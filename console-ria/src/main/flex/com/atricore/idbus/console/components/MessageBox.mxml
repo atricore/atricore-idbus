@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         minWidth="450" visible="false" includeInLayout="false">
+   <mx:Script>
+      <![CDATA[
+         public function showSuccessMessage(message : String) : void {
+         styleName = "messageBox";
+         visible = true;
+         includeInLayout = true;
+         successIcon.visible = true;
+         successIcon.includeInLayout = true;
+         failureIcon.visible = false;
+         failureIcon.includeInLayout = false;
+         messageText.text = message;
+      }
+
+      public function showFailureMessage(message : String) : void {
+         styleName = "messageBoxError";
+         visible = true;
+         includeInLayout = true;
+         successIcon.visible = false;
+         successIcon.includeInLayout = false;
+         failureIcon.visible = true;
+         failureIcon.includeInLayout = true;
+         messageText.text = message;
+      }
+
+      public function clearAndHide() : void {
+         this.visible = false;
+         this.includeInLayout = false;
+         this.messageText.text = "";
+      }
+      ]]>
+   </mx:Script>
+   <mx:Image id="successIcon" source="@Embed(source='/images/star_green.png')"/>
+   <mx:Image id="failureIcon" source="@Embed(source='/images/star_red.png')"
+             visible="false" includeInLayout="false"/>
+   <mx:Text id="messageText" width="100%"/>
+</mx:HBox>

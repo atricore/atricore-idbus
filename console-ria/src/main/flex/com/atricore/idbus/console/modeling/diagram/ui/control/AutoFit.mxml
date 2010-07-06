@@ -1,0 +1,116 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<mx:CheckBox xmlns:mx="http://www.adobe.com/2006/mxml"
+            label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.autofit')}"
+            selected="true"
+            click="toggleAutoFit()">
+
+
+    <mx:Script><![CDATA[
+        import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
+        import org.un.cava.birdeye.ravis.utils.LogUtil;
+        import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;
+
+        private static const _LOG:String = "components.ui.controls.layouterControls.AutoFit";
+
+        private var _vgraph:VisualGraph;
+
+        /**
+         * Provides access to the registered vgraph object.
+         * */
+        public function set vgraph(v:VisualGraph):void {
+            _vgraph = v;
+            registerListeners();
+        }
+
+
+        /**
+         * @private
+         * */
+        public function get vgraph():VisualGraph {
+            return _vgraph;
+        }
+
+        /**
+         * Event handler to be triggered in case the
+         * layouter in VGraph has changed.
+         * Only used to apply the current value to the new layouter.
+         * */
+        public function layouterChanged(e:VGraphEvent = null):void {
+
+            /* check if we have a layouter at all */
+            if (_vgraph == null || _vgraph.layouter == null) {
+                LogUtil.warn(_LOG, "Cannot toggle AutoFit to missing vgraph or null layouter");
+                return;
+            }
+
+            /* this is a default control component, and valid
+             * for all layouters, thus we only need to apply
+             * the value to the new layouter.
+             * We don't call toggleAutoFit(), since this
+             * triggers a draw(), which we do not want here
+             */
+            _vgraph.layouter.autoFitEnabled = this.selected;
+            _vgraph.layouter.layoutChanged = true;
+        }
+
+        /**
+         * toggles the autoFit capability of most layouters.
+         * */
+        public function toggleAutoFit():void {
+
+            /* check if we have a layouter at all */
+            if (_vgraph == null || _vgraph.layouter == null) {
+                LogUtil.warn(_LOG, "Cannot toggle AutoFit to missing vgraph or null layouter");
+                return;
+            }
+
+            _vgraph.layouter.autoFitEnabled = this.selected;
+            _vgraph.layouter.layoutChanged = true;
+            _vgraph.draw();
+        }
+
+        /**
+         * This refreshes the current value of the
+         * checkbox with the value in the layouter.
+         * */
+        public function refreshCheckbox(e:VGraphEvent = null):void {
+            /* check if we have a layouter at all */
+            if (_vgraph == null || _vgraph.layouter == null) {
+                LogUtil.warn(_LOG, "Cannot refresh AutoFit from missing vgraph or null layouter");
+                return;
+            }
+            /* refresh the value */
+            this.selected = _vgraph.layouter.autoFitEnabled;
+        }
+
+        /**
+         * Adds the listeners to update on changes in the VGraph
+         * */
+        private function registerListeners():void {
+            _vgraph.addEventListener(VGraphEvent.VGRAPH_CHANGED, refreshCheckbox);
+            _vgraph.addEventListener(VGraphEvent.LAYOUTER_CHANGED, layouterChanged);
+        }
+
+        ]]></mx:Script>
+</mx:CheckBox>

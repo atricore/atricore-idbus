@@ -1,0 +1,161 @@
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.atricore.idbus.console</groupId>
+        <artifactId>console</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>console-lib</artifactId>
+    <packaging>swc</packaging>
+
+    <name>Atricore Identity Bus Console :: Server Libraries</name>
+
+    <build>
+        <sourceDirectory>src/main/flex</sourceDirectory>
+
+        <plugins>
+            <plugin><!-- Flex (SWC and SWF) compilation -->
+                <groupId>org.sonatype.flexmojos</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <configurationReport>true</configurationReport>
+                    <contextRoot>org.atricore.idbus.console</contextRoot>
+                    <debug>true</debug>
+                    <configurationReport>true</configurationReport>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>optimize</goal>
+                            <!-- Optimized RSL generation -->
+                            <goal>generate</goal>
+                            <!-- ActionScript POJOs generation based on Java POJOs -->
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/generated-sources/flexmojos</outputDirectory>
+
+                            <includeJavaClasses>
+                                <includeClass>
+                                    org.atricore.idbus.capabilities.management.main.spi.StatusCode
+                                </includeClass>
+                                <includeClass>
+                                    org.atricore.idbus.capabilities.management.main.spi.IdentityApplianceLifeCycleAction
+                                </includeClass>
+                                <includeClass>
+                                    org.atricore.idbus.capabilities.management.main.domain.*
+                                </includeClass>                                  
+                                <includeClass>
+                                    org.atricore.idbus.capabilities.management.main.domain.metadata.*
+                                </includeClass>                                
+
+                                <includeClass>org.atricore.idbus.capabilities.management.main.spi.request.*</includeClass>
+                                <includeClass>org.atricore.idbus.capabilities.management.main.spi.response.*</includeClass>
+
+                                <includeClass>com.atricore.idbus.console.services.spi.request.*</includeClass>
+                                <includeClass>com.atricore.idbus.console.services.spi.response.*</includeClass>
+                                <includeClass>com.atricore.idbus.console.services.impl.request.*</includeClass>
+                                <includeClass>com.atricore.idbus.console.services.impl.response.*</includeClass>
+
+                            </includeJavaClasses>
+                            <excludeJavaClasses>
+                                <excludeJavaClass>org.atricore.idbus.capabilities.management.main.metadata.iam.*
+                                </excludeJavaClass>
+                                <!--<excludeJavaClass>-->
+                                    <!--org.atricore.idbus.capabilities.management.main.impl.IdentityBusMetadataManagerImpl-->
+                                <!--</excludeJavaClass>-->
+                                <!--<excludeJavaClass>-->
+                                    <!--org.atricore.idbus.applications.server.services.impl.IdentityApplianceMetadataAjaxServiceImpl-->
+                                <!--</excludeJavaClass>-->
+                            </excludeJavaClasses>
+                            <interfaceTemplate>
+                                <template>${basedir}/src/main/template/interfaceBase.gsp</template>
+                                <template>${basedir}/src/main/template/interface.gsp</template>
+                            </interfaceTemplate>
+                            <beanTemplate>
+                                <template>${basedir}/src/main/template/beanBase.gsp</template>
+                                <template>${basedir}/src/main/template/bean.gsp</template>
+                            </beanTemplate>
+                            <enumTemplate>
+                                <enumTemplate>${basedir}/src/main/template/enum.gsp</enumTemplate>
+                            </enumTemplate>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${felix.plugin.version}</version>
+                <configuration>
+                    <instructions>
+                        <Bundle-Name>Atricore Identity Bus Console :: Server Libraries</Bundle-Name>
+                        <Bundle-Description>Atricore Identity Bus Console :: Server Libraries</Bundle-Description>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>com.atricore.idbus.console.*;version=${pom.version}
+                        </Export-Package>
+                        <Import-Package>
+                            org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
+                            org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
+                            org.springframework.web.context,
+                            org.springframework.web.context.support,
+                            org.springframework.osgi.web.context.support,
+                            flex.*,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>console-services</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.management</groupId>
+            <artifactId>org.atricore.idbus.capabilities.management.main</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>flex-framework</artifactId>
+            <type>pom</type>
+        </dependency>
+
+    </dependencies>
+</project>

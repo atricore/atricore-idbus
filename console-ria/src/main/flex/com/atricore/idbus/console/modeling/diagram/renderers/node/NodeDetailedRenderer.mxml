@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:primitive="org.un.cava.birdeye.ravis.assets.icons.primitives.*"
+	creationComplete="onCreationComplete()" autoLayout="true" rollOver="handleNodeRollOver(event)" rollOut="handleNodeRollOut(event)">
+
+    <mx:Zoom id="zoomAll" zoomWidthTo="1.2" zoomHeightTo="1.2" zoomWidthFrom="1" zoomHeightFrom="1"/>
+
+    <mx:Button label="{_linkLabel}" icon="{_linkIcon}" click="nodeSelected(event)" toggle="true"/>
+
+    <mx:Button id="removeNode" icon="{EmbeddedIcons.removeNodeIcon}" click="nodeRemove(event)" visible="false"/>
+
+	<mx:Script>
+		<![CDATA[
+
+        import com.atricore.idbus.console.main.EmbeddedIcons;
+
+        import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
+        import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
+        import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
+
+        import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
+        import org.atricore.idbus.capabilities.management.main.domain.IdentityApplianceUnit;
+        import org.atricore.idbus.capabilities.management.main.domain.IdentityApplianceUnitType;
+        import org.atricore.idbus.capabilities.management.main.domain.metadata.BindingProvider;
+        import org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProvider;
+        import org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityVault;
+        import org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProvider;
+        import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualGraph;
+        import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
+        import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
+        import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;
+
+        private var _vgraph:IVisualGraph;
+
+        [Bindable]
+        public var _linkLabel:String;
+
+        [Bindable]
+        public var _linkIcon:Class;
+
+        private var _graphManager:GraphDataManager;
+
+
+        private function onCreationComplete():void {
+            registerListeners();
+            loadData(IVisualNode(this.data).data);
+        }
+
+        public override function set data(value:Object):void {
+            super.data = value;
+            _vgraph = (IVisualNode(this.data).vgraph);
+        }
+
+        protected function loadData(obj:Object):void {
+            if (obj is IdentityAppliance) {
+                var bus:IdentityAppliance = obj as IdentityAppliance;
+                _linkLabel = bus.idApplianceDefinition.name;
+                //iconImage.source = EmbeddedIcons.busIcon;
+                _linkIcon = EmbeddedIcons.busIcon;
+            } else {
+                if (obj is IdentityProvider) {
+                    var idp:IdentityProvider = obj as IdentityProvider;
+                    _linkLabel = idp.name;
+                    //iconImage.source = EmbeddedIcons.idpIcon;
+                    _linkIcon = EmbeddedIcons.idpIcon;
+                } else {
+                    if (obj is ServiceProvider) {
+                        var sp:ServiceProvider = obj as ServiceProvider;
+                        _linkLabel = sp.name;
+                        //iconImage.source = EmbeddedIcons.spIcon;
+                    } else {
+                        if (obj is BindingProvider) {
+                            var bp:BindingProvider = obj as BindingProvider;
+                            _linkLabel = bp.name;
+                            //iconImage.source = EmbeddedIcons.bpIcon;
+                        } else {
+                            if (obj is IdentityVault) {
+                                var identityVault:IdentityVault = obj as IdentityVault;
+                                _linkLabel = identityVault.name;
+                                //iconImage.source = EmbeddedIcons.vaultIcon;
+                            } else {
+                                if (obj is IdentityApplianceUnit) {
+                                    var applianceUnit:IdentityApplianceUnit = obj as IdentityApplianceUnit;
+                                    _linkLabel = applianceUnit.name;
+                                    var type:IdentityApplianceUnitType = applianceUnit.type;
+                                    if (type.equals(IdentityApplianceUnitType.FEDERATION_UNIT)) {
+                                        //iconImage.source = EmbeddedIcons.spIcon;
+                                    } else if (type.equals(IdentityApplianceUnitType.PROVISIONING_UNIT)) {
+                                        //iconImage.source = EmbeddedIcons.vaultIcon;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private function nodeSelected(e:MouseEvent):void {
+            dispatchEvent(new VNodeSelectedEvent(VNodeSelectedEvent.VNODE_SELECTED, IVisualNode(this.data).node.stringid, true, false, 0));
+        }
+
+        private function nodeRemove(e:MouseEvent):void {
+            dispatchEvent(new VNodeRemoveEvent(VNodeRemoveEvent.VNODE_REMOVE, IVisualNode(this.data).node.stringid, true, false, 0));
+        }
+
+
+        public function handleNodeRollOver(event:MouseEvent):void {
+            (_vgraph as VisualGraph).data = IVisualNode(this.data);
+
+            if (zoomAll.isPlaying) {
+                zoomAll.reverse();
+            }
+            else {
+                zoomAll.play([event.target], false);
+            }
+
+            // show node remove button
+            removeNode.visible = true;
+        }
+
+        public function handleNodeRollOut(event:MouseEvent):void {
+            (_vgraph as VisualGraph).data = null;
+
+            // hide node remove button
+            removeNode.visible = false;
+
+            if (zoomAll.isPlaying) {
+                zoomAll.reverse();
+            }
+            else {
+                zoomAll.play([event.target], true);
+            }
+
+        }
+
+        public function refreshData(e:VGraphEvent = null):void {
+            loadData(IVisualNode(this.data).data);
+        }
+
+        /**
+         * register the event listener
+         * */
+        private function registerListeners():void {
+            IVisualNode(this.data).vgraph.addEventListener(VGraphEvent.VGRAPH_CHANGED, refreshData);
+        }
+
+		]]>
+	</mx:Script>
+</mx:VBox>

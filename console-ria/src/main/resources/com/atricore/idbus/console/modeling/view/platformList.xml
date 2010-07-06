@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<platforms>
+    <platform label="JBoss 3.2">jb32</platform>
+    <platform label="JBoss 4.0">jb40</platform>
+    <platform label="JBoss 4.2">jb42</platform>
+    <platform label="Tomcat 5.0">tc50</platform>
+    <platform label="Tomcat 5.5">tc55</platform>
+    <platform label="Tomcat 6.0">tc60</platform>
+</platforms>

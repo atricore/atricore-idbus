@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:utils="com.atricore.idbus.console.components.*"
+         defaultButton="{btnSave}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
+
+    <mx:StringValidator id="nameValidator" source="{applianceName}" required="true" property="text" trigger="{btnSave}"
+                        triggerEvent="click"/>
+    <mx:NumberValidator id="portValidator" source="{applianceLocationPort}" required="false" property="text"
+                        trigger="{btnSave}" triggerEvent="click" minValue="1" maxValue="65535"
+                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.portValidationError')}"/>
+    <utils:URLPartValidator id="domainValidator" source="{applianceLocationDomain}" required="true" property="text"
+                        trigger="{btnSave}" triggerEvent="click"/>
+    <utils:URLPartValidator id="pathValidator" source="{applianceLocationPath}" required="false" property="text"
+                        trigger="{btnSave}" triggerEvent="click"/>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.name')}:" required="true">
+        <mx:TextInput id="applianceName"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.description')}:">
+        <mx:TextArea id="applianceDescription" height="80"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.applianceLocation')}:"
+                 direction="horizontal" required="true">
+        <mx:ComboBox id="applianceLocationProtocol">
+            <mx:ArrayCollection>
+                <mx:Object label="http" data="http"/>
+                <mx:Object label="https" data="https"/>
+            </mx:ArrayCollection>
+        </mx:ComboBox>
+        <mx:Label text="://" width="9" paddingLeft="-5"/>
+        <mx:TextInput id="applianceLocationDomain" width="150"/>
+        <mx:Label text=":" width="1" paddingLeft="-5"/>
+        <mx:TextInput id="applianceLocationPort" width="40"/>
+        <mx:Label text="/" width="2" paddingLeft="-5"/>
+        <mx:TextInput id="applianceLocationPath" styleName="locationInput" width="100"/>
+    </mx:FormItem>
+
+    <mx:HBox width="100%" height="100%" verticalAlign="bottom" horizontalAlign="right">
+        <mx:Button id="btnSave" label="Create"/>
+        <mx:LinkButton id="btnCancel" styleName="form" label="cancel"/>
+    </mx:HBox>
+</mx:Form>

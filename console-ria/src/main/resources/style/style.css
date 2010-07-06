@@ -1,0 +1,489 @@
+/* CSS file */
+
+Application {
+   paddingTop: 0;
+   padding-left: 0;
+   padding-right: 0;
+   padding-bottom: 0;
+   verticalGap: 0;
+   background-color:#ffffff;
+   backgroundAlpha:1.0;
+}
+
+.banner {
+   background-image: Embed(source = "/images/nav-bg.png");
+   backgroundSize:"100%";
+}
+
+Label.welcome {
+   font-size: 16;
+   font-family:"News Gothic MT,Trebuchet MS";
+   color:#ffffff;
+}
+
+.topBox {
+   horizontalAlign:right;
+   verticalAlign:top;
+   horizontalGap:3;
+   padding-top:2;
+}
+
+.login {
+   paddingTop: 0;
+   padding-left: 0;
+   padding-right: 0;
+   padding-bottom: 0;
+   font-weight: normal;
+   text-decoration: underline;
+   font-family:"News Gothic MT,Trebuchet MS";
+}
+
+.menu {
+   color: #ffffff;
+   font-family:"News Gothic MT,Trebuchet MS";
+   disabledColor:#382d37;
+   horizontalGap:0;
+   padding-top:0;
+   padding-bottom:0;
+}
+
+.menuItem {
+   color: #ffffff;
+   font-weight: normal;
+   font-size: 16;
+   cornerRadius: 0;
+   padding-top: 5;
+   selectionColor: #ab9578;
+   disabledColor: #4d4d4d;
+}
+
+.bannerLabel {
+   color:#63410B;
+}
+
+.bannerLink {
+   color:#63410B;
+   text-decoration:underline;
+}
+
+.headingBox {
+   padding-top: 15;
+   padding-right: 0;
+}
+
+.heading {
+   padding-top: 10;
+   font-size: 20;
+   font-weight: normal;
+   text-align: center;
+   color: #FFFFFF;
+}
+
+.main {
+   border-skin: ClassReference('com.atricore.idbus.console.skin.HaloBorderWithImagePositioning');
+   background-position: center, top;
+   background-image: Embed(source = "/images/main-bg.jpg");
+   background-color:#ffffff;
+   padding-right:0;
+   padding-left:10;
+   padding-bottom:5;
+   horizontalGap:0;
+}
+
+Label.h1 {
+   font-size: 22;
+   font-weight: normal;
+}
+
+Label.h1White {
+   font-size: 22;
+   color: #FFFFFF;
+}
+
+Label.h2 {
+   font-size: 16;
+}
+
+Label.h3 {
+   font-size: 14;
+   font-weight: bold;
+}
+
+Label.h2White {
+   font-size: 14;
+   color: #FFFFFF;
+   text-align:center;
+}
+
+Label.sideText {
+   text-align:justify;
+   vertical-gap: 2;
+}
+
+Label.storyHead {
+   font-size: 16;
+   text-align:center;
+}
+
+
+.wallHeader {
+   border-thickness: 0;
+   horizontal-align: left;
+   vertical-align: middle;
+   background-image:Embed(source = "/images/heading-bg.png");
+   backgroundSize:"100%";
+   /*background-color:#3679b0;*/
+}
+
+.thinBorder {
+   border-style: solid;
+   border-thickness: 1;
+   corner-radius: 2;
+}
+
+.unpadded {
+   padding-bottom: 0;
+   padding-left: 0;
+   padding-right: 0;
+   padding-top: 0;
+}
+
+.titledForm {
+   padding-bottom: 10;
+   padding-left: 10;
+   padding-right: 10;
+   padding-top: 40;
+   border-color:#3679b0;
+   border-thickness:2px;
+   background-color:#ffffff;
+   backgroundAlpha:0.7;
+   corner-radius:4;
+}
+
+.titledFormTitle {
+   font-weight:normal;
+   font-size:16px;
+   color:#382d37;
+}
+
+.navLinkBox {
+   padding-left: 10;
+   padding-top: 0;
+   padding-right: 10;
+   horizontal-align: center;
+}
+
+.messageBox {
+   border-style: solid;
+   border-thickness: 2;
+   corner-radius: 3;
+   border-color: #009900;
+   background-color: #ffffff;
+   padding-bottom: 2;
+   padding-left: 5;
+   padding-right: 5;
+   padding-top: 2;
+   font-size:12;
+}
+
+.messageBoxError {
+   border-style: solid;
+   border-thickness: 2;
+   corner-radius: 3;
+   border-color: #990000;
+   background-color: #ffffff;
+   padding-bottom: 2;
+   padding-left: 5;
+   padding-right: 5;
+   padding-top: 2;
+   font-size:12;
+}
+
+.messageText {
+   font-size:12;
+}
+
+ToolTip {
+   font-size: 12;
+}
+
+.storyView {
+   padding-bottom: 0;
+   padding-left: 0;
+   padding-right: 0;
+   padding-top: 0;
+   border-style: solid;
+   border-thickness: 1;
+   border-color: #B7BABC;
+   border-sides: top, bottom;
+   horizontal-gap: 0;
+   vertical-gap: 0;
+}
+
+Alert {
+   border-color: #3679b0;
+   background-color: #ffffff;
+   color: #000000;
+   titleStyleName: "alertTitle";
+   padding-bottom: 10;
+}
+
+.alertTitle {
+   color: #ffffff;
+}
+
+.whiteTitle {
+   color: #153F63;
+   background-color:#B08136;
+   font-size:16;
+}
+
+TextInput {
+   borderStyle: "solid";
+   borderColor: #3679b0;
+   cornerRadius: 1;
+   focusAlpha: 0.05;
+   focusFillColors: #FFFFFF, #DCEBFE;
+   focusFillAlphas: 1, 1
+}
+
+List {
+   borderStyle: "solid";
+   borderColor: #3679b0;
+   cornerRadius: 1;
+   focusAlpha: 0.05;
+   focusFillColors: #FFFFFF, #DCEBFE;
+   focusFillAlphas: 1, 1
+}
+
+.wallHolder {
+   padding-bottom: 0;
+   padding-left: 0;
+   padding-right: 0;
+   padding-top: 0;
+   vertical-align:top;
+   horizontalGap:0;
+}
+
+TextArea {
+   borderStyle: "solid";
+   borderColor: #3679b0;
+   cornerRadius: 1;
+   focusAlpha: 0.05;
+   focusFillColors: #FFFFFF, #DCEBFE;
+   focusFillAlphas: 1, 1
+}
+
+.wallList {
+   border-thickness:0;
+   backgroundAlpha:0.7;
+}
+
+.cardHeading {
+    paddingTop:2;
+   font-weight:bold;
+   font-size:12;
+   horizontal-align:left;
+}
+
+.cardSummaryText {
+   font-size:10;
+   horizontal-align:left;
+   padding-top:3px;
+}
+
+.cardText {
+   font-size:10;
+   horizontal-align:left;
+}
+
+
+.titledBorder {
+   color:#3679b0;
+   font-size:18;
+}
+
+.printHeading {
+   font-weight:bold;
+   font-size:24;
+   horizontal-align:left;
+}
+
+.printTitle {
+   font-size:20;
+   font-weight:bold;
+   text-align:center;
+}
+
+.printText {
+   font-size:18;
+   text-align:left;
+}
+
+.page {
+   borderThickness:0;
+}
+
+.accordionHeader {
+   font-size:14;
+}
+
+.buttonBox {
+   padding-right:5px;
+   padding-bottom:5px;
+   horizontalAlign:right;
+   verticalAlign:bottom;
+}
+
+LinkButton.form {
+   color:#3679b0;
+   text-decoration:underline;
+   font-weight:normal;
+   font-size:14;
+   padding-bottom:0;
+   padding-left:0;
+   padding-right:0;
+}
+
+LinkButton.logout {
+   color:#ffffff;
+   textRollOverColor:#aaaaaa;
+   rollOverColor:#404040;
+   text-decoration:underline;
+   font-weight:normal;
+   font-size:14;
+   padding-bottom:0;
+   padding-left:0;
+   padding-right:0;
+}
+
+LinkButton.secondNav {
+   color:#404040;
+   text-decoration:none;
+   font-weight:normal;
+   font-size:14;
+   padding-bottom:0;
+   padding-left:0;
+   padding-right:0;
+}
+
+.mainPopup {
+   padding-top:35;
+   padding-bottom:10;
+   padding-left:10;
+   padding-right:10;
+   border-color: #3679b0;
+   title-style-name: whiteTitle;
+   border-style:outset;
+   borderThickness:0;
+   corner-radius:0;
+   borderSkin:Embed(source = "/images/panel-bg.png",
+   scaleGridLeft=44,
+   scaleGridRight=360,
+   scaleGridTop=54,
+   scaleGridBottom=219);
+}
+
+.modelerPopup {
+   padding-top:35;
+   padding-bottom:10;
+   padding-left:10;
+   padding-right:10;
+   border-color: #3679b0;
+   title-style-name: whiteTitle;
+   border-style:outset;
+   borderThickness:0;
+   corner-radius:0;
+   borderSkin:Embed(source = "/images/panel-bg.png",
+   scaleGridLeft=44,
+   scaleGridRight=360,
+   scaleGridTop=54,
+   scaleGridBottom=219);
+}
+
+TitleWindow {
+   closeButtonSkin: Embed("/images/icons/close.png");
+   /* Set values from defaults.css to null. */
+   closeButtonDisabledSkin: ClassReference(null);
+   closeButtonDownSkin: ClassReference(null);
+   closeButtonOverSkin: Embed("/images/icons/close-over.png");
+   closeButtonUpSkin: ClassReference(null);
+}
+
+.confirm {
+   border-color: #3679b0;
+   borderAlpha:1.0;
+   title-style-name:alertTitle;
+   
+}
+
+.loginForm {
+   background-image:Embed(source = "/images/login-form-bg.png");
+   padding-left:70;
+   padding-right:70;
+   padding-top:15;
+}
+
+.menuBar {
+   background-color:#f7f6f3;
+   border-style:solid;
+   border-thickness:1;
+   border-sides:bottom;
+   padding-top:2;
+   padding-right:5px;
+   padding-bottom:0;
+   horizontalAlign:right;
+}
+
+.themeHeader {
+   font-size:14;
+   color:#382d37;
+}
+
+.swimLane {
+   backgroundAlpha:0.7;
+   horizontalAlign:center;
+   borderSides:left,right;
+   borderThickness:1;
+   border-style:solid;
+}
+
+.popupList {
+   text-align:left;
+   font-weight:normal;
+   font-size:14px;
+   padding-left:5px;
+   padding-right:5px;
+}
+
+.sideTabs {
+   verticalGap:10px;
+   paddingLeft:5px;
+}
+
+.sidePanel {
+   backgroundAlpha:1.0;
+   background-color:#ffffff;
+   borderSides:left,top,bottom;
+   borderThickness:1;
+   border-style:solid;
+   border-color:#404040;
+   verticalGap:0;
+}
+
+.panelBox {
+   paddingLeft:10px;
+   paddingTop:8px;
+   horizontalGap:5px;
+}
+
+.loggedInViewStack {
+   backgroundAlpha:0.7;
+   backgroundColor:#ffffff;
+}
+
+.impedimentList {
+   borderThickness:0px;
+   padding-top:10px;
+   padding-right:10px;
+}

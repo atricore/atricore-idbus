@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<WizardStep
+        xmlns="com.atricore.idbus.console.components.wizard.*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        stepName="Basic Authentication"
+        xmlns:utils="com.atricore.idbus.console.components.*"
+        creationComplete="initForm()">
+
+        <mx:Script>
+        <![CDATA[           
+
+            import org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityVault;
+
+            [Bindable]
+            private var validators:Array;
+
+            /**
+             * This will holds the results
+             */
+            private var readableDecisionArray:Array;
+
+            override public function get stepDecision():* {
+                var identityVault:IdentityVault = new IdentityVault();
+                readableDecisionArray = new Array();
+
+                identityVault.name = userRepositoryName.text;
+                readableDecisionArray.push("Repository Name: " + identityVault.name);
+
+                if (repositoryType.selectedValue == "embedded") {
+                    identityVault.embedded = true;
+                    readableDecisionArray.push("Create Embedded Repository");
+                } else {
+                    identityVault.embedded = false;
+                    readableDecisionArray.push("Create External Repository");
+                }
+
+                return identityVault;
+            }
+
+            override public function get readableStepDecision():String {
+                return readableDecisionArray.join("\n").toString();
+            }
+
+            private function initForm():void {
+                if (validators == null) {
+                    validators = new Array();
+                    validators.push(nameValidator);
+                }
+            }
+
+            private function handleFormChange(event:Event):void {
+                // Check the step validity
+                ssoWizStep1Form.validateForm(event);
+                isValid = ssoWizStep1Form.isValid;
+            }
+
+            override public function get isJumpToConditionMet():Boolean {
+                if (repositoryType.selectedValue == "embedded") {
+                    return true;
+                }
+                return false;
+            }
+
+        ]]>
+    </mx:Script>
+    <mx:StringValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"/>
+
+    <mx:VBox width="100%" height="100%">
+
+        <utils:ValidatingForm id="ssoWizStep1Form" width="100%" height="100%" validators="{validators}" labelWidth="50">
+
+            <utils:GroupBox verticalAlign="middle" width="100%" height="100%" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.usersRepository')}">
+                <mx:FormItem paddingLeft="60" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.userRepositoryName')}:" required="true">
+                    <mx:TextInput id="userRepositoryName" width="300" change="handleFormChange(event);"/>
+                </mx:FormItem>
+                <mx:FormItem paddingLeft="60" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.type')}:">
+                    <mx:RadioButtonGroup id="repositoryType" itemClick="handleFormChange(event);"/>
+                    <mx:RadioButton groupName="repositoryType" id="embedded" value="embedded" selected="true"
+                            label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.embeddedRepository')}"/>
+                    <mx:RadioButton groupName="repositoryType" id="external" value="external"
+                            label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.externalRepository')}"/>
+                </mx:FormItem>
+            </utils:GroupBox>
+       </utils:ValidatingForm>
+
+    </mx:VBox>
+</WizardStep>

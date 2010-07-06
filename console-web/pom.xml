@@ -1,0 +1,746 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.atricore.idbus.console</groupId>
+        <artifactId>console</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <!--artifactId>idbus-server-web</artifactId-->
+    <artifactId>com.atricore.idbus.console.web</artifactId>
+    <packaging>war</packaging>
+    <name>Atricore Identity Bus Console :: Web distribution</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warSourceDirectory>src/main/webapp/</warSourceDirectory>
+                    <archive>
+                        <!-- add the generated manifest to the war -->
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+
+
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-config</id>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/flex
+                            </outputDirectory>
+                            <includeGroupIds>${project.groupId}</includeGroupIds>
+                            <includeArtifactIds>console-config</includeArtifactIds>
+                            <includeTypes>zip</includeTypes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>maven-jetty-plugin</artifactId>
+                <version>6.1.24</version>
+                <configuration>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>org.apache.commons.logging.Log</name>
+                            <value>
+                                org.apache.commons.logging.impl.Log4JLogger
+                            </value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>slf4j</name>
+                            <value>false</value>
+                        </systemProperty>
+                        <!--
+                        <systemProperty>
+                            <name>log4j.configuration</name>
+                            <value>file:./src/main/resources/log4j.properties</value>
+                        </systemProperty>
+                        -->
+                    </systemProperties>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.mortbay.jetty</groupId>
+                        <artifactId>jsp-2.1-jetty</artifactId>
+                        <version>6.1.21</version>
+                        <scope>provided</scope>
+                        <exclusions>
+                            <exclusion>
+                                <groupId>org.eclipse.jdt</groupId>
+                                <artifactId>core</artifactId>
+                            </exclusion>
+                            <exclusion>
+                                <groupId>org.mortbay.jetty</groupId>
+                                <artifactId>jsp-api-2.1</artifactId>
+                            </exclusion>
+                            <exclusion>
+                                <groupId>org.mortbay.jetty</groupId>
+                                <artifactId>start</artifactId>
+                            </exclusion>
+                            <exclusion>
+                                <groupId>org.mortbay.jetty</groupId>
+                                <artifactId>jetty-annotations</artifactId>
+                            </exclusion>
+                        </exclusions>
+                    </dependency>
+                    <dependency>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                        <version>1.1</version>
+                        <type>jar</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                        <version>1.2.13</version>
+                        <type>jar</type>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.flexmojos</groupId>
+                <artifactId>flexmojos-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>copy-flex-resources</goal>
+                            <!-- Copy of Flex resource into WAR -->
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configurationReport>true</configurationReport>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${felix.plugin.version}</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <supportedProjectTypes>
+                        <supportedProjectType>bundle</supportedProjectType>
+                        <supportedProjectType>war</supportedProjectType>
+                    </supportedProjectTypes>
+                    <instructions>
+                        <Bundle-Name>Atricore IDBus :: Application : Server Admin Web distribution</Bundle-Name>
+                        <Bundle-Description>Identity Bus Server Admin Web distribution</Bundle-Description>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-ClassPath>
+                            .,
+                            WEB-INF,
+                            WEB-INF/classes,
+                            WEB-INF/lib/backport-util-concurrent-3.1.jar,
+                            WEB-INF/lib/blazeds-common-3.0.jar,
+                            WEB-INF/lib/blazeds-core-3.0.jar,
+                            WEB-INF/lib/blazeds-remoting-3.0.jar,
+                            <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.main-1.0.0-SNAPSHOT.jar,-->
+                            WEB-INF/lib/com.atricore.idbus.console.services-1.0.0-SNAPSHOT.jar,
+                            <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.support.springmetadata-1.0.0-SNAPSHOT.jar-->
+                            <!--WEB-INF/lib/org.atricore.idbus.bundles.datanucleus-core-v2_0_3-1.0.0-SNAPSHOT.jar,-->
+                            <!--WEB-INF/lib/org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3-1.0.0-SNAPSHOT.jar-->
+                        </Bundle-ClassPath>
+                        <Require-Bundle>
+                            org.atricore.idbus.capabilities.management.main
+                        </Require-Bundle>
+                        <Import-Package>
+                            org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
+                            org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
+                            <!--javax.jdo; version="[2.3.0,2.3.0]",-->
+                            <!--javax.jdo.annotations; version="[2.3.0,2.3.0]",-->
+                            <!--javax.jdo.datastore; version="[2.3.0,2.3.0]",-->
+                            <!--javax.jdo.identity; version="[2.3.0,2.3.0]",-->
+                            <!--javax.jdo.listener; version="[2.3.0,2.3.0]",-->
+                            <!--javax.jdo.metadata; version="[2.3.0,2.3.0]",-->
+                            <!--javax.jdo.spi; version="[2.3.0,2.3.0]",-->
+                            javax.management,
+                            javax.transaction;resolution:=optional,
+                            javax.transaction.xa;resolution:=optional,
+                            javax.naming,
+                            javax.naming.spi,
+                            javax.xml.xpath,
+                            javax.xml.parsers,
+                            javax.xml.stream,
+                            javax.xml.transform,
+                            javax.xml.transform.dom,
+                            javax.xml.transform.stream,
+                            javax.xml.validation,
+                            javax.sql,
+                            javax.servlet.http; version="[2.5.0,3.0.0]",
+                            javax.servlet; version="[2.5.0,3.0.0]",
+                            oasis.names.tc.saml._2_0.metadata,
+                            oasis.names.tc.saml._2_0.assertion,
+                            oasis.names.tc.saml._2_0.protocol,
+                            oasis.names.tc.saml._2_0.wsdl, 
+                            org.atricore.idbus.bundles.apache.derby,
+                            org.atricore.idbus.kernel.common.support.osgi,
+                            org.atricore.idbus.kernel.main.authn.util,
+                            org.atricore.idbus.capabilities.management.main.domain,
+                            org.atricore.idbus.capabilities.management.main.domain.metadata,
+                            org.atricore.idbus.capabilities.management.main.exception,
+                            org.atricore.idbus.capabilities.management.main.impl,
+                            org.atricore.idbus.capabilities.management.main.spi,
+                            org.atricore.idbus.capabilities.management.main.spi.request,
+                            org.atricore.idbus.capabilities.management.main.spi.response,
+                            org.atricore.idbus.capabilities.management.main.util,
+                            <!--org.apache.derby.jdbc,-->
+                            <!--org.hsqldb,-->
+                            org.springframework.core.io,
+                            org.springframework.context; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                            org.springframework.beans; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                            org.springframework.beans.factory; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                            org.springframework.beans.factory.config; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                            org.springframework.web.context; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                            org.springframework.web.context.support; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                            org.springframework.orm.jdo; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                            org.springframework.osgi.web.context.support; version=["1.2.0,1.2.0"],
+                            org.springframework.osgi.context; version=["1.2.0,1.2.0"],
+                            org.osgi.framework,
+                            org.xml.sax,
+                            org.xml.sax.helpers,
+                            org.w3c.dom,
+                            *
+                        </Import-Package>
+                        <Webapp-Context>atricore-console</Webapp-Context>
+                        
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.support</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1</artifactId>
+            <scope>provided</scope>
+        </dependency>     
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>console-ria</artifactId>
+            <type>swf</type>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>console-services</artifactId>
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>${project.groupId}</groupId>-->
+            <!--<artifactId>org.atricore.idbus.capabilities.management.support.springmetadata</artifactId>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.management</groupId>
+            <artifactId>org.atricore.idbus.capabilities.management.main</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>console-config</artifactId>
+            <classifier>resources</classifier>
+            <type>zip</type>
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>org.atricore.idbus.bundles</groupId>-->
+            <!--<artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>-->
+        <!--</dependency>-->
+        <!---->
+        <!--<dependency>-->
+            <!--<groupId>org.atricore.idbus.bundles</groupId>-->
+            <!--<artifactId>org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3</artifactId>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>javax.jdo</groupId>
+            <artifactId>jdo2-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- FLEX , Embedded-->
+        <dependency>
+            <groupId>com.adobe.blazeds</groupId>
+            <artifactId>blazeds-remoting</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.blazeds</groupId>
+            <artifactId>blazeds-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.blazeds</groupId>
+            <artifactId>blazeds-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>flex-framework</artifactId>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.un.cava.birdeye</groupId>
+            <artifactId>ravis</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flexlib</groupId>
+            <artifactId>flexlib</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+    <profiles>
+
+        <profile>
+            <id>non-managed</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>1.5</source>
+                            <target>1.5</target>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <configuration>
+                            <warSourceDirectory>src/main/webapp-nonmanaged/</warSourceDirectory>
+                            <archive>
+                                <!-- add the generated manifest to the war -->
+                                <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                            </archive>
+                        </configuration>
+                    </plugin>
+
+
+                    <plugin>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-config</id>
+                                <goals>
+                                    <goal>unpack-dependencies</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/flex
+                                    </outputDirectory>
+                                    <includeGroupIds>${project.groupId}</includeGroupIds>
+                                    <includeArtifactIds>console-config</includeArtifactIds>
+                                    <includeTypes>zip</includeTypes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.mortbay.jetty</groupId>
+                        <artifactId>maven-jetty-plugin</artifactId>
+                        <version>6.1.24</version>
+                        <configuration>
+                            <contextPath>/atricore-console</contextPath>
+                            <scanIntervalSeconds>10</scanIntervalSeconds>
+                            <systemProperties>
+                                <systemProperty>
+                                    <name>org.apache.commons.logging.Log</name>
+                                    <value>
+                                        org.apache.commons.logging.impl.Log4JLogger
+                                    </value>
+                                </systemProperty>
+                                <systemProperty>
+                                    <name>slf4j</name>
+                                    <value>false</value>
+                                </systemProperty>
+                                <!--
+                                <systemProperty>
+                                    <name>log4j.configuration</name>
+                                    <value>file:./src/main/resources/log4j.properties</value>
+                                </systemProperty>
+                                -->
+                            </systemProperties>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.mortbay.jetty</groupId>
+                                <artifactId>jsp-2.1-jetty</artifactId>
+                                <version>6.1.21</version>
+                                <scope>provided</scope>
+                                <exclusions>
+                                    <exclusion>
+                                        <groupId>org.eclipse.jdt</groupId>
+                                        <artifactId>core</artifactId>
+                                    </exclusion>
+                                    <exclusion>
+                                        <groupId>org.mortbay.jetty</groupId>
+                                        <artifactId>jsp-api-2.1</artifactId>
+                                    </exclusion>
+                                    <exclusion>
+                                        <groupId>org.mortbay.jetty</groupId>
+                                        <artifactId>start</artifactId>
+                                    </exclusion>
+                                    <exclusion>
+                                        <groupId>org.mortbay.jetty</groupId>
+                                        <artifactId>jetty-annotations</artifactId>
+                                    </exclusion>
+                                </exclusions>
+                            </dependency>
+                            <dependency>
+                                <groupId>commons-logging</groupId>
+                                <artifactId>commons-logging</artifactId>
+                                <version>1.1</version>
+                                <type>jar</type>
+                            </dependency>
+                            <dependency>
+                                <groupId>log4j</groupId>
+                                <artifactId>log4j</artifactId>
+                                <version>1.2.13</version>
+                                <type>jar</type>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.flexmojos</groupId>
+                        <artifactId>flexmojos-maven-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>copy-flex-resources</goal>
+                                    <!-- Copy of Flex resource into WAR -->
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <configurationReport>true</configurationReport>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>maven-bundle-plugin</artifactId>
+                        <version>${felix.plugin.version}</version>
+                        <extensions>true</extensions>
+                        <executions>
+                            <execution>
+                                <id>bundle-manifest</id>
+                                <phase>process-classes</phase>
+                                <goals>
+                                    <goal>manifest</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <supportedProjectTypes>
+                                <supportedProjectType>bundle</supportedProjectType>
+                                <supportedProjectType>war</supportedProjectType>
+                            </supportedProjectTypes>
+                            <instructions>
+                                <Bundle-Name>Atricore IDBus :: Application : Server Admin Web distribution</Bundle-Name>
+                                <Bundle-Description>Identity Bus Server Admin Web distribution</Bundle-Description>
+                                <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                                <Bundle-ClassPath>
+                                    .,
+                                    WEB-INF,
+                                    WEB-INF/classes,
+                                    WEB-INF/lib/backport-util-concurrent-3.1.jar,
+                                    WEB-INF/lib/blazeds-common-3.0.jar,
+                                    WEB-INF/lib/blazeds-core-3.0.jar,
+                                    WEB-INF/lib/blazeds-remoting-3.0.jar,
+                                    <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.main-1.0.0-SNAPSHOT.jar,-->
+                                    WEB-INF/lib/com.atricore.idbus.console.services-1.0.0-SNAPSHOT.jar,
+                                    <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.support.springmetadata-1.0.0-SNAPSHOT.jar-->
+                                    <!--WEB-INF/lib/org.atricore.idbus.bundles.datanucleus-core-v2_0_3-1.0.0-SNAPSHOT.jar,-->
+                                    <!--WEB-INF/lib/org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3-1.0.0-SNAPSHOT.jar-->
+                                </Bundle-ClassPath>
+                                <Require-Bundle>
+                                    org.atricore.idbus.capabilities.management.main
+                                </Require-Bundle>
+                                <Import-Package>
+                                    org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
+                                    org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
+                                    <!--javax.jdo; version="[2.3.0,2.3.0]",-->
+                                    <!--javax.jdo.annotations; version="[2.3.0,2.3.0]",-->
+                                    <!--javax.jdo.datastore; version="[2.3.0,2.3.0]",-->
+                                    <!--javax.jdo.identity; version="[2.3.0,2.3.0]",-->
+                                    <!--javax.jdo.listener; version="[2.3.0,2.3.0]",-->
+                                    <!--javax.jdo.metadata; version="[2.3.0,2.3.0]",-->
+                                    <!--javax.jdo.spi; version="[2.3.0,2.3.0]",-->
+                                    javax.management,
+                                    javax.transaction;resolution:=optional,
+                                    javax.transaction.xa;resolution:=optional,
+                                    javax.naming,
+                                    javax.naming.spi,
+                                    javax.xml.xpath,
+                                    javax.xml.parsers,
+                                    javax.xml.stream,
+                                    javax.xml.transform,
+                                    javax.xml.transform.dom,
+                                    javax.xml.transform.stream,
+                                    javax.xml.validation,
+                                    javax.sql,
+                                    javax.servlet.http; version="[2.5.0,3.0.0]",
+                                    javax.servlet; version="[2.5.0,3.0.0]",
+                                    oasis.names.tc.saml._2_0.metadata,
+                                    oasis.names.tc.saml._2_0.assertion,
+                                    oasis.names.tc.saml._2_0.protocol,
+                                    oasis.names.tc.saml._2_0.wsdl,
+                                    org.atricore.idbus.bundles.apache.derby,
+                                    org.atricore.idbus.kernel.common.support.osgi,
+                                    org.atricore.idbus.kernel.main.authn.util,
+                                    org.atricore.idbus.capabilities.management.main.domain,
+                                    org.atricore.idbus.capabilities.management.main.domain.metadata,
+                                    org.atricore.idbus.capabilities.management.main.exception,
+                                    org.atricore.idbus.capabilities.management.main.impl,
+                                    org.atricore.idbus.capabilities.management.main.spi,
+                                    org.atricore.idbus.capabilities.management.main.spi.request,
+                                    org.atricore.idbus.capabilities.management.main.spi.response,
+                                    org.atricore.idbus.capabilities.management.main.util,
+                                    <!--org.apache.derby.jdbc,-->
+                                    <!--org.hsqldb,-->
+                                    org.springframework.core.io,
+                                    org.springframework.context; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                                    org.springframework.beans; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                                    org.springframework.beans.factory; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                                    org.springframework.beans.factory.config; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                                    org.springframework.web.context; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                                    org.springframework.web.context.support; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                                    org.springframework.orm.jdo; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                                    org.springframework.osgi.web.context.support; version=["1.2.0,1.2.0"],
+                                    org.springframework.osgi.context; version=["1.2.0,1.2.0"],
+                                    org.osgi.framework,
+                                    org.xml.sax,
+                                    org.xml.sax.helpers,
+                                    org.w3c.dom,
+                                    *
+                                </Import-Package>
+                                <Webapp-Context>atricore-console</Webapp-Context>
+
+                            </instructions>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <dependencies>
+
+                <dependency>
+                    <groupId>org.atricore.idbus.kernel.common</groupId>
+                    <artifactId>org.atricore.idbus.kernel.common.support</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.atricore.idbus.kernel</groupId>
+                    <artifactId>org.atricore.idbus.kernel.main</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.atricore.idbus.bundles</groupId>
+                    <artifactId>org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>console-ria</artifactId>
+                    <type>swf</type>
+                </dependency>
+
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>console-services</artifactId>
+                </dependency>
+
+                <!--<dependency>-->
+                <!--<groupId>${project.groupId}</groupId>-->
+                <!--<artifactId>org.atricore.idbus.capabilities.management.support.springmetadata</artifactId>-->
+                <!--</dependency>-->
+
+                <dependency>
+                    <groupId>org.atricore.idbus.capabilities.management</groupId>
+                    <artifactId>org.atricore.idbus.capabilities.management.main</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>console-config</artifactId>
+                    <classifier>resources</classifier>
+                    <type>zip</type>
+                </dependency>
+
+                <!--<dependency>-->
+                <!--<groupId>org.atricore.idbus.bundles</groupId>-->
+                <!--<artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>-->
+                <!--</dependency>-->
+                <!---->
+                <!--<dependency>-->
+                <!--<groupId>org.atricore.idbus.bundles</groupId>-->
+                <!--<artifactId>org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3</artifactId>-->
+                <!--</dependency>-->
+
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-core</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </dependency>                
+                <dependency>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </dependency>                
+                <dependency>
+                    <groupId>javax.jdo</groupId>
+                    <artifactId>jdo2-api</artifactId>
+                </dependency>
+
+                <!-- FLEX , Embedded-->
+                <dependency>
+                    <groupId>com.adobe.blazeds</groupId>
+                    <artifactId>blazeds-remoting</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.adobe.blazeds</groupId>
+                    <artifactId>blazeds-common</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.adobe.blazeds</groupId>
+                    <artifactId>blazeds-core</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>flex-framework</artifactId>
+                    <type>pom</type>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.un.cava.birdeye</groupId>
+                    <artifactId>ravis</artifactId>
+                    <type>swc</type>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.flexlib</groupId>
+                    <artifactId>flexlib</artifactId>
+                    <type>swc</type>
+                </dependency>
+
+                <dependency>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                    <scope>provided</scope>
+                </dependency>
+
+            </dependencies>
+        </profile>
+    </profiles>
+    
+
+</project>

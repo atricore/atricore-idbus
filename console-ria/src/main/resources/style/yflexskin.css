@@ -1,0 +1,362 @@
+/*
+    Copyright (c) 2007 Yahoo! Inc.  All rights reserved. 
+    The copyrights embodied in the content of this file are licensed under the BSD (revised) open source license
+*/
+/*
+//------------------------------
+//  global
+//------------------------------
+*/
+global {
+   color: #404040;
+   fontFamily: Arial;
+   fontSize: 14px;
+   themeColor: #3679b0;
+}
+
+/*
+//------------------------------
+//  AccordionHeader
+//------------------------------
+*/
+/*AccordionHeader*/
+/*{*/
+	/*disabledSkin: Embed(source="yflexskin.swf", symbol="AccordionHeader_disabledSkin");*/
+	/*downSkin: Embed(source="yflexskin.swf", symbol="AccordionHeader_downSkin");*/
+	/*overSkin: Embed(source="yflexskin.swf", symbol="AccordionHeader_overSkin");*/
+	/*selectedDisabledSkin: Embed(source="yflexskin.swf", symbol="AccordionHeader_disabledSkin");*/
+	/*selectedDownSkin: Embed(source="yflexskin.swf", symbol="AccordionHeader_downSkin");*/
+	/*selectedOverSkin: Embed(source="yflexskin.swf", symbol="AccordionHeader_overSkin");*/
+	/*selectedUpSkin: Embed(source="yflexskin.swf", symbol="AccordionHeader_selectedSkin");*/
+	/*upSkin: Embed(source="yflexskin.swf", symbol="AccordionHeader_upSkin");*/
+/*}*/
+
+/*
+//------------------------------
+//  Button
+//------------------------------
+*/
+Button {
+   disabledSkin: Embed(source = "yflexskin.swf", symbol = "Button_disabledSkin");
+   downSkin: Embed(source = "yflexskin.swf", symbol = "Button_downSkin");
+   overSkin: Embed(source = "yflexskin.swf", symbol = "Button_overSkin");
+   upSkin: Embed(source = "yflexskin.swf", symbol = "Button_upSkin");
+   paddingTop: 2;
+}
+
+/*
+//------------------------------
+//  primaryButton
+//------------------------------
+*/
+.primaryButton {
+   color: #ffffff;
+   textRollOverColor: #ffffff;
+   textSelectedColor: #ffffff;
+   disabledSkin: Embed(source = "yflexskin.swf", symbol = "primaryButton_disabledSkin");
+   downSkin: Embed(source = "yflexskin.swf", symbol = "primaryButton_downSkin");
+   overSkin: Embed(source = "yflexskin.swf", symbol = "primaryButton_overSkin");
+   upSkin: Embed(source = "yflexskin.swf", symbol = "primaryButton_upSkin");
+   paddingTop: 2;
+}
+
+/*
+//------------------------------
+//  ButtonBar
+//------------------------------
+*/
+
+ButtonBar {
+   buttonStyleName: "buttonBarButton";
+   firstButtonStyleName: "firstButtonBarButton";
+   lastButtonStyleName: "lastButtonBarButton";
+}
+
+/*
+//------------------------------
+//  DividedBox
+//------------------------------
+*/
+DividedBox
+{
+	dividerSkin: Embed(source="yflexskin.swf",symbol="DividedBox_dividerSkin");
+	horizontalCursor: Embed(source="yflexskin.swf",symbol="DividedBox_horizontalCursor");
+	verticalCursor: Embed(source="yflexskin.swf",symbol="DividedBox_verticalCursor");
+}
+
+ToggleButtonBar {
+   buttonStyleName: "buttonBarButton";
+   firstButtonStyleName: "firstButtonBarButton";
+   lastButtonStyleName: "lastButtonBarButton";
+}
+
+/*
+//------------------------------
+//  ButtonBarButtons
+//------------------------------
+*/
+
+.firstButtonBarButton {
+   disabledSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_firstDisabledSkin");
+   downSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_firstDownSkin");
+   overSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_firstOverSkin");
+   selectedDisabledSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_firstSelectedDisabledSkin");
+   selectedDownSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_firstSelectedUpSkin");
+   selectedOverSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_firstSelectedUpSkin");
+   selectedUpSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_firstSelectedUpSkin");
+   upSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_firstUpSkin");
+}
+
+.buttonBarButton {
+   disabledSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_buttonDisabledSkin");
+   downSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_buttonDownSkin");
+   overSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_buttonOverSkin");
+   selectedDisabledSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_buttonSelectedDisabledSkin");
+   selectedDownSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_buttonSelectedUpSkin");
+   selectedOverSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_buttonSelectedUpSkin");
+   selectedUpSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_buttonSelectedUpSkin");
+   upSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_buttonUpSkin");
+}
+
+.lastButtonBarButton {
+   disabledSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_lastDisabledSkin");
+   downSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_lastDownSkin");
+   overSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_lastOverSkin");
+   selectedDisabledSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_lastSelectedDisabledSkin");
+   selectedDownSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_lastSelectedUpSkin");
+   selectedOverSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_lastSelectedUpSkin");
+   selectedUpSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_lastSelectedUpSkin");
+   upSkin: Embed(source = "yflexskin.swf", symbol = "ButtonBar_lastUpSkin");
+}
+
+/*
+//------------------------------
+//  CheckBox
+//------------------------------
+*/
+CheckBox {
+   disabledIcon: Embed(source = "yflexskin.swf", symbol = "CheckBox_disabledIcon");
+   downIcon: Embed(source = "yflexskin.swf", symbol = "CheckBox_downIcon");
+   overIcon: Embed(source = "yflexskin.swf", symbol = "CheckBox_overIcon");
+   selectedDisabledIcon: Embed(source = "yflexskin.swf", symbol = "CheckBox_selectedDisabledIcon");
+   selectedDownIcon: Embed(source = "yflexskin.swf", symbol = "CheckBox_selectedDownIcon");
+   selectedOverIcon: Embed(source = "yflexskin.swf", symbol = "CheckBox_selectedOverIcon");
+   selectedUpIcon: Embed(source = "yflexskin.swf", symbol = "CheckBox_selectedUpIcon");
+   upIcon: Embed(source = "yflexskin.swf", symbol = "CheckBox_upIcon");
+}
+
+/*
+//------------------------------
+//  ColorPicker
+//------------------------------
+*/
+ColorPicker {
+   disabledSkin: Embed(source = "yflexskin.swf", symbol = "ColorPicker_disabledSkin");
+   downSkin: Embed(source = "yflexskin.swf", symbol = "ColorPicker_downSkin");
+   overSkin: Embed(source = "yflexskin.swf", symbol = "ColorPicker_overSkin");
+   upSkin: Embed(source = "yflexskin.swf", symbol = "ColorPicker_upSkin");
+}
+
+/*
+//------------------------------
+//  ComboBox
+//------------------------------
+*/
+ComboBox {
+   disabledSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_disabledSkin");
+   downSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_downSkin");
+   editableDisabledSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_editableDisabledSkin");
+   editableDownSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_editableDownSkin");
+   editableOverSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_editableOverSkin");
+   editableUpSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_editableUpSkin");
+   overSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_overSkin");
+   upSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_upSkin");
+   dropDownStyleName: "myComboBoxDropDowns";
+}
+
+.myComboBoxDropDowns {
+   cornerRadius: 4;
+}
+
+/*
+//------------------------------
+//  CursorManager
+//------------------------------
+*/
+CursorManager {
+   busyCursor: Embed(source = "yflexskin.swf", symbol = "BusyCursor");
+   busyCursorBackground: Embed(source = "yflexskin.swf", symbol = "BusyCursor");
+}
+
+/*
+//------------------------------
+//  DateChooser
+//------------------------------
+*/
+DateChooser {
+   nextMonthDisabledSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_nextMonthDisabledSkin");
+   nextMonthDownSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_nextMonthDownSkin");
+   nextMonthOverSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_nextMonthOverSkin");
+   nextMonthUpSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_nextMonthUpSkin");
+   prevMonthDisabledSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_prevMonthDisabledSkin");
+   prevMonthDownSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_prevMonthDownSkin");
+   prevMonthOverSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_prevMonthOverSkin");
+   prevMonthUpSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_prevMonthUpSkin");
+
+   nextYearDisabledSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_nextYearDisabledSkin");
+   nextYearDownSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_nextYearDownSkin");
+   nextYearOverSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_nextYearOverSkin");
+   nextYearUpSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_nextYearUpSkin");
+   prevYearDisabledSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_prevYearDisabledSkin");
+   prevYearDownSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_prevYearDownSkin");
+   prevYearOverSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_prevYearOverSkin");
+   prevYearUpSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_prevYearUpSkin");
+
+   todayIndicatorSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_todayIndicatorSkin");
+
+   rollOverIndicatorSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_rollOverIndicatorSkin");
+   selectionIndicatorSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_selectionIndicatorSkin");
+
+}
+
+/*
+//------------------------------
+//  DateField
+//------------------------------
+*/
+DateField {
+   disabledSkin: Embed(source = "yflexskin.swf", symbol = "DateField_disabledSkin");
+   downSkin: Embed(source = "yflexskin.swf", symbol = "DateField_downSkin");
+   overSkin: Embed(source = "yflexskin.swf", symbol = "DateField_overSkin");
+   upSkin: Embed(source = "yflexskin.swf", symbol = "DateField_upSkin");
+}
+
+/*
+//------------------------------
+//  DragManager
+//------------------------------
+*/
+DragManager {
+   copyCursor: Embed(source = "yflexskin.swf", symbol = "DragManager_copyCursor");
+
+   defaultDragImageSkin: Embed(source = "yflexskin.swf", symbol = "DragManager_defaultDragImageSkin");
+
+   linkCursor: Embed(source = "yflexskin.swf", symbol = "DragManager_linkCursor");
+   moveCursor: Embed(source = "yflexskin.swf", symbol = "DragManager_moveCursor");
+   rejectCursor: Embed(source = "yflexskin.swf", symbol = "DragManager_rejectCursor");
+}
+
+/*
+//------------------------------
+//  FormItem
+//------------------------------
+*/
+FormItem {
+   indicatorSkin: Embed(source = "yflexskin.swf", symbol = "FormItem_indicatorSkin");
+}
+
+/*
+//------------------------------
+//  Image
+//------------------------------
+*/
+Image {
+
+   brokenImageSkin: Embed(source = "yflexskin.swf", symbol = "Loader_brokenImageSkin");
+
+}
+
+/*
+//------------------------------
+//  LinkButton
+//------------------------------
+*/
+LinkButton {
+   disabledSkin: Embed(source = "yflexskin.swf", symbol = "LinkButton_disabledSkin");
+   downSkin: Embed(source = "yflexskin.swf", symbol = "LinkButton_downSkin");
+   overSkin: Embed(source = "yflexskin.swf", symbol = "LinkButton_overSkin");
+   upSkin: Embed(source = "yflexskin.swf", symbol = "LinkButton_upSkin");
+}
+
+/*
+//------------------------------
+//  Loader
+//------------------------------
+*/
+Loader {
+   brokenImageSkin: Embed(source = "yflexskin.swf", symbol = "Loader_brokenImageSkin");
+
+}
+
+/*
+//------------------------------
+//  Panel ControlBar
+//------------------------------
+*/
+ControlBar {
+   borderSkin: Embed(source = "yflexskin.swf", symbol = "Panel_controlBarBackgroundSkin");
+}
+
+/*
+//------------------------------
+//  RadioButton
+//------------------------------
+*/
+RadioButton {
+
+   disabledIcon: Embed(source = "yflexskin.swf", symbol = "RadioButton_disabledIcon");
+   downIcon: Embed(source = "yflexskin.swf", symbol = "RadioButton_downIcon");
+   overIcon: Embed(source = "yflexskin.swf", symbol = "RadioButton_overIcon");
+   selectedDisabledIcon: Embed(source = "yflexskin.swf", symbol = "RadioButtonSelected_disabledIcon");
+   selectedDownIcon: Embed(source = "yflexskin.swf", symbol = "RadioButtonSelected_downIcon");
+   selectedOverIcon: Embed(source = "yflexskin.swf", symbol = "RadioButtonSelected_overIcon");
+   selectedUpIcon: Embed(source = "yflexskin.swf", symbol = "RadioButtonSelected_upIcon");
+   upIcon: Embed(source = "yflexskin.swf", symbol = "RadioButton_upIcon");
+
+}
+
+/*
+//------------------------------
+//  HorizontalScrollBar
+//------------------------------
+*/
+HScrollBar {
+
+   downArrowDisabledSkin: Embed(source = "yflexskin.swf", symbol = "HScrollArrowRight_disabledSkin");
+   downArrowDownSkin: Embed(source = "yflexskin.swf", symbol = "HScrollArrowRight_downSkin");
+   downArrowOverSkin: Embed(source = "yflexskin.swf", symbol = "HScrollArrowRight_overSkin");
+   downArrowUpSkin: Embed(source = "yflexskin.swf", symbol = "HScrollArrowRight_upSkin");
+   thumbDownSkin: Embed(source = "yflexskin.swf", symbol = "HScrollThumb_downSkin");
+   thumbIcon: Embed(source = "yflexskin.swf", symbol = "HScrollBar_thumbIcon");
+   thumbOverSkin: Embed(source = "yflexskin.swf", symbol = "HScrollThumb_overSkin");
+   thumbUpSkin: Embed(source = "yflexskin.swf", symbol = "HScrollThumb_upSkin");
+   trackSkin: Embed(source = "yflexskin.swf", symbol = "HScrollTrack_Skin");
+   upArrowDisabledSkin: Embed(source = "yflexskin.swf", symbol = "HScrollArrowLeft_disabledSkin");
+   upArrowDownSkin: Embed(source = "yflexskin.swf", symbol = "HScrollArrowLeft_downSkin");
+   upArrowOverSkin: Embed(source = "yflexskin.swf", symbol = "HScrollArrowLeft_overSkin");
+   upArrowUpSkin: Embed(source = "yflexskin.swf", symbol = "HScrollArrowLeft_upSkin");
+
+}
+
+/*
+//------------------------------
+//  VerticalScrollBar
+//------------------------------
+*/
+VScrollBar {
+
+   downArrowDisabledSkin: Embed(source = "yflexskin.swf", symbol = "ScrollArrowDown_disabledSkin");
+   downArrowDownSkin: Embed(source = "yflexskin.swf", symbol = "ScrollArrowDown_downSkin");
+   downArrowOverSkin: Embed(source = "yflexskin.swf", symbol = "ScrollArrowDown_overSkin");
+   downArrowUpSkin: Embed(source = "yflexskin.swf", symbol = "ScrollArrowDown_upSkin");
+   thumbDownSkin: Embed(source = "yflexskin.swf", symbol = "ScrollThumb_downSkin");
+   thumbIcon: Embed(source = "yflexskin.swf", symbol = "ScrollBar_thumbIcon");
+   thumbOverSkin: Embed(source = "yflexskin.swf", symbol = "ScrollThumb_overSkin");
+   thumbUpSkin: Embed(source = "yflexskin.swf", symbol = "ScrollThumb_upSkin");
+   trackSkin: Embed(source = "yflexskin.swf", symbol = "ScrollTrack_Skin");
+   upArrowDisabledSkin: Embed(source = "yflexskin.swf", symbol = "ScrollArrowUp_disabledSkin");
+   upArrowDownSkin: Embed(source = "yflexskin.swf", symbol = "ScrollArrowUp_downSkin");
+   upArrowOverSkin: Embed(source = "yflexskin.swf", symbol = "ScrollArrowUp_overSkin");
+   upArrowUpSkin: Embed(source = "yflexskin.swf", symbol = "ScrollArrowUp_upSkin");
+
+}

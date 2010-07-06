@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:local="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
+    xmlns:graph-ctrl="org.atricore.idbus.applications.server.console.modeling.diagram.ui.control.*"
+	width="97%"
+	horizontalAlign="left"
+	paddingLeft="5"
+	paddingRight="5"
+	paddingBottom="5"
+	paddingTop="5"
+	borderThickness="1"
+	cornerRadius="5"
+	borderStyle="solid"
+	backgroundAlpha=".2"
+	 >
+
+	<graph-ctrl:BirdEyeZoom id="beyezoom" />
+	<!--<local:ScaleLabels id="scalelbs" />-->
+
+	<mx:Script>
+		<![CDATA[
+        import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
+
+        private var _vgraph:VisualGraph;
+
+        /**
+         * Provides access to the registered vgraph object.
+         * */
+        public function set vgraph(v:VisualGraph):void {
+            _vgraph = v;
+            beyezoom.vgraph = v;
+            //scalelbs.vgraph = v;
+        }
+
+
+        /**
+         * @private
+         * */
+        public function get vgraph():VisualGraph {
+            return _vgraph;
+        }
+
+        /**
+         * When enabling or disabling this component, we also
+         * perform some specific tasks.
+         * Attention do completely disable interaction
+         * there is also the mouseEnabled property.
+         *
+         * @inheritDoc
+         * */
+        override public function set enabled(e:Boolean):void {
+            /* do it for the super class */
+            super.enabled = e;
+
+            /* if disabled remove from view and vice versa */
+            this.visible = e;
+            this.includeInLayout = e;
+
+            if (beyezoom == null) { //|| scalelbs == null
+                return;
+            }
+
+            beyezoom.enabled = e;
+            //scalelbs.enabled = e;
+        }
+		]]>
+	</mx:Script>
+</mx:VBox>

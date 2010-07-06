@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<service id="remoting-service"
+         class="flex.messaging.services.RemotingService">
+
+    <adapters>
+        <adapter-definition id="java-object"
+                            class="flex.messaging.services.remoting.adapters.JavaAdapter"
+                            default="true"/>
+    </adapters>
+
+    <default-channels>
+        <channel ref="my-amf">
+            <serialization>
+                <log-property-errors>true</log-property-errors>
+            </serialization>
+        </channel>
+    </default-channels>
+
+
+    <destination id="userProvisioningService">
+        <properties>
+            <factory>spring</factory>
+            <source>userProvisioningAjaxServiceBean</source>
+        </properties>
+    </destination>
+
+    <destination id="profileManagementService">
+        <properties>
+            <factory>spring</factory>
+            <source>profileManagementAjaxServiceBean</source>
+        </properties>
+    </destination>
+
+    <!--<destination id="identityBusMetadataManager">-->
+        <!--<properties>-->
+            <!--<factory>spring</factory>-->
+            <!--<source>identityBusMetadataManagerBean</source>-->
+        <!--</properties>-->
+    <!--</destination>-->
+
+    <destination id="signOnService">
+        <properties>
+            <factory>spring</factory>
+            <source>signOnAjaxServiceBean</source>
+        </properties>
+    </destination>
+
+	<destination id="identityApplianceManagementService">
+        <properties>
+            <factory>spring</factory>
+            <source>identityApplianceManagementAjaxServiceBean</source>
+        </properties>
+    </destination>
+
+    <!--<destination id="identityApplianceMetadataAjaxService">-->
+        <!--<properties>-->
+            <!--<factory>spring</factory>-->
+            <!--<source>identityApplianceMetadataAjaxServiceBean</source>-->
+        <!--</properties>-->
+    <!--</destination>-->
+    
+</service>

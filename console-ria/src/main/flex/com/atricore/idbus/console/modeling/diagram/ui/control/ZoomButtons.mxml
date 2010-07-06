@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center">
+
+    <mx:Button
+        id="plusZoom"
+        icon="{EmbeddedIcons.zoominIcon}"
+        cornerRadius="5"
+        width="25"
+        height="25"
+        click="zoomValue=zoomValue+.10;updateVScale(null);"/>
+
+    <mx:Button
+        id="origZoom"
+        icon="{EmbeddedIcons.zoomOriginalIcon}"
+        cornerRadius="5"
+        width="25"
+        height="25"
+        click="zoomValue=1;updateVScale(null);"/>
+
+    <mx:Button
+        id="minusZoom"
+        icon="{EmbeddedIcons.zoomoutIcon}"
+        cornerRadius="5"
+        width="25"
+        height="25"
+        click="zoomValue=zoomValue-.10;updateVScale(null);"/>
+
+
+	<mx:Script>
+		<![CDATA[
+        import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
+        import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;
+
+        private var _vgraph:VisualGraph;
+
+        private var zoomValue:Number = 1;
+
+        private var zoomMax:Number = 2;
+
+        private var zoomMin:Number = .25;
+
+        /**
+         * Provides access to the registered vgraph object.
+         * */
+        public function set vgraph(v:VisualGraph):void {
+            _vgraph = v;
+            registerListeners();
+        }
+
+
+        /**
+         * @private
+         * */
+        public function get vgraph():VisualGraph {
+            return _vgraph;
+        }
+
+        /**
+         * update the scale of the VGraph, thus creating a BirdEye zoom effect
+         * this function can be passed a MouseEvent to handle scrollwheel zooming
+         * @param event A MouseEvent.MOUSE_WHEEL
+         * */
+        public function updateVScale(event:MouseEvent):void {
+
+            if (_vgraph == null) {
+                return;
+            }
+
+            if (zoomValue <= zoomMin) {
+                zoomValue = zoomMin;
+                return;
+            } else {
+                _vgraph.scale = zoomValue;
+            }
+
+            if (zoomValue >= zoomMax) {
+                zoomValue = zoomMax;
+                return;
+            } else {
+                _vgraph.scale = zoomValue;
+            }
+
+        }
+
+        /* refresh the slider from the scaleX value */
+        public function refreshVScale(e:VGraphEvent = null):void {
+            if (_vgraph == null) {
+                return;
+            }
+            zoomValue = _vgraph.scale;
+        }
+
+        /**
+         * register listeners
+         * */
+        private function registerListeners():void {
+            _vgraph.addEventListener(VGraphEvent.VGRAPH_CHANGED, refreshVScale);
+            /* testing*/
+            this.addEventListener(MouseEvent.MOUSE_WHEEL, updateVScale);
+        }
+		]]>
+	</mx:Script>
+</mx:HBox>

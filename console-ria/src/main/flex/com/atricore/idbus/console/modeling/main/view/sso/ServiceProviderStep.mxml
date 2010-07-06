@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<WizardStep
+        xmlns="com.atricore.idbus.console.components.wizard.*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        stepName="JOSSO Service Provider"
+        xmlns:utils="com.atricore.idbus.console.components.*"
+        xmlns:components="com.atricore.idbus.console.components.*"
+        creationComplete="initForm()"
+        show="initResultArray()">
+
+        <mx:Script>
+        <![CDATA[            
+            import org.atricore.idbus.capabilities.management.main.domain.metadata.Location;
+            import org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProvider;
+
+            [Bindable]
+            private var validators:Array;
+
+            private var labelWidth:Number = 120;
+
+            private var lastSPCreated:Boolean;
+
+            /**
+             * This will holds the results
+             */
+            private var readableResultArray:Array;
+            private var serviceProviderArray:Array;
+
+            override public function get stepDecision():* {
+                if (!lastSPCreated) {
+                    addSPToArray();
+                    lastSPCreated = true;
+                }
+                return serviceProviderArray;
+            }
+
+            override public function get readableStepDecision():String {
+                addSPToReadableArray();
+                return readableResultArray.join("\n").toString();
+            }
+
+            private function initResultArray():void {
+                readableResultArray = new Array();
+                serviceProviderArray = new Array();
+                lastSPCreated = false;
+
+                clearTheForm();
+            }
+
+            private function initForm():void {
+                if (validators == null) {
+                    validators = new Array();
+                    validators.push(nameValidator);
+                    //                    validators.push(urlValidator);
+                    validators.push(portValidator);
+                    validators.push(domainValidator);
+                    validators.push(pathValidator)
+                }
+            }
+
+            private function handleFormChange(event:Event):void {
+                // Check the step validity
+                ssoWizStep3Form.validateForm(event);
+                isValid = ssoWizStep3Form.isValid;
+            }
+
+            private function addSPToArray():void {
+                var sp:ServiceProvider = new ServiceProvider();
+                sp.name = jossoSPName.text;
+                var loc:Location = new Location();
+                loc.protocol = spLocationProtocol.selectedLabel;
+                loc.host = spLocationDomain.text;
+                loc.port = spLocationPort.text as int;
+                loc.context = spLocationPath.text;
+                sp.location = loc;
+                serviceProviderArray.push(sp);
+            }
+
+            private function addSPToReadableArray():void {
+                readableResultArray.push("JOSSO Service Provider's Name: " + jossoSPName.text);
+                readableResultArray.push("JOSSO Service Provider's Platform: " + jossoSPPlatform.selectedLabel);
+                readableResultArray.push("JOSSO Service Provider's Location: " + composeLocation());
+            }
+
+            private function addNewSPProvider():void {
+                addSPToArray();
+                addSPToReadableArray();
+
+                creationStatusLbl.text = "JOSSO Service Provider successfully added";
+                fadeFx.play([creationStatusLbl]);
+
+                clearTheForm();
+
+                isValid = false; //disable 'save' and 'next' buttons
+            }
+
+            private function clearTheForm():void {
+                jossoSPName.text = "";
+                jossoSPName.errorString = ""; //prevents validation error from occurring
+                jossoSPPlatform.selectedIndex = 0;
+
+                spLocationDomain.text = "";
+                spLocationDomain.errorString = "";//prevents validation error from occurring
+                spLocationPort.text = "";
+                spLocationPath.text = "";
+                spLocationPath.errorString = "";
+                spLocationLbl.text = "";
+                spLocationProtocol.selectedIndex = 0;
+            }
+
+            private function changeSPLocationLabel(event:Event):void {
+                var port:String = ( spLocationPort.text == "" ? "" : ":" + spLocationPort.text );
+                spLocationLbl.text = "[ " + composeLocation() + " ]";
+                handleFormChange(event);
+            }
+
+            private function composeLocation():String {
+                var port:String = ( spLocationPort.text == "" ? "" : ":" + spLocationPort.text );
+                return spLocationProtocol.selectedLabel + '://' + spLocationDomain.text + port + '/' + spLocationPath.text;
+            }
+        ]]>
+    </mx:Script>    
+
+    <mx:StringValidator id="nameValidator" source="{jossoSPName}" required="true" property="text"/>
+    <!--<mx:StringValidator id="domainValidator" source="{spLocationDomain}" required="true" property="text"/>-->
+    <mx:NumberValidator id="portValidator" source="{spLocationPort}" required="false" property="text"
+        minValue="1" maxValue="65535"
+        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.portValidationError')}"/>
+    <utils:URLPartValidator id="domainValidator" source="{spLocationDomain}" required="true" property="text" />
+    <utils:URLPartValidator id="pathValidator" source="{spLocationPath}" required="false" property="text" />
+
+    <mx:XML id="platforms" source="/com/atricore/idbus/console/modeling/view/platformList.xml" />            
+    <mx:XMLListCollection id="platformList" source="{platforms.children()}" />
+
+    <mx:Fade id="fadeFx" alphaFrom="1" alphaTo="0" duration="2000" startDelay="5000"/>
+
+    <mx:VBox width="100%" height="100%">
+
+        <utils:ValidatingForm id="ssoWizStep3Form" width="100%" height="100%" validators="{validators}" labelWidth="{labelWidth}">
+            <utils:GroupBox width="100%" height="100%" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.jossoServiceProvider')}">
+                <mx:HBox>
+                    <mx:Spacer width="{labelWidth}"/>
+                    <mx:Label id="creationStatusLbl" text="" >
+                        <mx:filters>
+                            <mx:BlurFilter blurX="0" blurY="0" />
+                        </mx:filters>
+                    </mx:Label>
+                </mx:HBox>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.jossoSPName')}:"
+                             required="true" paddingRight="4">
+                    <mx:TextInput id="jossoSPName" width="422" change="handleFormChange(event);"/>
+                </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.applicationPlatform')}:">
+                    <mx:ComboBox id="jossoSPPlatform" width="302"
+                            dataProvider="{platformList}" labelField="@label" />
+                </mx:FormItem>
+                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.applicationLocation')}:" required="true">-->
+                    <!--<mx:TextInput id="jossoSPLocation" width="300" change="handleFormChange(event);"/>-->
+                <!--</mx:FormItem>-->
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.applicationLocation')}:"
+                        direction="horizontal" labelWidth="{labelWidth}" required="true">
+                    <mx:ComboBox id="spLocationProtocol" change="{changeSPLocationLabel(event);}">
+                        <mx:ArrayCollection>
+                            <mx:Object label="http" data="http"/>
+                            <mx:Object label="https" data="https"/>
+                        </mx:ArrayCollection>
+                    </mx:ComboBox>
+                    <mx:Label text="://" width="9" paddingLeft="-5"/>
+                    <mx:TextInput id="spLocationDomain" width="150" change="changeSPLocationLabel(event);"/>
+                            <!--focusIn="clearDefaultValue(event);" focusOut="setDefaultValueIfEmpty(event)"/>-->
+                    <mx:Label text=":" width="1" paddingLeft="-5"/>
+                    <mx:TextInput id="spLocationPort" width="40" change="changeSPLocationLabel(event);" />
+                    <mx:Label text="/" width="2" paddingLeft="-5"/>
+                    <mx:TextInput id="spLocationPath" width="100" change="changeSPLocationLabel(event);" />
+                </mx:FormItem>
+
+                <mx:Label id="spLocationLbl" paddingLeft="130" fontWeight="bold" />
+
+
+                <mx:Spacer height="20" />
+                <mx:HBox>
+                    <mx:Spacer width="{labelWidth}"/>
+                    <mx:Button id="newSPProvider" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.addNewSPProvider')}"
+                           click="addNewSPProvider()" enabled="{isValid}"/>
+                </mx:HBox>
+            </utils:GroupBox>
+       </utils:ValidatingForm>
+
+    </mx:VBox>
+</WizardStep>

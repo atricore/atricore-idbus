@@ -1,0 +1,89 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->        
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+        backgroundAlpha="0.7" width="100%" height="100%"
+        xmlns:utils="com.atricore.idbus.console.components.*">
+
+    <mx:Metadata>
+        [ResourceBundle("console")]
+    </mx:Metadata>
+
+    <mx:Script><![CDATA[
+        public static const BUNDLE:String = "idbusconsole";
+    ]]>
+    </mx:Script>
+
+	<mx:XML id="mainDashboardMenuData">
+        <node label="root">
+            <node label="Identity Appliances">
+                <node label="{resourceManager.getString(BUNDLE, 'main.menu.createSimpleSSO')}"
+                      value="createSimpleSSO" />
+                <node label="{resourceManager.getString(BUNDLE, 'main.menu.createSimpleFederation')}"
+                      value="createSimpleFederation" />
+                <node label="{resourceManager.getString(BUNDLE, 'main.menu.createAppliance')}"
+                      value="createAppliance" />
+                <node type="separator"/>
+                <node label="{resourceManager.getString(BUNDLE, 'main.menu.applianceModeler')}"
+                      value="applianceModeler" />
+                <node type="separator"/>
+                <node label="{resourceManager.getString(BUNDLE, 'main.menu.applianceManager')}"
+                      value="applianceManager"/>
+                <node type="separator"/>
+                <node label="{resourceManager.getString(BUNDLE, 'main.menu.managePlugins')}"
+                      value="managePlugins" />
+            </node>
+            <node label="Server Administration">
+                <node label="{resourceManager.getString(BUNDLE, 'main.menu.manageUsers')}"
+                      value="manageUsers" />
+            </node>
+        </node>
+    </mx:XML>
+
+
+    <mx:HBox id="bodyBox" width="100%" height="100%" horizontalAlign="left" verticalGap="10" verticalAlign="middle"
+            paddingLeft="10" paddingRight="10" paddingBottom="10">
+
+		<mx:VBox width="30%" height="100%">
+	        <utils:GroupBox width="100%" height="100%" title="{resourceManager.getString(BUNDLE, 'maindashboard.runningAppliances.title')}">
+	        	<mx:Repeater id="startedAppliancesRepeater">
+	        		<mx:LinkButton id="btnIdentityApplianceDetail" label="{startedAppliancesRepeater.currentItem.idApplianceDefinition.name}" fontWeight="normal"/>
+			    </mx:Repeater>
+			    <mx:LinkButton id="btnManageAppliances" label="{resourceManager.getString(BUNDLE, 'maindashboard.runningAppliances.manageAppliances')}... >" fontWeight="normal"/>
+	        </utils:GroupBox>
+	        <utils:GroupBox id="projectedAppliances" width="100%" height="100%" title="{resourceManager.getString(BUNDLE, 'maindashboard.projectedAppliances.title')}">
+	        	<mx:Repeater id="projectedAppliancesRepeater">
+                    <mx:LinkButton id="btnProjectedIdentityApplianceDetail" label="{projectedAppliancesRepeater.currentItem.idApplianceDefinition.name}" fontWeight="normal"/>
+			    </mx:Repeater>
+	        	<mx:LinkButton id="btnCreateNewAppliance" label="{resourceManager.getString(BUNDLE, 'maindashboard.projectedAppliances.createNewAppliance')}... >" fontWeight="normal" />
+	        	<mx:LinkButton id="btnGoToDashboard" label="{resourceManager.getString(BUNDLE, 'maindashboard.runningAppliances.goToDashboard')}... >" fontWeight="normal"/>
+	        </utils:GroupBox>
+		</mx:VBox>
+		<utils:GroupBox width="100%" height="100%" title="{resourceManager.getString(BUNDLE, 'maindashboard.welcome.title')}">
+	        <mx:Label text="{resourceManager.getString(BUNDLE, 'maindashboard.welcome.gettingStarted')} ..." paddingLeft="8" />
+	        <mx:Label text="{resourceManager.getString(BUNDLE, 'maindashboard.welcome.gettingStarted.text')}" paddingLeft="8" />
+	    	<mx:Label text="{resourceManager.getString(BUNDLE, 'maindashboard.welcome.help')}" paddingLeft="8" paddingTop="30" />
+	        <mx:Label text="{resourceManager.getString(BUNDLE, 'maindashboard.welcome.help.text')}" paddingLeft="8" />
+	    	<mx:LinkButton label="http://www.atricore.com &gt;" fontWeight="normal" click="navigateToURL(new URLRequest('http://www.atricore.com'));" />
+	    </utils:GroupBox>
+    </mx:HBox>
+
+</mx:Panel>

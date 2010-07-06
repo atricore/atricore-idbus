@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+    <!-- ==================================================================== -->
+    <!-- Idbus Server Management OSGI Services                                -->
+    <!-- ==================================================================== -->
+    <!--
+    <osgi:reference id="userProvisioningServiceManagerBean" cardinality="1..1" timeout="60"
+                interface="org.atricore.idbus.capabilities.management.main.spi.UserProvisioningService"/>
+
+    <osgi:reference id="idApplianceManagementService" cardinality="1..1" timeout="60"
+                interface="org.atricore.idbus.capabilities.management.main.spi.IdentityApplianceManagementService"/>
+
+    <osgi:reference id="profileManagementServiceBean" cardinality="1..1" timeout="60"
+                interface="org.atricore.idbus.capabilities.management.main.spi.ProfileManagementService"/>
+
+    <osgi:reference id="signOnServiceBean" cardinality="1..1" timeout="60"
+                interface="org.atricore.idbus.capabilities.management.main.spi.SignOnService"/>
+
+
+    <bean id="applicationServerInitialization" class="org.atricore.idbus.applications.server.services.util.ApplicationServerInitialization">
+        <property name="userProvisioningService" ref="userProvisioningServiceManagerBean"/>        
+    </bean>
+
+    <bean class="org.atricore.idbus.applications.server.services.util.EnumPropertyProxy" factory-method="registerPropertyProxy" />
+    -->
+
+    <!-- AJAX SERVICES -->
+
+    <!--<bean id="identityApplianceMetadataAjaxServiceBean" class="org.atricore.idbus.applications.server.services.impl.IdentityApplianceMetadataAjaxServiceImpl">-->
+        <!--<property name="idApplianceManagementService">-->
+            <!--<ref local="idApplianceManagementService"/>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--
+    <bean id="profileManagementAjaxServiceBean" class="org.atricore.idbus.applications.server.services.impl.ProfileManagementAjaxServiceImpl">
+        <property name="profileManagementService">
+            <ref local="profileManagementServiceBean"/>
+        </property>
+    </bean>
+
+    <bean id="signOnAjaxServiceBean" class="org.atricore.idbus.applications.server.services.impl.SignOnAjaxServiceImpl">
+        <property name="signOnService">
+            <ref local="signOnServiceBean"/>
+        </property>
+    </bean>
+    -->
+
+    <bean id="userProvisioningAjaxServiceBean" class="com.atricore.idbus.console.services.impl.UserProvisioningAjaxServiceImpl">
+        <property name="provisioningService">
+            <ref local="userProvisioningServiceManagerBean"/>
+        </property>
+    </bean>
+
+    <bean id="userProvisioningServiceManagerBean" class="org.atricore.idbus.capabilities.management.main.impl.UserProvisioningServiceHashImpl">
+        <property name="passwordHashUtil" ref="passwordHashUtil"/>
+    </bean>
+
+    <bean name="passwordHashUtil"
+          class="org.atricore.idbus.capabilities.management.main.util.PasswordHashUtil">
+            <property name="hashAlgorithm" value="MD5"/>
+            <property name="hashEncoding" value="HEX"/>
+    </bean>
+
+    <bean id="identityApplianceManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.IdentityApplianceManagementAjaxServiceImpl">
+        <property name="idApplianceManagementService">
+            <ref local="identityApplianceManagementServiceBean"/>
+        </property>
+    </bean>
+
+    <bean id="identityApplianceManagementServiceBean" class="org.atricore.idbus.capabilities.management.main.impl.IdentityApplianceManagementServiceHashImpl">
+    </bean>
+
+
+
+</beans>

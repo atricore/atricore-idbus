@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+    <!-- ==================================================================== -->
+    <!-- Idbus Server Management OSGI Services                                -->
+    <!-- ==================================================================== -->
+
+    <osgi:reference id="userProvisioningServiceManagerBean" cardinality="1..1" timeout="60"
+                interface="org.atricore.idbus.capabilities.management.main.spi.UserProvisioningService"/>
+
+    <osgi:reference id="idApplianceManagementService" cardinality="1..1" timeout="60"
+                interface="org.atricore.idbus.capabilities.management.main.spi.IdentityApplianceManagementService"/>
+
+    <osgi:reference id="profileManagementServiceBean" cardinality="1..1" timeout="60"
+                interface="org.atricore.idbus.capabilities.management.main.spi.ProfileManagementService"/>
+
+    <osgi:reference id="signOnServiceBean" cardinality="1..1" timeout="60"
+                interface="org.atricore.idbus.capabilities.management.main.spi.SignOnService"/>
+
+
+    <bean id="applicationServerInitialization" class="com.atricore.idbus.console.services.util.ApplicationServerInitialization">
+        <property name="userProvisioningService" ref="userProvisioningServiceManagerBean"/>        
+    </bean>
+
+    <bean class="com.atricore.idbus.console.services.util.EnumPropertyProxy" factory-method="registerPropertyProxy" />
+
+    <!-- AJAX SERVICES -->
+
+    <!--<bean id="identityApplianceMetadataAjaxServiceBean" class="org.atricore.idbus.applications.server.services.impl.IdentityApplianceMetadataAjaxServiceImpl">-->
+        <!--<property name="idApplianceManagementService">-->
+            <!--<ref local="idApplianceManagementService"/>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <bean id="identityApplianceManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.IdentityApplianceManagementAjaxServiceImpl">
+        <property name="idApplianceManagementService">
+            <ref local="idApplianceManagementService"/>
+        </property>
+    </bean>
+
+    <bean id="profileManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ProfileManagementAjaxServiceImpl">
+        <property name="profileManagementService">
+            <ref local="profileManagementServiceBean"/>
+        </property>
+    </bean>
+
+    <bean id="signOnAjaxServiceBean" class="com.atricore.idbus.console.services.impl.SignOnAjaxServiceImpl">
+        <property name="signOnService">
+            <ref local="signOnServiceBean"/>
+        </property>
+    </bean>
+
+    <bean id="userProvisioningAjaxServiceBean" class="com.atricore.idbus.console.services.impl.UserProvisioningAjaxServiceImpl">
+        <property name="provisioningService">
+            <ref local="userProvisioningServiceManagerBean"/>
+        </property>
+    </bean>
+    
+</beans>

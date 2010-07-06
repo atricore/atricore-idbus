@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<!--borderColor="#666666"
+                 backgroundColor="#CCCCCC"-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:comp="com.atricore.idbus.console.components.*"
+         width="97%"
+         horizontalAlign="left"
+         paddingLeft="5"
+         paddingRight="5"
+         paddingBottom="5"
+         paddingTop="5"
+         borderThickness="1"
+         cornerRadius="5"
+         borderStyle="solid"
+         backgroundAlpha=".2"
+         creationComplete="init();">
+
+    <mx:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.depth.label')}"
+              toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.depth.tooltip')}"
+              fontWeight="bold"/>
+
+	<mx:VSlider
+		tickInterval="1"
+		id="degreesOfSep"
+		value="2"
+		minimum="1"
+		maximum="4"
+        showTrackHighlight="true"
+        dataTipPlacement="right"
+        tickOffset="10"
+		liveDragging="true"
+		snapInterval="1"
+		change="updateMaxVisDist()"
+        labels="{depthLabels}"
+        labelOffset="12"
+        height="150"
+        invertThumbDirection="true"
+		/>
+
+	<mx:Script>
+		<![CDATA[
+        import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
+        import org.un.cava.birdeye.ravis.utils.LogUtil;
+        import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;
+
+        private static const _LOG:String = "components.ui.controls.vgraphControls.DegreesOfSeparation";
+
+        private var _vgraph:VisualGraph;
+
+        [Bindable]
+        public var depthLabels:Array;
+
+        private function init():void {
+            depthLabels = new Array();
+            depthLabels.push(resourceManager.getString(AtricoreConsole.BUNDLE, 'provider'));
+            depthLabels.push(resourceManager.getString(AtricoreConsole.BUNDLE, 'channel'));
+        }
+
+        /**
+         * Provides access to the registered vgraph object.
+         * */
+        public function set vgraph(v:VisualGraph):void {
+            _vgraph = v;
+            registerListeners();
+        }
+
+
+        /**
+         * @private
+         * */
+        public function get vgraph():VisualGraph {
+            return _vgraph;
+        }
+
+        /**
+         * updates the visible degree of separation (i.e.
+         * nodes visible from the root node).
+         * */
+        public function updateMaxVisDist():void {
+            if (degreesOfSep == null) {
+                return;
+            }
+
+            if (_vgraph == null) {
+                LogUtil.warn(_LOG, "DegreeOfSeparation NOT changed, no valid vgraph!");
+                return;
+            }
+            _vgraph.maxVisibleDistance = degreesOfSep.value;
+            _vgraph.draw();
+        }
+
+        /**
+         * refreshes the component slider from the value
+         * from VisualGraph object.
+         * */
+        public function refreshMaxVisDist(e:VGraphEvent = null):void {
+            if (degreesOfSep == null) {
+                return;
+            }
+            if (_vgraph == null) {
+                LogUtil.warn(_LOG, "DegreeOfSeparation NOT refreshed, no valid vgraph!");
+                return;
+            }
+            degreesOfSep.value = _vgraph.maxVisibleDistance;
+        }
+
+        /**
+         * register listeners
+         * */
+        private function registerListeners():void {
+            _vgraph.addEventListener(VGraphEvent.VGRAPH_CHANGED, refreshMaxVisDist);
+        }
+
+		]]>
+	</mx:Script>
+    
+</mx:VBox>

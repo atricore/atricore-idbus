@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<WizardStep
+        xmlns="com.atricore.idbus.console.components.wizard.*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        stepName="External User Repository"
+        xmlns:utils="com.atricore.idbus.console.components.*"
+        xmlns:components="com.atricore.idbus.console.components.*"
+        creationComplete="initForm()"
+        show="initFields()">
+
+        <mx:Script>
+        <![CDATA[
+            import org.atricore.idbus.capabilities.management.main.domain.metadata.DbIdentityVault;
+            import org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityVault;
+            import org.atricore.idbus.capabilities.management.main.domain.metadata.UserInformationLookup;
+
+            [Bindable]
+            private var validators:Array;
+
+            private var readableDecisionArray:Array;
+
+            override public function get stepDecision():* {
+                var identityVault:IdentityVault = null;
+                if (externalRepositoryType.selectedLabel == "Database") {
+                    identityVault = new DbIdentityVault();
+                    identityVault.embedded = false;
+                    identityVault.name = userRepositoryName.text;
+                    (identityVault as DbIdentityVault).connectionName = connectionName.text;
+                    (identityVault as DbIdentityVault).driverName = driverName.text;
+                    (identityVault as DbIdentityVault).connectionUrl = connectionUrl.text;
+                    (identityVault as DbIdentityVault).admin = dbUsername.text;
+                    (identityVault as DbIdentityVault).password = dbPassword.text;
+
+                    var userLookup = new UserInformationLookup();
+                    userLookup.userQueryString = userQuery.text;
+                    userLookup.rolesQueryString = rolesQuery.text;
+                    userLookup.credentialsQueryString = credentialsQuery.text;
+                    userLookup.userPropertiesQueryString = propertiesQuery.text;
+
+                    identityVault.userInformationLookup = userLookup;
+                }
+                return identityVault;
+            }
+
+            override public function get readableStepDecision():String {
+                readableDecisionArray = new Array();
+                readableDecisionArray.push("user repository type: " + externalRepositoryType.selectedLabel);
+                return readableDecisionArray.join("\n").toString();
+            }
+
+            private function initFields():void {
+                userRepositoryName.text = (previousStepData as IdentityVault).name;
+            }
+
+            private function initForm():void {
+                if (validators == null) {
+                    validators = new Array();
+                    validators.push(nameValidator);
+                    validators.push(connNameValidator);
+                    validators.push(driverNameValidator);
+                    validators.push(connUrlValidator);
+                    validators.push(dbUsernameValidator);
+                    validators.push(dbPasswordValidator);
+                }
+            }
+
+            private function handleFormChange(event:Event):void {
+                // Check the step validity
+                ssoWizStep2Form.validateForm(event);
+                isValid = ssoWizStep2Form.isValid;
+            }
+
+            override public function get isJumpToConditionMet():Boolean {
+                return true;
+            }
+
+        ]]>
+    </mx:Script>
+    <mx:Style>
+        .textAreaLabel {
+           verticalAlign:middle;
+           textAlign: left;
+           padding-left:5;
+        }
+    </mx:Style>
+
+    <mx:StringValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"/>
+    <mx:StringValidator id="connNameValidator" source="{connectionName}" required="true" property="text"/>
+    <mx:StringValidator id="driverNameValidator" source="{driverName}" required="true" property="text"/>
+    <mx:StringValidator id="connUrlValidator" source="{connectionUrl}" required="true" property="text"/>
+    <mx:StringValidator id="dbUsernameValidator" source="{dbUsername}" required="true" property="text"/>
+    <mx:StringValidator id="dbPasswordValidator" source="{dbPassword}" required="true" property="text"/>
+
+    <mx:VBox width="100%" height="100%">
+
+        <utils:ValidatingForm id="ssoWizStep2Form" width="100%" height="100%" validators="{validators}" labelWidth="120">
+            <utils:GroupBox width="100%" height="100%" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.externalUsersRepository')}">
+                <mx:HBox>
+                    <mx:FormItem labelWidth="50" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.userRepositoryName')}:" required="true">
+                        <mx:TextInput id="userRepositoryName" width="150" editable="false"/>
+                    </mx:FormItem>
+                    <mx:FormItem labelWidth="40" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.externalRepositoryType')}:">
+                        <mx:ComboBox id="externalRepositoryType" width="100" change="handleFormChange(event);">
+                            <mx:ArrayCollection>
+                                 <mx:Object label="Database" data="database"/>
+                             </mx:ArrayCollection>
+                        </mx:ComboBox>
+                    </mx:FormItem>
+                    <mx:CheckBox id="skipConnTest" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.skipConnTest')}"/>
+                </mx:HBox>
+
+                <mx:TabNavigator borderStyle="solid" width="100%" height="100%">
+
+                    <!-- CONNECTION TAB -->
+                    <mx:VBox label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.connectionTab')}">
+
+                        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.connectionName')}:" required="true">
+                            <mx:TextInput id="connectionName" width="200" change="handleFormChange(event);"/>
+                        </mx:FormItem>
+
+                        <mx:HBox>
+                            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.jdbcDriver')}:" required="true">
+                                <mx:ComboBox id="jdbcDriver" width="200" change="handleFormChange(event);">
+                                </mx:ComboBox>
+                            </mx:FormItem>
+                            <mx:Button id="uploadBtn" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.upload')}"/>
+                        </mx:HBox>
+
+                        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.driverName')}:" required="true">
+                            <mx:TextInput id="driverName" width="200" change="handleFormChange(event);"/>
+                        </mx:FormItem>
+
+                        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.connectionUrl')}:" required="true">
+                            <mx:TextInput id="connectionUrl" width="200" change="handleFormChange(event);"/>
+                        </mx:FormItem>
+
+                        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.dbUsername')}:" required="true">
+                            <mx:TextInput id="dbUsername" width="200" change="handleFormChange(event);"/>
+                        </mx:FormItem>
+
+                        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.dbPassword')}:" required="true">
+                            <mx:TextInput id="dbPassword" width="200" change="handleFormChange(event);"/>
+                        </mx:FormItem>
+
+                        <mx:HBox width="100%">
+                            <mx:Spacer width="400"/>
+                            <mx:Button id="testConnBtn" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.testConnection')}"/>
+                        </mx:HBox>
+                        <mx:Spacer width="10"/>
+                    </mx:VBox>
+
+                    <!-- USER LOOKUP TAB -->
+                    <mx:VBox label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.userLookupTab')}">
+                        <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.userQuery')}:">
+                            <mx:TextArea id="userQuery" width="370" height="40" />
+                        </utils:FormItemVerticalAlign>
+                        <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.rolesQuery')}:">
+                            <mx:TextArea id="rolesQuery" width="370" height="40" />
+                        </utils:FormItemVerticalAlign>
+                        <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.credentialsQuery')}:">
+                            <mx:TextArea id="credentialsQuery" width="370" height="40" />
+                        </utils:FormItemVerticalAlign>
+                        <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.propertiesQuery')}:">
+                            <mx:TextArea id="propertiesQuery" width="370" height="40" />
+                        </utils:FormItemVerticalAlign>
+                        <mx:HBox width="100%">
+                            <mx:Spacer width="402"/>
+                            <mx:Button id="testQueries" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.testQueries')}"/>
+                        </mx:HBox>
+                    </mx:VBox>
+
+                    <!-- UPDATE TAB -->
+                    <mx:VBox label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.passUpdateTab')}">
+                        <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.credentialsUpdate')}:">
+                            <mx:TextArea id="credentialsUpdate" width="370" height="40" />
+                        </utils:FormItemVerticalAlign>
+                        <!--<utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.relayCredentials')}:">-->
+                            <!--<mx:TextArea id="relayCredentials" width="370" height="40" />-->
+                        <!--</utils:FormItemVerticalAlign>-->
+                        <mx:HBox width="100%">
+                            <mx:Spacer width="407"/>
+                            <mx:Button id="testUpdates" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.testUpdate')}"/>
+                        </mx:HBox>
+                    </mx:VBox>
+                </mx:TabNavigator>
+            </utils:GroupBox>
+        </utils:ValidatingForm>
+
+    </mx:VBox>
+</WizardStep>

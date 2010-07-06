@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+          xmlns:components="com.atricore.idbus.console.components.*"
+          xmlns:browser="com.atricore.idbus.console.modeling.browser.*"
+          xmlns:diagram="com.atricore.idbus.console.modeling.diagram.*"
+          xmlns:palette="com.atricore.idbus.console.modeling.palette.*"
+          xmlns:propertysheet="com.atricore.idbus.console.modeling.propertysheet.*"
+          xmlns:comp="com.atricore.idbus.console.components.*"
+          xmlns:ravis="org.un.cava.birdeye.ravis.graphLayout.visual.*"
+          xmlns:graph-ctrl="com.atricore.idbus.console.modeling.diagram.ui.control.*"
+          xmlns:vc="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
+          xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
+          width="100%" height="100%"
+        >
+
+    <mx:Metadata>
+        [ResourceBundle("console")]
+    </mx:Metadata>
+
+    <mx:HBox width="100%" height="100%" x="0" y="0" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+        <mx:TabNavigator width="100%" height="100%">
+            <mx:Canvas label="Design" width="95%" height="100%">
+                <mx:VBox x="10" y="10" height="100%" width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10">
+                    <mx:ButtonBar id="modelActionToolBar" height="5%" dataProvider="[New,Build,Deploy]">
+                    </mx:ButtonBar>
+                    <mx:HBox width="99%" height="60%">
+                        <browser:BrowserView id="browser" height="99%" width="20%"/>
+                        <diagram:DiagramView id="diagram" width="60%" height="99%"/>
+                        <palette:PaletteView id="palette" width="20%" height="99%"/>
+                    </mx:HBox>
+                    <mx:HBox height="35%" width="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" borderStyle="solid">
+                        <propertysheet:PropertySheetView id="propertysheet" height="100%" width="100%"/>
+                    </mx:HBox>
+                </mx:VBox>
+            </mx:Canvas>
+            <mx:Canvas label="Deployment" width="95%" height="95%">
+            </mx:Canvas>
+        </mx:TabNavigator>
+    </mx:HBox>
+</mx:Panel>

@@ -1,0 +1,196 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<WizardStep
+        xmlns="com.atricore.idbus.console.components.wizard.*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:utils="com.atricore.idbus.console.components.*"
+        stepName="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.description')}"
+        stepDescription="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.description')}"
+        creationComplete="initForm();"
+        isValid="true">
+
+        <mx:Script>
+        <![CDATA[
+
+            import mx.controls.Alert;
+            import mx.managers.PopUpManager;
+
+            private const _strUploadDomain:String = "http://localhost:8080/";
+            private const _strUploadScript:String = _strUploadDomain + "files/upload.jsp";
+
+            [Bindable]
+            private var _certificates:Array;
+
+            private var _certFiles:FileReferenceList;
+            private var _refUploadFile:FileReference;
+
+            private var _uploadProgress:UploadProgress;
+            private var _numCurrentUpload:Number = 0;
+
+            private function initForm():void {
+                _certificates = new Array();
+                if (_certFiles != null && _certFiles.fileList.length > 0) {
+                    for (var i:Number = 0; i < _certFiles.fileList.length; i++) {
+                        _certificates.push(_certFiles.fileList[i].name);
+                    }
+                }
+            }
+
+            // Called to add file(s) for upload
+            private function browseFiles():void {
+                _certFiles = new FileReferenceList();
+                _certFiles.addEventListener(Event.SELECT, onSelectFile);
+                _certFiles.browse();
+            }
+
+            // Called when a file is selected
+            private function onSelectFile(event:Event):void {
+                _certificates = new Array();
+                for (var i:Number = 0; i < _certFiles.fileList.length; i++) {
+                    _certificates.push(_certFiles.fileList[i].name);
+                }
+                if (_certificates.length > 0) {
+                    certificate.selectedIndex = 0;
+                }
+            }
+
+            private function startUpload(firstFile:Boolean):void {
+                if (firstFile) {
+                    _numCurrentUpload = 0;
+                }
+                if (_certFiles != null && _certFiles.fileList.length > 0) {
+                    _uploadProgress = UploadProgress(PopUpManager.createPopUp(this, UploadProgress, true));
+                    _uploadProgress.btnCancel.removeEventListener("click", onUploadCanceled);
+                    _uploadProgress.btnCancel.addEventListener("click", onUploadCanceled);
+                    _uploadProgress.title = "Uploading file to " + _strUploadDomain;
+                    _uploadProgress.txtFile.text = _certFiles.fileList[_numCurrentUpload].name;
+                    _uploadProgress.progBar.label = "0%";
+                    PopUpManager.centerPopUp(_uploadProgress);
+
+                    // Variables to send along with upload
+                    var sendVars:URLVariables = new URLVariables();
+                    sendVars.action = "upload";
+
+                    var request:URLRequest = new URLRequest();
+                    request.data = sendVars;
+                    request.url = _strUploadScript;
+                    request.method = URLRequestMethod.POST;
+                    _refUploadFile = new FileReference();
+                    _refUploadFile = _certFiles.fileList[_numCurrentUpload];
+                    _refUploadFile.addEventListener(ProgressEvent.PROGRESS, onUploadProgress);
+                    _refUploadFile.addEventListener(Event.COMPLETE, onUploadComplete);
+                    _refUploadFile.addEventListener(IOErrorEvent.IO_ERROR, onUploadIoError);
+                    _refUploadFile.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadSecurityError);
+                    _refUploadFile.upload(request, "file", false);
+                }
+            }
+
+            // Called on upload cancel
+            private function onUploadCanceled(event:Event):void {
+                PopUpManager.removePopUp(_uploadProgress);
+                _uploadProgress == null;
+                _refUploadFile.cancel();
+                clearUpload();
+            }
+
+            // Cancel and clear eventlisteners on last upload
+            private function clearUpload():void {
+                _numCurrentUpload = 0;
+                _refUploadFile.removeEventListener(ProgressEvent.PROGRESS, onUploadProgress);
+                _refUploadFile.removeEventListener(Event.COMPLETE, onUploadComplete);
+                _refUploadFile.removeEventListener(IOErrorEvent.IO_ERROR, onUploadIoError);
+                _refUploadFile.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadSecurityError);
+                _refUploadFile.cancel();
+            }
+
+            // Get upload progress
+            private function onUploadProgress(event:ProgressEvent):void {
+                var numPerc:Number = Math.round((Number(event.bytesLoaded) / Number(event.bytesTotal)) * 100);
+                _uploadProgress.progBar.setProgress(numPerc, 100);
+                _uploadProgress.progBar.label = numPerc + "%";
+                _uploadProgress.progBar.validateNow();
+                if (numPerc > 90) {
+                    _uploadProgress.btnCancel.enabled = false;
+                } else {
+                    _uploadProgress.btnCancel.enabled = true;
+                }
+            }
+
+            // Called on upload complete
+            private function onUploadComplete(event:Event):void {
+                _numCurrentUpload++;
+                PopUpManager.removePopUp(_uploadProgress);
+                if (_numCurrentUpload < _certFiles.fileList.length) {
+                    startUpload(false);
+                } else {
+                    Alert.show("File(s) have been uploaded.", "Upload successful");
+                }
+            }
+
+            // Called on upload io error
+            private function onUploadIoError(event:IOErrorEvent):void {
+                Alert.show("IO Error in uploading file.", "Error");
+                PopUpManager.removePopUp(_uploadProgress);
+                _uploadProgress == null;
+                _refUploadFile.cancel();
+                clearUpload();
+            }
+
+            // Called on upload security error
+            private function onUploadSecurityError(event:SecurityErrorEvent):void {
+                Alert.show("Security Error in uploading file.", "Error");
+                PopUpManager.removePopUp(_uploadProgress);
+                _uploadProgress == null;
+                _refUploadFile.cancel();
+                clearUpload();
+            }
+
+            /**
+             * Returns the desicion made in this step, here we return the array
+             * that holds the results
+             */
+            override public function get stepDecision():* {
+                return _certFiles;
+            }
+
+            /**
+             * Returns a string that represents the decision the user has made
+             * in a readable format
+             */
+            override public function get readableStepDecision():String {
+                return resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.summary.certificate') + "\n" + _certificates.join("\n").toString();
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:Form>
+        <utils:GroupBox width="300" height="200" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.title')}">
+			<mx:HBox>
+            	<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.certificate')}">
+            		<mx:ComboBox id="certificate" dataProvider="{_certificates}" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.certificate.prompt')}" mouseUp="browseFiles()" />
+            	</mx:FormItem>
+				<!--mx:Button label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.certificate.upload')}" id="btnUpload" click="startUpload(true)" /-->
+			</mx:HBox>
+        </utils:GroupBox>
+    </mx:Form>
+
+</WizardStep>

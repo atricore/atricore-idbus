@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:component="com.atricore.idbus.console.components.*"
+         horizontalAlign="center" paddingTop="100" width="100%" height="100%">
+
+   <mx:EmailValidator id="userNameValidator" required="true" source="{userName}" property="text"/>
+   <mx:StringValidator id="passwordValidator" required="true" source="{password}" property="text"/>
+
+   <mx:Form width="500" height="265" styleName="loginForm" verticalGap="4" defaultButton="{btnLogin}">
+      <mx:Label styleName="h1White" text="Login" width="100%" textAlign="center"/>
+      <mx:Spacer height="10"/>
+      <mx:FormItem required="true" label="Username (email)">
+         <mx:TextInput id="userName" width="200"/>
+      </mx:FormItem>
+      <mx:FormItem required="true" label="Password">
+         <mx:TextInput id="password" displayAsPassword="true" width="200"/>
+      </mx:FormItem>
+      <mx:FormItem label="Remember me">
+         <mx:CheckBox id="rememberMe"
+                      toolTip="Selecting will cause your login details to be remembered on this computer."/>
+      </mx:FormItem>
+      <mx:HBox styleName="buttonBox" width="100%">
+         <mx:Button id="btnLogin" label="Log In"/>
+         <mx:LinkButton id="btnClear" styleName="form" label="clear"/>
+      </mx:HBox>
+   </mx:Form>
+</mx:HBox>

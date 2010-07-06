@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+
+<mx:ComboBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="95%"
+	prompt="Select layout algorithm."
+	toolTip="Some layouters may not be fully stable."
+	initialize="initData()"
+	change="changeLayouter()">
+
+	<mx:ArrayCollection id="layouts">
+        <mx:String>{resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.layout.hierarchical')}</mx:String>
+		<mx:String>{resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.layout.concentrical')}</mx:String>
+		<mx:String>{resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.layout.parent.centered')}</mx:String>
+		<mx:String>{resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.layout.single.cycle')}</mx:String>
+	</mx:ArrayCollection>
+
+
+
+	<mx:Script>
+		<![CDATA[
+        import mx.utils.ObjectUtil;
+
+        import org.un.cava.birdeye.ravis.graphLayout.layout.CircularLayouter;
+        import org.un.cava.birdeye.ravis.graphLayout.layout.ConcentricRadialLayouter;
+        import org.un.cava.birdeye.ravis.graphLayout.layout.HierarchicalLayouter;
+        import org.un.cava.birdeye.ravis.graphLayout.layout.ILayoutAlgorithm;
+        import org.un.cava.birdeye.ravis.graphLayout.layout.ParentCenteredRadialLayouter;
+        import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
+        import org.un.cava.birdeye.ravis.utils.LogUtil;
+        import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;
+
+        private static const _LOG:String = "components.ui.controls.layouterControls.LayoutSelector";
+
+        private var _vgraph:VisualGraph;
+
+        /**
+         * Provides access to the registered vgraph object.
+         * */
+        public function set vgraph(v:VisualGraph):void {
+            _vgraph = v;
+            registerListeners();
+        }
+
+        /**
+         * @private
+         * */
+        public function get vgraph():VisualGraph {
+            return _vgraph;
+        }
+
+        /**
+         * When enabling or disabling this component, we also
+         * perform some specific tasks.
+         * Attention do completely disable interaction
+         * there is also the mouseEnabled property.
+         *
+         * @inheritDoc
+         * */
+        override public function set enabled(e:Boolean):void {
+            if (e) {
+                this.alpha = 1;
+            } else {
+                this.alpha = 0.3;
+            }
+            /* call superclass (ComboBox) */
+            super.enabled = e;
+        }
+
+        /**
+         * Set the selected Layouter.
+         * */
+        public function changeLayouter():void {
+            /* check if we have a vgraph at all */
+            if (_vgraph == null) {
+                LogUtil.warn(_LOG, "Cannot change Layouter without vgraph.");
+                return;
+            }
+            setLayouter();
+            _vgraph.draw(); // run the layout
+        }
+
+        /**
+         * Set/Activate the layouter set in the selector.
+         * */
+        public function setLayouter():void {
+
+            var layouter:ILayoutAlgorithm;
+            var layouterName:String = (this.selectedItem as String);
+
+            /* check if we have a vgraph at all */
+            if (_vgraph == null) {
+                LogUtil.warn(_LOG, "Cannot change Layouter without vgraph.");
+                return;
+            }
+
+            /* kill off animation in old layouter if present */
+            if (_vgraph.layouter != null) {
+                _vgraph.layouter.resetAll();
+                /* remove also existing references thus
+                 * destroying the object (maybe this is not needed?) */
+                _vgraph.layouter = null;
+            }
+
+            /* now choose the selected layouter */
+            switch (layouterName) {
+                case resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.layout.concentrical'):
+                    layouter = new ConcentricRadialLayouter(_vgraph);
+                    break;
+                case resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.layout.parent.centered'):
+                    layouter = new ParentCenteredRadialLayouter(_vgraph);
+                    break;
+                case resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.layout.single.cycle'):
+                    layouter = new CircularLayouter(_vgraph);
+                    break;
+                case resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.layout.hierarchical'):
+                    layouter = new HierarchicalLayouter(_vgraph);
+                    break;
+                default:
+                    LogUtil.warn(_LOG, "Illegal Layouter selected, defaulting to ConcentricRadial" +
+                            layouterName);
+                    layouter = new ConcentricRadialLayouter(_vgraph);
+                    break;
+            }
+            _vgraph.layouter = layouter;
+        }
+
+        /**
+         * Refresh the selector if an external event changes the layouter.
+         * */
+        public function refreshSelector(e:VGraphEvent = null):void {
+
+            var layouterClassName:String;
+            var layouterName:String;
+
+            /* check if we have a vgraph/layouter at all */
+            if (_vgraph == null || _vgraph.layouter == null) {
+                LogUtil.warn(_LOG, "Cannot refresh the LayoutSelector without vgraph or Layouter.");
+                return;
+            }
+
+            layouterClassName = ObjectUtil.getClassInfo(_vgraph.layouter).name;
+            layouterClassName = layouterClassName.replace(/org.un.cava.birdeye.ravis.graphLayout.layout::/, "");
+
+            /* now choose the selected layouter */
+            switch (layouterClassName) {
+                case "ConcentricRadialLayouter":
+                    layouterName = resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.layout.concentrical');
+                    break;
+                case "ParentCenteredRadialLayouter":
+                    layouterName = resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.layout.parent.centered');
+                    break;
+                case "CircularLayouter":
+                    layouterName = resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.layout.single.cycle');
+                    break;
+                case "HierarchicalLayouter":
+                    layouterName = resourceManager.getString(AtricoreConsole.BUNDLE, 'graph.control.layout.hierarchical');
+                    break;
+                default:
+                    layouterName = "Unknown";
+                    LogUtil.warn(_LOG, "Unknown Layouter found:" + layouterClassName);
+                    break;
+            }
+            /* make the selection */
+
+            /* XXX THIS MAY CAUSE A LOOP POSSIBLY */
+            this.selectedItem = layouterName;
+        }
+
+        /**
+         * initialise the selection data.
+         * It is a bit unclear, why this seems to be necessary.
+         * */
+        private function initData():void {
+            this.dataProvider = layouts;
+        }
+
+        /**
+         * Adds the listeners to update on changes in the VGraph
+         * */
+        private function registerListeners():void {
+            _vgraph.addEventListener(VGraphEvent.LAYOUTER_CHANGED, refreshSelector);
+        }
+		]]>
+	</mx:Script>
+</mx:ComboBox>

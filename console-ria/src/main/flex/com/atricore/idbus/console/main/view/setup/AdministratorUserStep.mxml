@@ -1,0 +1,133 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<WizardStep
+        xmlns="com.atricore.idbus.console.components.wizard.*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:utils="com.atricore.idbus.console.components.*"
+        stepName="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.description')}"
+        stepDescription="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.description')}">
+
+        <mx:Script>
+        <![CDATA[
+
+            import mx.utils.StringUtil;
+            import mx.validators.Validator;
+
+            import org.atricore.idbus.capabilities.management.main.domain.User;
+
+            /**
+             * This will holds the results
+             */
+            private var _user:User;
+
+            private function trimStr(evt:FocusEvent):void {
+                var ti:TextInput = TextInput(evt.currentTarget);
+                ti.text = StringUtil.trim(ti.text);
+            }
+
+            private function handleFormChange():void {
+                // Check the step validity
+                isValid = getStepValidity();
+            }
+
+            /**
+             * Returns a Boolean to whether the step is valid or not.
+             */
+            private function getStepValidity():Boolean {
+                var errors:Array = Validator.validateAll(validatorArray);
+                if (errors.length) {
+                    return false;
+                } else if (password.text != passwordConfirmation.text) {
+                    return false;
+                }
+                return true;
+            }
+
+            /**
+             * Returns the desicion made in this step, here we return the array
+             * that holds the results
+             */
+            override public function get stepDecision():* {
+                _user = new User();
+                _user.userName = userName.text;
+                _user.commonName = fullName.text;
+                _user.email = email.text;
+                _user.userPassword = password.text;
+                return _user;
+            }
+
+            /**
+             * Returns a string that represents the decision the user has made
+             * in a readable format
+             */
+            override public function get readableStepDecision():String {
+                return resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.username') + " " + _user.userName + "\n" +
+                        resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.fullname') + " " + _user.commonName + "\n" +
+                        resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.email') + " " + _user.email;
+            }
+        ]]>
+    </mx:Script>
+	
+    <mx:Array id="validatorArray">
+        <mx:StringValidator id="userNameValidator"
+                source="{userName}"
+                property="text"
+                required="true" />
+        <mx:StringValidator id="passwordValidator"
+                source="{password}"
+                property="text"
+                required="true" />
+        <mx:StringValidator id="passwordConfirmationValidator"
+                source="{passwordConfirmation}"
+                property="text"
+                required="true" />
+        <mx:EmailValidator id="emailValidator"
+        		source="{email}"
+        		property="text"
+       			required="false" />
+    </mx:Array>
+
+    <mx:Form>
+        <utils:GroupBox width="100%" height="100%" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.title')}">
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.username')}" required="true" labelWidth="80">
+                <mx:TextInput id="userName" text="&lt;atricore&gt;" change="handleFormChange()" focusOut="trimStr(event)" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.fullname')}" labelWidth="80">
+                <mx:TextInput id="fullName" change="handleFormChange()" focusOut="trimStr(event)" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.password')}" required="true" labelWidth="80">
+                <mx:TextInput id="password" change="handleFormChange()" focusOut="trimStr(event)" displayAsPassword="true" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.password.confirmation')}" required="true" labelWidth="80">
+                <mx:TextInput id="passwordConfirmation" change="handleFormChange()" focusOut="trimStr(event)" displayAsPassword="true" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.email')}" labelWidth="80">
+                <mx:TextInput id="email" change="handleFormChange()" focusOut="trimStr(event)" width="200"/>
+            </mx:FormItem>
+        </utils:GroupBox>
+    </mx:Form>
+
+</WizardStep>
