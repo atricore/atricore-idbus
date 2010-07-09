@@ -690,7 +690,7 @@
             <snapshots>
                 <checksumPolicy>fail</checksumPolicy>
                 <enabled>true</enabled>  
-            </snapshots>
+            </snapshots>  
 
         </repository>
 
