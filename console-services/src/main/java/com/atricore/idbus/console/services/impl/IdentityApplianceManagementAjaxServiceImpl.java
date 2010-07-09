@@ -1,5 +1,7 @@
 package com.atricore.idbus.console.services.impl;
 
+import com.atricore.idbus.console.services.spi.request.CreateSimpleSsoRequest;
+import com.atricore.idbus.console.services.spi.response.CreateSimpleSsoResponse;
 import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
 import org.atricore.idbus.capabilities.management.main.domain.metadata.*;
 import org.atricore.idbus.capabilities.management.main.exception.IdentityServerException;
@@ -86,8 +88,8 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return idApplianceManagementService.addIdentityApplianceDefinition(req);
     }
 
-    public UpdateApplianceDefinitionResponse updateApplianceDefinition(UpdateApplianceDefinitionRequest request) throws IdentityServerException {
-        return idApplianceManagementService.updateApplianceDefinition(request);
+    public UpdateIdentityApplianceResponse updateApplianceDefinition(UpdateIdentityApplianceRequest request) throws IdentityServerException {
+        return idApplianceManagementService.updateIdentityAppliance(request);
     }
 
     public LookupIdentityApplianceDefinitionByIdResponse lookupIdentityApplianceDefinitionById(LookupIdentityApplianceDefinitionByIdRequest req) throws IdentityServerException {

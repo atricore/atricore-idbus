@@ -76,9 +76,7 @@
         </property>
     </bean>
 
-    <bean id="identityApplianceManagementServiceBean" class="org.atricore.idbus.capabilities.management.main.impl.IdentityApplianceManagementServiceHashImpl">
+    <bean id="identityApplianceManagementServiceBean" class="org.atricore.idbus.capabilities.management.main.impl.IdentityApplianceManagementServiceMockImpl">
     </bean>
-
-
 
 </beans>

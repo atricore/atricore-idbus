@@ -29,7 +29,7 @@ import mx.rpc.remoting.mxml.RemoteObject;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
-import org.atricore.idbus.capabilities.management.main.spi.request.CreateSimpleSsoRequest;
+import com.atricore.idbus.console.services.spi.request.CreateSimpleSsoRequest;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.command.SimpleCommand;
 

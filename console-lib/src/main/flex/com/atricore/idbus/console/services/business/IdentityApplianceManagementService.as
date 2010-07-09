@@ -27,12 +27,12 @@ import flash.events.Event;
 import mx.rpc.AsyncToken;
 import mx.rpc.remoting.RemoteObject;
 
-import org.atricore.idbus.capabilities.management.main.spi.request.AddBindingProviderRequest;
+import com.atricore.idbus.console.services.spi.request.AddBindingProviderRequest;
 import org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceDefinitionRequest;
 import org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityProviderRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.AddServiceProviderRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.CreateSimpleSsoRequest;
+import com.atricore.idbus.console.services.spi.request.AddIdentityProviderRequest;
+import com.atricore.idbus.console.services.spi.request.AddServiceProviderRequest;
+import com.atricore.idbus.console.services.spi.request.CreateSimpleSsoRequest;
 import org.atricore.idbus.capabilities.management.main.spi.request.DeployIdentityApplianceRequest;
 import org.atricore.idbus.capabilities.management.main.spi.request.ExportIdentityApplianceRequest;
 import org.atricore.idbus.capabilities.management.main.spi.request.ImportIdentityApplianceRequest;
@@ -43,7 +43,7 @@ import org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentit
 import org.atricore.idbus.capabilities.management.main.spi.request.ManageIdentityApplianceLifeCycleRequest;
 import org.atricore.idbus.capabilities.management.main.spi.request.RemoveIdentityApplianceRequest;
 import org.atricore.idbus.capabilities.management.main.spi.request.UndeployIdentityApplianceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.UpdateApplianceDefinitionRequest;
+import org.atricore.idbus.capabilities.management.main.spi.request.UpdateIdentityApplianceRequest;
 
 public class IdentityApplianceManagementService implements IIdentityApplianceManagementService {
 
@@ -132,7 +132,7 @@ public class IdentityApplianceManagementService implements IIdentityApplianceMan
         }
 
 
-        public function updateApplianceDefinition(req: UpdateApplianceDefinitionRequest):AsyncToken {
+        public function updateApplianceDefinition(req: UpdateIdentityApplianceRequest):AsyncToken {
             return ro.updateApplianceDefinition(req);
         }
 

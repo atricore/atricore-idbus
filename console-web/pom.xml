@@ -188,7 +188,7 @@
                             WEB-INF/lib/blazeds-core-3.0.jar,
                             WEB-INF/lib/blazeds-remoting-3.0.jar,
                             <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.main-1.0.0-SNAPSHOT.jar,-->
-                            WEB-INF/lib/com.atricore.idbus.console.services-1.0.0-SNAPSHOT.jar,
+                            WEB-INF/lib/console-services-1.0.0-SNAPSHOT.jar,
                             <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.support.springmetadata-1.0.0-SNAPSHOT.jar-->
                             <!--WEB-INF/lib/org.atricore.idbus.bundles.datanucleus-core-v2_0_3-1.0.0-SNAPSHOT.jar,-->
                             <!--WEB-INF/lib/org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3-1.0.0-SNAPSHOT.jar-->
@@ -393,6 +393,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-war-plugin</artifactId>
+                        <version>2.1-beta-1</version>
                         <configuration>
                             <warSourceDirectory>src/main/webapp-nonmanaged/</warSourceDirectory>
                             <archive>
@@ -535,7 +536,7 @@
                                     WEB-INF/lib/blazeds-core-3.0.jar,
                                     WEB-INF/lib/blazeds-remoting-3.0.jar,
                                     <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.main-1.0.0-SNAPSHOT.jar,-->
-                                    WEB-INF/lib/com.atricore.idbus.console.services-1.0.0-SNAPSHOT.jar,
+                                    WEB-INF/lib/console-services-1.0.0-SNAPSHOT.jar,
                                     <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.support.springmetadata-1.0.0-SNAPSHOT.jar-->
                                     <!--WEB-INF/lib/org.atricore.idbus.bundles.datanucleus-core-v2_0_3-1.0.0-SNAPSHOT.jar,-->
                                     <!--WEB-INF/lib/org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3-1.0.0-SNAPSHOT.jar-->

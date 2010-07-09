@@ -74,7 +74,7 @@
             You either have JavaScript turned off or an old version of Adobe's Flash Player. <a href="http://www.adobe.com/go/getflashplayer/">Get the latest Flash player</a>.
         </div>
         <script type="text/javascript">
-            var so = new SWFObject("<%=request.getContextPath()%>/idbus-server-ria-1.0.0-SNAPSHOT.swf", "customRightClick", "100%", "100%", "9");
+            var so = new SWFObject("<%=request.getContextPath()%>/console-ria-1.0.0-SNAPSHOT.swf", "customRightClick", "100%", "100%", "9");
             so.addParam("quality", "high");
             so.addParam("name", "customRightClick");
             so.addParam("id", "customRightClick");
