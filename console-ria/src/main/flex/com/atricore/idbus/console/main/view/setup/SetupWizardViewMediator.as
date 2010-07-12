@@ -21,6 +21,8 @@
 
 package com.atricore.idbus.console.main.view.setup
 {
+import com.atricore.idbus.console.services.dto.UserDTO;
+
 import mx.events.CloseEvent;
 import mx.utils.ObjectProxy;
 
@@ -29,7 +31,6 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
 import com.atricore.idbus.console.main.controller.SetupServerCommand;
 import com.atricore.idbus.console.main.model.ProfileProxy;
-import org.atricore.idbus.capabilities.management.main.domain.User;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
 
@@ -70,7 +71,7 @@ public class SetupWizardViewMediator extends Mediator
     private function onServerSetupWizardComplete(event:WizardEvent):void {
         // setup server using the supplied data
         //save user
-        var user:User = _wizardDataModel.user;
+        var user:UserDTO = _wizardDataModel.user;
         _proxy.user = user;
 
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));

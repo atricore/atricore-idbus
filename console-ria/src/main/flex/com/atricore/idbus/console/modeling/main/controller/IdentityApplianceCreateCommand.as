@@ -21,6 +21,12 @@
 
 package com.atricore.idbus.console.modeling.main.controller
 {
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+
+import com.atricore.idbus.console.services.spi.request.AddIdentityApplianceRequest;
+
+import com.atricore.idbus.console.services.spi.response.AddIdentityApplianceResponse;
+
 import mx.rpc.Fault;
 import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
@@ -29,9 +35,6 @@ import mx.rpc.remoting.mxml.RemoteObject;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
-import org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.response.AddIdentityApplianceResponse;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.command.SimpleCommand;
 
@@ -40,7 +43,7 @@ public class IdentityApplianceCreateCommand extends SimpleCommand implements IRe
     public static const SUCCESS : String = "IdentityApplianceCreateCommand.SUCCESS";
 
     override public function execute(notification:INotification):void {
-        var identityAppliance:IdentityAppliance = notification.getBody() as IdentityAppliance;
+        var identityAppliance:IdentityApplianceDTO = notification.getBody() as IdentityApplianceDTO;
         var registry:ServiceRegistry = facade.retrieveProxy(ServiceRegistry.NAME) as ServiceRegistry;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
 

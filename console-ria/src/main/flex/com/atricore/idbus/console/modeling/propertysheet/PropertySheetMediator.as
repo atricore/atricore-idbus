@@ -20,6 +20,10 @@
  */
 
 package com.atricore.idbus.console.modeling.propertysheet {
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+
+import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
+
 import flash.events.Event;
 import flash.events.MouseEvent;
 
@@ -32,8 +36,6 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderCoreSection;
-import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
-import org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProvider;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
 
@@ -65,11 +67,11 @@ public class PropertySheetMediator extends Mediator {
                 clearPropertyTabs();
                 break;
             case ApplicationFacade.NOTE_DIAGRAM_ELEMENT_SELECTED:
-                if (_projectProxy.currentIdentityApplianceElement is IdentityAppliance) {
+                if (_projectProxy.currentIdentityApplianceElement is IdentityApplianceDTO) {
                     _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                     enableIdentityAppliancePropertyTabs();
                 } else
-                if (_projectProxy.currentIdentityApplianceElement is IdentityProvider) {
+                if (_projectProxy.currentIdentityApplianceElement is IdentityProviderDTO) {
                     _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                     enableIdentityProviderPropertyTabs();
                 }
@@ -99,7 +101,7 @@ public class PropertySheetMediator extends Mediator {
      }
 
      private function handleCorePropertyTabCreationComplete(event:Event):void {
-         var identityAppliance:IdentityAppliance;
+         var identityAppliance:IdentityApplianceDTO;
 
          // fetch appliance object
          var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
@@ -113,7 +115,7 @@ public class PropertySheetMediator extends Mediator {
         trace(e);
         // bind model
         // fetch appliance object
-        var identityAppliance:IdentityAppliance;
+        var identityAppliance:IdentityApplianceDTO;
         var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
         identityAppliance = proxy.currentIdentityAppliance;
 
@@ -143,9 +145,9 @@ public class PropertySheetMediator extends Mediator {
      }
 
      private function handleIdentityProviderCorePropertyTabCreationComplete(event:Event):void {
-         var identityProvider:IdentityProvider;
+         var identityProvider:IdentityProviderDTO;
 
-         identityProvider = _currentIdentityApplianceElement as IdentityProvider;
+         identityProvider = _currentIdentityApplianceElement as IdentityProviderDTO;
 
          // bind view
          _ipCoreSection.identityProviderName.text = identityProvider.name;
@@ -154,9 +156,9 @@ public class PropertySheetMediator extends Mediator {
 
     private function handleIdentityProviderCorePropertyTabRollOut(e:Event):void {
         // bind model
-        var identityProvider:IdentityProvider;
+        var identityProvider:IdentityProviderDTO;
 
-        identityProvider = _currentIdentityApplianceElement as IdentityProvider;
+        identityProvider = _currentIdentityApplianceElement as IdentityProviderDTO;
 
         identityProvider.name = _ipCoreSection.identityProviderName.text;
         sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);

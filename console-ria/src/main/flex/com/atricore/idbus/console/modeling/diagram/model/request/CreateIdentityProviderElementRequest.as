@@ -20,18 +20,19 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.model.request {
-import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+
 
 public class CreateIdentityProviderElementRequest {
-    private var _identityAppliance:IdentityAppliance;
+    private var _identityAppliance:IdentityApplianceDTO;
     private var _notationalElementId:String;
 
-    public function CreateIdentityProviderElementRequest(identityAppliance:IdentityAppliance, notationalElementId:String) {
+    public function CreateIdentityProviderElementRequest(identityAppliance:IdentityApplianceDTO, notationalElementId:String) {
         _identityAppliance = identityAppliance;
         _notationalElementId = notationalElementId;
     }
 
-    public function get identityAppliance():IdentityAppliance {
+    public function get identityAppliance():IdentityApplianceDTO {
         return _identityAppliance;
     }
 

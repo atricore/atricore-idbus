@@ -21,14 +21,15 @@
 
 package com.atricore.idbus.console.main.model
 {
-import org.atricore.idbus.capabilities.management.main.domain.User;
+import com.atricore.idbus.console.services.dto.UserDTO;
+
 import org.puremvc.as3.patterns.proxy.Proxy;
 
 public class ProfileProxy extends Proxy
 {
    public static const NAME : String = "com.atricore.idbus.console.main.model.ProfileProxy";
 
-   public var user : User;
+   public var user : UserDTO;
 
    public function ProfileProxy()
    {

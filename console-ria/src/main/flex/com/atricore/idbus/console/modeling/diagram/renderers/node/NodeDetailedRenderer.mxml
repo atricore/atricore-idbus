@@ -39,13 +39,16 @@
         import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
         import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 
-        import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
-        import org.atricore.idbus.capabilities.management.main.domain.IdentityApplianceUnit;
-        import org.atricore.idbus.capabilities.management.main.domain.IdentityApplianceUnitType;
-        import org.atricore.idbus.capabilities.management.main.domain.metadata.BindingProvider;
-        import org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProvider;
-        import org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityVault;
-        import org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProvider;
+        import com.atricore.idbus.console.services.dto.BindingProviderDTO;
+        import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+
+        import com.atricore.idbus.console.services.dto.IdentityApplianceUnitDTO;
+        import com.atricore.idbus.console.services.dto.IdentityApplianceUnitTypeDTO;
+        import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
+
+        import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+        import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+
         import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualGraph;
         import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
         import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
@@ -73,40 +76,40 @@
         }
 
         protected function loadData(obj:Object):void {
-            if (obj is IdentityAppliance) {
-                var bus:IdentityAppliance = obj as IdentityAppliance;
+            if (obj is IdentityApplianceDTO) {
+                var bus:IdentityApplianceDTO = obj as IdentityApplianceDTO;
                 _linkLabel = bus.idApplianceDefinition.name;
                 //iconImage.source = EmbeddedIcons.busIcon;
                 _linkIcon = EmbeddedIcons.busIcon;
             } else {
-                if (obj is IdentityProvider) {
-                    var idp:IdentityProvider = obj as IdentityProvider;
+                if (obj is IdentityProviderDTO) {
+                    var idp:IdentityProviderDTO = obj as IdentityProviderDTO;
                     _linkLabel = idp.name;
                     //iconImage.source = EmbeddedIcons.idpIcon;
                     _linkIcon = EmbeddedIcons.idpIcon;
                 } else {
-                    if (obj is ServiceProvider) {
-                        var sp:ServiceProvider = obj as ServiceProvider;
+                    if (obj is ServiceProviderDTO) {
+                        var sp:ServiceProviderDTO = obj as ServiceProviderDTO;
                         _linkLabel = sp.name;
                         //iconImage.source = EmbeddedIcons.spIcon;
                     } else {
-                        if (obj is BindingProvider) {
-                            var bp:BindingProvider = obj as BindingProvider;
+                        if (obj is BindingProviderDTO) {
+                            var bp:BindingProviderDTO = obj as BindingProviderDTO;
                             _linkLabel = bp.name;
                             //iconImage.source = EmbeddedIcons.bpIcon;
                         } else {
-                            if (obj is IdentityVault) {
-                                var identityVault:IdentityVault = obj as IdentityVault;
+                            if (obj is IdentityVaultDTO) {
+                                var identityVault:IdentityVaultDTO = obj as IdentityVaultDTO;
                                 _linkLabel = identityVault.name;
                                 //iconImage.source = EmbeddedIcons.vaultIcon;
                             } else {
-                                if (obj is IdentityApplianceUnit) {
-                                    var applianceUnit:IdentityApplianceUnit = obj as IdentityApplianceUnit;
+                                if (obj is IdentityApplianceUnitDTO) {
+                                    var applianceUnit:IdentityApplianceUnitDTO = obj as IdentityApplianceUnitDTO;
                                     _linkLabel = applianceUnit.name;
-                                    var type:IdentityApplianceUnitType = applianceUnit.type;
-                                    if (type.equals(IdentityApplianceUnitType.FEDERATION_UNIT)) {
+                                    var type:IdentityApplianceUnitTypeDTO = applianceUnit.type;
+                                    if (type.equals(IdentityApplianceUnitTypeDTO.FEDERATION_UNIT)) {
                                         //iconImage.source = EmbeddedIcons.spIcon;
-                                    } else if (type.equals(IdentityApplianceUnitType.PROVISIONING_UNIT)) {
+                                    } else if (type.equals(IdentityApplianceUnitTypeDTO.PROVISIONING_UNIT)) {
                                         //iconImage.source = EmbeddedIcons.vaultIcon;
                                     }
                                 }

@@ -49,6 +49,8 @@
 
 	<mx:Script>
 		<![CDATA[
+        import com.atricore.idbus.console.main.view.util.EmbeddedIcons;
+
         import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
         import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;
 

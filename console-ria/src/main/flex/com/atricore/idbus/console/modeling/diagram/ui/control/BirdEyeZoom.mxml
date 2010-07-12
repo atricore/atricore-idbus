@@ -20,7 +20,7 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center">
 
 	<mx:Label
 		toolTip="Use this control to height of birdeye view."
@@ -65,6 +65,8 @@ xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center">
 
 	<mx:Script>
 		<![CDATA[
+        import com.atricore.idbus.console.main.view.util.EmbeddedIcons;
+
         import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
         import org.un.cava.birdeye.ravis.utils.LogUtil;
         import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;

@@ -21,12 +21,13 @@
 
 package com.atricore.idbus.console.services.business {
 
+import com.atricore.idbus.console.services.spi.request.FetchGroupMembershipRequest;
+import com.atricore.idbus.console.services.spi.request.UpdateUserPasswordRequest;
+import com.atricore.idbus.console.services.spi.request.UpdateUserProfileRequest;
+
 import mx.rpc.AsyncToken;
 import flash.events.IEventDispatcher;
 
-import org.atricore.idbus.capabilities.management.main.spi.request.FetchGroupMembershipRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.UpdateUserPasswordRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.UpdateUserProfileRequest;
 
 public interface IProfileManagementService  extends IEventDispatcher {
 

@@ -20,13 +20,15 @@
  */
 
 package com.atricore.idbus.console.services.business {
+import com.atricore.idbus.console.services.spi.request.SignOnRequest;
+
+import com.atricore.idbus.console.services.spi.request.SignOutRequest;
+
+import com.atricore.idbus.console.services.spi.request.UserLoggedRequest;
+
 import mx.rpc.AsyncToken;
 
 import mx.rpc.remoting.RemoteObject;
-
-import org.atricore.idbus.capabilities.management.main.spi.request.SignOnRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.SignOutRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.UserLoggedRequest;
 
 public class SignOnService implements ISignOnService{
 

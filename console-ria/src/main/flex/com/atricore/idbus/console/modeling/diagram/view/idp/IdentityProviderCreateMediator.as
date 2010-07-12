@@ -20,6 +20,8 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.idp {
+import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
+
 import flash.events.MouseEvent;
 
 import mx.events.CloseEvent;
@@ -27,14 +29,13 @@ import mx.events.CloseEvent;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormMediator;
-import org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProvider;
 import org.puremvc.as3.interfaces.INotification;
 
 public class IdentityProviderCreateMediator extends FormMediator {
     public static const NAME:String = "com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator";
 
     private var _proxy:ProjectProxy;
-    private var _newIdentityProvider:IdentityProvider;
+    private var _newIdentityProvider:IdentityProviderDTO;
 
     public function IdentityProviderCreateMediator(viewComp:IdentityProviderCreateForm) {
         super(NAME, viewComp);
@@ -46,7 +47,7 @@ public class IdentityProviderCreateMediator extends FormMediator {
 
     override public function bindModel():void {
 
-        var identityProvider:IdentityProvider = new IdentityProvider();
+        var identityProvider:IdentityProviderDTO = new IdentityProviderDTO();
 
         identityProvider.name = view.identityProviderName.text;
         _newIdentityProvider = identityProvider;

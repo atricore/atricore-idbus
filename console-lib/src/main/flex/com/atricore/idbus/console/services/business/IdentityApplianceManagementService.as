@@ -22,28 +22,26 @@
 package com.atricore.idbus.console.services.business {
 
 
+import com.atricore.idbus.console.services.spi.request.AddIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.request.AddResourceRequest;
+import com.atricore.idbus.console.services.spi.request.DeployIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.request.ExportIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.request.ImportIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.request.ListIdentityAppliancesRequest;
+
+import com.atricore.idbus.console.services.spi.request.LookupIdentityApplianceByIdRequest;
+import com.atricore.idbus.console.services.spi.request.LookupResourceByIdRequest;
+import com.atricore.idbus.console.services.spi.request.ManageIdentityApplianceLifeCycleRequest;
+import com.atricore.idbus.console.services.spi.request.RemoveIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.request.UndeployIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.request.UpdateIdentityApplianceRequest;
+
 import flash.events.Event;
 
 import mx.rpc.AsyncToken;
 import mx.rpc.remoting.RemoteObject;
 
-import com.atricore.idbus.console.services.spi.request.AddBindingProviderRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceDefinitionRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.request.AddIdentityProviderRequest;
-import com.atricore.idbus.console.services.spi.request.AddServiceProviderRequest;
 import com.atricore.idbus.console.services.spi.request.CreateSimpleSsoRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.DeployIdentityApplianceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.ExportIdentityApplianceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.ImportIdentityApplianceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.ListIdentityApplianceDefinitionsRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.ListIdentityAppliancesRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceDefinitionByIdRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.ManageIdentityApplianceLifeCycleRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.RemoveIdentityApplianceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.UndeployIdentityApplianceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.UpdateIdentityApplianceRequest;
 
 public class IdentityApplianceManagementService implements IIdentityApplianceManagementService {
 
@@ -71,26 +69,6 @@ public class IdentityApplianceManagementService implements IIdentityApplianceMan
         public function undeployIdentityAppliance(req:UndeployIdentityApplianceRequest):AsyncToken {
             return ro.undeployIdentityAppliance(req);
         }
-
-//        public function createIdentityAppliance(req:CreateIdentityApplianceRequest):AsyncToken {
-//            return ro.createIdentityAppliance(req);
-//        }
-//
-//    	public function removeIdentityAppliance(req:RemoveIdentityApplianceRequest):AsyncToken {
-//            return ro.removeIdentityAppliance(req);
-//        }
-//
-//        public function listIdentityAppliances(req:ListIdentityAppliancesRequest):AsyncToken {
-//            return ro.listIdentityAppliances(req);
-//        }
-//
-//        public function findIdentityAppliancesById(req:FindIdentityApplianceByIdRequest):AsyncToken {
-//            return ro.findIdentityAppliancesById(req);
-//        }
-//
-//        public function findIdentityAppliancesByState(req:FindIdentityAppliancesByStateRequest):AsyncToken {
-//            return ro.findIdentityAppliancesByState(req);
-//        }
         
         public function importIdentityAppliance(req:ImportIdentityApplianceRequest):AsyncToken {
             return ro.importIdentityAppliance(req);
@@ -122,40 +100,22 @@ public class IdentityApplianceManagementService implements IIdentityApplianceMan
             return ro.removeIdentityAppliance(req);
         }
 
+        public function updateIdentityAppliance(req: UpdateIdentityApplianceRequest):AsyncToken {
+            return ro.updateIdentityAppliance(req);
+        }
+
         public function listIdentityAppliances(req:ListIdentityAppliancesRequest):AsyncToken {
             var obj:AsyncToken = ro.listIdentityAppliances(req);
             return obj;
         }
 
-        public function addIdentityApplianceDefinition(req: AddIdentityApplianceDefinitionRequest):AsyncToken {
-            return ro.addIdentityApplianceDefinition(req);
+        public function addResource(req:AddResourceRequest):AsyncToken {
+            return ro.addResource(req);
         }
 
-
-        public function updateApplianceDefinition(req: UpdateIdentityApplianceRequest):AsyncToken {
-            return ro.updateApplianceDefinition(req);
-        }
-
-
-        public function lookupIdentityApplianceDefinitionById(req:LookupIdentityApplianceDefinitionByIdRequest):AsyncToken {
-            return ro.lookupIdentityApplianceDefinitionById(req);
-        }
-
-        public function listIdentityApplianceDefinitions(req:ListIdentityApplianceDefinitionsRequest):AsyncToken {
-            return ro.listIdentityApplianceDefinitions(req);
-        }
-
-        public function addIdentityProvider(req: AddIdentityProviderRequest):AsyncToken {
-            return ro.addIdentityProvider(req);
-        }
-
-        public function addServiceProvider(req: AddServiceProviderRequest):AsyncToken {
-            return ro.addServiceProvider(req);
-        }
-
-        public function addBindingProvider(req:AddBindingProviderRequest):AsyncToken {
-            return ro.addBindingProvider(req);
-        }
+        public function lookupResourceById(req:LookupResourceByIdRequest):AsyncToken {
+            return ro.lookupResourceById(req);
+        }    
 
         public function addEventListener(type:String, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false):void {
             ro.addEventListener(type, listener, useCapture, priority, useWeakReference);

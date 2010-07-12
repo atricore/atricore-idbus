@@ -20,6 +20,17 @@
  */
 
 package com.atricore.idbus.console.modeling.browser {
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+
+import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
+
+import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
+import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+import com.atricore.idbus.console.services.dto.LocalProviderDTO;
+import com.atricore.idbus.console.services.dto.ProviderDTO;
+
+import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
+
 import flash.events.Event;
 
 import com.atricore.idbus.console.components.AutoSizeTree;
@@ -27,13 +38,6 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.browser.model.BrowserModelFactory;
 import com.atricore.idbus.console.modeling.browser.model.BrowserNode;
-import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
-import org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityApplianceDefinition;
-import org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProviderChannel;
-import org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityVault;
-import org.atricore.idbus.capabilities.management.main.domain.metadata.LocalProvider;
-import org.atricore.idbus.capabilities.management.main.domain.metadata.Provider;
-import org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProviderChannel;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
 
@@ -41,7 +45,7 @@ public class BrowserMediator extends Mediator {
     public static const NAME:String = "com.atricore.idbus.console.modeling.browser.BrowserMediator";
     private var _applianceBrowser:AutoSizeTree;
     private var _applianceRootNode;
-    private var _identityAppliance:IdentityAppliance;
+    private var _identityAppliance:IdentityApplianceDTO;
     private var _projectProxy:ProjectProxy;
 
     public function BrowserMediator(viewComp:BrowserView) {
@@ -96,23 +100,23 @@ public class BrowserMediator extends Mediator {
     private function bindApplianceBrowser():void {
 
         if (_identityAppliance != null) {
-            var identityApplianceDefinition:IdentityApplianceDefinition = _identityAppliance.idApplianceDefinition;
+            var identityApplianceDefinition:IdentityApplianceDefinitionDTO = _identityAppliance.idApplianceDefinition;
 
             _applianceRootNode = BrowserModelFactory.createIdentityApplianceNode(_identityAppliance, true);
 
             if (identityApplianceDefinition.providers != null) {
                 for (var i:int = 0; i < identityApplianceDefinition.providers.length; i++) {
-                    var provider:Provider = identityApplianceDefinition.providers[i];
+                    var provider:ProviderDTO = identityApplianceDefinition.providers[i];
                     var providerNode:BrowserNode = BrowserModelFactory.createProviderNode(provider, true);
 
-                    if (provider is LocalProvider) {
-                        var locProv:LocalProvider = provider as LocalProvider;
+                    if (provider is LocalProviderDTO) {
+                        var locProv:LocalProviderDTO = provider as LocalProviderDTO;
                         if (locProv.defaultChannel != null) {
-                            var identityVault:IdentityVault = null;
-                            if (locProv.defaultChannel is IdentityProviderChannel) {
-                                identityVault = IdentityProviderChannel(locProv.defaultChannel).identityVault;
-                            } else if (locProv.defaultChannel is ServiceProviderChannel) {
-                                identityVault = ServiceProviderChannel(locProv.defaultChannel).identityVault;
+                            var identityVault:IdentityVaultDTO = null;
+                            if (locProv.defaultChannel is IdentityProviderChannelDTO) {
+                                identityVault = IdentityProviderChannelDTO(locProv.defaultChannel).identityVault;
+                            } else if (locProv.defaultChannel is ServiceProviderChannelDTO) {
+                                identityVault = ServiceProviderChannelDTO(locProv.defaultChannel).identityVault;
                             }
                             if (identityVault != null) {
                                 var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityVault, true);
@@ -122,11 +126,11 @@ public class BrowserMediator extends Mediator {
                         if (locProv.channels != null) {
                             for (var j:int = 0; j < locProv.channels.length; j++) {
                                 var channel = locProv.channels[j];
-                                var identityVault:IdentityVault = null;
-                                if (channel is IdentityProviderChannel) {
-                                    identityVault = IdentityProviderChannel(channel).identityVault;
-                                } else if (channel is ServiceProviderChannel) {
-                                    identityVault = ServiceProviderChannel(channel).identityVault;
+                                var identityVault:IdentityVaultDTO = null;
+                                if (channel is IdentityProviderChannelDTO) {
+                                    identityVault = IdentityProviderChannelDTO(channel).identityVault;
+                                } else if (channel is ServiceProviderChannelDTO) {
+                                    identityVault = ServiceProviderChannelDTO(channel).identityVault;
                                 }
                                 if (identityVault != null) {
                                     var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityVault, true);

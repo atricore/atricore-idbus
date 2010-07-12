@@ -27,6 +27,8 @@
             click="addBusClick()">
 
     <mx:Script><![CDATA[
+        import com.atricore.idbus.console.main.view.util.EmbeddedIcons;
+
         import mx.controls.Alert;
         import mx.events.CloseEvent;
         import mx.managers.PopUpManager;

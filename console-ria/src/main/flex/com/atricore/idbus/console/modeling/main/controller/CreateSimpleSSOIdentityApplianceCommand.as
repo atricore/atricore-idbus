@@ -21,6 +21,8 @@
 
 package com.atricore.idbus.console.modeling.main.controller
 {
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+
 import mx.rpc.Fault;
 import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
@@ -28,7 +30,6 @@ import mx.rpc.remoting.mxml.RemoteObject;
 
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.services.spi.request.CreateSimpleSsoRequest;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.command.SimpleCommand;
@@ -43,7 +44,7 @@ public class CreateSimpleSSOIdentityApplianceCommand extends SimpleCommand imple
     }
 
     override public function execute(notification:INotification):void {
-        var identityApplianceDefinition:IdentityAppliance = notification.getBody() as IdentityAppliance;
+        var identityApplianceDefinition:IdentityApplianceDTO = notification.getBody() as IdentityApplianceDTO;
 
         var req:CreateSimpleSsoRequest = new CreateSimpleSsoRequest();
 ///        req.identityApplianceDefinition = identityApplianceDefinition;

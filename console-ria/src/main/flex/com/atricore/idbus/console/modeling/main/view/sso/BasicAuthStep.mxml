@@ -30,7 +30,7 @@
         <mx:Script>
         <![CDATA[           
 
-            import org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityVault;
+            import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
 
             [Bindable]
             private var validators:Array;
@@ -41,7 +41,7 @@
             private var readableDecisionArray:Array;
 
             override public function get stepDecision():* {
-                var identityVault:IdentityVault = new IdentityVault();
+                var identityVault:IdentityVaultDTO = new IdentityVaultDTO();
                 readableDecisionArray = new Array();
                 if (obfuscatePass.selected) {
                     //TODO

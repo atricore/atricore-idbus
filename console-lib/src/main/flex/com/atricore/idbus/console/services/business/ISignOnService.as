@@ -21,10 +21,12 @@
 
 package com.atricore.idbus.console.services.business {
 
+import com.atricore.idbus.console.services.spi.request.SignOnRequest;
+
+import com.atricore.idbus.console.services.spi.request.SignOutRequest;
+
 import mx.rpc.AsyncToken;
 
-import org.atricore.idbus.capabilities.management.main.spi.request.SignOnRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.SignOutRequest;
 
 
 public interface ISignOnService {

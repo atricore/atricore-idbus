@@ -21,9 +21,10 @@
 
 package com.atricore.idbus.console.main.model
 {
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+
 import mx.collections.ArrayCollection;
 
-import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
 import org.puremvc.as3.patterns.proxy.Proxy;
 
 public class ProjectProxy extends Proxy
@@ -35,7 +36,7 @@ public class ProjectProxy extends Proxy
 
     private var _identityApplianceList:ArrayCollection;
     private var _viewAction:int;
-    private var _currentIdentityAppliance:IdentityAppliance;
+    private var _currentIdentityAppliance:IdentityApplianceDTO;
     private var _currentIdentityApplianceElement:Object;
 
     public function ProjectProxy()
@@ -51,11 +52,11 @@ public class ProjectProxy extends Proxy
         _identityApplianceList = identityApplianceList;
     }
 
-    public function get currentIdentityAppliance():IdentityAppliance {
+    public function get currentIdentityAppliance():IdentityApplianceDTO {
        return _currentIdentityAppliance;
     }
 
-    public function set currentIdentityAppliance(currentIdentityApplianceDefinition:IdentityAppliance):void {
+    public function set currentIdentityAppliance(currentIdentityApplianceDefinition:IdentityApplianceDTO):void {
         _currentIdentityAppliance = currentIdentityApplianceDefinition;
     }
 

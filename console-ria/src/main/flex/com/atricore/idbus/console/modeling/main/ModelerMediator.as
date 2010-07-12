@@ -20,6 +20,8 @@
  */
 
 package com.atricore.idbus.console.modeling.main {
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+
 import mx.controls.ButtonBar;
 import mx.controls.buttonBarClasses.ButtonBarButton;
 import mx.events.ItemClickEvent;
@@ -33,7 +35,6 @@ import com.atricore.idbus.console.modeling.main.view.*;
 import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.modeling.propertysheet.PropertySheetMediator;
-import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
 
@@ -52,7 +53,7 @@ public class ModelerMediator extends Mediator {
 
     private var _modelActionToolBar:ButtonBar;
 
-    private var _identityAppliance:IdentityAppliance;
+    private var _identityAppliance:IdentityApplianceDTO;
 
     private var _emptyNotationModel:XML;
 

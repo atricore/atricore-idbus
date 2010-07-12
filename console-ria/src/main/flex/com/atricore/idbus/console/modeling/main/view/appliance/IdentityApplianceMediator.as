@@ -21,6 +21,12 @@
 
 package com.atricore.idbus.console.modeling.main.view.appliance {
 
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+
+import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
+
+import com.atricore.idbus.console.services.dto.LocationDTO;
+
 import flash.events.MouseEvent;
 
 import mx.events.CloseEvent;
@@ -30,9 +36,6 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormMediator;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
-import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
-import org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityApplianceDefinition;
-import org.atricore.idbus.capabilities.management.main.domain.metadata.Location;
 import org.puremvc.as3.interfaces.INotification;
 
 public class IdentityApplianceMediator extends FormMediator
@@ -42,7 +45,7 @@ public class IdentityApplianceMediator extends FormMediator
     public static const EDIT:String = "IdentityApplianceMediator.EDIT";
 
     private var _proxy:ProjectProxy;
-    private var _newIdentityAppliance:IdentityAppliance;
+    private var _newIdentityAppliance:IdentityApplianceDTO;
 
     public function IdentityApplianceMediator(viewComp:IdentityApplianceForm) {
         super(NAME, viewComp);
@@ -100,17 +103,17 @@ public class IdentityApplianceMediator extends FormMediator
 
     override public function bindModel():void {
 
-        var idApplianceDef:IdentityApplianceDefinition = new IdentityApplianceDefinition();
+        var idApplianceDef:IdentityApplianceDefinitionDTO = new IdentityApplianceDefinitionDTO();
         idApplianceDef.name = view.applianceName.text;
         idApplianceDef.description = view.applianceDescription.text;
-        var location:Location = new Location();
+        var location:LocationDTO = new LocationDTO();
         location.protocol = view.applianceLocationProtocol.selectedItem.data;
         location.host = view.applianceLocationDomain.text;
         location.port = view.applianceLocationPort.text as int;
         location.context = view.applianceLocationPath.text;
         idApplianceDef.location = location;
 
-        _newIdentityAppliance = new IdentityAppliance();
+        _newIdentityAppliance = new IdentityApplianceDTO();
         _newIdentityAppliance.idApplianceDefinition = idApplianceDef;
 
     }

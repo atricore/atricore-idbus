@@ -21,43 +21,32 @@
 
 package com.atricore.idbus.console.services.business {
 
+import com.atricore.idbus.console.services.spi.request.AddIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.request.AddResourceRequest;
+import com.atricore.idbus.console.services.spi.request.DeployIdentityApplianceRequest;
+
+import com.atricore.idbus.console.services.spi.request.ExportIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.request.ImportIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.request.ListIdentityAppliancesRequest;
+import com.atricore.idbus.console.services.spi.request.LookupIdentityApplianceByIdRequest;
+import com.atricore.idbus.console.services.spi.request.LookupResourceByIdRequest;
+import com.atricore.idbus.console.services.spi.request.ManageIdentityApplianceLifeCycleRequest;
+import com.atricore.idbus.console.services.spi.request.RemoveIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.request.UndeployIdentityApplianceRequest;
+
+import com.atricore.idbus.console.services.spi.request.UpdateIdentityApplianceRequest;
+
 import flash.events.IEventDispatcher;
 
 import mx.rpc.AsyncToken;
 
-import com.atricore.idbus.console.services.spi.request.AddBindingProviderRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceDefinitionRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.request.AddIdentityProviderRequest;
-import com.atricore.idbus.console.services.spi.request.AddServiceProviderRequest;
 import com.atricore.idbus.console.services.spi.request.CreateSimpleSsoRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.DeployIdentityApplianceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.ExportIdentityApplianceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.ImportIdentityApplianceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.ListIdentityApplianceDefinitionsRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.ListIdentityAppliancesRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceDefinitionByIdRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.ManageIdentityApplianceLifeCycleRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.RemoveIdentityApplianceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.UndeployIdentityApplianceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.UpdateIdentityApplianceRequest;
 
 public interface IIdentityApplianceManagementService extends IEventDispatcher {
 
     	function deployIdentityAppliance(req:DeployIdentityApplianceRequest):AsyncToken;
     
 		function undeployIdentityAppliance(req:UndeployIdentityApplianceRequest):AsyncToken;
-
-//    	function createIdentityAppliance(req:CreateIdentityApplianceRequest):AsyncToken;
-//
-//    	function removeIdentityAppliance(req:RemoveIdentityApplianceRequest):AsyncToken;
-//
-//    	function listIdentityAppliances(req:ListIdentityAppliancesRequest):AsyncToken;
-//
-//    	function findIdentityAppliancesById(req:FindIdentityApplianceByIdRequest):AsyncToken;
-//
-//    	function findIdentityAppliancesByState(req:FindIdentityAppliancesByStateRequest):AsyncToken;
     
     	function importIdentityAppliance(req:ImportIdentityApplianceRequest):AsyncToken;
     
@@ -67,21 +56,15 @@ public interface IIdentityApplianceManagementService extends IEventDispatcher {
 
         function createSimpleSso(req:CreateSimpleSsoRequest):AsyncToken;
 
-        function addBindingProvider(req:AddBindingProviderRequest):AsyncToken;
-        function lookupIdentityApplianceDefinitionById(req:LookupIdentityApplianceDefinitionByIdRequest):AsyncToken;
-
         function addIdentityAppliance(req:AddIdentityApplianceRequest):AsyncToken;
-
+        function updateIdentityAppliance(req: UpdateIdentityApplianceRequest):AsyncToken;
         function lookupIdentityApplianceById(req:LookupIdentityApplianceByIdRequest):AsyncToken;
         function removeIdentityAppliance(req:RemoveIdentityApplianceRequest):AsyncToken;
 
         function listIdentityAppliances(req: ListIdentityAppliancesRequest):AsyncToken;
 
-        function addIdentityProvider(req: AddIdentityProviderRequest):AsyncToken;
-        function addServiceProvider(req: AddServiceProviderRequest):AsyncToken;
+        function addResource(req:AddResourceRequest):AsyncToken;
+        function lookupResourceById(req:LookupResourceByIdRequest):AsyncToken;
 
-        function addIdentityApplianceDefinition(req: AddIdentityApplianceDefinitionRequest):AsyncToken;
-        function updateApplianceDefinition(req: UpdateIdentityApplianceRequest):AsyncToken;
-        function listIdentityApplianceDefinitions(req: ListIdentityApplianceDefinitionsRequest):AsyncToken;
     }
 }

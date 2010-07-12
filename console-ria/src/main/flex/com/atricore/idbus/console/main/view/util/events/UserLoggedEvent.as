@@ -21,20 +21,20 @@
 
 package com.atricore.idbus.console.main.view.util.events {
 
-import flash.events.Event;
+import com.atricore.idbus.console.services.dto.UserDTO;
 
-import org.atricore.idbus.capabilities.management.main.domain.User;
+import flash.events.Event;
 
 public class UserLoggedEvent extends Event{
 
-        private var _user:User;
+        private var _user:UserDTO;
 
-        public function UserLoggedEvent(type:String, user:User, bubbles:Boolean = false, cancelable:Boolean = false) {
+        public function UserLoggedEvent(type:String, user:UserDTO, bubbles:Boolean = false, cancelable:Boolean = false) {
             super(type, bubbles, cancelable);
             _user = user;
         }
 
-        public function get user():User{
+        public function get user():UserDTO{
             return _user;
         }
     }

@@ -20,25 +20,25 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-xmlns:mx="http://www.adobe.com/2006/mxml"
-	xmlns:local="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
-    xmlns:graph-ctrl="org.atricore.idbus.applications.server.console.modeling.diagram.ui.control.*"
-	width="97%"
-	horizontalAlign="left"
-	paddingLeft="5"
-	paddingRight="5"
-	paddingBottom="5"
-	paddingTop="5"
-	borderThickness="1"
-	cornerRadius="5"
-	borderStyle="solid"
-	backgroundAlpha=".2"
-	 >
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:local="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
+         xmlns:graph-ctrl="com.atricore.idbus.console.modeling.diagram.ui.control.*"
+         width="97%"
+         horizontalAlign="left"
+         paddingLeft="5"
+         paddingRight="5"
+         paddingBottom="5"
+         paddingTop="5"
+         borderThickness="1"
+         cornerRadius="5"
+         borderStyle="solid"
+         backgroundAlpha=".2"
+        >
 
-	<graph-ctrl:BirdEyeZoom id="beyezoom" />
-	<!--<local:ScaleLabels id="scalelbs" />-->
+    <graph-ctrl:BirdEyeZoom id="beyezoom"/>
+    <!--<local:ScaleLabels id="scalelbs" />-->
 
-	<mx:Script>
+    <mx:Script>
 		<![CDATA[
         import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
 
@@ -85,5 +85,5 @@ xmlns:mx="http://www.adobe.com/2006/mxml"
             //scalelbs.enabled = e;
         }
 		]]>
-	</mx:Script>
+    </mx:Script>
 </mx:VBox>

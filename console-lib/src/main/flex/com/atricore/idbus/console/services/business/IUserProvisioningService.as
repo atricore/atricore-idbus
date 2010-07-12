@@ -21,22 +21,26 @@
 
 package com.atricore.idbus.console.services.business {
 
-    import flash.events.IEventDispatcher;
+import com.atricore.idbus.console.services.spi.request.AddGroupRequest;
+import com.atricore.idbus.console.services.spi.request.AddUserRequest;
+import com.atricore.idbus.console.services.spi.request.FindGroupByIdRequest;
+import com.atricore.idbus.console.services.spi.request.FindGroupByNameRequest;
+import com.atricore.idbus.console.services.spi.request.FindUserByIdRequest;
+import com.atricore.idbus.console.services.spi.request.FindUserByUsernameRequest;
+import com.atricore.idbus.console.services.spi.request.GetUsersByGroupRequest;
+import com.atricore.idbus.console.services.spi.request.RemoveGroupRequest;
+
+import com.atricore.idbus.console.services.spi.request.RemoveUserRequest;
+import com.atricore.idbus.console.services.spi.request.SearchGroupRequest;
+
+import com.atricore.idbus.console.services.spi.request.SearchUserRequest;
+import com.atricore.idbus.console.services.spi.request.UpdateGroupRequest;
+
+import com.atricore.idbus.console.services.spi.request.UpdateUserRequest;
+
+import flash.events.IEventDispatcher;
     import mx.rpc.AsyncToken;
 
-import org.atricore.idbus.capabilities.management.main.spi.request.AddGroupRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.AddUserRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.FindGroupByIdRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.FindGroupByNameRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.FindUserByIdRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.FindUserByUsernameRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.GetUsersByGroupRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.RemoveGroupRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.RemoveUserRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.SearchGroupRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.SearchUserRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.UpdateGroupRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.UpdateUserRequest;
 
 public interface IUserProvisioningService extends IEventDispatcher {
 

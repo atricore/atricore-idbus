@@ -21,6 +21,8 @@
 
 package com.atricore.idbus.console.modeling.main.controller
 {
+import com.atricore.idbus.console.services.spi.request.ListIdentityAppliancesRequest;
+
 import mx.collections.ArrayCollection;
 import mx.rpc.Fault;
 import mx.rpc.IResponder;
@@ -30,7 +32,6 @@ import mx.rpc.remoting.mxml.RemoteObject;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import org.atricore.idbus.capabilities.management.main.spi.request.ListIdentityAppliancesRequest;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.command.SimpleCommand;
 

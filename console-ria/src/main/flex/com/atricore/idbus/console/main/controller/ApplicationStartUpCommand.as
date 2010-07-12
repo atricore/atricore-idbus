@@ -21,6 +21,8 @@
 
 package com.atricore.idbus.console.main.controller
 {
+import com.atricore.idbus.console.services.spi.request.FindGroupByNameRequest;
+
 import mx.managers.BrowserManager;
 import mx.managers.IBrowserManager;
 import mx.messaging.Channel;
@@ -34,7 +36,6 @@ import com.atricore.idbus.console.main.model.ProfileProxy;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import org.atricore.idbus.capabilities.management.main.spi.request.FindGroupByNameRequest;
 import org.puremvc.as3.interfaces.*;
 import org.puremvc.as3.patterns.command.*;
 
