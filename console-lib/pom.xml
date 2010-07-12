@@ -68,24 +68,17 @@
                                     org.atricore.idbus.capabilities.management.main.spi.IdentityApplianceLifeCycleAction
                                 </includeClass>
                                 <includeClass>
-                                    org.atricore.idbus.capabilities.management.main.domain.*
+                                    com.atricore.idbus.console.services.dto.*
                                 </includeClass>                                  
-                                <includeClass>
-                                    org.atricore.idbus.capabilities.management.main.domain.metadata.*
-                                </includeClass>                                
 
-                                <includeClass>org.atricore.idbus.capabilities.management.main.spi.request.*</includeClass>
-                                <includeClass>org.atricore.idbus.capabilities.management.main.spi.response.*</includeClass>
+                                <includeClass>org.atricore.idbus.capabilities.management.main.spi.request.AbstractManagementRequest</includeClass>
+                                <includeClass>org.atricore.idbus.capabilities.management.main.spi.response.AbstractManagementResponse</includeClass>
 
                                 <includeClass>com.atricore.idbus.console.services.spi.request.*</includeClass>
                                 <includeClass>com.atricore.idbus.console.services.spi.response.*</includeClass>
-                                <includeClass>com.atricore.idbus.console.services.impl.request.*</includeClass>
-                                <includeClass>com.atricore.idbus.console.services.impl.response.*</includeClass>
 
                             </includeJavaClasses>
                             <excludeJavaClasses>
-                                <excludeJavaClass>org.atricore.idbus.capabilities.management.main.metadata.iam.*
-                                </excludeJavaClass>
                                 <!--<excludeJavaClass>-->
                                     <!--org.atricore.idbus.capabilities.management.main.impl.IdentityBusMetadataManagerImpl-->
                                 <!--</excludeJavaClass>-->

@@ -31,6 +31,14 @@
 
     <bean class="com.atricore.idbus.console.services.util.EnumPropertyProxy" factory-method="registerPropertyProxy" />
 
+    <bean id="dozerMapper" class="org.dozer.DozerBeanMapper">
+        <property name="mappingFiles">
+          <list>
+            <value>com/atricore/idbus/console/services/dto/dozer-mappings.xml</value>
+          </list>
+        </property>
+    </bean>    
+
     <!-- AJAX SERVICES -->
 
     <!--<bean id="identityApplianceMetadataAjaxServiceBean" class="org.atricore.idbus.applications.server.services.impl.IdentityApplianceMetadataAjaxServiceImpl">-->
@@ -43,24 +51,28 @@
         <property name="idApplianceManagementService">
             <ref local="idApplianceManagementService"/>
         </property>
+        <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 
     <bean id="profileManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ProfileManagementAjaxServiceImpl">
         <property name="profileManagementService">
             <ref local="profileManagementServiceBean"/>
         </property>
+        <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 
     <bean id="signOnAjaxServiceBean" class="com.atricore.idbus.console.services.impl.SignOnAjaxServiceImpl">
         <property name="signOnService">
             <ref local="signOnServiceBean"/>
         </property>
+        <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 
     <bean id="userProvisioningAjaxServiceBean" class="com.atricore.idbus.console.services.impl.UserProvisioningAjaxServiceImpl">
         <property name="provisioningService">
             <ref local="userProvisioningServiceManagerBean"/>
         </property>
+        <property name="dozerMapper" ref="dozerMapper" />
     </bean>
     
 </beans>

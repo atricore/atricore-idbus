@@ -1,14 +1,37 @@
+/*
+ * Atricore IDBus
+ *
+ *   Copyright 2009, Atricore Inc.
+ *
+ *   This is free software; you can redistribute it and/or modify it
+ *   under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation; either version 2.1 of
+ *   the License, or (at your option) any later version.
+ *
+ *   This software is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *   Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with this software; if not, write to the Free
+ *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package com.atricore.idbus.console.services.impl;
 
-import com.atricore.idbus.console.services.spi.request.CreateSimpleSsoRequest;
-import com.atricore.idbus.console.services.spi.response.CreateSimpleSsoResponse;
-import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
-import org.atricore.idbus.capabilities.management.main.domain.metadata.*;
-import org.atricore.idbus.capabilities.management.main.exception.IdentityServerException;
-import org.atricore.idbus.capabilities.management.main.spi.IdentityApplianceManagementService;
-import org.atricore.idbus.capabilities.management.main.spi.request.*;
-import org.atricore.idbus.capabilities.management.main.spi.response.*;
 import com.atricore.idbus.console.services.spi.IdentityApplianceManagementAjaxService;
+import com.atricore.idbus.console.services.spi.IdentityServerException;
+import com.atricore.idbus.console.services.spi.request.*;
+import com.atricore.idbus.console.services.spi.response.*;
+import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.services.dto.*;
+import org.atricore.idbus.capabilities.management.main.spi.IdentityApplianceManagementService;
+import org.dozer.DozerBeanMapper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Author: Dejan Maric
@@ -16,191 +39,475 @@ import com.atricore.idbus.console.services.spi.IdentityApplianceManagementAjaxSe
 public class IdentityApplianceManagementAjaxServiceImpl implements IdentityApplianceManagementAjaxService {
 
     private IdentityApplianceManagementService idApplianceManagementService;
+    private DozerBeanMapper dozerMapper;
 
     public DeployIdentityApplianceResponse deployIdentityAppliance(DeployIdentityApplianceRequest req) throws IdentityServerException {
-        return idApplianceManagementService.deployIdentityAppliance(req);
+        org.atricore.idbus.capabilities.management.main.spi.request.DeployIdentityApplianceRequest beReq =
+                dozerMapper.map(req, org.atricore.idbus.capabilities.management.main.spi.request.DeployIdentityApplianceRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.DeployIdentityApplianceResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.deployIdentityAppliance(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, DeployIdentityApplianceResponse.class);
     }
 
     public UndeployIdentityApplianceResponse undeployIdentityAppliance(UndeployIdentityApplianceRequest req) throws IdentityServerException {
-        return idApplianceManagementService.undeployIdentityAppliance(req);
+        org.atricore.idbus.capabilities.management.main.spi.request.UndeployIdentityApplianceRequest beReq =
+                dozerMapper.map(req, org.atricore.idbus.capabilities.management.main.spi.request.UndeployIdentityApplianceRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.UndeployIdentityApplianceResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.undeployIdentityAppliance(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, UndeployIdentityApplianceResponse.class);
     }
 
-    public ImportIdentityApplianceResponse importIdentityAppliance(ImportIdentityApplianceRequest request) throws IdentityServerException {
-        return idApplianceManagementService.importIdentityAppliance(request);
+    public ImportIdentityApplianceResponse importIdentityAppliance(ImportIdentityApplianceRequest req) throws IdentityServerException {
+        org.atricore.idbus.capabilities.management.main.spi.request.ImportIdentityApplianceRequest beReq =
+                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ImportIdentityApplianceRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.ImportIdentityApplianceResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.importIdentityAppliance(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, ImportIdentityApplianceResponse.class);
     }
 
-    public ExportIdentityApplianceResponse ExportIdentityAppliance(ExportIdentityApplianceRequest request) throws IdentityServerException {
-        return idApplianceManagementService.exportIdentityAppliance(request);
+    public ExportIdentityApplianceResponse ExportIdentityAppliance(ExportIdentityApplianceRequest req) throws IdentityServerException {
+        org.atricore.idbus.capabilities.management.main.spi.request.ExportIdentityApplianceRequest beReq =
+                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ExportIdentityApplianceRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.ExportIdentityApplianceResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.exportIdentityAppliance(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, ExportIdentityApplianceResponse.class);
     }
 
     public ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException {
-        return idApplianceManagementService.manageIdentityApplianceLifeCycle(req);
+        org.atricore.idbus.capabilities.management.main.spi.request.ManageIdentityApplianceLifeCycleRequest beReq =
+                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ManageIdentityApplianceLifeCycleRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.ManageIdentityApplianceLifeCycleResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.manageIdentityApplianceLifeCycle(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, ManageIdentityApplianceLifeCycleResponse.class);
+    }
+
+    public CreateSimpleSsoResponse createSimpleSso(CreateSimpleSsoRequest req)
+            throws IdentityServerException {
+
+        IdentityApplianceDefinitionDTO iad = req.getIdentityApplianceDefinition();
+
+        //providers that are currently in providers list are service providers
+        for(ProviderDTO sp : iad.getProviders()){
+            if(sp.getRole().equals(ProviderRoleDTO.SSOServiceProvider)){
+//                populateServiceProvider((ServiceProviderDTO)sp, iad);
+            }
+        }
+        iad.getProviders().add(createIdentityProvider(iad));
+
+        List<BindingProviderDTO> bps = new ArrayList<BindingProviderDTO>();
+
+        // create binding providers
+        //iad.getProviders().add(createBindingProvider(iad));
+        for (ProviderDTO sp : iad.getProviders()) {
+            if (sp.getRole().equals(ProviderRoleDTO.SSOServiceProvider)) {
+                boolean bpExists = false;
+                for (BindingProviderDTO bp : bps) {
+                    if (bp.getLocation().getProtocol().equals(sp.getLocation().getProtocol()) &&
+                            bp.getLocation().getHost().equals(sp.getLocation().getHost()) &&
+                            bp.getLocation().getPort() == bp.getLocation().getPort() &&
+                            ((JossoBPConfigDTO)bp.getConfig()).getTargetPlatform().equals(sp.getDescription())) {
+                        bpExists = true;
+                        break;
+                    }
+                }
+                if (!bpExists) {
+                    bps.add(createBindingProvider(iad, (ServiceProviderDTO)sp));
+                }
+            }
+        }
+        iad.getProviders().addAll(bps);
+
+        //TODO set Locations for all objects
+        //TODO add bindings and profiles to channels
+
+        IdentityApplianceDTO idAppliance = new IdentityApplianceDTO();
+        idAppliance.setIdApplianceDefinition(iad);
+        idAppliance.setState(IdentityApplianceStateDTO.PROJECTED.toString());
+
+        //here we'll set STORE to NULL, and later we'll fetch it from DB and update the appliance
+        long storeId = iad.getCertificate().getStore().getId();
+        iad.getCertificate().setStore(null);
+
+        org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest addIdApplianceReq =
+                new org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest();
+        addIdApplianceReq.setIdentityAppliance(dozerMapper.map(idAppliance, IdentityAppliance.class));
+        org.atricore.idbus.capabilities.management.main.spi.response.AddIdentityApplianceResponse beRes = null;
+
+        try {
+            beRes = idApplianceManagementService.addIdentityAppliance(addIdApplianceReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        AddIdentityApplianceResponse res = dozerMapper.map(beRes, AddIdentityApplianceResponse.class);
+        idAppliance = res.getAppliance();
+
+        List<BindingProviderDTO> bindingProviders = new ArrayList<BindingProviderDTO>();
+        for (ProviderDTO p : idAppliance.getIdApplianceDefinition().getProviders()) {
+            if (p instanceof BindingProviderDTO) {
+                bindingProviders.add((BindingProviderDTO)p);
+            }
+        }
+
+        for (ProviderDTO p : idAppliance.getIdApplianceDefinition().getProviders()) {
+            if (p instanceof ServiceProviderDTO) {
+                ServiceProviderDTO sp = (ServiceProviderDTO)p;
+                BindingProviderDTO bindingProvider = null;
+                for (BindingProviderDTO bp : bindingProviders) {
+                    if (bp.getLocation().getProtocol().equals(sp.getLocation().getProtocol()) &&
+                            bp.getLocation().getHost().equals(sp.getLocation().getHost()) &&
+                            bp.getLocation().getPort() == bp.getLocation().getPort() &&
+                            ((JossoBPConfigDTO)bp.getConfig()).getTargetPlatform().equals(sp.getDescription())) {
+                        bindingProvider = bp;
+                        break;
+                    }
+                }
+                populateServiceProvider((ServiceProviderDTO)p, iad, bindingProvider);
+            }
+        }
+
+//        org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
+//                new  org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest();
+//
+//        beLookupReq.setIdentityApplianceId(new Long(idAppliance.getId()).toString());
+//
+//        org.atricore.idbus.capabilities.management.main.spi.response.LookupIdentityApplianceByIdResponse beLookupRes =
+//                null;
+//        try {
+//            beLookupRes = idApplianceManagementService.lookupIdentityApplianceById(beLookupReq);
+//        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+//            throw new IdentityServerException(e);
+//        }
+
+//        IdentityAppliance foundAppliance = beLookupRes.getIdentityAppliance();
+//
+        //lookup store
+        LookupResourceByIdRequest lookupStoreReq = new LookupResourceByIdRequest();
+        lookupStoreReq.setResourceId(new Long(storeId).toString());
+
+        org.atricore.idbus.capabilities.management.main.spi.request.LookupResourceByIdRequest beLookupStoreReq =
+                dozerMapper.map(lookupStoreReq, org.atricore.idbus.capabilities.management.main.spi.request.LookupResourceByIdRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.LookupResourceByIdResponse beLookupStoreRes = null;
+
+        try {
+            beLookupStoreRes = idApplianceManagementService.lookupResourceById(beLookupStoreReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+
+        IdentityAppliance foundAppliance = prepareApplianceForUpdate(idAppliance);
+        foundAppliance.getIdApplianceDefinition().getCertificate().setStore(beLookupStoreRes.getResource());
+        this.updateAppliance(foundAppliance);
+
+        return new CreateSimpleSsoResponse();
+    }
+
+    public AddIdentityApplianceResponse addIdentityAppliance(AddIdentityApplianceRequest req) throws IdentityServerException {
+        org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest beReq =
+                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.AddIdentityApplianceResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.addIdentityAppliance(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, AddIdentityApplianceResponse.class);
+    }
+
+    public LookupIdentityApplianceByIdResponse lookupIdentityApplianceById(LookupIdentityApplianceByIdRequest req) throws IdentityServerException {
+        org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest beReq =
+                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.LookupIdentityApplianceByIdResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.lookupIdentityApplianceById(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, LookupIdentityApplianceByIdResponse.class);
+    }
+
+    public UpdateIdentityApplianceResponse updateIdentityAppliance(UpdateIdentityApplianceRequest req) throws IdentityServerException{
+        //First find identity appliance in DB
+        org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
+                new  org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest();
+
+        IdentityAppliance updatedAppliance = prepareApplianceForUpdate(req.getAppliance());
+
+        //Finally call the update method
+//        this.updateAppliance(updatedAppliance);
+        return this.updateAppliance(updatedAppliance);
+    }
+
+    private IdentityAppliance prepareApplianceForUpdate(IdentityApplianceDTO updatedApplianceDto) throws IdentityServerException {
+        org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
+                new  org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest();
+
+        beLookupReq.setIdentityApplianceId(new Long(updatedApplianceDto.getId()).toString());
+
+        org.atricore.idbus.capabilities.management.main.spi.response.LookupIdentityApplianceByIdResponse beLookupRes =
+                null;
+        try {
+            beLookupRes = idApplianceManagementService.lookupIdentityApplianceById(beLookupReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+
+        IdentityAppliance foundAppliance = beLookupRes.getIdentityAppliance();
+
+        //Then, update the found identity appliance with data from DTO object
+        dozerMapper.map(updatedApplianceDto, foundAppliance);
+        return foundAppliance;
+    }
+
+    private UpdateIdentityApplianceResponse updateAppliance(IdentityAppliance appliance) throws IdentityServerException {
+        //Prepare Request object for calling BE updateIdentityAppliance method
+        org.atricore.idbus.capabilities.management.main.spi.request.UpdateIdentityApplianceRequest beReq =
+              new org.atricore.idbus.capabilities.management.main.spi.request.UpdateIdentityApplianceRequest();
+
+        beReq.setAppliance(appliance);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.UpdateIdentityApplianceResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.updateIdentityAppliance(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, UpdateIdentityApplianceResponse.class);
+    }
+
+
+    public RemoveIdentityApplianceResponse removeIdentityAppliance(RemoveIdentityApplianceRequest req) throws IdentityServerException{
+        //First find identity appliance in DB
+        org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
+                new  org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest();
+
+        beLookupReq.setIdentityApplianceId(new Long(req.getIdentityAppliance().getId()).toString());
+
+        org.atricore.idbus.capabilities.management.main.spi.response.LookupIdentityApplianceByIdResponse beLookupRes =
+                null;
+        try {
+            beLookupRes = idApplianceManagementService.lookupIdentityApplianceById(beLookupReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+
+        IdentityAppliance foundAppliance = beLookupRes.getIdentityAppliance();
+
+        //Prepare Request object for calling BE updateIdentityAppliance method
+        org.atricore.idbus.capabilities.management.main.spi.request.RemoveIdentityApplianceRequest beReq =
+                new org.atricore.idbus.capabilities.management.main.spi.request.RemoveIdentityApplianceRequest();
+
+        beReq.setIdentityAppliance(foundAppliance);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.RemoveIdentityApplianceResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.removeIdentityAppliance(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, RemoveIdentityApplianceResponse.class);
+    }
+
+    public ListIdentityAppliancesResponse listIdentityAppliances(ListIdentityAppliancesRequest req) throws IdentityServerException {
+        org.atricore.idbus.capabilities.management.main.spi.request.ListIdentityAppliancesRequest beReq =
+                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ListIdentityAppliancesRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.ListIdentityAppliancesResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.listIdentityAppliances(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, ListIdentityAppliancesResponse.class);
     }
 
     public void setIdApplianceManagementService(IdentityApplianceManagementService idApplianceManagementService) {
         this.idApplianceManagementService = idApplianceManagementService;
     }
 
-    public CreateSimpleSsoResponse createSimpleSso(CreateSimpleSsoRequest req)
-            throws IdentityServerException {
+    public void setDozerMapper(DozerBeanMapper dozerMapper) {
+        this.dozerMapper = dozerMapper;
+    }
 
-        IdentityApplianceDefinition iad = req.getIdentityApplianceDefinition();
+    public AddResourceResponse addResource(AddResourceRequest req) throws IdentityServerException {
+        org.atricore.idbus.capabilities.management.main.spi.request.AddResourceRequest beReq =
+                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.AddResourceRequest.class);
 
-        //providers that are currently in providers list are service providers
-        for(Provider sp : iad.getProviders()){
-            if(sp.getRole().equals(ProviderRole.SSOServiceProvider)){
-                populateServiceProvider((ServiceProvider)sp, iad);
-            }
+        org.atricore.idbus.capabilities.management.main.spi.response.AddResourceResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.addResource(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
         }
-        iad.getProviders().add(createIdentityProvider(iad));
-        iad.getProviders().add(createBindingProvider(iad));
-
-        //TODO set Locations for all objects
-        //TODO add bindings and profiles to channels
-
-        IdentityAppliance idAppliance = new IdentityAppliance();
-        idAppliance.setIdApplianceDefinition(iad);
-
-        AddIdentityApplianceRequest addIdApplianceReq = new AddIdentityApplianceRequest();
-        addIdApplianceReq.setIdentityAppliance(idAppliance);
-        idApplianceManagementService.addIdentityAppliance(addIdApplianceReq);
-        return null;
+        return dozerMapper.map(beRes, AddResourceResponse.class);
     }
 
-    public AddIdentityApplianceResponse addIdentityAppliance(AddIdentityApplianceRequest req) throws IdentityServerException {
-        return idApplianceManagementService.addIdentityAppliance(req);
+    public LookupResourceByIdResponse lookupResourceById(LookupResourceByIdRequest req) throws IdentityServerException {
+        org.atricore.idbus.capabilities.management.main.spi.request.LookupResourceByIdRequest beReq =
+                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.LookupResourceByIdRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.LookupResourceByIdResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.lookupResourceById(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, LookupResourceByIdResponse.class);
     }
 
-    public LookupIdentityApplianceByIdResponse lookupIdentityApplianceById(LookupIdentityApplianceByIdRequest req) throws IdentityServerException {
-        return idApplianceManagementService.lookupIdentityApplianceById(req);
-    }
+    /******************************************************
+     * Helper methods
+     ******************************************************/
 
-    public RemoveIdentityApplianceResponse removeIdentityAppliance(RemoveIdentityApplianceRequest req) throws IdentityServerException{
-        return idApplianceManagementService.removeIdentityAppliance(req);
-    }
-
-    public ListIdentityAppliancesResponse listIdentityAppliances(ListIdentityAppliancesRequest req) throws IdentityServerException {
-        ListIdentityAppliancesResponse ret = idApplianceManagementService.listIdentityAppliances(req);
-        return ret;
-    }
-
-    public AddIdentityApplianceDefinitionResponse addIdentityApplianceDefinition(AddIdentityApplianceDefinitionRequest req) throws IdentityServerException {
-        return idApplianceManagementService.addIdentityApplianceDefinition(req);
-    }
-
-    public UpdateIdentityApplianceResponse updateApplianceDefinition(UpdateIdentityApplianceRequest request) throws IdentityServerException {
-        return idApplianceManagementService.updateIdentityAppliance(request);
-    }
-
-    public LookupIdentityApplianceDefinitionByIdResponse lookupIdentityApplianceDefinitionById(LookupIdentityApplianceDefinitionByIdRequest req) throws IdentityServerException {
-        return idApplianceManagementService.lookupIdentityApplianceDefinitionById(req);
-    }
-
-    public LookupIdentityApplianceDefinitionResponse lookupIdentityApplianceDefinition(LookupIdentityApplianceDefinitionRequest req) throws IdentityServerException {
-        return idApplianceManagementService.lookupIdentityApplianceDefinition(req);
-    }
-
-    public ListIdentityApplianceDefinitionsResponse listIdentityApplianceDefinitions(ListIdentityApplianceDefinitionsRequest req) throws IdentityServerException {
-        return idApplianceManagementService.listIdentityApplianceDefinitions(req);
-    }
-
-    private void populateServiceProvider(ServiceProvider sp, IdentityApplianceDefinition iad) {
+    private void populateServiceProvider(ServiceProviderDTO sp, IdentityApplianceDefinitionDTO iad, BindingProviderDTO bp) {
         sp.setIdentityAppliance(iad);
+        sp.setDescription(sp.getName() + " description");
 
-        BindingChannel bindingChannel = new BindingChannel();
+        BindingChannelDTO bindingChannel = new BindingChannelDTO();
         bindingChannel.setName(sp.getName() + " binding channel");
-        bindingChannel.setTarget(sp);
+        bindingChannel.setTarget(bp);
 
-        Location bpLocation = new Location();
-        bpLocation.setProtocol(sp.getLocation().getProtocol());
-        bpLocation.setHost(sp.getLocation().getHost());
-        bpLocation.setPort(sp.getLocation().getPort());
-        bpLocation.setContext(iad.getLocation().getContext());////not sp.getLocation.uri but iad.getLocation.Context
-        bpLocation.setUri("/" + createUrlSafeString(sp.getName()) + "/SSOP");//remove sp.getLocation.uri
-        bindingChannel.setLocation(bpLocation);
+        LocationDTO bcLocation = new LocationDTO();
+        bcLocation.setProtocol(iad.getLocation().getProtocol());
+        bcLocation.setHost(iad.getLocation().getHost());
+        bcLocation.setPort(iad.getLocation().getPort());
+        bcLocation.setContext(iad.getLocation().getContext());
+        bcLocation.setUri(createUrlSafeString(sp.getName() + "-sp"));
+        bindingChannel.setLocation(bcLocation);
 
-        bindingChannel.getActiveBindings().add(Binding.SSO_ARTIFACT);
-        bindingChannel.getActiveBindings().add(Binding.SSO_REDIRECT);
+//        LocationDTO bpLocation = new LocationDTO();
+//        bpLocation.setProtocol(sp.getLocation().getProtocol());
+//        bpLocation.setHost(sp.getLocation().getHost());
+//        bpLocation.setPort(sp.getLocation().getPort());
+//        bpLocation.setContext(iad.getLocation().getContext());////not sp.getLocation.uri but iad.getLocation.Context
+//        bpLocation.setUri("/" + createUrlSafeString(sp.getName()) + "/SSOP");//remove sp.getLocation.uri
+//        bindingChannel.setLocation(bpLocation);
 
-        bindingChannel.getActiveProfiles().add(Profile.SSO);
-        bindingChannel.getActiveProfiles().add(Profile.SSO_SLO);
+        bindingChannel.getActiveBindings().add(BindingDTO.SSO_ARTIFACT);
+        bindingChannel.getActiveBindings().add(BindingDTO.SSO_REDIRECT);
+
+        bindingChannel.getActiveProfiles().add(ProfileDTO.SSO);
+        bindingChannel.getActiveProfiles().add(ProfileDTO.SSO_SLO);
 
         sp.setBindingChannel(bindingChannel);
 
-        IdentityProviderChannel idpChannel = new IdentityProviderChannel();
+        IdentityProviderChannelDTO idpChannel = new IdentityProviderChannelDTO();
         idpChannel.setName(sp.getName() + " to idp default channel");
         idpChannel.setTarget(sp);
 
-        Location idpLocation = new Location();
-        idpLocation.setProtocol(sp.getLocation().getProtocol());
-        idpLocation.setHost(sp.getLocation().getHost());
-        idpLocation.setPort(sp.getLocation().getPort());
-        idpLocation.setContext(iad.getLocation().getContext());//this will be IDBUS
-        idpLocation.setUri("/" + createUrlSafeString(sp.getName()) + "/SAML2");
+        LocationDTO idpLocation = new LocationDTO();
+        idpLocation.setProtocol(iad.getLocation().getProtocol());
+        idpLocation.setHost(iad.getLocation().getHost());
+        idpLocation.setPort(iad.getLocation().getPort());
+        idpLocation.setContext(iad.getLocation().getContext());
+        idpLocation.setUri(createUrlSafeString(sp.getName()) + "/SAML2");
         idpChannel.setLocation(idpLocation);
 
-        idpChannel.getActiveBindings().add(Binding.SAMLR2_ARTIFACT);
-        idpChannel.getActiveBindings().add(Binding.SAMLR2_HTTP_REDIRECT);
+        idpChannel.getActiveBindings().add(BindingDTO.SAMLR2_ARTIFACT);
+        idpChannel.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_REDIRECT);
 
-        idpChannel.getActiveProfiles().add(Profile.SSO);
-        idpChannel.getActiveProfiles().add(Profile.SSO_SLO);
+        idpChannel.getActiveProfiles().add(ProfileDTO.SSO);
+        idpChannel.getActiveProfiles().add(ProfileDTO.SSO_SLO);
 
         sp.setDefaultChannel(idpChannel);
+
+        SamlR2ProviderConfigDTO spSamlConfig = new SamlR2ProviderConfigDTO();
+        spSamlConfig.setName(sp.getName() + " samlr2 config");
+        spSamlConfig.setSigner(iad.getCertificate());
+        spSamlConfig.setEncrypter(iad.getCertificate());
+        sp.setConfig(spSamlConfig);
     }
 
-    private Provider createBindingProvider(IdentityApplianceDefinition iad) {
-        BindingProvider bp = new BindingProvider();
+    private BindingProviderDTO createBindingProvider(IdentityApplianceDefinitionDTO iad, ServiceProviderDTO sp) {
+        BindingProviderDTO bp = new BindingProviderDTO();
         bp.setIdentityAppliance(iad);
-        bp.setName(iad.getName() + " bp");
-        BindingChannel bindingChannel = new BindingChannel();
+        bp.setName(iad.getName() + " " + createUrlSafeString(sp.getLocation().getHost()) + " " + sp.getDescription() + " bp");
+        BindingChannelDTO bindingChannel = new BindingChannelDTO();
         bindingChannel.setName(bp.getName() + " josso binding channel");
         bindingChannel.setTarget(bp);
 
-        //TODO set bp.location
-        Location bpLocation = new Location();
-        bpLocation.setProtocol(iad.getLocation().getProtocol());
-        bpLocation.setHost(iad.getLocation().getHost());
-        bpLocation.setPort(iad.getLocation().getPort());
-        bpLocation.setContext(iad.getLocation().getContext());
-        bpLocation.setUri("/" + createUrlSafeString(bp.getName()) + "/SAML2");//obrisi saml2
-        bindingChannel.setLocation(bpLocation);
+        LocationDTO bpLocation = new LocationDTO();
+        bpLocation.setProtocol(sp.getLocation().getProtocol());
+        bpLocation.setHost(sp.getLocation().getHost());
+        bpLocation.setPort(sp.getLocation().getPort());
+        bp.setLocation(bpLocation);
 
-        bindingChannel.getActiveBindings().add(Binding.SSO_ARTIFACT);
-        bindingChannel.getActiveBindings().add(Binding.SSO_REDIRECT);
-        bindingChannel.getActiveBindings().add(Binding.JOSSO_SOAP);
+        LocationDTO bcLocation = new LocationDTO();
+        bcLocation.setProtocol(iad.getLocation().getProtocol());
+        bcLocation.setHost(iad.getLocation().getHost());
+        bcLocation.setPort(iad.getLocation().getPort());
+        bcLocation.setContext(iad.getLocation().getContext());
+        bcLocation.setUri(createUrlSafeString(bp.getName()));
+        bindingChannel.setLocation(bcLocation);
 
-        bindingChannel.getActiveProfiles().add(Profile.SSO);
-        bindingChannel.getActiveProfiles().add(Profile.SSO_SLO);
+        bindingChannel.getActiveBindings().add(BindingDTO.SSO_ARTIFACT);
+        bindingChannel.getActiveBindings().add(BindingDTO.SSO_REDIRECT);
+        bindingChannel.getActiveBindings().add(BindingDTO.JOSSO_SOAP);
+
+        bindingChannel.getActiveProfiles().add(ProfileDTO.SSO);
+        bindingChannel.getActiveProfiles().add(ProfileDTO.SSO_SLO);
         bp.setBindingChannel(bindingChannel);
+
+        JossoBPConfigDTO config = new JossoBPConfigDTO();
+        config.setTargetPlatform(sp.getDescription());
+        config.setName(bp.getName() + " config");
+        config.setDescription(bp.getName() + " config description");
+        bp.setConfig(config);
 
         return bp;
     }
 
-    private Provider createIdentityProvider(IdentityApplianceDefinition iad) {
-        IdentityProvider idp = new IdentityProvider();
+    private ProviderDTO createIdentityProvider(IdentityApplianceDefinitionDTO iad) {
+        IdentityProviderDTO idp = new IdentityProviderDTO();
         idp.setName(iad.getName() + " idp");
         idp.setIdentityAppliance(iad);
 
-        //TODO set idp.location
-
-        ServiceProviderChannel spChannel = new ServiceProviderChannel();
+        ServiceProviderChannelDTO spChannel = new ServiceProviderChannelDTO();
         spChannel.setName(idp.getName() + " to sp default channel");
         spChannel.setTarget(idp);
 
-        spChannel.getActiveBindings().add(Binding.SAMLR2_ARTIFACT);
-        spChannel.getActiveBindings().add(Binding.SAMLR2_HTTP_REDIRECT);
-        spChannel.getActiveBindings().add(Binding.SAMLR2_HTTP_POST);
-        spChannel.getActiveBindings().add(Binding.SAMLR2_SOAP);
+        spChannel.getActiveBindings().add(BindingDTO.SAMLR2_ARTIFACT);
+        spChannel.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_REDIRECT);
+        spChannel.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_POST);
+        spChannel.getActiveBindings().add(BindingDTO.SAMLR2_SOAP);
 
-        spChannel.getActiveProfiles().add(Profile.SSO);
-        spChannel.getActiveProfiles().add(Profile.SSO_SLO);
+        spChannel.getActiveProfiles().add(ProfileDTO.SSO);
+        spChannel.getActiveProfiles().add(ProfileDTO.SSO_SLO);
 
-        Location idpLocation = new Location();
+        LocationDTO idpLocation = new LocationDTO();
         idpLocation.setProtocol(iad.getLocation().getProtocol());
         idpLocation.setHost(iad.getLocation().getHost());
         idpLocation.setPort(iad.getLocation().getPort());
         idpLocation.setContext(iad.getLocation().getContext());
         idpLocation.setUri(createUrlSafeString(idp.getName()));
+        idp.setLocation(idpLocation);
 
         spChannel.setLocation(idpLocation);
 
@@ -208,6 +515,12 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         spChannel.setIdentityVault(iad.getIdentityVaults().get(0));
 
         idp.setDefaultChannel(spChannel);
+
+        SamlR2ProviderConfigDTO idpSamlConfig = new SamlR2ProviderConfigDTO();
+        idpSamlConfig.setName(idp.getName() + " samlr2 config");
+        idpSamlConfig.setSigner(iad.getCertificate());
+        idpSamlConfig.setEncrypter(iad.getCertificate());
+        idp.setConfig(idpSamlConfig);
 
         return idp;
     }
@@ -219,6 +532,8 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
      */
     private String createUrlSafeString(String stringToCheck){
     	String regex = "[^a-zA-Z0-9-_]";
-        return stringToCheck.replaceAll(regex, "-");
-    }    
+        return stringToCheck.replaceAll(regex, "-").toLowerCase();
+    }
+
+
 }

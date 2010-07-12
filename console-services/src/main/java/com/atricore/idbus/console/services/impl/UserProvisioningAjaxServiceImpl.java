@@ -1,11 +1,33 @@
+/*
+ * Atricore IDBus
+ *
+ *   Copyright 2009, Atricore Inc.
+ *
+ *   This is free software; you can redistribute it and/or modify it
+ *   under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation; either version 2.1 of
+ *   the License, or (at your option) any later version.
+ *
+ *   This software is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ *   Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with this software; if not, write to the Free
+ *   Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
 package com.atricore.idbus.console.services.impl;
 
+import com.atricore.idbus.console.services.spi.request.*;
+import com.atricore.idbus.console.services.spi.response.*;
 import org.atricore.idbus.capabilities.management.main.exception.GroupNotFoundException;
 import org.atricore.idbus.capabilities.management.main.exception.ProvisioningBusinessException;
 import org.atricore.idbus.capabilities.management.main.spi.UserProvisioningService;
-import org.atricore.idbus.capabilities.management.main.spi.request.*;
-import org.atricore.idbus.capabilities.management.main.spi.response.*;
 import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
+import org.dozer.DozerBeanMapper;
 
 /**
  * Author: Dejan Maric
@@ -13,68 +35,125 @@ import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
 public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxService {
 
     UserProvisioningService provisioningService;
+    private DozerBeanMapper dozerMapper;
 
     public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws ProvisioningBusinessException {
-        return provisioningService.removeGroup(groupRequest);
+        org.atricore.idbus.capabilities.management.main.spi.request.RemoveGroupRequest beReq =
+                dozerMapper.map(groupRequest, org.atricore.idbus.capabilities.management.main.spi.request.RemoveGroupRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.RemoveGroupResponse beRes = provisioningService.removeGroup(beReq);
+        return dozerMapper.map(beRes, RemoveGroupResponse.class);
     }
 
     public AddGroupResponse addGroup(AddGroupRequest groupRequest) throws ProvisioningBusinessException {
-        return provisioningService.addGroup(groupRequest);
+        org.atricore.idbus.capabilities.management.main.spi.request.AddGroupRequest beReq =
+                dozerMapper.map(groupRequest, org.atricore.idbus.capabilities.management.main.spi.request.AddGroupRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.AddGroupResponse beRes = provisioningService.addGroup(beReq);
+        return dozerMapper.map(beRes, AddGroupResponse.class);
     }
 
     public FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest) throws GroupNotFoundException {
-        return provisioningService.findGroupById(groupRequest);
+        org.atricore.idbus.capabilities.management.main.spi.request.FindGroupByIdRequest beReq =
+                dozerMapper.map(groupRequest, org.atricore.idbus.capabilities.management.main.spi.request.FindGroupByIdRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.FindGroupByIdResponse beRes = provisioningService.findGroupById(beReq);
+        return dozerMapper.map(beRes, FindGroupByIdResponse.class);
     }
 
     public FindGroupByNameResponse findGroupByName(FindGroupByNameRequest groupRequest) throws GroupNotFoundException {
-        return provisioningService.findGroupByName(groupRequest);
+        org.atricore.idbus.capabilities.management.main.spi.request.FindGroupByNameRequest beReq =
+                dozerMapper.map(groupRequest, org.atricore.idbus.capabilities.management.main.spi.request.FindGroupByNameRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.FindGroupByNameResponse beRes = provisioningService.findGroupByName(beReq);
+        return dozerMapper.map(beRes, FindGroupByNameResponse.class);
     }
 
     public ListGroupResponse getGroups() throws ProvisioningBusinessException {
-        return provisioningService.getGroups();
+        return dozerMapper.map(provisioningService.getGroups(), ListGroupResponse.class);
     }
 
     public SearchGroupResponse searchGroups(SearchGroupRequest groupRequest) throws ProvisioningBusinessException {
-        return provisioningService.searchGroups(groupRequest);
+        org.atricore.idbus.capabilities.management.main.spi.request.SearchGroupRequest beReq =
+                dozerMapper.map(groupRequest, org.atricore.idbus.capabilities.management.main.spi.request.SearchGroupRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.SearchGroupResponse beRes = provisioningService.searchGroups(beReq);
+        return dozerMapper.map(beRes, SearchGroupResponse.class);
     }
 
     public UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest) throws ProvisioningBusinessException {
-        return provisioningService.updateGroup(groupRequest);
+        org.atricore.idbus.capabilities.management.main.spi.request.UpdateGroupRequest beReq =
+                dozerMapper.map(groupRequest, org.atricore.idbus.capabilities.management.main.spi.request.UpdateGroupRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.UpdateGroupResponse beRes = provisioningService.updateGroup(beReq);
+        return dozerMapper.map(beRes, UpdateGroupResponse.class);
     }
 
     public RemoveUserResponse removeUser(RemoveUserRequest userRequest) throws Exception {
-        return provisioningService.removeUser(userRequest);
+        org.atricore.idbus.capabilities.management.main.spi.request.RemoveUserRequest beReq =
+                dozerMapper.map(userRequest, org.atricore.idbus.capabilities.management.main.spi.request.RemoveUserRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.RemoveUserResponse beRes = provisioningService.removeUser(beReq);
+        return dozerMapper.map(beRes, RemoveUserResponse.class);
     }
 
     public AddUserResponse addUser(AddUserRequest userRequest) throws Exception {
-        return provisioningService.addUser(userRequest);
+        org.atricore.idbus.capabilities.management.main.spi.request.AddUserRequest beReq =
+                dozerMapper.map(userRequest, org.atricore.idbus.capabilities.management.main.spi.request.AddUserRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.AddUserResponse beRes = provisioningService.addUser(beReq);
+        return dozerMapper.map(beRes, AddUserResponse.class);
     }
 
     public FindUserByIdResponse findUserById(FindUserByIdRequest userRequest) throws Exception {
-        return provisioningService.findUserById(userRequest);
+        org.atricore.idbus.capabilities.management.main.spi.request.FindUserByIdRequest beReq =
+                dozerMapper.map(userRequest, org.atricore.idbus.capabilities.management.main.spi.request.FindUserByIdRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.FindUserByIdResponse beRes = provisioningService.findUserById(beReq);
+        return dozerMapper.map(beRes, FindUserByIdResponse.class);
     }
 
     public FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest) throws Exception {
-        return provisioningService.findUserByUsername(userRequest);
+        org.atricore.idbus.capabilities.management.main.spi.request.FindUserByUsernameRequest beReq =
+                dozerMapper.map(userRequest, org.atricore.idbus.capabilities.management.main.spi.request.FindUserByUsernameRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.FindUserByUsernameResponse beRes = provisioningService.findUserByUsername(beReq);
+        return dozerMapper.map(beRes, FindUserByUsernameResponse.class);
     }
 
     public ListUserResponse getUsers() throws Exception {
-        return provisioningService.getUsers();
+        return dozerMapper.map(provisioningService.getUsers(), ListUserResponse.class);
     }
 
     public SearchUserResponse searchUsers(SearchUserRequest userRequest) throws Exception {
-        return provisioningService.searchUsers(userRequest);
+        org.atricore.idbus.capabilities.management.main.spi.request.SearchUserRequest beReq =
+                dozerMapper.map(userRequest, org.atricore.idbus.capabilities.management.main.spi.request.SearchUserRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.SearchUserResponse beRes = provisioningService.searchUsers(beReq);
+        return dozerMapper.map(beRes, SearchUserResponse.class);
     }
 
     public UpdateUserResponse updateUser(UpdateUserRequest userRequest) throws Exception {
-        return provisioningService.updateUser(userRequest);
+        org.atricore.idbus.capabilities.management.main.spi.request.UpdateUserRequest beReq =
+                dozerMapper.map(userRequest, org.atricore.idbus.capabilities.management.main.spi.request.UpdateUserRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.UpdateUserResponse beRes = provisioningService.updateUser(beReq);
+        return dozerMapper.map(beRes, UpdateUserResponse.class);
     }
 
     public GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByGroupRequest) throws Exception {
-        return provisioningService.getUsersByGroup(usersByGroupRequest);
+        org.atricore.idbus.capabilities.management.main.spi.request.GetUsersByGroupRequest beReq =
+                dozerMapper.map(usersByGroupRequest, org.atricore.idbus.capabilities.management.main.spi.request.GetUsersByGroupRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.GetUsersByGroupResponse beRes = provisioningService.getUsersByGroup(beReq);
+        return dozerMapper.map(beRes, GetUsersByGroupResponse.class);
     }
 
     public void setProvisioningService(UserProvisioningService provisioningService) {
         this.provisioningService = provisioningService;
+    }
+
+    public void setDozerMapper(DozerBeanMapper dozerMapper) {
+        this.dozerMapper = dozerMapper;
     }
 }
