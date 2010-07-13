@@ -24,6 +24,7 @@ package com.atricore.idbus.console.main
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
 import com.atricore.idbus.console.main.controller.RegisterCommand;
 import com.atricore.idbus.console.main.controller.SetupServerCommand;
+import com.atricore.idbus.console.main.controller.UploadCommand;
 import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
@@ -61,6 +62,9 @@ public class ApplicationFacade extends Facade {
     public static const NOTE_DIAGRAM_ELEMENT_REMOVE:String = "Note.DiagramElementRemove";
     public static const NOTE_REMOVE_IDENTITY_APPLIANCE_ELEMENT:String = "Node.RemoveIdentityApplianceElement";
     public static const NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT:String = "Node.RemoveIdentityProviderElement";
+    public static const NOTE_MANAGE_CERTIFICATE:String = "Note.ManageCertificate";
+    public static const NOTE_SHOW_UPLOAD_PROGRESS:String = "Note.UploadProgress";
+    public static const NOTE_UPLOAD:String = "Note.Upload";
 
 
     public static function getInstance():ApplicationFacade {
@@ -82,6 +86,7 @@ public class ApplicationFacade extends Facade {
         registerCommand(NOTE_CREATE_IDENTITY_APPLIANCE, IdentityApplianceCreateCommand);
         registerCommand(NOTE_IDENTITY_PROVIDER_REMOVE, IdentityProviderRemoveCommand);
         registerCommand(NOTE_IDENTITY_APPLIANCE_LIST_LOAD, IdentityApplianceListLoadCommand);
+        registerCommand(NOTE_UPLOAD, UploadCommand);
     }
 
     public function startUp(app:AtricoreConsole):void {

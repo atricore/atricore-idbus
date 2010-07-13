@@ -30,11 +30,11 @@
         show="initResultArray()">
 
         <mx:Script>
-        <![CDATA[            
+        <![CDATA[
 
-            import com.atricore.idbus.console.services.dto.LocationDTO;
+			import com.atricore.idbus.console.services.dto.LocationDTO;
             import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
-
+            
             [Bindable]
             private var validators:Array;
 
@@ -76,7 +76,8 @@
                     //                    validators.push(urlValidator);
                     validators.push(portValidator);
                     validators.push(domainValidator);
-                    validators.push(pathValidator)
+                    validators.push(contextPathValidator);
+                    //validators.push(pathValidator);
                 }
             }
 
@@ -92,9 +93,12 @@
                 var loc:LocationDTO = new LocationDTO();
                 loc.protocol = spLocationProtocol.selectedLabel;
                 loc.host = spLocationDomain.text;
-                loc.port = spLocationPort.text as int;
-                loc.context = spLocationPath.text;
+                loc.port = parseInt(spLocationPort.text);
+                loc.context = spLocationContext.text;
+                //loc.uri = spLocationPath.text;
                 sp.location = loc;
+                // temporary save application platform in description field
+                sp.description = jossoSPPlatform.selectedItem.@data;
                 serviceProviderArray.push(sp);
             }
 
@@ -124,8 +128,10 @@
                 spLocationDomain.text = "";
                 spLocationDomain.errorString = "";//prevents validation error from occurring
                 spLocationPort.text = "";
-                spLocationPath.text = "";
-                spLocationPath.errorString = "";
+                spLocationContext.text = "";
+                spLocationContext.errorString = "";
+                //spLocationPath.text = "";
+                //spLocationPath.errorString = "";
                 spLocationLbl.text = "";
                 spLocationProtocol.selectedIndex = 0;
             }
@@ -138,10 +144,11 @@
 
             private function composeLocation():String {
                 var port:String = ( spLocationPort.text == "" ? "" : ":" + spLocationPort.text );
-                return spLocationProtocol.selectedLabel + '://' + spLocationDomain.text + port + '/' + spLocationPath.text;
+                return spLocationProtocol.selectedLabel + '://' + spLocationDomain.text + port + '/' +
+                        spLocationContext.text;
             }
         ]]>
-    </mx:Script>    
+    </mx:Script>
 
     <mx:StringValidator id="nameValidator" source="{jossoSPName}" required="true" property="text"/>
     <!--<mx:StringValidator id="domainValidator" source="{spLocationDomain}" required="true" property="text"/>-->
@@ -149,9 +156,10 @@
         minValue="1" maxValue="65535"
         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.portValidationError')}"/>
     <utils:URLPartValidator id="domainValidator" source="{spLocationDomain}" required="true" property="text" />
-    <utils:URLPartValidator id="pathValidator" source="{spLocationPath}" required="false" property="text" />
+    <utils:URLPartValidator id="contextPathValidator" source="{spLocationContext}" required="false" property="text" />
+    <!--utils:URLMultipartValidator id="pathValidator" source="{spLocationPath}" required="false" property="text" /-->
 
-    <mx:XML id="platforms" source="/com/atricore/idbus/console/modeling/view/platformList.xml" />            
+    <mx:XML id="platforms" source="/com/atricore/idbus/console/modeling/view/platformList.xml" />
     <mx:XMLListCollection id="platformList" source="{platforms.children()}" />
 
     <mx:Fade id="fadeFx" alphaFrom="1" alphaTo="0" duration="2000" startDelay="5000"/>
@@ -194,7 +202,9 @@
                     <mx:Label text=":" width="1" paddingLeft="-5"/>
                     <mx:TextInput id="spLocationPort" width="40" change="changeSPLocationLabel(event);" />
                     <mx:Label text="/" width="2" paddingLeft="-5"/>
-                    <mx:TextInput id="spLocationPath" width="100" change="changeSPLocationLabel(event);" />
+                    <mx:TextInput id="spLocationContext" width="70" change="changeSPLocationLabel(event);" />
+                    <!--mx:Label text="/" width="2" paddingLeft="-5"/>
+                    <mx:TextInput id="spLocationPath" width="100" change="changeSPLocationLabel(event);" /-->
                 </mx:FormItem>
 
                 <mx:Label id="spLocationLbl" paddingLeft="130" fontWeight="bold" />

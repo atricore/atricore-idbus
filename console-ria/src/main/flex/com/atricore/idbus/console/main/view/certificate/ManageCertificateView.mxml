@@ -1,0 +1,90 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:utils="com.atricore.idbus.console.components.*"
+         defaultButton="{btnConfirm}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
+
+    <mx:Script><![CDATA[
+        private static var INPUT_WIDTH:Number = 145;
+    ]]></mx:Script>
+    
+    <mx:StringValidator id="certificateAliasValidator" source="{certificateAlias}" required="true" property="text"/>
+    <mx:StringValidator id="keyAliasValidator" source="{keyAlias}" required="true" property="text"/>
+    <mx:StringValidator id="keystorePasswordValidator" source="{keystorePassword}" required="true" property="text"/>
+    <mx:StringValidator id="keyPasswordValidator" source="{keyPassword}" required="true" property="text"/>
+
+    <mx:VBox>
+
+        <utils:GroupBox width="100%" height="100%" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.currentCertificate')}">
+            <mx:TextArea id="currentCertificate" width="370" height="120" />
+        </utils:GroupBox>
+
+        <mx:TabNavigator borderStyle="solid" width="100%" height="100%">
+            <!-- UPLOAD KEY PAIR TAB -->
+            <mx:VBox width="100%" height="100%" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.uploadKeyPair')}">
+                <mx:HBox width="100%" height="100%">
+                    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateKeyPair')}:">
+                        <mx:ComboBox id="certificateKeyPair" width="{INPUT_WIDTH}" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.browseKeyPair')}"/>
+                    </mx:FormItem>
+
+                    <mx:Button id="btnUpload" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload')}" enabled="false"/>
+                </mx:HBox>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystoreFormat')}:">
+                    <mx:ComboBox id="keystoreFormat" width="{INPUT_WIDTH}">
+                        <mx:ArrayCollection>
+                             <mx:Object label="Java Keystore" data="JKS"/>
+                         </mx:ArrayCollection>
+                    </mx:ComboBox>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateAlias')}:" required="true">
+                    <mx:TextInput id="certificateAlias" width="{INPUT_WIDTH}"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keyAlias')}:" required="true">
+                    <mx:TextInput id="keyAlias" width="{INPUT_WIDTH}"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystorePassword')}:" required="true">
+                    <mx:TextInput id="keystorePassword" width="{INPUT_WIDTH}"/>
+                </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keyPassword')}:" required="true">
+                    <mx:TextInput id="keyPassword" width="{INPUT_WIDTH}"/>
+                </mx:FormItem>
+                <mx:Spacer height="5" />
+            </mx:VBox>
+
+            <!-- CREATE KEY PAIR TAB -->
+            <mx:VBox width="100%" height="100%" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.createKeyPair')}">
+                <!-- TODO -->
+            </mx:VBox>
+        </mx:TabNavigator>
+
+        <mx:ControlBar horizontalAlign="right" width="100%">
+            <mx:Button id="btnCancel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
+            <mx:Button id="btnConfirm" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.confirm')}"/>
+        </mx:ControlBar>
+
+    </mx:VBox>
+
+</mx:Form>

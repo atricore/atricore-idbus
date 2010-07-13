@@ -74,5 +74,11 @@
         </property>
         <property name="dozerMapper" ref="dozerMapper" />
     </bean>
-    
+
+    <bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">
+        <property name="idApplianceManagementService">
+            <ref local="idApplianceManagementService"/>
+        </property>
+    </bean>
+
 </beans>

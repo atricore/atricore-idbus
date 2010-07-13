@@ -21,12 +21,19 @@
 
 package com.atricore.idbus.console.modeling.main.view.sso
 {
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+
+import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
+
+import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+
+import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 import mx.utils.ObjectProxy;
 
 import com.atricore.idbus.console.components.wizard.WizardEvent;
 import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.controller.SetupServerCommand;
 import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOSetupCommand;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
@@ -38,6 +45,8 @@ public class SimpleSSOWizardViewMediator extends Mediator
 
     private var _wizardDataModel:ObjectProxy = new ObjectProxy();
 
+    private var _newIdentityAppliance:IdentityApplianceDTO;
+
     public function SimpleSSOWizardViewMediator(viewComp:SimpleSSOWizardView) {
         super(NAME, viewComp);
 
@@ -47,64 +56,59 @@ public class SimpleSSOWizardViewMediator extends Mediator
     }
 
     override public function listNotificationInterests():Array {
-        return [CreateSimpleSSOSetupCommand.FAILURE, CreateSimpleSSOSetupCommand.SUCCESS];
+        return [RUN, CreateSimpleSSOSetupCommand.FAILURE, CreateSimpleSSOSetupCommand.SUCCESS];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case SetupServerCommand.SUCCESS :
-                handleServerSetupSuccess();
+            case RUN:
+                _newIdentityAppliance = notification.getBody() as IdentityApplianceDTO;
                 break;
-            case SetupServerCommand.FAILURE :
-                handleServerSetupFailure();
+            case CreateSimpleSSOSetupCommand.SUCCESS :
+                //handleSSOSetupSuccess();
+                break;
+            case CreateSimpleSSOSetupCommand.FAILURE :
+                handleSSOSetupFailure();
                 break;
         }
     }
 
     private function onSimpleSSOWizardComplete(event:WizardEvent):void {
-
-        /*
-        var idApplianceDef:IdentityApplianceDefinition = new IdentityApplianceDefinition();
-        idApplianceDef.name = applianceName.text;
-        idApplianceDef.description = applianceDescription.text;
-        var location:Location = new Location();
-        location.protocol = applianceLocationProtocol.selectedItem.data;
-        location.host = applianceLocationDomain.text;
-        location.port = applianceLocationPort.text as int;
-        location.context = applianceLocationPath.text;
-        idApplianceDef.location = location;
-        */
-        
-        /*
+        var identityApplianceDefinition:IdentityApplianceDefinitionDTO = _newIdentityAppliance.idApplianceDefinition;
         identityApplianceDefinition.identityVaults = new ArrayCollection();
         identityApplianceDefinition.identityVaults.addItem(createIdentityVault());
 
         identityApplianceDefinition.providers = new ArrayCollection();
-        for (var i:int = 0; i < simpleSsoWizardDataModel.step3Data.length; i++) {
-            var sp:ServiceProvider = simpleSsoWizardDataModel.step3Data[i] as ServiceProvider;
+        for (var i:int = 0; i < _wizardDataModel.step3Data.length; i++) {
+            var sp:ServiceProviderDTO = _wizardDataModel.step3Data[i] as ServiceProviderDTO;
             identityApplianceDefinition.providers.addItem(sp);
         }
-        */
 
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
-
-
-        sendNotification(ApplicationFacade.NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE);
-
+        
+        sendNotification(ApplicationFacade.NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, _newIdentityAppliance);
     }
 
     private function onSimpleSSOWizardCancelled(event:WizardEvent):void {
 
     }
 
-    public function handleServerSetupSuccess():void {
-        sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
-                "The server has been setup successfully.");
+    private function createIdentityVault():IdentityVaultDTO {
+        if ((_wizardDataModel.step1Data as IdentityVaultDTO).embedded) {
+            return _wizardDataModel.step2EmbeddedData as IdentityVaultDTO;
+        } else {
+            return _wizardDataModel.step2ExternalData as IdentityVaultDTO;
+        }
     }
 
-    public function handleServerSetupFailure():void {
+    public function handleSSOSetupSuccess():void {
+        sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
+                "The SSO appliance has been successfully created.");
+    }
+
+    public function handleSSOSetupFailure():void {
         sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
-                "There was an error initializing the server");
+                "There was an error creating simple SSO appliance");
     }
 
     protected function get view():SimpleSSOWizardView

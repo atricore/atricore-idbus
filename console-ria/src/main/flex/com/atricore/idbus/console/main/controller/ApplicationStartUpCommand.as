@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.main.controller
 {
+import com.atricore.idbus.console.main.model.KeystoreProxy;
 import com.atricore.idbus.console.services.spi.request.FindGroupByNameRequest;
 
 import mx.managers.BrowserManager;
@@ -60,7 +61,7 @@ public class ApplicationStartUpCommand extends SimpleCommand implements IRespond
       facade.registerProxy(registry);
       facade.registerProxy(new ProfileProxy());
       facade.registerProxy(new ProjectProxy());
-
+      facade.registerProxy(new KeystoreProxy());
    }
 
    protected function createServiceRegistry():ServiceRegistry {

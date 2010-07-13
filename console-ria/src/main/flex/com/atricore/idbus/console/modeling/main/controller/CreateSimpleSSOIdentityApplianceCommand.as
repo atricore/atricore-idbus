@@ -44,10 +44,10 @@ public class CreateSimpleSSOIdentityApplianceCommand extends SimpleCommand imple
     }
 
     override public function execute(notification:INotification):void {
-        var identityApplianceDefinition:IdentityApplianceDTO = notification.getBody() as IdentityApplianceDTO;
+        var identityAppliance:IdentityApplianceDTO = notification.getBody() as IdentityApplianceDTO;
 
         var req:CreateSimpleSsoRequest = new CreateSimpleSsoRequest();
-///        req.identityApplianceDefinition = identityApplianceDefinition;
+        req.identityApplianceDefinition = identityAppliance.idApplianceDefinition;
 
         var registry:ServiceRegistry = facade.retrieveProxy(ServiceRegistry.NAME) as ServiceRegistry;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);

@@ -192,7 +192,7 @@ public class ConsolePopUpManager {
         if (!_identityProviderCreateForm) {
            createIdentityProviderCreateForm();
         }
-        _popup.title = "Creat Identity Provider";
+        _popup.title = "Create Identity Provider";
         _popup.width = 450;
         _popup.height = 410;
         _popup.x = (_application.width / 2) - 225;
@@ -217,7 +217,7 @@ public class ConsolePopUpManager {
             _popup.removeAllChildren();
         }
         else {
-            PopUpManager.addPopUp(_popup, _application);
+            PopUpManager.addPopUp(_popup, _application, true);
             _popupVisible = true;
             _wizardOpenEffect.end();
             _wizardOpenEffect.play();
@@ -236,7 +236,7 @@ public class ConsolePopUpManager {
         _wizard.showCloseButton = true;
         _wizard.addEventListener(CloseEvent.CLOSE, handleHideWizard);
 
-        PopUpManager.addPopUp(_wizard, _application);
+        PopUpManager.addPopUp(_wizard, _application, true);
         _wizardOpenEffect.end();
         _wizardOpenEffect.play();
 

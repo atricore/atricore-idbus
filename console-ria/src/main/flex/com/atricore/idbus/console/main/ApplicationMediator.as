@@ -92,15 +92,14 @@ public class ApplicationMediator extends Mediator {
             case SetupServerCommand.FAILURE:
                 break;
             case ApplicationFacade.NOTE_SHOW_ERROR_MSG :
-               app.messageBox.showFailureMessage(notification.getBody() as String);
-               break;
+                app.messageBox.showFailureMessage(notification.getBody() as String);
+                break;
             case ApplicationFacade.NOTE_SHOW_SUCCESS_MSG :
-               app.messageBox.showSuccessMessage(notification.getBody() as String);
-               break;
+                app.messageBox.showSuccessMessage(notification.getBody() as String);
+                break;
             case ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER:
-               app.modelerView.setVisible(true);
-               break;
-
+                app.modelerView.setVisible(true);
+                break;
         }
     }
 

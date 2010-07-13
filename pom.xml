@@ -61,6 +61,7 @@
         <blazeds.version>3.0</blazeds.version>
         <commons-vfs.version>1.0_1</commons-vfs.version>
         <commons-lang.version>2.4</commons-lang.version>
+        <commons-fileupload.version>1.2.1</commons-fileupload.version>
         <datanucleus.version>2.0.3</datanucleus.version>
         <dozer.version>5.2.2</dozer.version>
         <felix.plugin.version>2.0.1</felix.plugin.version>
@@ -543,7 +544,14 @@
                 <groupId>net.sf.dozer</groupId>
                 <artifactId>dozer</artifactId>
                 <version>${dozer.version}</version>
-            </dependency>   
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
+                <version>${commons-fileupload.version}</version>
+            </dependency>
+            
             <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>

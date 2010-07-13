@@ -1,8 +1,8 @@
 <?xml version="1.0" ?>
 <!--
-  ~ Atricore IDBus
+  ~ Atricore Console
   ~
-  ~ Copyright 2009, Atricore Inc.
+  ~ Copyright 2009-2010, Atricore Inc.
   ~
   ~ This is free software; you can redistribute it and/or modify it
   ~ under the terms of the GNU Lesser General Public License as
@@ -19,11 +19,10 @@
   ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
-<platforms>
-    <platform label="JBoss 3.2" data="jb32" />
-    <platform label="JBoss 4.0" data="jb40" />
-    <platform label="JBoss 4.2" data="jb42" />
-    <platform label="Tomcat 5.0" data="tc50" />
-    <platform label="Tomcat 5.5" data="tc55" />
-    <platform label="Tomcat 6.0" data="tc60" />
-</platforms>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         left="10" top="10" right="10" bottom="10" horizontalAlign="center" verticalAlign="top">
+    <mx:Label text="Filename" id="txtFile" enabled="true" width="100%"/>
+    <mx:ProgressBar width="100%" id="progBar" mode="manual" minimum="0" maximum="100" labelPlacement="center"/>
+    <mx:Button label="Cancel" id="btnCancel"/>
+    <mx:Button label="Finish" id="btnFinish" visible="false"/>
+</mx:VBox>

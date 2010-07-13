@@ -92,7 +92,9 @@ public class ModelerMediator extends Mediator {
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE,
             ApplicationFacade.NOTE_CREATE_IDENTITY_PROVIDER_ELEMENT,
-            ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT];
+            ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.NOTE_MANAGE_CERTIFICATE,
+            ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -108,6 +110,12 @@ public class ModelerMediator extends Mediator {
                 var rip:RemoveIdentityProviderElementRequest  = RemoveIdentityProviderElementRequest(notification.getBody());
                 // TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.NOTE_IDENTITY_PROVIDER_REMOVE, rip.identityProvider);
+                break;
+            case ApplicationFacade.NOTE_MANAGE_CERTIFICATE:
+                _modelerPopUpManager.showManageCertificateWindow(notification);
+                break;
+            case ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS:
+                _modelerPopUpManager.showUploadProgressWindow(notification);
                 break;
         }
 

@@ -21,6 +21,8 @@
 
 package com.atricore.idbus.console.modeling.main.view.appliance {
 
+import com.atricore.idbus.console.main.model.KeystoreProxy;
+import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
@@ -45,13 +47,16 @@ public class IdentityApplianceMediator extends FormMediator
     public static const EDIT:String = "IdentityApplianceMediator.EDIT";
 
     private var _proxy:ProjectProxy;
+    private var _keystoreProxy:KeystoreProxy;
     private var _newIdentityAppliance:IdentityApplianceDTO;
 
     public function IdentityApplianceMediator(viewComp:IdentityApplianceForm) {
         super(NAME, viewComp);
         _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
+        _keystoreProxy = KeystoreProxy(facade.retrieveProxy(KeystoreProxy.NAME));
         viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         viewComp.btnSave.addEventListener(MouseEvent.CLICK, handleIdentityApplianceSave);
+        viewComp.btnConfigureCertificate.addEventListener(MouseEvent.CLICK, handleCertificate);
     }
 
     override public function registerValidators():void {
@@ -109,9 +114,10 @@ public class IdentityApplianceMediator extends FormMediator
         var location:LocationDTO = new LocationDTO();
         location.protocol = view.applianceLocationProtocol.selectedItem.data;
         location.host = view.applianceLocationDomain.text;
-        location.port = view.applianceLocationPort.text as int;
+        location.port = parseInt(view.applianceLocationPort.text);
         location.context = view.applianceLocationPath.text;
         idApplianceDef.location = location;
+        idApplianceDef.certificate = _keystoreProxy.currentKeystore;
 
         _newIdentityAppliance = new IdentityApplianceDTO();
         _newIdentityAppliance.idApplianceDefinition = idApplianceDef;
@@ -122,10 +128,15 @@ public class IdentityApplianceMediator extends FormMediator
         if (validate(true)) {
             bindModel();
             if (_proxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
-                sendNotification(ApplicationFacade.NOTE_CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
+                if (view.applianceStyleCombo.selectedItem.data == "SimpleSSO") {
+                    sendNotification(SimpleSSOWizardViewMediator.RUN, _newIdentityAppliance);
+                }
+                else {
+                    sendNotification(ApplicationFacade.NOTE_CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
 
-                _proxy.currentIdentityApplianceElement = _newIdentityAppliance;
-                sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
+                    _proxy.currentIdentityApplianceElement = _newIdentityAppliance;
+                    sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
+                }
             }
             else {
                 sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
@@ -139,6 +150,10 @@ public class IdentityApplianceMediator extends FormMediator
 
     private function handleCancel(event:MouseEvent):void {
         closeWindow();
+    }
+
+    private function handleCertificate(event:MouseEvent):void {
+        sendNotification(ApplicationFacade.NOTE_MANAGE_CERTIFICATE);
     }
 
     private function closeWindow():void {

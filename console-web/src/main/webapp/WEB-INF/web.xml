@@ -65,6 +65,16 @@
         <url-pattern>/messagebroker/*</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>uploadHandler</servlet-name>
+        <servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>uploadHandler</servlet-name>
+        <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+    
     <listener>
         <listener-class>flex.messaging.HttpFlexSession</listener-class>
     </listener>

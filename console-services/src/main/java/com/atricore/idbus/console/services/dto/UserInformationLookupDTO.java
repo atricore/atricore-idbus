@@ -35,6 +35,7 @@ public class UserInformationLookupDTO implements Serializable {
     private String rolesQueryString;
     private String credentialsQueryString;
     private String userPropertiesQueryString;
+    private String resetCredentialDml;
 
     public long getId() {
         return id;
@@ -82,6 +83,14 @@ public class UserInformationLookupDTO implements Serializable {
 
     public void setUserPropertiesQueryString(String userPropertiesQueryString) {
         this.userPropertiesQueryString = userPropertiesQueryString;
+    }
+
+    public String getResetCredentialDml() {
+        return resetCredentialDml;
+    }
+
+    public void setResetCredentialDml(String resetCredentialDml) {
+        this.resetCredentialDml = resetCredentialDml;
     }
 
     @Override

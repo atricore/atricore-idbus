@@ -188,6 +188,7 @@
                             WEB-INF/lib/blazeds-core-3.0.jar,
                             WEB-INF/lib/blazeds-remoting-3.0.jar,
                             <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.main-1.0.0-SNAPSHOT.jar,-->
+                            WEB-INF/lib/dozer-5.2.2.jar,
                             WEB-INF/lib/console-services-1.0.0-SNAPSHOT.jar,
                             <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.support.springmetadata-1.0.0-SNAPSHOT.jar-->
                             <!--WEB-INF/lib/org.atricore.idbus.bundles.datanucleus-core-v2_0_3-1.0.0-SNAPSHOT.jar,-->
@@ -199,6 +200,11 @@
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
                             org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
+                            org.apache.commons.lang,
+                            org.apache.commons.beanutils,
+                            org.apache.commons.beanutils.converters,
+                            org.apache.xmlbeans,
+                            javax.xml.datatype,
                             <!--javax.jdo; version="[2.3.0,2.3.0]",-->
                             <!--javax.jdo.annotations; version="[2.3.0,2.3.0]",-->
                             <!--javax.jdo.datastore; version="[2.3.0,2.3.0]",-->
@@ -252,6 +258,7 @@
                             org.xml.sax,
                             org.xml.sax.helpers,
                             org.w3c.dom,
+                            org.apache.commons.fileupload,
                             *
                         </Import-Package>
                         <Webapp-Context>atricore-console</Webapp-Context>
@@ -338,6 +345,11 @@
         </dependency>
 
         <dependency>
+            <groupId>net.sf.dozer</groupId>
+            <artifactId>dozer</artifactId>
+        </dependency>
+        
+        <dependency>
             <groupId>com.adobe.flex.framework</groupId>
             <artifactId>flex-framework</artifactId>
             <type>pom</type>
@@ -368,11 +380,35 @@
         </dependency>
 
         <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+            
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
     </dependencies>
 
     <profiles>

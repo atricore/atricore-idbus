@@ -22,6 +22,12 @@
 package com.atricore.idbus.console.modeling.main.view {
 import com.adobe.components.SizeableTitleWindow;
 
+import com.atricore.idbus.console.main.view.certificate.ManageCertificateMediator;
+import com.atricore.idbus.console.main.view.certificate.ManageCertificateView;
+
+import com.atricore.idbus.console.main.view.upload.UploadProgress;
+import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
+
 import flash.events.Event;
 
 import mx.core.UIComponent;
@@ -65,6 +71,8 @@ public class ModelerPopUpManager {
     private var _secureContext:SecureContextProxy;
     private var _identityApplianceForm:IdentityApplianceForm;
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
+    private var _manageCertificateForm:ManageCertificateView;
+    private var _uploadProgress:UploadProgress;
 
     public function ModelerPopUpManager(facade:IFacade, modeler:ModelerView) {
         _facade = facade;
@@ -212,13 +220,60 @@ public class ModelerPopUpManager {
         mediator.handleNotification(_lastWindowNotification);
     }
 
+    public function showManageCertificateWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_manageCertificateForm) {
+           createManageCertificateForm();
+        }
+        _popup.title = "Manage Certificate";
+        _popup.width = 400;
+        _popup.height = 480;
+        _popup.x = (_modeler.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_manageCertificateForm);
+    }
 
+    private function createManageCertificateForm():void {
+        _manageCertificateForm = new ManageCertificateView();
+        _manageCertificateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleManageCertificateFormCreated);
+    }
+
+    private function handleManageCertificateFormCreated(event:FlexEvent):void {
+        var mediator:ManageCertificateMediator = new ManageCertificateMediator(_manageCertificateForm);
+        _facade.registerMediator(mediator);
+        mediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showUploadProgressWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_uploadProgress) {
+           createUploadProgressWindow();
+        }
+        _popup.title = "File upload";
+        _popup.width = 400;
+        _popup.height = 170;
+        _popup.x = (_modeler.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_uploadProgress);
+    }
+
+    private function createUploadProgressWindow():void {
+        _uploadProgress = new UploadProgress();
+        _uploadProgress.addEventListener(FlexEvent.CREATION_COMPLETE, handleUploadProgressWindowCreated);
+    }
+
+    private function handleUploadProgressWindowCreated(event:FlexEvent):void {
+        var mediator:UploadProgressMediator = new UploadProgressMediator(_uploadProgress);
+        _facade.registerMediator(mediator);
+        mediator.handleNotification(_lastWindowNotification);
+    }
+    
     private function showPopup(child:UIComponent):void {
         if (_popupVisible) {
             _popup.removeAllChildren();
         }
         else {
-            PopUpManager.addPopUp(_popup, _modeler);
+            PopUpManager.addPopUp(_popup, _modeler, true);
             _popupVisible = true;
             _popUpOpenEffect.end();
             _popUpOpenEffect.play();
@@ -237,7 +292,7 @@ public class ModelerPopUpManager {
         _wizard.showCloseButton = true;
         _wizard.addEventListener(CloseEvent.CLOSE, handleHideWizard);
 
-        PopUpManager.addPopUp(_wizard, _modeler);
+        PopUpManager.addPopUp(_wizard, _modeler, true);
         _wizardOpenEffect.end();
         _wizardOpenEffect.play();
 

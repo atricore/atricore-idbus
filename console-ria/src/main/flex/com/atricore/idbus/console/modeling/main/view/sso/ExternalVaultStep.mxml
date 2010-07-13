@@ -58,6 +58,7 @@
                     userLookup.rolesQueryString = rolesQuery.text;
                     userLookup.credentialsQueryString = credentialsQuery.text;
                     userLookup.userPropertiesQueryString = propertiesQuery.text;
+                    userLookup.resetCredentialDml = credentialsUpdate.text;
 
                     identityVault.userInformationLookup = userLookup;
                 }
