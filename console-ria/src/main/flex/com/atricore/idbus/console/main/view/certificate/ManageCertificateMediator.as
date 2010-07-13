@@ -159,7 +159,7 @@ public class ManageCertificateMediator extends FormMediator
     private function handleUpload(event:MouseEvent):void {
         //_fileRef.load();  //this is available from flash player 10 and maybe flex sdk 3.4
         //_fileRef.data;
-        sendNotification(ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS, _fileRef);
+        //sendNotification(ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS, _fileRef);
         sendNotification(ApplicationFacade.NOTE_UPLOAD, _fileRef);
     }
 

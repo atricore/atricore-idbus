@@ -21,7 +21,10 @@
 
 package com.atricore.idbus.console.modeling.main.controller
 {
+import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+
+import com.atricore.idbus.console.services.spi.response.CreateSimpleSsoResponse;
 
 import mx.rpc.Fault;
 import mx.rpc.IResponder;
@@ -64,6 +67,9 @@ public class CreateSimpleSSOIdentityApplianceCommand extends SimpleCommand imple
     }
 
     public function result(data:Object):void {
+        var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
+        var resp:CreateSimpleSsoResponse = data.result as CreateSimpleSsoResponse;
+        proxy.currentIdentityAppliance = resp.appliance;
         sendNotification(SUCCESS);
     }
 }

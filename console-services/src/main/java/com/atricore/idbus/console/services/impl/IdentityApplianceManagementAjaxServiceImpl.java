@@ -222,9 +222,12 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
         IdentityAppliance foundAppliance = prepareApplianceForUpdate(idAppliance);
         foundAppliance.getIdApplianceDefinition().getCertificate().setStore(beLookupStoreRes.getResource());
-        this.updateAppliance(foundAppliance);
+        UpdateIdentityApplianceResponse updateResponse = this.updateAppliance(foundAppliance);
+        idAppliance = updateResponse.getAppliance();
 
-        return new CreateSimpleSsoResponse();
+        CreateSimpleSsoResponse response = new CreateSimpleSsoResponse();
+        response.setAppliance(idAppliance);
+        return response;
     }
 
     public AddIdentityApplianceResponse addIdentityAppliance(AddIdentityApplianceRequest req) throws IdentityServerException {

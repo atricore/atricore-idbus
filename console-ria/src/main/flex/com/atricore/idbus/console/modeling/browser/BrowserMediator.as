@@ -75,6 +75,9 @@ public class BrowserMediator extends Mediator {
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE:
+                updateIdentityAppliance();
+                bindApplianceBrowser();
+                break;
             case ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED:
                 // TODO: Dispatch change event to renderer so that it can update item's labels & icons without
                 // TODO: recreating the tree view. 
