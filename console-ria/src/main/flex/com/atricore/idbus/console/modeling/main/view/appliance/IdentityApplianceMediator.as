@@ -21,23 +21,21 @@
 
 package com.atricore.idbus.console.modeling.main.view.appliance {
 
+import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.KeystoreProxy;
-import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
+import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.view.form.FormMediator;
+import com.atricore.idbus.console.main.view.form.FormUtility;
+import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
-
 import com.atricore.idbus.console.services.dto.LocationDTO;
 
 import flash.events.MouseEvent;
 
 import mx.events.CloseEvent;
 
-import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
-import com.atricore.idbus.console.main.view.form.FormUtility;
-import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
 import org.puremvc.as3.interfaces.INotification;
 
 public class IdentityApplianceMediator extends FormMediator
@@ -56,7 +54,6 @@ public class IdentityApplianceMediator extends FormMediator
         _keystoreProxy = KeystoreProxy(facade.retrieveProxy(KeystoreProxy.NAME));
         viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         viewComp.btnSave.addEventListener(MouseEvent.CLICK, handleIdentityApplianceSave);
-        viewComp.btnConfigureCertificate.addEventListener(MouseEvent.CLICK, handleCertificate);
     }
 
     override public function registerValidators():void {
@@ -86,6 +83,7 @@ public class IdentityApplianceMediator extends FormMediator
                 view.focusManager.setFocus(view.applianceName);
                 break;
             case IdentityApplianceCreateCommand.SUCCESS:
+                sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
                 break;
@@ -128,20 +126,16 @@ public class IdentityApplianceMediator extends FormMediator
         if (validate(true)) {
             bindModel();
             if (_proxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
-                if (view.applianceStyleCombo.selectedItem.data == "SimpleSSO") {
-                    sendNotification(SimpleSSOWizardViewMediator.RUN, _newIdentityAppliance);
-                }
-                else {
-                    sendNotification(ApplicationFacade.NOTE_CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
+                sendNotification(ApplicationFacade.NOTE_CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
 
-                    _proxy.currentIdentityApplianceElement = _newIdentityAppliance;
-                    sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
-                }
+                _proxy.currentIdentityApplianceElement = _newIdentityAppliance;
+                sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
             }
             else {
                 sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
             }
             closeWindow();
+            sendNotification(ProcessingMediator.START);
         }
         else {
             event.stopImmediatePropagation();
@@ -150,10 +144,6 @@ public class IdentityApplianceMediator extends FormMediator
 
     private function handleCancel(event:MouseEvent):void {
         closeWindow();
-    }
-
-    private function handleCertificate(event:MouseEvent):void {
-        sendNotification(ApplicationFacade.NOTE_MANAGE_CERTIFICATE);
     }
 
     private function closeWindow():void {
