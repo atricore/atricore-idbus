@@ -20,9 +20,13 @@
  */
 
 package com.atricore.idbus.console.modeling.propertysheet {
+import com.atricore.idbus.console.services.dto.BindingDTO;
+import com.atricore.idbus.console.services.dto.ChannelDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
+
+import com.atricore.idbus.console.services.dto.ProfileDTO;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -145,12 +149,51 @@ public class PropertySheetMediator extends Mediator {
      }
 
      private function handleIdentityProviderCorePropertyTabCreationComplete(event:Event):void {
-         var identityProvider:IdentityProviderDTO;
+        var identityProvider:IdentityProviderDTO;
 
-         identityProvider = _currentIdentityApplianceElement as IdentityProviderDTO;
+        identityProvider = _currentIdentityApplianceElement as IdentityProviderDTO;
 
          // bind view
-         _ipCoreSection.identityProviderName.text = identityProvider.name;
+        _ipCoreSection.identityProviderName.text = identityProvider.name;
+        _ipCoreSection.identityProvDescription.text = identityProvider.description;
+         //TODO
+//         _ipCoreSection.idpLocationProtocol.selectedIndex = ...
+        for(var i:int = 0; i < _ipCoreSection.idpLocationProtocol.dataProvider.length; i++){
+            if(identityProvider.location != null && _ipCoreSection.idpLocationProtocol.dataProvider[i].label == identityProvider.location.protocol){
+                _ipCoreSection.idpLocationProtocol.selectedIndex = i;
+                break;
+            }
+        }
+        _ipCoreSection.idpLocationDomain.text = identityProvider.location.host;
+        _ipCoreSection.idpLocationPort.text = identityProvider.location.port.toString();
+        _ipCoreSection.idpLocationContext.text = identityProvider.location.context;
+        _ipCoreSection.idpLocationPath.text = identityProvider.location.uri;
+        _ipCoreSection.signAuthAssertionCheck.selected = identityProvider.signAuthenticationAssertions;
+        _ipCoreSection.encryptAuthAssertionCheck.selected = identityProvider.encryptAuthenticationAssertions;
+        var defaultChannel:ChannelDTO = identityProvider.defaultChannel;
+        if(defaultChannel != null){
+            for(var j:int = 0; j < defaultChannel.activeBindings.length; j ++){
+                var tmpBinding:BindingDTO =  defaultChannel.activeBindings.getItemAt(j) as BindingDTO;
+                if(tmpBinding.name == BindingDTO.SAMLR2_HTTP_POST.name){
+                    _ipCoreSection.samlBindingHttpPostCheck.selected = true;
+                }
+                if(tmpBinding.name == BindingDTO.SAMLR2_HTTP_REDIRECT.name){
+                    _ipCoreSection.samlBindingHttpRedirectCheck.selected = true;
+                }
+                if(tmpBinding.name == BindingDTO.SAMLR2_ARTIFACT.name){
+                    _ipCoreSection.samlBindingArtifactCheck.selected = true;
+                }
+            }
+            for(j = 0; j < defaultChannel.activeProfiles.length; j++){
+                var tmpProfile:ProfileDTO = defaultChannel.activeProfiles.getItemAt(j) as ProfileDTO;
+                if(tmpProfile.name == ProfileDTO.SSO.name){
+                    _ipCoreSection.samlProfileSSOCheck.selected = true;
+                }
+                if(tmpProfile.name == ProfileDTO.SSO_SLO.name){
+                    _ipCoreSection.samlProfileSLOCheck.selected = true;
+                }
+            }
+        }
      }
 
 
