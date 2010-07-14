@@ -150,8 +150,11 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idAppliance.setState(IdentityApplianceStateDTO.PROJECTED.toString());
 
         //here we'll set STORE to NULL, and later we'll fetch it from DB and update the appliance
-        long storeId = iad.getCertificate().getStore().getId();
-        iad.getCertificate().setStore(null);
+        Long storeId = null;
+        if (iad.getCertificate() != null) {
+            storeId = iad.getCertificate().getStore().getId();
+            iad.getCertificate().setStore(null);
+        }
 
         org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest addIdApplianceReq =
                 new org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest();
@@ -205,25 +208,28 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
 //        IdentityAppliance foundAppliance = beLookupRes.getIdentityAppliance();
 //
-        //lookup store
-        LookupResourceByIdRequest lookupStoreReq = new LookupResourceByIdRequest();
-        lookupStoreReq.setResourceId(new Long(storeId).toString());
 
-        org.atricore.idbus.capabilities.management.main.spi.request.LookupResourceByIdRequest beLookupStoreReq =
-                dozerMapper.map(lookupStoreReq, org.atricore.idbus.capabilities.management.main.spi.request.LookupResourceByIdRequest.class);
+        if (storeId != null) {
+            //lookup store
+            LookupResourceByIdRequest lookupStoreReq = new LookupResourceByIdRequest();
+            lookupStoreReq.setResourceId(new Long(storeId).toString());
 
-        org.atricore.idbus.capabilities.management.main.spi.response.LookupResourceByIdResponse beLookupStoreRes = null;
+            org.atricore.idbus.capabilities.management.main.spi.request.LookupResourceByIdRequest beLookupStoreReq =
+                    dozerMapper.map(lookupStoreReq, org.atricore.idbus.capabilities.management.main.spi.request.LookupResourceByIdRequest.class);
 
-        try {
-            beLookupStoreRes = idApplianceManagementService.lookupResourceById(beLookupStoreReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
-            throw new IdentityServerException(e);
+            org.atricore.idbus.capabilities.management.main.spi.response.LookupResourceByIdResponse beLookupStoreRes = null;
+
+            try {
+                beLookupStoreRes = idApplianceManagementService.lookupResourceById(beLookupStoreReq);
+            } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+                throw new IdentityServerException(e);
+            }
+
+            IdentityAppliance foundAppliance = prepareApplianceForUpdate(idAppliance);
+            foundAppliance.getIdApplianceDefinition().getCertificate().setStore(beLookupStoreRes.getResource());
+            UpdateIdentityApplianceResponse updateResponse = this.updateAppliance(foundAppliance);
+            idAppliance = updateResponse.getAppliance();
         }
-
-        IdentityAppliance foundAppliance = prepareApplianceForUpdate(idAppliance);
-        foundAppliance.getIdApplianceDefinition().getCertificate().setStore(beLookupStoreRes.getResource());
-        UpdateIdentityApplianceResponse updateResponse = this.updateAppliance(foundAppliance);
-        idAppliance = updateResponse.getAppliance();
 
         CreateSimpleSsoResponse response = new CreateSimpleSsoResponse();
         response.setAppliance(idAppliance);

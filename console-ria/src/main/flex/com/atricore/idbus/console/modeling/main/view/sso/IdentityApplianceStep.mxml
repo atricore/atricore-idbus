@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<WizardStep
+        xmlns="com.atricore.idbus.console.components.wizard.*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        stepName="Basic Authentication"
+        xmlns:utils="com.atricore.idbus.console.components.*"
+        creationComplete="initForm()">
+
+        <mx:Script>
+        <![CDATA[
+
+            import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+            import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
+            import com.atricore.idbus.console.services.dto.LocationDTO;
+
+            [Bindable]
+            private var validators:Array;
+
+            /**
+             * This will hold the results
+             */
+            private var readableDecisionArray:Array;
+
+            override public function get stepDecision():* {
+                var idApplianceDef:IdentityApplianceDefinitionDTO = new IdentityApplianceDefinitionDTO();
+                idApplianceDef.name = applianceName.text;
+                idApplianceDef.description = applianceDescription.text;
+                
+                var location:LocationDTO = new LocationDTO();
+                location.protocol = applianceLocationProtocol.selectedItem.data;
+                location.host = applianceLocationDomain.text;
+                location.port = parseInt(applianceLocationPort.text);
+                location.context = applianceLocationPath.text;
+                idApplianceDef.location = location;
+
+                var identityAppliance:IdentityApplianceDTO = new IdentityApplianceDTO();
+                identityAppliance.idApplianceDefinition = idApplianceDef;
+                return identityAppliance;
+            }
+
+            override public function get readableStepDecision():String {
+                readableDecisionArray = new Array();
+                readableDecisionArray.push("Appliance name: " + applianceName.text);
+                readableDecisionArray.push("Appliance description: " + applianceDescription.text);
+                readableDecisionArray.push("Appliance location: " + applianceLocationProtocol.text + "://" +
+                        applianceLocationDomain.text +
+                        ((applianceLocationPort.text != null && applianceLocationPort.text != "") ? 
+                        ":" + applianceLocationPort.text : "") + "/" + applianceLocationPath.text);
+                return readableDecisionArray.join("\n").toString();
+            }
+
+            private function initForm():void {
+                if (validators == null) {
+                    validators = new Array();
+                    validators.push(nameValidator);
+                    validators.push(portValidator);
+                    validators.push(domainValidator);
+                    validators.push(pathValidator);
+                }
+            }
+
+            private function handleFormChange(event:Event):void {
+                // Check the step validity
+                applianceForm.validateForm(event);
+                isValid = applianceForm.isValid;
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:StringValidator id="nameValidator" source="{applianceName}" required="true" property="text"/>
+    <mx:NumberValidator id="portValidator" source="{applianceLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
+                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.portValidationError')}"/>
+    <utils:URLPartValidator id="domainValidator" source="{applianceLocationDomain}" required="true" property="text"/>
+    <utils:URLPartValidator id="pathValidator" source="{applianceLocationPath}" required="false" property="text"/>
+
+    <mx:VBox width="100%" height="100%">
+        <utils:ValidatingForm id="applianceForm" width="100%" height="100%" validators="{validators}" labelWidth="50">
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.name')}:" required="true">
+                <mx:TextInput id="applianceName" change="handleFormChange(event);"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.description')}:">
+                <mx:TextArea id="applianceDescription" height="80" change="handleFormChange(event);"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.applianceLocation')}:"
+                         direction="horizontal" required="true">
+                <mx:ComboBox id="applianceLocationProtocol">
+                    <mx:ArrayCollection>
+                        <mx:Object label="http" data="http"/>
+                        <mx:Object label="https" data="https"/>
+                    </mx:ArrayCollection>
+                </mx:ComboBox>
+                <mx:Label text="://" width="9" paddingLeft="-5"/>
+                <mx:TextInput id="applianceLocationDomain" width="150" change="handleFormChange(event);"/>
+                <mx:Label text=":" width="1" paddingLeft="-5"/>
+                <mx:TextInput id="applianceLocationPort" width="40" change="handleFormChange(event);"/>
+                <mx:Label text="/" width="2" paddingLeft="-5"/>
+                <mx:TextInput id="applianceLocationPath" styleName="locationInput" width="100" change="handleFormChange(event);"/>
+            </mx:FormItem>
+
+            <mx:HBox width="100%" height="100%">
+                <mx:Button id="btnConfigureCertificate"
+                           label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idApplianceWiz.idpLocalStep.certificateBtn')}"/>
+            </mx:HBox>
+
+        </utils:ValidatingForm>
+    </mx:VBox>
+</WizardStep>

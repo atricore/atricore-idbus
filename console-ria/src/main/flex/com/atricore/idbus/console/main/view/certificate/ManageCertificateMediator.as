@@ -69,7 +69,7 @@ public class ManageCertificateMediator extends FormMediator
         _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
         _fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
         
-        BindingUtils.bindProperty(view.certificateKeyPair, "dataProvider", this, "_selectedFiles");
+        BindingUtils.bindProperty(viewComp.certificateKeyPair, "dataProvider", this, "_selectedFiles");
         viewComp.certificateKeyPair.prompt = "Browse Key Pair";
     }
 
@@ -81,7 +81,8 @@ public class ManageCertificateMediator extends FormMediator
     }
     
     override public function listNotificationInterests():Array {
-        return [CREATE,EDIT, UploadProgressMediator.UPLOAD_CANCELED];
+        return [CREATE,EDIT, UploadProgressMediator.CREATED,
+                UploadProgressMediator.UPLOAD_CANCELED];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -95,6 +96,10 @@ public class ManageCertificateMediator extends FormMediator
                 _proxy.viewAction = KeystoreProxy.ACTION_ITEM_EDIT;
                 bindForm();
                 view.focusManager.setFocus(view.certificateAlias);
+                break;
+            case UploadProgressMediator.CREATED:
+                // upload progress window created, start upload
+                sendNotification(ApplicationFacade.NOTE_UPLOAD, _fileRef);
                 break;
             case UploadProgressMediator.UPLOAD_CANCELED:
                 if (_fileRef != null)
@@ -159,8 +164,7 @@ public class ManageCertificateMediator extends FormMediator
     private function handleUpload(event:MouseEvent):void {
         //_fileRef.load();  //this is available from flash player 10 and maybe flex sdk 3.4
         //_fileRef.data;
-        //sendNotification(ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS, _fileRef);
-        sendNotification(ApplicationFacade.NOTE_UPLOAD, _fileRef);
+        sendNotification(ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS, _fileRef);
     }
 
     private function fileSelectHandler(evt:Event):void {
@@ -196,6 +200,5 @@ public class ManageCertificateMediator extends FormMediator
     {
         return viewComponent as ManageCertificateView;
     }
-
 }
 }

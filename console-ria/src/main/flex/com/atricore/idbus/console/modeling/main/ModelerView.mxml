@@ -43,8 +43,17 @@
         <mx:TabNavigator width="100%" height="100%">
             <mx:Canvas label="Design" width="95%" height="100%">
                 <mx:VBox x="10" y="10" height="100%" width="100%" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10">
-                    <mx:ButtonBar id="modelActionToolBar" height="5%" dataProvider="[New,Build,Deploy]">
+                    <mx:HBox>
+                    <mx:Button id="btnNew" label="New"/>
+                    <mx:ComboBox id="applianceStyle" labelField="label" selectedIndex="0" width="250">
+                        <mx:ArrayCollection>
+                            <mx:Object label="None (Advanced mode)" data="Advanced"/>
+                            <mx:Object label="Simple SSO" data="SimpleSSO"/>
+                        </mx:ArrayCollection>
+                    </mx:ComboBox>
+                    <mx:ButtonBar id="modelActionToolBar" height="5%" dataProvider="[Build,Deploy]">
                     </mx:ButtonBar>
+                    </mx:HBox>
                     <mx:HBox width="99%" height="60%">
                         <browser:BrowserView id="browser" height="99%" width="20%"/>
                         <diagram:DiagramView id="diagram" width="60%" height="99%"/>

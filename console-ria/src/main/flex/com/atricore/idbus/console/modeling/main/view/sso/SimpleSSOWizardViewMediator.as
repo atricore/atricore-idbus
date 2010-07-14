@@ -24,11 +24,14 @@ package com.atricore.idbus.console.modeling.main.view.sso
 import com.atricore.idbus.console.components.wizard.WizardEvent;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
 import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
 import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+
+import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
@@ -45,27 +48,24 @@ public class SimpleSSOWizardViewMediator extends Mediator
     private var _wizardDataModel:ObjectProxy = new ObjectProxy();
 
     private var _proxy:ProjectProxy;
-    private var _newIdentityAppliance:IdentityApplianceDTO;
-
+    
     public function SimpleSSOWizardViewMediator(viewComp:SimpleSSOWizardView) {
         super(NAME, viewComp);
 
         _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
         
-        view.dataModel = _wizardDataModel;
-        view.addEventListener(WizardEvent.WIZARD_COMPLETE, onSimpleSSOWizardComplete);
-        view.addEventListener(WizardEvent.WIZARD_CANCEL, onSimpleSSOWizardCancelled);
+        viewComp.dataModel = _wizardDataModel;
+        viewComp.addEventListener(WizardEvent.WIZARD_COMPLETE, onSimpleSSOWizardComplete);
+        viewComp.addEventListener(WizardEvent.WIZARD_CANCEL, onSimpleSSOWizardCancelled);
+        viewComp.steps[0].btnConfigureCertificate.addEventListener(MouseEvent.CLICK, handleCertificate);
     }
 
     override public function listNotificationInterests():Array {
-        return [RUN, CreateSimpleSSOIdentityApplianceCommand.FAILURE, CreateSimpleSSOIdentityApplianceCommand.SUCCESS];
+        return [CreateSimpleSSOIdentityApplianceCommand.FAILURE, CreateSimpleSSOIdentityApplianceCommand.SUCCESS];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case RUN:
-                _newIdentityAppliance = notification.getBody() as IdentityApplianceDTO;
-                break;
             case CreateSimpleSSOIdentityApplianceCommand.SUCCESS :
                 handleSSOSetupSuccess();
                 break;
@@ -76,7 +76,8 @@ public class SimpleSSOWizardViewMediator extends Mediator
     }
 
     private function onSimpleSSOWizardComplete(event:WizardEvent):void {
-        var identityApplianceDefinition:IdentityApplianceDefinitionDTO = _newIdentityAppliance.idApplianceDefinition;
+        var identityAppliance:IdentityApplianceDTO = _wizardDataModel.applianceData;
+        var identityApplianceDefinition:IdentityApplianceDefinitionDTO = identityAppliance.idApplianceDefinition;
         identityApplianceDefinition.identityVaults = new ArrayCollection();
         identityApplianceDefinition.identityVaults.addItem(createIdentityVault());
 
@@ -87,15 +88,13 @@ public class SimpleSSOWizardViewMediator extends Mediator
         }
 
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
-        
-        sendNotification(ApplicationFacade.NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, _newIdentityAppliance);
 
-        //_proxy.currentIdentityApplianceElement = _newIdentityAppliance;
-       // sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
+        sendNotification(ProcessingMediator.START);
+        sendNotification(ApplicationFacade.NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);
     }
 
     private function onSimpleSSOWizardCancelled(event:WizardEvent):void {
-
+        closeWizard();
     }
 
     private function createIdentityVault():IdentityVaultDTO {
@@ -107,12 +106,10 @@ public class SimpleSSOWizardViewMediator extends Mediator
     }
 
     public function handleSSOSetupSuccess():void {
+        sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
         sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-
-        //_proxy.currentIdentityApplianceElement = _newIdentityAppliance;
         sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
-
         sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
                 "The SSO appliance has been successfully created.");
     }
@@ -120,6 +117,14 @@ public class SimpleSSOWizardViewMediator extends Mediator
     public function handleSSOSetupFailure():void {
         sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
                 "There was an error creating simple SSO appliance");
+    }
+
+    private function handleCertificate(event:MouseEvent):void {
+        sendNotification(ApplicationFacade.NOTE_MANAGE_CERTIFICATE);
+    }
+
+    private function closeWizard():void {
+        view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
     protected function get view():SimpleSSOWizardView

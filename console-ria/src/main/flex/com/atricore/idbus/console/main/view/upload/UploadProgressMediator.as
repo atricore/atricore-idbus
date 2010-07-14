@@ -34,6 +34,7 @@ import org.puremvc.as3.patterns.mediator.Mediator;
 public class UploadProgressMediator extends Mediator
 {
     public static const NAME:String = "UploadProgressMediator";
+    public static const CREATED:String = "Note.UploadProgressCreated";
     public static const UPDATE_PROGRESS:String = "Note.UpdateProgress";
     public static const UPLOAD_COMPLETED:String = "Note.UploadCompleted";
     public static const UPLOAD_CANCELED:String = "Note.UploadCanceled";
@@ -56,6 +57,7 @@ public class UploadProgressMediator extends Mediator
                 _fileRef = notification.getBody() as FileReference;
                 view.txtFile.text = "Uploading file: " + _fileRef.name;
                 view.progBar.label = "0%";
+                sendNotification(CREATED);
                 break;
             case UPDATE_PROGRESS:
                 var numPerc:Number = notification.getBody() as Number;

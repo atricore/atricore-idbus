@@ -28,6 +28,8 @@
         showSummaryStep="true">
 
         <steps>
+            <ssowizardsteps:IdentityApplianceStep stepId="appliance" jumpToStep="ssoStep1"
+                dataField="applianceData"/>
             <ssowizardsteps:BasicAuthStep stepId="ssoStep1" jumpToStep="ssoStep2Embedded"
                 dataField="step1Data"/>
             <ssowizardsteps:ExternalVaultStep stepId="ssoStep2External" jumpToStep="ssoStep3"

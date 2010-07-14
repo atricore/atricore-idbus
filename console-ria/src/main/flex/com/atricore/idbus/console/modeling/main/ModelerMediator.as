@@ -20,7 +20,11 @@
  */
 
 package com.atricore.idbus.console.modeling.main {
+import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+
+import flash.events.MouseEvent;
 
 import mx.controls.ButtonBar;
 import mx.controls.buttonBarClasses.ButtonBarButton;
@@ -46,9 +50,9 @@ public class ModelerMediator extends Mediator {
 
     private static const MODEL_ACTION_BAR_NEW_BUTTON_IDX:int = 0;
 
-    private static const MODEL_ACTION_BAR_BUILD_BUTTON_IDX:int = 1;
+    private static const MODEL_ACTION_BAR_BUILD_BUTTON_IDX:int = 0;
 
-    private static const MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX:int = 2;
+    private static const MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX:int = 1;
 
 
     private var _modelActionToolBar:ButtonBar;
@@ -76,9 +80,19 @@ public class ModelerMediator extends Mediator {
         (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_BUILD_BUTTON_IDX) as ButtonBarButton).enabled = false;
         (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX) as ButtonBarButton).enabled = false;
 
+        viewComp.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
         _modelActionToolBar.addEventListener(ItemClickEvent.ITEM_CLICK, handleModelActionToolBarClick);
 
         _modelerPopUpManager = new ModelerPopUpManager(facade, viewComp);
+    }
+
+    private function handleNewClick(event:MouseEvent):void {
+        trace("New Button Click: " + event);
+        if (view.applianceStyle.selectedItem.data == "Advanced") {
+            sendNotification(IdentityApplianceMediator.CREATE);
+        } else if (view.applianceStyle.selectedItem.data == "SimpleSSO") {
+            sendNotification(SimpleSSOWizardViewMediator.RUN);
+        }
     }
 
     private function handleModelActionToolBarClick(event:ItemClickEvent):void {
@@ -94,7 +108,8 @@ public class ModelerMediator extends Mediator {
             ApplicationFacade.NOTE_CREATE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.NOTE_MANAGE_CERTIFICATE,
-            ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS];
+            ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS,
+            ProcessingMediator.START];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -116,6 +131,9 @@ public class ModelerMediator extends Mediator {
                 break;
             case ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS:
                 _modelerPopUpManager.showUploadProgressWindow(notification);
+                break;
+            case ProcessingMediator.START:
+                _modelerPopUpManager.showProcessingWindow(notification);
                 break;
         }
 
