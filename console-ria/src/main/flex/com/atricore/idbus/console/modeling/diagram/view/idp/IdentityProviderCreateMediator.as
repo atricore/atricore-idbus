@@ -20,10 +20,17 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.idp {
+import com.atricore.idbus.console.services.dto.BindingDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
+
+import com.atricore.idbus.console.services.dto.LocationDTO;
+
+import com.atricore.idbus.console.services.dto.ProfileDTO;
+import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
 
 import flash.events.MouseEvent;
 
+import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
 import com.atricore.idbus.console.main.ApplicationFacade;
@@ -45,11 +52,65 @@ public class IdentityProviderCreateMediator extends FormMediator {
 
     }
 
+    override public function bindForm():void {
+//        if (_proxy.currentIdentityAppliance != null) {
+//            view.applianceName.text = _proxy.currentIdentityAppliance.idApplianceDefinition.name;
+//            view.applianceDescription.text = _proxy.currentIdentityAppliance.idApplianceDefinition.description;
+//            view.applianceLocationDomain.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.host;
+//            view.applianceLocationPort.text = new Number(_proxy.currentIdentityAppliance.idApplianceDefinition.location.port).toString();
+//            view.applianceLocationProtocol.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.protocol;
+//            view.applianceLocationPath.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.context;
+//        }
+//
+//        FormUtility.clearValidationErrors(_validators);        
+    }
+
     override public function bindModel():void {
 
         var identityProvider:IdentityProviderDTO = new IdentityProviderDTO();
 
         identityProvider.name = view.identityProviderName.text;
+        identityProvider.description = view.identityProvDescription.text;
+
+        var loc:LocationDTO = new LocationDTO();
+        loc.protocol = view.idpLocationProtocol.selectedLabel;
+        loc.host = view.idpLocationDomain.text;
+        loc.port = parseInt(view.idpLocationPort.text);
+        loc.context = view.idpLocationContext.text;
+        loc.uri = view.idpLocationPath.text;
+        identityProvider.location = loc;
+
+        identityProvider.signAuthenticationAssertions = view.signAuthAssertionCheck.selected;
+        identityProvider.encryptAuthenticationAssertions = view.encryptAuthAssertionCheck.selected;
+
+        var spChannel:ServiceProviderChannelDTO = new ServiceProviderChannelDTO();
+
+        spChannel.activeBindings = new ArrayCollection();
+        if(view.samlBindingHttpPostCheck.selected){
+            spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_POST);
+        }
+        if(view.samlBindingArtifactCheck.selected){
+            spChannel.activeBindings.addItem(BindingDTO.SAMLR2_ARTIFACT);
+        }
+        if(view.samlBindingHttpRedirectCheck.selected){
+            spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_REDIRECT);
+        }
+
+        spChannel.activeProfiles = new ArrayCollection();
+        if(view.samlProfileSSOCheck.selected){
+            spChannel.activeProfiles.addItem(ProfileDTO.SSO);
+        }
+        if(view.samlProfileSSOCheck.selected){
+            spChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
+        }
+        
+        // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
+        //userInformationLookup
+        //authenticationContract
+        //authenticationMechanism
+        //authenticationAssertionEmissionPolicy
+        identityProvider.defaultChannel = spChannel;        
+
         _newIdentityProvider = identityProvider;
     }
 
@@ -83,7 +144,10 @@ public class IdentityProviderCreateMediator extends FormMediator {
 
 
     override public function registerValidators():void {
-        // TODO: wire validators
+        _validators.push(view.nameValidator);
+        _validators.push(view.portValidator);
+        _validators.push(view.domainValidator);
+        _validators.push(view.pathValidator);
     }
 
 
