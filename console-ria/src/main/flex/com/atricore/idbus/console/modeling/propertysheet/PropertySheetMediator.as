@@ -26,11 +26,15 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
 
+import com.atricore.idbus.console.services.dto.LocationDTO;
 import com.atricore.idbus.console.services.dto.ProfileDTO;
+
+import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.collections.ArrayCollection;
 import mx.containers.Canvas;
 import mx.containers.ViewStack;
 import mx.controls.TabBar;
@@ -157,7 +161,7 @@ public class PropertySheetMediator extends Mediator {
         _ipCoreSection.identityProviderName.text = identityProvider.name;
         _ipCoreSection.identityProvDescription.text = identityProvider.description;
          //TODO
-//         _ipCoreSection.idpLocationProtocol.selectedIndex = ...
+
         for(var i:int = 0; i < _ipCoreSection.idpLocationProtocol.dataProvider.length; i++){
             if(identityProvider.location != null && _ipCoreSection.idpLocationProtocol.dataProvider[i].label == identityProvider.location.protocol){
                 _ipCoreSection.idpLocationProtocol.selectedIndex = i;
@@ -204,6 +208,47 @@ public class PropertySheetMediator extends Mediator {
         identityProvider = _currentIdentityApplianceElement as IdentityProviderDTO;
 
         identityProvider.name = _ipCoreSection.identityProviderName.text;
+        identityProvider.description = _ipCoreSection.identityProvDescription.text;
+
+        var loc:LocationDTO = new LocationDTO();
+        loc.protocol = _ipCoreSection.idpLocationProtocol.selectedLabel;
+        loc.host = _ipCoreSection.idpLocationDomain.text;
+        loc.port = parseInt(_ipCoreSection.idpLocationPort.text);
+        loc.context = _ipCoreSection.idpLocationContext.text;
+        loc.uri = _ipCoreSection.idpLocationPath.text;
+        identityProvider.location = loc;
+
+        identityProvider.signAuthenticationAssertions = _ipCoreSection.signAuthAssertionCheck.selected;
+        identityProvider.encryptAuthenticationAssertions = _ipCoreSection.encryptAuthAssertionCheck.selected;
+
+        var spChannel:ServiceProviderChannelDTO = new ServiceProviderChannelDTO();
+
+        spChannel.activeBindings = new ArrayCollection();
+        if(_ipCoreSection.samlBindingHttpPostCheck.selected){
+            spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_POST);
+        }
+        if(_ipCoreSection.samlBindingArtifactCheck.selected){
+            spChannel.activeBindings.addItem(BindingDTO.SAMLR2_ARTIFACT);
+        }
+        if(_ipCoreSection.samlBindingHttpRedirectCheck.selected){
+            spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_REDIRECT);
+        }
+
+        spChannel.activeProfiles = new ArrayCollection();
+        if(_ipCoreSection.samlProfileSSOCheck.selected){
+            spChannel.activeProfiles.addItem(ProfileDTO.SSO);
+        }
+        if(_ipCoreSection.samlProfileSSOCheck.selected){
+            spChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
+        }
+
+        // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
+        //userInformationLookup
+        //authenticationContract
+        //authenticationMechanism
+        //authenticationAssertionEmissionPolicy
+        identityProvider.defaultChannel = spChannel;
+        
         sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
     }
 
