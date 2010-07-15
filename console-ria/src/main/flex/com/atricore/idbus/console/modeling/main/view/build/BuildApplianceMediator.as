@@ -47,7 +47,7 @@ public class BuildApplianceMediator extends FormMediator
         _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
         viewComp.selectedAppliance.text = _proxy.currentIdentityAppliance.idApplianceDefinition.name;
         viewComp.btnNext.addEventListener(MouseEvent.CLICK, handleNextClick);
-        viewComp.addEventListener(CloseEvent.CLOSE, handleClose);
+        viewComp.parent.addEventListener(CloseEvent.CLOSE, handleClose);
     }
     
     override public function listNotificationInterests():Array {

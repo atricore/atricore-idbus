@@ -45,7 +45,7 @@ public class UploadProgressMediator extends Mediator
         super(NAME, viewComp);
         view.btnCancel.addEventListener("click", onUploadBtnCancel);
         view.btnFinish.addEventListener("click", onUploadBtnFinish);
-        viewComp.addEventListener(CloseEvent.CLOSE, handleClose);
+        viewComp.parent.addEventListener(CloseEvent.CLOSE, handleClose);
     }
 
     override public function listNotificationInterests():Array {

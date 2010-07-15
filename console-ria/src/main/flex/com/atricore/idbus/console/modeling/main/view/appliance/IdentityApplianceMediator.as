@@ -57,7 +57,7 @@ public class IdentityApplianceMediator extends FormMediator
         _keystoreProxy = KeystoreProxy(facade.retrieveProxy(KeystoreProxy.NAME));
         viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         viewComp.btnSave.addEventListener(MouseEvent.CLICK, handleIdentityApplianceSave);
-        viewComp.addEventListener(CloseEvent.CLOSE, handleClose);
+        viewComp.parent.addEventListener(CloseEvent.CLOSE, handleClose);
     }
 
     override public function registerValidators():void {

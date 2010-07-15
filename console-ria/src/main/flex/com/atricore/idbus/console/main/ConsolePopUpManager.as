@@ -81,9 +81,7 @@ public class ConsolePopUpManager extends BasePopUpManager {
 
     public function showCreateIdentityApplianceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_identityApplianceForm) {
-           createIdentityApplianceForm();
-        }
+        createIdentityApplianceForm();
         _popup.title = "Identity Appliance";
         _popup.width = 650;
         _popup.height = 410;
