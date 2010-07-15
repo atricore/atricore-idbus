@@ -55,6 +55,7 @@
                         <mx:ButtonBar id="modelActionToolBar" height="5%" dataProvider="[Build,Deploy]"/>
                         <mx:Button id="btnOpen" label="Open"/>
                         <mx:ComboBox id="appliances" width="250" prompt="Select an appliance to open"/>
+                        <mx:Button id="btnSave" label="Save"/>
                     </mx:HBox>
                     <mx:HBox width="99%" height="55%">
                         <browser:BrowserView id="browser" height="99%" width="20%"/>

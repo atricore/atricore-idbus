@@ -30,6 +30,7 @@ import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdenti
 import com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand;
 
 import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand;
@@ -56,6 +57,7 @@ public class ApplicationFacade extends Facade {
     public static const NOTE_IDENTITY_APPLIANCE_LIST_LOAD:String = "Note.IdentityApplianceListLoad";
     public static const NOTE_CREATE_IDENTITY_APPLIANCE:String = "Note.CreateIdentityAppliance";
     public static const NOTE_IDENTITY_PROVIDER_REMOVE:String = "Node.IdentityProviderRemove" ;
+    public static const NOTE_IDENTITY_APPLIANCE_CHANGED:String = "Note.IdentityApplianceChanged";
     public static const NOTE_EDIT_IDENTITY_APPLIANCE:String = "Note.EditIdentityAppliance";
     public static const NOTE_UPDATE_IDENTITY_APPLIANCE:String = "Note.UpdateIdentityAppliance";
     public static const NOTE_DISPLAY_APPLIANCE_MODELER:String = "Note.DisplayApplianceModeler";
@@ -100,6 +102,7 @@ public class ApplicationFacade extends Facade {
         registerCommand(NOTE_UPLOAD, UploadCommand);
         registerCommand(NOTE_BUILD_IDENTITY_APPLIANCE, BuildIdentityApplianceCommand);
         registerCommand(NOTE_DEPLOY_IDENTITY_APPLIANCE, DeployIdentityApplianceCommand);
+        registerCommand(NOTE_EDIT_IDENTITY_APPLIANCE, IdentityApplianceUpdateCommand);
     }
 
     public function startUp(app:AtricoreConsole):void {
