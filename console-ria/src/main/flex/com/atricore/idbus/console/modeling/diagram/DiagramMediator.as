@@ -175,30 +175,22 @@ DiagramMediator extends Mediator {
 
                     switch (elementType) {
                         case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
-                            // assert that source end is an Identity Appliance
-                            if (_currentlySelectedNode.data is IdentityProviderDTO) {
-                                var identityProvider:IdentityProviderDTO = _currentlySelectedNode.data as IdentityProviderDTO;
+                            var identityProvider:IdentityProviderDTO = _currentlySelectedNode.data as IdentityProviderDTO;
 
-                                var rip:RemoveIdentityProviderElementRequest = new RemoveIdentityProviderElementRequest(identityProvider);
+                            var rip:RemoveIdentityProviderElementRequest = new RemoveIdentityProviderElementRequest(identityProvider);
 
-                                // this notification will be grabbed by the modeler mediator which will invoke
-                                // the corresponding command for processing the removal operation.
-                                sendNotification(ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT, rip);
-                            }
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT, rip);
                             break;
-                            case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
-                                // assert that source end is an Identity Appliance
-                                if (_currentlySelectedNode.data is ServiceProviderDTO) {
-                                    var serviceProvider:ServiceProviderDTO = _currentlySelectedNode.data as ServiceProviderDTO;
+                        case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
+                            var serviceProvider:ServiceProviderDTO = _currentlySelectedNode.data as ServiceProviderDTO;
 
-                                    var rsp:RemoveServiceProviderElementRequest = new RemoveServiceProviderElementRequest(serviceProvider);
+                            var rsp:RemoveServiceProviderElementRequest = new RemoveServiceProviderElementRequest(serviceProvider);
 
-                                    // this notification will be grabbed by the modeler mediator which will invoke
-                                    // the corresponding command for processing the removal operation.
-                                    sendNotification(ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT, rsp);
-                                }
-
-
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT, rsp);
                             break;
                     }
                 }
