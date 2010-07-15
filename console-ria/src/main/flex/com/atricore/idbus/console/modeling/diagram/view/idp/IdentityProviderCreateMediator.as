@@ -121,6 +121,7 @@ public class IdentityProviderCreateMediator extends FormMediator {
             _proxy.currentIdentityApplianceElement = _newIdentityProvider;
             sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
             sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
             closeWindow();
         }
         else {

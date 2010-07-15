@@ -27,6 +27,7 @@ import com.atricore.idbus.console.modeling.browser.BrowserMediator;
 import com.atricore.idbus.console.modeling.diagram.DiagramMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
 import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand;
 import com.atricore.idbus.console.modeling.main.view.*;
 import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator;
@@ -89,9 +90,11 @@ public class ModelerMediator extends Mediator {
 
         viewComp.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
         viewComp.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
+        viewComp.btnSave.addEventListener(MouseEvent.CLICK, handleSaveClick);
         _modelActionToolBar.addEventListener(ItemClickEvent.ITEM_CLICK, handleModelActionToolBarClick);
 
         viewComp.appliances.labelFunction = applianceListLabelFunc;
+        viewComp.btnSave.enabled = false;
 
         _modelerPopUpManager = new ModelerPopUpManager(facade, viewComp);
 
@@ -115,6 +118,11 @@ public class ModelerMediator extends Mediator {
         }
     }
 
+    private function handleSaveClick(event:MouseEvent):void {
+        trace("Save Button Click: " + event);
+        sendNotification(ApplicationFacade.NOTE_EDIT_IDENTITY_APPLIANCE);
+    }
+
     private function handleModelActionToolBarClick(event:ItemClickEvent):void {
         if (event.index == 0) {
             trace("Build Button Click: " + event);
@@ -131,13 +139,16 @@ public class ModelerMediator extends Mediator {
             ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.NOTE_MANAGE_CERTIFICATE,
             ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS,
+            ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED,
             ProcessingMediator.START,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             LookupIdentityApplianceByIdCommand.SUCCESS,
             LookupIdentityApplianceByIdCommand.FAILURE,
             IdentityApplianceListLoadCommand.SUCCESS,
-            IdentityApplianceListLoadCommand.FAILURE];
+            IdentityApplianceListLoadCommand.FAILURE,
+            IdentityApplianceUpdateCommand.SUCCESS,
+            IdentityApplianceUpdateCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -160,6 +171,9 @@ public class ModelerMediator extends Mediator {
             case ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS:
                 _modelerPopUpManager.showUploadProgressWindow(notification);
                 break;
+            case ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED:
+                view.btnSave.enabled = true;
+                break;
             case ProcessingMediator.START:
                 _modelerPopUpManager.showProcessingWindow(notification);
                 break;
@@ -170,9 +184,9 @@ public class ModelerMediator extends Mediator {
                 _modelerPopUpManager.showDeployIdentityApplianceWindow(notification);
                 break;
             case LookupIdentityApplianceByIdCommand.SUCCESS:
+                view.btnSave.enabled = false;
                 sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-                //sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
                 sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
                     "Appliance successfully opened.");
                 break;
@@ -187,6 +201,17 @@ public class ModelerMediator extends Mediator {
             case IdentityApplianceListLoadCommand.FAILURE:
                 sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
                     "There was an error retrieving list of appliances.");
+                break;
+            case IdentityApplianceUpdateCommand.SUCCESS:
+                view.btnSave.enabled = false;
+                sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
+                sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
+                    "Appliance successfully updated.");
+                break;
+            case IdentityApplianceUpdateCommand.FAILURE:
+                sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+                    "There was an error updating appliance.");
                 break;
         }
 

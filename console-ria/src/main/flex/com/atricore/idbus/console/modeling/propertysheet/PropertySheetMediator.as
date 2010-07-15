@@ -120,6 +120,18 @@ public class PropertySheetMediator extends Mediator {
 
         // bind view
         _iaCoreSection.applianceName.text = identityAppliance.idApplianceDefinition.name;
+        _iaCoreSection.applianceDescription.text = identityAppliance.idApplianceDefinition.description;
+
+        var location:LocationDTO = identityAppliance.idApplianceDefinition.location;
+        for (var i:int = 0; i < _iaCoreSection.applianceLocationProtocol.dataProvider.length; i++) {
+            if (location != null && location.protocol == _iaCoreSection.applianceLocationProtocol.dataProvider[i].label) {
+                _iaCoreSection.applianceLocationProtocol.selectedIndex = i;
+                break;
+            }
+        }
+        _iaCoreSection.applianceLocationDomain.text = location.host;
+        _iaCoreSection.applianceLocationPort.text = location.port.toString();
+        _iaCoreSection.applianceLocationPath.text = location.context;
     }
 
     private function handleIdentityApplianceCorePropertyTabRollOut(e:Event):void {
@@ -130,8 +142,34 @@ public class PropertySheetMediator extends Mediator {
         var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
         identityAppliance = proxy.currentIdentityAppliance;
 
+        var applianceChanged:Boolean = false;
+        var oldLocation:LocationDTO = identityAppliance.idApplianceDefinition.location;
+        var description:String = identityAppliance.idApplianceDefinition.description;
+        if (description == null) {
+            description = "";
+        }
+        if (identityAppliance.idApplianceDefinition.name != _iaCoreSection.applianceName.text ||
+                description != _iaCoreSection.applianceDescription.text ||
+                oldLocation.protocol != _iaCoreSection.applianceLocationProtocol.selectedLabel ||
+                oldLocation.host != _iaCoreSection.applianceLocationDomain.text ||
+                oldLocation.port != parseInt(_iaCoreSection.applianceLocationPort.text) ||
+                oldLocation.context != _iaCoreSection.applianceLocationPath.text) {
+            applianceChanged = true;
+        }
+
         identityAppliance.idApplianceDefinition.name = _iaCoreSection.applianceName.text;
+        identityAppliance.idApplianceDefinition.description = _iaCoreSection.applianceDescription.text;
+        var loc:LocationDTO = new LocationDTO();
+        loc.protocol = _iaCoreSection.applianceLocationProtocol.selectedLabel;
+        loc.host = _iaCoreSection.applianceLocationDomain.text;
+        loc.port = parseInt(_iaCoreSection.applianceLocationPort.text);
+        loc.context = _iaCoreSection.applianceLocationPath.text;
+        identityAppliance.idApplianceDefinition.location = loc;
+
         sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
+        if (applianceChanged) {
+            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+        }
     }
 
 
@@ -201,6 +239,22 @@ public class PropertySheetMediator extends Mediator {
 
         identityProvider = _currentIdentityApplianceElement as IdentityProviderDTO;
 
+        var applianceChanged:Boolean = false;
+        var oldLocation:LocationDTO = identityProvider.location;
+        var description:String = identityProvider.description;
+        if (description == null) {
+            description = "";
+        }
+        if (identityProvider.name != _ipCoreSection.identityProviderName.text ||
+                description != _ipCoreSection.identityProvDescription.text ||
+                oldLocation.protocol != _ipCoreSection.idpLocationProtocol.selectedLabel ||
+                oldLocation.host != _ipCoreSection.idpLocationDomain.text ||
+                oldLocation.port != parseInt(_ipCoreSection.idpLocationPort.text) ||
+                oldLocation.context != _ipCoreSection.idpLocationContext.text ||
+                oldLocation.uri != _ipCoreSection.idpLocationPath.text) {
+            applianceChanged = true;
+        }
+
         identityProvider.name = _ipCoreSection.identityProviderName.text;
         identityProvider.description = _ipCoreSection.identityProvDescription.text;
 
@@ -220,6 +274,9 @@ public class PropertySheetMediator extends Mediator {
         //authenticationAssertionEmissionPolicy
 
         sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
+        if (applianceChanged) {
+            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+        }
     }
 
     private function handleIdentityProviderContractPropertyTabCreationComplete(event:Event):void {
@@ -244,6 +301,9 @@ public class PropertySheetMediator extends Mediator {
                 if (tmpBinding.name == BindingDTO.SAMLR2_ARTIFACT.name) {
                     _ipContractSection.samlBindingArtifactCheck.selected = true;
                 }
+                if (tmpBinding.name == BindingDTO.SAMLR2_SOAP.name) {
+                    _ipContractSection.samlBindingSoapCheck.selected = true;
+                }
             }
             for (j = 0; j < defaultChannel.activeProfiles.length; j++) {
                 var tmpProfile:ProfileDTO = defaultChannel.activeProfiles.getItemAt(j) as ProfileDTO;
@@ -263,7 +323,18 @@ public class PropertySheetMediator extends Mediator {
 
         identityProvider = _currentIdentityApplianceElement as IdentityProviderDTO;
 
-        var spChannel:ServiceProviderChannelDTO = new ServiceProviderChannelDTO();
+        //var spChannel:ServiceProviderChannelDTO = new ServiceProviderChannelDTO();
+        var spChannel:ServiceProviderChannelDTO = identityProvider.defaultChannel as ServiceProviderChannelDTO;
+
+        var applianceChanged:Boolean = false;
+        var oldActiveBindings:ArrayCollection = spChannel.activeBindings;
+        var oldActiveProfiles:ArrayCollection = spChannel.activeProfiles;
+        if (oldActiveBindings == null) {
+            oldActiveBindings = new  ArrayCollection();
+        }
+        if (oldActiveProfiles == null) {
+            oldActiveProfiles = new  ArrayCollection();
+        }
 
         spChannel.activeBindings = new ArrayCollection();
         if (_ipContractSection.samlBindingHttpPostCheck.selected) {
@@ -275,19 +346,68 @@ public class PropertySheetMediator extends Mediator {
         if (_ipContractSection.samlBindingHttpRedirectCheck.selected) {
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_REDIRECT);
         }
+        if (_ipContractSection.samlBindingSoapCheck.selected) {
+            spChannel.activeBindings.addItem(BindingDTO.SAMLR2_SOAP);
+        }
 
         spChannel.activeProfiles = new ArrayCollection();
         if (_ipContractSection.samlProfileSSOCheck.selected) {
             spChannel.activeProfiles.addItem(ProfileDTO.SSO);
         }
-        if (_ipContractSection.samlProfileSSOCheck.selected) {
+        if (_ipContractSection.samlProfileSLOCheck.selected) {
             spChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
         }
 
-        identityProvider.defaultChannel = spChannel;
+        if (spChannel.activeBindings.length != oldActiveBindings.length) {
+            applianceChanged = true;
+        } else {
+            for (var i:int = 0; i < spChannel.activeBindings.length; i++) {
+                var binding:BindingDTO = spChannel.activeBindings[i];
+                var bindingFound:Boolean = false;
+                for (var j:int = 0; j < oldActiveBindings.length; j++) {
+                    if (binding.equals(oldActiveBindings[j])) {
+                        bindingFound = true;
+                        break;
+                    }
+                }
+                if (!bindingFound) {
+                    applianceChanged = true;
+                    break;
+                }
+            }
+        }
+
+        if (spChannel.activeProfiles.length != oldActiveProfiles.length) {
+            applianceChanged = true;
+        } else {
+            for (var i:int = 0; i < spChannel.activeProfiles.length; i++) {
+                var profile:ProfileDTO = spChannel.activeProfiles[i];
+                var profileFound:Boolean = false;
+                for (var j:int = 0; j < oldActiveProfiles.length; j++) {
+                    if (profile.equals(oldActiveProfiles[j])) {
+                        profileFound = true;
+                        break;
+                    }
+                }
+                if (!profileFound) {
+                    applianceChanged = true;
+                    break;
+                }
+            }
+        }
+
+        if (identityProvider.signAuthenticationAssertions != _ipContractSection.signAuthAssertionCheck.selected ||
+                identityProvider.encryptAuthenticationAssertions != _ipContractSection.encryptAuthAssertionCheck.selected) {
+            applianceChanged = true;
+        }
+
+        //identityProvider.defaultChannel = spChannel;
         identityProvider.signAuthenticationAssertions = _ipContractSection.signAuthAssertionCheck.selected;
         identityProvider.encryptAuthenticationAssertions = _ipContractSection.encryptAuthAssertionCheck.selected;
 
+        if (applianceChanged) {
+            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+        }
     }
 
 

@@ -41,6 +41,8 @@
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
         <mx:CheckBox id="samlBindingArtifactCheck"
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
+        <mx:CheckBox id="samlBindingSoapCheck"
+                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:">
