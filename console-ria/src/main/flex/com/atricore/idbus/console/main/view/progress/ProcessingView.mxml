@@ -20,7 +20,7 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-         left="10" top="10" right="10" bottom="10" horizontalAlign="center" verticalAlign="middle">
+         left="10" top="10" right="10" bottom="10" paddingLeft="30" paddingTop="40" horizontalAlign="center" verticalAlign="middle">
     <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'processing.request.title')}" />
 
     <mx:ProgressBar id="progressBar" indeterminate="true"  width="75%"

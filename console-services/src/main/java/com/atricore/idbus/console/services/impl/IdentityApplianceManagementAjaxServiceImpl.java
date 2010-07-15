@@ -41,6 +41,19 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
     private IdentityApplianceManagementService idApplianceManagementService;
     private DozerBeanMapper dozerMapper;
 
+    public BuildIdentityApplianceResponse buildIdentityAppliance(BuildIdentityApplianceRequest req) throws IdentityServerException {
+        org.atricore.idbus.capabilities.management.main.spi.request.BuildIdentityApplianceRequest beReq =
+                dozerMapper.map(req, org.atricore.idbus.capabilities.management.main.spi.request.BuildIdentityApplianceRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.BuildIdentityApplianceResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.buildIdentityAppliance(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, BuildIdentityApplianceResponse.class);
+    }
+    
     public DeployIdentityApplianceResponse deployIdentityAppliance(DeployIdentityApplianceRequest req) throws IdentityServerException {
         org.atricore.idbus.capabilities.management.main.spi.request.DeployIdentityApplianceRequest beReq =
                 dozerMapper.map(req, org.atricore.idbus.capabilities.management.main.spi.request.DeployIdentityApplianceRequest.class);

@@ -56,6 +56,7 @@ public class ConsolePopUpManager extends BasePopUpManager {
 
     private function handleSetupViewCreated(event:FlexEvent):void {
         var mediator:SetupWizardViewMediator = new SetupWizardViewMediator(_setupWizardView);
+        _facade.removeMediator(SetupWizardViewMediator.NAME);
         _facade.registerMediator(mediator);
         mediator.handleNotification(_lastWindowNotification);
     }
@@ -73,6 +74,7 @@ public class ConsolePopUpManager extends BasePopUpManager {
 
     private function handleSimpleSSOWizardViewCreated(event:FlexEvent):void {
         var mediator:SimpleSSOWizardViewMediator = new SimpleSSOWizardViewMediator(_simpleSSOWizardView);
+        _facade.removeMediator(SimpleSSOWizardViewMediator.NAME);
         _facade.registerMediator(mediator);
         mediator.handleNotification(_lastWindowNotification);
     }
@@ -85,8 +87,8 @@ public class ConsolePopUpManager extends BasePopUpManager {
         _popup.title = "Identity Appliance";
         _popup.width = 650;
         _popup.height = 410;
-        _popup.x = (_popupParent.width / 2) - 225;
-        _popup.y = 80;
+        //_popup.x = (_popupParent.width / 2) - 225;
+        //_popup.y = 80;
         showPopup(_identityApplianceForm);
     }
 
@@ -97,6 +99,7 @@ public class ConsolePopUpManager extends BasePopUpManager {
 
     private function handleIdentityApplianceFormCreated(event:FlexEvent):void {
         var mediator:IdentityApplianceMediator = new IdentityApplianceMediator(_identityApplianceForm);
+        _facade.removeMediator(IdentityApplianceMediator.NAME);
         _facade.registerMediator(mediator);
         mediator.handleNotification(_lastWindowNotification);
     }

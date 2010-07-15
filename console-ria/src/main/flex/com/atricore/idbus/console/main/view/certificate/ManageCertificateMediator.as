@@ -62,6 +62,7 @@ public class ManageCertificateMediator extends FormMediator
         viewComp.btnConfirm.addEventListener(MouseEvent.CLICK, handleConfirm);
         viewComp.btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
         viewComp.certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
+        viewComp.addEventListener(CloseEvent.CLOSE, handleClose);
 
         _fileRef = new FileReference();
         _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
@@ -194,6 +195,10 @@ public class ManageCertificateMediator extends FormMediator
 
     private function closeWindow():void {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+    }
+
+    private function handleClose(event:Event):void {
+        facade.removeMediator(ManageCertificateMediator.NAME);
     }
 
     protected function get view():ManageCertificateView

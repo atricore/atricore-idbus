@@ -23,6 +23,7 @@ package com.atricore.idbus.console.modeling.main.controller
 {
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
+import com.atricore.idbus.console.services.dto.IdentityApplianceStateDTO;
 import com.atricore.idbus.console.services.spi.request.AddIdentityApplianceRequest;
 
 import com.atricore.idbus.console.services.spi.response.AddIdentityApplianceResponse;
@@ -41,12 +42,14 @@ import org.puremvc.as3.patterns.command.SimpleCommand;
 public class IdentityApplianceCreateCommand extends SimpleCommand implements IResponder {
 
     public static const SUCCESS : String = "IdentityApplianceCreateCommand.SUCCESS";
+    public static const FAILURE : String = "IdentityApplianceCreateCommand.FAILURE";
 
     override public function execute(notification:INotification):void {
         var identityAppliance:IdentityApplianceDTO = notification.getBody() as IdentityApplianceDTO;
         var registry:ServiceRegistry = facade.retrieveProxy(ServiceRegistry.NAME) as ServiceRegistry;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
 
+        identityAppliance.state = IdentityApplianceStateDTO.PROJECTED.toString();
         var req:AddIdentityApplianceRequest = new AddIdentityApplianceRequest();
         req.identityAppliance = identityAppliance;
         var call:Object = service.addIdentityAppliance(req);
@@ -62,7 +65,9 @@ public class IdentityApplianceCreateCommand extends SimpleCommand implements IRe
 
     public function fault(info:Object):void {
         var fault:Fault = (info as FaultEvent).fault;
-        trace(fault.message);
+        var msg:String = fault.faultString.substring((fault.faultString.indexOf('.') + 1), fault.faultString.length);
+        trace(msg);
+        sendNotification(FAILURE, msg);
     }
 }
 }

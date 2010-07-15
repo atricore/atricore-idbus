@@ -23,12 +23,13 @@ package com.atricore.idbus.console.main {
 import com.adobe.components.SizeableTitleWindow;
 import com.atricore.idbus.console.components.wizard.Wizard;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
-
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingView;
 
+import flash.display.DisplayObject;
 import flash.events.Event;
 
+import mx.core.Application;
 import mx.core.UIComponent;
 import mx.effects.Effect;
 import mx.effects.Iris;
@@ -76,14 +77,16 @@ public class BasePopUpManager {
         _popup.showCloseButton = true;
         _popup.addEventListener(CloseEvent.CLOSE, handleHidePopup);
         createPopUpOpenCloseEffects();
-        createWizardOpenCloseEffects();
 
         _progress = new SizeableTitleWindow();
         _progress.styleName = "";
         _progress.verticalScrollPolicy = "off";
         _progress.horizontalScrollPolicy = "off";
         _progress.showCloseButton = false;
+        _progress.addEventListener(CloseEvent.CLOSE, handleHideProgress);
         createProgressOpenCloseEffects();
+
+        createWizardOpenCloseEffects();
     }
 
     protected function createPopUpOpenCloseEffects():void {
@@ -145,6 +148,14 @@ public class BasePopUpManager {
         _popupVisible = false;
     }
 
+    protected function handleHideProgress(event:Event):void {
+        PopUpManager.removePopUp(_progress);
+        _progress.removeAllChildren();
+        _progressCloseEffect.end();
+        _progressCloseEffect.play();
+        _progressVisible = false;
+    }
+
     protected function handleHideWizard(event:Event):void {
         PopUpManager.removePopUp(_wizard);
         _wizardCloseEffect.end();
@@ -156,7 +167,8 @@ public class BasePopUpManager {
             _popup.removeAllChildren();
         }
         else {
-            PopUpManager.addPopUp(_popup, _popupParent, true);
+            //PopUpManager.addPopUp(_popup, _popupParent, true);
+            PopUpManager.addPopUp(_popup, Application.application as DisplayObject, true);
             PopUpManager.centerPopUp(_popup);
             _popupVisible = true;
             _popUpOpenEffect.end();
@@ -170,7 +182,8 @@ public class BasePopUpManager {
             _progress.removeAllChildren();
         }
         else {
-            PopUpManager.addPopUp(_progress, _popupParent, true);
+            //PopUpManager.addPopUp(_progress, _popupParent, true);
+            PopUpManager.addPopUp(_progress, Application.application as DisplayObject, true);
             PopUpManager.centerPopUp(_progress);
             _progressVisible = true;
             _progressOpenEffect.end();
@@ -188,22 +201,31 @@ public class BasePopUpManager {
         _wizard.horizontalScrollPolicy = "off";
         _wizard.showCloseButton = true;
         _wizard.addEventListener(CloseEvent.CLOSE, handleHideWizard);
+        _wizard.addEventListener(FlexEvent.CREATION_COMPLETE, onWizardCreationComplete, false, 0);
 
-        PopUpManager.addPopUp(_wizard, _popupParent, true);
+        //PopUpManager.addPopUp(_wizard, _popupParent, true);
+        PopUpManager.addPopUp(_wizard, Application.application as DisplayObject, true);
+        PopUpManager.centerPopUp(_wizard);
         _wizardOpenEffect.end();
         _wizardOpenEffect.play();
     }
 
+    /**
+     * This handler will center the popup AFTER its dimensions are properly set.
+     * @param event
+     */
+    private function onWizardCreationComplete(event:Event):void {
+        PopUpManager.centerPopUp(event.currentTarget as Wizard);
+    }
+
     public function showProcessingWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_processingView) {
-            createProcessingWindow();
-        }
+        createProcessingWindow();
         _progress.title = "Progress";
         _progress.width = 300;
         _progress.height = 200;
-        _progress.x = (_popupParent.width / 2) - 225;
-        _progress.y = 80;
+        //_progress.x = (_popupParent.width / 2) - 225;
+        //_progress.y = 80;
         showProgress(_processingView);
     }
 
@@ -214,6 +236,7 @@ public class BasePopUpManager {
 
     private function handleProcessingWindowCreated(event:FlexEvent):void {
         var mediator:ProcessingMediator = new ProcessingMediator(_processingView);
+        _facade.removeMediator(ProcessingMediator.NAME);
         _facade.registerMediator(mediator);
         mediator.handleNotification(_lastWindowNotification);
     }

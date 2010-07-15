@@ -29,6 +29,8 @@ import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdenti
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand;
+import com.atricore.idbus.console.modeling.main.controller.ManageIdentityApplianceLifeCycleCommand;
+
 import org.puremvc.as3.patterns.facade.Facade;
 
 public class ApplicationFacade extends Facade {
@@ -65,6 +67,7 @@ public class ApplicationFacade extends Facade {
     public static const NOTE_MANAGE_CERTIFICATE:String = "Note.ManageCertificate";
     public static const NOTE_SHOW_UPLOAD_PROGRESS:String = "Note.UploadProgress";
     public static const NOTE_UPLOAD:String = "Note.Upload";
+    public static const NOTE_MANAGE_IDENTITY_APPLIANCE_LIFECYCLE:String = "Note.ManageIdentityApplianceLifeCycle";
 
 
     public static function getInstance():ApplicationFacade {
@@ -87,6 +90,7 @@ public class ApplicationFacade extends Facade {
         registerCommand(NOTE_IDENTITY_PROVIDER_REMOVE, IdentityProviderRemoveCommand);
         registerCommand(NOTE_IDENTITY_APPLIANCE_LIST_LOAD, IdentityApplianceListLoadCommand);
         registerCommand(NOTE_UPLOAD, UploadCommand);
+        registerCommand(NOTE_MANAGE_IDENTITY_APPLIANCE_LIFECYCLE, ManageIdentityApplianceLifeCycleCommand);
     }
 
     public function startUp(app:AtricoreConsole):void {

@@ -29,6 +29,8 @@ import com.atricore.idbus.console.services.spi.response.*;
  */
 public interface IdentityApplianceManagementAjaxService {
 
+    BuildIdentityApplianceResponse buildIdentityAppliance(BuildIdentityApplianceRequest req) throws IdentityServerException;
+
 	DeployIdentityApplianceResponse deployIdentityAppliance(DeployIdentityApplianceRequest req) throws IdentityServerException;
 
 	UndeployIdentityApplianceResponse undeployIdentityAppliance(UndeployIdentityApplianceRequest req) throws IdentityServerException;

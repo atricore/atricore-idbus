@@ -32,6 +32,7 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
 import com.atricore.idbus.console.services.dto.LocationDTO;
 
+import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.events.CloseEvent;
@@ -48,12 +49,15 @@ public class IdentityApplianceMediator extends FormMediator
     private var _keystoreProxy:KeystoreProxy;
     private var _newIdentityAppliance:IdentityApplianceDTO;
 
+    private var _processingStarted:Boolean;
+
     public function IdentityApplianceMediator(viewComp:IdentityApplianceForm) {
         super(NAME, viewComp);
         _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
         _keystoreProxy = KeystoreProxy(facade.retrieveProxy(KeystoreProxy.NAME));
         viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         viewComp.btnSave.addEventListener(MouseEvent.CLICK, handleIdentityApplianceSave);
+        viewComp.addEventListener(CloseEvent.CLOSE, handleClose);
     }
 
     override public function registerValidators():void {
@@ -65,7 +69,9 @@ public class IdentityApplianceMediator extends FormMediator
 
 
     override public function listNotificationInterests():Array {
-        return [CREATE,EDIT,IdentityApplianceCreateCommand.SUCCESS];
+        return [CREATE,EDIT,IdentityApplianceCreateCommand.SUCCESS,
+                IdentityApplianceCreateCommand.FAILURE,
+                ProcessingMediator.CREATED];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -86,6 +92,30 @@ public class IdentityApplianceMediator extends FormMediator
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
+                    "The appliance has been successfully created.");
+                facade.removeMediator(IdentityApplianceMediator.NAME);
+                break;
+            case IdentityApplianceCreateCommand.FAILURE:
+                sendNotification(ProcessingMediator.STOP);
+                sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+                    "There was an error creating appliance.");
+                facade.removeMediator(IdentityApplianceMediator.NAME);
+                break;
+            case ProcessingMediator.CREATED:
+                // persisting data could end before processing window was created
+                // and processing window will be left unclosed because it didn't receive
+                // STOP notification, so we start the persisting once the processing window
+                // is created
+                if (_proxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
+                    sendNotification(ApplicationFacade.NOTE_CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
+
+                    _proxy.currentIdentityApplianceElement = _newIdentityAppliance;
+                    sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
+                }
+                else {
+                    sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+                }
                 break;
         }
 
@@ -125,6 +155,7 @@ public class IdentityApplianceMediator extends FormMediator
     private function handleIdentityApplianceSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
+            /*
             if (_proxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
                 sendNotification(ApplicationFacade.NOTE_CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
 
@@ -134,6 +165,8 @@ public class IdentityApplianceMediator extends FormMediator
             else {
                 sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
             }
+            */
+            _processingStarted = true;
             closeWindow();
             sendNotification(ProcessingMediator.START);
         }
@@ -148,6 +181,12 @@ public class IdentityApplianceMediator extends FormMediator
 
     private function closeWindow():void {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+    }
+
+    private function handleClose(event:Event):void {
+        if (!_processingStarted) {
+            facade.removeMediator(IdentityApplianceMediator.NAME);
+        }
     }
 
     protected function get view():IdentityApplianceForm

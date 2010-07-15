@@ -45,6 +45,7 @@ public class UploadProgressMediator extends Mediator
         super(NAME, viewComp);
         view.btnCancel.addEventListener("click", onUploadBtnCancel);
         view.btnFinish.addEventListener("click", onUploadBtnFinish);
+        viewComp.addEventListener(CloseEvent.CLOSE, handleClose);
     }
 
     override public function listNotificationInterests():Array {
@@ -90,7 +91,11 @@ public class UploadProgressMediator extends Mediator
     private function closeWindow():void {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
-    
+
+    private function handleClose(event:Event):void {
+        facade.removeMediator(UploadProgressMediator.NAME);
+    }
+
     protected function get view():UploadProgress
     {
         return viewComponent as UploadProgress;

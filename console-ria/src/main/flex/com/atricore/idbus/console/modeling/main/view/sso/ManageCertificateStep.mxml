@@ -1,0 +1,178 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<WizardStep
+        xmlns="com.atricore.idbus.console.components.wizard.*"
+        xmlns:mx="http://www.adobe.com/2006/mxml"
+        stepName="Basic Authentication"
+        xmlns:utils="com.atricore.idbus.console.components.*"
+        creationComplete="initForm()">
+
+        <mx:Script>
+        <![CDATA[
+
+            import com.atricore.idbus.console.services.dto.KeystoreDTO;
+            import com.atricore.idbus.console.services.dto.ResourceDTO;
+
+            import mx.events.ItemClickEvent;
+
+            private static var INPUT_WIDTH:Number = 145;
+
+            [Bindable]
+            private var _resourceId:String;
+
+            [Bindable]
+            private var validators:Array;
+
+            public function set resourceId(resourceId:String):void {
+                _resourceId = resourceId;
+                handleFormChange(null);
+            }
+
+            public function get resourceId():String {
+                return _resourceId;
+            }
+
+            /**
+             * This will hold the results
+             */
+            private var readableDecisionArray:Array;
+
+            override public function get stepDecision():* {
+                if (uploadKeystore.selected) {
+                    var keystore:KeystoreDTO = new KeystoreDTO();
+                    keystore.certificateAlias = certificateAlias.text;
+                    keystore.privateKeyName = keyAlias.text;
+                    keystore.privateKeyPassword = keyPassword.text;
+                    keystore.password = keystorePassword.text;
+                    keystore.type = keystoreFormat.selectedItem.data;
+                    var resource:ResourceDTO = new ResourceDTO();
+                    resource.id = Number(resourceId);
+                    keystore.store = resource;
+                    return keystore;
+                } else {
+                    return null;
+                }
+            }
+
+            override public function get readableStepDecision():String {
+                readableDecisionArray = new Array();
+                return readableDecisionArray.join("\n").toString();
+            }
+
+            private function initForm():void {
+                if (validators == null) {
+                    validators = new Array();
+                    validators.push(certificateAliasValidator);
+                    validators.push(keyAliasValidator);
+                    validators.push(keystorePasswordValidator);
+                    validators.push(keyPasswordValidator);
+                }
+                autoGenerate.selected = true;
+                enableDisableUploadFields(false);
+            }
+
+            private function handleManagementTypeClicked(event:ItemClickEvent):void {
+                if (uploadKeystore.selected) {
+                    enableDisableUploadFields(true);
+                } else {
+                    enableDisableUploadFields(false);
+                }
+                handleFormChange(event);
+            }
+
+            private function handleFormChange(event:Event):void {
+                // Check the step validity
+                if (uploadKeystore.selected) {
+                    certificateForm.validateForm(event);
+                    isValid = certificateForm.isValid && resourceId != null;
+                } else {
+                    isValid = true;
+                }
+            }
+
+            private function enableDisableUploadFields(enable:Boolean):void {
+                certificateKeyPair.enabled = enable;
+                keystoreFormat.enabled = enable;
+                certificateAlias.enabled = enable;
+                keyAlias.enabled = enable;
+                keystorePassword.enabled = enable;
+                keyPassword.enabled = enable;
+            }
+        ]]>
+    </mx:Script>
+
+    <mx:StringValidator id="certificateAliasValidator" source="{certificateAlias}" required="true" property="text"/>
+    <mx:StringValidator id="keyAliasValidator" source="{keyAlias}" required="true" property="text"/>
+    <mx:StringValidator id="keystorePasswordValidator" source="{keystorePassword}" required="true" property="text"/>
+    <mx:StringValidator id="keyPasswordValidator" source="{keyPassword}" required="true" property="text"/>
+
+    <mx:VBox width="100%" height="100%">
+
+        <utils:ValidatingForm id="certificateForm" width="100%" height="100%" validators="{validators}" labelWidth="110">
+
+            <utils:GroupBox width="100%" height="100%" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.manageCertificate')}">
+                <mx:RadioButtonGroup id="certificateManagementType" itemClick="handleManagementTypeClicked(event);"/>
+                <mx:RadioButton groupName="certificateManagementType" id="autoGenerate" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.autoGenerate')}"/>
+                <mx:RadioButton groupName="certificateManagementType" id="uploadKeystore" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.uploadKeystore')}"/>
+            </utils:GroupBox>
+
+            <!-- UPLOAD CERTIFICATE -->
+            <utils:GroupBox width="100%" height="100%" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.uploadKeyPair')}">
+                <mx:HBox width="100%" height="100%">
+                    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateKeyPair')}:">
+                        <mx:ComboBox id="certificateKeyPair" width="{INPUT_WIDTH}" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.browseKeyPair')}" enabled="false"/>
+                    </mx:FormItem>
+                    <mx:Button id="btnUpload" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload')}" enabled="false"/>
+                    <mx:Label id="lblUploadMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload.success')}" visible="false"/>
+                </mx:HBox>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystoreFormat')}:">
+                    <mx:ComboBox id="keystoreFormat" width="{INPUT_WIDTH}" enabled="false">
+                        <mx:ArrayCollection>
+                             <mx:Object label="Java Keystore" data="JKS"/>
+                         </mx:ArrayCollection>
+                    </mx:ComboBox>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateAlias')}:" required="true">
+                    <mx:TextInput id="certificateAlias" width="{INPUT_WIDTH}" enabled="false" change="handleFormChange(event);"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keyAlias')}:" required="true">
+                    <mx:TextInput id="keyAlias" width="{INPUT_WIDTH}" enabled="false" change="handleFormChange(event);"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystorePassword')}:" required="true">
+                    <mx:TextInput id="keystorePassword" width="{INPUT_WIDTH}" enabled="false" change="handleFormChange(event);"/>
+                </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keyPassword')}:" required="true">
+                    <mx:TextInput id="keyPassword" width="{INPUT_WIDTH}" enabled="false" change="handleFormChange(event);"/>
+                </mx:FormItem>
+                <mx:Spacer height="5" />
+            </utils:GroupBox>
+
+        </utils:ValidatingForm>
+
+    </mx:VBox>
+
+</WizardStep>

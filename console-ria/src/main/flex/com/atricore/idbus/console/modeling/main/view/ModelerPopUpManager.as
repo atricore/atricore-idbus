@@ -28,6 +28,10 @@ import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator;
 import com.atricore.idbus.console.modeling.main.ModelerView;
+import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator;
+import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceView;
+import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
+import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceView;
 
 import mx.events.FlexEvent;
 
@@ -39,6 +43,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
     private var _manageCertificateForm:ManageCertificateView;
     private var _uploadProgress:UploadProgress;
+    private var _buildAppliance:BuildApplianceView;
+    private var _deployAppliance:DeployApplianceView;
 
     public function ModelerPopUpManager(facade:IFacade, modeler:ModelerView) {
         super(facade, modeler);
@@ -65,20 +71,19 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     private function handleIdentityProviderCreateFormCreated(event:FlexEvent):void {
         var mediator:IdentityProviderCreateMediator = new IdentityProviderCreateMediator(_identityProviderCreateForm);
+        _facade.removeMediator(IdentityProviderCreateMediator.NAME);
         _facade.registerMediator(mediator);
         mediator.handleNotification(_lastWindowNotification);
     }
 
     public function showManageCertificateWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_manageCertificateForm) {
-           createManageCertificateForm();
-        }
+        createManageCertificateForm();
         _popup.title = "Manage Certificate";
         _popup.width = 400;
         _popup.height = 480;
-        _popup.x = (_popupParent.width / 2) - 225;
-        _popup.y = 80;
+        //_popup.x = (_popupParent.width / 2) - 225;
+        //_popup.y = 80;
         showPopup(_manageCertificateForm);
     }
     
@@ -89,20 +94,19 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     private function handleManageCertificateFormCreated(event:FlexEvent):void {
         var mediator:ManageCertificateMediator = new ManageCertificateMediator(_manageCertificateForm);
+        _facade.removeMediator(ManageCertificateMediator.NAME);
         _facade.registerMediator(mediator);
         mediator.handleNotification(_lastWindowNotification);
     }
 
     public function showUploadProgressWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_uploadProgress) {
-           createUploadProgressWindow();
-        }
+        createUploadProgressWindow();
         _progress.title = "File upload";
-        _progress.width = 400;
+        _progress.width = 300;
         _progress.height = 170;
-        _progress.x = (_popupParent.width / 2) - 225;
-        _progress.y = 80;
+        //_progress.x = (_popupParent.width / 2) - 225;
+        //_progress.y = 80;
         showProgress(_uploadProgress);
     }
 
@@ -113,6 +117,53 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     private function handleUploadProgressWindowCreated(event:FlexEvent):void {
         var mediator:UploadProgressMediator = new UploadProgressMediator(_uploadProgress);
+        _facade.removeMediator(UploadProgressMediator.NAME);
+        _facade.registerMediator(mediator);
+        mediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showBuildIdentityApplianceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createBuildApplianceWindow();
+        _popup.title = "Build Identity Appliance";
+        _popup.width = 430;
+        _popup.height = 230;
+        //_progress.x = (_popupParent.width / 2) - 225;
+        //_progress.y = 80;
+        showPopup(_buildAppliance);
+    }
+
+    private function createBuildApplianceWindow():void {
+        _buildAppliance = new BuildApplianceView();
+        _buildAppliance.addEventListener(FlexEvent.CREATION_COMPLETE, handleBuildApplianceWindowCreated);
+    }
+
+    private function handleBuildApplianceWindowCreated(event:FlexEvent):void {
+        var mediator:BuildApplianceMediator = new BuildApplianceMediator(_buildAppliance);
+        _facade.removeMediator(BuildApplianceMediator.NAME);
+        _facade.registerMediator(mediator);
+        mediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showDeployIdentityApplianceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createDeployApplianceWindow();
+        _popup.title = "Deploy Identity Appliance";
+        _popup.width = 430;
+        _popup.height = 230;
+        //_progress.x = (_popupParent.width / 2) - 225;
+        //_progress.y = 80;
+        showPopup(_deployAppliance);
+    }
+
+    private function createDeployApplianceWindow():void {
+        _deployAppliance = new DeployApplianceView();
+        _deployAppliance.addEventListener(FlexEvent.CREATION_COMPLETE, handleDeployApplianceWindowCreated);
+    }
+
+    private function handleDeployApplianceWindowCreated(event:FlexEvent):void {
+        var mediator:DeployApplianceMediator = new DeployApplianceMediator(_deployAppliance);
+        _facade.removeMediator(DeployApplianceMediator.NAME);
         _facade.registerMediator(mediator);
         mediator.handleNotification(_lastWindowNotification);
     }
