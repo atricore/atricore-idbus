@@ -92,6 +92,7 @@ public class IdentityApplianceMediator extends FormMediator
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_LIST_LOAD);
                 sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
                     "The appliance has been successfully created.");
                 facade.removeMediator(IdentityApplianceMediator.NAME);

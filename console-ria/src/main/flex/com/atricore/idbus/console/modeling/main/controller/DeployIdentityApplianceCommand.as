@@ -24,8 +24,8 @@ package com.atricore.idbus.console.modeling.main.controller
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.spi.request.ListIdentityAppliancesRequest;
-import com.atricore.idbus.console.services.spi.response.ListIdentityAppliancesResponse;
+import com.atricore.idbus.console.services.spi.request.DeployIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.response.DeployIdentityApplianceResponse;
 
 import mx.rpc.Fault;
 import mx.rpc.IResponder;
@@ -35,27 +35,32 @@ import mx.rpc.remoting.mxml.RemoteObject;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.command.SimpleCommand;
 
-public class IdentityApplianceListLoadCommand extends SimpleCommand implements IResponder {
+public class DeployIdentityApplianceCommand extends SimpleCommand implements IResponder
+{
+    public static const SUCCESS:String = "DeployIdentityApplianceCommand.SUCCESS";
+    public static const FAILURE:String = "DeployIdentityApplianceCommand.FAILURE";
 
-    public static const SUCCESS:String = "IdentityApplianceListLoadCommand.SUCCESS";
-    public static const FAILURE:String = "IdentityApplianceListLoadCommand.FAILURE";
+    public function DeployIdentityApplianceCommand() {
+
+    }
 
     override public function execute(notification:INotification):void {
-        var req:ListIdentityAppliancesRequest = new ListIdentityAppliancesRequest();
-        req.startedOnly = false;
-        req.projectedOnly = false;
-        req.fetchDepth = 3;
-
+        var params:Array = notification.getBody() as Array;
+        
         var registry:ServiceRegistry = facade.retrieveProxy(ServiceRegistry.NAME) as ServiceRegistry;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
-        var call:Object = service.listIdentityAppliances(req);
+
+        var req:DeployIdentityApplianceRequest = new DeployIdentityApplianceRequest();
+        req.applianceId = params[0];
+        req.startAppliance = params[1];
+        var call:Object = service.deployIdentityAppliance(req);
         call.addResponder(this);
     }
 
     public function result(data:Object):void {
         var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
-        var resp:ListIdentityAppliancesResponse = data.result as ListIdentityAppliancesResponse;
-        proxy.identityApplianceList = resp.identityAppliances;
+        var resp:DeployIdentityApplianceResponse = data.result as DeployIdentityApplianceResponse;
+        proxy.currentIdentityAppliance = resp.appliance;
         sendNotification(SUCCESS);
     }
 

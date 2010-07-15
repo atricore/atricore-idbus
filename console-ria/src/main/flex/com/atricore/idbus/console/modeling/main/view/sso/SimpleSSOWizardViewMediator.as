@@ -186,6 +186,7 @@ public class SimpleSSOWizardViewMediator extends Mediator
         sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
         sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
+        sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_LIST_LOAD);
         sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
                 "The SSO appliance has been successfully created.");
     }

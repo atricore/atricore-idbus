@@ -46,14 +46,15 @@
                          paddingBottom="5">
                     <mx:HBox>
                         <mx:Button id="btnNew" label="New"/>
-                        <mx:ComboBox id="applianceStyle" labelField="label" selectedIndex="0" width="250">
+                        <mx:ComboBox id="applianceStyle" labelField="label" selectedIndex="0" width="210">
                             <mx:ArrayCollection>
                                 <mx:Object label="None (Advanced mode)" data="Advanced"/>
                                 <mx:Object label="Simple SSO" data="SimpleSSO"/>
                             </mx:ArrayCollection>
                         </mx:ComboBox>
-                        <mx:ButtonBar id="modelActionToolBar" height="5%" dataProvider="[Build,Deploy]">
-                        </mx:ButtonBar>
+                        <mx:ButtonBar id="modelActionToolBar" height="5%" dataProvider="[Build,Deploy]"/>
+                        <mx:Button id="btnOpen" label="Open"/>
+                        <mx:ComboBox id="appliances" width="250" prompt="Select an appliance to open"/>
                     </mx:HBox>
                     <mx:HBox width="99%" height="55%">
                         <browser:BrowserView id="browser" height="99%" width="20%"/>

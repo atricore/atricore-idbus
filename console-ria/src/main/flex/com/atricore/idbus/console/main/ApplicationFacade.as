@@ -25,11 +25,14 @@ import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
 import com.atricore.idbus.console.main.controller.RegisterCommand;
 import com.atricore.idbus.console.main.controller.SetupServerCommand;
 import com.atricore.idbus.console.main.controller.UploadCommand;
+import com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand;
+import com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand;
-import com.atricore.idbus.console.modeling.main.controller.ManageIdentityApplianceLifeCycleCommand;
+
+import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand;
 
 import org.puremvc.as3.patterns.facade.Facade;
 
@@ -49,6 +52,7 @@ public class ApplicationFacade extends Facade {
     public static const NOTE_CLEAR_MSG:String = "Note.ClearMsg";
     public static const NOTE_REGISTER:String = "Note.Register";
     public static const NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE:String = "Note.CreateSimpleSSOIdentityAppliance";
+    public static const NOTE_LOOKUP_IDENTITY_APPLIANCE_BY_ID:String = "Note.LookupIdentityApplianceById";
     public static const NOTE_IDENTITY_APPLIANCE_LIST_LOAD:String = "Note.IdentityApplianceListLoad";
     public static const NOTE_CREATE_IDENTITY_APPLIANCE:String = "Note.CreateIdentityAppliance";
     public static const NOTE_IDENTITY_PROVIDER_REMOVE:String = "Node.IdentityProviderRemove" ;
@@ -67,7 +71,8 @@ public class ApplicationFacade extends Facade {
     public static const NOTE_MANAGE_CERTIFICATE:String = "Note.ManageCertificate";
     public static const NOTE_SHOW_UPLOAD_PROGRESS:String = "Note.UploadProgress";
     public static const NOTE_UPLOAD:String = "Note.Upload";
-    public static const NOTE_MANAGE_IDENTITY_APPLIANCE_LIFECYCLE:String = "Note.ManageIdentityApplianceLifeCycle";
+    public static const NOTE_BUILD_IDENTITY_APPLIANCE:String = "Note.BuildIdentityAppliance";
+    public static const NOTE_DEPLOY_IDENTITY_APPLIANCE:String = "Note.DeployIdentityAppliance";
 
 
     public static function getInstance():ApplicationFacade {
@@ -88,9 +93,11 @@ public class ApplicationFacade extends Facade {
         registerCommand(NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, CreateSimpleSSOIdentityApplianceCommand);
         registerCommand(NOTE_CREATE_IDENTITY_APPLIANCE, IdentityApplianceCreateCommand);
         registerCommand(NOTE_IDENTITY_PROVIDER_REMOVE, IdentityProviderRemoveCommand);
+        registerCommand(NOTE_LOOKUP_IDENTITY_APPLIANCE_BY_ID, LookupIdentityApplianceByIdCommand);
         registerCommand(NOTE_IDENTITY_APPLIANCE_LIST_LOAD, IdentityApplianceListLoadCommand);
         registerCommand(NOTE_UPLOAD, UploadCommand);
-        registerCommand(NOTE_MANAGE_IDENTITY_APPLIANCE_LIFECYCLE, ManageIdentityApplianceLifeCycleCommand);
+        registerCommand(NOTE_BUILD_IDENTITY_APPLIANCE, BuildIdentityApplianceCommand);
+        registerCommand(NOTE_DEPLOY_IDENTITY_APPLIANCE, DeployIdentityApplianceCommand);
     }
 
     public function startUp(app:AtricoreConsole):void {

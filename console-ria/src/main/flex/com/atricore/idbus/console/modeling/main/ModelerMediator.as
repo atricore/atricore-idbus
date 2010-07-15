@@ -20,10 +20,21 @@
  */
 
 package com.atricore.idbus.console.modeling.main {
+import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.browser.BrowserMediator;
+import com.atricore.idbus.console.modeling.diagram.DiagramMediator;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
+import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
+import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand;
+import com.atricore.idbus.console.modeling.main.view.*;
+import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
+import com.atricore.idbus.console.modeling.palette.PaletteMediator;
+import com.atricore.idbus.console.modeling.propertysheet.PropertySheetMediator;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
 import flash.events.MouseEvent;
@@ -32,15 +43,6 @@ import mx.controls.ButtonBar;
 import mx.controls.buttonBarClasses.ButtonBarButton;
 import mx.events.ItemClickEvent;
 
-import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.modeling.browser.BrowserMediator;
-import com.atricore.idbus.console.modeling.diagram.DiagramMediator;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
-import com.atricore.idbus.console.modeling.main.view.*;
-import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator;
-import com.atricore.idbus.console.modeling.palette.PaletteMediator;
-import com.atricore.idbus.console.modeling.propertysheet.PropertySheetMediator;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
 
@@ -67,6 +69,9 @@ public class ModelerMediator extends Mediator {
 
     public static const NAME:String = "ModelMediator";
 
+    [Bindable]
+    public var _applianceList:Array;
+
     public function ModelerMediator(viewComp:ModelerView) {
         super(NAME, viewComp);
 
@@ -83,9 +88,14 @@ public class ModelerMediator extends Mediator {
         (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX) as ButtonBarButton).enabled = false;
 
         viewComp.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
+        viewComp.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
         _modelActionToolBar.addEventListener(ItemClickEvent.ITEM_CLICK, handleModelActionToolBarClick);
 
+        viewComp.appliances.labelFunction = applianceListLabelFunc;
+
         _modelerPopUpManager = new ModelerPopUpManager(facade, viewComp);
+
+        sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_LIST_LOAD);
     }
 
     private function handleNewClick(event:MouseEvent):void {
@@ -94,6 +104,14 @@ public class ModelerMediator extends Mediator {
             sendNotification(IdentityApplianceMediator.CREATE);
         } else if (view.applianceStyle.selectedItem.data == "SimpleSSO") {
             sendNotification(SimpleSSOWizardViewMediator.RUN);
+        }
+    }
+
+    private function handleOpenClick(event:MouseEvent):void {
+        trace("Open Button Click: " + event);
+        if (view.appliances.selectedItem != null) {
+            var applianceId:String = (view.appliances.selectedItem as IdentityApplianceDTO).id.toString();
+            sendNotification(ApplicationFacade.NOTE_LOOKUP_IDENTITY_APPLIANCE_BY_ID, applianceId);
         }
     }
 
@@ -115,7 +133,11 @@ public class ModelerMediator extends Mediator {
             ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS,
             ProcessingMediator.START,
             BuildApplianceMediator.RUN,
-            DeployApplianceMediator.RUN];
+            DeployApplianceMediator.RUN,
+            LookupIdentityApplianceByIdCommand.SUCCESS,
+            LookupIdentityApplianceByIdCommand.FAILURE,
+            IdentityApplianceListLoadCommand.SUCCESS,
+            IdentityApplianceListLoadCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -147,6 +169,25 @@ public class ModelerMediator extends Mediator {
             case DeployApplianceMediator.RUN:
                 _modelerPopUpManager.showDeployIdentityApplianceWindow(notification);
                 break;
+            case LookupIdentityApplianceByIdCommand.SUCCESS:
+                sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
+                sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+                //sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
+                sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
+                    "Appliance successfully opened.");
+                break;
+            case LookupIdentityApplianceByIdCommand.FAILURE:
+                sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+                    "There was an error opening appliance.");
+                break;
+            case IdentityApplianceListLoadCommand.SUCCESS:
+                var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
+                view.appliances.dataProvider = proxy.identityApplianceList;
+                break;
+            case IdentityApplianceListLoadCommand.FAILURE:
+                sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+                    "There was an error retrieving list of appliances.");
+                break;
         }
 
     }
@@ -165,6 +206,9 @@ public class ModelerMediator extends Mediator {
 
     }
 
+    private function applianceListLabelFunc(item:Object):String {
+        return (item as IdentityApplianceDTO).idApplianceDefinition.name;
+    }
 
     protected function get view():ModelerView
     {
