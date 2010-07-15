@@ -54,10 +54,19 @@
     </bean>
     -->
 
+    <bean id="dozerMapper" class="org.dozer.DozerBeanMapper">
+        <property name="mappingFiles">
+          <list>
+            <value>com/atricore/idbus/console/services/dto/dozer-mappings.xml</value>
+          </list>
+        </property>
+    </bean>
+
     <bean id="userProvisioningAjaxServiceBean" class="com.atricore.idbus.console.services.impl.UserProvisioningAjaxServiceImpl">
         <property name="provisioningService">
             <ref local="userProvisioningServiceManagerBean"/>
         </property>
+        <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 
     <bean id="userProvisioningServiceManagerBean" class="org.atricore.idbus.capabilities.management.main.impl.UserProvisioningServiceHashImpl">
@@ -74,9 +83,10 @@
         <property name="idApplianceManagementService">
             <ref local="identityApplianceManagementServiceBean"/>
         </property>
+        <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 
-    <bean id="identityApplianceManagementServiceBean" class="org.atricore.idbus.capabilities.management.main.impl.IdentityApplianceManagementServiceMockImpl">
+    <bean id="identityApplianceManagementServiceBean" class="org.atricore.idbus.capabilities.management.main.impl.IdentityApplianceManagementServiceHashImpl">
     </bean>
 
 </beans>
