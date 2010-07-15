@@ -82,8 +82,7 @@ public class BasePopUpManager {
         _progress.styleName = "";
         _progress.verticalScrollPolicy = "off";
         _progress.horizontalScrollPolicy = "off";
-        _progress.showCloseButton = true;
-        _progress.addEventListener(CloseEvent.CLOSE, handleHideProgress);
+        _progress.showCloseButton = false;
         createProgressOpenCloseEffects();
     }
 
@@ -146,20 +145,12 @@ public class BasePopUpManager {
         _popupVisible = false;
     }
 
-    protected function handleHideProgress(event:Event):void {
-        PopUpManager.removePopUp(_progress);
-        _progress.removeAllChildren();
-        _progressCloseEffect.end();
-        _progressCloseEffect.play();
-        _progressVisible = false;
-    }
-
     protected function handleHideWizard(event:Event):void {
         PopUpManager.removePopUp(_wizard);
         _wizardCloseEffect.end();
         _wizardCloseEffect.play();
     }
-    
+
     protected function showPopup(child:UIComponent):void {
         if (_popupVisible) {
             _popup.removeAllChildren();
@@ -206,7 +197,7 @@ public class BasePopUpManager {
     public function showProcessingWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         if (!_processingView) {
-           createProcessingWindow();
+            createProcessingWindow();
         }
         _progress.title = "Progress";
         _progress.width = 300;
