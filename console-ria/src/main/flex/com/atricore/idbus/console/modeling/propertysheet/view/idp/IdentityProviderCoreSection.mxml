@@ -20,55 +20,65 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<mx:HDividedBox xmlns:mx="http://www.adobe.com/2006/mxml"
-                xmlns:utils="com.atricore.idbus.console.components.*" width="100%">
-    <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
-             verticalGap="8">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
+         paddingRight="5" paddingTop="5" paddingBottom="5">
+    <utils:TitledBorderBox title="Endpoint" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
+                           paddingBottom="5">
+        <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
+                 verticalGap="8">
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.name')}:"
-                     required="true">
-            <mx:TextInput id="identityProviderName"/>
-        </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.name')}:"
+                         required="true">
+                <mx:TextInput id="identityProviderName"/>
+            </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.description')}:">
-            <mx:TextInput id="identityProvDescription"/>
-        </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.description')}:">
+                <mx:TextInput id="identityProvDescription"/>
+            </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.location')}:"
-                     direction="horizontal" labelWidth="75">
-            <mx:ComboBox id="idpLocationProtocol">
-                <mx:ArrayCollection>
-                    <mx:Object label="http" data="http"/>
-                    <mx:Object label="https" data="https"/>
-                </mx:ArrayCollection>
-            </mx:ComboBox>
-            <mx:Label text="://" width="15"/>
-            <mx:TextInput id="idpLocationDomain" width="150"/>
-            <mx:Label text=":" width="10"/>
-            <mx:TextInput id="idpLocationPort" width="40"/>
-            <mx:Label id="idpLocationContext" text="/idbus/" width="45"/>
-            <mx:TextInput id="idpLocationPath" width="180"/>
-        </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.location')}:"
+                         direction="horizontal" labelWidth="75">
+                <mx:ComboBox id="idpLocationProtocol">
+                    <mx:ArrayCollection>
+                        <mx:Object label="http" data="http"/>
+                        <mx:Object label="https" data="https"/>
+                    </mx:ArrayCollection>
+                </mx:ComboBox>
+                <mx:Label text="://" width="15"/>
+                <mx:TextInput id="idpLocationDomain" width="150"/>
+                <mx:Label text=":" width="10"/>
+                <mx:TextInput id="idpLocationPort" width="40"/>
+                <mx:Label id="idpLocationContext" text="/idbus/" width="45"/>
+                <mx:TextInput id="idpLocationPath" width="180"/>
+            </mx:FormItem>
 
-    </mx:Form>
-    <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
-             verticalGap="8">
+        </mx:Form>
+    </utils:TitledBorderBox>
+    <utils:TitledBorderBox title="User Information Lookup and Authentication" height="100%" width="50%" paddingLeft="5"
+                           paddingRight="5"
+                           paddingTop="5" paddingBottom="5">
+        <mx:Form paddingLeft="5" paddingRight="5" paddingTop="15" paddingBottom="5" width="100%" height="100%"
+                 verticalGap="8">
 
-        <mx:FormItem
-                label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.user.information.lookup')}:">
-            <mx:ComboBox id="userInfoLookupCombo" labelField="name" selectedIndex="0"/>
-        </mx:FormItem>
+            <mx:FormItem
+                    label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.user.information.lookup')}:">
+                <mx:ComboBox id="userInfoLookupCombo" labelField="name" selectedIndex="0"/>
+            </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:">
-            <mx:ComboBox id="authContractCombo" labelField="name" selectedIndex="0"/>
-        </mx:FormItem>
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:">
+                <mx:ComboBox id="authContractCombo" labelField="name" selectedIndex="0"/>
+            </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.mechanism')}:">
-            <mx:ComboBox id="authMechanismCombo" labelField="name" selectedIndex="0"/>
-        </mx:FormItem>
+            <mx:FormItem
+                    label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.mechanism')}:">
+                <mx:ComboBox id="authMechanismCombo" labelField="name" selectedIndex="0"/>
+            </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:">
-            <mx:ComboBox id="authAssertionEmissionPolicyCombo" labelField="name" selectedIndex="0"/>
-        </mx:FormItem>
-    </mx:Form>
-</mx:HDividedBox>
+            <mx:FormItem
+                    label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:">
+                <mx:ComboBox id="authAssertionEmissionPolicyCombo" labelField="name" selectedIndex="0"/>
+            </mx:FormItem>
+        </mx:Form>
+    </utils:TitledBorderBox>
+</mx:HBox>

@@ -57,7 +57,7 @@ public class IdentityApplianceMediator extends FormMediator
         _keystoreProxy = KeystoreProxy(facade.retrieveProxy(KeystoreProxy.NAME));
         viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         viewComp.btnSave.addEventListener(MouseEvent.CLICK, handleIdentityApplianceSave);
-        viewComp.addEventListener(CloseEvent.CLOSE, handleClose);
+        viewComp.parent.addEventListener(CloseEvent.CLOSE, handleClose);
     }
 
     override public function registerValidators():void {
@@ -92,6 +92,7 @@ public class IdentityApplianceMediator extends FormMediator
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_LIST_LOAD);
                 sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
                     "The appliance has been successfully created.");
                 facade.removeMediator(IdentityApplianceMediator.NAME);

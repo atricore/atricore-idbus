@@ -25,9 +25,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 import com.atricore.idbus.console.services.spi.request.BuildIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.request.DeployIdentityApplianceRequest;
 import com.atricore.idbus.console.services.spi.response.BuildIdentityApplianceResponse;
-import com.atricore.idbus.console.services.spi.response.DeployIdentityApplianceResponse;
 
 import mx.rpc.Fault;
 import mx.rpc.IResponder;
@@ -37,54 +35,32 @@ import mx.rpc.remoting.mxml.RemoteObject;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.command.SimpleCommand;
 
-public class ManageIdentityApplianceLifeCycleCommand extends SimpleCommand implements IResponder
+public class BuildIdentityApplianceCommand extends SimpleCommand implements IResponder
 {
-    public static const SUCCESS:String = "ManageIdentityApplianceLifeCycleCommand.SUCCESS";
-    public static const FAILURE:String = "ManageIdentityApplianceLifeCycleCommand.FAILURE";
+    public static const SUCCESS:String = "BuildIdentityApplianceCommand.SUCCESS";
+    public static const FAILURE:String = "BuildIdentityApplianceCommand.FAILURE";
 
-    public function ManageIdentityApplianceLifeCycleCommand() {
+    public function BuildIdentityApplianceCommand() {
 
     }
 
     override public function execute(notification:INotification):void {
         var params:Array = notification.getBody() as Array;
-        var action:String = notification.getType();
 
-        var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
-        proxy.currentApplianceLifeCycleAction = action;
         var registry:ServiceRegistry = facade.retrieveProxy(ServiceRegistry.NAME) as ServiceRegistry;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
-
-        switch (action) {
-            case "build":
-                var buildReq:BuildIdentityApplianceRequest = new BuildIdentityApplianceRequest();
-                buildReq.applianceId = params[0];
-                buildReq.deploy = params[1];
-                var call:Object = service.buildIdentityAppliance(buildReq);
-                call.addResponder(this);
-                break;
-            case "deploy":
-                var deployReq:DeployIdentityApplianceRequest = new DeployIdentityApplianceRequest();
-                deployReq.applianceId = params[0];
-                deployReq.startAppliance = params[1];
-                var call:Object = service.deployIdentityAppliance(deployReq);
-                call.addResponder(this);
-                break;
-        }
+        
+        var req:BuildIdentityApplianceRequest = new BuildIdentityApplianceRequest();
+        req.applianceId = params[0];
+        req.deploy = params[1];
+        var call:Object = service.buildIdentityAppliance(req);
+        call.addResponder(this);
     }
 
     public function result(data:Object):void {
         var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
-        switch (proxy.currentApplianceLifeCycleAction) {
-            case "build":
-                var buildResp:BuildIdentityApplianceResponse = data.result as BuildIdentityApplianceResponse;
-                proxy.currentIdentityAppliance = buildResp.appliance;
-                break;
-            case "deploy":
-                var deployResp:DeployIdentityApplianceResponse = data.result as DeployIdentityApplianceResponse;
-                proxy.currentIdentityAppliance = deployResp.appliance;
-                break;
-        }
+        var resp:BuildIdentityApplianceResponse = data.result as BuildIdentityApplianceResponse;
+        proxy.currentIdentityAppliance = resp.appliance;
         sendNotification(SUCCESS);
     }
 
