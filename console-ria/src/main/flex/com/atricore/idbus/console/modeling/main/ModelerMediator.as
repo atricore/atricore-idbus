@@ -174,7 +174,7 @@ public class ModelerMediator extends Mediator {
             case ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT:
                 var rsp:RemoveServiceProviderElementRequest  = RemoveServiceProviderElementRequest(notification.getBody());
 //                 TODO: Perform UI handling for confirming removal action
-                sendNotification(ApplicationFacade.NOTE_IDENTITY_PROVIDER_REMOVE, rip.identityProvider);
+                sendNotification(ApplicationFacade.NOTE_SERVICE_PROVIDER_REMOVE, rsp.serviceProvider);
                 break;
             case ApplicationFacade.NOTE_MANAGE_CERTIFICATE:
                 _modelerPopUpManager.showManageCertificateWindow(notification);

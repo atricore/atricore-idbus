@@ -23,6 +23,7 @@ package com.atricore.idbus.console.modeling.diagram {
 public class DiagramElementTypes {
     public static const IDENTITY_PROVIDER_ELEMENT_TYPE:int = 0;
     public static const SERVICE_PROVIDER_ELEMENT_TYPE:int = 1;
+    public static const IDENTITY_APPLIANCE_ELEMENT_TYPE = 2;
     
 }
 }

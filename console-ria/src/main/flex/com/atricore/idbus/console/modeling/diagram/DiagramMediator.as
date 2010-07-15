@@ -326,11 +326,24 @@ DiagramMediator extends Mediator {
     private function nodeRemoveEventHandler(event:VNodeRemoveEvent):void
     {
         var node:INode = _identityApplianceDiagram.graph.nodeByStringId(event.vnodeId);
+        var elementType:int;
 
         if (node != null) {
             _currentlySelectedNode = node;
             _projectProxy.currentIdentityApplianceElement = node.data;
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_REMOVE);
+            //need to add elementType in the notification body for delete func. to work properly
+            if(node.data is IdentityApplianceDTO){
+                elementType = DiagramElementTypes.IDENTITY_APPLIANCE_ELEMENT_TYPE;
+            } else
+            if(node.data is IdentityProviderDTO){
+                elementType = DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE;
+            } else
+            if (node.data is ServiceProviderDTO){
+                elementType = DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE;
+            }
+            //TODO - add other element types
+            
+            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_REMOVE, elementType);
         }
     }
 

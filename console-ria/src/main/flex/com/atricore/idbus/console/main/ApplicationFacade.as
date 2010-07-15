@@ -35,6 +35,8 @@ import com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemov
 
 import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand;
 
+import com.atricore.idbus.console.modeling.main.controller.ServiceProviderRemoveCommand;
+
 import org.puremvc.as3.patterns.facade.Facade;
 
 public class ApplicationFacade extends Facade {
@@ -57,6 +59,7 @@ public class ApplicationFacade extends Facade {
     public static const NOTE_IDENTITY_APPLIANCE_LIST_LOAD:String = "Note.IdentityApplianceListLoad";
     public static const NOTE_CREATE_IDENTITY_APPLIANCE:String = "Note.CreateIdentityAppliance";
     public static const NOTE_IDENTITY_PROVIDER_REMOVE:String = "Node.IdentityProviderRemove" ;
+    public static const NOTE_SERVICE_PROVIDER_REMOVE:String = "Node.ServiceProviderRemove" ;
     public static const NOTE_IDENTITY_APPLIANCE_CHANGED:String = "Note.IdentityApplianceChanged";
     public static const NOTE_EDIT_IDENTITY_APPLIANCE:String = "Note.EditIdentityAppliance";
     public static const NOTE_UPDATE_IDENTITY_APPLIANCE:String = "Note.UpdateIdentityAppliance";
@@ -97,6 +100,7 @@ public class ApplicationFacade extends Facade {
         registerCommand(NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, CreateSimpleSSOIdentityApplianceCommand);
         registerCommand(NOTE_CREATE_IDENTITY_APPLIANCE, IdentityApplianceCreateCommand);
         registerCommand(NOTE_IDENTITY_PROVIDER_REMOVE, IdentityProviderRemoveCommand);
+        registerCommand(NOTE_SERVICE_PROVIDER_REMOVE, ServiceProviderRemoveCommand);
         registerCommand(NOTE_LOOKUP_IDENTITY_APPLIANCE_BY_ID, LookupIdentityApplianceByIdCommand);
         registerCommand(NOTE_IDENTITY_APPLIANCE_LIST_LOAD, IdentityApplianceListLoadCommand);
         registerCommand(NOTE_UPLOAD, UploadCommand);
