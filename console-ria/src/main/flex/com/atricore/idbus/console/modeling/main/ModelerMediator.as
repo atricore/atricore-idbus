@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.modeling.main {
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
@@ -111,6 +112,8 @@ public class ModelerMediator extends Mediator {
         return [ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE,
             ApplicationFacade.NOTE_CREATE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.NOTE_CREATE_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT,                
             ApplicationFacade.NOTE_MANAGE_CERTIFICATE,
             ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS,
             ProcessingMediator.START,
@@ -130,6 +133,14 @@ public class ModelerMediator extends Mediator {
             case ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT:
                 var rip:RemoveIdentityProviderElementRequest  = RemoveIdentityProviderElementRequest(notification.getBody());
                 // TODO: Perform UI handling for confirming removal action
+                sendNotification(ApplicationFacade.NOTE_IDENTITY_PROVIDER_REMOVE, rip.identityProvider);
+                break;
+            case ApplicationFacade.NOTE_CREATE_SERVICE_PROVIDER_ELEMENT:
+                _modelerPopUpManager.showCreateServiceProviderWindow(notification);
+                break;
+            case ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT:
+                var rsp:RemoveServiceProviderElementRequest  = RemoveServiceProviderElementRequest(notification.getBody());
+//                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.NOTE_IDENTITY_PROVIDER_REMOVE, rip.identityProvider);
                 break;
             case ApplicationFacade.NOTE_MANAGE_CERTIFICATE:

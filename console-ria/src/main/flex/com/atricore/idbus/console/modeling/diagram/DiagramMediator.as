@@ -20,6 +20,8 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram {
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
@@ -31,6 +33,8 @@ import com.atricore.idbus.console.services.dto.LocalProviderDTO;
 import com.atricore.idbus.console.services.dto.ProviderDTO;
 
 import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
+
+import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
 
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
@@ -138,6 +142,23 @@ DiagramMediator extends Mediator {
 
 
                             break;
+                        case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
+                            // assert that source end is an Identity Appliance
+                            if (_currentlySelectedNode.data is IdentityApplianceDTO) {
+                                var ownerIdentityAppliance:IdentityApplianceDTO = _currentlySelectedNode.data as IdentityApplianceDTO;
+
+                                var csp:CreateServiceProviderElementRequest = new CreateServiceProviderElementRequest(
+                                        ownerIdentityAppliance,
+                                        _currentlySelectedNode.stringid
+                                        );
+
+                                // this notification will be grabbed by the modeler mediator which will open
+                                // the corresponding form
+                                sendNotification(ApplicationFacade.NOTE_CREATE_SERVICE_PROVIDER_ELEMENT, csp);
+                            }
+
+
+                            break;
                     }
                 }
                 break;
@@ -164,6 +185,18 @@ DiagramMediator extends Mediator {
                                 // the corresponding command for processing the removal operation.
                                 sendNotification(ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT, rip);
                             }
+                            break;
+                            case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
+                                // assert that source end is an Identity Appliance
+                                if (_currentlySelectedNode.data is ServiceProviderDTO) {
+                                    var serviceProvider:ServiceProviderDTO = _currentlySelectedNode.data as ServiceProviderDTO;
+
+                                    var rsp:RemoveServiceProviderElementRequest = new RemoveServiceProviderElementRequest(serviceProvider);
+
+                                    // this notification will be grabbed by the modeler mediator which will invoke
+                                    // the corresponding command for processing the removal operation.
+                                    sendNotification(ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT, rsp);
+                                }
 
 
                             break;

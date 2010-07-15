@@ -58,12 +58,14 @@ public class ApplicationFacade extends Facade {
     public static const NOTE_DRAG_ELEMENT_TO_DIAGRAM:String = "Note.DragElementToDiagram";
     public static const NOTE_CREATE_DIAGRAM_ELEMENT:String = "Note.CreateDiagramElement";
     public static const NOTE_CREATE_IDENTITY_PROVIDER_ELEMENT:String = "Note.CreateIdentityProviderElement";
+    public static const NOTE_CREATE_SERVICE_PROVIDER_ELEMENT:String = "Note.CreateServiceProviderElement";
     public static const NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE:String = "Note.DiagramElementCreationComplete";
     public static const NOTE_DIAGRAM_ELEMENT_SELECTED:String = "Note.DiagramElementSelected";
     public static const NOTE_DIAGRAM_ELEMENT_UPDATED:String = "Note.DiagramElementUpdated";
     public static const NOTE_DIAGRAM_ELEMENT_REMOVE:String = "Note.DiagramElementRemove";
     public static const NOTE_REMOVE_IDENTITY_APPLIANCE_ELEMENT:String = "Node.RemoveIdentityApplianceElement";
     public static const NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT:String = "Node.RemoveIdentityProviderElement";
+    public static const NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT:String = "Node.RemoveServiceProviderElement";
     public static const NOTE_MANAGE_CERTIFICATE:String = "Note.ManageCertificate";
     public static const NOTE_SHOW_UPLOAD_PROGRESS:String = "Note.UploadProgress";
     public static const NOTE_UPLOAD:String = "Note.Upload";

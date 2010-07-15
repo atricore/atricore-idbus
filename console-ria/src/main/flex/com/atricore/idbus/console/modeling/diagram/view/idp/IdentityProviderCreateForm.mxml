@@ -55,7 +55,7 @@
             <mx:TextInput id="identityProvDescription" width="300"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.location')}:"
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.location')}:" required="true"
                 direction="horizontal" labelWidth="75">
             <mx:ComboBox id="idpLocationProtocol">
                 <mx:ArrayCollection>

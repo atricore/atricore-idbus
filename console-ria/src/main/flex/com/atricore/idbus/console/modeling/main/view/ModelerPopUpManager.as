@@ -27,6 +27,8 @@ import com.atricore.idbus.console.main.view.upload.UploadProgress;
 import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator;
 import com.atricore.idbus.console.modeling.main.ModelerView;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceView;
@@ -41,6 +43,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class ModelerPopUpManager extends BasePopUpManager {
 
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
+    private var _serviceProviderCreateForm:ServiceProviderCreateForm;
     private var _manageCertificateForm:ManageCertificateView;
     private var _uploadProgress:UploadProgress;
     private var _buildAppliance:BuildApplianceView;
@@ -56,7 +59,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         if (!_identityProviderCreateForm) {
            createIdentityProviderCreateForm();
         }
-        _popup.title = "Creat Identity Provider";
+        _popup.title = "Create Identity Provider";
         _popup.width = 650;
         _popup.height = 610;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -72,6 +75,31 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleIdentityProviderCreateFormCreated(event:FlexEvent):void {
         var mediator:IdentityProviderCreateMediator = new IdentityProviderCreateMediator(_identityProviderCreateForm);
         _facade.removeMediator(IdentityProviderCreateMediator.NAME);
+        _facade.registerMediator(mediator);
+        mediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateServiceProviderWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_serviceProviderCreateForm) {
+           createServiceProviderCreateForm();
+        }
+        _popup.title = "Create Service Provider";
+        _popup.width = 650;
+        _popup.height = 610;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_serviceProviderCreateForm);
+    }
+
+    private function createServiceProviderCreateForm():void {
+        _serviceProviderCreateForm = new ServiceProviderCreateForm();
+        _serviceProviderCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderCreateFormCreated);
+    }
+
+    private function handleServiceProviderCreateFormCreated(event:FlexEvent):void {
+        var mediator:ServiceProviderCreateMediator = new ServiceProviderCreateMediator(_serviceProviderCreateForm);
+        _facade.removeMediator(ServiceProviderCreateMediator.NAME);
         _facade.registerMediator(mediator);
         mediator.handleNotification(_lastWindowNotification);
     }
