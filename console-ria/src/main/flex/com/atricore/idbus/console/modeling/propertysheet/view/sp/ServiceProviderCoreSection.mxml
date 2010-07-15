@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<mx:HDividedBox xmlns:mx="http://www.adobe.com/2006/mxml"
+                xmlns:utils="com.atricore.idbus.console.components.*" width="100%">
+
+        <mx:Array id="authMechanismArray">
+            <utils:ListItemValueObject label="Form-Based Basic" isSelected="false" />
+            <utils:ListItemValueObject label="Strong (Digital Sertificate)" isSelected="false" />
+            <utils:ListItemValueObject label="Windows (NTLM)" isSelected="false" />
+            <utils:ListItemValueObject label="Remember Me" isSelected="false" />
+        </mx:Array>
+
+        <mx:ArrayCollection id="authMechanismColl"
+                source="{authMechanismArray}" />
+    
+    <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
+             verticalGap="8">
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.name')}:"
+                     required="true">
+            <mx:TextInput id="serviceProvName"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.description')}:">
+            <mx:TextInput id="serviceProvDescription"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.location')}:" required="true"
+                direction="horizontal" labelWidth="90">
+            <mx:ComboBox id="spLocationProtocol">
+                <mx:ArrayCollection>
+                    <mx:Object label="http" data="http"/>
+                    <mx:Object label="https" data="https"/>
+                </mx:ArrayCollection>
+            </mx:ComboBox>
+            <mx:Label text="://" width="15"/>
+            <mx:TextInput id="spLocationDomain" width="150"/>
+            <mx:Label text=":" width="10"/>
+            <mx:TextInput id="spLocationPort" width="40"/>
+            <mx:Label id="spLocationContext" text="/idbus/" width="45"/>
+            <mx:TextInput id="spLocationPath" width="180"/>
+        </mx:FormItem>
+      <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.user.information.lookup')}:">
+            <mx:ComboBox id="userInfoLookupCombo" labelField="name" selectedIndex="0"/>
+        </mx:FormItem>        
+    </mx:Form>
+    
+    <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
+             verticalGap="8">
+
+        <mx:HBox width="100%">
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.mechanism')}:">
+                <mx:List id="authMechanismCombo"
+                               dataProvider="{authMechanismColl}"
+                               alternatingItemColors="[#EEEEEE, white]"
+                                width="200"
+                               rowCount="4">
+                       <mx:itemRenderer>
+                           <mx:Component>
+                               <mx:CheckBox selectedField="isSelected"
+                                       change="onChange(event);">
+                                   <mx:Script>
+                                       <![CDATA[
+                                           private function onChange(evt:Event):void {
+                                               data.isSelected = !data.isSelected;
+                                           }
+                                       ]]>
+                                   </mx:Script>
+                               </mx:CheckBox>
+                           </mx:Component>
+                       </mx:itemRenderer>
+                </mx:List>
+            </mx:FormItem>
+            <mx:Button id="configureAuthMechanism"
+               label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
+        </mx:HBox>
+
+        <mx:HBox width="100%">
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:">
+                <mx:ComboBox id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0"/>
+            </mx:FormItem>
+            <mx:Button id="configureAccLinkagePolicy"
+               label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
+        </mx:HBox>
+
+        <mx:HBox width="100%">
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.contract')}:">
+                <mx:ComboBox id="authContractCombo" width="200" labelField="name" selectedIndex="0"/>
+            </mx:FormItem>
+        </mx:HBox>        
+    </mx:Form>
+</mx:HDividedBox>

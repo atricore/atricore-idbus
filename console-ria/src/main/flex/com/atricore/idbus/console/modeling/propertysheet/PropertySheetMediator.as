@@ -21,16 +21,21 @@
 
 package com.atricore.idbus.console.modeling.propertysheet {
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderContractSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderContractSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderCoreSection;
 import com.atricore.idbus.console.services.dto.BindingDTO;
 import com.atricore.idbus.console.services.dto.ChannelDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
+import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
 
 import com.atricore.idbus.console.services.dto.LocationDTO;
 import com.atricore.idbus.console.services.dto.ProfileDTO;
 
 import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
+
+import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -55,9 +60,11 @@ public class PropertySheetMediator extends Mediator {
     private var _propertySheetsViewStack:ViewStack;
     private var _iaCoreSection:IdentityApplianceCoreSection;
     private var _ipCoreSection:IdentityProviderCoreSection;
+    private var _spCoreSection:ServiceProviderCoreSection;
     private var _projectProxy:ProjectProxy;
     private var _currentIdentityApplianceElement:Object;
     private var _ipContractSection:IdentityProviderContractSection;
+    private var _spContractSection:ServiceProviderContractSection;
 
     public function PropertySheetMediator(viewComp:PropertySheetView) {
         super(NAME, viewComp);
@@ -85,6 +92,10 @@ public class PropertySheetMediator extends Mediator {
                 if (_projectProxy.currentIdentityApplianceElement is IdentityProviderDTO) {
                     _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                     enableIdentityProviderPropertyTabs();
+                } else
+                if(_projectProxy.currentIdentityApplianceElement is ServiceProviderDTO) {
+                    _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
+                    enableServiceProviderPropertyTabs();                    
                 }
                 break;
         }
@@ -134,7 +145,6 @@ public class PropertySheetMediator extends Mediator {
         sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
     }
 
-
     protected function enableIdentityProviderPropertyTabs():void {
         // Attach appliance editor form to property tabbed view
         _propertySheetsViewStack.removeAllChildren();
@@ -168,8 +178,41 @@ public class PropertySheetMediator extends Mediator {
 
         _ipContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityProviderContractPropertyTabCreationComplete);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityProviderContractPropertyTabRollOut);
+    }
 
+    protected function enableServiceProviderPropertyTabs():void {
+        // Attach appliance editor form to property tabbed view
+        _propertySheetsViewStack.removeAllChildren();
 
+        // Core Tab
+        var corePropertyTab:Canvas = new Canvas();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.label = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _spCoreSection = new ServiceProviderCoreSection();
+        corePropertyTab.addChild(_spCoreSection);
+        _propertySheetsViewStack.addChild(corePropertyTab);
+
+        _spCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleServiceProviderCorePropertyTabRollOut);
+
+        // Contract Tab
+        var contractPropertyTab:Canvas = new Canvas();
+        contractPropertyTab.id = "propertySheetContractSection";
+        contractPropertyTab.label = "Contract";
+        contractPropertyTab.width = Number("100%");
+        contractPropertyTab.height = Number("100%");
+        contractPropertyTab.setStyle("borderStyle", "solid");
+
+        _spContractSection = new ServiceProviderContractSection();
+        contractPropertyTab.addChild(_spContractSection);
+        _propertySheetsViewStack.addChild(contractPropertyTab);
+
+        _spContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderContractPropertyTabCreationComplete);
+        contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleServiceProviderContractPropertyTabRollOut);
     }
 
     private function handleIdentityProviderCorePropertyTabCreationComplete(event:Event):void {
@@ -211,7 +254,6 @@ public class PropertySheetMediator extends Mediator {
         loc.context = _ipCoreSection.idpLocationContext.text;
         loc.uri = _ipCoreSection.idpLocationPath.text;
         identityProvider.location = loc;
-
 
         // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
         //userInformationLookup
@@ -290,6 +332,121 @@ public class PropertySheetMediator extends Mediator {
 
     }
 
+    private function handleServiceProviderCorePropertyTabCreationComplete(event:Event):void {
+        var serviceProvider:ServiceProviderDTO;
+
+        serviceProvider = _currentIdentityApplianceElement as ServiceProviderDTO;
+        // bind view
+        _spCoreSection.serviceProvName.text = serviceProvider.name;
+        _spCoreSection.serviceProvDescription.text = serviceProvider.description;
+        //TODO
+
+        for (var i:int = 0; i < _spCoreSection.spLocationProtocol.dataProvider.length; i++) {
+            if (serviceProvider.location != null && _spCoreSection.spLocationProtocol.dataProvider[i].label == serviceProvider.location.protocol) {
+                _spCoreSection.spLocationProtocol.selectedIndex = i;
+                break;
+            }
+        }
+        _spCoreSection.spLocationDomain.text = serviceProvider.location.host;
+        _spCoreSection.spLocationPort.text = serviceProvider.location.port.toString();
+        _spCoreSection.spLocationContext.text = serviceProvider.location.context;
+        _spCoreSection.spLocationPath.text = serviceProvider.location.uri;
+    }
+
+    private function handleServiceProviderCorePropertyTabRollOut(e:Event):void {
+        // bind model
+        var serviceProvider:ServiceProviderDTO;
+
+        serviceProvider = _currentIdentityApplianceElement as ServiceProviderDTO;
+
+        serviceProvider.name = _spCoreSection.serviceProvName.text;
+        serviceProvider.description = _spCoreSection.serviceProvDescription.text;
+
+        var loc:LocationDTO = new LocationDTO();
+        loc.protocol = _spCoreSection.spLocationProtocol.selectedLabel;
+        loc.host = _spCoreSection.spLocationDomain.text;
+        loc.port = parseInt(_spCoreSection.spLocationPort.text);
+        loc.context = _spCoreSection.spLocationContext.text;
+        loc.uri = _spCoreSection.spLocationPath.text;
+        loc.uri = _spCoreSection.spLocationPath.text;
+        serviceProvider.location = loc;
+
+        // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
+        //userInformationLookup
+        //authenticationContract
+        //authenticationMechanism
+        //authenticationAssertionEmissionPolicy
+
+        sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
+    }
+
+    private function handleServiceProviderContractPropertyTabCreationComplete(event:Event):void {
+
+        var serviceProvider:ServiceProviderDTO;
+
+        serviceProvider = _currentIdentityApplianceElement as ServiceProviderDTO;
+
+//        _spContractSection.signAuthRequestCheck.selected = serviceProvider.signAuthenticationAssertions;
+//        _spContractSection.encryptAuthRequestCheck.selected = serviceProvider.encryptAuthenticationAssertions;
+
+        var defaultChannel:ChannelDTO = serviceProvider.defaultChannel;
+        if (defaultChannel != null) {
+            for (var j:int = 0; j < defaultChannel.activeBindings.length; j ++) {
+                var tmpBinding:BindingDTO = defaultChannel.activeBindings.getItemAt(j) as BindingDTO;
+                if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_POST.name) {
+                    _spContractSection.samlBindingHttpPostCheck.selected = true;
+                }
+                if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_REDIRECT.name) {
+                    _spContractSection.samlBindingHttpRedirectCheck.selected = true;
+                }
+                if (tmpBinding.name == BindingDTO.SAMLR2_ARTIFACT.name) {
+                    _spContractSection.samlBindingArtifactCheck.selected = true;
+                }
+            }
+            for (j = 0; j < defaultChannel.activeProfiles.length; j++) {
+                var tmpProfile:ProfileDTO = defaultChannel.activeProfiles.getItemAt(j) as ProfileDTO;
+                if (tmpProfile.name == ProfileDTO.SSO.name) {
+                    _spContractSection.samlProfileSSOCheck.selected = true;
+                }
+                if (tmpProfile.name == ProfileDTO.SSO_SLO.name) {
+                    _spContractSection.samlProfileSLOCheck.selected = true;
+                }
+            }
+        }
+    }
+
+    private function handleServiceProviderContractPropertyTabRollOut(event:Event):void {
+
+        var serviceProvider:ServiceProviderDTO;
+
+        serviceProvider = _currentIdentityApplianceElement as ServiceProviderDTO;
+
+        var idpChannel:IdentityProviderChannelDTO = new IdentityProviderChannelDTO();
+
+        idpChannel.activeBindings = new ArrayCollection();
+        if (_spContractSection.samlBindingHttpPostCheck.selected) {
+            idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_POST);
+        }
+        if (_spContractSection.samlBindingArtifactCheck.selected) {
+            idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_ARTIFACT);
+        }
+        if (_spContractSection.samlBindingHttpRedirectCheck.selected) {
+            idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_REDIRECT);
+        }
+
+        idpChannel.activeProfiles = new ArrayCollection();
+        if (_spContractSection.samlProfileSSOCheck.selected) {
+            idpChannel.activeProfiles.addItem(ProfileDTO.SSO);
+        }
+        if (_spContractSection.samlProfileSSOCheck.selected) {
+            idpChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
+        }
+
+        serviceProvider.defaultChannel = idpChannel;
+//        identityProvider.signAuthenticationAssertions = _ipContractSection.signAuthAssertionCheck.selected;
+//        identityProvider.encryptAuthenticationAssertions = _ipContractSection.encryptAuthAssertionCheck.selected;
+
+    }
 
     protected function clearPropertyTabs():void {
         // Attach appliance editor form to property tabbed view
