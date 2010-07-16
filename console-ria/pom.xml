@@ -64,6 +64,14 @@
                     <configurationReport>true</configurationReport>
                     <keepGeneratedActionscript>false</keepGeneratedActionscript>
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.adobe.flex</groupId>
+                        <artifactId>compiler</artifactId>
+                        <version>${flex.framework.version}</version>
+                        <type>pom</type>
+                    </dependency>
+                </dependencies>
             </plugin>
 
             <plugin>
@@ -123,10 +131,10 @@
         </dependency>
 
         <dependency>
-           <groupId>org.puremvc</groupId>
-           <artifactId>puremvc</artifactId>
-           <version>2.0.4</version>
-           <type>swc</type>
+            <groupId>org.puremvc</groupId>
+            <artifactId>puremvc</artifactId>
+            <version>2.0.4</version>
+            <type>swc</type>
         </dependency>
 
     </dependencies>
