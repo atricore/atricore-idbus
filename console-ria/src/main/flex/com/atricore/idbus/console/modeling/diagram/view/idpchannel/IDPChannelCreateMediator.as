@@ -84,7 +84,7 @@ public class IDPChannelCreateMediator extends FormMediator {
         if(view.samlProfileSSOCheck.selected){
             idpChannel.activeProfiles.addItem(ProfileDTO.SSO);
         }
-        if(view.samlProfileSSOCheck.selected){
+        if(view.samlProfileSLOCheck.selected){
             idpChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
         }
         

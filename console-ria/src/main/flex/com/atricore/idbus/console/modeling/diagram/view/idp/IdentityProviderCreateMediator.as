@@ -85,6 +85,17 @@ public class IdentityProviderCreateMediator extends FormMediator {
 
         var spChannel:ServiceProviderChannelDTO = new ServiceProviderChannelDTO();
 
+        spChannel.name = identityProvider.name + " to idp default channel";
+
+        var spChannelLoc:LocationDTO = new LocationDTO();
+        spChannelLoc.protocol = view.idpLocationProtocol.selectedLabel;
+        spChannelLoc.host = view.idpLocationDomain.text;
+        spChannelLoc.port = parseInt(view.idpLocationPort.text);
+        spChannelLoc.context = view.idpLocationContext.text;
+        spChannelLoc.uri = view.idpLocationPath.text + "/SAML2";
+
+        spChannel.location = spChannelLoc;
+
         spChannel.activeBindings = new ArrayCollection();
         if(view.samlBindingHttpPostCheck.selected){
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_POST);
@@ -100,7 +111,7 @@ public class IdentityProviderCreateMediator extends FormMediator {
         if(view.samlProfileSSOCheck.selected){
             spChannel.activeProfiles.addItem(ProfileDTO.SSO);
         }
-        if(view.samlProfileSSOCheck.selected){
+        if(view.samlProfileSLOCheck.selected){
             spChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
         }
         
