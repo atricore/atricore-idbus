@@ -66,7 +66,10 @@
         <dozer.version>5.2.2</dozer.version>
         <felix.plugin.version>2.0.1</felix.plugin.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
+        <!--
         <flex.framework.version>3.2.0.3958</flex.framework.version>
+        -->
+        <flex.framework.version>3.3.0.4852</flex.framework.version>
         <flexlib.version>2.4.0</flexlib.version>
         <hsqldb.version>1.8.0.9</hsqldb.version>
         <javax.jdo2.version>2.3-ec</javax.jdo2.version>
@@ -290,6 +293,21 @@
                 <artifactId>flex-framework</artifactId>
                 <version>${flex.framework.version}</version>
                 <type>pom</type>
+            </dependency>
+
+            <dependency>
+               <groupId>com.adobe.flex.framework</groupId>
+               <artifactId>datavisualization</artifactId>
+               <version>${flex.framework.version}</version>
+               <type>swc</type>
+            </dependency>
+
+            <dependency>
+               <groupId>com.adobe.flex.framework</groupId>
+               <artifactId>datavisualization</artifactId>
+               <version>${flex.framework.version}</version>
+               <classifier>en_US</classifier>
+               <type>rb.swc</type>
             </dependency>
 
             <dependency>
@@ -877,7 +895,7 @@
 
         <repository>
             <id>forge</id>
-            <url>http://repository.sonatype.org/content/groups/public</url>
+            <url>http://repository.sonatype.org/content/groups/flexgroup/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -983,7 +1001,7 @@
 
         <pluginRepository>
             <id>forge</id>
-            <url>http://repository.sonatype.org/content/groups/public</url>
+            <url>http://repository.sonatype.org/content/groups/flexgroup/</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>

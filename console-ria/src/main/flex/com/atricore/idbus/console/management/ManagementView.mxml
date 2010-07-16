@@ -1,0 +1,130 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+          xmlns:components="com.atricore.idbus.console.components.*"
+          xmlns:browser="com.atricore.idbus.console.modeling.browser.*"
+          xmlns:diagram="com.atricore.idbus.console.modeling.diagram.*"
+          xmlns:palette="com.atricore.idbus.console.modeling.palette.*"
+          xmlns:propertysheet="com.atricore.idbus.console.modeling.propertysheet.*"
+          xmlns:comp="com.atricore.idbus.console.components.*"
+          xmlns:ravis="org.un.cava.birdeye.ravis.graphLayout.visual.*"
+          xmlns:graph-ctrl="com.atricore.idbus.console.modeling.diagram.ui.control.*"
+          xmlns:vc="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
+          xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
+          width="100%" height="100%"
+        >
+
+    <mx:Metadata>
+        [ResourceBundle("console")]
+    </mx:Metadata>
+
+    <mx:HDividedBox width="100%" height="100%" paddingRight="0">
+        <mx:VBox width="30%" height="100%" backgroundAlpha="0.7">
+           <mx:HBox width="100%" verticalAlign="bottom">
+              <mx:Label width="200" text="Saved Identity Appliances" styleName="h2"/>
+              <mx:Spacer width="100%"/>
+              <mx:Button id="btnApplianceCreate" label="Create Identity Appliance" enabled="false"/>
+           </mx:HBox>
+           <mx:AdvancedDataGrid id="grdSavedAppliances" width="100%" height="100%"
+                                dragEnabled="true" allowMultipleSelection="true" sortExpertMode="true"
+                                folderClosedIcon="{null}" folderOpenIcon="{null}"
+                                dragMoveEnabled="true" dropEnabled="true" doubleClickEnabled="true"
+                                styleName="applianceGrid" headerHeight="30" variableRowHeight="true">
+              <mx:columns>
+                 <mx:AdvancedDataGridColumn fontSize="12" color="#3679b0" headerText="Identity Appliance" headerStyleName="applianceHeader"
+                                            showDataTips="true" dataField="applianceLabel" wordWrap="true"/>
+                 <mx:AdvancedDataGridColumn headerText="Description" showDataTips="true" dataField="descriptionLabel"/>
+                 <mx:AdvancedDataGridColumn headerText="State" dataField="state" width="50" textAlign="center"
+                                            showDataTips="true"/>
+              </mx:columns>
+           </mx:AdvancedDataGrid>
+        </mx:VBox>
+       <mx:VBox width="30%" height="100%" backgroundAlpha="0.7">
+          <mx:HBox width="100%" verticalAlign="bottom">
+             <mx:Label width="200" text="Compiled Identity Appliances" styleName="h2"/>
+              <mx:Spacer width="100%"/>
+              <mx:ComboBox id="cboCompiledIdentityAppliances" prompt="Select an Identity Appliance to rebuild" width="230"
+                           labelField="title" enabled="true"/>
+          </mx:HBox>
+          <mx:AdvancedDataGrid id="grdCompiledAppliances" width="100%" height="100%"
+                               dragEnabled="true" allowMultipleSelection="true" sortExpertMode="true"
+                               folderClosedIcon="{null}" folderOpenIcon="{null}"
+                               dragMoveEnabled="true" dropEnabled="true" doubleClickEnabled="true"
+                               styleName="applianceGrid" headerHeight="30" variableRowHeight="true">
+             <mx:columns>
+                <mx:AdvancedDataGridColumn fontSize="12" color="#3679b0" headerText="Identity Appliance" headerStyleName="applianceHeader"
+                                           showDataTips="true" dataField="applianceLabel" wordWrap="true"/>
+                <mx:AdvancedDataGridColumn headerText="Description" showDataTips="true" dataField="descriptionLabel"/>
+                <mx:AdvancedDataGridColumn headerText="State" dataField="state" width="50" textAlign="center"
+                                           showDataTips="true"/>
+             </mx:columns>
+          </mx:AdvancedDataGrid>
+       </mx:VBox>
+       <mx:VBox width="45%" height="100%">
+          <mx:HBox width="100%" verticalAlign="bottom">
+              <mx:Label width="200" text="Deployed Identity Appliances" styleName="h2"/>
+              <mx:Spacer width="100%"/>
+             <mx:ComboBox id="cboDeployedIdentityAppliances" prompt="Select an Identity Appliance to redeploy" width="230"
+                          labelField="title" enabled="true"/>
+          </mx:HBox>
+
+          <mx:AdvancedDataGrid id="grdDeployAppliances" width="100%" height="100%"
+                               dragEnabled="true" allowMultipleSelection="true" doubleClickEnabled="true"
+                               dragMoveEnabled="true" dropEnabled="true"
+                               styleName="applianceGrid" headerHeight="30" sortExpertMode="true"
+                               folderClosedIcon="{null}" folderOpenIcon="{null}" variableRowHeight="true">
+              <mx:columns>
+                 <mx:AdvancedDataGridColumn fontSize="12" color="#3679b0" headerText="Identity Appliance" headerStyleName="applianceHeader"
+                                            showDataTips="true" dataField="applianceLabel" wordWrap="true"/>
+                 <mx:AdvancedDataGridColumn headerText="Description" showDataTips="true" dataField="descriptionLabel"/>
+                 <mx:AdvancedDataGridColumn headerText="State" dataField="state" width="50" textAlign="center"
+                                            showDataTips="true"/>
+              </mx:columns>
+          </mx:AdvancedDataGrid>
+       </mx:VBox>
+        <mx:VBox width="45%" height="100%">
+           <mx:HBox width="100%" verticalAlign="bottom">
+               <mx:Label width="200" text="Disposed Identity Appliances" styleName="h2"/>
+               <mx:Spacer width="100%"/>
+              <mx:ComboBox id="cboDisposedIdentityAppliances" prompt="Select an Identity Appliance to remove" width="230"
+                           labelField="title" enabled="true"/>
+           </mx:HBox>
+
+           <mx:AdvancedDataGrid id="grdDisposedAppliances" width="100%" height="100%"
+                                dragEnabled="true" allowMultipleSelection="true" doubleClickEnabled="true"
+                                dragMoveEnabled="true" dropEnabled="true"
+                                styleName="applianceGrid" headerHeight="30" sortExpertMode="true"
+                                folderClosedIcon="{null}" folderOpenIcon="{null}" variableRowHeight="true">
+               <mx:columns>
+                  <mx:AdvancedDataGridColumn fontSize="12" color="#3679b0" headerText="Identity Appliance" headerStyleName="applianceHeader"
+                                             showDataTips="true" dataField="applianceLabel" wordWrap="true"/>
+                  <mx:AdvancedDataGridColumn headerText="Description" showDataTips="true" dataField="descriptionLabel"/>
+                  <mx:AdvancedDataGridColumn headerText="State" dataField="state" width="50" textAlign="center"
+                                             showDataTips="true"/>
+               </mx:columns>
+           </mx:AdvancedDataGrid>
+        </mx:VBox>
+
+    </mx:HDividedBox>
+</mx:Panel>
