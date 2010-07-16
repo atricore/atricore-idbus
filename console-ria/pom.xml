@@ -137,6 +137,18 @@
             <type>swc</type>
         </dependency>
 
+      <dependency>
+         <groupId>com.adobe.flex.framework</groupId>
+         <artifactId>datavisualization</artifactId>
+         <type>swc</type>
+      </dependency>
+
+      <dependency>
+         <groupId>com.adobe.flex.framework</groupId>
+         <artifactId>datavisualization</artifactId>
+         <classifier>en_US</classifier>
+         <type>rb.swc</type>
+      </dependency>
     </dependencies>
 
 </project>

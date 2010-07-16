@@ -296,6 +296,21 @@
             </dependency>
 
             <dependency>
+               <groupId>com.adobe.flex.framework</groupId>
+               <artifactId>datavisualization</artifactId>
+               <version>${flex.framework.version}</version>
+               <type>swc</type>
+            </dependency>
+
+            <dependency>
+               <groupId>com.adobe.flex.framework</groupId>
+               <artifactId>datavisualization</artifactId>
+               <version>${flex.framework.version}</version>
+               <classifier>en_US</classifier>
+               <type>rb.swc</type>
+            </dependency>
+
+            <dependency>
                 <groupId>org.un.cava.birdeye</groupId>
                 <artifactId>ravis</artifactId>
                 <version>${ravis.version}</version>
