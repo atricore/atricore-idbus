@@ -69,7 +69,7 @@ public class ServiceProviderCreateMediator extends FormMediator {
 //        serviceProvider.encryptAuthenticationRequest = view.encryptAuthRequestCheck.selected;
 
         var idpChannel:IdentityProviderChannelDTO = new IdentityProviderChannelDTO();
-        idpChannel.name = serviceProvider.name + " to sp default channel";
+        idpChannel.name = serviceProvider.name + " to idp default channel";
         var idpChannelLoc:LocationDTO = new LocationDTO();
         idpChannelLoc.protocol = view.spLocationProtocol.selectedLabel;
         idpChannelLoc.host = view.spLocationDomain.text;

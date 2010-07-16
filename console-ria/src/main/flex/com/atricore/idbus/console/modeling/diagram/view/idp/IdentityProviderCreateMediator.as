@@ -85,7 +85,7 @@ public class IdentityProviderCreateMediator extends FormMediator {
 
         var spChannel:ServiceProviderChannelDTO = new ServiceProviderChannelDTO();
 
-        spChannel.name = identityProvider.name + " to idp default channel";
+        spChannel.name = identityProvider.name + " to sp default channel";
 
         var spChannelLoc:LocationDTO = new LocationDTO();
         spChannelLoc.protocol = view.idpLocationProtocol.selectedLabel;

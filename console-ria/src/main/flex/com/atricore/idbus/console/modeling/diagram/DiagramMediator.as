@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.modeling.diagram {
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
@@ -210,6 +211,15 @@ DiagramMediator extends Mediator {
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT, rsp);
                             break;
+                        case DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE:
+                            var idpChannel:IdentityProviderChannelDTO = _currentlySelectedNode.data as IdentityProviderChannelDTO;
+
+                            var ridpc:RemoveIdpChannelElementRequest = new RemoveIdpChannelElementRequest(idpChannel);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.NOTE_REMOVE_IDP_CHANNEL_ELEMENT, ridpc);
+                            break;
                     }
                 }
                 break;
@@ -257,7 +267,8 @@ DiagramMediator extends Mediator {
                     if (provider is LocalProviderDTO) {
                         var locProv:LocalProviderDTO = provider as LocalProviderDTO;
                         if (locProv.defaultChannel != null) {
-                            var defChannelGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), locProv.defaultChannel, providerGraphNode, true, Constants.CHANNEL_DEEP);
+                            //do NOT show default channel
+//                            var defChannelGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), locProv.defaultChannel, providerGraphNode, true, Constants.CHANNEL_DEEP);
                             var identityVault:IdentityVaultDTO = null;
                             if (locProv.defaultChannel is IdentityProviderChannelDTO) {
                                 identityVault = IdentityProviderChannelDTO(locProv.defaultChannel).identityVault;
@@ -352,6 +363,9 @@ DiagramMediator extends Mediator {
             } else
             if (node.data is ServiceProviderDTO){
                 elementType = DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE;
+            } else
+            if(node.data is IdentityProviderChannelDTO){
+                elementType = DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE;
             }
             //TODO - add other element types
             

@@ -33,6 +33,7 @@ import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceList
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand;
 
+import com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand;
 import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand;
 
 import com.atricore.idbus.console.modeling.main.controller.ServiceProviderRemoveCommand;
@@ -104,7 +105,7 @@ public class ApplicationFacade extends Facade {
         registerCommand(NOTE_CREATE_IDENTITY_APPLIANCE, IdentityApplianceCreateCommand);
         registerCommand(NOTE_IDENTITY_PROVIDER_REMOVE, IdentityProviderRemoveCommand);
         registerCommand(NOTE_SERVICE_PROVIDER_REMOVE, ServiceProviderRemoveCommand);
-        registerCommand(NOTE_IDP_CHANNEL_REMOVE, IdentityProviderRemoveCommand);
+        registerCommand(NOTE_IDP_CHANNEL_REMOVE, IdpChannelRemoveCommand);
         registerCommand(NOTE_LOOKUP_IDENTITY_APPLIANCE_BY_ID, LookupIdentityApplianceByIdCommand);
         registerCommand(NOTE_IDENTITY_APPLIANCE_LIST_LOAD, IdentityApplianceListLoadCommand);
         registerCommand(NOTE_UPLOAD, UploadCommand);
