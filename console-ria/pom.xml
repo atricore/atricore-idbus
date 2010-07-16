@@ -63,6 +63,9 @@
                     </compiledLocales>
                     <configurationReport>true</configurationReport>
                     <keepGeneratedActionscript>false</keepGeneratedActionscript>
+                    <licenses>
+                        <flexbuilder3>1377-4004-5203-8817-7220-1547</flexbuilder3>
+                    </licenses>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -70,6 +73,11 @@
                         <artifactId>compiler</artifactId>
                         <version>${flex.framework.version}</version>
                         <type>pom</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.adobe.flex</groupId>
+                        <artifactId>license</artifactId> 
+                        <version>${flex.framework.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -137,18 +145,18 @@
             <type>swc</type>
         </dependency>
 
-      <dependency>
-         <groupId>com.adobe.flex.framework</groupId>
-         <artifactId>datavisualization</artifactId>
-         <type>swc</type>
-      </dependency>
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>datavisualization</artifactId>
+            <type>swc</type>
+        </dependency>
 
-      <dependency>
-         <groupId>com.adobe.flex.framework</groupId>
-         <artifactId>datavisualization</artifactId>
-         <classifier>en_US</classifier>
-         <type>rb.swc</type>
-      </dependency>
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>datavisualization</artifactId>
+            <classifier>en_US</classifier>
+            <type>rb.swc</type>
+        </dependency>
     </dependencies>
 
 </project>

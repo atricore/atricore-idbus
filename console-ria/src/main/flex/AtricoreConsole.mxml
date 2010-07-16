@@ -25,6 +25,7 @@
                 xmlns:modeler="com.atricore.idbus.console.modeling.main.*"
                 xmlns:comp="com.atricore.idbus.console.components.*"
                 xmlns:login="com.atricore.idbus.console.main.view.login.*"
+                xmlns:management="com.atricore.idbus.console.management.*"
                 layout="absolute" horizontalAlign="left" height="100%" width="100%" minWidth="955" minHeight="600"
                 creationComplete="facade.startUp(this)">
 
@@ -51,14 +52,15 @@
     <mx:Style source="../resources/style/yflexskin.css"/>
     <mx:Style source="../resources/style/style.css"/>
 
-     <mx:VBox x="71" y="31" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
-              borderStyle="solid" width="100%" height="100%" visible="true">
-         <mx:HBox paddingTop="2" paddingLeft="10">
+    <mx:VBox x="71" y="31" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+             borderStyle="solid" width="100%" height="100%" visible="true">
+        <mx:HBox paddingTop="2" paddingLeft="10">
             <comp:MessageBox id="messageBox" showEffect="{wipeRight}"/>
-         </mx:HBox>
+        </mx:HBox>
         <mx:ToggleButtonBar dataProvider="modulesViewStack"/>
         <mx:ViewStack id="modulesViewStack" width="100%" height="100%">
             <modeler:ModelerView id="modelerView" visible="false" label="Modeler"/>
+            <management:ManagementView id="managementView" visible="true" label="Management"/>  
             <mx:Canvas label="Setup" width="95%" height="95%">
             </mx:Canvas>
             <mx:Canvas label="Deployment" width="95%" height="95%">

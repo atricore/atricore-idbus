@@ -69,6 +69,7 @@
                 </mx:VBox>
             </mx:Canvas>
             <mx:Canvas label="Deployment" width="95%" height="95%">
+
             </mx:Canvas>
         </mx:TabNavigator>
     </mx:HBox>
