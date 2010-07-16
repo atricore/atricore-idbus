@@ -138,8 +138,11 @@ public class ModelerMediator extends Mediator {
         return [ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE,
             ApplicationFacade.NOTE_CREATE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.NOTE_REMOVE_IDP_CHANNEL_ELEMENT,
             ApplicationFacade.NOTE_CREATE_SERVICE_PROVIDER_ELEMENT,
-            ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT,                
+            ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.NOTE_CREATE_IDP_CHANNEL_ELEMENT,
+            ApplicationFacade.NOTE_REMOVE_IDP_CHANNEL_ELEMENT,
             ApplicationFacade.NOTE_MANAGE_CERTIFICATE,
             ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS,
             ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED,
@@ -176,6 +179,16 @@ public class ModelerMediator extends Mediator {
 //                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.NOTE_SERVICE_PROVIDER_REMOVE, rsp.serviceProvider);
                 break;
+
+            case ApplicationFacade.NOTE_CREATE_IDP_CHANNEL_ELEMENT:
+                _modelerPopUpManager.showCreateIdpChannelWindow(notification);
+                break;
+            case ApplicationFacade.NOTE_REMOVE_IDP_CHANNEL_ELEMENT:
+//                var rsp:RemoveServiceProviderElementRequest  = RemoveServiceProviderElementRequest(notification.getBody());
+//                 TODO: Perform UI handling for confirming removal action
+//                sendNotification(ApplicationFacade.NOTE_SERVICE_PROVIDER_REMOVE, rsp.serviceProvider);
+                break;
+
             case ApplicationFacade.NOTE_MANAGE_CERTIFICATE:
                 _modelerPopUpManager.showManageCertificateWindow(notification);
                 break;

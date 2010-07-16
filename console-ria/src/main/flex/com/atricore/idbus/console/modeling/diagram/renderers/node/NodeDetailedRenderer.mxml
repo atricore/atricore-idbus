@@ -40,6 +40,7 @@
         import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 
         import com.atricore.idbus.console.services.dto.BindingProviderDTO;
+        import com.atricore.idbus.console.services.dto.ChannelDTO;
         import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnitDTO;
@@ -98,19 +99,24 @@
                             _linkLabel = bp.name;
                             //iconImage.source = EmbeddedIcons.bpIcon;
                         } else {
-                            if (obj is IdentityVaultDTO) {
-                                var identityVault:IdentityVaultDTO = obj as IdentityVaultDTO;
-                                _linkLabel = identityVault.name;
-                                //iconImage.source = EmbeddedIcons.vaultIcon;
+                            if(obj is ChannelDTO){
+                                _linkLabel = (obj as ChannelDTO).name;
                             } else {
-                                if (obj is IdentityApplianceUnitDTO) {
-                                    var applianceUnit:IdentityApplianceUnitDTO = obj as IdentityApplianceUnitDTO;
-                                    _linkLabel = applianceUnit.name;
-                                    var type:IdentityApplianceUnitTypeDTO = applianceUnit.type;
-                                    if (type.equals(IdentityApplianceUnitTypeDTO.FEDERATION_UNIT)) {
-                                        //iconImage.source = EmbeddedIcons.spIcon;
-                                    } else if (type.equals(IdentityApplianceUnitTypeDTO.PROVISIONING_UNIT)) {
-                                        //iconImage.source = EmbeddedIcons.vaultIcon;
+
+                                if (obj is IdentityVaultDTO) {
+                                    var identityVault:IdentityVaultDTO = obj as IdentityVaultDTO;
+                                    _linkLabel = identityVault.name;
+                                    //iconImage.source = EmbeddedIcons.vaultIcon;
+                                } else {
+                                    if (obj is IdentityApplianceUnitDTO) {
+                                        var applianceUnit:IdentityApplianceUnitDTO = obj as IdentityApplianceUnitDTO;
+                                        _linkLabel = applianceUnit.name;
+                                        var type:IdentityApplianceUnitTypeDTO = applianceUnit.type;
+                                        if (type.equals(IdentityApplianceUnitTypeDTO.FEDERATION_UNIT)) {
+                                            //iconImage.source = EmbeddedIcons.spIcon;
+                                        } else if (type.equals(IdentityApplianceUnitTypeDTO.PROVISIONING_UNIT)) {
+                                            //iconImage.source = EmbeddedIcons.vaultIcon;
+                                        }
                                     }
                                 }
                             }

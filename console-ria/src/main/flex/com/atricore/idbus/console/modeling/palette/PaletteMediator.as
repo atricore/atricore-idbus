@@ -47,6 +47,10 @@ public class PaletteMediator extends Mediator {
                     new PaletteEntry("Service Provider", null, "Service Provider Entry", DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE)
 
                 );
+        saml2PaletteDrawer.add(
+                    new PaletteEntry("IDP Channel", null, "Identity Provider Channel Entry", DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE)
+
+                );
 
         var pr:PaletteRoot  = new PaletteRoot("Identity Appliance Modeler Palette", null, null);
         pr.add(saml2PaletteDrawer);

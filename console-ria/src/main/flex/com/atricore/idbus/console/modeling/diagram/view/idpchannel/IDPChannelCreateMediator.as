@@ -19,11 +19,13 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.diagram.view.sp {
+package com.atricore.idbus.console.modeling.diagram.view.idpchannel {
+import com.atricore.idbus.console.modeling.diagram.view.sp.*;
 import com.atricore.idbus.console.services.dto.BindingDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
 import com.atricore.idbus.console.services.dto.LocationDTO;
 import com.atricore.idbus.console.services.dto.ProfileDTO;
+
 import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
 
 import flash.events.MouseEvent;
@@ -36,40 +38,36 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormMediator;
 import org.puremvc.as3.interfaces.INotification;
 
-public class ServiceProviderCreateMediator extends FormMediator {
-    public static const NAME:String = "com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator";
+public class IDPChannelCreateMediator extends FormMediator {
+    public static const NAME:String = "com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator";
 
     private var _proxy:ProjectProxy;
-    private var _newServiceProvider:ServiceProviderDTO;
+    private var _newIdpChannel:IdentityProviderChannelDTO;
 
-    public function ServiceProviderCreateMediator(viewComp:ServiceProviderCreateForm) {
+    public function IDPChannelCreateMediator(viewComp:IDPChannelCreateForm) {
         super(NAME, viewComp);
         _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        viewComp.btnOk.addEventListener(MouseEvent.CLICK, handleServiceProviderSave);
+        viewComp.btnOk.addEventListener(MouseEvent.CLICK, handleIdpChannelSave);
         viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
 
     }
 
     override public function bindModel():void {
+        var idpChannel:IdentityProviderChannelDTO = new IdentityProviderChannelDTO();
 
-        var serviceProvider:ServiceProviderDTO = new ServiceProviderDTO();
-
-        serviceProvider.name = view.serviceProvName.text;
-        serviceProvider.description = view.serviceProvDescription.text;
+        idpChannel.name = view.identityProvChannelName.text;
+        idpChannel.description = view.identityProvChannelDescription.text;
 
         var loc:LocationDTO = new LocationDTO();
-        loc.protocol = view.spLocationProtocol.selectedLabel;
-        loc.host = view.spLocationDomain.text;
-        loc.port = parseInt(view.spLocationPort.text);
-        loc.context = view.spLocationContext.text;
-        loc.uri = view.spLocationPath.text;
-        serviceProvider.location = loc;
+        loc.protocol = view.idpChannelLocationProtocol.selectedLabel;
+        loc.host = view.idpChannelLocationDomain.text;
+        loc.port = parseInt(view.idpChannelLocationPort.text);
+        loc.context = view.idpChannelLocationContext.text;
+        loc.uri = view.idpChannelLocationPath.text;
+        idpChannel.location = loc;
 
 //        serviceProvider.signAuthenticationRequest = view.signAuthRequestCheck.selected;
 //        serviceProvider.encryptAuthenticationRequest = view.encryptAuthRequestCheck.selected;
-
-        var idpChannel:IdentityProviderChannelDTO = new IdentityProviderChannelDTO();
-        idpChannel.name = serviceProvider.name + " to sp default channel";
 
         idpChannel.activeBindings = new ArrayCollection();
         if(view.samlBindingHttpPostCheck.selected){
@@ -95,16 +93,18 @@ public class ServiceProviderCreateMediator extends FormMediator {
         //authenticationContract
         //authenticationMechanism
         //authenticationAssertionEmissionPolicy
-        serviceProvider.defaultChannel = idpChannel;
 
-        _newServiceProvider = serviceProvider;
+        _newIdpChannel = idpChannel;
     }
 
-    private function handleServiceProviderSave(event:MouseEvent):void {
+    private function handleIdpChannelSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            _proxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newServiceProvider);
-            _proxy.currentIdentityApplianceElement = _newServiceProvider;
+            var sp:ServiceProviderDTO = _proxy.currentIdentityApplianceElementOwner as ServiceProviderDTO;
+            if(sp.channels == null){
+                sp.channels = new ArrayCollection();
+            }
+            sp.channels.addItem(_newIdpChannel);
             sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
             sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
             closeWindow();
@@ -122,9 +122,9 @@ public class ServiceProviderCreateMediator extends FormMediator {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
-    protected function get view():ServiceProviderCreateForm
+    protected function get view():IDPChannelCreateForm
     {
-        return viewComponent as ServiceProviderCreateForm;
+        return viewComponent as IDPChannelCreateForm;
     }
 
 

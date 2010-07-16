@@ -38,6 +38,7 @@ public class ProjectProxy extends Proxy
     private var _viewAction:int;
     private var _currentIdentityAppliance:IdentityApplianceDTO;
     private var _currentIdentityApplianceElement:Object;
+    private var _currentIdentityApplianceElementOwner:Object;
 
     public function ProjectProxy()
     {
@@ -68,6 +69,13 @@ public class ProjectProxy extends Proxy
         _currentIdentityApplianceElement = currentIdentityApplianceElement;
     }
 
+    public function get currentIdentityApplianceElementOwner():Object {
+        return _currentIdentityApplianceElementOwner;
+    }
+
+    public function set currentIdentityApplianceElementOwner(value:Object):void {
+        _currentIdentityApplianceElementOwner = value;
+    }
 
     public function get viewAction():int {
         return _viewAction;

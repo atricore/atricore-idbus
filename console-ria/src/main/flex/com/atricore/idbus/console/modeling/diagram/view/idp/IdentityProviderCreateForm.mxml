@@ -41,7 +41,7 @@
                         triggerEvent="click"/>
         <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
-                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idApplianceWiz.idpLocalStep.portValidationError')}"/>
+                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{idpLocationDomain}" required="true" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
         <utils:URLPartValidator id="pathValidator" source="{idpLocationPath}" required="false" property="text"
