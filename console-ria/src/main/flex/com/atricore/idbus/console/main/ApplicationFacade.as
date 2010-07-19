@@ -44,6 +44,8 @@ public class ApplicationFacade extends Facade {
 
     public static const USER_PROVISIONING_SERVICE:String = "userProvisioningService";
     public static const IDENTITY_APPLIANCE_MANAGEMENT_SERVICE:String = "identityApplianceManagementService";
+    public static const PROFILE_MANAGEMENT_SERVICE:String = "profileManagementService";
+    public static const SIGN_ON_SERVICE:String = "signOnService";
 
     // Notification name constants application
     public static const NOTE_STARTUP:String = "startup";

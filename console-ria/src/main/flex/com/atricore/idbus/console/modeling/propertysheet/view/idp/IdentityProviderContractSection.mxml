@@ -27,29 +27,29 @@
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:"
                  direction="horizontal">
-        <mx:CheckBox id="samlProfileSSOCheck"
+        <utils:BubbleCheckBox id="samlProfileSSOCheck"
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}"/>
-        <mx:CheckBox id="samlProfileSLOCheck"
+        <utils:BubbleCheckBox id="samlProfileSLOCheck"
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:"
                  direction="horizontal">
-        <mx:CheckBox id="samlBindingHttpPostCheck"
+        <utils:BubbleCheckBox id="samlBindingHttpPostCheck"
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}"/>
-        <mx:CheckBox id="samlBindingHttpRedirectCheck"
+        <utils:BubbleCheckBox id="samlBindingHttpRedirectCheck"
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
-        <mx:CheckBox id="samlBindingArtifactCheck"
+        <utils:BubbleCheckBox id="samlBindingArtifactCheck"
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
-        <mx:CheckBox id="samlBindingSoapCheck"
+        <utils:BubbleCheckBox id="samlBindingSoapCheck"
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:">
-        <mx:CheckBox id="signAuthAssertionCheck"/>
+        <utils:BubbleCheckBox id="signAuthAssertionCheck"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:">
-        <mx:CheckBox id="encryptAuthAssertionCheck"/>
+        <utils:BubbleCheckBox id="encryptAuthAssertionCheck"/>
     </mx:FormItem>
 </mx:Form>
