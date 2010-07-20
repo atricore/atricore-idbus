@@ -124,7 +124,6 @@ public class PropertySheetMediator extends Mediator {
         _propertySheetsViewStack.addChild(corePropertyTab);
 
         _iaCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleCorePropertyTabCreationComplete);
-        _iaCoreSection.addEventListener(Event.CHANGE, handleFormChange);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityApplianceCorePropertyTabRollOut);
 
     }
@@ -150,6 +149,13 @@ public class PropertySheetMediator extends Mediator {
         _iaCoreSection.applianceLocationDomain.text = location.host;
         _iaCoreSection.applianceLocationPort.text = location.port.toString();
         _iaCoreSection.applianceLocationPath.text = location.context;
+
+        _iaCoreSection.applianceName.addEventListener(Event.CHANGE, handleSectionChange);
+        _iaCoreSection.applianceDescription.addEventListener(Event.CHANGE, handleSectionChange);
+        _iaCoreSection.applianceLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+        _iaCoreSection.applianceLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
+        _iaCoreSection.applianceLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
+        _iaCoreSection.applianceLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
     }
 
     private function handleIdentityApplianceCorePropertyTabRollOut(e:Event):void {
@@ -190,7 +196,6 @@ public class PropertySheetMediator extends Mediator {
         _propertySheetsViewStack.addChild(corePropertyTab);
 
         _ipCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityProviderCorePropertyTabCreationComplete);
-        _ipCoreSection.addEventListener(Event.CHANGE, handleFormChange);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityProviderCorePropertyTabRollOut);
 
         // Contract Tab
@@ -206,7 +211,6 @@ public class PropertySheetMediator extends Mediator {
         _propertySheetsViewStack.addChild(contractPropertyTab);
 
         _ipContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityProviderContractPropertyTabCreationComplete);
-        _ipContractSection.addEventListener(Event.CHANGE, handleFormChange);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityProviderContractPropertyTabRollOut);
     }
 
@@ -227,7 +231,6 @@ public class PropertySheetMediator extends Mediator {
         _propertySheetsViewStack.addChild(corePropertyTab);
 
         _spCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderCorePropertyTabCreationComplete);
-        _spCoreSection.addEventListener(Event.CHANGE, handleFormChange);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleServiceProviderCorePropertyTabRollOut);
 
         // Contract Tab
@@ -243,7 +246,6 @@ public class PropertySheetMediator extends Mediator {
         _propertySheetsViewStack.addChild(contractPropertyTab);
 
         _spContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderContractPropertyTabCreationComplete);
-        _spContractSection.addEventListener(Event.CHANGE, handleFormChange);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleServiceProviderContractPropertyTabRollOut);
     }
 
@@ -267,6 +269,14 @@ public class PropertySheetMediator extends Mediator {
         _ipCoreSection.idpLocationPort.text = identityProvider.location.port.toString();
         _ipCoreSection.idpLocationContext.text = identityProvider.location.context;
         _ipCoreSection.idpLocationPath.text = identityProvider.location.uri;
+
+        _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
+        _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
+        _ipCoreSection.idpLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+        _ipCoreSection.idpLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
+        _ipCoreSection.idpLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
+        _ipCoreSection.idpLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
+        _ipCoreSection.idpLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
     }
 
 
@@ -334,6 +344,15 @@ public class PropertySheetMediator extends Mediator {
                 }
             }
         }
+
+        _ipContractSection.signAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _ipContractSection.encryptAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _ipContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _ipContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _ipContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _ipContractSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _ipContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _ipContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
     }
 
     private function handleIdentityProviderContractPropertyTabRollOut(event:Event):void {
@@ -400,6 +419,15 @@ public class PropertySheetMediator extends Mediator {
         _spCoreSection.spLocationPort.text = serviceProvider.location.port.toString();
         _spCoreSection.spLocationContext.text = serviceProvider.location.context;
         _spCoreSection.spLocationPath.text = serviceProvider.location.uri;
+
+        _spCoreSection.serviceProvName.addEventListener(Event.CHANGE, handleSectionChange);
+        _spCoreSection.serviceProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
+        _spCoreSection.spLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+        _spCoreSection.spLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
+        _spCoreSection.spLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
+        _spCoreSection.spLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
+        _spCoreSection.spLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+        _spCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
     }
 
     private function handleServiceProviderCorePropertyTabRollOut(e:Event):void {
@@ -466,6 +494,13 @@ public class PropertySheetMediator extends Mediator {
                 }
             }
         }
+
+        _spContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _spContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _spContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _spContractSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _spContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _spContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
     }
 
     private function handleServiceProviderContractPropertyTabRollOut(event:Event):void {
@@ -530,7 +565,6 @@ public class PropertySheetMediator extends Mediator {
         _propertySheetsViewStack.addChild(corePropertyTab);
 
         _idpChannelCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdpChannelCorePropertyTabCreationComplete);
-        _idpChannelCoreSection.addEventListener(Event.CHANGE, handleFormChange);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdpChannelCorePropertyTabRollOut);
 
         // Contract Tab
@@ -546,7 +580,6 @@ public class PropertySheetMediator extends Mediator {
         _propertySheetsViewStack.addChild(contractPropertyTab);
 
         _idpChannelContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdpChannelContractPropertyTabCreationComplete);
-        _idpChannelContractSection.addEventListener(Event.CHANGE, handleFormChange);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdpChannelContractPropertyTabRollOut);
     }
 
@@ -569,6 +602,15 @@ public class PropertySheetMediator extends Mediator {
         _idpChannelCoreSection.idpChannelLocationPort.text = idpChannel.location.port.toString();
         _idpChannelCoreSection.idpChannelLocationContext.text = idpChannel.location.context;
         _idpChannelCoreSection.idpChannelLocationPath.text = idpChannel.location.uri;
+
+        _idpChannelCoreSection.identityProvChannelName.addEventListener(Event.CHANGE, handleSectionChange);
+        _idpChannelCoreSection.identityProvChannelDescription.addEventListener(Event.CHANGE, handleSectionChange);
+        _idpChannelCoreSection.idpChannelLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+        _idpChannelCoreSection.idpChannelLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
+        _idpChannelCoreSection.idpChannelLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
+        _idpChannelCoreSection.idpChannelLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
+        _idpChannelCoreSection.idpChannelLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+        _idpChannelCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
     }
 
     private function handleIdpChannelCorePropertyTabRollOut(e:Event):void {
@@ -635,6 +677,12 @@ public class PropertySheetMediator extends Mediator {
                 }
             }
         }
+
+        _idpChannelContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _idpChannelContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _idpChannelContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _idpChannelContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        _idpChannelContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
     }
 
     private function handleIdpChannelContractPropertyTabRollOut(event:Event):void {
@@ -674,7 +722,7 @@ public class PropertySheetMediator extends Mediator {
 
     }
 
-    private function handleFormChange(event:Event) {
+    private function handleSectionChange(event:Event) {
         _dirty = true;
     }
     
