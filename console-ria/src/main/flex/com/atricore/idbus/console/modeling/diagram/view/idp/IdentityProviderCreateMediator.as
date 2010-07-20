@@ -106,6 +106,9 @@ public class IdentityProviderCreateMediator extends FormMediator {
         if(view.samlBindingHttpRedirectCheck.selected){
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_REDIRECT);
         }
+        if(view.samlBindingSoapCheck.selected){
+            spChannel.activeBindings.addItem(BindingDTO.SAMLR2_SOAP);
+        }
 
         spChannel.activeProfiles = new ArrayCollection();
         if(view.samlProfileSSOCheck.selected){

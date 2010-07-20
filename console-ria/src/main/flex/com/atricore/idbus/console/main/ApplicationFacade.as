@@ -38,6 +38,8 @@ import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplian
 
 import com.atricore.idbus.console.modeling.main.controller.ServiceProviderRemoveCommand;
 
+import com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand;
+
 import org.puremvc.as3.patterns.facade.Facade;
 
 public class ApplicationFacade extends Facade {
@@ -64,6 +66,7 @@ public class ApplicationFacade extends Facade {
     public static const NOTE_IDENTITY_PROVIDER_REMOVE:String = "Node.IdentityProviderRemove" ;
     public static const NOTE_SERVICE_PROVIDER_REMOVE:String = "Node.ServiceProviderRemove" ;
     public static const NOTE_IDP_CHANNEL_REMOVE:String = "Node.IdpChannelRemove" ;
+    public static const NOTE_SP_CHANNEL_REMOVE:String = "Note.ISpChannelRemove" ;
     public static const NOTE_IDENTITY_APPLIANCE_CHANGED:String = "Note.IdentityApplianceChanged";
     public static const NOTE_EDIT_IDENTITY_APPLIANCE:String = "Note.EditIdentityAppliance";
     public static const NOTE_UPDATE_IDENTITY_APPLIANCE:String = "Note.UpdateIdentityAppliance";
@@ -80,6 +83,8 @@ public class ApplicationFacade extends Facade {
     public static const NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT:String = "Node.RemoveIdentityProviderElement";
     public static const NOTE_CREATE_IDP_CHANNEL_ELEMENT:String = "Note.CreateIdpChannelElement";
     public static const NOTE_REMOVE_IDP_CHANNEL_ELEMENT:String = "Node.RemoveIdpChannelElement";
+    public static const NOTE_CREATE_SP_CHANNEL_ELEMENT:String = "Note.CreateSpChannelElement";
+    public static const NOTE_REMOVE_SP_CHANNEL_ELEMENT:String = "Note.RemoveSpChannelElement";
     public static const NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT:String = "Node.RemoveServiceProviderElement";
     public static const NOTE_MANAGE_CERTIFICATE:String = "Note.ManageCertificate";
     public static const NOTE_SHOW_UPLOAD_PROGRESS:String = "Note.UploadProgress";
@@ -108,6 +113,7 @@ public class ApplicationFacade extends Facade {
         registerCommand(NOTE_IDENTITY_PROVIDER_REMOVE, IdentityProviderRemoveCommand);
         registerCommand(NOTE_SERVICE_PROVIDER_REMOVE, ServiceProviderRemoveCommand);
         registerCommand(NOTE_IDP_CHANNEL_REMOVE, IdpChannelRemoveCommand);
+        registerCommand(NOTE_SP_CHANNEL_REMOVE, SpChannelRemoveCommand);
         registerCommand(NOTE_LOOKUP_IDENTITY_APPLIANCE_BY_ID, LookupIdentityApplianceByIdCommand);
         registerCommand(NOTE_IDENTITY_APPLIANCE_LIST_LOAD, IdentityApplianceListLoadCommand);
         registerCommand(NOTE_UPLOAD, UploadCommand);

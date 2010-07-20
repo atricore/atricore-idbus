@@ -25,41 +25,33 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
-import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
 import com.atricore.idbus.console.services.dto.ProviderDTO;
-import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.command.SimpleCommand;
 
-public class IdpChannelRemoveCommand extends SimpleCommand {
+public class SpChannelRemoveCommand extends SimpleCommand {
 
-    public static const SUCCESS : String = "IdpChannelRemoveCommand.SUCCESS";
+    public static const SUCCESS : String = "SpChannelRemoveCommand.SUCCESS";
 
     override public function execute(notification:INotification):void {
-        var idpChannel:IdentityProviderChannelDTO = notification.getBody() as IdentityProviderChannelDTO;
+        var spChannel:ServiceProviderChannelDTO = notification.getBody() as ServiceProviderChannelDTO;
         var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
 
         var identityAppliance:IdentityApplianceDTO = proxy.currentIdentityAppliance;
 
         for (var i:int=identityAppliance.idApplianceDefinition.providers.length-1; i>=0; i--) {
             var obj:ProviderDTO = identityAppliance.idApplianceDefinition.providers[i];
-            if(obj is ServiceProviderDTO){
-                var sp = obj as ServiceProviderDTO;
-                for(var j:int = 0; j < sp.channels.length; j++){
-                    if (identityAppliance.idApplianceDefinition.providers[i].channels[j] == idpChannel) {
+             if (obj is IdentityProviderDTO){
+                var idp = obj as IdentityProviderDTO;
+                for(var j:int = 0; j < idp.channels.length; j++){
+                    if (identityAppliance.idApplianceDefinition.providers[i].channels[j] == spChannel) {
                         identityAppliance.idApplianceDefinition.providers[i].channels.removeItemAt(j);
                     }
                 }
-            }// else if (obj is IdentityProviderDTO){
-//                var idp = obj as IdentityProviderDTO;
-//                for(var k:int = 0; k < idp.channels.length; k++){
-//                    if (identityAppliance.idApplianceDefinition.providers[i].channels[k] == idpChannel) {
-//                        identityAppliance.idApplianceDefinition.providers[i].channels.removeItemAt(k);
-//                    }
-//                }
-//            }
+            }
 
         }
 

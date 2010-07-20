@@ -22,8 +22,10 @@
 package com.atricore.idbus.console.modeling.diagram {
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateSpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannelElementRequest;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
@@ -178,6 +180,23 @@ DiagramMediator extends Mediator {
 
 
                             break;
+                        case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
+                            // assert that source end is an Identity Appliance
+                            if (_currentlySelectedNode.data is IdentityProviderDTO) {
+                                var ownerIdentityProvider:IdentityProviderDTO = _currentlySelectedNode.data as IdentityProviderDTO;
+
+                                var csdpc:CreateSpChannelElementRequest = new CreateSpChannelElementRequest(
+                                        ownerIdentityProvider,
+                                        _currentlySelectedNode.stringid
+                                        );
+                                _projectProxy.currentIdentityApplianceElementOwner = ownerIdentityProvider;
+                                // this notification will be grabbed by the modeler mediator which will open
+                                // the corresponding form
+                                sendNotification(ApplicationFacade.NOTE_CREATE_SP_CHANNEL_ELEMENT, csdpc);
+                            }
+
+
+                            break;
                     }
                 }
                 break;
@@ -219,6 +238,15 @@ DiagramMediator extends Mediator {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.NOTE_REMOVE_IDP_CHANNEL_ELEMENT, ridpc);
+                            break;
+                        case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
+                            var spChannel:ServiceProviderChannelDTO = _currentlySelectedNode.data as ServiceProviderChannelDTO;
+
+                            var rspc:RemoveSpChannelElementRequest = new RemoveSpChannelElementRequest(spChannel);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.NOTE_REMOVE_SP_CHANNEL_ELEMENT, rspc);
                             break;
                     }
                 }
@@ -349,7 +377,7 @@ DiagramMediator extends Mediator {
     private function nodeRemoveEventHandler(event:VNodeRemoveEvent):void
     {
         var node:INode = _identityApplianceDiagram.graph.nodeByStringId(event.vnodeId);
-        var elementType:int;
+        var elementType:int = -1;
 
         if (node != null) {
             _currentlySelectedNode = node;
@@ -366,6 +394,9 @@ DiagramMediator extends Mediator {
             } else
             if(node.data is IdentityProviderChannelDTO){
                 elementType = DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE;
+            } else
+            if(node.data is ServiceProviderChannelDTO){
+                elementType = DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE;
             }
             //TODO - add other element types
             

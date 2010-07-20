@@ -44,18 +44,16 @@
         <utils:URLPartValidator id="pathValidator" source="{idpChannelLocationPath}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.name')}:" required="true"
-                     labelWidth="90">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.name')}:" required="true">
             <mx:TextInput id="identityProvChannelName" width="300"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.description')}:"
-                     labelWidth="90">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.description')}:">
             <mx:TextInput id="identityProvChannelDescription" width="300"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.location')}:" required="true"
-                direction="horizontal" labelWidth="90">
+                direction="horizontal" labelWidth="75">
             <mx:ComboBox id="idpChannelLocationProtocol">
                 <mx:ArrayCollection>
                     <mx:Object label="http" data="http"/>
@@ -79,6 +77,8 @@
             <mx:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}"/>
             <mx:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
             <mx:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
+            <mx:CheckBox id="samlBindingSoapCheck"
+                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.sign.auth.requests')}:">

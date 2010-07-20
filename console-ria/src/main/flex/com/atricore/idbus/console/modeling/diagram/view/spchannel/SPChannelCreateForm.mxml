@@ -20,63 +20,52 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<!--
-  User: cdbirge
-  Date: Oct 6, 2009
-  Time: 5:55:29 PM
-  email: cbirge@atricore.org
--->
-<!--<mx:VBox width="100%" height="100%"-->
-         <!--xmlns:mx="http://www.adobe.com/2006/mxml"-->
-         <!--xmlns:utils="com.atricore.idbus.console.components.*"-->
-         <!--xmlns:components="com.atricore.idbus.console.components.*">-->
-
 
     <!--<utils:ValidatingForm id="identityProvForm" width="100%" height="100%" defaultButton="{btnOk}">-->
 <mx:Form xmlns:mx="http://www.adobe.com/2006/mxml"
          xmlns:utils="com.atricore.idbus.console.components.*"
          defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
 
-        <mx:StringValidator id="nameValidator" source="{identityProviderName}" required="true" property="text" trigger="{btnOk}"
+        <mx:StringValidator id="nameValidator" source="{serviceProvChannelName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
-        <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="false" property="text"
+        <mx:NumberValidator id="portValidator" source="{spChannelLocationPort}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
-        <utils:URLPartValidator id="domainValidator" source="{idpLocationDomain}" required="true" property="text"
+        <utils:URLPartValidator id="domainValidator" source="{spChannelLocationDomain}" required="true" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
-        <utils:URLPartValidator id="pathValidator" source="{idpLocationPath}" required="false" property="text"
+        <utils:URLPartValidator id="pathValidator" source="{spChannelLocationPath}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.name')}:" required="true">
-            <mx:TextInput id="identityProviderName" width="300"/>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProvChannel.name')}:" required="true">
+            <mx:TextInput id="serviceProvChannelName" width="300"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.description')}:">
-            <mx:TextInput id="identityProvDescription" width="300"/>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProvChannel.description')}:">
+            <mx:TextInput id="serviceProvChannelDescription" width="300"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.location')}:" required="true"
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProvChannel.location')}:" required="true"
                 direction="horizontal" labelWidth="75">
-            <mx:ComboBox id="idpLocationProtocol">
+            <mx:ComboBox id="spChannelLocationProtocol">
                 <mx:ArrayCollection>
                     <mx:Object label="http" data="http"/>
                     <mx:Object label="https" data="https"/>
                 </mx:ArrayCollection>
             </mx:ComboBox>
             <mx:Label text="://" width="15"/>
-            <mx:TextInput id="idpLocationDomain" width="150"/>
+            <mx:TextInput id="spChannelLocationDomain" width="150"/>
             <mx:Label text=":" width="10"/>
-            <mx:TextInput id="idpLocationPort" width="40"/>
-            <mx:Label id="idpLocationContext" text="/idbus/" width="45"/>
-            <mx:TextInput id="idpLocationPath" width="180"/>
+            <mx:TextInput id="spChannelLocationPort" width="40"/>
+            <mx:Label id="spChannelLocationContext" text="/idbus/" width="45"/>
+            <mx:TextInput id="spChannelLocationPath" width="180"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:" direction="horizontal">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProvChannel.enabled.saml.profiles')}:" direction="horizontal">
             <mx:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}"/>
             <mx:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:" direction="horizontal">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProvChannel.enabled.saml.bindings')}:" direction="horizontal">
             <mx:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}"/>
             <mx:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
             <mx:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
@@ -84,23 +73,23 @@
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProvChannel.sign.auth.assertion')}:">
             <mx:CheckBox id="signAuthAssertionCheck"/>            
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProvChannel.encrypt.auth.assertion')}:">
             <mx:CheckBox id="encryptAuthAssertionCheck"/>            
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.user.information.lookup')}:">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProvChannel.user.information.lookup')}:">
             <mx:ComboBox id="userInfoLookupCombo" labelField="name" selectedIndex="0"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProvChannel.auth.contract')}:">
             <mx:ComboBox id="authContractCombo"  labelField="name" selectedIndex="0"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.mechanism')}:">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProvChannel.auth.mechanism')}:">
             <mx:ComboBox id="authMechanismCombo" labelField="name" selectedIndex="0"/>
         </mx:FormItem>
 

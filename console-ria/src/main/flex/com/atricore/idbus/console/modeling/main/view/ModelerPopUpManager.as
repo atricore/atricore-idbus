@@ -31,6 +31,8 @@ import com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCre
 import com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator;
 import com.atricore.idbus.console.modeling.main.ModelerView;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceView;
@@ -47,6 +49,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
     private var _serviceProviderCreateForm:ServiceProviderCreateForm;
     private var _idpChannelCreateForm:IDPChannelCreateForm;
+    private var _spChannelCreateForm:SPChannelCreateForm;
     private var _manageCertificateForm:ManageCertificateView;
     private var _uploadProgress:UploadProgress;
     private var _buildAppliance:BuildApplianceView;
@@ -63,8 +66,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
            createIdentityProviderCreateForm();
         }
         _popup.title = "Create Identity Provider";
-        _popup.width = 670;
-        _popup.height = 580;
+        _popup.width = 690;
+        _popup.height = 510;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_identityProviderCreateForm);
@@ -88,8 +91,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
            createServiceProviderCreateForm();
         }
         _popup.title = "Create Service Provider";
-        _popup.width = 670;
-        _popup.height = 580;
+        _popup.width = 690;
+        _popup.height = 550;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_serviceProviderCreateForm);
@@ -113,8 +116,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
            createIdpChannelCreateForm();
         }
         _popup.title = "Create Identity Provider Channel";
-        _popup.width = 670;
-        _popup.height = 580;
+        _popup.width = 690;
+        _popup.height = 550;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_idpChannelCreateForm);
@@ -128,6 +131,31 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleIdpChannelCreateFormCreated(event:FlexEvent):void {
         var mediator:IDPChannelCreateMediator = new IDPChannelCreateMediator(_idpChannelCreateForm);
         _facade.removeMediator(IDPChannelCreateMediator.NAME);
+        _facade.registerMediator(mediator);
+        mediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateSpChannelWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_spChannelCreateForm) {
+           createSpChannelCreateForm();
+        }
+        _popup.title = "Create Service Provider Channel";
+        _popup.width = 690;
+        _popup.height = 510;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_spChannelCreateForm);
+    }
+
+    private function createSpChannelCreateForm():void {
+        _spChannelCreateForm = new SPChannelCreateForm();
+        _spChannelCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleSpChannelCreateFormCreated);
+    }
+
+    private function handleSpChannelCreateFormCreated(event:FlexEvent):void {
+        var mediator:SPChannelCreateMediator = new SPChannelCreateMediator(_spChannelCreateForm);
+        _facade.removeMediator(SPChannelCreateMediator.NAME);
         _facade.registerMediator(mediator);
         mediator.handleNotification(_lastWindowNotification);
     }
