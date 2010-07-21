@@ -21,6 +21,8 @@
 
 package com.atricore.idbus.console.main
 {
+import com.atricore.idbus.console.management.ManagementViewMediator;
+
 import flash.events.Event;
 
 import mx.events.FlexEvent;
@@ -33,6 +35,7 @@ import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
 import com.atricore.idbus.console.modeling.main.ModelerMediator;
 import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
+
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
 
@@ -52,7 +55,12 @@ public class ApplicationMediator extends Mediator {
         _popupManager = new ConsolePopUpManager(facade, viewComp);
 
         // Add listeners for other components on the viewStack with delayed instantiation.
+        viewComp.managementView.addEventListener(FlexEvent.CREATION_COMPLETE, handleManagementViewCreated);
         viewComp.addEventListener(FlexEvent.SHOW, handleShowConsole);
+    }
+
+    public function handleManagementViewCreated(event:Event):void {
+        facade.registerMediator(new ManagementViewMediator(app.managementView));
     }
 
     public function handleShowConsole(event:Event):void {
@@ -107,7 +115,7 @@ public class ApplicationMediator extends Mediator {
     private function handleMenuItemClick(event:MenuEvent):void {
 
         if (event.index == 1) {
-           sendNotification(IdentityApplianceMediator.CREATE);
+            sendNotification(IdentityApplianceMediator.CREATE);
         } else
         if (event.index == 3) {
             sendNotification(SimpleSSOWizardViewMediator.RUN)
