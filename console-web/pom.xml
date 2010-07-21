@@ -143,7 +143,7 @@
             <plugin>
                 <groupId>org.sonatype.flexmojos</groupId>
                 <artifactId>flexmojos-maven-plugin</artifactId>
-                <version>3.6.1</version>
+                
                 <executions>
                     <execution>
                         <goals>
@@ -152,22 +152,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <configurationReport>true</configurationReport>
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.adobe.flex</groupId>
-                        <artifactId>compiler</artifactId>
-                        <version>${flex.framework.version}</version>
-                        <type>pom</type>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.adobe.flex</groupId>
-                        <artifactId>license</artifactId>
-                        <version>${flex.framework.version}</version>
-                    </dependency>
-                </dependencies>                
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -540,7 +524,7 @@
                     <plugin>
                         <groupId>org.sonatype.flexmojos</groupId>
                         <artifactId>flexmojos-maven-plugin</artifactId>
-                        <version>3.6.1</version>
+                        
                         <executions>
                             <execution>
                                 <goals>
@@ -549,22 +533,7 @@
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <configurationReport>true</configurationReport>
-                        </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.adobe.flex</groupId>
-                        <artifactId>compiler</artifactId>
-                        <version>${flex.framework.version}</version>
-                        <type>pom</type>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.adobe.flex</groupId>
-                        <artifactId>license</artifactId>
-                        <version>${flex.framework.version}</version>
-                    </dependency>
-                </dependencies>                        
+                    
                     </plugin>
                     <plugin>
                         <groupId>org.apache.felix</groupId>

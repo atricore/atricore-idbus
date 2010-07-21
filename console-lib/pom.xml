@@ -50,29 +50,6 @@
             <plugin><!-- Flex (SWC and SWF) compilation -->
                 <groupId>org.sonatype.flexmojos</groupId>
                 <artifactId>flexmojos-maven-plugin</artifactId>
-                <version>3.6.1</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <configurationReport>true</configurationReport>
-                    <contextRoot>org.atricore.idbus.console</contextRoot>
-                    <debug>true</debug>
-                    <configurationReport>true</configurationReport>
-
-                </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.adobe.flex</groupId>
-                        <artifactId>compiler</artifactId>
-                        <version>${flex.framework.version}</version>
-                        <type>pom</type>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.adobe.flex</groupId>
-                        <artifactId>license</artifactId>
-                        <version>${flex.framework.version}</version>
-                    </dependency>
-
-                </dependencies>
                 <executions>
                     <execution>
                         <id>myId</id>
