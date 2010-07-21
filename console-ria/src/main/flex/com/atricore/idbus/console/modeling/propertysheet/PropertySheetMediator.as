@@ -23,6 +23,9 @@ package com.atricore.idbus.console.modeling.propertysheet {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.EmbeddedDBIdentityVaultCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.ExternalDBIdentityVaultLookupSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.ExternalDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idpchannel.IDPChannelContractSection;
@@ -33,6 +36,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChanne
 import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelCoreSection;
 import com.atricore.idbus.console.services.dto.BindingDTO;
 import com.atricore.idbus.console.services.dto.ChannelDTO;
+import com.atricore.idbus.console.services.dto.DbIdentityVaultDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
@@ -40,6 +44,8 @@ import com.atricore.idbus.console.services.dto.LocationDTO;
 import com.atricore.idbus.console.services.dto.ProfileDTO;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
 import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+
+import com.atricore.idbus.console.services.dto.UserInformationLookupDTO;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -62,12 +68,15 @@ public class PropertySheetMediator extends Mediator {
     private var _spCoreSection:ServiceProviderCoreSection;
     private var _idpChannelCoreSection:IDPChannelCoreSection;
     private var _spChannelCoreSection:SPChannelCoreSection;
+    private var _embeddedDbVaultCoreSection:EmbeddedDBIdentityVaultCoreSection;
+    private var _externalDbVaultCoreSection:ExternalDBIdentityVaultCoreSection;
     private var _projectProxy:ProjectProxy;
     private var _currentIdentityApplianceElement:Object;
     private var _ipContractSection:IdentityProviderContractSection;
     private var _spContractSection:ServiceProviderContractSection;
     private var _idpChannelContractSection:IDPChannelContractSection;
     private var _spChannelContractSection:SPChannelContractSection;
+    private var _externalDbVaultLookupSection:ExternalDBIdentityVaultLookupSection;
     private var _dirty:Boolean;
 
     public function PropertySheetMediator(viewComp:PropertySheetView) {
@@ -110,6 +119,15 @@ public class PropertySheetMediator extends Mediator {
                 if(_projectProxy.currentIdentityApplianceElement is ServiceProviderChannelDTO) {
                     _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                     enableSpChannelPropertyTabs();
+                }
+                if(_projectProxy.currentIdentityApplianceElement is DbIdentityVaultDTO) {
+                    _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
+                    if((_currentIdentityApplianceElement as DbIdentityVaultDTO).embedded){
+                        enableEmbeddedDbVaultPropertyTabs();
+                    } else {
+                        enableExternalDbVaultPropertyTabs();
+                    }
+
                 }
                 break;
         }
@@ -897,7 +915,180 @@ public class PropertySheetMediator extends Mediator {
             sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
-    }    
+    }
+
+    protected function enableEmbeddedDbVaultPropertyTabs():void {
+        // Attach embedded DB identity vault editor form to property tabbed view
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Canvas = new Canvas();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.label = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _embeddedDbVaultCoreSection = new EmbeddedDBIdentityVaultCoreSection();
+        corePropertyTab.addChild(_embeddedDbVaultCoreSection);
+        _propertySheetsViewStack.addChild(corePropertyTab);
+
+        _embeddedDbVaultCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleEmbeddedDbVaultCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleEmbeddedDbVaultCorePropertyTabRollOut);
+    }
+
+    private function handleEmbeddedDbVaultCorePropertyTabCreationComplete(event:Event):void {
+        var dbIdentityVault:DbIdentityVaultDTO;
+
+        dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVaultDTO;
+        // bind view
+        _embeddedDbVaultCoreSection.userRepositoryName.text = dbIdentityVault.name;
+        _embeddedDbVaultCoreSection.serverPort.text = dbIdentityVault.port.toString();
+        _embeddedDbVaultCoreSection.schema.text = dbIdentityVault.schema;
+        _embeddedDbVaultCoreSection.admin.text = dbIdentityVault.admin;
+        _embeddedDbVaultCoreSection.adminPass.text = dbIdentityVault.password;
+        _embeddedDbVaultCoreSection.confirmAdminPass.text = dbIdentityVault.password;
+
+        _embeddedDbVaultCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
+        _embeddedDbVaultCoreSection.serverPort.addEventListener(Event.CHANGE, handleSectionChange);
+        _embeddedDbVaultCoreSection.schema.addEventListener(Event.CHANGE, handleSectionChange);
+        _embeddedDbVaultCoreSection.admin.addEventListener(Event.CHANGE, handleSectionChange);
+        _embeddedDbVaultCoreSection.adminPass.addEventListener(Event.CHANGE, handleSectionChange);
+        _embeddedDbVaultCoreSection.confirmAdminPass.addEventListener(Event.CHANGE, handleSectionChange);
+    }
+
+    private function handleEmbeddedDbVaultCorePropertyTabRollOut(e:Event):void {
+        if (_dirty) {
+            // bind model
+            var dbIdentityVault:DbIdentityVaultDTO;
+
+            dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVaultDTO;
+            dbIdentityVault.name = _embeddedDbVaultCoreSection.userRepositoryName.text;
+            dbIdentityVault.port = parseInt(_embeddedDbVaultCoreSection.serverPort.text);
+            dbIdentityVault.schema = _embeddedDbVaultCoreSection.schema.text;
+            dbIdentityVault.admin = _embeddedDbVaultCoreSection.admin.text;
+            dbIdentityVault.password = _embeddedDbVaultCoreSection.adminPass.text;
+
+            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
+
+    protected function enableExternalDbVaultPropertyTabs():void {
+        // Attach external DB identity vault editor form to property tabbed view
+        _propertySheetsViewStack.removeAllChildren();
+
+        // Core Tab
+        var corePropertyTab:Canvas = new Canvas();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.label = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _externalDbVaultCoreSection = new ExternalDBIdentityVaultCoreSection();
+        corePropertyTab.addChild(_externalDbVaultCoreSection);
+        _propertySheetsViewStack.addChild(corePropertyTab);
+
+        _externalDbVaultCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalDbVaultCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalDbVaultCorePropertyTabRollOut);
+
+        // Contract Tab
+        var contractPropertyTab:Canvas = new Canvas();
+        contractPropertyTab.id = "propertySheetContractSection";
+        contractPropertyTab.label = "Lookup";
+        contractPropertyTab.width = Number("100%");
+        contractPropertyTab.height = Number("100%");
+        contractPropertyTab.setStyle("borderStyle", "solid");
+
+        _externalDbVaultLookupSection = new ExternalDBIdentityVaultLookupSection();
+        contractPropertyTab.addChild(_externalDbVaultLookupSection);
+        _propertySheetsViewStack.addChild(contractPropertyTab);
+
+        _externalDbVaultLookupSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalDbVaulLookupPropertyTabCreationComplete);
+        contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalDbVaultLookupPropertyTabRollOut);
+    }
+
+    private function handleExternalDbVaultCorePropertyTabCreationComplete(event:Event):void {
+        var dbIdentityVault:DbIdentityVaultDTO;
+
+        dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVaultDTO;
+        // bind view
+        _externalDbVaultCoreSection.userRepositoryName.text = dbIdentityVault.name;
+        _externalDbVaultCoreSection.connectionName.text = dbIdentityVault.connectionName;
+        //TODO DRIVER
+        _externalDbVaultCoreSection.driverName.text = dbIdentityVault.driverName;
+        _externalDbVaultCoreSection.connectionUrl.text = dbIdentityVault.connectionUrl;
+        _externalDbVaultCoreSection.dbUsername.text = dbIdentityVault.admin;
+        _externalDbVaultCoreSection.dbPassword.text = dbIdentityVault.password;
+
+        _externalDbVaultCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
+        _externalDbVaultCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
+        _externalDbVaultCoreSection.driverName.addEventListener(Event.CHANGE, handleSectionChange);
+        _externalDbVaultCoreSection.connectionUrl.addEventListener(Event.CHANGE, handleSectionChange);
+        _externalDbVaultCoreSection.dbUsername.addEventListener(Event.CHANGE, handleSectionChange);
+        _externalDbVaultCoreSection.dbPassword.addEventListener(Event.CHANGE, handleSectionChange);
+    }
+
+    private function handleExternalDbVaultCorePropertyTabRollOut(e:Event):void {
+        if (_dirty) {
+            // bind model
+            var dbIdentityVault:DbIdentityVaultDTO;
+
+            dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVaultDTO;
+            dbIdentityVault.name = _externalDbVaultCoreSection.userRepositoryName.text;
+            dbIdentityVault.connectionName = _externalDbVaultCoreSection.connectionName.text;
+            dbIdentityVault.driverName = _externalDbVaultCoreSection.driverName.text;
+            dbIdentityVault.connectionUrl = _externalDbVaultCoreSection.connectionUrl.text;
+            dbIdentityVault.admin = _externalDbVaultCoreSection.dbUsername.text;
+            dbIdentityVault.password = _externalDbVaultCoreSection.dbPassword.text;
+
+            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
+
+    private function handleExternalDbVaulLookupPropertyTabCreationComplete(event:Event):void {
+        var dbIdentityVault:DbIdentityVaultDTO;
+
+        dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVaultDTO;
+        // bind view
+//        if(dbIdentityVault.userInformationLookup == null){
+//           dbIdentityVault.userInformationLookup = new UserInformationLookupDTO();
+//        }
+
+        _externalDbVaultLookupSection.userQuery.text = dbIdentityVault.userInformationLookup.userQueryString;
+        _externalDbVaultLookupSection.rolesQuery.text = dbIdentityVault.userInformationLookup.rolesQueryString;
+        _externalDbVaultLookupSection.credentialsQuery.text = dbIdentityVault.userInformationLookup.credentialsQueryString;
+        _externalDbVaultLookupSection.propertiesQuery.text = dbIdentityVault.userInformationLookup.userPropertiesQueryString;
+
+        _externalDbVaultLookupSection.userQuery.addEventListener(Event.CHANGE, handleSectionChange);
+        _externalDbVaultLookupSection.credentialsQuery.addEventListener(Event.CHANGE, handleSectionChange);
+        _externalDbVaultLookupSection.rolesQuery.addEventListener(Event.CHANGE, handleSectionChange);
+        _externalDbVaultLookupSection.propertiesQuery.addEventListener(Event.CHANGE, handleSectionChange);
+    }
+
+    private function handleExternalDbVaultLookupPropertyTabRollOut(e:Event):void {
+        if (_dirty) {
+            // bind model
+            var dbIdentityVault:DbIdentityVaultDTO;
+            dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVaultDTO;
+
+            if(dbIdentityVault.userInformationLookup == null){
+               dbIdentityVault.userInformationLookup = new UserInformationLookupDTO();
+            }
+
+            dbIdentityVault.userInformationLookup.userQueryString = _externalDbVaultLookupSection.userQuery.text;
+            dbIdentityVault.userInformationLookup.rolesQueryString = _externalDbVaultLookupSection.rolesQuery.text;
+            dbIdentityVault.userInformationLookup.credentialsQueryString =  _externalDbVaultLookupSection.credentialsQuery.text;
+            dbIdentityVault.userInformationLookup.userPropertiesQueryString = _externalDbVaultLookupSection.propertiesQuery.text;
+
+            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
 
     protected function clearPropertyTabs():void {
         // Attach appliance editor form to property tabbed view

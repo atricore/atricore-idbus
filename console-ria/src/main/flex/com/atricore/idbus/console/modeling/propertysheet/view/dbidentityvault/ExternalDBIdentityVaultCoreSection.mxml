@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
+         paddingRight="5" paddingTop="5" paddingBottom="5">
+    <!--<utils:TitledBorderBox title="Endpoint" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"-->
+                           <!--paddingBottom="5">-->
+        <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
+                 verticalGap="8">
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.userRepositoryName')}:"
+                         required="true">
+                <mx:TextInput id="userRepositoryName"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.connectionName')}:" required="true">
+                <mx:TextInput id="connectionName" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.jdbcDriver')}:" required="true">
+                <mx:ComboBox id="jdbcDriver" width="200">
+                </mx:ComboBox>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.driverName')}:" required="true">
+                <mx:TextInput id="driverName" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.connectionUrl')}:" required="true">
+                <mx:TextInput id="connectionUrl" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.dbUsername')}:" required="true">
+                <mx:TextInput id="dbUsername" width="200"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.dbPassword')}:" required="true">
+                <mx:TextInput id="dbPassword" width="200"/>
+            </mx:FormItem>
+
+        </mx:Form>
+    <!--</utils:TitledBorderBox>-->
+</mx:HBox>
