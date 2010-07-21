@@ -37,20 +37,45 @@
     <build>
         <sourceDirectory>src/main/flex</sourceDirectory>
 
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${basedir}/target/generated-resources</directory>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin><!-- Flex (SWC and SWF) compilation -->
                 <groupId>org.sonatype.flexmojos</groupId>
                 <artifactId>flexmojos-maven-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.6.1</version>
                 <extensions>true</extensions>
                 <configuration>
                     <configurationReport>true</configurationReport>
                     <contextRoot>org.atricore.idbus.console</contextRoot>
                     <debug>true</debug>
                     <configurationReport>true</configurationReport>
+
                 </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.adobe.flex</groupId>
+                        <artifactId>compiler</artifactId>
+                        <version>${flex.framework.version}</version>
+                        <type>pom</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.adobe.flex</groupId>
+                        <artifactId>license</artifactId>
+                        <version>${flex.framework.version}</version>
+                    </dependency>
+
+                </dependencies>
                 <executions>
                     <execution>
+                        <id>myId</id>
                         <goals>
                             <goal>optimize</goal>
                             <!-- Optimized RSL generation -->
@@ -59,44 +84,44 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/generated-sources/flexmojos</outputDirectory>
-
                             <includeJavaClasses>
-                                <includeClass>
+                                <class>
                                     org.atricore.idbus.capabilities.management.main.spi.StatusCode
-                                </includeClass>
-                                <includeClass>
+                                </class>
+                                <class>
                                     org.atricore.idbus.capabilities.management.main.spi.IdentityApplianceLifeCycleAction
-                                </includeClass>
-                                <includeClass>
+                                </class>
+                                <class>
                                     com.atricore.idbus.console.services.dto.*
-                                </includeClass>                                  
+                                </class>
 
-                                <includeClass>org.atricore.idbus.capabilities.management.main.spi.request.AbstractManagementRequest</includeClass>
-                                <includeClass>org.atricore.idbus.capabilities.management.main.spi.response.AbstractManagementResponse</includeClass>
+                                <class>org.atricore.idbus.capabilities.management.main.spi.request.AbstractManagementRequest</class>
+                                <class>org.atricore.idbus.capabilities.management.main.spi.response.AbstractManagementResponse</class>
 
-                                <includeClass>com.atricore.idbus.console.services.spi.request.*</includeClass>
-                                <includeClass>com.atricore.idbus.console.services.spi.response.*</includeClass>
+                                <class>com.atricore.idbus.console.services.spi.request.*</class>
+                                <class>com.atricore.idbus.console.services.spi.response.*</class>
 
                             </includeJavaClasses>
                             <excludeJavaClasses>
-                                <!--<excludeJavaClass>-->
+                                <!--<class>-->
                                     <!--org.atricore.idbus.capabilities.management.main.impl.IdentityBusMetadataManagerImpl-->
-                                <!--</excludeJavaClass>-->
-                                <!--<excludeJavaClass>-->
+                                <!--</class>-->
+                                <!--<class>-->
                                     <!--org.atricore.idbus.applications.server.services.impl.IdentityApplianceMetadataAjaxServiceImpl-->
-                                <!--</excludeJavaClass>-->
+                                <!--</class>-->
                             </excludeJavaClasses>
-                            <interfaceTemplate>
-                                <template>${basedir}/src/main/template/interfaceBase.gsp</template>
-                                <template>${basedir}/src/main/template/interface.gsp</template>
-                            </interfaceTemplate>
-                            <beanTemplate>
-                                <template>${basedir}/src/main/template/beanBase.gsp</template>
-                                <template>${basedir}/src/main/template/bean.gsp</template>
-                            </beanTemplate>
-                            <enumTemplate>
-                                <enumTemplate>${basedir}/src/main/template/enum.gsp</enumTemplate>
-                            </enumTemplate>
+                            
+                            <templates>
+                                <!-- There is a bug in flexmojo 3.6.1 that requires defining base-enum-template -->
+                                <base-enum-template>${basedir}/src/main/template/enum.gsp</base-enum-template>
+                                <enum-template>${basedir}/src/main/template/enum.gsp</enum-template>
+
+                                <base-interface-template>${basedir}/src/main/template/interfaceBase.gsp</base-interface-template>
+                                <interface-template>${basedir}/src/main/template/interface.gsp</interface-template>
+                                <base-bean-template>${basedir}/src/main/template/beanBase.gsp</base-bean-template>
+                                <bean-template>${basedir}/src/main/template/bean.gsp</bean-template>
+                            </templates>
+
                         </configuration>
                     </execution>
                 </executions>
