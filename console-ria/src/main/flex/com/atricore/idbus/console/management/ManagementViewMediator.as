@@ -130,7 +130,7 @@ public class ManagementViewMediator extends Mediator {
 
     private function handleGridButton(event:ManagementGridButtonEvent):void {
         switch (event.action) {
-            case ManagementGridButtonEvent.ACTION_ADD_CHILD :
+            case ManagementGridButtonEvent.ACTION_EDIT :
                 var parent:IdentityApplianceDTO = event.data as IdentityApplianceDTO;
                 break;
             case ManagementGridButtonEvent.ACTION_REMOVE :
