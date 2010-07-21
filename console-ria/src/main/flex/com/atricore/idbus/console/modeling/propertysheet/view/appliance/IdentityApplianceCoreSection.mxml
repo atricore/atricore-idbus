@@ -47,7 +47,4 @@
         <mx:Label text="/" width="2" paddingLeft="-5"/>
         <mx:TextInput id="applianceLocationPath" styleName="locationInput" width="100"/>
     </mx:FormItem>
-    <mx:Script><![CDATA[
-        import AtricoreConsole;
-        ]]></mx:Script>
 </mx:Form>

@@ -79,6 +79,9 @@ public class IDPChannelCreateMediator extends FormMediator {
         if(view.samlBindingHttpRedirectCheck.selected){
             idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_REDIRECT);
         }
+        if(view.samlBindingSoapCheck.selected){
+            idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_SOAP);
+        }
 
         idpChannel.activeProfiles = new ArrayCollection();
         if(view.samlProfileSSOCheck.selected){
@@ -107,6 +110,7 @@ public class IDPChannelCreateMediator extends FormMediator {
             sp.channels.addItem(_newIdpChannel);
             sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
             sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
             closeWindow();
         }
         else {

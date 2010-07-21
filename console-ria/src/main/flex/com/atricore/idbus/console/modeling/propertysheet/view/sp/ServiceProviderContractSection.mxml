@@ -33,13 +33,14 @@
             <mx:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}"/>
             <mx:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
             <mx:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
+            <mx:CheckBox id="samlBindingSoapCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:">
+        <!--mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:">
             <mx:CheckBox id="signAuthRequestCheck"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:">
             <mx:CheckBox id="encryptAuthRequestCheck"/>
-        </mx:FormItem>    
+        </mx:FormItem-->    
 </mx:Form>

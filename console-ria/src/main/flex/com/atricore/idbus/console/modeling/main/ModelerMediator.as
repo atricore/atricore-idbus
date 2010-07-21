@@ -28,6 +28,7 @@ import com.atricore.idbus.console.modeling.diagram.DiagramMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannelElementRequest;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
 import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand;
@@ -139,11 +140,12 @@ public class ModelerMediator extends Mediator {
         return [ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE,
             ApplicationFacade.NOTE_CREATE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT,
-            ApplicationFacade.NOTE_REMOVE_IDP_CHANNEL_ELEMENT,
             ApplicationFacade.NOTE_CREATE_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.NOTE_CREATE_IDP_CHANNEL_ELEMENT,
             ApplicationFacade.NOTE_REMOVE_IDP_CHANNEL_ELEMENT,
+            ApplicationFacade.NOTE_CREATE_SP_CHANNEL_ELEMENT,
+            ApplicationFacade.NOTE_REMOVE_SP_CHANNEL_ELEMENT,                
             ApplicationFacade.NOTE_MANAGE_CERTIFICATE,
             ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS,
             ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED,
@@ -180,7 +182,6 @@ public class ModelerMediator extends Mediator {
 //                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.NOTE_SERVICE_PROVIDER_REMOVE, rsp.serviceProvider);
                 break;
-
             case ApplicationFacade.NOTE_CREATE_IDP_CHANNEL_ELEMENT:
                 _modelerPopUpManager.showCreateIdpChannelWindow(notification);
                 break;
@@ -189,7 +190,14 @@ public class ModelerMediator extends Mediator {
 //                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.NOTE_IDP_CHANNEL_REMOVE, ridpc.idpChannel);
                 break;
-
+            case ApplicationFacade.NOTE_CREATE_SP_CHANNEL_ELEMENT:
+                _modelerPopUpManager.showCreateSpChannelWindow(notification);
+                break;
+            case ApplicationFacade.NOTE_REMOVE_SP_CHANNEL_ELEMENT:
+                var rspc:RemoveSpChannelElementRequest  = RemoveSpChannelElementRequest(notification.getBody());
+//                 TODO: Perform UI handling for confirming removal action
+                sendNotification(ApplicationFacade.NOTE_SP_CHANNEL_REMOVE, rspc.spChannel);
+                break;
             case ApplicationFacade.NOTE_MANAGE_CERTIFICATE:
                 _modelerPopUpManager.showManageCertificateWindow(notification);
                 break;

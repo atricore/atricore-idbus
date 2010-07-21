@@ -83,7 +83,7 @@
                            <mx:itemRenderer>
                                <mx:Component>
                                    <mx:CheckBox selectedField="isSelected"
-                                           change="onChange(event);">
+                                          change="onChange(event);">
                                        <mx:Script>
                                            <![CDATA[
                                                private function onChange(evt:Event):void {
@@ -91,7 +91,7 @@
                                                }
                                            ]]>
                                        </mx:Script>
-                                   </mx:CheckBox>
+                                    </mx:CheckBox>
                                </mx:Component>
                            </mx:itemRenderer>
                     </mx:List>
