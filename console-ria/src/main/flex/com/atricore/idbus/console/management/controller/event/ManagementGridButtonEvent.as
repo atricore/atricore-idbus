@@ -4,19 +4,18 @@ import flash.events.Event;
 
 public class ManagementGridButtonEvent extends Event
 {
-    public static const CLICK:String = "GridButtonEvent.CLICK";
+    public static const CLICK:String = "ManagementGridButtonEvent.CLICK";
 
     public static const ACTION_EDIT:int = 0;
-    public static const ACTION_VIEW:int = 1;
-    public static const ACTION_REMOVE:int = 2;
-    public static const ACTION_ADD_CHILD:int = 3;
-    public static const ACTION_ACCEPT:int = 4;
-    public static const ACTION_REJECT:int = 5;
+    public static const ACTION_REMOVE:int = 1;
+    public static const ACTION_START:int = 2;
+    public static const ACTION_STOP:int = 3;
+
 
     private var _data:Object;
     private var _action:int;
 
-    public function ManagementGridButtonEvent(bubbles:Boolean = false, cancelable:Boolean = false, data:Object = null, action:int = ManagementGridButtonEvent.ACTION_VIEW)
+    public function ManagementGridButtonEvent(bubbles:Boolean = false, cancelable:Boolean = false, data:Object = null, action:int = ManagementGridButtonEvent.ACTION_EDIT)
     {
         super(ManagementGridButtonEvent.CLICK, bubbles, cancelable);
         this._data = data;

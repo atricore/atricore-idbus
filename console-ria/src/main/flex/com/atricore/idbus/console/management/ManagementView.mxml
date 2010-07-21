@@ -42,24 +42,20 @@
     <mx:HDividedBox width="100%" height="100%" paddingRight="0">
         <mx:VBox width="30%" height="100%" backgroundAlpha="0.7">
             <mx:HBox width="100%" verticalAlign="bottom">
-                <mx:Label width="200" text="Saved Identity Appliances" styleName="h2"/>
+                <mx:Label width="200" text="Saved" styleName="h3"/>
                 <mx:Spacer width="100%"/>
-                <mx:Button id="btnApplianceCreate" label="Create Identity Appliance" enabled="false"/>
+                <mx:Button id="btnApplianceCreate" label="Create" enabled="false"/>
             </mx:HBox>
             <mx:AdvancedDataGrid id="grdSavedAppliances" width="100%" height="100%"
                                  dragEnabled="true" allowMultipleSelection="false" sortExpertMode="true"
                                  folderClosedIcon="{null}" folderOpenIcon="{null}"
-                                 dragMoveEnabled="true" dropEnabled="true" doubleClickEnabled="true"
+                                 dragMoveEnabled="false" dropEnabled="true" doubleClickEnabled="true"
                                  styleName="applianceGrid" headerHeight="30" variableRowHeight="true">
                 <mx:columns>
                     <mx:AdvancedDataGridColumn id="colSavedApplianceName" fontSize="12" color="#3679b0"
                                                headerText="Identity Appliance"
                                                headerStyleName="applianceHeader"
                                                showDataTips="true" dataField="name" wordWrap="true"/>
-                    <mx:AdvancedDataGridColumn headerText="Description" showDataTips="true"
-                                               dataField="description"/>
-                    <mx:AdvancedDataGridColumn headerText="State" dataField="state" width="50" textAlign="center"
-                                               showDataTips="true"/>
                     <mx:AdvancedDataGridColumn headerText="Actions" width="65">
                         <mx:itemRenderer>
                             <mx:Component>
@@ -70,8 +66,11 @@
                                         import com.atricore.idbus.console.management.controller.event.ManagementGridButtonEvent;
                               ]]>
                               </mx:Script>
+                                    <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
+                                                   toolTip="Edit Saved Identity Appliance"
+                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_EDIT));"/>
                                     <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
-                                                   toolTip="Remove Identity Appliance"
+                                                   toolTip="Remove Saved Identity Appliance"
                                                    click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_REMOVE));"/>
                                 </mx:HBox>
                             </mx:Component>
@@ -82,10 +81,10 @@
         </mx:VBox>
         <mx:VBox width="30%" height="100%" backgroundAlpha="0.7">
             <mx:HBox width="100%" verticalAlign="bottom">
-                <mx:Label width="200" text="Compiled Identity Appliances" styleName="h2"/>
+                <mx:Label width="200" text="Compiled" styleName="h3"/>
                 <mx:Spacer width="100%"/>
-                <mx:ComboBox id="cboCompiledIdentityAppliances" prompt="Select an Identity Appliance to rebuild"
-                             width="230"
+                <mx:ComboBox id="cboCompiledIdentityAppliances" prompt="Rebuild All"
+                             width="150"
                              labelField="title" enabled="true"/>
             </mx:HBox>
             <mx:AdvancedDataGrid id="grdCompiledAppliances" width="100%" height="100%"
@@ -98,19 +97,35 @@
                                                headerText="Identity Appliance"
                                                headerStyleName="applianceHeader"
                                                showDataTips="true" dataField="applianceLabel" wordWrap="true"/>
-                    <mx:AdvancedDataGridColumn headerText="Description" showDataTips="true"
-                                               dataField="descriptionLabel"/>
-                    <mx:AdvancedDataGridColumn headerText="State" dataField="state" width="50" textAlign="center"
-                                               showDataTips="true"/>
+                    <mx:AdvancedDataGridColumn headerText="Actions" width="65">
+                        <mx:itemRenderer>
+                            <mx:Component>
+                                <mx:HBox horizontalGap="4" horizontalAlign="center"
+                                         click="event.stopImmediatePropagation()">
+                                    <mx:Script>
+                              <![CDATA[
+                                        import com.atricore.idbus.console.management.controller.event.ManagementGridButtonEvent;
+                              ]]>
+                              </mx:Script>
+                                    <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
+                                                   toolTip="Edit Compiled Identity Appliance"
+                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_EDIT));"/>
+                                    <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
+                                                   toolTip="Remove Compiled Identity Appliance"
+                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_REMOVE));"/>
+                                </mx:HBox>
+                            </mx:Component>
+                        </mx:itemRenderer>
+                    </mx:AdvancedDataGridColumn>
                 </mx:columns>
             </mx:AdvancedDataGrid>
         </mx:VBox>
-        <mx:VBox width="45%" height="100%">
+        <mx:VBox width="30%" height="100%">
             <mx:HBox width="100%" verticalAlign="bottom">
-                <mx:Label width="200" text="Deployed Identity Appliances" styleName="h2"/>
+                <mx:Label width="200" text="Deployed" styleName="h3"/>
                 <mx:Spacer width="100%"/>
-                <mx:ComboBox id="cboDeployedIdentityAppliances" prompt="Select an Identity Appliance to redeploy"
-                             width="230"
+                <mx:ComboBox id="cboDeployedIdentityAppliances" prompt="Redeploy All"
+                             width="150"
                              labelField="title" enabled="true"/>
             </mx:HBox>
 
@@ -124,19 +139,43 @@
                                                headerText="Identity Appliance"
                                                headerStyleName="applianceHeader"
                                                showDataTips="true" dataField="applianceLabel" wordWrap="true"/>
-                    <mx:AdvancedDataGridColumn headerText="Description" showDataTips="true"
-                                               dataField="descriptionLabel"/>
                     <mx:AdvancedDataGridColumn headerText="State" dataField="state" width="50" textAlign="center"
                                                showDataTips="true"/>
+                    <mx:AdvancedDataGridColumn headerText="Actions" width="100">
+                        <mx:itemRenderer>
+                            <mx:Component>
+                                <mx:HBox horizontalGap="4" horizontalAlign="center"
+                                         click="event.stopImmediatePropagation()">
+                                    <mx:Script>
+                              <![CDATA[
+                                        import com.atricore.idbus.console.management.controller.event.ManagementGridButtonEvent;
+                              ]]>
+                              </mx:Script>
+                                    <mx:LinkButton icon="@Embed('/images/icons/accept.png')" width="20"
+                                                   toolTip="Start Identity Appliance"
+                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_START));"/>
+                                    <mx:LinkButton icon="@Embed('/images/icons/down.png')" width="20"
+                                                   toolTip="Stop Identity Appliance"
+                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_STOP));"/>
+                                    <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
+                                                   toolTip="Edit Identity Appliance"
+                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_EDIT));"/>
+                                    <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
+                                                   toolTip="Remove Identity Appliance"
+                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_REMOVE));"/>
+                                </mx:HBox>
+                            </mx:Component>
+                        </mx:itemRenderer>
+                    </mx:AdvancedDataGridColumn>
                 </mx:columns>
             </mx:AdvancedDataGrid>
         </mx:VBox>
-        <mx:VBox width="45%" height="100%">
+        <mx:VBox width="30%" height="100%">
             <mx:HBox width="100%" verticalAlign="bottom">
-                <mx:Label width="200" text="Disposed Identity Appliances" styleName="h2"/>
+                <mx:Label width="200" text="Disposed" styleName="h3"/>
                 <mx:Spacer width="100%"/>
-                <mx:ComboBox id="cboDisposedIdentityAppliances" prompt="Select an Identity Appliance to remove"
-                             width="230"
+                <mx:ComboBox id="cboDisposedIdentityAppliances" prompt="Remove All"
+                             width="150"
                              labelField="title" enabled="true"/>
             </mx:HBox>
 
@@ -150,13 +189,28 @@
                                                headerText="Identity Appliance"
                                                headerStyleName="applianceHeader"
                                                showDataTips="true" wordWrap="true"/>
-                    <mx:AdvancedDataGridColumn headerText="Description" showDataTips="true"
-                                               dataField="descriptionLabel"/>
-                    <mx:AdvancedDataGridColumn headerText="State" dataField="state" width="50" textAlign="center"
-                                               showDataTips="true"/>
+                    <mx:AdvancedDataGridColumn headerText="Actions" width="65">
+                        <mx:itemRenderer>
+                            <mx:Component>
+                                <mx:HBox horizontalGap="4" horizontalAlign="center"
+                                         click="event.stopImmediatePropagation()">
+                                    <mx:Script>
+                              <![CDATA[
+                                        import com.atricore.idbus.console.management.controller.event.ManagementGridButtonEvent;
+                              ]]>
+                              </mx:Script>
+                                    <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
+                                                   toolTip="Edit Identity Appliance"
+                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_EDIT));"/>
+                                    <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
+                                                   toolTip="Remove Identity Appliance"
+                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_REMOVE));"/>
+                                </mx:HBox>
+                            </mx:Component>
+                        </mx:itemRenderer>
+                    </mx:AdvancedDataGridColumn>
                 </mx:columns>
             </mx:AdvancedDataGrid>
         </mx:VBox>
-
     </mx:HDividedBox>
 </mx:Panel>
