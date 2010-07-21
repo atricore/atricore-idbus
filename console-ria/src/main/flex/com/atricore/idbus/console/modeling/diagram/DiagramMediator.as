@@ -344,7 +344,17 @@ DiagramMediator extends Mediator {
                             }
                             if (identityVault != null) {
                                 //since we're not displaying default channel, link identityvault from def.channel with provider
-                                var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, providerGraphNode, true, Constants.IDENTITY_VAULT_DEEP);
+//                                var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, providerGraphNode, true, Constants.IDENTITY_VAULT_DEEP);
+                                var vaultExists:Boolean = false;
+                                for each (var tmpVaultGraphNode:IVisualNode in vaults){
+                                    if(tmpVaultGraphNode.data as IdentityVaultDTO == identityVault){
+                                        GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode);
+                                        vaultExists = true;
+                                    }
+                                }
+                                if(!vaultExists){
+                                    GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, channelGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
+                                }
                             }
                         }
                         if (locProv.channels != null) {
@@ -361,8 +371,8 @@ DiagramMediator extends Mediator {
                                     var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityVault, true);
                                     //link identity vault with the channel containing it
 //                                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, channelGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
-                                    var vaultExists:Boolean = false;
-                                    for each (var tmpVaultGraphNode:IVisualNode in vaults){
+                                    vaultExists = false;
+                                    for each (tmpVaultGraphNode in vaults){
                                         if(tmpVaultGraphNode.data as IdentityVaultDTO == identityVault){
                                             GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, channelGraphNode);
                                             vaultExists = true;
