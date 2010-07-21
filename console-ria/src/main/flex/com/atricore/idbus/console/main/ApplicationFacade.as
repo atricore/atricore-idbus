@@ -33,6 +33,7 @@ import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceList
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand;
 
+import com.atricore.idbus.console.modeling.main.controller.IdentityVaultRemoveCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand;
 import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand;
 
@@ -67,6 +68,7 @@ public class ApplicationFacade extends Facade {
     public static const NOTE_SERVICE_PROVIDER_REMOVE:String = "Node.ServiceProviderRemove" ;
     public static const NOTE_IDP_CHANNEL_REMOVE:String = "Node.IdpChannelRemove" ;
     public static const NOTE_SP_CHANNEL_REMOVE:String = "Note.ISpChannelRemove" ;
+    public static const NOTE_DB_IDENTITY_VAULT_REMOVE:String = "Note.IdentityVaultRemove" ;    
     public static const NOTE_IDENTITY_APPLIANCE_CHANGED:String = "Note.IdentityApplianceChanged";
     public static const NOTE_EDIT_IDENTITY_APPLIANCE:String = "Note.EditIdentityAppliance";
     public static const NOTE_UPDATE_IDENTITY_APPLIANCE:String = "Note.UpdateIdentityAppliance";
@@ -85,6 +87,8 @@ public class ApplicationFacade extends Facade {
     public static const NOTE_REMOVE_IDP_CHANNEL_ELEMENT:String = "Node.RemoveIdpChannelElement";
     public static const NOTE_CREATE_SP_CHANNEL_ELEMENT:String = "Note.CreateSpChannelElement";
     public static const NOTE_REMOVE_SP_CHANNEL_ELEMENT:String = "Note.RemoveSpChannelElement";
+    public static const NOTE_CREATE_DB_IDENTITY_VAULT_ELEMENT:String = "Note.CreateIdentityVaultElement";
+    public static const NOTE_REMOVE_DB_IDENTITY_VAULT_ELEMENT:String = "Note.RemoveIdentityVaultElement";
     public static const NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT:String = "Node.RemoveServiceProviderElement";
     public static const NOTE_MANAGE_CERTIFICATE:String = "Note.ManageCertificate";
     public static const NOTE_SHOW_UPLOAD_PROGRESS:String = "Note.UploadProgress";
@@ -114,6 +118,7 @@ public class ApplicationFacade extends Facade {
         registerCommand(NOTE_SERVICE_PROVIDER_REMOVE, ServiceProviderRemoveCommand);
         registerCommand(NOTE_IDP_CHANNEL_REMOVE, IdpChannelRemoveCommand);
         registerCommand(NOTE_SP_CHANNEL_REMOVE, SpChannelRemoveCommand);
+        registerCommand(NOTE_DB_IDENTITY_VAULT_REMOVE, IdentityVaultRemoveCommand);
         registerCommand(NOTE_LOOKUP_IDENTITY_APPLIANCE_BY_ID, LookupIdentityApplianceByIdCommand);
         registerCommand(NOTE_IDENTITY_APPLIANCE_LIST_LOAD, IdentityApplianceListLoadCommand);
         registerCommand(NOTE_UPLOAD, UploadCommand);

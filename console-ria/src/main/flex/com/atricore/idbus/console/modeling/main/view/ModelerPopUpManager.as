@@ -25,6 +25,8 @@ import com.atricore.idbus.console.main.view.certificate.ManageCertificateMediato
 import com.atricore.idbus.console.main.view.certificate.ManageCertificateView;
 import com.atricore.idbus.console.main.view.upload.UploadProgress;
 import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
+import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardView;
+import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardViewMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateForm;
@@ -50,6 +52,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _serviceProviderCreateForm:ServiceProviderCreateForm;
     private var _idpChannelCreateForm:IDPChannelCreateForm;
     private var _spChannelCreateForm:SPChannelCreateForm;
+    private var _dbIdentityVaultWizardView:DbIdentityVaultWizardView;
     private var _manageCertificateForm:ManageCertificateView;
     private var _uploadProgress:UploadProgress;
     private var _buildAppliance:BuildApplianceView;
@@ -156,6 +159,24 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleSpChannelCreateFormCreated(event:FlexEvent):void {
         var mediator:SPChannelCreateMediator = new SPChannelCreateMediator(_spChannelCreateForm);
         _facade.removeMediator(SPChannelCreateMediator.NAME);
+        _facade.registerMediator(mediator);
+        mediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateDbIdentityVaultWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createDbIdentityVaultWizardView();
+        showWizard(_dbIdentityVaultWizardView);
+    }
+
+    private function createDbIdentityVaultWizardView():void {
+        _dbIdentityVaultWizardView = new DbIdentityVaultWizardView();
+        _dbIdentityVaultWizardView.addEventListener(FlexEvent.CREATION_COMPLETE, handleDbIdentityVaultWizardViewCreated);
+    }
+
+    private function handleDbIdentityVaultWizardViewCreated(event:FlexEvent):void {
+        var mediator:DbIdentityVaultWizardViewMediator = new DbIdentityVaultWizardViewMediator(_dbIdentityVaultWizardView);
+        _facade.removeMediator(DbIdentityVaultWizardViewMediator.NAME);
         _facade.registerMediator(mediator);
         mediator.handleNotification(_lastWindowNotification);
     }

@@ -26,6 +26,7 @@ import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.browser.BrowserMediator;
 import com.atricore.idbus.console.modeling.diagram.DiagramMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannelElementRequest;
@@ -145,7 +146,9 @@ public class ModelerMediator extends Mediator {
             ApplicationFacade.NOTE_CREATE_IDP_CHANNEL_ELEMENT,
             ApplicationFacade.NOTE_REMOVE_IDP_CHANNEL_ELEMENT,
             ApplicationFacade.NOTE_CREATE_SP_CHANNEL_ELEMENT,
-            ApplicationFacade.NOTE_REMOVE_SP_CHANNEL_ELEMENT,                
+            ApplicationFacade.NOTE_REMOVE_SP_CHANNEL_ELEMENT,
+            ApplicationFacade.NOTE_CREATE_DB_IDENTITY_VAULT_ELEMENT,
+            ApplicationFacade.NOTE_REMOVE_DB_IDENTITY_VAULT_ELEMENT,
             ApplicationFacade.NOTE_MANAGE_CERTIFICATE,
             ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS,
             ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED,
@@ -197,6 +200,15 @@ public class ModelerMediator extends Mediator {
                 var rspc:RemoveSpChannelElementRequest  = RemoveSpChannelElementRequest(notification.getBody());
 //                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.NOTE_SP_CHANNEL_REMOVE, rspc.spChannel);
+                break;
+
+            case ApplicationFacade.NOTE_CREATE_DB_IDENTITY_VAULT_ELEMENT:
+                _modelerPopUpManager.showCreateDbIdentityVaultWindow(notification);
+                break;
+            case ApplicationFacade.NOTE_REMOVE_DB_IDENTITY_VAULT_ELEMENT:
+                var rdbiv:RemoveIdentityVaultElementRequest  = RemoveIdentityVaultElementRequest(notification.getBody());
+//                 TODO: Perform UI handling for confirming removal action
+                sendNotification(ApplicationFacade.NOTE_DB_IDENTITY_VAULT_REMOVE, rdbiv.identityVault);
                 break;
             case ApplicationFacade.NOTE_MANAGE_CERTIFICATE:
                 _modelerPopUpManager.showManageCertificateWindow(notification);

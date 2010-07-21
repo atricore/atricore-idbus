@@ -19,13 +19,18 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.diagram {
-public class DiagramElementTypes {
-    public static const IDENTITY_PROVIDER_ELEMENT_TYPE:int = 0;
-    public static const SERVICE_PROVIDER_ELEMENT_TYPE:int = 1;
-    public static const IDENTITY_APPLIANCE_ELEMENT_TYPE = 2;
-    public static const IDP_CHANNEL_ELEMENT_TYPE:int = 3;
-    public static const SP_CHANNEL_ELEMENT_TYPE:int = 4;
-    public static const DB_IDENTITY_VAULT_ELEMENT_TYPE = 5;
+package com.atricore.idbus.console.modeling.diagram.model.request {
+import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+
+public class RemoveIdentityVaultElementRequest {
+    private var _identityVault:IdentityVaultDTO;
+
+    public function RemoveIdentityVaultElementRequest(identityVault:IdentityVaultDTO) {
+        _identityVault = identityVault;
+    }
+
+    public function get identityVault():IdentityVaultDTO {
+        return _identityVault;
+    }
 }
 }

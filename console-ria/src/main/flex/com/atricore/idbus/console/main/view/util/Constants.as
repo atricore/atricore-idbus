@@ -32,6 +32,8 @@ package com.atricore.idbus.console.main.view.util {
         public static const CHANNEL_DEEP:uint=2;
 
         public static const IDENTITY_VAULT_DEEP:uint=2;
+        
+        public static const IDENTITY_VAULT_CHANNEL_DEEP:uint=3;
 
 		//dashboard parameters
 		public static const MANAGER_PARAM_APPLIANCE_ID:String = "applianceId";

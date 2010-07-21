@@ -20,12 +20,15 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram {
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSpChannelElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannelElementRequest;
+import com.atricore.idbus.console.services.dto.DbIdentityVaultDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
@@ -43,6 +46,7 @@ import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
 
+import mx.collections.ArrayCollection;
 import mx.controls.Button;
 import mx.core.ClassFactory;
 import mx.core.Container;
@@ -197,6 +201,23 @@ DiagramMediator extends Mediator {
 
 
                             break;
+                        case DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE:
+                            // assert that source end is an Identity Appliance
+                            if (_currentlySelectedNode.data is IdentityApplianceDTO) {
+                                var ownerIdentityAppliance:IdentityApplianceDTO = _currentlySelectedNode.data as IdentityApplianceDTO;
+
+                                var civ:CreateIdentityVaultElementRequest = new CreateIdentityVaultElementRequest(
+                                        ownerIdentityAppliance,
+                                        _currentlySelectedNode.stringid
+                                        );
+
+                                // this notification will be grabbed by the modeler mediator which will open
+                                // the corresponding form                                
+                                sendNotification(ApplicationFacade.NOTE_CREATE_DB_IDENTITY_VAULT_ELEMENT, civ);
+                            }
+
+
+                            break;
                     }
                 }
                 break;
@@ -248,6 +269,15 @@ DiagramMediator extends Mediator {
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.NOTE_REMOVE_SP_CHANNEL_ELEMENT, rspc);
                             break;
+                        case DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE:
+                            var identityVault:DbIdentityVaultDTO = _currentlySelectedNode.data as DbIdentityVaultDTO;
+
+                            var riv:RemoveIdentityVaultElementRequest = new RemoveIdentityVaultElementRequest(identityVault);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.NOTE_REMOVE_DB_IDENTITY_VAULT_ELEMENT, riv);
+                            break;
                     }
                 }
                 break;
@@ -288,6 +318,15 @@ DiagramMediator extends Mediator {
 
             var rootGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), _identityAppliance, null, true, Constants.IDENTITY_BUS_DEEP);
 
+            var vaults:ArrayCollection = new ArrayCollection();
+            if (identityApplianceDefinition.identityVaults != null) {
+                for(var k:int=0; k < identityApplianceDefinition.identityVaults.length; k++){
+                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identityVaults[k], true);
+                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.identityVaults[k], rootGraphNode, true, Constants.PROVIDER_DEEP);
+                    vaults.addItem(identityVaultGraphNode);
+                }
+            }
+
             if (identityApplianceDefinition.providers != null) {
                 for (var i:int = 0; i < identityApplianceDefinition.providers.length; i++) {
                     var provider:ProviderDTO = identityApplianceDefinition.providers[i];
@@ -304,6 +343,7 @@ DiagramMediator extends Mediator {
                                 identityVault = ServiceProviderChannelDTO(locProv.defaultChannel).identityVault;
                             }
                             if (identityVault != null) {
+                                //since we're not displaying default channel, link identityvault from def.channel with provider
                                 var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, providerGraphNode, true, Constants.IDENTITY_VAULT_DEEP);
                             }
                         }
@@ -319,7 +359,18 @@ DiagramMediator extends Mediator {
                                 }
                                 if (identityVault != null) {
                                     var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityVault, true);
-                                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, providerGraphNode, true, Constants.IDENTITY_VAULT_DEEP);
+                                    //link identity vault with the channel containing it
+//                                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, channelGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
+                                    var vaultExists:Boolean = false;
+                                    for each (var tmpVaultGraphNode:IVisualNode in vaults){
+                                        if(tmpVaultGraphNode.data as IdentityVaultDTO == identityVault){
+                                            GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, channelGraphNode);
+                                            vaultExists = true;
+                                        }
+                                    }
+                                    if(!vaultExists){
+                                        GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, channelGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
+                                    }
                                 }
                             }
                         }
@@ -327,11 +378,11 @@ DiagramMediator extends Mediator {
                 }
             }
 
-            if (identityApplianceDefinition.identityVaults != null) {
-                for (i = 0; i < identityApplianceDefinition.identityVaults.length; i++) {
-                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identityVaults[i], true);
-                }
-            }
+//            if (identityApplianceDefinition.identityVaults != null) {
+//                for (i = 0; i < identityApplianceDefinition.identityVaults.length; i++) {
+//                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identityVaults[i], true);
+//                }
+//            }
 
         }
 
@@ -397,6 +448,9 @@ DiagramMediator extends Mediator {
             } else
             if(node.data is ServiceProviderChannelDTO){
                 elementType = DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE;
+            } else
+            if(node.data is DbIdentityVaultDTO){
+                elementType = DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE;
             }
             //TODO - add other element types
             
