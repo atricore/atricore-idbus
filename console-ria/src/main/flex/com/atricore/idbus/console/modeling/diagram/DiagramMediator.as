@@ -361,7 +361,7 @@ DiagramMediator extends Mediator {
                                     }
                                 }
                                 if(!vaultExists){
-                                    GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, channelGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
+                                    GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, providerGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
                                 }
                             }
                         }
