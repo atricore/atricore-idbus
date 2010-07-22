@@ -21,7 +21,7 @@
 
 package com.atricore.idbus.console.main
 {
-import com.atricore.idbus.console.management.ManagementViewMediator;
+import com.atricore.idbus.console.lifecycle.LifecycleViewMediator;
 
 import flash.events.Event;
 
@@ -55,12 +55,12 @@ public class ApplicationMediator extends Mediator {
         _popupManager = new ConsolePopUpManager(facade, viewComp);
 
         // Add listeners for other components on the viewStack with delayed instantiation.
-        viewComp.managementView.addEventListener(FlexEvent.CREATION_COMPLETE, handleManagementViewCreated);
+        viewComp.lifecycleView.addEventListener(FlexEvent.CREATION_COMPLETE, handleLifecycleViewCreated);
         viewComp.addEventListener(FlexEvent.SHOW, handleShowConsole);
     }
 
-    public function handleManagementViewCreated(event:Event):void {
-        facade.registerMediator(new ManagementViewMediator(app.managementView));
+    public function handleLifecycleViewCreated(event:Event):void {
+        facade.registerMediator(new LifecycleViewMediator(app.lifecycleView));
     }
 
     public function handleShowConsole(event:Event):void {

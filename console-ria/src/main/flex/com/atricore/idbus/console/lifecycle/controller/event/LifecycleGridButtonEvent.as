@@ -1,10 +1,10 @@
-package com.atricore.idbus.console.management.controller.event
+package com.atricore.idbus.console.lifecycle.controller.event
 {
 import flash.events.Event;
 
-public class ManagementGridButtonEvent extends Event
+public class LifecycleGridButtonEvent extends Event
 {
-    public static const CLICK:String = "ManagementGridButtonEvent.CLICK";
+    public static const CLICK:String = "LifecycleGridButtonEvent.CLICK";
 
     public static const ACTION_EDIT:int = 0;
     public static const ACTION_REMOVE:int = 1;
@@ -15,9 +15,9 @@ public class ManagementGridButtonEvent extends Event
     private var _data:Object;
     private var _action:int;
 
-    public function ManagementGridButtonEvent(bubbles:Boolean = false, cancelable:Boolean = false, data:Object = null, action:int = ManagementGridButtonEvent.ACTION_EDIT)
+    public function LifecycleGridButtonEvent(bubbles:Boolean = false, cancelable:Boolean = false, data:Object = null, action:int = LifecycleGridButtonEvent.ACTION_EDIT)
     {
-        super(ManagementGridButtonEvent.CLICK, bubbles, cancelable);
+        super(LifecycleGridButtonEvent.CLICK, bubbles, cancelable);
         this._data = data;
         this._action = action;
     }
@@ -34,7 +34,7 @@ public class ManagementGridButtonEvent extends Event
 
     override public function clone():Event
     {
-        return new ManagementGridButtonEvent(bubbles, cancelable, data, action);
+        return new LifecycleGridButtonEvent(bubbles, cancelable, data, action);
     }
 }
 }

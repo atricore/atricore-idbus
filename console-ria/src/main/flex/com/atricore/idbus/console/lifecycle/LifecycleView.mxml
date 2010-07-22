@@ -63,15 +63,19 @@
                                          click="event.stopImmediatePropagation()">
                                     <mx:Script>
                               <![CDATA[
-                                        import com.atricore.idbus.console.management.controller.event.ManagementGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
                               ]]>
                               </mx:Script>
                                     <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
                                                    toolTip="Edit Saved Identity Appliance"
-                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_EDIT));"/>
+                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
                                     <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
                                                    toolTip="Remove Saved Identity Appliance"
-                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_REMOVE));"/>
+                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
                                 </mx:HBox>
                             </mx:Component>
                         </mx:itemRenderer>
@@ -104,15 +108,19 @@
                                          click="event.stopImmediatePropagation()">
                                     <mx:Script>
                               <![CDATA[
-                                        import com.atricore.idbus.console.management.controller.event.ManagementGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
                               ]]>
                               </mx:Script>
                                     <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
                                                    toolTip="Edit Compiled Identity Appliance"
-                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_EDIT));"/>
+                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
                                     <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
                                                    toolTip="Remove Compiled Identity Appliance"
-                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_REMOVE));"/>
+                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
                                 </mx:HBox>
                             </mx:Component>
                         </mx:itemRenderer>
@@ -148,21 +156,29 @@
                                          click="event.stopImmediatePropagation()">
                                     <mx:Script>
                               <![CDATA[
-                                        import com.atricore.idbus.console.management.controller.event.ManagementGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
                               ]]>
                               </mx:Script>
                                     <mx:LinkButton icon="@Embed('/images/icons/accept.png')" width="20"
                                                    toolTip="Start Identity Appliance"
-                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_START));"/>
+                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_START));"/>
                                     <mx:LinkButton icon="@Embed('/images/icons/down.png')" width="20"
                                                    toolTip="Stop Identity Appliance"
-                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_STOP));"/>
+                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_STOP));"/>
                                     <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
                                                    toolTip="Edit Identity Appliance"
-                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_EDIT));"/>
+                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
                                     <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
                                                    toolTip="Remove Identity Appliance"
-                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_REMOVE));"/>
+                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
                                 </mx:HBox>
                             </mx:Component>
                         </mx:itemRenderer>
@@ -196,15 +212,19 @@
                                          click="event.stopImmediatePropagation()">
                                     <mx:Script>
                               <![CDATA[
-                                        import com.atricore.idbus.console.management.controller.event.ManagementGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
                               ]]>
                               </mx:Script>
                                     <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
                                                    toolTip="Edit Identity Appliance"
-                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_EDIT));"/>
+                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
                                     <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
                                                    toolTip="Remove Identity Appliance"
-                                                   click="dispatchEvent(new ManagementGridButtonEvent(true, true, data, ManagementGridButtonEvent.ACTION_REMOVE));"/>
+                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
                                 </mx:HBox>
                             </mx:Component>
                         </mx:itemRenderer>
