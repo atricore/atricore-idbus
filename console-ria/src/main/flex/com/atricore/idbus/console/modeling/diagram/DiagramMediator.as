@@ -24,6 +24,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityV
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSpChannelElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
@@ -233,6 +234,13 @@ DiagramMediator extends Mediator {
                     var elementType:int = notification.getBody() as int;
 
                     switch (elementType) {
+                        case DiagramElementTypes.IDENTITY_APPLIANCE_ELEMENT_TYPE:
+                            var identityAppliance:IdentityApplianceDTO = _currentlySelectedNode.data as IdentityApplianceDTO;
+                            var ria:RemoveIdentityApplianceElementRequest = new RemoveIdentityApplianceElementRequest(identityAppliance);
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.NOTE_REMOVE_IDENTITY_APPLIANCE_ELEMENT, ria);
+                            break;
                         case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
                             var identityProvider:IdentityProviderDTO = _currentlySelectedNode.data as IdentityProviderDTO;
 

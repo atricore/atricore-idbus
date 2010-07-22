@@ -25,6 +25,7 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.browser.BrowserMediator;
 import com.atricore.idbus.console.modeling.diagram.DiagramMediator;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdpChannelElementRequest;
@@ -139,6 +140,7 @@ public class ModelerMediator extends Mediator {
 
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE,
+            ApplicationFacade.NOTE_REMOVE_IDENTITY_APPLIANCE_ELEMENT,
             ApplicationFacade.NOTE_CREATE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.NOTE_CREATE_SERVICE_PROVIDER_ELEMENT,
@@ -168,6 +170,12 @@ public class ModelerMediator extends Mediator {
             case ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE:
                 updateIdentityAppliance();
                 enableIdentityApplianceActionButtons();
+                break;
+            case ApplicationFacade.NOTE_REMOVE_IDENTITY_APPLIANCE_ELEMENT:
+                var ria:RemoveIdentityApplianceElementRequest  = RemoveIdentityApplianceElementRequest(notification.getBody());
+                // TODO: Perform UI handling for confirming removal action
+                sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_REMOVE, ria.identityAppliance);
+                break;
                 break;
             case ApplicationFacade.NOTE_CREATE_IDENTITY_PROVIDER_ELEMENT:
                 _modelerPopUpManager.showCreateIdentityProviderWindow(notification);

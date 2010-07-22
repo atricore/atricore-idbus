@@ -155,6 +155,9 @@ public class BrowserMediator extends Mediator {
             _applianceBrowser.dataProvider = _applianceRootNode;
             _applianceBrowser.validateNow();
             _applianceBrowser.callLater(expandCollapseTree, [true]);
+        } else {
+            _applianceBrowser.dataProvider = null;
+            _applianceBrowser.validateNow();
         }
 
 

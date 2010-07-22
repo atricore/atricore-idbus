@@ -30,6 +30,7 @@ import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdenti
 import com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceRemoveCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand;
 
@@ -64,6 +65,7 @@ public class ApplicationFacade extends Facade {
     public static const NOTE_LOOKUP_IDENTITY_APPLIANCE_BY_ID:String = "Note.LookupIdentityApplianceById";
     public static const NOTE_IDENTITY_APPLIANCE_LIST_LOAD:String = "Note.IdentityApplianceListLoad";
     public static const NOTE_CREATE_IDENTITY_APPLIANCE:String = "Note.CreateIdentityAppliance";
+    public static const NOTE_IDENTITY_APPLIANCE_REMOVE:String = "Node.IdentityApplianceRemove" ;
     public static const NOTE_IDENTITY_PROVIDER_REMOVE:String = "Node.IdentityProviderRemove" ;
     public static const NOTE_SERVICE_PROVIDER_REMOVE:String = "Node.ServiceProviderRemove" ;
     public static const NOTE_IDP_CHANNEL_REMOVE:String = "Node.IdpChannelRemove" ;
@@ -114,6 +116,7 @@ public class ApplicationFacade extends Facade {
         registerCommand(NOTE_REGISTER, RegisterCommand);
         registerCommand(NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, CreateSimpleSSOIdentityApplianceCommand);
         registerCommand(NOTE_CREATE_IDENTITY_APPLIANCE, IdentityApplianceCreateCommand);
+        registerCommand(NOTE_IDENTITY_APPLIANCE_REMOVE, IdentityApplianceRemoveCommand);
         registerCommand(NOTE_IDENTITY_PROVIDER_REMOVE, IdentityProviderRemoveCommand);
         registerCommand(NOTE_SERVICE_PROVIDER_REMOVE, ServiceProviderRemoveCommand);
         registerCommand(NOTE_IDP_CHANNEL_REMOVE, IdpChannelRemoveCommand);
