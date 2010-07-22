@@ -721,7 +721,13 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idpLocation.setUri(createUrlSafeString(idp.getName()));
         idp.setLocation(idpLocation);
 
-        spChannel.setLocation(idpLocation);
+        LocationDTO spChannelLocation = new LocationDTO();
+        spChannelLocation.setProtocol(iad.getLocation().getProtocol());
+        spChannelLocation.setHost(iad.getLocation().getHost());
+        spChannelLocation.setPort(iad.getLocation().getPort());
+        spChannelLocation.setContext(iad.getLocation().getContext());
+        spChannelLocation.setUri(createUrlSafeString(idp.getName()));
+        spChannel.setLocation(spChannelLocation);
 
         //simple sso wizard creates only one vault
         spChannel.setIdentityVault(iad.getIdentityVaults().get(0));
