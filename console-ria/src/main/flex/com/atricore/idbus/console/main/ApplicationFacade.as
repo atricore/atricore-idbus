@@ -43,8 +43,11 @@ import com.atricore.idbus.console.modeling.main.controller.ServiceProviderRemove
 import com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand;
 
 import org.puremvc.as3.patterns.facade.Facade;
+import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
+import org.springextensions.actionscript.puremvc.patterns.facade.IocFacade;
 
-public class ApplicationFacade extends Facade {
+
+public class ApplicationFacade extends IocFacade implements IIocFacade {
 
     public static const USER_PROVISIONING_SERVICE:String = "userProvisioningService";
     public static const IDENTITY_APPLIANCE_MANAGEMENT_SERVICE:String = "identityApplianceManagementService";
@@ -52,6 +55,7 @@ public class ApplicationFacade extends Facade {
     public static const SIGN_ON_SERVICE:String = "signOnService";
 
     // Notification name constants application
+    public static const STARTUP_CMD:String = "startupCommand";
     public static const NOTE_STARTUP:String = "startup";
     public static const NOTE_SETUP_SERVER:String = "Note.SetupServer";
 
@@ -99,16 +103,31 @@ public class ApplicationFacade extends Facade {
     public static const NOTE_DEPLOY_IDENTITY_APPLIANCE:String = "Note.DeployIdentityAppliance";
 
 
-    public static function getInstance():ApplicationFacade {
-        if (instance == null) {
-            instance = new ApplicationFacade();
-        }
-        return instance as ApplicationFacade;
+    public function ApplicationFacade(p_configuration:* = null) {
+      super(p_configuration);
+    }
+
+    /**
+     * Singleton ApplicationFacade Factory Method
+     */
+    public static function getInstance(p_configSource:* = null):ApplicationFacade {
+      if (instance == null) {
+        new ApplicationFacade(p_configSource);
+      }
+
+      return instance as ApplicationFacade;
     }
 
     /**
      * Register Commands with the Controller
      */
+    override protected function initializeController():void {
+      super.initializeController();
+      registerCommandByConfigName(NOTE_STARTUP, STARTUP_CMD);
+    }
+
+    /**
+     * Register Commands with the Controller
     override protected function initializeController():void {
         super.initializeController();
         registerCommand(NOTE_STARTUP, ApplicationStartUpCommand);
@@ -133,5 +152,7 @@ public class ApplicationFacade extends Facade {
     public function startUp(app:AtricoreConsole):void {
         sendNotification(NOTE_STARTUP, app);
     }
-}
+     */
+
+     }
 }

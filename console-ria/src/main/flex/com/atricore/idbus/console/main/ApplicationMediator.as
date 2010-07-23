@@ -38,8 +38,9 @@ import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMedi
 
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class ApplicationMediator extends Mediator {
+public class ApplicationMediator extends IocMediator {
     // Canonical name of the Mediator
     public static const NAME:String = "com.atricore.idbus.console.main.ApplicationMediator";
     public static const REGISTER_HEAD:String = "User Registration";

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects
+        xmlns="http://www.springactionscript.org/schema/objects"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.springactionscript.org/schema/objects
+        http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd">
+
+    <object id="startupCommand" class="com.atricore.idbus.console.main.controller.ApplicationStartupCommand">
+        <property name="applicationMediator" ref="applicationMediator"/>
+        <property name="modelerMediator" ref="modelerMediator"/>
+    </object>
+
+    <!-- Proxies -->
+
+    <!-- Commands -->
+
+    <!-- Mediators -->
+    <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator"/>
+    <object id="modelerMediator" class="com.atricore.idbus.console.modeling.main.ModelerMediator"/>
+
+</objects>

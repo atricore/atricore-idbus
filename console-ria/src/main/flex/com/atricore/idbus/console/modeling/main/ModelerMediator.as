@@ -51,8 +51,9 @@ import mx.events.ItemClickEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class ModelerMediator extends Mediator {
+public class ModelerMediator extends IocMediator {
 
     public static const BUNDLE:String = "console";
 
