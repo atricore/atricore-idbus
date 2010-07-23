@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flex-config>
+    <includes>
+        <!--
+        <symbol>mx.logging.targets.TraceTarget</symbol>
+        <symbol>org.pranaframework.ioc.factory.MethodInvokingObject</symbol>
+        -->
+        <symbol>flash.utils.Dictionary</symbol>
+        <symbol>com.atricore.idbus.console.main.controller.ApplicationStartUpCommand</symbol>
+        <symbol>com.atricore.idbus.console.main.ApplicationMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.ModelerMediator</symbol>
+    </includes>
+</flex-config>

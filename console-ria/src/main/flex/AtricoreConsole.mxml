@@ -27,7 +27,7 @@
                 xmlns:login="com.atricore.idbus.console.main.view.login.*"
                 xmlns:lifecycle="com.atricore.idbus.console.lifecycle.*"
                 layout="absolute" horizontalAlign="left" height="100%" width="100%" minWidth="955" minHeight="600"
-                creationComplete="onCreationComplete">
+                creationComplete="onCreationComplete()">
 
 
     <mx:Script>
@@ -45,7 +45,7 @@
             
           // --- Configuring IoC facade through addConfigSource()
           m_facade = ApplicationFacade.getInstance();
-          m_facade.addConfigSource("applicationContext.xml");
+          m_facade.addConfigSource("flex/flexApplicationContext.xml");
           m_facade.addEventListener(Event.COMPLETE, startupApp);
           m_facade.initializeIocContainer();
         }

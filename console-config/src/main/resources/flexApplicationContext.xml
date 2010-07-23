@@ -6,10 +6,6 @@
         http://www.springactionscript.org/schema/objects
         http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd">
 
-    <object id="startupCommand" class="com.atricore.idbus.console.main.controller.ApplicationStartupCommand">
-        <property name="applicationMediator" ref="applicationMediator"/>
-        <property name="modelerMediator" ref="modelerMediator"/>
-    </object>
 
     <!-- Proxies -->
 
@@ -18,5 +14,11 @@
     <!-- Mediators -->
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator"/>
     <object id="modelerMediator" class="com.atricore.idbus.console.modeling.main.ModelerMediator"/>
+
+    <object id="startupCommand" class="com.atricore.idbus.console.main.controller.ApplicationStartUpCommand">
+        <property name="applicationMediator" ref="applicationMediator"/>
+        <property name="modelerMediator" ref="modelerMediator"/>
+    </object>
+    
 
 </objects>
