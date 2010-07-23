@@ -88,18 +88,18 @@ public class PropertySheetMediator extends Mediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE,
-            ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE,
-            ApplicationFacade.NOTE_DIAGRAM_ELEMENT_SELECTED];
+        return [ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE,
+            ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
+            ApplicationFacade.DIAGRAM_ELEMENT_SELECTED];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE:
+            case ApplicationFacade.UPDATE_IDENTITY_APPLIANCE:
                 clearPropertyTabs();
                 _dirty = false;
                 break;
-            case ApplicationFacade.NOTE_DIAGRAM_ELEMENT_SELECTED:
+            case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
                 if (_projectProxy.currentIdentityApplianceElement is IdentityApplianceDTO) {
                     _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                     enableIdentityAppliancePropertyTabs();
@@ -199,8 +199,8 @@ public class PropertySheetMediator extends Mediator {
             identityAppliance.idApplianceDefinition.location.host = _iaCoreSection.applianceLocationDomain.text;
             identityAppliance.idApplianceDefinition.location.port = parseInt(_iaCoreSection.applianceLocationPort.text);
             identityAppliance.idApplianceDefinition.location.context = _iaCoreSection.applianceLocationPath.text;
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
     }
@@ -328,8 +328,8 @@ public class PropertySheetMediator extends Mediator {
             //authenticationMechanism
             //authenticationAssertionEmissionPolicy
 
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
     }
@@ -421,7 +421,7 @@ public class PropertySheetMediator extends Mediator {
             identityProvider.signAuthenticationAssertions = _ipContractSection.signAuthAssertionCheck.selected;
             identityProvider.encryptAuthenticationAssertions = _ipContractSection.encryptAuthAssertionCheck.selected;
 
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
     }
@@ -478,8 +478,8 @@ public class PropertySheetMediator extends Mediator {
             //authenticationMechanism
             //authenticationAssertionEmissionPolicy
 
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
     }
@@ -569,7 +569,7 @@ public class PropertySheetMediator extends Mediator {
             }
 
             serviceProvider.defaultChannel = idpChannel;
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
     }
@@ -665,8 +665,8 @@ public class PropertySheetMediator extends Mediator {
             //authenticationMechanism
             //authenticationAssertionEmissionPolicy
 
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
     }
@@ -742,7 +742,7 @@ public class PropertySheetMediator extends Mediator {
                 idpChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
             }
 
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
     }
@@ -838,8 +838,8 @@ public class PropertySheetMediator extends Mediator {
             //authenticationMechanism
             //authenticationAssertionEmissionPolicy
 
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
     }
@@ -912,7 +912,7 @@ public class PropertySheetMediator extends Mediator {
                 spChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
             }
 
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
     }
@@ -968,8 +968,8 @@ public class PropertySheetMediator extends Mediator {
             dbIdentityVault.admin = _embeddedDbVaultCoreSection.admin.text;
             dbIdentityVault.password = _embeddedDbVaultCoreSection.adminPass.text;
 
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
     }
@@ -1043,8 +1043,8 @@ public class PropertySheetMediator extends Mediator {
             dbIdentityVault.admin = _externalDbVaultCoreSection.dbUsername.text;
             dbIdentityVault.password = _externalDbVaultCoreSection.dbPassword.text;
 
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
     }
@@ -1084,8 +1084,8 @@ public class PropertySheetMediator extends Mediator {
             dbIdentityVault.userInformationLookup.credentialsQueryString =  _externalDbVaultLookupSection.credentialsQuery.text;
             dbIdentityVault.userInformationLookup.userPropertiesQueryString = _externalDbVaultLookupSection.propertiesQuery.text;
 
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
     }

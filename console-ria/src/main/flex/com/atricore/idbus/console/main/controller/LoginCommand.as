@@ -35,8 +35,9 @@ import mx.rpc.remoting.mxml.RemoteObject;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.command.SimpleCommand;
+import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class LoginCommand extends SimpleCommand implements IResponder
+public class LoginCommand extends IocSimpleCommand implements IResponder
 {
     public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.LoginCommand.SUCCESS";
     public static const FAILURE:String = "com.atricore.idbus.console.main.controller.LoginCommand.FAILURE";
@@ -47,9 +48,6 @@ public class LoginCommand extends SimpleCommand implements IResponder
 
     
     private var _password:String;
-
-    public function LoginCommand() {
-    }
 
     override public function execute(notification:INotification):void {
         var loginRequest:LoginRequest = notification.getBody() as LoginRequest;

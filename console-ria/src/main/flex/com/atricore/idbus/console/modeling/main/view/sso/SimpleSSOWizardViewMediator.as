@@ -129,12 +129,12 @@ public class SimpleSSOWizardViewMediator extends Mediator
                 var keystore:KeystoreDTO = _wizardDataModel.certificateData;
                 identityApplianceDefinition.certificate = keystore;
 
-                sendNotification(ApplicationFacade.NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);
+                sendNotification(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);
                 break;
             case UploadProgressMediator.CREATED:
                 // upload progress window created, start upload
                 if (_fileRef != null) {
-                    sendNotification(ApplicationFacade.NOTE_UPLOAD, _fileRef);
+                    sendNotification(ApplicationFacade.UPLOAD, _fileRef);
                 } else {
                     view.steps[1].lblUploadMsg.text = "Upload error";
                     view.steps[1].lblUploadMsg.visible = true;
@@ -183,17 +183,17 @@ public class SimpleSSOWizardViewMediator extends Mediator
 
     public function handleSSOSetupSuccess():void {
         sendNotification(ProcessingMediator.STOP);
-        sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
-        sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-        sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
-        sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_LIST_LOAD);
-        sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
+        sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+        sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
                 "The SSO appliance has been successfully created.");
     }
 
     public function handleSSOSetupFailure():void {
         sendNotification(ProcessingMediator.STOP);
-        sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+        sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                 "There was an error creating simple SSO appliance.");
     }
 
@@ -214,7 +214,7 @@ public class SimpleSSOWizardViewMediator extends Mediator
     private function handleUpload(event:MouseEvent):void {
         //_fileRef.load();  //this is available from flash player 10 and maybe flex sdk 3.4
         //_fileRef.data;
-        sendNotification(ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS, _fileRef);
+        sendNotification(ApplicationFacade.SHOW_UPLOAD_PROGRESS, _fileRef);
     }
 
     private function fileSelectHandler(evt:Event):void {

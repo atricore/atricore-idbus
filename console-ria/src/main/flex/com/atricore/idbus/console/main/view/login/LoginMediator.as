@@ -33,22 +33,39 @@ import com.atricore.idbus.console.main.model.request.LoginRequest;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class LoginMediator extends Mediator
+public class LoginMediator extends IocMediator
 {
-    public static const NAME:String = "LoginViewMediator";
 
     private var _loginValidators:Array;
 
-    public function LoginMediator(viewComp:LoginView) {
-        super(NAME, viewComp);
-        viewComp.btnLogin.addEventListener(MouseEvent.CLICK, handleLoginButton);
-        viewComp.btnClear.addEventListener(MouseEvent.CLICK, handleClearButton);
-        viewComp.addEventListener(FlexEvent.SHOW, handleShowLogin);
+    public function LoginMediator(name:String = null, viewComp:LoginView = null) {
+        super(name, viewComp);
+    }
+
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.btnLogin.removeEventListener(MouseEvent.CLICK, handleLoginButton);
+            view.btnClear.removeEventListener(MouseEvent.CLICK, handleClearButton);
+            view.removeEventListener(FlexEvent.SHOW, handleShowLogin);
+        }
+
+        init();
+
+        super.setViewComponent(viewComponent);
+    }
+
+    private function init():void {
+
+        view.btnLogin.addEventListener(MouseEvent.CLICK, handleLoginButton);
+        view.btnClear.addEventListener(MouseEvent.CLICK, handleClearButton);
+        view.addEventListener(FlexEvent.SHOW, handleShowLogin);
 
         _loginValidators = [];
-        _loginValidators.push(viewComp.userNameValidator);
-        _loginValidators.push(viewComp.passwordValidator);
+        _loginValidators.push(view.userNameValidator);
+        _loginValidators.push(view.passwordValidator);
         handleShowLogin(null);
     }
 
@@ -86,7 +103,7 @@ public class LoginMediator extends Mediator
             loginRequest.username = view.userName.text;
             loginRequest.password = view.password.text;
             loginRequest.passwordReminderRequest = false;
-            sendNotification(ApplicationFacade.NOTE_LOGIN, loginRequest);
+            sendNotification(ApplicationFacade.LOGIN, loginRequest);
 
             if (view.rememberMe.selected) {
                 PersistentLoginDetails.clear();
@@ -97,7 +114,7 @@ public class LoginMediator extends Mediator
             }
         }
         else {
-            sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG, "Missing or invalid data entered");
+            sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "Missing or invalid data entered");
         }
     }
 
@@ -107,13 +124,13 @@ public class LoginMediator extends Mediator
 
 
     public function handleLoginFailure():void {
-        sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+        sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                 "The user name and/or password you entered are not correct. " +
                 "Please re-enter to log in again.");
     }
 
     public function handleEmailSuccess():void {
-        sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
+        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
                 "An email with your password has been sent to your account.");
     }
 
@@ -122,7 +139,7 @@ public class LoginMediator extends Mediator
         view.password.text = "";
         view.rememberMe.selected = false;
         FormUtility.clearValidationErrors(_loginValidators);
-        sendNotification(ApplicationFacade.NOTE_CLEAR_MSG);
+        sendNotification(ApplicationFacade.CLEAR_MSG);
     }
 
     protected function get view():LoginView

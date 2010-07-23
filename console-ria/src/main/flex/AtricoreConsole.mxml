@@ -33,6 +33,7 @@
     <mx:Script>
       <![CDATA[
         import org.puremvc.as3.patterns.observer.Notification;
+
         import com.atricore.idbus.console.main.ApplicationFacade;
 
         private var m_facade:ApplicationFacade;
@@ -41,18 +42,18 @@
 
         private function onCreationComplete():void {
 
-         trace("OnCreationComplete");
-            
-          // --- Configuring IoC facade through addConfigSource()
-          m_facade = ApplicationFacade.getInstance();
-          m_facade.addConfigSource("flex/flexApplicationContext.xml");
-          m_facade.addEventListener(Event.COMPLETE, startupApp);
-          m_facade.initializeIocContainer();
+            trace("OnCreationComplete");
+
+            // --- Configuring IoC facade through addConfigSource()
+            m_facade = ApplicationFacade.getInstance();
+            m_facade.addConfigSource("flex/flexApplicationContext.xml");
+            m_facade.addEventListener(Event.COMPLETE, startupApp);
+            m_facade.initializeIocContainer();
         }
 
         private function startupApp(p_event:Event):void {
-          m_facade.removeEventListener(Event.COMPLETE, startupApp);
-          m_facade.notifyObservers(new Notification(ApplicationFacade.NOTE_STARTUP, this));
+            m_facade.removeEventListener(Event.COMPLETE, startupApp);
+            m_facade.notifyObservers(new Notification(ApplicationFacade.STARTUP, this));
         }
       ]]>
     </mx:Script>

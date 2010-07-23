@@ -47,8 +47,8 @@ public class IdentityProviderRemoveCommand extends SimpleCommand {
 
         proxy.currentIdentityApplianceElement = false;
         // reflect removal in views and diagram editor
-        sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-        sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+        sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
     }
 
 }

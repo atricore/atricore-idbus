@@ -45,7 +45,7 @@ public class ApplicationMediator extends IocMediator {
     public static const NAME:String = "com.atricore.idbus.console.main.ApplicationMediator";
     public static const REGISTER_HEAD:String = "User Registration";
 
-    private var _secureContext:SecureContextProxy;
+    private var _secureContextProxy:SecureContextProxy;
     private var _popupManager:ConsolePopUpManager;
 
     public function ApplicationMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
@@ -54,6 +54,14 @@ public class ApplicationMediator extends IocMediator {
 
     }
 
+    public function set secureContextProxy(value:SecureContextProxy):void {
+        _secureContextProxy = value;
+    }
+
+    public function get secureContextProxy():SecureContextProxy {
+        return _secureContextProxy;
+
+    }
 
     override public function setViewComponent(p_viewComponent:Object):void {
       if (getViewComponent() != null) {
@@ -68,7 +76,6 @@ public class ApplicationMediator extends IocMediator {
 
     public function init():void {
 
-        _secureContext = SecureContextProxy(facade.retrieveProxy(SecureContextProxy.NAME));
         _popupManager = new ConsolePopUpManager(facade, app);
 
         // Add listeners for other components on the viewStack with delayed instantiation.
@@ -86,8 +93,8 @@ public class ApplicationMediator extends IocMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.NOTE_SHOW_ERROR_MSG,
-            ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
+        return [ApplicationFacade.SHOW_ERROR_MSG,
+            ApplicationFacade.SHOW_SUCCESS_MSG,
             ApplicationStartUpCommand.SUCCESS,
             ApplicationStartUpCommand.FAILURE,
             SetupServerCommand.SUCCESS,
@@ -95,7 +102,7 @@ public class ApplicationMediator extends IocMediator {
             SetupWizardViewMediator.RUN,
             SimpleSSOWizardViewMediator.RUN,
             IdentityApplianceMediator.CREATE,
-            ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER
+            ApplicationFacade.DISPLAY_APPLIANCE_MODELER
         ];
     }
 
@@ -117,13 +124,13 @@ public class ApplicationMediator extends IocMediator {
                 break;
             case SetupServerCommand.FAILURE:
                 break;
-            case ApplicationFacade.NOTE_SHOW_ERROR_MSG :
+            case ApplicationFacade.SHOW_ERROR_MSG :
                 app.messageBox.showFailureMessage(notification.getBody() as String);
                 break;
-            case ApplicationFacade.NOTE_SHOW_SUCCESS_MSG :
+            case ApplicationFacade.SHOW_SUCCESS_MSG :
                 app.messageBox.showSuccessMessage(notification.getBody() as String);
                 break;
-            case ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER:
+            case ApplicationFacade.DISPLAY_APPLIANCE_MODELER:
                 app.modelerView.setVisible(true);
                 break;
         }

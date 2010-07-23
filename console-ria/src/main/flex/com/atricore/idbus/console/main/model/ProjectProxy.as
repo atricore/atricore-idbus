@@ -26,10 +26,10 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 import mx.collections.ArrayCollection;
 
 import org.puremvc.as3.patterns.proxy.Proxy;
+import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
-public class ProjectProxy extends Proxy
+public class ProjectProxy extends IocProxy
 {
-    public static const NAME:String = "com.atricore.idbus.console.main.model.ProjectProxy";
 
     public static const ACTION_ITEM_CREATE : int = 1;
     public static const ACTION_ITEM_EDIT : int = 2;
@@ -42,7 +42,7 @@ public class ProjectProxy extends Proxy
 
     public function ProjectProxy()
     {
-        super(NAME, null);
+        super(NAME);
     }
 
     public function get identityApplianceList():ArrayCollection {

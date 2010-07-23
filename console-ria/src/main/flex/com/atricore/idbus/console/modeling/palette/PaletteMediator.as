@@ -74,7 +74,7 @@ public class PaletteMediator extends Mediator {
        switch(event.action) {
           case PaletteEvent.ACTION_PALETTE_ITEM_CLICKED :
              var selectedPaletteEntry:PaletteEntry = event.data as PaletteEntry;
-             sendNotification(ApplicationFacade.NOTE_DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
+             sendNotification(ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
              break;
        }
 

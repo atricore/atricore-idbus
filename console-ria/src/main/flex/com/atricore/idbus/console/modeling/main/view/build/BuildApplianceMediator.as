@@ -22,7 +22,7 @@
 package com.atricore.idbus.console.modeling.main.view.build {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand;
 
@@ -33,7 +33,7 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class BuildApplianceMediator extends FormMediator
+public class BuildApplianceMediator extends IocFormMediator
 {
     public static const NAME:String = "BuildApplianceMediator";
     public static const RUN:String = "BuildApplianceMediator.RUN";
@@ -59,22 +59,22 @@ public class BuildApplianceMediator extends FormMediator
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case ProcessingMediator.CREATED:
-                sendNotification(ApplicationFacade.NOTE_BUILD_IDENTITY_APPLIANCE,
+                sendNotification(ApplicationFacade.BUILD_IDENTITY_APPLIANCE,
                         [_proxy.currentIdentityAppliance.id.toString(), view.deployAppliance.selected]);
                 break;
             case BuildIdentityApplianceCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 var msg:String = "Appliance has been successfully built.";
                 if (view.deployAppliance.selected) {
                     msg =  "Appliance has been successfully built and deployed.";
                 }
-                sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG, msg);
+                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, msg);
                 facade.removeMediator(BuildApplianceMediator.NAME);
                 break;
             case BuildIdentityApplianceCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                     "There was an error building appliance.");
                 facade.removeMediator(BuildApplianceMediator.NAME);
                 break;

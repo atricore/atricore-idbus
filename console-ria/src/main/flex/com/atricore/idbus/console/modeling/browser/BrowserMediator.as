@@ -63,28 +63,28 @@ public class BrowserMediator extends Mediator {
         var selectedItem:BrowserNode = event.currentTarget.selectedItem;
 
         _projectProxy.currentIdentityApplianceElement = selectedItem.data;
-        sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_SELECTED)
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_SELECTED)
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE,
-            ApplicationFacade.NOTE_DIAGRAM_ELEMENT_SELECTED,
-            ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED];
+        return [ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
+            ApplicationFacade.DIAGRAM_ELEMENT_SELECTED,
+            ApplicationFacade.DIAGRAM_ELEMENT_UPDATED];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE:
+            case ApplicationFacade.UPDATE_IDENTITY_APPLIANCE:
                 updateIdentityAppliance();
                 bindApplianceBrowser();
                 break;
-            case ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED:
+            case ApplicationFacade.DIAGRAM_ELEMENT_UPDATED:
                 // TODO: Dispatch change event to renderer so that it can update item's labels & icons without
                 // TODO: recreating the tree view. 
                 updateIdentityAppliance();
                 bindApplianceBrowser();
                 break;
-            case ApplicationFacade.NOTE_DIAGRAM_ELEMENT_SELECTED:
+            case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
                 var treeNode:BrowserNode  = findDataTreeNodeByData(_applianceRootNode, _projectProxy.currentIdentityApplianceElement );
                 trace("Tree Node: " + treeNode);
                 if (treeNode != null) {

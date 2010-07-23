@@ -30,10 +30,10 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class UploadProgressMediator extends Mediator
+public class UploadProgressMediator extends IocMediator
 {
-    public static const NAME:String = "UploadProgressMediator";
     public static const CREATED:String = "Note.UploadProgressCreated";
     public static const UPDATE_PROGRESS:String = "Note.UpdateProgress";
     public static const UPLOAD_COMPLETED:String = "Note.UploadCompleted";
@@ -41,20 +41,35 @@ public class UploadProgressMediator extends Mediator
 
     private var _fileRef:FileReference;
     
-    public function UploadProgressMediator(viewComp:UploadProgress) {
-        super(NAME, viewComp);
+    public function UploadProgressMediator(name:String = null, viewComp:UploadProgress = null) {
+        super(name, viewComp);
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.btnCancel.removeEventListener("click", onUploadBtnCancel);
+            view.btnFinish.removeEventListener("click", onUploadBtnFinish);
+            view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
+        }
+
+        init();
+
+        super.setViewComponent(viewComponent);
+    }
+
+    private function init():void {
         view.btnCancel.addEventListener("click", onUploadBtnCancel);
         view.btnFinish.addEventListener("click", onUploadBtnFinish);
-        viewComp.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+        view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS, UPDATE_PROGRESS, UPLOAD_COMPLETED];
+        return [ApplicationFacade.SHOW_UPLOAD_PROGRESS, UPDATE_PROGRESS, UPLOAD_COMPLETED];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS:
+            case ApplicationFacade.SHOW_UPLOAD_PROGRESS:
                 _fileRef = notification.getBody() as FileReference;
                 view.txtFile.text = "Uploading file: " + _fileRef.name;
                 view.progBar.label = "0%";
@@ -93,7 +108,6 @@ public class UploadProgressMediator extends Mediator
     }
 
     private function handleClose(event:Event):void {
-        facade.removeMediator(UploadProgressMediator.NAME);
     }
 
     protected function get view():UploadProgress

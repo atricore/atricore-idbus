@@ -34,10 +34,10 @@ import mx.events.CloseEvent;
 
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import org.puremvc.as3.interfaces.INotification;
 
-public class SPChannelCreateMediator extends FormMediator {
+public class SPChannelCreateMediator extends IocFormMediator {
     public static const NAME:String = "com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator";
 
     private var _proxy:ProjectProxy;
@@ -108,9 +108,9 @@ public class SPChannelCreateMediator extends FormMediator {
                 idp.channels = new ArrayCollection();
             }
             idp.channels.addItem(_newSpChannel);
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
-            sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+            sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             closeWindow();
         }
         else {

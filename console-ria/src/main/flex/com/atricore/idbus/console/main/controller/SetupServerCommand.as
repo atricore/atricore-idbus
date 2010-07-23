@@ -33,14 +33,12 @@ import com.atricore.idbus.console.main.model.ProfileProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.command.SimpleCommand;
+import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class SetupServerCommand extends SimpleCommand implements IResponder
+public class SetupServerCommand extends IocSimpleCommand implements IResponder
 {
    public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.SetupServerCommand.SUCCESS";
    public static const FAILURE:String = "com.atricore.idbus.console.main.controller.SetupServerCommand.FAILURE";
-
-   public function SetupServerCommand() {
-   }
 
    override public function execute(notification:INotification):void {
        var proxy:ProfileProxy = facade.retrieveProxy(ProfileProxy.NAME) as ProfileProxy;

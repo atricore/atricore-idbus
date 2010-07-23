@@ -73,9 +73,9 @@ public class DbIdentityVaultWizardViewMediator extends Mediator
         }
         _proxy.currentIdentityAppliance.idApplianceDefinition.identityVaults.addItem(_newDbIdentityVault);
         _proxy.currentIdentityApplianceElement = _newDbIdentityVault;
-        sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
-        sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-        sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+        sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
 
         //closeWizard();
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));

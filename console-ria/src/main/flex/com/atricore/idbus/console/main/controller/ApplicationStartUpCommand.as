@@ -52,39 +52,49 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public static var ADMIN_GROUP:String = "Administrators";
 
-    private var m_applicationMediator:IIocMediator;
-    private var m_modelerMediator:IIocMediator;
-    private var m_serviceRegistry:IIocProxy;
+    private var _applicationMediator:IIocMediator;
+    private var _modelerMediator:IIocMediator;
+    private var _lifecycleMediator:IIocMediator;
+
+    private var _serviceRegistry:IIocProxy;
 
     public function set applicationMediator(p_applicationMediator:IIocMediator):void {
-        m_applicationMediator = p_applicationMediator;
+        _applicationMediator = p_applicationMediator;
     }
 
     public function get applicationMediator():IIocMediator {
-        return m_applicationMediator;
+        return _applicationMediator;
     }
 
     public function set modelerMediator(p_modelerMediator:IIocMediator):void {
-        m_modelerMediator = p_modelerMediator;
+        _modelerMediator = p_modelerMediator;
     }
 
     public function get modelerMediator():IIocMediator {
-        return m_modelerMediator;
+        return _modelerMediator;
     }
 
+    public function set lifecycleMediator(value:IIocMediator):void {
+        _lifecycleMediator = value;
+    }
+
+    public function get lifecycleMediator():IIocMediator {
+        return _lifecycleMediator;
+    }
+
+    // TODO: implement injection function for remaining mediators
+
     public function set serviceRegistry(p_serviceRegistry:IIocProxy):void {
-        m_serviceRegistry = p_serviceRegistry;
+        _serviceRegistry = p_serviceRegistry;
     }
 
     public function get serviceRegistry():IIocProxy {
-        return m_serviceRegistry;
+        return _serviceRegistry;
     }
 
     override public function execute(note:INotification):void {
         var registry:ServiceRegistry = setupServiceRegistry();
 
-        trace("registry = " + registry);
-        
         var app:AtricoreConsole = note.getBody() as AtricoreConsole;
 
         applicationMediator.setViewComponent(app);
@@ -92,6 +102,11 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
         modelerMediator.setViewComponent(app.modelerView);
         iocFacade.registerMediatorByConfigName(applicationMediator.getConfigName());
+
+        lifecycleMediator.setViewComponent(app.lifecycleView);
+        iocFacade.registerMediatorByConfigName(lifecycleMediator.getConfigName());
+
+        // TODO: wire the view to the remaining mediators
 
         checkFirstRun();
     }
@@ -115,7 +130,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         browserManager.init();
         browserManager.setTitle("Atricore Identity Bus | Administration Console");
 
-        var registry:ServiceRegistry = m_serviceRegistry as ServiceRegistry;
+        var registry:ServiceRegistry = _serviceRegistry as ServiceRegistry;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
 
         var findAdminGroup:FindGroupByNameRequest = new FindGroupByNameRequest();

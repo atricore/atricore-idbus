@@ -24,16 +24,17 @@ package com.atricore.idbus.console.main.model
 import com.atricore.idbus.console.services.dto.UserDTO;
 
 import org.puremvc.as3.patterns.proxy.Proxy;
+import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
-public class ProfileProxy extends Proxy
+public class ProfileProxy extends IocProxy
 {
    public static const NAME : String = "com.atricore.idbus.console.main.model.ProfileProxy";
 
    public var user : UserDTO;
 
-   public function ProfileProxy()
+   public function ProfileProxy(name:String = null)
    {
-      super(NAME, null);
+      super(name);
    }
 
 }

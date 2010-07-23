@@ -114,21 +114,21 @@ DiagramMediator extends Mediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE,
-            ApplicationFacade.NOTE_DRAG_ELEMENT_TO_DIAGRAM,
-            ApplicationFacade.NOTE_DIAGRAM_ELEMENT_SELECTED,
+        return [ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
+            ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM,
+            ApplicationFacade.DIAGRAM_ELEMENT_SELECTED,
             ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED,
-            ApplicationFacade.NOTE_DIAGRAM_ELEMENT_REMOVE
+            ApplicationFacade.DIAGRAM_ELEMENT_REMOVE
         ];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE:
+            case ApplicationFacade.UPDATE_IDENTITY_APPLIANCE:
                 updateIdentityAppliance();
                 init();
                 break;
-            case ApplicationFacade.NOTE_DRAG_ELEMENT_TO_DIAGRAM:
+            case ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM:
                 if (_currentlySelectedNode != null) {
                     var elementType:int = notification.getBody() as int;
 
@@ -146,7 +146,7 @@ DiagramMediator extends Mediator {
 
                                 // this notification will be grabbed by the modeler mediator which will open
                                 // the corresponding form
-                                sendNotification(ApplicationFacade.NOTE_CREATE_IDENTITY_PROVIDER_ELEMENT, cip);
+                                sendNotification(ApplicationFacade.CREATE_IDENTITY_PROVIDER_ELEMENT, cip);
                             }
 
 
@@ -163,7 +163,7 @@ DiagramMediator extends Mediator {
 
                                 // this notification will be grabbed by the modeler mediator which will open
                                 // the corresponding form
-                                sendNotification(ApplicationFacade.NOTE_CREATE_SERVICE_PROVIDER_ELEMENT, csp);
+                                sendNotification(ApplicationFacade.CREATE_SERVICE_PROVIDER_ELEMENT, csp);
                             }
 
 
@@ -180,7 +180,7 @@ DiagramMediator extends Mediator {
                                 _projectProxy.currentIdentityApplianceElementOwner = ownerServiceProvider;
                                 // this notification will be grabbed by the modeler mediator which will open
                                 // the corresponding form
-                                sendNotification(ApplicationFacade.NOTE_CREATE_IDP_CHANNEL_ELEMENT, cidpc);
+                                sendNotification(ApplicationFacade.CREATE_IDP_CHANNEL_ELEMENT, cidpc);
                             }
 
 
@@ -197,7 +197,7 @@ DiagramMediator extends Mediator {
                                 _projectProxy.currentIdentityApplianceElementOwner = ownerIdentityProvider;
                                 // this notification will be grabbed by the modeler mediator which will open
                                 // the corresponding form
-                                sendNotification(ApplicationFacade.NOTE_CREATE_SP_CHANNEL_ELEMENT, csdpc);
+                                sendNotification(ApplicationFacade.CREATE_SP_CHANNEL_ELEMENT, csdpc);
                             }
 
 
@@ -214,7 +214,7 @@ DiagramMediator extends Mediator {
 
                                 // this notification will be grabbed by the modeler mediator which will open
                                 // the corresponding form                                
-                                sendNotification(ApplicationFacade.NOTE_CREATE_DB_IDENTITY_VAULT_ELEMENT, civ);
+                                sendNotification(ApplicationFacade.CREATE_DB_IDENTITY_VAULT_ELEMENT, civ);
                             }
 
 
@@ -222,14 +222,14 @@ DiagramMediator extends Mediator {
                     }
                 }
                 break;
-            case ApplicationFacade.NOTE_DIAGRAM_ELEMENT_SELECTED:
+            case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
                 toggleNodeOnByData(_identityApplianceDiagram, _projectProxy.currentIdentityApplianceElement);
                 break;
 
-            case ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED:
+            case ApplicationFacade.DIAGRAM_ELEMENT_UPDATED:
                 _identityApplianceDiagram.dispatchEvent(new VGraphEvent(VGraphEvent.VGRAPH_CHANGED));
                 break;
-            case ApplicationFacade.NOTE_DIAGRAM_ELEMENT_REMOVE:
+            case ApplicationFacade.DIAGRAM_ELEMENT_REMOVE:
                 if (_currentlySelectedNode != null) {
                     var elementType:int = notification.getBody() as int;
 
@@ -239,7 +239,7 @@ DiagramMediator extends Mediator {
                             var ria:RemoveIdentityApplianceElementRequest = new RemoveIdentityApplianceElementRequest(identityAppliance);
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.NOTE_REMOVE_IDENTITY_APPLIANCE_ELEMENT, ria);
+                            sendNotification(ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT, ria);
                             break;
                         case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
                             var identityProvider:IdentityProviderDTO = _currentlySelectedNode.data as IdentityProviderDTO;
@@ -248,7 +248,7 @@ DiagramMediator extends Mediator {
 
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT, rip);
+                            sendNotification(ApplicationFacade.REMOVE_IDENTITY_PROVIDER_ELEMENT, rip);
                             break;
                         case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
                             var serviceProvider:ServiceProviderDTO = _currentlySelectedNode.data as ServiceProviderDTO;
@@ -257,7 +257,7 @@ DiagramMediator extends Mediator {
 
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT, rsp);
+                            sendNotification(ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT, rsp);
                             break;
                         case DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE:
                             var idpChannel:IdentityProviderChannelDTO = _currentlySelectedNode.data as IdentityProviderChannelDTO;
@@ -266,7 +266,7 @@ DiagramMediator extends Mediator {
 
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.NOTE_REMOVE_IDP_CHANNEL_ELEMENT, ridpc);
+                            sendNotification(ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT, ridpc);
                             break;
                         case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
                             var spChannel:ServiceProviderChannelDTO = _currentlySelectedNode.data as ServiceProviderChannelDTO;
@@ -275,7 +275,7 @@ DiagramMediator extends Mediator {
 
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.NOTE_REMOVE_SP_CHANNEL_ELEMENT, rspc);
+                            sendNotification(ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT, rspc);
                             break;
                         case DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE:
                             var identityVault:DbIdentityVaultDTO = _currentlySelectedNode.data as DbIdentityVaultDTO;
@@ -284,7 +284,7 @@ DiagramMediator extends Mediator {
 
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.NOTE_REMOVE_DB_IDENTITY_VAULT_ELEMENT, riv);
+                            sendNotification(ApplicationFacade.REMOVE_DB_IDENTITY_VAULT_ELEMENT, riv);
                             break;
                     }
                 }
@@ -439,7 +439,7 @@ DiagramMediator extends Mediator {
         if (node != null) {
             _currentlySelectedNode = node;
             _projectProxy.currentIdentityApplianceElement = node.data;
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_SELECTED);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_SELECTED);
         }
     }
 
@@ -472,7 +472,7 @@ DiagramMediator extends Mediator {
             }
             //TODO - add other element types
             
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_REMOVE, elementType);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE, elementType);
         }
     }
 

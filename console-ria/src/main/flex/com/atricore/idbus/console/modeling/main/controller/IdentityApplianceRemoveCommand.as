@@ -75,8 +75,8 @@ public class IdentityApplianceRemoveCommand extends SimpleCommand implements IRe
         proxy.currentIdentityApplianceElementOwner = false;
         proxy.currentIdentityApplianceElement = false;
         sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-        sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_LIST_LOAD);
-        sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
                     "The identity appliance has been successfully removed.");
     }
 
@@ -85,7 +85,7 @@ public class IdentityApplianceRemoveCommand extends SimpleCommand implements IRe
         var msg:String = fault.faultString.substring((fault.faultString.indexOf('.') + 1), fault.faultString.length);
         trace(msg);
 //        sendNotification(FAILURE, msg);
-        sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+        sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                     "There an error removing the identity appliance. Find more details in log file.");
 
     }    

@@ -45,8 +45,11 @@ import mx.events.FlexEvent;
 
 import org.puremvc.as3.interfaces.IFacade;
 import org.puremvc.as3.interfaces.INotification;
+import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
 
 public class ModelerPopUpManager extends BasePopUpManager {
+
+    private var _manageCertificateMediator:ManageCertificateMediator;
 
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
     private var _serviceProviderCreateForm:ServiceProviderCreateForm;
@@ -58,11 +61,19 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _buildAppliance:BuildApplianceView;
     private var _deployAppliance:DeployApplianceView;
 
-    public function ModelerPopUpManager(facade:IFacade, modeler:ModelerView) {
+    public function ModelerPopUpManager(facade:IIocFacade, modeler:ModelerView) {
         super(facade, modeler);
         _popup.styleName = "modelerPopup";
     }
     
+    public function set manageCertificateMediator(value:ManageCertificateMediator) {
+        _manageCertificateMediator = value;
+    }
+
+    public function get manageCertificateMediator():ManageCertificateMediator {
+        return _manageCertificateMediator;
+    }
+
     public function showCreateIdentityProviderWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         if (!_identityProviderCreateForm) {
@@ -183,27 +194,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showManageCertificateWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        createManageCertificateForm();
+
+        _manageCertificateMediator.handleNotification(_lastWindowNotification);
         _popup.title = "Manage Certificate";
         _popup.width = 400;
         _popup.height = 480;
-        //_popup.x = (_popupParent.width / 2) - 225;
-        //_popup.y = 80;
         showPopup(_manageCertificateForm);
     }
     
-    private function createManageCertificateForm():void {
-        _manageCertificateForm = new ManageCertificateView();
-        _manageCertificateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleManageCertificateFormCreated);
-    }
-
-    private function handleManageCertificateFormCreated(event:FlexEvent):void {
-        var mediator:ManageCertificateMediator = new ManageCertificateMediator(_manageCertificateForm);
-        _facade.removeMediator(ManageCertificateMediator.NAME);
-        _facade.registerMediator(mediator);
-        mediator.handleNotification(_lastWindowNotification);
-    }
-
     public function showUploadProgressWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createUploadProgressWindow();

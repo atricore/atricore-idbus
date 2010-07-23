@@ -84,18 +84,6 @@ public class ModelerMediator extends IocMediator {
       super(p_mediatorName, p_viewComponent);
     }
 
-    /*
-    public function ModelerMediator(viewComp:ModelerView) {
-        super(NAME, viewComp);
-
-        // register mediators for child components
-        facade.registerMediator(new BrowserMediator(viewComp.browser));
-        facade.registerMediator(new DiagramMediator(viewComp.diagram));
-        facade.registerMediator(new PaletteMediator(viewComp.palette));
-        facade.registerMediator(new PropertySheetMediator(viewComp.propertysheet));
-    }
-    */
-
 
     override public function setViewComponent(p_viewComponent:Object):void {
       if (getViewComponent() != null) {
@@ -125,9 +113,9 @@ public class ModelerMediator extends IocMediator {
         view.appliances.labelFunction = applianceListLabelFunc;
         view.btnSave.enabled = false;
 
-        _modelerPopUpManager = new ModelerPopUpManager(facade, view);
+        _modelerPopUpManager = new ModelerPopUpManager(iocFacade, view);
 
-        sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_LIST_LOAD);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
     }
 
 
@@ -144,13 +132,13 @@ public class ModelerMediator extends IocMediator {
         trace("Open Button Click: " + event);
         if (view.appliances.selectedItem != null) {
             var applianceId:String = (view.appliances.selectedItem as IdentityApplianceDTO).id.toString();
-            sendNotification(ApplicationFacade.NOTE_LOOKUP_IDENTITY_APPLIANCE_BY_ID, applianceId);
+            sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, applianceId);
         }
     }
 
     private function handleSaveClick(event:MouseEvent):void {
         trace("Save Button Click: " + event);
-        sendNotification(ApplicationFacade.NOTE_EDIT_IDENTITY_APPLIANCE);
+        sendNotification(ApplicationFacade.EDIT_IDENTITY_APPLIANCE);
     }
 
     private function handleModelActionToolBarClick(event:ItemClickEvent):void {
@@ -164,21 +152,21 @@ public class ModelerMediator extends IocMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE,
-            ApplicationFacade.NOTE_REMOVE_IDENTITY_APPLIANCE_ELEMENT,
-            ApplicationFacade.NOTE_CREATE_IDENTITY_PROVIDER_ELEMENT,
-            ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT,
-            ApplicationFacade.NOTE_CREATE_SERVICE_PROVIDER_ELEMENT,
-            ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT,
-            ApplicationFacade.NOTE_CREATE_IDP_CHANNEL_ELEMENT,
-            ApplicationFacade.NOTE_REMOVE_IDP_CHANNEL_ELEMENT,
-            ApplicationFacade.NOTE_CREATE_SP_CHANNEL_ELEMENT,
-            ApplicationFacade.NOTE_REMOVE_SP_CHANNEL_ELEMENT,
-            ApplicationFacade.NOTE_CREATE_DB_IDENTITY_VAULT_ELEMENT,
-            ApplicationFacade.NOTE_REMOVE_DB_IDENTITY_VAULT_ELEMENT,
-            ApplicationFacade.NOTE_MANAGE_CERTIFICATE,
-            ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS,
-            ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED,
+        return [ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
+            ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT,
+            ApplicationFacade.CREATE_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.CREATE_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.CREATE_IDP_CHANNEL_ELEMENT,
+            ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT,
+            ApplicationFacade.CREATE_SP_CHANNEL_ELEMENT,
+            ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT,
+            ApplicationFacade.CREATE_DB_IDENTITY_VAULT_ELEMENT,
+            ApplicationFacade.REMOVE_DB_IDENTITY_VAULT_ELEMENT,
+            ApplicationFacade.MANAGE_CERTIFICATE,
+            ApplicationFacade.SHOW_UPLOAD_PROGRESS,
+            ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
             ProcessingMediator.START,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
@@ -192,64 +180,64 @@ public class ModelerMediator extends IocMediator {
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE:
+            case ApplicationFacade.UPDATE_IDENTITY_APPLIANCE:
                 updateIdentityAppliance();
                 enableIdentityApplianceActionButtons();
                 break;
-            case ApplicationFacade.NOTE_REMOVE_IDENTITY_APPLIANCE_ELEMENT:
+            case ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT:
                 var ria:RemoveIdentityApplianceElementRequest  = RemoveIdentityApplianceElementRequest(notification.getBody());
                 // TODO: Perform UI handling for confirming removal action
-                sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_REMOVE, ria.identityAppliance);
+                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_REMOVE, ria.identityAppliance);
                 break;
                 break;
-            case ApplicationFacade.NOTE_CREATE_IDENTITY_PROVIDER_ELEMENT:
+            case ApplicationFacade.CREATE_IDENTITY_PROVIDER_ELEMENT:
                 _modelerPopUpManager.showCreateIdentityProviderWindow(notification);
                 break;
-            case ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT:
+            case ApplicationFacade.REMOVE_IDENTITY_PROVIDER_ELEMENT:
                 var rip:RemoveIdentityProviderElementRequest  = RemoveIdentityProviderElementRequest(notification.getBody());
                 // TODO: Perform UI handling for confirming removal action
-                sendNotification(ApplicationFacade.NOTE_IDENTITY_PROVIDER_REMOVE, rip.identityProvider);
+                sendNotification(ApplicationFacade.IDENTITY_PROVIDER_REMOVE, rip.identityProvider);
                 break;
-            case ApplicationFacade.NOTE_CREATE_SERVICE_PROVIDER_ELEMENT:
+            case ApplicationFacade.CREATE_SERVICE_PROVIDER_ELEMENT:
                 _modelerPopUpManager.showCreateServiceProviderWindow(notification);
                 break;
-            case ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT:
+            case ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT:
                 var rsp:RemoveServiceProviderElementRequest  = RemoveServiceProviderElementRequest(notification.getBody());
 //                 TODO: Perform UI handling for confirming removal action
-                sendNotification(ApplicationFacade.NOTE_SERVICE_PROVIDER_REMOVE, rsp.serviceProvider);
+                sendNotification(ApplicationFacade.SERVICE_PROVIDER_REMOVE, rsp.serviceProvider);
                 break;
-            case ApplicationFacade.NOTE_CREATE_IDP_CHANNEL_ELEMENT:
+            case ApplicationFacade.CREATE_IDP_CHANNEL_ELEMENT:
                 _modelerPopUpManager.showCreateIdpChannelWindow(notification);
                 break;
-            case ApplicationFacade.NOTE_REMOVE_IDP_CHANNEL_ELEMENT:
+            case ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT:
                 var ridpc:RemoveIdpChannelElementRequest  = RemoveIdpChannelElementRequest(notification.getBody());
 //                 TODO: Perform UI handling for confirming removal action
-                sendNotification(ApplicationFacade.NOTE_IDP_CHANNEL_REMOVE, ridpc.idpChannel);
+                sendNotification(ApplicationFacade.IDP_CHANNEL_REMOVE, ridpc.idpChannel);
                 break;
-            case ApplicationFacade.NOTE_CREATE_SP_CHANNEL_ELEMENT:
+            case ApplicationFacade.CREATE_SP_CHANNEL_ELEMENT:
                 _modelerPopUpManager.showCreateSpChannelWindow(notification);
                 break;
-            case ApplicationFacade.NOTE_REMOVE_SP_CHANNEL_ELEMENT:
+            case ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT:
                 var rspc:RemoveSpChannelElementRequest  = RemoveSpChannelElementRequest(notification.getBody());
 //                 TODO: Perform UI handling for confirming removal action
-                sendNotification(ApplicationFacade.NOTE_SP_CHANNEL_REMOVE, rspc.spChannel);
+                sendNotification(ApplicationFacade.SP_CHANNEL_REMOVE, rspc.spChannel);
                 break;
 
-            case ApplicationFacade.NOTE_CREATE_DB_IDENTITY_VAULT_ELEMENT:
+            case ApplicationFacade.CREATE_DB_IDENTITY_VAULT_ELEMENT:
                 _modelerPopUpManager.showCreateDbIdentityVaultWindow(notification);
                 break;
-            case ApplicationFacade.NOTE_REMOVE_DB_IDENTITY_VAULT_ELEMENT:
+            case ApplicationFacade.REMOVE_DB_IDENTITY_VAULT_ELEMENT:
                 var rdbiv:RemoveIdentityVaultElementRequest  = RemoveIdentityVaultElementRequest(notification.getBody());
 //                 TODO: Perform UI handling for confirming removal action
-                sendNotification(ApplicationFacade.NOTE_DB_IDENTITY_VAULT_REMOVE, rdbiv.identityVault);
+                sendNotification(ApplicationFacade.DB_IDENTITY_VAULT_REMOVE, rdbiv.identityVault);
                 break;
-            case ApplicationFacade.NOTE_MANAGE_CERTIFICATE:
+            case ApplicationFacade.MANAGE_CERTIFICATE:
                 _modelerPopUpManager.showManageCertificateWindow(notification);
                 break;
-            case ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS:
+            case ApplicationFacade.SHOW_UPLOAD_PROGRESS:
                 _modelerPopUpManager.showUploadProgressWindow(notification);
                 break;
-            case ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED:
+            case ApplicationFacade.IDENTITY_APPLIANCE_CHANGED:
                 view.btnSave.enabled = true;
                 break;
             case ProcessingMediator.START:
@@ -263,13 +251,13 @@ public class ModelerMediator extends IocMediator {
                 break;
             case LookupIdentityApplianceByIdCommand.SUCCESS:
                 view.btnSave.enabled = false;
-                sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
-                sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-                sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
+                sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
                     "Appliance successfully opened.");
                 break;
             case LookupIdentityApplianceByIdCommand.FAILURE:
-                sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                     "There was an error opening appliance.");
                 break;
             case IdentityApplianceListLoadCommand.SUCCESS:
@@ -277,18 +265,18 @@ public class ModelerMediator extends IocMediator {
                 view.appliances.dataProvider = proxy.identityApplianceList;
                 break;
             case IdentityApplianceListLoadCommand.FAILURE:
-                sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                     "There was an error retrieving list of appliances.");
                 break;
             case IdentityApplianceUpdateCommand.SUCCESS:
                 view.btnSave.enabled = false;
-                sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
-                sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-                sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
+                sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
                     "Appliance successfully updated.");
                 break;
             case IdentityApplianceUpdateCommand.FAILURE:
-                sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                     "There was an error updating appliance.");
                 break;
         }

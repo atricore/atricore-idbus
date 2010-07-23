@@ -23,6 +23,7 @@ package com.atricore.idbus.console.main.view.form {
 import mx.validators.Validator;
 
 import org.puremvc.as3.patterns.mediator.Mediator;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 /**
  * This class would be abstract if ActionScript supported such a construct. It is intended to provide
@@ -34,14 +35,16 @@ import org.puremvc.as3.patterns.mediator.Mediator;
  * <li>bindForm - to bind model fields onto the form</li>
  * <li>bindModel - to bind form fields back onto the model</li>
  */
-public class FormMediator extends Mediator{
+public class IocFormMediator extends IocMediator {
    protected var _validators : Array;
 
-   public function FormMediator(mediatorName : String, viewComponent : Object) {
-      super(mediatorName, viewComponent);
-      _validators = [];
-      registerValidators();
-   }
+    public function IocFormMediator(mediatorName:String = null, viewComponent:Object = null) {
+
+        super(mediatorName, viewComponent);
+
+        _validators = [];
+        registerValidators();
+    }
 
    /**
     * This method should be overridden to initialise the list of validators so that reset validators

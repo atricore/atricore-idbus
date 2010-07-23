@@ -25,16 +25,21 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class ProcessingMediator extends Mediator
+public class ProcessingMediator extends IocMediator
 {
-    public static const NAME:String = "ProcessingMediator";
     public static const CREATED:String = "Note.ProcessingCreated";
     public static const START:String = "Note.StartProcessing";
     public static const STOP:String = "Note.StopProcessing";
 
-    public function ProcessingMediator(viewComp:ProcessingView) {
-        super(NAME, viewComp);
+    public function ProcessingMediator(name:String = null, viewComp:ProcessingView = null) {
+        super(name, viewComp);
+    }
+
+
+    override public function setViewComponent(viewComponent:Object):void {
+        super.setViewComponent(viewComponent);
     }
 
     override public function listNotificationInterests():Array {
@@ -53,7 +58,6 @@ public class ProcessingMediator extends Mediator
                 break;
             case STOP:
                 closeWindow();
-                facade.removeMediator(ProcessingMediator.NAME);
                 break;
         }
     }

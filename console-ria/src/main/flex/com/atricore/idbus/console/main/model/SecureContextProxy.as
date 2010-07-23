@@ -25,10 +25,10 @@ import mx.collections.ArrayCollection;
 
 import com.atricore.idbus.console.main.model.domain.User;
 import org.puremvc.as3.patterns.proxy.Proxy;
+import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
-public class SecureContextProxy extends Proxy
+public class SecureContextProxy extends IocProxy
 {
-   public static const NAME:String = "com.atricore.idbus.console.main.model.SecureContextProxy";
    public static const ROLE_PROJECT_ADMIN :String = "role.projectAdmin";
    public static const ROLE_ITERATION_ADMIN :String = "role.iterationAdmin";
 

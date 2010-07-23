@@ -22,7 +22,7 @@
 package com.atricore.idbus.console.modeling.main.view.deploy {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand;
 
@@ -33,7 +33,7 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class DeployApplianceMediator extends FormMediator
+public class DeployApplianceMediator extends IocFormMediator
 {
     public static const NAME:String = "DeployApplianceMediator";
     public static const RUN:String = "DeployApplianceMediator.RUN";
@@ -59,22 +59,22 @@ public class DeployApplianceMediator extends FormMediator
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case ProcessingMediator.CREATED:
-                sendNotification(ApplicationFacade.NOTE_DEPLOY_IDENTITY_APPLIANCE,
+                sendNotification(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE,
                         [_proxy.currentIdentityAppliance.id.toString(), view.startAppliance.selected]);
                 break;
             case DeployIdentityApplianceCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 var msg:String = "Appliance has been successfully deployed.";
                 if (view.startAppliance.selected) {
                     msg =  "Appliance has been successfully deployed and started.";
                 }
-                sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG, msg);
+                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, msg);
                 facade.removeMediator(DeployApplianceMediator.NAME);
                 break;
             case DeployIdentityApplianceCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                     "There was an error deploying appliance.");
                 facade.removeMediator(DeployApplianceMediator.NAME);
                 break;

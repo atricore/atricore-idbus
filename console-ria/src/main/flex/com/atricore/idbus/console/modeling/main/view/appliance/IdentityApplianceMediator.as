@@ -24,7 +24,7 @@ package com.atricore.idbus.console.modeling.main.view.appliance {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.KeystoreProxy;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
@@ -39,7 +39,7 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class IdentityApplianceMediator extends FormMediator
+public class IdentityApplianceMediator extends IocFormMediator
 {
     public static const NAME:String = "IdentityApplianceMediator";
     public static const CREATE:String = "IdentityApplianceMediator.CREATE";
@@ -90,16 +90,16 @@ public class IdentityApplianceMediator extends FormMediator
                 break;
             case IdentityApplianceCreateCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
-                sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-                sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_LIST_LOAD);
-                sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
+                sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
                     "The appliance has been successfully created.");
                 facade.removeMediator(IdentityApplianceMediator.NAME);
                 break;
             case IdentityApplianceCreateCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                     "There was an error creating appliance.");
                 facade.removeMediator(IdentityApplianceMediator.NAME);
                 break;
@@ -109,13 +109,13 @@ public class IdentityApplianceMediator extends FormMediator
                 // STOP notification, so we start the persisting once the processing window
                 // is created
                 if (_proxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
-                    sendNotification(ApplicationFacade.NOTE_CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
+                    sendNotification(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
 
                     _proxy.currentIdentityApplianceElement = _newIdentityAppliance;
-                    sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
+                    sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
                 }
                 else {
-                    sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+                    sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 }
                 break;
         }

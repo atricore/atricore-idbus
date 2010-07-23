@@ -22,18 +22,17 @@ import mx.managers.DragManager;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class LifecycleViewMediator extends Mediator {
-    public static const NAME:String = "LifecycleViewMediator";
+public class LifecycleViewMediator extends IocMediator {
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
 
     public function LifecycleViewMediator(viewComp:LifecycleView) {
         super(NAME, viewComp);
-        _proxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
 
         // Saved Appliances Grid
-        viewComp.grdSavedAppliances.dataProvider = new HierarchicalData(_proxy.identityApplianceList);
+        viewComp.grdSavedAppliances.dataProvider = new HierarchicalData(_projectProxy.identityApplianceList);
         viewComp.grdSavedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
         viewComp.grdSavedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
         viewComp.grdSavedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);

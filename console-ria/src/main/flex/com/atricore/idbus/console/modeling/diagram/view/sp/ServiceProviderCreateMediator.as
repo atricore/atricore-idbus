@@ -33,10 +33,10 @@ import mx.events.CloseEvent;
 
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import org.puremvc.as3.interfaces.INotification;
 
-public class ServiceProviderCreateMediator extends FormMediator {
+public class ServiceProviderCreateMediator extends IocFormMediator {
     public static const NAME:String = "com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator";
 
     private var _proxy:ProjectProxy;
@@ -116,8 +116,8 @@ public class ServiceProviderCreateMediator extends FormMediator {
             bindModel();
             _proxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newServiceProvider);
             _proxy.currentIdentityApplianceElement = _newServiceProvider;
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
-            sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+            sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
             closeWindow();
         }
         else {

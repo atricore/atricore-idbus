@@ -10,12 +10,25 @@
     <!-- Proxies -->
     <object id="serviceRegistry" class="com.atricore.idbus.console.main.service.ServiceRegistry"/>
     <object id="projectProxy" class="com.atricore.idbus.console.main.model.ProjectProxy"/>
+    <object id="keystoreProxy" class="com.atricore.idbus.console.main.model.KeystoreProxy"/>
+    <object id="profileProxy" class="com.atricore.idbus.console.main.model.ProfileProxy"/>
+    <object id="projectProxy" class="com.atricore.idbus.console.main.model.ProjectProxy"/>
+    <object id="secureContextProxy" class="com.atricore.idbus.console.main.model.SecureContextProxy"/>
 
     <!-- Commands -->
+
 
     <!-- Mediators -->
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator"/>
     <object id="modelerMediator" class="com.atricore.idbus.console.modeling.main.ModelerMediator"/>
+    <object id="certificateMediator" class="com.atricore.idbus.console.main.view.certificate.CertificateMediator">
+        <property name="keystoreProxy" ref="keystoreProxy"/>
+    </object>
+    <object id="setupWizardViewMediator" class="com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator">
+        <property name="profileProxy" ref="profileProxy"/>
+    </object>
+    <object id="uploadProgressMediator" class="com.atricore.idbus.console.main.view.upload.UploadProgressMediator"/>
+
 
     <object id="startupCommand" class="com.atricore.idbus.console.main.controller.ApplicationStartUpCommand">
         <property name="applicationMediator" ref="applicationMediator"/>

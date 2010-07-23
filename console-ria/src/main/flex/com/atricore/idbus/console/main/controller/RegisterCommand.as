@@ -33,8 +33,9 @@ import com.atricore.idbus.console.main.model.ProfileProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.command.SimpleCommand;
+import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class RegisterCommand extends SimpleCommand implements IResponder {
+public class RegisterCommand extends IocSimpleCommand implements IResponder {
     public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.RegisterCommand.SUCCESS";
     public static const FAILURE:String = "com.atricore.idbus.console.main.controller.RegisterCommand.FAILURE";
 
