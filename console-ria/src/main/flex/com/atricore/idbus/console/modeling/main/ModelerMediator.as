@@ -173,16 +173,13 @@ public class ModelerMediator extends Mediator {
                 break;
             case ApplicationFacade.NOTE_REMOVE_IDENTITY_APPLIANCE_ELEMENT:
                 var ria:RemoveIdentityApplianceElementRequest  = RemoveIdentityApplianceElementRequest(notification.getBody());
-                // TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_REMOVE, ria.identityAppliance);
-                break;
                 break;
             case ApplicationFacade.NOTE_CREATE_IDENTITY_PROVIDER_ELEMENT:
                 _modelerPopUpManager.showCreateIdentityProviderWindow(notification);
                 break;
             case ApplicationFacade.NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT:
                 var rip:RemoveIdentityProviderElementRequest  = RemoveIdentityProviderElementRequest(notification.getBody());
-                // TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.NOTE_IDENTITY_PROVIDER_REMOVE, rip.identityProvider);
                 break;
             case ApplicationFacade.NOTE_CREATE_SERVICE_PROVIDER_ELEMENT:
@@ -190,7 +187,6 @@ public class ModelerMediator extends Mediator {
                 break;
             case ApplicationFacade.NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT:
                 var rsp:RemoveServiceProviderElementRequest  = RemoveServiceProviderElementRequest(notification.getBody());
-//                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.NOTE_SERVICE_PROVIDER_REMOVE, rsp.serviceProvider);
                 break;
             case ApplicationFacade.NOTE_CREATE_IDP_CHANNEL_ELEMENT:
@@ -198,7 +194,6 @@ public class ModelerMediator extends Mediator {
                 break;
             case ApplicationFacade.NOTE_REMOVE_IDP_CHANNEL_ELEMENT:
                 var ridpc:RemoveIdpChannelElementRequest  = RemoveIdpChannelElementRequest(notification.getBody());
-//                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.NOTE_IDP_CHANNEL_REMOVE, ridpc.idpChannel);
                 break;
             case ApplicationFacade.NOTE_CREATE_SP_CHANNEL_ELEMENT:
@@ -206,7 +201,6 @@ public class ModelerMediator extends Mediator {
                 break;
             case ApplicationFacade.NOTE_REMOVE_SP_CHANNEL_ELEMENT:
                 var rspc:RemoveSpChannelElementRequest  = RemoveSpChannelElementRequest(notification.getBody());
-//                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.NOTE_SP_CHANNEL_REMOVE, rspc.spChannel);
                 break;
 
@@ -215,7 +209,6 @@ public class ModelerMediator extends Mediator {
                 break;
             case ApplicationFacade.NOTE_REMOVE_DB_IDENTITY_VAULT_ELEMENT:
                 var rdbiv:RemoveIdentityVaultElementRequest  = RemoveIdentityVaultElementRequest(notification.getBody());
-//                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.NOTE_DB_IDENTITY_VAULT_REMOVE, rdbiv.identityVault);
                 break;
             case ApplicationFacade.NOTE_MANAGE_CERTIFICATE:

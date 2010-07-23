@@ -28,7 +28,7 @@
 
     <mx:Button label="{_linkLabel}" icon="{_linkIcon}" click="nodeSelected(event)" toggle="true"/>
 
-    <mx:Button id="removeNode" icon="{EmbeddedIcons.removeNodeIcon}" click="nodeRemove(event)" visible="false"/>
+    <mx:Button id="removeNode" icon="{EmbeddedIcons.removeNodeIcon}" click="confirmNodeRemove(event)" visible="false"/>
 
 	<mx:Script>
 		<![CDATA[
@@ -49,6 +49,10 @@
 
         import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
         import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+
+        import mx.controls.Alert;
+
+        import mx.events.CloseEvent;
 
         import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualGraph;
         import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
@@ -130,8 +134,14 @@
             dispatchEvent(new VNodeSelectedEvent(VNodeSelectedEvent.VNODE_SELECTED, IVisualNode(this.data).node.stringid, true, false, 0));
         }
 
-        private function nodeRemove(e:MouseEvent):void {
-            dispatchEvent(new VNodeRemoveEvent(VNodeRemoveEvent.VNODE_REMOVE, IVisualNode(this.data).node.stringid, true, false, 0));
+        private function confirmNodeRemove(e:MouseEvent):void {
+            Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null, nodeRemoveConfirmed, null, Alert.YES);
+        }
+
+        private function nodeRemoveConfirmed(event:CloseEvent):void {
+            if (event.detail == Alert.YES) {
+                dispatchEvent(new VNodeRemoveEvent(VNodeRemoveEvent.VNODE_REMOVE, IVisualNode(this.data).node.stringid, true, false, 0));
+            }
         }
 
 
