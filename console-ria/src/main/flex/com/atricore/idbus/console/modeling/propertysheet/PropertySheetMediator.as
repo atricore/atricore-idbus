@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.modeling.propertysheet {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.EmbeddedDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.ExternalDBIdentityVaultLookupSection;
@@ -54,7 +55,10 @@ import mx.collections.ArrayCollection;
 import mx.containers.Canvas;
 import mx.containers.ViewStack;
 import mx.controls.TabBar;
+import mx.controls.TextInput;
 import mx.events.FlexEvent;
+
+import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.mediator.Mediator;
@@ -79,12 +83,15 @@ public class PropertySheetMediator extends Mediator {
     private var _externalDbVaultLookupSection:ExternalDBIdentityVaultLookupSection;
     private var _dirty:Boolean;
 
+    protected var _validators : Array;
+
     public function PropertySheetMediator(viewComp:PropertySheetView) {
         super(NAME, viewComp);
         _tabbedPropertiesTabBar = viewComp.tabbedPropertiesTabBar;
         _propertySheetsViewStack = viewComp.propertySheetsViewStack;
         _projectProxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
         _dirty = false;
+        _validators = [];
     }
 
     override public function listNotificationInterests():Array {
@@ -303,11 +310,18 @@ public class PropertySheetMediator extends Mediator {
         _ipCoreSection.idpLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
         _ipCoreSection.idpLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
         _ipCoreSection.idpLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+
+        //clear all existing validators and add idp core section validators
+        _validators = [];
+        _validators.push(_ipCoreSection.nameValidator);
+        _validators.push(_ipCoreSection.portValidator);
+        _validators.push(_ipCoreSection.domainValidator);
+        _validators.push(_ipCoreSection.pathValidator);
     }
 
 
     private function handleIdentityProviderCorePropertyTabRollOut(e:Event):void {
-        if (_dirty) {
+        if (_dirty && validate(true)) {
             // bind model
             var identityProvider:IdentityProviderDTO;
 
@@ -454,10 +468,16 @@ public class PropertySheetMediator extends Mediator {
         _spCoreSection.spLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
         _spCoreSection.spLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
         _spCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
+
+        _validators = [];
+        _validators.push(_spCoreSection.nameValidator);
+        _validators.push(_spCoreSection.portValidator);
+        _validators.push(_spCoreSection.domainValidator);
+        _validators.push(_spCoreSection.pathValidator);
     }
 
     private function handleServiceProviderCorePropertyTabRollOut(e:Event):void {
-        if (_dirty) {
+        if (_dirty && validate(true)) {
             // bind model
             var serviceProvider:ServiceProviderDTO;
 
@@ -637,10 +657,16 @@ public class PropertySheetMediator extends Mediator {
         _idpChannelCoreSection.idpChannelLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
         _idpChannelCoreSection.idpChannelLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
         _idpChannelCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
+
+        _validators = [];
+        _validators.push(_idpChannelCoreSection.nameValidator);
+        _validators.push(_idpChannelCoreSection.portValidator);
+        _validators.push(_idpChannelCoreSection.domainValidator);
+        _validators.push(_idpChannelCoreSection.pathValidator);        
     }
 
     private function handleIdpChannelCorePropertyTabRollOut(e:Event):void {
-        if (_dirty) {
+        if (_dirty && validate(true)) {
             // bind model
             var idpChannel:IdentityProviderChannelDTO;
 
@@ -810,10 +836,16 @@ public class PropertySheetMediator extends Mediator {
         _spChannelCoreSection.spChannelLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
         _spChannelCoreSection.spChannelLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
         _spChannelCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
+
+        _validators = [];
+        _validators.push(_spChannelCoreSection.nameValidator);
+        _validators.push(_spChannelCoreSection.portValidator);
+        _validators.push(_spChannelCoreSection.domainValidator);
+        _validators.push(_spChannelCoreSection.pathValidator);
     }
 
     private function handleSpChannelCorePropertyTabRollOut(e:Event):void {
-        if (_dirty) {
+        if (_dirty && validate(true)) {
             // bind model
             var spChannel:ServiceProviderChannelDTO;
 
@@ -954,10 +986,16 @@ public class PropertySheetMediator extends Mediator {
         _embeddedDbVaultCoreSection.admin.addEventListener(Event.CHANGE, handleSectionChange);
         _embeddedDbVaultCoreSection.adminPass.addEventListener(Event.CHANGE, handleSectionChange);
         _embeddedDbVaultCoreSection.confirmAdminPass.addEventListener(Event.CHANGE, handleSectionChange);
+
+        _validators = [];
+        _validators.push(_embeddedDbVaultCoreSection.nameValidator);
+        _validators.push(_embeddedDbVaultCoreSection.serverPortValidator);
+        _validators.push(_embeddedDbVaultCoreSection.schemaValidator);
+        _validators.push(_embeddedDbVaultCoreSection.adminValidator);        
     }
 
     private function handleEmbeddedDbVaultCorePropertyTabRollOut(e:Event):void {
-        if (_dirty) {
+        if (_dirty && validate(true) && comparePasswords(_embeddedDbVaultCoreSection.adminPass, _embeddedDbVaultCoreSection.confirmAdminPass)) {
             // bind model
             var dbIdentityVault:DbIdentityVaultDTO;
 
@@ -1028,10 +1066,20 @@ public class PropertySheetMediator extends Mediator {
         _externalDbVaultCoreSection.connectionUrl.addEventListener(Event.CHANGE, handleSectionChange);
         _externalDbVaultCoreSection.dbUsername.addEventListener(Event.CHANGE, handleSectionChange);
         _externalDbVaultCoreSection.dbPassword.addEventListener(Event.CHANGE, handleSectionChange);
+
+        _validators = [];
+        _validators.push(_externalDbVaultCoreSection.nameValidator);
+        _validators.push(_externalDbVaultCoreSection.connNameValidator);
+        _validators.push(_externalDbVaultCoreSection.driverNameValidator);
+        _validators.push(_externalDbVaultCoreSection.connUrlValidator);
+        _validators.push(_externalDbVaultCoreSection.dbUsernameValidator);
+        _validators.push(_externalDbVaultCoreSection.dbPasswordValidator);
+
+
     }
 
     private function handleExternalDbVaultCorePropertyTabRollOut(e:Event):void {
-        if (_dirty) {
+        if (_dirty && validate(true)) {
             // bind model
             var dbIdentityVault:DbIdentityVaultDTO;
 
@@ -1105,6 +1153,38 @@ public class PropertySheetMediator extends Mediator {
         return viewComponent as PropertySheetView;
     }
 
+   public function validate(revalidate : Boolean) : Boolean {
+      return FormUtility.validateAll(_validators, revalidate);
+   }
+
+    public function resetValidation() : void {
+      for each(var validator : Validator in _validators) {
+         validator.source.errorString = "";
+      }
+    }
+
+    /**
+     * Used instead of matchValidator because changing the confirmField doesn't remove the error message
+     * from password field (although the next button becomes enabled)
+     * @return
+     */
+    private function comparePasswords(adminPass:TextInput, confirmAdminPass:TextInput):Boolean {
+        if (adminPass.text == "") {
+            adminPass.errorString = "This field is required!";
+            return false;
+        }
+        if (confirmAdminPass.text == "") {
+            confirmAdminPass.errorString = "This field is required!";
+            return false;
+        }
+        if (adminPass.text != confirmAdminPass.text) {
+            adminPass.errorString = "Passwords are not identical!";
+            return false;
+        }
+        confirmAdminPass.errorString = "";
+        adminPass.errorString = "";
+        return true;
+    }
 
 }
 }

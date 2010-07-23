@@ -23,8 +23,12 @@
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
          xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
          paddingRight="5" paddingTop="5" paddingBottom="5">
-    <!--<utils:TitledBorderBox title="Endpoint" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"-->
-                           <!--paddingBottom="5">-->
+
+        <mx:StringValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"/>
+        <mx:NumberValidator id="serverPortValidator" source="{serverPort}" minValue="0" maxValue="65535" required="true" property="text"/>
+        <mx:StringValidator id="schemaValidator" source="{schema}" required="true" property="text"/>
+        <mx:StringValidator id="adminValidator" source="{admin}" required="true" property="text"/>
+
         <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
                  verticalGap="8">
 

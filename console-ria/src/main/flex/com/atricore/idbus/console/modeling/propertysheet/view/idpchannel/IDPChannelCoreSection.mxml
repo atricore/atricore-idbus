@@ -34,6 +34,13 @@
         <mx:ArrayCollection id="authMechanismColl"
                 source="{authMechanismArray}" />
 
+        <mx:StringValidator id="nameValidator" source="{identityProvChannelName}" required="true" property="text"/>
+        <mx:NumberValidator id="portValidator" source="{idpChannelLocationPort}" required="false" property="text"
+                        minValue="1" maxValue="65535"
+                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <utils:URLPartValidator id="domainValidator" source="{idpChannelLocationDomain}" required="true" property="text"/>
+        <utils:URLPartValidator id="pathValidator" source="{idpChannelLocationPath}" required="false" property="text"/>
+
     <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.endpoint')}" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
                            paddingBottom="5">    
         <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"

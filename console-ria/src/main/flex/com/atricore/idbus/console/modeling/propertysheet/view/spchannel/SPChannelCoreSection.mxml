@@ -23,6 +23,14 @@
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
          xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
          paddingRight="5" paddingTop="5" paddingBottom="5">
+
+    <mx:StringValidator id="nameValidator" source="{serviceProvChannelName}" required="true" property="text"/>
+    <mx:NumberValidator id="portValidator" source="{spChannelLocationPort}" required="false" property="text"
+                    minValue="1" maxValue="65535"
+                    invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+    <utils:URLPartValidator id="domainValidator" source="{spChannelLocationDomain}" required="true" property="text"/>
+    <utils:URLPartValidator id="pathValidator" source="{spChannelLocationPath}" required="false" property="text"/>
+
     <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProvChannel.endpoint')}" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
                            paddingBottom="5">
         <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
