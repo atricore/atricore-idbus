@@ -189,11 +189,17 @@ public class PropertySheetMediator extends Mediator {
         _iaCoreSection.applianceLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+
+        _validators = [];
+        _validators.push(_iaCoreSection.nameValidator);
+        _validators.push(_iaCoreSection.portValidator);
+        _validators.push(_iaCoreSection.domainValidator);
+        _validators.push(_iaCoreSection.pathValidator);
     }
 
     private function handleIdentityApplianceCorePropertyTabRollOut(e:Event):void {
         trace(e);
-        if (_dirty) {
+        if (_dirty && validate(true)) {
              // bind model
             // fetch appliance object
             var identityAppliance:IdentityApplianceDTO;
