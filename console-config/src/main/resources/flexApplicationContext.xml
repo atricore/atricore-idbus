@@ -8,6 +8,8 @@
 
 
     <!-- Proxies -->
+    <object id="serviceRegistry" class="com.atricore.idbus.console.main.service.ServiceRegistry"/>
+    <object id="projectProxy" class="com.atricore.idbus.console.main.model.ProjectProxy"/>
 
     <!-- Commands -->
 
@@ -18,6 +20,7 @@
     <object id="startupCommand" class="com.atricore.idbus.console.main.controller.ApplicationStartUpCommand">
         <property name="applicationMediator" ref="applicationMediator"/>
         <property name="modelerMediator" ref="modelerMediator"/>
+        <property name="serviceRegistry" ref="serviceRegistry"/>
     </object>
     
 

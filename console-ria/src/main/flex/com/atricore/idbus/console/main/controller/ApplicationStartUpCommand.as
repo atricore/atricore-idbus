@@ -54,6 +54,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     private var m_applicationMediator:IIocMediator;
     private var m_modelerMediator:IIocMediator;
+    private var m_serviceRegistry:IIocProxy;
 
     public function set applicationMediator(p_applicationMediator:IIocMediator):void {
         m_applicationMediator = p_applicationMediator;
@@ -71,11 +72,19 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         return m_modelerMediator;
     }
 
+    public function set serviceRegistry(p_serviceRegistry:IIocProxy):void {
+        m_serviceRegistry = p_serviceRegistry;
+    }
+
+    public function get serviceRegistry():IIocProxy {
+        return m_serviceRegistry;
+    }
 
     override public function execute(note:INotification):void {
-        var registry:ServiceRegistry = createServiceRegistry();
-        //      registerProxies(registry);
+        var registry:ServiceRegistry = setupServiceRegistry();
 
+        trace("registry = " + registry);
+        
         var app:AtricoreConsole = note.getBody() as AtricoreConsole;
 
         applicationMediator.setViewComponent(app);
@@ -87,18 +96,11 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         checkFirstRun();
     }
 
-    protected function registerProxies(registry:ServiceRegistry):void {
-        facade.registerProxy(new SecureContextProxy());
-        facade.registerProxy(registry);
-        facade.registerProxy(new ProfileProxy());
-        facade.registerProxy(new ProjectProxy());
-        facade.registerProxy(new KeystoreProxy());
-    }
-
-    protected function createServiceRegistry():ServiceRegistry {
+    protected function setupServiceRegistry():ServiceRegistry {
         var channel:Channel = ServerConfig.getChannel("my-amf");
-        var registry:ServiceRegistry = new ServiceRegistry(channel);
 
+        var registry:ServiceRegistry = serviceRegistry as ServiceRegistry;
+        registry.setChannel(channel);
         registry.registerRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE, ApplicationFacade.USER_PROVISIONING_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE, ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.PROFILE_MANAGEMENT_SERVICE, ApplicationFacade.PROFILE_MANAGEMENT_SERVICE);
@@ -113,7 +115,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         browserManager.init();
         browserManager.setTitle("Atricore Identity Bus | Administration Console");
 
-        var registry:ServiceRegistry = facade.retrieveProxy(ServiceRegistry.NAME) as ServiceRegistry;
+        var registry:ServiceRegistry = m_serviceRegistry as ServiceRegistry;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
 
         var findAdminGroup:FindGroupByNameRequest = new FindGroupByNameRequest();

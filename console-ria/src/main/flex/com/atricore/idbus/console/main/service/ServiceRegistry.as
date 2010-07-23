@@ -28,22 +28,23 @@ import mx.messaging.ChannelSet;
 import mx.rpc.remoting.mxml.RemoteObject;
 
 import org.puremvc.as3.patterns.proxy.Proxy;
+import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 /**
     * The ServiceRegistry allows the registration of RemoteObject and HTTPService objects. It provides
     * central management of credentials for remote calls.
     */
-public class ServiceRegistry extends Proxy {
-   public static const NAME : String = "ServiceRegistry";
+public class ServiceRegistry extends IocProxy {
+
+   public static const NAME : String = "ServiceRegistry";    // TODO: Deprecate
 
    protected var _services:Dictionary;
    private var _channelSet : ChannelSet;
 
-   public function ServiceRegistry(channel : Channel) {
-      super(NAME, null);
+   public function ServiceRegistry() {
+      super("Proxy", null);
       _services = new Dictionary();
       _channelSet = new ChannelSet();
-      ///_channelSet.addChannel(channel);
    }
 
    public function unregister(id:String):void {
@@ -73,5 +74,9 @@ public class ServiceRegistry extends Proxy {
    public function logout():void {
       _channelSet.logout();
    }
+
+    public function setChannel(channel:Channel):void {
+        ///_channelSet.addChannel(channel);
+    }
 }
 }

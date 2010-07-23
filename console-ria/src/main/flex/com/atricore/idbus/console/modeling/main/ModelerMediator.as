@@ -79,6 +79,12 @@ public class ModelerMediator extends IocMediator {
     [Bindable]
     public var _applianceList:Array;
 
+
+    public function ModelerMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
+      super(p_mediatorName, p_viewComponent);
+    }
+
+    /*
     public function ModelerMediator(viewComp:ModelerView) {
         super(NAME, viewComp);
 
@@ -87,25 +93,43 @@ public class ModelerMediator extends IocMediator {
         facade.registerMediator(new DiagramMediator(viewComp.diagram));
         facade.registerMediator(new PaletteMediator(viewComp.palette));
         facade.registerMediator(new PropertySheetMediator(viewComp.propertysheet));
+    }
+    */
 
-        _modelActionToolBar = viewComp.modelActionToolBar;
+
+    override public function setViewComponent(p_viewComponent:Object):void {
+      if (getViewComponent() != null) {
+          view.btnNew.removeEventListener(MouseEvent.CLICK, handleNewClick);
+          view.btnOpen.removeEventListener(MouseEvent.CLICK, handleOpenClick);
+          view.btnSave.removeEventListener(MouseEvent.CLICK, handleSaveClick);
+          _modelActionToolBar.removeEventListener(ItemClickEvent.ITEM_CLICK, handleModelActionToolBarClick);
+      }
+
+      super.setViewComponent(p_viewComponent);
+
+      init();
+    }
+
+    public function init():void {
+        _modelActionToolBar = view.modelActionToolBar;
 
         //(_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_NEW_BUTTON_IDX) as ButtonBarButton).enabled = true;
         (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_BUILD_BUTTON_IDX) as ButtonBarButton).enabled = false;
         (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX) as ButtonBarButton).enabled = false;
 
-        viewComp.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
-        viewComp.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
-        viewComp.btnSave.addEventListener(MouseEvent.CLICK, handleSaveClick);
+        view.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
+        view.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
+        view.btnSave.addEventListener(MouseEvent.CLICK, handleSaveClick);
         _modelActionToolBar.addEventListener(ItemClickEvent.ITEM_CLICK, handleModelActionToolBarClick);
 
-        viewComp.appliances.labelFunction = applianceListLabelFunc;
-        viewComp.btnSave.enabled = false;
+        view.appliances.labelFunction = applianceListLabelFunc;
+        view.btnSave.enabled = false;
 
-        _modelerPopUpManager = new ModelerPopUpManager(facade, viewComp);
+        _modelerPopUpManager = new ModelerPopUpManager(facade, view);
 
         sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_LIST_LOAD);
     }
+
 
     private function handleNewClick(event:MouseEvent):void {
         trace("New Button Click: " + event);

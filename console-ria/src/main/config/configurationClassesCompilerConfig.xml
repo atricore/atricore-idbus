@@ -9,5 +9,9 @@
         <symbol>com.atricore.idbus.console.main.controller.ApplicationStartUpCommand</symbol>
         <symbol>com.atricore.idbus.console.main.ApplicationMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.ModelerMediator</symbol>
+        <symbol>com.atricore.idbus.console.main.service.ServiceRegistry</symbol>
+        <symbol>mx.messaging.channels.AMFChannel</symbol>
+        <symbol>mx.messaging.ChannelSet</symbol>
+        <symbol>mx.rpc.remoting.mxml.RemoteObject</symbol>
     </includes>
 </flex-config>

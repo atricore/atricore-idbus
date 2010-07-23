@@ -48,16 +48,33 @@ public class ApplicationMediator extends IocMediator {
     private var _secureContext:SecureContextProxy;
     private var _popupManager:ConsolePopUpManager;
 
-    public function ApplicationMediator(viewComp:AtricoreConsole) {
-        super(NAME, viewComp);
+    public function ApplicationMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
+
+        super(p_mediatorName, p_viewComponent);
+
+    }
+
+
+    override public function setViewComponent(p_viewComponent:Object):void {
+      if (getViewComponent() != null) {
+          app.lifecycleView.removeEventListener(FlexEvent.CREATION_COMPLETE, handleLifecycleViewCreated);
+          app.removeEventListener(FlexEvent.SHOW, handleShowConsole);
+      }
+
+      super.setViewComponent(p_viewComponent);
+
+      init();
+    }
+
+    public function init():void {
 
         _secureContext = SecureContextProxy(facade.retrieveProxy(SecureContextProxy.NAME));
-        facade.registerMediator(new ModelerMediator(viewComp.modelerView));
-        _popupManager = new ConsolePopUpManager(facade, viewComp);
+        _popupManager = new ConsolePopUpManager(facade, app);
 
         // Add listeners for other components on the viewStack with delayed instantiation.
-        viewComp.lifecycleView.addEventListener(FlexEvent.CREATION_COMPLETE, handleLifecycleViewCreated);
-        viewComp.addEventListener(FlexEvent.SHOW, handleShowConsole);
+        app.lifecycleView.addEventListener(FlexEvent.CREATION_COMPLETE, handleLifecycleViewCreated);
+        app.addEventListener(FlexEvent.SHOW, handleShowConsole);
+
     }
 
     public function handleLifecycleViewCreated(event:Event):void {
@@ -125,7 +142,7 @@ public class ApplicationMediator extends IocMediator {
     }
 
     public function get app():AtricoreConsole {
-        return viewComponent as AtricoreConsole;
+        return getViewComponent() as AtricoreConsole;
     }
 
 }
