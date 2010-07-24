@@ -97,6 +97,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
         var app:AtricoreConsole = note.getBody() as AtricoreConsole;
 
+        // setup for first level mediators
         applicationMediator.setViewComponent(app);
         iocFacade.registerMediatorByConfigName(applicationMediator.getConfigName());
 
@@ -105,6 +106,21 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
         lifecycleMediator.setViewComponent(app.lifecycleView);
         iocFacade.registerMediatorByConfigName(lifecycleMediator.getConfigName());
+
+        // setup for second level modeler mediators
+        browserMediator.setViewComponent(app.modelerView.browser);
+        iocFacade.registerMediatorByConfigName(browserMediator.getConfigName());
+
+        diagramMediator.setViewComponent(app.modelerView.diagram);
+        iocFacade.registerMediatorByConfigName(diagramMediator.getConfigName());
+
+        paletteMediator.setViewComponent(app.modelerView.palette);
+        iocFacade.registerMediatorByConfigName(app.modelerView.palette);
+
+
+
+
+
 
         // TODO: wire the view to the remaining mediators
 
