@@ -24,21 +24,30 @@ package com.atricore.idbus.console.modeling.main.controller
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-
 import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.command.SimpleCommand;
+import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class IdentityVaultRemoveCommand extends SimpleCommand {
+public class IdentityVaultRemoveCommand extends IocSimpleCommand {
 
     public static const SUCCESS : String = "IdentityVaultRemoveCommand.SUCCESS";
 
+    private var _projectProxy:ProjectProxy;
+
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
     override public function execute(notification:INotification):void {
         var identityVault:IdentityVaultDTO = notification.getBody() as IdentityVaultDTO;
-        var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
 
-        var identityAppliance:IdentityApplianceDTO = proxy.currentIdentityAppliance;
+        var identityAppliance:IdentityApplianceDTO = projectProxy.currentIdentityAppliance;
 
         for (var i:int=identityAppliance.idApplianceDefinition.identityVaults.length-1; i>=0; i--) {
             if (identityAppliance.idApplianceDefinition.identityVaults[i] == identityVault) {
@@ -46,7 +55,7 @@ public class IdentityVaultRemoveCommand extends SimpleCommand {
             }
         }
 
-        proxy.currentIdentityApplianceElement = false;
+        projectProxy.currentIdentityApplianceElement = false;
         // reflect removal in views and diagram editor
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

@@ -24,8 +24,8 @@ package com.atricore.idbus.console.modeling.main.view.appliance {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.KeystoreProxy;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.form.FormUtility;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
@@ -41,7 +41,6 @@ import org.puremvc.as3.interfaces.INotification;
 
 public class IdentityApplianceMediator extends IocFormMediator
 {
-    public static const NAME:String = "IdentityApplianceMediator";
     public static const CREATE:String = "IdentityApplianceMediator.CREATE";
     public static const EDIT:String = "IdentityApplianceMediator.EDIT";
 
@@ -51,13 +50,26 @@ public class IdentityApplianceMediator extends IocFormMediator
 
     private var _processingStarted:Boolean;
 
-    public function IdentityApplianceMediator(viewComp:IdentityApplianceForm) {
-        super(NAME, viewComp);
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        _keystoreProxy = KeystoreProxy(facade.retrieveProxy(KeystoreProxy.NAME));
-        viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
-        viewComp.btnSave.addEventListener(MouseEvent.CLICK, handleIdentityApplianceSave);
-        viewComp.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+    public function IdentityApplianceMediator(name:String = null, viewComp:IdentityApplianceForm = null) {
+        super(name, viewComp);
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
+            view.btnSave.removeEventListener(MouseEvent.CLICK, handleIdentityApplianceSave);
+            view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+    private function init():void {
+        view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+        view.btnSave.addEventListener(MouseEvent.CLICK, handleIdentityApplianceSave);
+        view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
     }
 
     override public function registerValidators():void {
@@ -66,7 +78,6 @@ public class IdentityApplianceMediator extends IocFormMediator
         _validators.push(view.domainValidator);
         _validators.push(view.pathValidator);
     }
-
 
     override public function listNotificationInterests():Array {
         return [CREATE,EDIT,IdentityApplianceCreateCommand.SUCCESS,
@@ -95,13 +106,11 @@ public class IdentityApplianceMediator extends IocFormMediator
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
                 sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
                     "The appliance has been successfully created.");
-                facade.removeMediator(IdentityApplianceMediator.NAME);
                 break;
             case IdentityApplianceCreateCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                     "There was an error creating appliance.");
-                facade.removeMediator(IdentityApplianceMediator.NAME);
                 break;
             case ProcessingMediator.CREATED:
                 // persisting data could end before processing window was created
@@ -185,9 +194,6 @@ public class IdentityApplianceMediator extends IocFormMediator
     }
 
     private function handleClose(event:Event):void {
-        if (!_processingStarted) {
-            facade.removeMediator(IdentityApplianceMediator.NAME);
-        }
     }
 
     protected function get view():IdentityApplianceForm

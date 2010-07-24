@@ -23,7 +23,6 @@ package com.atricore.idbus.console.main.model
 {
 import com.atricore.idbus.console.services.dto.KeystoreDTO;
 
-import org.puremvc.as3.patterns.proxy.Proxy;
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 public class KeystoreProxy extends IocProxy

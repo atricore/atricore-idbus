@@ -46,7 +46,7 @@
                 var idApplianceDef:IdentityApplianceDefinitionDTO = new IdentityApplianceDefinitionDTO();
                 idApplianceDef.name = applianceName.text;
                 idApplianceDef.description = applianceDescription.text;
-                
+
                 var location:LocationDTO = new LocationDTO();
                 location.protocol = applianceLocationProtocol.selectedItem.data;
                 location.host = applianceLocationDomain.text;
@@ -65,8 +65,8 @@
                 readableDecisionArray.push("Appliance description: " + applianceDescription.text);
                 readableDecisionArray.push("Appliance location: " + applianceLocationProtocol.text + "://" +
                         applianceLocationDomain.text +
-                        ((applianceLocationPort.text != null && applianceLocationPort.text != "") ? 
-                        ":" + applianceLocationPort.text : "") + "/" + applianceLocationPath.text);
+                        ((applianceLocationPort.text != null && applianceLocationPort.text != "") ?
+                                ":" + applianceLocationPort.text : "") + "/" + applianceLocationPath.text);
                 return readableDecisionArray.join("\n").toString();
             }
 

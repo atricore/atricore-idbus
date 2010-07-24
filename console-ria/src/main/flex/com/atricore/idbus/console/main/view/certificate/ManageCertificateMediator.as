@@ -23,8 +23,8 @@ package com.atricore.idbus.console.main.view.certificate {
 
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.KeystoreProxy;
-import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.form.FormUtility;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
 import com.atricore.idbus.console.services.dto.KeystoreDTO;
 import com.atricore.idbus.console.services.dto.ResourceDTO;
@@ -40,12 +40,9 @@ import mx.binding.utils.BindingUtils;
 import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.springextensions.actionscript.puremvc.interfaces.IIocProxy;
-import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 public class ManageCertificateMediator extends IocFormMediator
 {
-    public static const NAME:String = "ManageCertificateMediator";
     public static const CREATE:String = "ManageCertificateMediator.CREATE";
     public static const EDIT:String = "ManageCertificateMediator.EDIT";
 
@@ -237,7 +234,7 @@ public class ManageCertificateMediator extends IocFormMediator
     }
 
     private function handleClose(event:Event):void {
-        facade.removeMediator(ManageCertificateMediator.NAME);
+
     }
 
     protected function get view():ManageCertificateView

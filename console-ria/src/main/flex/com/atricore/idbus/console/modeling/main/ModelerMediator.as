@@ -23,8 +23,6 @@ package com.atricore.idbus.console.modeling.main {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-import com.atricore.idbus.console.modeling.browser.BrowserMediator;
-import com.atricore.idbus.console.modeling.diagram.DiagramMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
@@ -39,8 +37,6 @@ import com.atricore.idbus.console.modeling.main.view.appliance.IdentityAppliance
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
-import com.atricore.idbus.console.modeling.palette.PaletteMediator;
-import com.atricore.idbus.console.modeling.propertysheet.PropertySheetMediator;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
 import flash.events.MouseEvent;
@@ -50,7 +46,6 @@ import mx.controls.buttonBarClasses.ButtonBarButton;
 import mx.events.ItemClickEvent;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.mediator.Mediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class ModelerMediator extends IocMediator {
@@ -66,6 +61,9 @@ public class ModelerMediator extends IocMediator {
     private static const MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX:int = 1;
 
 
+
+    private var _projectProxy:ProjectProxy;
+
     private var _modelActionToolBar:ButtonBar;
 
     private var _identityAppliance:IdentityApplianceDTO;
@@ -74,15 +72,22 @@ public class ModelerMediator extends IocMediator {
 
     private var _modelerPopUpManager:ModelerPopUpManager;
 
-    public static const NAME:String = "ModelMediator";
-
     [Bindable]
     public var _applianceList:Array;
+
 
 
     public function ModelerMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
       super(p_mediatorName, p_viewComponent);
     }
+
+    public function get projectProxy():ProjectProxy {
+         return _projectProxy;
+     }
+
+     public function set projectProxy(value:ProjectProxy):void {
+         _projectProxy = value;
+     }
 
 
     override public function setViewComponent(p_viewComponent:Object):void {
@@ -261,8 +266,7 @@ public class ModelerMediator extends IocMediator {
                     "There was an error opening appliance.");
                 break;
             case IdentityApplianceListLoadCommand.SUCCESS:
-                var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
-                view.appliances.dataProvider = proxy.identityApplianceList;
+                view.appliances.dataProvider = projectProxy.identityApplianceList;
                 break;
             case IdentityApplianceListLoadCommand.FAILURE:
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
@@ -285,8 +289,7 @@ public class ModelerMediator extends IocMediator {
 
     private function updateIdentityAppliance():void {
 
-        var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
-        _identityAppliance = proxy.currentIdentityAppliance;
+        _identityAppliance = projectProxy.currentIdentityAppliance;
     }
 
     private function enableIdentityApplianceActionButtons():void {

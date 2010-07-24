@@ -21,18 +21,17 @@
 
 package com.atricore.idbus.console.main.view.setup
 {
-import com.atricore.idbus.console.services.dto.UserDTO;
-
-import mx.events.CloseEvent;
-import mx.utils.ObjectProxy;
-
 import com.atricore.idbus.console.components.wizard.WizardEvent;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
 import com.atricore.idbus.console.main.controller.SetupServerCommand;
 import com.atricore.idbus.console.main.model.ProfileProxy;
+import com.atricore.idbus.console.services.dto.UserDTO;
+
+import mx.events.CloseEvent;
+import mx.utils.ObjectProxy;
+
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.mediator.Mediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class SetupWizardViewMediator extends IocMediator

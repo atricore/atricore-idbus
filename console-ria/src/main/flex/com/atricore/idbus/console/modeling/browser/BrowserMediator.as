@@ -20,49 +20,63 @@
  */
 
 package com.atricore.idbus.console.modeling.browser {
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-
-import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
-
-import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
-import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
-import com.atricore.idbus.console.services.dto.LocalProviderDTO;
-import com.atricore.idbus.console.services.dto.ProviderDTO;
-
-import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
-
-import flash.events.Event;
-
 import com.atricore.idbus.console.components.AutoSizeTree;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.browser.model.BrowserModelFactory;
 import com.atricore.idbus.console.modeling.browser.model.BrowserNode;
-import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.mediator.Mediator;
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
+import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
+import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+import com.atricore.idbus.console.services.dto.LocalProviderDTO;
+import com.atricore.idbus.console.services.dto.ProviderDTO;
+import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
 
-public class BrowserMediator extends Mediator {
-    public static const NAME:String = "com.atricore.idbus.console.modeling.browser.BrowserMediator";
+import flash.events.Event;
+
+import org.puremvc.as3.interfaces.INotification;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
+
+public class BrowserMediator extends IocMediator {
     private var _applianceBrowser:AutoSizeTree;
     private var _applianceRootNode;
     private var _identityAppliance:IdentityApplianceDTO;
     private var _projectProxy:ProjectProxy;
 
-    public function BrowserMediator(viewComp:BrowserView) {
-        super(NAME, viewComp);
+    public function BrowserMediator(name:String = null, viewComp:BrowserView = null) {
+        super(name, viewComp);
+    }
 
-        _projectProxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
 
-        _applianceBrowser = viewComp;
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            _applianceBrowser.removeEventListener(Event.CHANGE, onTreeChange);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+
+    }
+
+    private function init():void {
         _applianceBrowser.validateNow();
         _applianceBrowser.addEventListener(Event.CHANGE, onTreeChange);
-
     }
 
     private function onTreeChange(event:Event):void {
         var selectedItem:BrowserNode = event.currentTarget.selectedItem;
 
-        _projectProxy.currentIdentityApplianceElement = selectedItem.data;
+        projectProxy.currentIdentityApplianceElement = selectedItem.data;
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_SELECTED)
     }
 
@@ -85,7 +99,7 @@ public class BrowserMediator extends Mediator {
                 bindApplianceBrowser();
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
-                var treeNode:BrowserNode  = findDataTreeNodeByData(_applianceRootNode, _projectProxy.currentIdentityApplianceElement );
+                var treeNode:BrowserNode  = findDataTreeNodeByData(_applianceRootNode, projectProxy.currentIdentityApplianceElement );
                 trace("Tree Node: " + treeNode);
                 if (treeNode != null) {
                     _applianceBrowser.selectedItem = treeNode;
@@ -196,5 +210,6 @@ public class BrowserMediator extends Mediator {
     {
         return viewComponent as BrowserView;
     }
+
 }
 }

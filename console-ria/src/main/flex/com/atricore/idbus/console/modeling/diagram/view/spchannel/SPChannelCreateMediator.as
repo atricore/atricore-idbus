@@ -20,10 +20,12 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.spchannel {
+import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.services.dto.BindingDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
 import com.atricore.idbus.console.services.dto.LocationDTO;
-
 import com.atricore.idbus.console.services.dto.ProfileDTO;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
 
@@ -32,23 +34,32 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
-import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import org.puremvc.as3.interfaces.INotification;
 
 public class SPChannelCreateMediator extends IocFormMediator {
-    public static const NAME:String = "com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator";
 
     private var _proxy:ProjectProxy;
     private var _newSpChannel:ServiceProviderChannelDTO;
 
-    public function SPChannelCreateMediator(viewComp:SPChannelCreateForm) {
-        super(NAME, viewComp);
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        viewComp.btnOk.addEventListener(MouseEvent.CLICK, handleSpChannelSave);
-        viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+    public function SPChannelCreateMediator(name : String = null, viewComp:SPChannelCreateForm = null) {
+        super(name, viewComp);
 
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handleSpChannelSave);
+            view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+    private function init():void {
+        view.btnOk.addEventListener(MouseEvent.CLICK, handleSpChannelSave);
+        view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
     }
 
     override public function bindModel():void {

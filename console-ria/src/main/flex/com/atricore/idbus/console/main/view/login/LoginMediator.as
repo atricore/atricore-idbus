@@ -21,18 +21,18 @@
 
 package com.atricore.idbus.console.main.view.login
 {
-import flash.events.Event;
-import flash.events.MouseEvent;
-
-import mx.events.FlexEvent;
-
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.controller.LoginCommand;
 import com.atricore.idbus.console.main.model.PersistentLoginDetails;
 import com.atricore.idbus.console.main.model.request.LoginRequest;
 import com.atricore.idbus.console.main.view.form.FormUtility;
+
+import flash.events.Event;
+import flash.events.MouseEvent;
+
+import mx.events.FlexEvent;
+
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.mediator.Mediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class LoginMediator extends IocMediator
@@ -52,9 +52,9 @@ public class LoginMediator extends IocMediator
             view.removeEventListener(FlexEvent.SHOW, handleShowLogin);
         }
 
-        init();
-
         super.setViewComponent(viewComponent);
+
+        init();
     }
 
     private function init():void {

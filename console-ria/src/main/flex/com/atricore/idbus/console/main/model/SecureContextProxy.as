@@ -21,10 +21,10 @@
 
 package com.atricore.idbus.console.main.model
 {
+import com.atricore.idbus.console.main.model.domain.User;
+
 import mx.collections.ArrayCollection;
 
-import com.atricore.idbus.console.main.model.domain.User;
-import org.puremvc.as3.patterns.proxy.Proxy;
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 public class SecureContextProxy extends IocProxy

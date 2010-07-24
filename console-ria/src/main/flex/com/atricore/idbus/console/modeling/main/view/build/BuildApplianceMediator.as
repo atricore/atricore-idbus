@@ -35,21 +35,41 @@ import org.puremvc.as3.interfaces.INotification;
 
 public class BuildApplianceMediator extends IocFormMediator
 {
-    public static const NAME:String = "BuildApplianceMediator";
     public static const RUN:String = "BuildApplianceMediator.RUN";
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
 
     private var _processingStarted:Boolean;
 
-    public function BuildApplianceMediator(viewComp:BuildApplianceView) {
-        super(NAME, viewComp);
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        viewComp.selectedAppliance.text = _proxy.currentIdentityAppliance.idApplianceDefinition.name;
-        viewComp.btnNext.addEventListener(MouseEvent.CLICK, handleNextClick);
-        viewComp.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+    public function BuildApplianceMediator(name : String = null, viewComp:BuildApplianceView = null) {
+        super(name, viewComp);
     }
-    
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.btnNext.removeEventListener(MouseEvent.CLICK, handleNextClick);
+            view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+    private function init():void {
+        view.selectedAppliance.text = projectProxy.currentIdentityAppliance.idApplianceDefinition.name;
+        view.btnNext.addEventListener(MouseEvent.CLICK, handleNextClick);
+        view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+    }
+
     override public function listNotificationInterests():Array {
         return [BuildIdentityApplianceCommand.SUCCESS,
                 BuildIdentityApplianceCommand.FAILURE,
@@ -60,7 +80,7 @@ public class BuildApplianceMediator extends IocFormMediator
         switch (notification.getName()) {
             case ProcessingMediator.CREATED:
                 sendNotification(ApplicationFacade.BUILD_IDENTITY_APPLIANCE,
-                        [_proxy.currentIdentityAppliance.id.toString(), view.deployAppliance.selected]);
+                        [projectProxy.currentIdentityAppliance.id.toString(), view.deployAppliance.selected]);
                 break;
             case BuildIdentityApplianceCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
@@ -70,13 +90,11 @@ public class BuildApplianceMediator extends IocFormMediator
                     msg =  "Appliance has been successfully built and deployed.";
                 }
                 sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, msg);
-                facade.removeMediator(BuildApplianceMediator.NAME);
                 break;
             case BuildIdentityApplianceCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                     "There was an error building appliance.");
-                facade.removeMediator(BuildApplianceMediator.NAME);
                 break;
         }
 
@@ -93,14 +111,12 @@ public class BuildApplianceMediator extends IocFormMediator
     }
 
     private function handleClose(event:Event):void {
-        if (!_processingStarted) {
-            facade.removeMediator(BuildApplianceMediator.NAME);
-        }
     }
 
     protected function get view():BuildApplianceView
     {
         return viewComponent as BuildApplianceView;
     }
+
 }
 }

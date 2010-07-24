@@ -27,11 +27,7 @@ import flash.net.URLRequest;
 import flash.net.URLRequestMethod;
 import flash.net.URLVariables;
 
-import mx.rpc.IResponder;
-import mx.rpc.events.FaultEvent;
-
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.command.SimpleCommand;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
 public class UploadCommand extends IocSimpleCommand

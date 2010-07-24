@@ -34,7 +34,6 @@
             import mx.utils.StringUtil;
             import mx.validators.Validator;
 
-
             /**
              * This will holds the results
              */

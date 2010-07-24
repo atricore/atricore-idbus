@@ -46,11 +46,10 @@ import mx.events.CloseEvent;
 import mx.utils.ObjectProxy;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.mediator.Mediator;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class SimpleSSOWizardViewMediator extends Mediator
+public class SimpleSSOWizardViewMediator extends IocMediator
 {
-    public static const NAME:String = "SimpleSSOWizardViewMediator";
     public static const RUN:String = "Note.start.RunSimpleSSOSetup";
 
     private var _wizardDataModel:ObjectProxy = new ObjectProxy();
@@ -68,28 +67,46 @@ public class SimpleSSOWizardViewMediator extends Mediator
 
     private var _processingStarted:Boolean;
 
-    public function SimpleSSOWizardViewMediator(viewComp:SimpleSSOWizardView) {
-        super(NAME, viewComp);
+    public function SimpleSSOWizardViewMediator(name:String = null, viewComp:SimpleSSOWizardView = null) {
+        super(name, viewComp);
+    }
 
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        
-        viewComp.dataModel = _wizardDataModel;
-        viewComp.addEventListener(WizardEvent.WIZARD_COMPLETE, onSimpleSSOWizardComplete);
-        viewComp.addEventListener(WizardEvent.WIZARD_CANCEL, onSimpleSSOWizardCancelled);
-        viewComp.addEventListener(CloseEvent.CLOSE, handleClose);
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.addEventListener(WizardEvent.WIZARD_COMPLETE, onSimpleSSOWizardComplete);
+            view.addEventListener(WizardEvent.WIZARD_CANCEL, onSimpleSSOWizardCancelled);
+            view.addEventListener(CloseEvent.CLOSE, handleClose);
+
+            _fileRef.removeEventListener(Event.SELECT, fileSelectHandler);
+            _fileRef.removeEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
+            _fileRef.removeEventListener(Event.COMPLETE, uploadCompleteHandler);
+            _fileRef.removeEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+
+    private function init():void {
+
+        view.dataModel = _wizardDataModel;
+        view.addEventListener(WizardEvent.WIZARD_COMPLETE, onSimpleSSOWizardComplete);
+        view.addEventListener(WizardEvent.WIZARD_CANCEL, onSimpleSSOWizardCancelled);
+        view.addEventListener(CloseEvent.CLOSE, handleClose);
 
         // upload bindings
-        viewComp.steps[1].btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
-        viewComp.steps[1].certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
+        view.steps[1].btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
+        view.steps[1].certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
 
-        _fileRef = new FileReference();
         _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
         _fileRef.addEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
         _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
         _fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
 
-        BindingUtils.bindProperty(viewComp.steps[1], "resourceId", this, "_resourceId");
-        BindingUtils.bindProperty(viewComp.steps[1].certificateKeyPair, "dataProvider", this, "_selectedFiles");
+        BindingUtils.bindProperty(view.steps[1], "resourceId", this, "_resourceId");
+        BindingUtils.bindProperty(view.steps[1].certificateKeyPair, "dataProvider", this, "_selectedFiles");
     }
 
     override public function listNotificationInterests():Array {
@@ -104,10 +121,8 @@ public class SimpleSSOWizardViewMediator extends Mediator
         switch (notification.getName()) {
             case CreateSimpleSSOIdentityApplianceCommand.SUCCESS :
                 handleSSOSetupSuccess();
-                facade.removeMediator(SimpleSSOWizardViewMediator.NAME);
                 break;
             case CreateSimpleSSOIdentityApplianceCommand.FAILURE :
-                facade.removeMediator(SimpleSSOWizardViewMediator.NAME);
                 handleSSOSetupFailure();
                 break;
             case ProcessingMediator.CREATED:
@@ -249,9 +264,6 @@ public class SimpleSSOWizardViewMediator extends Mediator
     }
 
     private function handleClose(event:Event):void {
-        if (!_processingStarted) {
-            facade.removeMediator(SimpleSSOWizardViewMediator.NAME);
-        }
     }
 
     protected function get view():SimpleSSOWizardView

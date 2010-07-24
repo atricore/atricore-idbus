@@ -22,27 +22,23 @@
 package com.atricore.idbus.console.main
 {
 import com.atricore.idbus.console.lifecycle.LifecycleViewMediator;
+import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
+import com.atricore.idbus.console.main.controller.SetupServerCommand;
+import com.atricore.idbus.console.main.model.SecureContextProxy;
+import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
+import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator;
+import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 
 import flash.events.Event;
 
 import mx.events.FlexEvent;
 import mx.events.MenuEvent;
 
-import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
-import com.atricore.idbus.console.main.controller.SetupServerCommand;
-import com.atricore.idbus.console.main.model.SecureContextProxy;
-import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
-import com.atricore.idbus.console.modeling.main.ModelerMediator;
-import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator;
-import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
-
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.mediator.Mediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class ApplicationMediator extends IocMediator {
     // Canonical name of the Mediator
-    public static const NAME:String = "com.atricore.idbus.console.main.ApplicationMediator";
     public static const REGISTER_HEAD:String = "User Registration";
 
     private var _secureContextProxy:SecureContextProxy;

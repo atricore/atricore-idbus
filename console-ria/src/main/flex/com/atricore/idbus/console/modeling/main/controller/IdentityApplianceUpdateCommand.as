@@ -34,20 +34,38 @@ import mx.rpc.events.FaultEvent;
 import mx.rpc.remoting.mxml.RemoteObject;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.command.SimpleCommand;
+import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class IdentityApplianceUpdateCommand extends SimpleCommand implements IResponder {
+public class IdentityApplianceUpdateCommand extends IocSimpleCommand implements IResponder {
 
     public static const SUCCESS : String = "IdentityApplianceUpdateCommand.SUCCESS";
     public static const FAILURE : String = "IdentityApplianceUpdateCommand.FAILURE";
 
+    private var _projectProxy:ProjectProxy;
+    private var _registry:ServiceRegistry;
+
+
+    public function get registry():ServiceRegistry {
+        return _registry;
+    }
+
+    public function set registry(value:ServiceRegistry):void {
+        _registry = value;
+    }
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
     override public function execute(notification:INotification):void {
-        var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
-        var identityAppliance:IdentityApplianceDTO = proxy.currentIdentityAppliance;
+        var identityAppliance:IdentityApplianceDTO = projectProxy.currentIdentityAppliance;
         
-        var registry:ServiceRegistry = facade.retrieveProxy(ServiceRegistry.NAME) as ServiceRegistry;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
-        
+
         var req:UpdateIdentityApplianceRequest = new UpdateIdentityApplianceRequest();
         req.appliance = identityAppliance;
         var call:Object = service.updateIdentityAppliance(req);
@@ -55,9 +73,8 @@ public class IdentityApplianceUpdateCommand extends SimpleCommand implements IRe
     }
 
     public function result(data:Object):void {
-        var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
         var resp:UpdateIdentityApplianceResponse = data.result as UpdateIdentityApplianceResponse;
-        proxy.currentIdentityAppliance = resp.appliance;
+        projectProxy.currentIdentityAppliance = resp.appliance;
         sendNotification(SUCCESS);
     }
 

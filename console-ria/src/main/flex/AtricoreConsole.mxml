@@ -32,9 +32,9 @@
 
     <mx:Script>
       <![CDATA[
-        import org.puremvc.as3.patterns.observer.Notification;
-
         import com.atricore.idbus.console.main.ApplicationFacade;
+
+        import org.puremvc.as3.patterns.observer.Notification;
 
         private var m_facade:ApplicationFacade;
 

@@ -21,17 +21,11 @@
  */
 
 package com.atricore.idbus.console.modeling.browser.renderers {
-import mx.events.FlexEvent;
-
-import com.atricore.idbus.console.components.*;
-
-import flash.events.MouseEvent;
-
-import mx.controls.Tree;
-import mx.controls.treeClasses.*;
-
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.modeling.browser.model.BrowserNode;
+
+import mx.controls.treeClasses.*;
+import mx.events.FlexEvent;
 
 public class DefaultBrowserNodeRenderer extends TreeItemRenderer
     {

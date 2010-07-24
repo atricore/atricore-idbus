@@ -22,7 +22,6 @@
 package com.atricore.idbus.console.main.view.form {
 import mx.validators.Validator;
 
-import org.puremvc.as3.patterns.mediator.Mediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 /**

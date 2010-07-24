@@ -25,7 +25,6 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
 import mx.collections.ArrayCollection;
 
-import org.puremvc.as3.patterns.proxy.Proxy;
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 public class ProjectProxy extends IocProxy

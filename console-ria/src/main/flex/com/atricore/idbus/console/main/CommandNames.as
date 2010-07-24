@@ -1,6 +1,4 @@
 package com.atricore.idbus.console.main {
-import flash.sampler._getInvocationCount;
-
 public final class CommandNames {
     public static const STARTUP_CMD:String = "startupCommand";
     public static const DELETE_USER_CMD:String = "deleteUserCommand";

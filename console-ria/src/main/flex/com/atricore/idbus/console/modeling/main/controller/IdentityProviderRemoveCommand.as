@@ -27,17 +27,26 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.command.SimpleCommand;
+import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class IdentityProviderRemoveCommand extends SimpleCommand {
+public class IdentityProviderRemoveCommand extends IocSimpleCommand {
 
     public static const SUCCESS : String = "IdentityProviderRemoveCommand.SUCCESS";
 
+    private var _projectProxy:ProjectProxy;
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
     override public function execute(notification:INotification):void {
         var identityProvider:IdentityProviderDTO = notification.getBody() as IdentityProviderDTO;
-        var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
 
-        var identityAppliance:IdentityApplianceDTO = proxy.currentIdentityAppliance;
+        var identityAppliance:IdentityApplianceDTO = projectProxy.currentIdentityAppliance;
 
         for (var i:int=identityAppliance.idApplianceDefinition.providers.length-1; i>=0; i--) {
             if (identityAppliance.idApplianceDefinition.providers[i] == identityProvider) {
@@ -45,7 +54,7 @@ public class IdentityProviderRemoveCommand extends SimpleCommand {
             }
         }
 
-        proxy.currentIdentityApplianceElement = false;
+        projectProxy.currentIdentityApplianceElement = false;
         // reflect removal in views and diagram editor
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

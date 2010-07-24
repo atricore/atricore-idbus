@@ -29,7 +29,6 @@ import flash.net.FileReference;
 import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.mediator.Mediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class UploadProgressMediator extends IocMediator

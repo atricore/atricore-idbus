@@ -24,7 +24,6 @@ package com.atricore.idbus.console.main.view.progress
 import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.mediator.Mediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class ProcessingMediator extends IocMediator

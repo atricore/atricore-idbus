@@ -64,10 +64,10 @@
                                     <mx:Script>
                               <![CDATA[
                                         import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+
+
+
+
                               ]]>
                               </mx:Script>
                                     <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
@@ -109,10 +109,10 @@
                                     <mx:Script>
                               <![CDATA[
                                         import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+
+
+
+
                               ]]>
                               </mx:Script>
                                     <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
@@ -157,14 +157,14 @@
                                     <mx:Script>
                               <![CDATA[
                                         import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+
+
+
+
+
+
+
+
                               ]]>
                               </mx:Script>
                                     <mx:LinkButton icon="@Embed('/images/icons/accept.png')" width="20"
@@ -213,10 +213,10 @@
                                     <mx:Script>
                               <![CDATA[
                                         import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+
+
+
+
                               ]]>
                               </mx:Script>
                                     <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"

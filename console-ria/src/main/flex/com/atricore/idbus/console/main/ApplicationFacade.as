@@ -21,31 +21,8 @@
 
 package com.atricore.idbus.console.main
 {
-import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
-import com.atricore.idbus.console.main.controller.RegisterCommand;
-import com.atricore.idbus.console.main.controller.SetupServerCommand;
-import com.atricore.idbus.console.main.controller.UploadCommand;
-import com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand;
-import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand;
-import com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceRemoveCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand;
-
-import com.atricore.idbus.console.modeling.main.controller.IdentityVaultRemoveCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand;
-import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand;
-
-import com.atricore.idbus.console.modeling.main.controller.ServiceProviderRemoveCommand;
-
-import com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand;
-
-import org.puremvc.as3.patterns.facade.Facade;
 import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
 import org.springextensions.actionscript.puremvc.patterns.facade.IocFacade;
-
 
 public class ApplicationFacade extends IocFacade implements IIocFacade {
 
@@ -127,23 +104,6 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
         super.initializeController();
 
         registerCommandByConfigName(STARTUP, CommandNames.STARTUP_CMD);
-        registerCommandByConfigName(SETUP_SERVER, CommandNames.SETUP_SERVER_CMD);
-        registerCommandByConfigName(REGISTER, CommandNames.REGISTER_CMD);
-        registerCommandByConfigName(CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, CommandNames.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE_CMD);
-        registerCommandByConfigName(CREATE_IDENTITY_APPLIANCE, CommandNames.CREATE_IDENTITY_APPLIANCE_CMD);
-        registerCommandByConfigName(IDENTITY_APPLIANCE_REMOVE, CommandNames.IDENTITY_APPLIANCE_REMOVE_CMD);
-        registerCommandByConfigName(IDENTITY_PROVIDER_REMOVE, CommandNames.IDENTITY_PROVIDER_REMOVE_CMD);
-        registerCommandByConfigName(SERVICE_PROVIDER_REMOVE, CommandNames.SERVICE_PROVIDER_REMOVE_CMD);
-        registerCommandByConfigName(IDP_CHANNEL_REMOVE, CommandNames.IDP_CHANNEL_REMOVE_CMD);
-        registerCommandByConfigName(SP_CHANNEL_REMOVE, CommandNames.SP_CHANNEL_REMOVE_CMD);
-        registerCommandByConfigName(DB_IDENTITY_VAULT_REMOVE, CommandNames.DB_IDENTITY_VAULT_REMOVE_CMD);
-        registerCommandByConfigName(LOOKUP_IDENTITY_APPLIANCE_BY_ID, CommandNames.LOOKUP_IDENTITY_APPLIANCE_BY_ID_CMD);
-        registerCommandByConfigName(IDENTITY_APPLIANCE_LIST_LOAD, CommandNames.IDENTITY_APPLIANCE_LIST_LOAD_CMD);
-        registerCommandByConfigName(UPLOAD, CommandNames.UPLOAD_CMD);
-        registerCommandByConfigName(BUILD_IDENTITY_APPLIANCE, CommandNames.BUILD_IDENTITY_APPLIANCE_CMD);
-        registerCommandByConfigName(DEPLOY_IDENTITY_APPLIANCE, CommandNames.DEPLOY_IDENTITY_APPLIANCE_CMD);
-        registerCommandByConfigName(EDIT_IDENTITY_APPLIANCE, CommandNames.EDIT_IDENTITY_APPLIANCE_CMD);
-
     }
 
 }

@@ -43,14 +43,23 @@ import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceView;
 
 import mx.events.FlexEvent;
 
-import org.puremvc.as3.interfaces.IFacade;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
 
 public class ModelerPopUpManager extends BasePopUpManager {
 
+    // mediators
     private var _manageCertificateMediator:ManageCertificateMediator;
+    private var _identityProviderMediator:IdentityProviderCreateMediator;
+    private var _serviceProviderMediator:ServiceProviderCreateMediator;
+    private var _idpChannelCreateMediator:IDPChannelCreateMediator;
+    private var _spChannelCreateMediator:SPChannelCreateMediator;
+    private var _dbIdentityVaultWizardViewMediator:DbIdentityVaultWizardViewMediator;
+    private var _uploadProgressMediator:UploadProgressMediator;
+    private var _buildApplianceMediator:BuildApplianceMediator;
+    private var _deployApplianceMediator:DeployApplianceMediator;
 
+    // views
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
     private var _serviceProviderCreateForm:ServiceProviderCreateForm;
     private var _idpChannelCreateForm:IDPChannelCreateForm;
@@ -74,6 +83,70 @@ public class ModelerPopUpManager extends BasePopUpManager {
         return _manageCertificateMediator;
     }
 
+    public function get identityProviderMediator():IdentityProviderCreateMediator {
+        return _identityProviderMediator;
+    }
+
+    public function set identityProviderMediator(value:IdentityProviderCreateMediator):void {
+        _identityProviderMediator = value;
+    }
+
+    public function get serviceProviderMediator():ServiceProviderCreateMediator {
+        return _serviceProviderMediator;
+    }
+
+    public function set serviceProviderMediator(value:ServiceProviderCreateMediator):void {
+        _serviceProviderMediator = value;
+    }
+
+    public function get idpChannelCreateMediator():IDPChannelCreateMediator {
+        return _idpChannelCreateMediator;
+    }
+
+    public function set idpChannelCreateMediator(value:IDPChannelCreateMediator):void {
+        _idpChannelCreateMediator = value;
+    }
+
+    public function get spChannelCreateMediator():SPChannelCreateMediator {
+        return _spChannelCreateMediator;
+    }
+
+    public function set spChannelCreateMediator(value:SPChannelCreateMediator):void {
+        _spChannelCreateMediator = value;
+    }
+
+    public function get dbIdentityVaultWizardViewMediator():DbIdentityVaultWizardViewMediator {
+        return _dbIdentityVaultWizardViewMediator;
+    }
+
+    public function set dbIdentityVaultWizardViewMediator(value:DbIdentityVaultWizardViewMediator):void {
+        _dbIdentityVaultWizardViewMediator = value;
+    }
+
+    public function get uploadProgressMediator():UploadProgressMediator {
+        return _uploadProgressMediator;
+    }
+
+    public function set uploadProgressMediator(value:UploadProgressMediator):void {
+        _uploadProgressMediator = value;
+    }
+
+    public function get buildApplianceMediator():BuildApplianceMediator {
+        return _buildApplianceMediator;
+    }
+
+    public function set buildApplianceMediator(value:BuildApplianceMediator):void {
+        _buildApplianceMediator = value;
+    }
+
+    public function get deployApplianceMediator():DeployApplianceMediator {
+        return _deployApplianceMediator;
+    }
+
+    public function set deployApplianceMediator(value:DeployApplianceMediator):void {
+        _deployApplianceMediator = value;
+    }
+
     public function showCreateIdentityProviderWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         if (!_identityProviderCreateForm) {
@@ -93,10 +166,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     }
 
     private function handleIdentityProviderCreateFormCreated(event:FlexEvent):void {
-        var mediator:IdentityProviderCreateMediator = new IdentityProviderCreateMediator(_identityProviderCreateForm);
-        _facade.removeMediator(IdentityProviderCreateMediator.NAME);
-        _facade.registerMediator(mediator);
-        mediator.handleNotification(_lastWindowNotification);
+        identityProviderMediator.setViewComponent(_identityProviderCreateForm);
+        identityProviderMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateServiceProviderWindow(notification:INotification):void {
@@ -118,10 +189,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     }
 
     private function handleServiceProviderCreateFormCreated(event:FlexEvent):void {
-        var mediator:ServiceProviderCreateMediator = new ServiceProviderCreateMediator(_serviceProviderCreateForm);
-        _facade.removeMediator(ServiceProviderCreateMediator.NAME);
-        _facade.registerMediator(mediator);
-        mediator.handleNotification(_lastWindowNotification);
+        serviceProviderMediator.setViewComponent(_serviceProviderCreateForm);
+        serviceProviderMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateIdpChannelWindow(notification:INotification):void {
@@ -143,10 +212,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     }
 
     private function handleIdpChannelCreateFormCreated(event:FlexEvent):void {
-        var mediator:IDPChannelCreateMediator = new IDPChannelCreateMediator(_idpChannelCreateForm);
-        _facade.removeMediator(IDPChannelCreateMediator.NAME);
-        _facade.registerMediator(mediator);
-        mediator.handleNotification(_lastWindowNotification);
+        idpChannelCreateMediator.setViewComponent(_idpChannelCreateForm);
+        idpChannelCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateSpChannelWindow(notification:INotification):void {
@@ -168,10 +235,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     }
 
     private function handleSpChannelCreateFormCreated(event:FlexEvent):void {
-        var mediator:SPChannelCreateMediator = new SPChannelCreateMediator(_spChannelCreateForm);
-        _facade.removeMediator(SPChannelCreateMediator.NAME);
-        _facade.registerMediator(mediator);
-        mediator.handleNotification(_lastWindowNotification);
+        spChannelCreateMediator.setViewComponent(_spChannelCreateForm);
+        spChannelCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateDbIdentityVaultWindow(notification:INotification):void {
@@ -186,22 +251,29 @@ public class ModelerPopUpManager extends BasePopUpManager {
     }
 
     private function handleDbIdentityVaultWizardViewCreated(event:FlexEvent):void {
-        var mediator:DbIdentityVaultWizardViewMediator = new DbIdentityVaultWizardViewMediator(_dbIdentityVaultWizardView);
-        _facade.removeMediator(DbIdentityVaultWizardViewMediator.NAME);
-        _facade.registerMediator(mediator);
-        mediator.handleNotification(_lastWindowNotification);
+        dbIdentityVaultWizardViewMediator.setViewComponent(_dbIdentityVaultWizardView);
+        dbIdentityVaultWizardViewMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showManageCertificateWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-
-        _manageCertificateMediator.handleNotification(_lastWindowNotification);
+        createManageCertificateForm();
         _popup.title = "Manage Certificate";
         _popup.width = 400;
         _popup.height = 480;
         showPopup(_manageCertificateForm);
     }
     
+    private function createManageCertificateForm():void {
+        _manageCertificateForm = new ManageCertificateView();
+        _manageCertificateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleManageCertificateFormCreated);
+    }
+
+    private function handleManageCertificateFormCreated(event:FlexEvent):void {
+        manageCertificateMediator.setViewComponent(_manageCertificateForm);
+        manageCertificateMediator.handleNotification(_lastWindowNotification);
+    }
+
     public function showUploadProgressWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createUploadProgressWindow();
@@ -219,10 +291,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     }
 
     private function handleUploadProgressWindowCreated(event:FlexEvent):void {
-        var mediator:UploadProgressMediator = new UploadProgressMediator(_uploadProgress);
-        _facade.removeMediator(UploadProgressMediator.NAME);
-        _facade.registerMediator(mediator);
-        mediator.handleNotification(_lastWindowNotification);
+        uploadProgressMediator.setViewComponent(_uploadProgress);
+        uploadProgressMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showBuildIdentityApplianceWindow(notification:INotification):void {
@@ -242,10 +312,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     }
 
     private function handleBuildApplianceWindowCreated(event:FlexEvent):void {
-        var mediator:BuildApplianceMediator = new BuildApplianceMediator(_buildAppliance);
-        _facade.removeMediator(BuildApplianceMediator.NAME);
-        _facade.registerMediator(mediator);
-        mediator.handleNotification(_lastWindowNotification);
+        buildApplianceMediator.setViewComponent(_buildAppliance);
+        buildApplianceMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showDeployIdentityApplianceWindow(notification:INotification):void {
@@ -265,10 +333,9 @@ public class ModelerPopUpManager extends BasePopUpManager {
     }
 
     private function handleDeployApplianceWindowCreated(event:FlexEvent):void {
-        var mediator:DeployApplianceMediator = new DeployApplianceMediator(_deployAppliance);
-        _facade.removeMediator(DeployApplianceMediator.NAME);
-        _facade.registerMediator(mediator);
-        mediator.handleNotification(_lastWindowNotification);
+        deployApplianceMediator.setViewComponent(_deployAppliance);
+        deployApplianceMediator.handleNotification(_lastWindowNotification);
     }
+
 }
 }

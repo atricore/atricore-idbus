@@ -27,7 +27,6 @@ import mx.messaging.Channel;
 import mx.messaging.ChannelSet;
 import mx.rpc.remoting.mxml.RemoteObject;
 
-import org.puremvc.as3.patterns.proxy.Proxy;
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 /**
@@ -35,8 +34,6 @@ import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
     * central management of credentials for remote calls.
     */
 public class ServiceRegistry extends IocProxy {
-
-   public static const NAME : String = "ServiceRegistry";    // TODO: Deprecate
 
    protected var _services:Dictionary;
    private var _channelSet : ChannelSet;

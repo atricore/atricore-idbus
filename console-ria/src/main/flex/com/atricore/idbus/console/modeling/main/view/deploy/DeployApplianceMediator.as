@@ -35,21 +35,35 @@ import org.puremvc.as3.interfaces.INotification;
 
 public class DeployApplianceMediator extends IocFormMediator
 {
-    public static const NAME:String = "DeployApplianceMediator";
     public static const RUN:String = "DeployApplianceMediator.RUN";
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
 
     private var _processingStarted:Boolean;
 
     public function DeployApplianceMediator(viewComp:DeployApplianceView) {
         super(NAME, viewComp);
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        viewComp.selectedAppliance.text = _proxy.currentIdentityAppliance.idApplianceDefinition.name;
-        viewComp.btnNext.addEventListener(MouseEvent.CLICK, handleNextClick);
-        viewComp.parent.addEventListener(CloseEvent.CLOSE, handleClose);
     }
-    
+
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (viewComponent != null) {
+            view.btnNext.removeEventListener(MouseEvent.CLICK, handleNextClick);
+            view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+
+    }
+
+    private function init():void {
+        view.selectedAppliance.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.name;
+        view.btnNext.addEventListener(MouseEvent.CLICK, handleNextClick);
+        view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+    }
+
     override public function listNotificationInterests():Array {
         return [DeployIdentityApplianceCommand.SUCCESS,
                 DeployIdentityApplianceCommand.FAILURE,
@@ -60,7 +74,7 @@ public class DeployApplianceMediator extends IocFormMediator
         switch (notification.getName()) {
             case ProcessingMediator.CREATED:
                 sendNotification(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE,
-                        [_proxy.currentIdentityAppliance.id.toString(), view.startAppliance.selected]);
+                        [_projectProxy.currentIdentityAppliance.id.toString(), view.startAppliance.selected]);
                 break;
             case DeployIdentityApplianceCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
@@ -70,13 +84,11 @@ public class DeployApplianceMediator extends IocFormMediator
                     msg =  "Appliance has been successfully deployed and started.";
                 }
                 sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, msg);
-                facade.removeMediator(DeployApplianceMediator.NAME);
                 break;
             case DeployIdentityApplianceCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                     "There was an error deploying appliance.");
-                facade.removeMediator(DeployApplianceMediator.NAME);
                 break;
         }
 
@@ -93,9 +105,6 @@ public class DeployApplianceMediator extends IocFormMediator
     }
 
     private function handleClose(event:Event):void {
-        if (!_processingStarted) {
-            facade.removeMediator(DeployApplianceMediator.NAME);
-        }
     }
 
     protected function get view():DeployApplianceView

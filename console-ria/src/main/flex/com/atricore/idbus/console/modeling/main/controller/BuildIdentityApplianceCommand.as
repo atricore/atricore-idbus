@@ -33,21 +33,36 @@ import mx.rpc.events.FaultEvent;
 import mx.rpc.remoting.mxml.RemoteObject;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.command.SimpleCommand;
+import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class BuildIdentityApplianceCommand extends SimpleCommand implements IResponder
+public class BuildIdentityApplianceCommand extends IocSimpleCommand implements IResponder
 {
     public static const SUCCESS:String = "BuildIdentityApplianceCommand.SUCCESS";
     public static const FAILURE:String = "BuildIdentityApplianceCommand.FAILURE";
 
-    public function BuildIdentityApplianceCommand() {
+    private var _registry:ServiceRegistry;
+    private var _projectProxy:ProjectProxy;
 
+
+    public function get registry():ServiceRegistry {
+        return _registry;
+    }
+
+    public function set registry(value:ServiceRegistry):void {
+        _registry = value;
+    }
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
     }
 
     override public function execute(notification:INotification):void {
         var params:Array = notification.getBody() as Array;
 
-        var registry:ServiceRegistry = facade.retrieveProxy(ServiceRegistry.NAME) as ServiceRegistry;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
         
         var req:BuildIdentityApplianceRequest = new BuildIdentityApplianceRequest();
@@ -58,9 +73,8 @@ public class BuildIdentityApplianceCommand extends SimpleCommand implements IRes
     }
 
     public function result(data:Object):void {
-        var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
         var resp:BuildIdentityApplianceResponse = data.result as BuildIdentityApplianceResponse;
-        proxy.currentIdentityAppliance = resp.appliance;
+        projectProxy.currentIdentityAppliance = resp.appliance;
         sendNotification(SUCCESS);
     }
 

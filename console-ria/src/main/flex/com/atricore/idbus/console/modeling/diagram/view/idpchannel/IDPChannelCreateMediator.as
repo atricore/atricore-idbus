@@ -20,12 +20,13 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.idpchannel {
-import com.atricore.idbus.console.modeling.diagram.view.sp.*;
+import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.services.dto.BindingDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
 import com.atricore.idbus.console.services.dto.LocationDTO;
 import com.atricore.idbus.console.services.dto.ProfileDTO;
-
 import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
 
 import flash.events.MouseEvent;
@@ -33,24 +34,33 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
-import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import org.puremvc.as3.interfaces.INotification;
 
 public class IDPChannelCreateMediator extends IocFormMediator {
-    public static const NAME:String = "com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator";
-
     private var _proxy:ProjectProxy;
     private var _newIdpChannel:IdentityProviderChannelDTO;
 
-    public function IDPChannelCreateMediator(viewComp:IDPChannelCreateForm) {
-        super(NAME, viewComp);
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        viewComp.btnOk.addEventListener(MouseEvent.CLICK, handleIdpChannelSave);
-        viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
 
+    public function IDPChannelCreateMediator(name : String = null, viewComp:IDPChannelCreateForm = null) {
+        super(name, viewComp);
     }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handleIdpChannelSave);
+            view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+    private function init():void {
+        view.btnOk.addEventListener(MouseEvent.CLICK, handleIdpChannelSave);
+        view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+    }
+
 
     override public function bindModel():void {
         var idpChannel:IdentityProviderChannelDTO = new IdentityProviderChannelDTO();
@@ -151,5 +161,6 @@ public class IDPChannelCreateMediator extends IocFormMediator {
 
 
     }
+
 }
 }

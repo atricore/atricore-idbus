@@ -24,8 +24,8 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.EmbeddedDBIdentityVaultCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.ExternalDBIdentityVaultLookupSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.ExternalDBIdentityVaultCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.ExternalDBIdentityVaultLookupSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idpchannel.IDPChannelContractSection;
@@ -44,7 +44,6 @@ import com.atricore.idbus.console.services.dto.LocationDTO;
 import com.atricore.idbus.console.services.dto.ProfileDTO;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
 import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
-
 import com.atricore.idbus.console.services.dto.UserInformationLookupDTO;
 
 import flash.events.Event;
@@ -57,10 +56,12 @@ import mx.controls.TabBar;
 import mx.events.FlexEvent;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.mediator.Mediator;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class PropertySheetMediator extends Mediator {
-    public static const NAME:String = "PropertySheetMediator";
+public class PropertySheetMediator extends IocMediator {
+
+    private var _projectProxy:ProjectProxy;
+
     private var _tabbedPropertiesTabBar:TabBar;
     private var _propertySheetsViewStack:ViewStack;
     private var _iaCoreSection:IdentityApplianceCoreSection;
@@ -70,7 +71,6 @@ public class PropertySheetMediator extends Mediator {
     private var _spChannelCoreSection:SPChannelCoreSection;
     private var _embeddedDbVaultCoreSection:EmbeddedDBIdentityVaultCoreSection;
     private var _externalDbVaultCoreSection:ExternalDBIdentityVaultCoreSection;
-    private var _projectProxy:ProjectProxy;
     private var _currentIdentityApplianceElement:Object;
     private var _ipContractSection:IdentityProviderContractSection;
     private var _spContractSection:ServiceProviderContractSection;
@@ -79,13 +79,32 @@ public class PropertySheetMediator extends Mediator {
     private var _externalDbVaultLookupSection:ExternalDBIdentityVaultLookupSection;
     private var _dirty:Boolean;
 
-    public function PropertySheetMediator(viewComp:PropertySheetView) {
-        super(NAME, viewComp);
-        _tabbedPropertiesTabBar = viewComp.tabbedPropertiesTabBar;
-        _propertySheetsViewStack = viewComp.propertySheetsViewStack;
-        _projectProxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
+    public function PropertySheetMediator(name : String = null, viewComp:PropertySheetView = null) {
+        super(name, viewComp);
+    }
+
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+    private function init():void {
+
+        _tabbedPropertiesTabBar = view.tabbedPropertiesTabBar;
+        _propertySheetsViewStack = view.propertySheetsViewStack;
         _dirty = false;
     }
+
 
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE,
@@ -158,8 +177,7 @@ public class PropertySheetMediator extends Mediator {
         var identityAppliance:IdentityApplianceDTO;
 
         // fetch appliance object
-        var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
-        identityAppliance = proxy.currentIdentityAppliance;
+        identityAppliance = projectProxy.currentIdentityAppliance;
 
         // bind view
         _iaCoreSection.applianceName.text = identityAppliance.idApplianceDefinition.name;
@@ -190,8 +208,7 @@ public class PropertySheetMediator extends Mediator {
              // bind model
             // fetch appliance object
             var identityAppliance:IdentityApplianceDTO;
-            var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
-            identityAppliance = proxy.currentIdentityAppliance;
+            identityAppliance = projectProxy.currentIdentityAppliance;
 
             identityAppliance.idApplianceDefinition.name = _iaCoreSection.applianceName.text;
             identityAppliance.idApplianceDefinition.description = _iaCoreSection.applianceDescription.text;

@@ -21,6 +21,9 @@
 
 package com.atricore.idbus.console.main.controller
 {
+import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProfileProxy;
+import com.atricore.idbus.console.main.service.ServiceRegistry;
 import com.atricore.idbus.console.services.spi.request.AddUserRequest;
 
 import mx.rpc.Fault;
@@ -28,28 +31,42 @@ import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
 import mx.rpc.remoting.mxml.RemoteObject;
 
-import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.model.ProfileProxy;
-import com.atricore.idbus.console.main.service.ServiceRegistry;
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.command.SimpleCommand;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
 public class RegisterCommand extends IocSimpleCommand implements IResponder {
     public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.RegisterCommand.SUCCESS";
     public static const FAILURE:String = "com.atricore.idbus.console.main.controller.RegisterCommand.FAILURE";
 
-    override public function execute(notification:INotification):void {
-        var proxy:ProfileProxy = facade.retrieveProxy(ProfileProxy.NAME) as ProfileProxy;
+    private var _profileProxy:ProfileProxy;
+    private var _registry:ServiceRegistry;
 
-        var registry:ServiceRegistry = facade.retrieveProxy(ServiceRegistry.NAME) as ServiceRegistry;
+
+    public function get profileProxy():ProfileProxy {
+        return _profileProxy;
+    }
+
+    public function set profileProxy(value:ProfileProxy):void {
+        _profileProxy = value;
+    }
+
+    public function get registry():ServiceRegistry {
+        return _registry;
+    }
+
+    public function set registry(value:ServiceRegistry):void {
+        _registry = value;
+    }
+
+    override public function execute(notification:INotification):void {
+
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
 
         var userReq:AddUserRequest = new AddUserRequest();
-        userReq.userName = proxy.user.userName;
-        userReq.commonName = proxy.user.commonName;
-        userReq.userPassword = proxy.user.userPassword;
-        userReq.email = proxy.user.email;
+        userReq.userName = profileProxy.user.userName;
+        userReq.commonName = profileProxy.user.commonName;
+        userReq.userPassword = profileProxy.user.userPassword;
+        userReq.email = profileProxy.user.email;
         userReq.accountDisabled = false;
         userReq.allowUserToChangePassword = true;
         var groups:Array = new Array();
