@@ -50,6 +50,14 @@ public class ApplicationMediator extends IocMediator {
 
     }
 
+    public function get popupManager():ConsolePopUpManager {
+        return _popupManager;
+    }
+
+    public function set popupManager(value:ConsolePopUpManager):void {
+        _popupManager = value;
+    }
+
     public function set secureContextProxy(value:SecureContextProxy):void {
         _secureContextProxy = value;
     }
@@ -60,19 +68,19 @@ public class ApplicationMediator extends IocMediator {
     }
 
     override public function setViewComponent(p_viewComponent:Object):void {
-      if (getViewComponent() != null) {
-          app.lifecycleView.removeEventListener(FlexEvent.CREATION_COMPLETE, handleLifecycleViewCreated);
-          app.removeEventListener(FlexEvent.SHOW, handleShowConsole);
-      }
+        if (getViewComponent() != null) {
+            app.lifecycleView.removeEventListener(FlexEvent.CREATION_COMPLETE, handleLifecycleViewCreated);
+            app.removeEventListener(FlexEvent.SHOW, handleShowConsole);
+        }
 
-      super.setViewComponent(p_viewComponent);
+        super.setViewComponent(p_viewComponent);
 
-      init();
+        init();
     }
 
     public function init():void {
 
-        _popupManager = new ConsolePopUpManager(facade, app);
+        popupManager.init(iocFacade, app);
 
         // Add listeners for other components on the viewStack with delayed instantiation.
         app.lifecycleView.addEventListener(FlexEvent.CREATION_COMPLETE, handleLifecycleViewCreated);
@@ -81,7 +89,7 @@ public class ApplicationMediator extends IocMediator {
     }
 
     public function handleLifecycleViewCreated(event:Event):void {
-        facade.registerMediator(new LifecycleViewMediator(app.lifecycleView));
+        //facade.registerMediator(new LifecycleViewMediator(app.lifecycleView));
     }
 
     public function handleShowConsole(event:Event):void {
@@ -111,10 +119,10 @@ public class ApplicationMediator extends IocMediator {
                 //TODO: popupManager.showSetupWizardWindow(notification);
                 break;
             case SimpleSSOWizardViewMediator.RUN:
-                _popupManager.showSimpleSSOWizardWindow(notification);
+                popupManager.showSimpleSSOWizardWindow(notification);
                 break;
             case IdentityApplianceMediator.CREATE:
-                _popupManager.showCreateIdentityApplianceWindow(notification);
+                popupManager.showCreateIdentityApplianceWindow(notification);
                 break;
             case SetupServerCommand.SUCCESS:
                 break;

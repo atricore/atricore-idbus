@@ -41,8 +41,8 @@ public class DeployApplianceMediator extends IocFormMediator
 
     private var _processingStarted:Boolean;
 
-    public function DeployApplianceMediator(viewComp:DeployApplianceView) {
-        super(NAME, viewComp);
+    public function DeployApplianceMediator(name:String = null, viewComp:DeployApplianceView = null) {
+        super(name, viewComp);
     }
 
 
@@ -66,10 +66,10 @@ public class DeployApplianceMediator extends IocFormMediator
 
     override public function listNotificationInterests():Array {
         return [DeployIdentityApplianceCommand.SUCCESS,
-                DeployIdentityApplianceCommand.FAILURE,
-                ProcessingMediator.CREATED];
+            DeployIdentityApplianceCommand.FAILURE,
+            ProcessingMediator.CREATED];
     }
-    
+
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case ProcessingMediator.CREATED:
@@ -81,25 +81,25 @@ public class DeployApplianceMediator extends IocFormMediator
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 var msg:String = "Appliance has been successfully deployed.";
                 if (view.startAppliance.selected) {
-                    msg =  "Appliance has been successfully deployed and started.";
+                    msg = "Appliance has been successfully deployed and started.";
                 }
                 sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, msg);
                 break;
             case DeployIdentityApplianceCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                    "There was an error deploying appliance.");
+                        "There was an error deploying appliance.");
                 break;
         }
 
     }
-    
+
     private function handleNextClick(event:MouseEvent):void {
         _processingStarted = true;
         closeWindow();
         sendNotification(ProcessingMediator.START, "Deploying appliance ...");
     }
-    
+
     private function closeWindow():void {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }

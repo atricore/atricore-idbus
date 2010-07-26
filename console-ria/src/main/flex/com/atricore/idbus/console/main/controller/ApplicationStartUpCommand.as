@@ -44,15 +44,20 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public static var ADMIN_GROUP:String = "Administrators";
 
+    /* Proxies */
+    private var _serviceRegistry:IIocProxy;
+    private var _projectProxy:IIocProxy;
+    private var _keystoreProxy:IIocProxy;
+    private var _profileProxy:IIocProxy;
+    private var _secureContextProxy:IIocProxy;
+
+    /* Mediators */
     private var _applicationMediator:IIocMediator;
     private var _modelerMediator:IIocMediator;
-    private var _lifecycleMediator:IIocMediator;
     private var _browserMediator:IIocMediator;
     private var _diagramMediator:IIocMediator;
     private var _paletteMediator:IIocMediator;
     private var _propertySheetMediator:IIocMediator;
-    private var _setupWizardMediator:IIocMediator;
-    private var _simpleSSOWizardMediator:IIocMediator;
     private var _identityApplianceMediator:IIocMediator;
     private var _manageCertificateMediator:IIocMediator;
     private var _identityProviderCreateMediator:IIocMediator;
@@ -63,48 +68,48 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _uploadProgressMediator:IIocMediator;
     private var _buildApplianceMediator:IIocMediator;
     private var _deployApplianceMediator:IIocMediator;
+    private var _managerCertificateMediator:IIocMediator;
+    private var _processingMediator:IIocMediator;
+    private var _loginMediator:IIocMediator;
+    private var _setupWizardViewMediator:IIocMediator;
+    private var _lifecycleViewMediator:IIocMediator;
+    private var _simpleSSOWizardViewMediator:IIocMediator;
 
-    private var _serviceRegistry:IIocProxy;
-
+    /* Commands */
     private var _setupServerCommand:IIocCommand;
     private var _registerCommand:IIocCommand;
-    private var _createSimpleSSOApplianceCommand:IIocCommand;
-    private var _createIdentityApplianceCommand:IIocCommand;
     private var _identityApplianceRemoveCommand:IIocCommand;
     private var _identityProviderRemoveCommand:IIocCommand;
     private var _serviceProviderRemoveCommand:IIocCommand;
     private var _idpChannelRemoveCommand:IIocCommand;
     private var _spChannelRemoveCommand:IIocCommand;
-    private var _identityVauleRemoveCommand:IIocCommand;
     private var _lookupIdentityApplianceByIdCommand:IIocCommand;
-    private var _identityApplianceListCommand:IIocCommand;
     private var _uploadCommand:IIocCommand;
     private var _buildIdentityApplianceCommand:IIocCommand;
     private var _deployIdentityApplianceCommand:IIocCommand;
-    private var _editIdentityApplianceCommand:IIocCommand;
+    private var _loginCommand:IIocCommand;
+    private var _identityApplianceUpdateCommand:IIocCommand;
+    private var _identityVaultRemoveCommand:IIocCommand;
+    private var _createSimpleSSOIdentityApplianceCommand:IIocCommand;
+    private var _identityApplianceListLoadCommand:IIocCommand;
+    private var _identityApplianceCreateCommand:IIocCommand;
+    private var _createSimpleSSOSetupCommand:IIocCommand;
 
-    public function set applicationMediator(p_applicationMediator:IIocMediator):void {
-        _applicationMediator = p_applicationMediator;
-    }
 
     public function get applicationMediator():IIocMediator {
         return _applicationMediator;
     }
 
-    public function set modelerMediator(p_modelerMediator:IIocMediator):void {
-        _modelerMediator = p_modelerMediator;
+    public function set applicationMediator(value:IIocMediator):void {
+        _applicationMediator = value;
     }
 
     public function get modelerMediator():IIocMediator {
         return _modelerMediator;
     }
 
-    public function set lifecycleMediator(value:IIocMediator):void {
-        _lifecycleMediator = value;
-    }
-
-    public function get lifecycleMediator():IIocMediator {
-        return _lifecycleMediator;
+    public function set modelerMediator(value:IIocMediator):void {
+        _modelerMediator = value;
     }
 
     public function get browserMediator():IIocMediator {
@@ -113,14 +118,6 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set browserMediator(value:IIocMediator):void {
         _browserMediator = value;
-    }
-
-    public function get diagramMediator():IIocMediator {
-        return _diagramMediator;
-    }
-
-    public function set diagramMediator(value:IIocMediator):void {
-        _diagramMediator = value;
     }
 
     public function get paletteMediator():IIocMediator {
@@ -137,31 +134,6 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set propertySheetMediator(value:IIocMediator):void {
         _propertySheetMediator = value;
-    }
-
-    public function set serviceRegistry(p_serviceRegistry:IIocProxy):void {
-        _serviceRegistry = p_serviceRegistry;
-    }
-
-    public function get serviceRegistry():IIocProxy {
-        return _serviceRegistry;
-    }
-
-
-    public function get setupWizardMediator():IIocMediator {
-        return _setupWizardMediator;
-    }
-
-    public function set setupWizardMediator(value:IIocMediator):void {
-        _setupWizardMediator = value;
-    }
-
-    public function get simpleSSOWizardMediator():IIocMediator {
-        return _simpleSSOWizardMediator;
-    }
-
-    public function set simpleSSOWizardMediator(value:IIocMediator):void {
-        _simpleSSOWizardMediator = value;
     }
 
     public function get identityApplianceMediator():IIocMediator {
@@ -244,6 +216,103 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _deployApplianceMediator = value;
     }
 
+    public function get managerCertificateMediator():IIocMediator {
+        return _managerCertificateMediator;
+    }
+
+    public function set managerCertificateMediator(value:IIocMediator):void {
+        _managerCertificateMediator = value;
+    }
+
+    public function get setupWizardViewMediator():IIocMediator {
+        return _setupWizardViewMediator;
+    }
+
+    public function set setupWizardViewMediator(value:IIocMediator):void {
+        _setupWizardViewMediator = value;
+    }
+
+    public function get lifecycleViewMediator():IIocMediator {
+        return _lifecycleViewMediator;
+    }
+
+    public function set lifecycleViewMediator(value:IIocMediator):void {
+        _lifecycleViewMediator = value;
+    }
+
+    public function get simpleSSOWizardViewMediator():IIocMediator {
+        return _simpleSSOWizardViewMediator;
+    }
+
+    public function set simpleSSOWizardViewMediator(value:IIocMediator):void {
+        _simpleSSOWizardViewMediator = value;
+    }
+
+    public function get diagramMediator():IIocMediator {
+        return _diagramMediator;
+    }
+
+    public function set diagramMediator(value:IIocMediator):void {
+        _diagramMediator = value;
+    }
+
+    public function get processingMediator():IIocMediator {
+        return _processingMediator;
+    }
+
+    public function set processingMediator(value:IIocMediator):void {
+        _processingMediator = value;
+    }
+
+    public function get serviceRegistry():IIocProxy {
+        return _serviceRegistry;
+    }
+
+    public function set serviceRegistry(value:IIocProxy):void {
+        _serviceRegistry = value;
+    }
+
+    public function get projectProxy():IIocProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:IIocProxy):void {
+        _projectProxy = value;
+    }
+
+    public function get keystoreProxy():IIocProxy {
+        return _keystoreProxy;
+    }
+
+    public function set keystoreProxy(value:IIocProxy):void {
+        _keystoreProxy = value;
+    }
+
+    public function get profileProxy():IIocProxy {
+        return _profileProxy;
+    }
+
+    public function set profileProxy(value:IIocProxy):void {
+        _profileProxy = value;
+    }
+
+    public function get secureContextProxy():IIocProxy {
+        return _secureContextProxy;
+    }
+
+    public function set secureContextProxy(value:IIocProxy):void {
+        _secureContextProxy = value;
+    }
+
+
+    public function get loginMediator():IIocMediator {
+        return _loginMediator;
+    }
+
+    public function set loginMediator(value:IIocMediator):void {
+        _loginMediator = value;
+    }
+
     public function get setupServerCommand():IIocCommand {
         return _setupServerCommand;
     }
@@ -258,22 +327,6 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set registerCommand(value:IIocCommand):void {
         _registerCommand = value;
-    }
-
-    public function get createSimpleSSOApplianceCommand():IIocCommand {
-        return _createSimpleSSOApplianceCommand;
-    }
-
-    public function set createSimpleSSOApplianceCommand(value:IIocCommand):void {
-        _createSimpleSSOApplianceCommand = value;
-    }
-
-    public function get createIdentityApplianceCommand():IIocCommand {
-        return _createIdentityApplianceCommand;
-    }
-
-    public function set createIdentityApplianceCommand(value:IIocCommand):void {
-        _createIdentityApplianceCommand = value;
     }
 
     public function get identityApplianceRemoveCommand():IIocCommand {
@@ -316,28 +369,12 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _spChannelRemoveCommand = value;
     }
 
-    public function get identityVauleRemoveCommand():IIocCommand {
-        return _identityVauleRemoveCommand;
-    }
-
-    public function set identityVauleRemoveCommand(value:IIocCommand):void {
-        _identityVauleRemoveCommand = value;
-    }
-
     public function get lookupIdentityApplianceByIdCommand():IIocCommand {
         return _lookupIdentityApplianceByIdCommand;
     }
 
     public function set lookupIdentityApplianceByIdCommand(value:IIocCommand):void {
         _lookupIdentityApplianceByIdCommand = value;
-    }
-
-    public function get identityApplianceListCommand():IIocCommand {
-        return _identityApplianceListCommand;
-    }
-
-    public function set identityApplianceListCommand(value:IIocCommand):void {
-        _identityApplianceListCommand = value;
     }
 
     public function get uploadCommand():IIocCommand {
@@ -364,12 +401,60 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _deployIdentityApplianceCommand = value;
     }
 
-    public function get editIdentityApplianceCommand():IIocCommand {
-        return _editIdentityApplianceCommand;
+    public function get loginCommand():IIocCommand {
+        return _loginCommand;
     }
 
-    public function set editIdentityApplianceCommand(value:IIocCommand):void {
-        _editIdentityApplianceCommand = value;
+    public function set loginCommand(value:IIocCommand):void {
+        _loginCommand = value;
+    }
+
+    public function get identityApplianceUpdateCommand():IIocCommand {
+        return _identityApplianceUpdateCommand;
+    }
+
+    public function set identityApplianceUpdateCommand(value:IIocCommand):void {
+        _identityApplianceUpdateCommand = value;
+    }
+
+    public function get identityVaultRemoveCommand():IIocCommand {
+        return _identityVaultRemoveCommand;
+    }
+
+    public function set identityVaultRemoveCommand(value:IIocCommand):void {
+        _identityVaultRemoveCommand = value;
+    }
+
+    public function get createSimpleSSOIdentityApplianceCommand():IIocCommand {
+        return _createSimpleSSOIdentityApplianceCommand;
+    }
+
+    public function set createSimpleSSOIdentityApplianceCommand(value:IIocCommand):void {
+        _createSimpleSSOIdentityApplianceCommand = value;
+    }
+
+    public function get identityApplianceListLoadCommand():IIocCommand {
+        return _identityApplianceListLoadCommand;
+    }
+
+    public function set identityApplianceListLoadCommand(value:IIocCommand):void {
+        _identityApplianceListLoadCommand = value;
+    }
+
+    public function get identityApplianceCreateCommand():IIocCommand {
+        return _identityApplianceCreateCommand;
+    }
+
+    public function set identityApplianceCreateCommand(value:IIocCommand):void {
+        _identityApplianceCreateCommand = value;
+    }
+
+    public function get createSimpleSSOSetupCommand():IIocCommand {
+        return _createSimpleSSOSetupCommand;
+    }
+
+    public function set createSimpleSSOSetupCommand(value:IIocCommand):void {
+        _createSimpleSSOSetupCommand = value;
     }
 
     override public function execute(note:INotification):void {
@@ -384,8 +469,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         modelerMediator.setViewComponent(app.modelerView);
         iocFacade.registerMediatorByConfigName(applicationMediator.getConfigName());
 
-        lifecycleMediator.setViewComponent(app.lifecycleView);
-        iocFacade.registerMediatorByConfigName(lifecycleMediator.getConfigName());
+        lifecycleViewMediator.setViewComponent(app.lifecycleView);
+        iocFacade.registerMediatorByConfigName(lifecycleViewMediator.getConfigName());
 
 
         // setup for second level modeler mediators
@@ -401,9 +486,9 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         propertySheetMediator.setViewComponent(app.modelerView.propertysheet);
         iocFacade.registerMediatorByConfigName(propertySheetMediator.getConfigName());
 
-       // register mediators for popup managers - popup managers will wire the corresponding view to it
-        iocFacade.registerMediatorByConfigName(setupWizardMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(simpleSSOWizardMediator.getConfigName());
+        // register mediators for popup managers - popup managers will wire the corresponding view to it
+        iocFacade.registerMediatorByConfigName(setupWizardViewMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(simpleSSOWizardViewMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(identityApplianceMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(manageCertificateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(identityProviderCreateMediator.getConfigName());
@@ -418,20 +503,20 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         // register commands
         iocFacade.registerCommandByConfigName(ApplicationFacade.SETUP_SERVER, setupServerCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.REGISTER, registerCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, createSimpleSSOApplianceCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, createIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, createSimpleSSOIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, identityApplianceCreateCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_REMOVE, identityApplianceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_PROVIDER_REMOVE, identityProviderRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SERVICE_PROVIDER_REMOVE, serviceProviderRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDP_CHANNEL_REMOVE, idpChannelRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SP_CHANNEL_REMOVE, spChannelRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.DB_IDENTITY_VAULT_REMOVE, identityVauleRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.DB_IDENTITY_VAULT_REMOVE, identityVaultRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, lookupIdentityApplianceByIdCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD, identityApplianceListCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD, identityApplianceListLoadCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.UPLOAD, uploadCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, buildIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE, deployIdentityApplianceCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.EDIT_IDENTITY_APPLIANCE, editIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE, identityApplianceUpdateCommand.getConfigName());
 
         checkFirstRun();
     }

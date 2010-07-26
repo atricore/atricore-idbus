@@ -22,12 +22,19 @@ public class LifecycleViewMediator extends IocMediator {
 
     private var _projectProxy:ProjectProxy;
 
-    public function LifecycleViewMediator(viewComp:LifecycleView) {
-        super(NAME, viewComp);
-
-
+    public function LifecycleViewMediator(name:String = null, viewComp:LifecycleView = null) {
+        super(name, viewComp);
 
     }
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
 
     override public function setViewComponent(viewComponent:Object):void {
 
@@ -54,13 +61,15 @@ public class LifecycleViewMediator extends IocMediator {
 
         super.setViewComponent(viewComponent);
 
-        init();
+        /* TODO: invoke only upon the view is created
+         init();
+         */
     }
 
     private function init():void {
 
         // Saved Appliances Grid
-        view.grdSavedAppliances.dataProvider = new HierarchicalData(_projectProxy.identityApplianceList);
+        view.grdSavedAppliances.dataProvider = new HierarchicalData(projectProxy.identityApplianceList);
         view.grdSavedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
         view.grdSavedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
         view.grdSavedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);

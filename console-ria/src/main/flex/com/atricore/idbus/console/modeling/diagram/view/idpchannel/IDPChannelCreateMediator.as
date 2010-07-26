@@ -37,11 +37,11 @@ import mx.events.CloseEvent;
 import org.puremvc.as3.interfaces.INotification;
 
 public class IDPChannelCreateMediator extends IocFormMediator {
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
     private var _newIdpChannel:IdentityProviderChannelDTO;
 
 
-    public function IDPChannelCreateMediator(name : String = null, viewComp:IDPChannelCreateForm = null) {
+    public function IDPChannelCreateMediator(name:String = null, viewComp:IDPChannelCreateForm = null) {
         super(name, viewComp);
     }
 
@@ -76,31 +76,31 @@ public class IDPChannelCreateMediator extends IocFormMediator {
         loc.uri = view.idpChannelLocationPath.text;
         idpChannel.location = loc;
 
-//        serviceProvider.signAuthenticationRequest = view.signAuthRequestCheck.selected;
-//        serviceProvider.encryptAuthenticationRequest = view.encryptAuthRequestCheck.selected;
+        //        serviceProvider.signAuthenticationRequest = view.signAuthRequestCheck.selected;
+        //        serviceProvider.encryptAuthenticationRequest = view.encryptAuthRequestCheck.selected;
 
         idpChannel.activeBindings = new ArrayCollection();
-        if(view.samlBindingHttpPostCheck.selected){
+        if (view.samlBindingHttpPostCheck.selected) {
             idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_POST);
         }
-        if(view.samlBindingArtifactCheck.selected){
+        if (view.samlBindingArtifactCheck.selected) {
             idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_ARTIFACT);
         }
-        if(view.samlBindingHttpRedirectCheck.selected){
+        if (view.samlBindingHttpRedirectCheck.selected) {
             idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_REDIRECT);
         }
-        if(view.samlBindingSoapCheck.selected){
+        if (view.samlBindingSoapCheck.selected) {
             idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_SOAP);
         }
 
         idpChannel.activeProfiles = new ArrayCollection();
-        if(view.samlProfileSSOCheck.selected){
+        if (view.samlProfileSSOCheck.selected) {
             idpChannel.activeProfiles.addItem(ProfileDTO.SSO);
         }
-        if(view.samlProfileSLOCheck.selected){
+        if (view.samlProfileSLOCheck.selected) {
             idpChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
         }
-        
+
         // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
         //userInformationLookup
         //authenticationContract
@@ -113,8 +113,8 @@ public class IDPChannelCreateMediator extends IocFormMediator {
     private function handleIdpChannelSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            var sp:ServiceProviderDTO = _proxy.currentIdentityApplianceElementOwner as ServiceProviderDTO;
-            if(sp.channels == null){
+            var sp:ServiceProviderDTO = _projectProxy.currentIdentityApplianceElementOwner as ServiceProviderDTO;
+            if (sp.channels == null) {
                 sp.channels = new ArrayCollection();
             }
             sp.channels.addItem(_newIdpChannel);
@@ -140,7 +140,6 @@ public class IDPChannelCreateMediator extends IocFormMediator {
     {
         return viewComponent as IDPChannelCreateForm;
     }
-
 
 
     override public function registerValidators():void {

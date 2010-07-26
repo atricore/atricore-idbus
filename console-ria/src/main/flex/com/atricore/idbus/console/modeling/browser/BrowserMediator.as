@@ -39,7 +39,6 @@ import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class BrowserMediator extends IocMediator {
-    private var _applianceBrowser:AutoSizeTree;
     private var _applianceRootNode;
     private var _identityAppliance:IdentityApplianceDTO;
     private var _projectProxy:ProjectProxy;
@@ -59,7 +58,7 @@ public class BrowserMediator extends IocMediator {
 
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            _applianceBrowser.removeEventListener(Event.CHANGE, onTreeChange);
+            view.removeEventListener(Event.CHANGE, onTreeChange);
         }
 
         super.setViewComponent(viewComponent);
@@ -69,8 +68,8 @@ public class BrowserMediator extends IocMediator {
     }
 
     private function init():void {
-        _applianceBrowser.validateNow();
-        _applianceBrowser.addEventListener(Event.CHANGE, onTreeChange);
+        view.validateNow();
+        view.addEventListener(Event.CHANGE, onTreeChange);
     }
 
     private function onTreeChange(event:Event):void {
@@ -99,10 +98,10 @@ public class BrowserMediator extends IocMediator {
                 bindApplianceBrowser();
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
-                var treeNode:BrowserNode  = findDataTreeNodeByData(_applianceRootNode, projectProxy.currentIdentityApplianceElement );
+                var treeNode:BrowserNode = findDataTreeNodeByData(_applianceRootNode, projectProxy.currentIdentityApplianceElement);
                 trace("Tree Node: " + treeNode);
                 if (treeNode != null) {
-                    _applianceBrowser.selectedItem = treeNode;
+                    view.selectedItem = treeNode;
                 }
                 break;
         }
@@ -166,19 +165,19 @@ public class BrowserMediator extends IocMediator {
                     _applianceRootNode.addChild(identityVaultNode);
                 }
             }
-            _applianceBrowser.dataProvider = _applianceRootNode;
-            _applianceBrowser.validateNow();
-            _applianceBrowser.callLater(expandCollapseTree, [true]);
+            view.dataProvider = _applianceRootNode;
+            view.validateNow();
+            view.callLater(expandCollapseTree, [true]);
         } else {
-            _applianceBrowser.dataProvider = null;
-            _applianceBrowser.validateNow();
+            view.dataProvider = null;
+            view.validateNow();
         }
 
 
     }
 
     private function expandCollapseTree(open:Boolean):void {
-        _applianceBrowser.expandChildrenOf(_applianceRootNode, open);
+        view.expandChildrenOf(_applianceRootNode, open);
     }
 
 
@@ -202,7 +201,7 @@ public class BrowserMediator extends IocMediator {
             }
 
         }
-        
+
         return targetTreeNode;
     }
 

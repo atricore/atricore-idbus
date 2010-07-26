@@ -35,40 +35,48 @@ import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
  * <li>bindModel - to bind form fields back onto the model</li>
  */
 public class IocFormMediator extends IocMediator {
-   protected var _validators : Array;
+    protected var _validators:Array;
 
     public function IocFormMediator(mediatorName:String = null, viewComponent:Object = null) {
 
         super(mediatorName, viewComponent);
 
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        super.setViewComponent(viewComponent);
+
         _validators = [];
         registerValidators();
     }
 
-   /**
-    * This method should be overridden to initialise the list of validators so that reset validators
-    * and validate fill work correctly
-    */
-   public function registerValidators() : void { }
+    /**
+     * This method should be overridden to initialise the list of validators so that reset validators
+     * and validate fill work correctly
+     */
+    public function registerValidators():void {
+    }
 
-   /**
-    * This function should be overriden to bind model fields onto the form.
-    */
-   public function bindForm() : void { }
+    /**
+     * This function should be overriden to bind model fields onto the form.
+     */
+    public function bindForm():void {
+    }
 
-   /**
-    * This function should be overriden to bind form fields onto the model.
-    */
-   public function bindModel() : void { }
+    /**
+     * This function should be overriden to bind form fields onto the model.
+     */
+    public function bindModel():void {
+    }
 
-   public function validate(revalidate : Boolean) : Boolean {
-      return FormUtility.validateAll(_validators, revalidate);
-   }
+    public function validate(revalidate:Boolean):Boolean {
+        return FormUtility.validateAll(_validators, revalidate);
+    }
 
-   public function resetValidation() : void {
-      for each(var validator : Validator in _validators) {
-         validator.source.errorString = "";
-      }
-   }
+    public function resetValidation():void {
+        for each(var validator:Validator in _validators) {
+            validator.source.errorString = "";
+        }
+    }
 }
 }

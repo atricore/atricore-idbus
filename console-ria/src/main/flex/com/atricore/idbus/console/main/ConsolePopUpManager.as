@@ -27,6 +27,7 @@ import com.atricore.idbus.console.modeling.main.view.appliance.IdentityAppliance
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardView;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 
+import mx.core.UIComponent;
 import mx.events.FlexEvent;
 
 import org.puremvc.as3.interfaces.IFacade;
@@ -42,10 +43,13 @@ public class ConsolePopUpManager extends BasePopUpManager {
     protected var _simpleSSOWizardView:SimpleSSOWizardView;
     protected var _identityApplianceForm:IdentityApplianceForm;
 
-    public function ConsolePopUpManager(facade:IFacade, application:AtricoreConsole) {
-        super(facade, application);
+
+    override public function init(facade:IFacade, popupParent:UIComponent):void {
+        super.init(facade, popupParent);
         _popup.styleName = "mainPopup";
+
     }
+
 
     public function get setupWizardMediator():SetupWizardViewMediator {
         return _setupWizardMediator;
@@ -92,7 +96,7 @@ public class ConsolePopUpManager extends BasePopUpManager {
         createSimpleSSOWizardView();
         showWizard(_simpleSSOWizardView);
     }
-    
+
     private function createSimpleSSOWizardView():void {
         _simpleSSOWizardView = new SimpleSSOWizardView();
         _simpleSSOWizardView.addEventListener(FlexEvent.CREATION_COMPLETE, handleSimpleSSOWizardViewCreated);

@@ -44,7 +44,7 @@ public class IdentityApplianceMediator extends IocFormMediator
     public static const CREATE:String = "IdentityApplianceMediator.CREATE";
     public static const EDIT:String = "IdentityApplianceMediator.EDIT";
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
     private var _keystoreProxy:KeystoreProxy;
     private var _newIdentityAppliance:IdentityApplianceDTO;
 
@@ -81,20 +81,20 @@ public class IdentityApplianceMediator extends IocFormMediator
 
     override public function listNotificationInterests():Array {
         return [CREATE,EDIT,IdentityApplianceCreateCommand.SUCCESS,
-                IdentityApplianceCreateCommand.FAILURE,
-                ProcessingMediator.CREATED];
+            IdentityApplianceCreateCommand.FAILURE,
+            ProcessingMediator.CREATED];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case CREATE :
-                _proxy.viewAction = ProjectProxy.ACTION_ITEM_CREATE;
+                _projectProxy.viewAction = ProjectProxy.ACTION_ITEM_CREATE;
                 view.btnSave.label = "Save";
                 bindForm();
                 view.focusManager.setFocus(view.applianceName);
                 break;
             case EDIT :
-                _proxy.viewAction = ProjectProxy.ACTION_ITEM_EDIT;
+                _projectProxy.viewAction = ProjectProxy.ACTION_ITEM_EDIT;
                 view.btnSave.label = "Update";
                 bindForm();
                 view.focusManager.setFocus(view.applianceName);
@@ -105,22 +105,22 @@ public class IdentityApplianceMediator extends IocFormMediator
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
                 sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-                    "The appliance has been successfully created.");
+                        "The appliance has been successfully created.");
                 break;
             case IdentityApplianceCreateCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                    "There was an error creating appliance.");
+                        "There was an error creating appliance.");
                 break;
             case ProcessingMediator.CREATED:
                 // persisting data could end before processing window was created
                 // and processing window will be left unclosed because it didn't receive
                 // STOP notification, so we start the persisting once the processing window
                 // is created
-                if (_proxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
+                if (_projectProxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
                     sendNotification(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
 
-                    _proxy.currentIdentityApplianceElement = _newIdentityAppliance;
+                    _projectProxy.currentIdentityApplianceElement = _newIdentityAppliance;
                     sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
                 }
                 else {
@@ -132,15 +132,15 @@ public class IdentityApplianceMediator extends IocFormMediator
     }
 
     override public function bindForm():void {
-        if (_proxy.currentIdentityAppliance != null) {
-            view.applianceName.text = _proxy.currentIdentityAppliance.idApplianceDefinition.name;
-            view.applianceDescription.text = _proxy.currentIdentityAppliance.idApplianceDefinition.description;
-            view.applianceLocationDomain.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.host;
-            view.applianceLocationPort.text = new Number(_proxy.currentIdentityAppliance.idApplianceDefinition.location.port).toString();
-            view.applianceLocationProtocol.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.protocol;
-            view.applianceLocationPath.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.context;
+        if (_projectProxy.currentIdentityAppliance != null) {
+            view.applianceName.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.name;
+            view.applianceDescription.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.description;
+            view.applianceLocationDomain.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.location.host;
+            view.applianceLocationPort.text = new Number(_projectProxy.currentIdentityAppliance.idApplianceDefinition.location.port).toString();
+            view.applianceLocationProtocol.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.location.protocol;
+            view.applianceLocationPath.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.location.context;
         }
-        
+
         FormUtility.clearValidationErrors(_validators);
     }
 
@@ -166,16 +166,16 @@ public class IdentityApplianceMediator extends IocFormMediator
         if (validate(true)) {
             bindModel();
             /*
-            if (_proxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
-                sendNotification(ApplicationFacade.NOTE_CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
+             if (_proxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
+             sendNotification(ApplicationFacade.NOTE_CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
 
-                _proxy.currentIdentityApplianceElement = _newIdentityAppliance;
-                sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
-            }
-            else {
-                sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-            }
-            */
+             _proxy.currentIdentityApplianceElement = _newIdentityAppliance;
+             sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
+             }
+             else {
+             sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+             }
+             */
             _processingStarted = true;
             closeWindow();
             sendNotification(ProcessingMediator.START);

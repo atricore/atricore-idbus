@@ -54,7 +54,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
     private var _wizardDataModel:ObjectProxy = new ObjectProxy();
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
 
     [Bindable]
     private var _fileRef:FileReference;
@@ -111,10 +111,10 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
     override public function listNotificationInterests():Array {
         return [CreateSimpleSSOIdentityApplianceCommand.FAILURE,
-                CreateSimpleSSOIdentityApplianceCommand.SUCCESS,
-                ProcessingMediator.CREATED,
-                UploadProgressMediator.CREATED,
-                UploadProgressMediator.UPLOAD_CANCELED];
+            CreateSimpleSSOIdentityApplianceCommand.SUCCESS,
+            ProcessingMediator.CREATED,
+            UploadProgressMediator.CREATED,
+            UploadProgressMediator.UPLOAD_CANCELED];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -164,17 +164,17 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
     private function onSimpleSSOWizardComplete(event:WizardEvent):void {
         /*
-        var identityAppliance:IdentityApplianceDTO = _wizardDataModel.applianceData;
-        var identityApplianceDefinition:IdentityApplianceDefinitionDTO = identityAppliance.idApplianceDefinition;
-        identityApplianceDefinition.identityVaults = new ArrayCollection();
-        identityApplianceDefinition.identityVaults.addItem(createIdentityVault());
+         var identityAppliance:IdentityApplianceDTO = _wizardDataModel.applianceData;
+         var identityApplianceDefinition:IdentityApplianceDefinitionDTO = identityAppliance.idApplianceDefinition;
+         identityApplianceDefinition.identityVaults = new ArrayCollection();
+         identityApplianceDefinition.identityVaults.addItem(createIdentityVault());
 
-        identityApplianceDefinition.providers = new ArrayCollection();
-        for (var i:int = 0; i < _wizardDataModel.step3Data.length; i++) {
-            var sp:ServiceProviderDTO = _wizardDataModel.step3Data[i] as ServiceProviderDTO;
-            identityApplianceDefinition.providers.addItem(sp);
-        }
-        */
+         identityApplianceDefinition.providers = new ArrayCollection();
+         for (var i:int = 0; i < _wizardDataModel.step3Data.length; i++) {
+         var sp:ServiceProviderDTO = _wizardDataModel.step3Data[i] as ServiceProviderDTO;
+         identityApplianceDefinition.providers.addItem(sp);
+         }
+         */
 
         //closeWizard();
         _processingStarted = true;

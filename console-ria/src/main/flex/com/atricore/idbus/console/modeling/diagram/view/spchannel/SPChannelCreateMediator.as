@@ -38,10 +38,10 @@ import org.puremvc.as3.interfaces.INotification;
 
 public class SPChannelCreateMediator extends IocFormMediator {
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
     private var _newSpChannel:ServiceProviderChannelDTO;
 
-    public function SPChannelCreateMediator(name : String = null, viewComp:SPChannelCreateForm = null) {
+    public function SPChannelCreateMediator(name:String = null, viewComp:SPChannelCreateForm = null) {
         super(name, viewComp);
 
     }
@@ -77,31 +77,31 @@ public class SPChannelCreateMediator extends IocFormMediator {
         loc.uri = view.spChannelLocationPath.text;
         spChannel.location = loc;
 
-//        spChannel.signAuthenticationAssertions = view.signAuthAssertionCheck.selected;
-//        spChannel.encryptAuthenticationAssertions = view.encryptAuthAssertionCheck.selected;
+        //        spChannel.signAuthenticationAssertions = view.signAuthAssertionCheck.selected;
+        //        spChannel.encryptAuthenticationAssertions = view.encryptAuthAssertionCheck.selected;
 
         spChannel.activeBindings = new ArrayCollection();
-        if(view.samlBindingHttpPostCheck.selected){
+        if (view.samlBindingHttpPostCheck.selected) {
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_POST);
         }
-        if(view.samlBindingArtifactCheck.selected){
+        if (view.samlBindingArtifactCheck.selected) {
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_ARTIFACT);
         }
-        if(view.samlBindingHttpRedirectCheck.selected){
+        if (view.samlBindingHttpRedirectCheck.selected) {
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_REDIRECT);
         }
-        if(view.samlBindingSoapCheck.selected){
+        if (view.samlBindingSoapCheck.selected) {
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_SOAP);
-        }        
+        }
 
         spChannel.activeProfiles = new ArrayCollection();
-        if(view.samlProfileSSOCheck.selected){
+        if (view.samlProfileSSOCheck.selected) {
             spChannel.activeProfiles.addItem(ProfileDTO.SSO);
         }
-        if(view.samlProfileSLOCheck.selected){
+        if (view.samlProfileSLOCheck.selected) {
             spChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
         }
-        
+
         // TODO save remaining fields, calling appropriate lookup methods
         //userInformationLookup
         //authenticationContract
@@ -114,8 +114,8 @@ public class SPChannelCreateMediator extends IocFormMediator {
     private function handleSpChannelSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            var idp:IdentityProviderDTO = _proxy.currentIdentityApplianceElementOwner as IdentityProviderDTO;
-            if(idp.channels == null){
+            var idp:IdentityProviderDTO = _projectProxy.currentIdentityApplianceElementOwner as IdentityProviderDTO;
+            if (idp.channels == null) {
                 idp.channels = new ArrayCollection();
             }
             idp.channels.addItem(_newSpChannel);
@@ -141,7 +141,6 @@ public class SPChannelCreateMediator extends IocFormMediator {
     {
         return viewComponent as SPChannelCreateForm;
     }
-
 
 
     override public function registerValidators():void {

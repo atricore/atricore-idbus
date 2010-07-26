@@ -42,6 +42,8 @@ import org.puremvc.as3.interfaces.INotification;
 
 public class BasePopUpManager {
 
+    protected var _app:AtricoreConsole;
+
     protected var _lastWindowNotification:INotification;
     protected var _popup:SizeableTitleWindow;
     protected var _popupVisible:Boolean = false;
@@ -65,7 +67,8 @@ public class BasePopUpManager {
     protected var _processingMediator:ProcessingMediator;
     protected var _processingView:ProcessingView;
 
-    public function BasePopUpManager(facade:IFacade, popupParent:UIComponent) {
+
+    public function init(facade:IFacade, popupParent:UIComponent):void {
         _facade = facade;
         _popupParent = popupParent;
         //_projectProxy = ProjectProxy(_facade.retrieveProxy(ProjectProxy.NAME));
@@ -88,6 +91,7 @@ public class BasePopUpManager {
 
         createWizardOpenCloseEffects();
     }
+
 
     public function get processingMediator():ProcessingMediator {
         return _processingMediator;

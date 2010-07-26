@@ -41,8 +41,10 @@ import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceView;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceView;
 
+import mx.core.UIComponent;
 import mx.events.FlexEvent;
 
+import org.puremvc.as3.interfaces.IFacade;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
 
@@ -70,11 +72,11 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _buildAppliance:BuildApplianceView;
     private var _deployAppliance:DeployApplianceView;
 
-    public function ModelerPopUpManager(facade:IIocFacade, modeler:ModelerView) {
-        super(facade, modeler);
+    override public function init(facade:IFacade, popupParent:UIComponent):void {
+        super.init(facade, popupParent);
         _popup.styleName = "modelerPopup";
     }
-    
+
     public function set manageCertificateMediator(value:ManageCertificateMediator) {
         _manageCertificateMediator = value;
     }
@@ -150,7 +152,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateIdentityProviderWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         if (!_identityProviderCreateForm) {
-           createIdentityProviderCreateForm();
+            createIdentityProviderCreateForm();
         }
         _popup.title = "Create Identity Provider";
         _popup.width = 690;
@@ -173,7 +175,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateServiceProviderWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         if (!_serviceProviderCreateForm) {
-           createServiceProviderCreateForm();
+            createServiceProviderCreateForm();
         }
         _popup.title = "Create Service Provider";
         _popup.width = 690;
@@ -196,7 +198,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateIdpChannelWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         if (!_idpChannelCreateForm) {
-           createIdpChannelCreateForm();
+            createIdpChannelCreateForm();
         }
         _popup.title = "Create Identity Provider Channel";
         _popup.width = 690;
@@ -219,7 +221,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateSpChannelWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         if (!_spChannelCreateForm) {
-           createSpChannelCreateForm();
+            createSpChannelCreateForm();
         }
         _popup.title = "Create Service Provider Channel";
         _popup.width = 690;
@@ -263,7 +265,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _popup.height = 480;
         showPopup(_manageCertificateForm);
     }
-    
+
     private function createManageCertificateForm():void {
         _manageCertificateForm = new ManageCertificateView();
         _manageCertificateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleManageCertificateFormCreated);

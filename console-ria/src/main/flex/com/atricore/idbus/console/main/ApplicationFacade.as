@@ -47,7 +47,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const IDP_CHANNEL_REMOVE:String = "idpChannelRemove";
     public static const SP_CHANNEL_REMOVE:String = "spChannelRemove";
     public static const DB_IDENTITY_VAULT_REMOVE:String = "identityVaultRemove";
-    public static const EDIT_IDENTITY_APPLIANCE:String = "editIdentityAppliance";
+    public static const IDENTITY_APPLIANCE_UPDATE:String = "identityApplianceUpdate";
     public static const UPLOAD:String = "upload";
     public static const BUILD_IDENTITY_APPLIANCE:String = "buildIdentityAppliance";
     public static const DEPLOY_IDENTITY_APPLIANCE:String = "deployIdentityAppliance";
