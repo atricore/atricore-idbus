@@ -20,11 +20,12 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.idp {
+import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.services.dto.BindingDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
-
 import com.atricore.idbus.console.services.dto.LocationDTO;
-
 import com.atricore.idbus.console.services.dto.ProfileDTO;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
 
@@ -33,36 +34,46 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
-import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
 import org.puremvc.as3.interfaces.INotification;
 
-public class IdentityProviderCreateMediator extends FormMediator {
-    public static const NAME:String = "com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator";
+public class IdentityProviderCreateMediator extends IocFormMediator {
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
     private var _newIdentityProvider:IdentityProviderDTO;
 
-    public function IdentityProviderCreateMediator(viewComp:IdentityProviderCreateForm) {
-        super(NAME, viewComp);
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        viewComp.btnOk.addEventListener(MouseEvent.CLICK, handleIdentityProviderSave);
-        viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+    public function IdentityProviderCreateMediator(name:String = null, viewComp:IdentityProviderCreateForm = null) {
+        super(name, viewComp);
 
     }
 
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handleIdentityProviderSave);
+            view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+    private function init():void {
+        view.btnOk.addEventListener(MouseEvent.CLICK, handleIdentityProviderSave);
+        view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+    }
+
     override public function bindForm():void {
-//        if (_proxy.currentIdentityAppliance != null) {
-//            view.applianceName.text = _proxy.currentIdentityAppliance.idApplianceDefinition.name;
-//            view.applianceDescription.text = _proxy.currentIdentityAppliance.idApplianceDefinition.description;
-//            view.applianceLocationDomain.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.host;
-//            view.applianceLocationPort.text = new Number(_proxy.currentIdentityAppliance.idApplianceDefinition.location.port).toString();
-//            view.applianceLocationProtocol.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.protocol;
-//            view.applianceLocationPath.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.context;
-//        }
-//
-//        FormUtility.clearValidationErrors(_validators);        
+        //        if (_proxy.currentIdentityAppliance != null) {
+        //            view.applianceName.text = _proxy.currentIdentityAppliance.idApplianceDefinition.name;
+        //            view.applianceDescription.text = _proxy.currentIdentityAppliance.idApplianceDefinition.description;
+        //            view.applianceLocationDomain.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.host;
+        //            view.applianceLocationPort.text = new Number(_proxy.currentIdentityAppliance.idApplianceDefinition.location.port).toString();
+        //            view.applianceLocationProtocol.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.protocol;
+        //            view.applianceLocationPath.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.context;
+        //        }
+        //
+        //        FormUtility.clearValidationErrors(_validators);
     }
 
     override public function bindModel():void {
@@ -97,33 +108,33 @@ public class IdentityProviderCreateMediator extends FormMediator {
         spChannel.location = spChannelLoc;
 
         spChannel.activeBindings = new ArrayCollection();
-        if(view.samlBindingHttpPostCheck.selected){
+        if (view.samlBindingHttpPostCheck.selected) {
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_POST);
         }
-        if(view.samlBindingArtifactCheck.selected){
+        if (view.samlBindingArtifactCheck.selected) {
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_ARTIFACT);
         }
-        if(view.samlBindingHttpRedirectCheck.selected){
+        if (view.samlBindingHttpRedirectCheck.selected) {
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_REDIRECT);
         }
-        if(view.samlBindingSoapCheck.selected){
+        if (view.samlBindingSoapCheck.selected) {
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_SOAP);
         }
 
         spChannel.activeProfiles = new ArrayCollection();
-        if(view.samlProfileSSOCheck.selected){
+        if (view.samlProfileSSOCheck.selected) {
             spChannel.activeProfiles.addItem(ProfileDTO.SSO);
         }
-        if(view.samlProfileSLOCheck.selected){
+        if (view.samlProfileSLOCheck.selected) {
             spChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
         }
-        
+
         // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
         //userInformationLookup
         //authenticationContract
         //authenticationMechanism
         //authenticationAssertionEmissionPolicy
-        identityProvider.defaultChannel = spChannel;        
+        identityProvider.defaultChannel = spChannel;
 
         _newIdentityProvider = identityProvider;
     }
@@ -131,11 +142,11 @@ public class IdentityProviderCreateMediator extends FormMediator {
     private function handleIdentityProviderSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            _proxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newIdentityProvider);
-            _proxy.currentIdentityApplianceElement = _newIdentityProvider;
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
-            sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newIdentityProvider);
+            _projectProxy.currentIdentityApplianceElement = _newIdentityProvider;
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+            sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             closeWindow();
         }
         else {
@@ -155,7 +166,6 @@ public class IdentityProviderCreateMediator extends FormMediator {
     {
         return viewComponent as IdentityProviderCreateForm;
     }
-
 
 
     override public function registerValidators():void {

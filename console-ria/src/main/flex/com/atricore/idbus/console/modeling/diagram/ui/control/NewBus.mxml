@@ -28,12 +28,11 @@
 
     <mx:Script><![CDATA[
         import com.atricore.idbus.console.main.view.util.EmbeddedIcons;
+        import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 
         import mx.controls.Alert;
         import mx.events.CloseEvent;
         import mx.managers.PopUpManager;
-
-        import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 
         import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
 

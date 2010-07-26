@@ -20,75 +20,88 @@
  */
 
 package com.atricore.idbus.console.modeling.browser {
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-
-import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
-
-import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
-import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
-import com.atricore.idbus.console.services.dto.LocalProviderDTO;
-import com.atricore.idbus.console.services.dto.ProviderDTO;
-
-import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
-
-import flash.events.Event;
-
 import com.atricore.idbus.console.components.AutoSizeTree;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.browser.model.BrowserModelFactory;
 import com.atricore.idbus.console.modeling.browser.model.BrowserNode;
-import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.mediator.Mediator;
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
+import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
+import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+import com.atricore.idbus.console.services.dto.LocalProviderDTO;
+import com.atricore.idbus.console.services.dto.ProviderDTO;
+import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
 
-public class BrowserMediator extends Mediator {
-    public static const NAME:String = "com.atricore.idbus.console.modeling.browser.BrowserMediator";
-    private var _applianceBrowser:AutoSizeTree;
+import flash.events.Event;
+
+import org.puremvc.as3.interfaces.INotification;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
+
+public class BrowserMediator extends IocMediator {
     private var _applianceRootNode;
     private var _identityAppliance:IdentityApplianceDTO;
     private var _projectProxy:ProjectProxy;
 
-    public function BrowserMediator(viewComp:BrowserView) {
-        super(NAME, viewComp);
+    public function BrowserMediator(name:String = null, viewComp:BrowserView = null) {
+        super(name, viewComp);
+    }
 
-        _projectProxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
 
-        _applianceBrowser = viewComp;
-        _applianceBrowser.validateNow();
-        _applianceBrowser.addEventListener(Event.CHANGE, onTreeChange);
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
 
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.removeEventListener(Event.CHANGE, onTreeChange);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+
+    }
+
+    private function init():void {
+        view.validateNow();
+        view.addEventListener(Event.CHANGE, onTreeChange);
     }
 
     private function onTreeChange(event:Event):void {
         var selectedItem:BrowserNode = event.currentTarget.selectedItem;
 
-        _projectProxy.currentIdentityApplianceElement = selectedItem.data;
-        sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_SELECTED)
+        projectProxy.currentIdentityApplianceElement = selectedItem.data;
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_SELECTED)
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE,
-            ApplicationFacade.NOTE_DIAGRAM_ELEMENT_SELECTED,
-            ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED];
+        return [ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
+            ApplicationFacade.DIAGRAM_ELEMENT_SELECTED,
+            ApplicationFacade.DIAGRAM_ELEMENT_UPDATED];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE:
+            case ApplicationFacade.UPDATE_IDENTITY_APPLIANCE:
                 updateIdentityAppliance();
                 bindApplianceBrowser();
                 break;
-            case ApplicationFacade.NOTE_DIAGRAM_ELEMENT_UPDATED:
+            case ApplicationFacade.DIAGRAM_ELEMENT_UPDATED:
                 // TODO: Dispatch change event to renderer so that it can update item's labels & icons without
                 // TODO: recreating the tree view. 
                 updateIdentityAppliance();
                 bindApplianceBrowser();
                 break;
-            case ApplicationFacade.NOTE_DIAGRAM_ELEMENT_SELECTED:
-                var treeNode:BrowserNode  = findDataTreeNodeByData(_applianceRootNode, _projectProxy.currentIdentityApplianceElement );
+            case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
+                var treeNode:BrowserNode = findDataTreeNodeByData(_applianceRootNode, projectProxy.currentIdentityApplianceElement);
                 trace("Tree Node: " + treeNode);
                 if (treeNode != null) {
-                    _applianceBrowser.selectedItem = treeNode;
+                    view.selectedItem = treeNode;
                 }
                 break;
         }
@@ -152,19 +165,19 @@ public class BrowserMediator extends Mediator {
                     _applianceRootNode.addChild(identityVaultNode);
                 }
             }
-            _applianceBrowser.dataProvider = _applianceRootNode;
-            _applianceBrowser.validateNow();
-            _applianceBrowser.callLater(expandCollapseTree, [true]);
+            view.dataProvider = _applianceRootNode;
+            view.validateNow();
+            view.callLater(expandCollapseTree, [true]);
         } else {
-            _applianceBrowser.dataProvider = null;
-            _applianceBrowser.validateNow();
+            view.dataProvider = null;
+            view.validateNow();
         }
 
 
     }
 
     private function expandCollapseTree(open:Boolean):void {
-        _applianceBrowser.expandChildrenOf(_applianceRootNode, open);
+        view.expandChildrenOf(_applianceRootNode, open);
     }
 
 
@@ -188,7 +201,7 @@ public class BrowserMediator extends Mediator {
             }
 
         }
-        
+
         return targetTreeNode;
     }
 
@@ -196,5 +209,6 @@ public class BrowserMediator extends Mediator {
     {
         return viewComponent as BrowserView;
     }
+
 }
 }

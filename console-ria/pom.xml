@@ -51,6 +51,9 @@
             <plugin> <!-- Flex (SWC and SWF) compilation -->
                 <groupId>org.sonatype.flexmojos</groupId>
                 <artifactId>flexmojos-maven-plugin</artifactId>
+                <configuration>
+                   <configFile>src/main/config/configurationClassesCompilerConfig.xml</configFile>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -128,6 +131,31 @@
             <classifier>en_US</classifier>
             <type>rb.swc</type>
         </dependency>
+
+        <dependency>
+            <groupId>org.springextensions.actionscript</groupId>
+            <artifactId>spring-actionscript-puremvc-standard</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-lang</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-reflect</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.as3commons</groupId>
+            <artifactId>as3commons-logging</artifactId>
+            <type>swc</type>
+        </dependency>
+
     </dependencies>
 
 </project>

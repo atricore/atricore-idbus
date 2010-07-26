@@ -21,9 +21,11 @@
 
 package com.atricore.idbus.console.modeling.main.controller
 {
+import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.service.ServiceRegistry;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-
+import com.atricore.idbus.console.services.spi.request.CreateSimpleSsoRequest;
 import com.atricore.idbus.console.services.spi.response.CreateSimpleSsoResponse;
 
 import mx.rpc.Fault;
@@ -31,19 +33,32 @@ import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
 import mx.rpc.remoting.mxml.RemoteObject;
 
-import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.spi.request.CreateSimpleSsoRequest;
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.command.SimpleCommand;
+import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class CreateSimpleSSOIdentityApplianceCommand extends SimpleCommand implements IResponder
+public class CreateSimpleSSOIdentityApplianceCommand extends IocSimpleCommand implements IResponder
 {
     public static const SUCCESS:String = "CreateSimpleSSOIdentityApplianceCommand.SUCCESS";
     public static const FAILURE:String = "CreateSimpleSSOIdentityApplianceCommand.FAILURE";
 
-    public function CreateSimpleSSOIdentityApplianceCommand() {
+    private var _projectProxy:ProjectProxy;
+    private var _registry:ServiceRegistry;
 
+
+    public function get registry():ServiceRegistry {
+        return _registry;
+    }
+
+    public function set registry(value:ServiceRegistry):void {
+        _registry = value;
+    }
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
     }
 
     override public function execute(notification:INotification):void {
@@ -52,7 +67,6 @@ public class CreateSimpleSSOIdentityApplianceCommand extends SimpleCommand imple
         var req:CreateSimpleSsoRequest = new CreateSimpleSsoRequest();
         req.identityApplianceDefinition = identityAppliance.idApplianceDefinition;
 
-        var registry:ServiceRegistry = facade.retrieveProxy(ServiceRegistry.NAME) as ServiceRegistry;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
 
         var call:Object = service.createSimpleSso(req);
@@ -67,9 +81,8 @@ public class CreateSimpleSSOIdentityApplianceCommand extends SimpleCommand imple
     }
 
     public function result(data:Object):void {
-        var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
         var resp:CreateSimpleSsoResponse = data.result as CreateSimpleSsoResponse;
-        proxy.currentIdentityAppliance = resp.appliance;
+        projectProxy.currentIdentityAppliance = resp.appliance;
         sendNotification(SUCCESS);
     }
 }

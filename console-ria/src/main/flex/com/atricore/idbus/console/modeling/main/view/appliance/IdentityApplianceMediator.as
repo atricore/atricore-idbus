@@ -24,8 +24,8 @@ package com.atricore.idbus.console.modeling.main.view.appliance {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.KeystoreProxy;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
 import com.atricore.idbus.console.main.view.form.FormUtility;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
@@ -39,25 +39,37 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class IdentityApplianceMediator extends FormMediator
+public class IdentityApplianceMediator extends IocFormMediator
 {
-    public static const NAME:String = "IdentityApplianceMediator";
     public static const CREATE:String = "IdentityApplianceMediator.CREATE";
     public static const EDIT:String = "IdentityApplianceMediator.EDIT";
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
     private var _keystoreProxy:KeystoreProxy;
     private var _newIdentityAppliance:IdentityApplianceDTO;
 
     private var _processingStarted:Boolean;
 
-    public function IdentityApplianceMediator(viewComp:IdentityApplianceForm) {
-        super(NAME, viewComp);
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        _keystoreProxy = KeystoreProxy(facade.retrieveProxy(KeystoreProxy.NAME));
-        viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
-        viewComp.btnSave.addEventListener(MouseEvent.CLICK, handleIdentityApplianceSave);
-        viewComp.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+    public function IdentityApplianceMediator(name:String = null, viewComp:IdentityApplianceForm = null) {
+        super(name, viewComp);
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
+            view.btnSave.removeEventListener(MouseEvent.CLICK, handleIdentityApplianceSave);
+            view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+    private function init():void {
+        view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+        view.btnSave.addEventListener(MouseEvent.CLICK, handleIdentityApplianceSave);
+        view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
     }
 
     override public function registerValidators():void {
@@ -67,55 +79,52 @@ public class IdentityApplianceMediator extends FormMediator
         _validators.push(view.pathValidator);
     }
 
-
     override public function listNotificationInterests():Array {
         return [CREATE,EDIT,IdentityApplianceCreateCommand.SUCCESS,
-                IdentityApplianceCreateCommand.FAILURE,
-                ProcessingMediator.CREATED];
+            IdentityApplianceCreateCommand.FAILURE,
+            ProcessingMediator.CREATED];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case CREATE :
-                _proxy.viewAction = ProjectProxy.ACTION_ITEM_CREATE;
+                _projectProxy.viewAction = ProjectProxy.ACTION_ITEM_CREATE;
                 view.btnSave.label = "Save";
                 bindForm();
                 view.focusManager.setFocus(view.applianceName);
                 break;
             case EDIT :
-                _proxy.viewAction = ProjectProxy.ACTION_ITEM_EDIT;
+                _projectProxy.viewAction = ProjectProxy.ACTION_ITEM_EDIT;
                 view.btnSave.label = "Update";
                 bindForm();
                 view.focusManager.setFocus(view.applianceName);
                 break;
             case IdentityApplianceCreateCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.NOTE_DISPLAY_APPLIANCE_MODELER);
-                sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-                sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_LIST_LOAD);
-                sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
-                    "The appliance has been successfully created.");
-                facade.removeMediator(IdentityApplianceMediator.NAME);
+                sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                        "The appliance has been successfully created.");
                 break;
             case IdentityApplianceCreateCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
-                    "There was an error creating appliance.");
-                facade.removeMediator(IdentityApplianceMediator.NAME);
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                        "There was an error creating appliance.");
                 break;
             case ProcessingMediator.CREATED:
                 // persisting data could end before processing window was created
                 // and processing window will be left unclosed because it didn't receive
                 // STOP notification, so we start the persisting once the processing window
                 // is created
-                if (_proxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
-                    sendNotification(ApplicationFacade.NOTE_CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
+                if (_projectProxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
+                    sendNotification(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
 
-                    _proxy.currentIdentityApplianceElement = _newIdentityAppliance;
-                    sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
+                    _projectProxy.currentIdentityApplianceElement = _newIdentityAppliance;
+                    sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
                 }
                 else {
-                    sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+                    sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 }
                 break;
         }
@@ -123,15 +132,15 @@ public class IdentityApplianceMediator extends FormMediator
     }
 
     override public function bindForm():void {
-        if (_proxy.currentIdentityAppliance != null) {
-            view.applianceName.text = _proxy.currentIdentityAppliance.idApplianceDefinition.name;
-            view.applianceDescription.text = _proxy.currentIdentityAppliance.idApplianceDefinition.description;
-            view.applianceLocationDomain.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.host;
-            view.applianceLocationPort.text = new Number(_proxy.currentIdentityAppliance.idApplianceDefinition.location.port).toString();
-            view.applianceLocationProtocol.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.protocol;
-            view.applianceLocationPath.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.context;
+        if (_projectProxy.currentIdentityAppliance != null) {
+            view.applianceName.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.name;
+            view.applianceDescription.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.description;
+            view.applianceLocationDomain.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.location.host;
+            view.applianceLocationPort.text = new Number(_projectProxy.currentIdentityAppliance.idApplianceDefinition.location.port).toString();
+            view.applianceLocationProtocol.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.location.protocol;
+            view.applianceLocationPath.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.location.context;
         }
-        
+
         FormUtility.clearValidationErrors(_validators);
     }
 
@@ -157,16 +166,16 @@ public class IdentityApplianceMediator extends FormMediator
         if (validate(true)) {
             bindModel();
             /*
-            if (_proxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
-                sendNotification(ApplicationFacade.NOTE_CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
+             if (_proxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
+             sendNotification(ApplicationFacade.NOTE_CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
 
-                _proxy.currentIdentityApplianceElement = _newIdentityAppliance;
-                sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
-            }
-            else {
-                sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-            }
-            */
+             _proxy.currentIdentityApplianceElement = _newIdentityAppliance;
+             sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
+             }
+             else {
+             sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+             }
+             */
             _processingStarted = true;
             closeWindow();
             sendNotification(ProcessingMediator.START);
@@ -185,9 +194,6 @@ public class IdentityApplianceMediator extends FormMediator
     }
 
     private function handleClose(event:Event):void {
-        if (!_processingStarted) {
-            facade.removeMediator(IdentityApplianceMediator.NAME);
-        }
     }
 
     protected function get view():IdentityApplianceForm

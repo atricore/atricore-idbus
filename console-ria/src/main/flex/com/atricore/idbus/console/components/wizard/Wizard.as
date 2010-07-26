@@ -34,6 +34,8 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License. 
 */
 package  com.atricore.idbus.console.components.wizard {
+import com.atricore.idbus.console.components.GroupBox;
+
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
 
@@ -51,8 +53,6 @@ import mx.core.mx_internal;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 import mx.resources.ResourceManager;
-
-import com.atricore.idbus.console.components.GroupBox;
 
 use namespace mx_internal;
 	

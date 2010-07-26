@@ -21,11 +21,12 @@
 
 package com.atricore.idbus.console.modeling.main.controller
 {
+import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.service.ServiceRegistry;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-
 import com.atricore.idbus.console.services.dto.IdentityApplianceStateDTO;
 import com.atricore.idbus.console.services.spi.request.AddIdentityApplianceRequest;
-
 import com.atricore.idbus.console.services.spi.response.AddIdentityApplianceResponse;
 
 import mx.rpc.Fault;
@@ -33,20 +34,37 @@ import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
 import mx.rpc.remoting.mxml.RemoteObject;
 
-import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.service.ServiceRegistry;
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.command.SimpleCommand;
+import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class IdentityApplianceCreateCommand extends SimpleCommand implements IResponder {
+public class IdentityApplianceCreateCommand extends IocSimpleCommand implements IResponder {
 
     public static const SUCCESS : String = "IdentityApplianceCreateCommand.SUCCESS";
     public static const FAILURE : String = "IdentityApplianceCreateCommand.FAILURE";
 
+    private var _projectProxy:ProjectProxy;
+    private var _registry:ServiceRegistry;
+
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
+
+    public function get registry():ServiceRegistry {
+        return _registry;
+    }
+
+    public function set registry(value:ServiceRegistry):void {
+        _registry = value;
+    }
+
     override public function execute(notification:INotification):void {
         var identityAppliance:IdentityApplianceDTO = notification.getBody() as IdentityApplianceDTO;
-        var registry:ServiceRegistry = facade.retrieveProxy(ServiceRegistry.NAME) as ServiceRegistry;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
 
         identityAppliance.state = IdentityApplianceStateDTO.PROJECTED.toString();
@@ -57,9 +75,8 @@ public class IdentityApplianceCreateCommand extends SimpleCommand implements IRe
     }
 
     public function result(data:Object):void {
-        var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
         var resp:AddIdentityApplianceResponse = data.result as AddIdentityApplianceResponse;
-        proxy.currentIdentityAppliance = resp.appliance;
+        projectProxy.currentIdentityAppliance = resp.appliance;
         sendNotification(SUCCESS);
     }
 

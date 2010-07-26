@@ -20,6 +20,9 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.sp {
+import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.services.dto.BindingDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
 import com.atricore.idbus.console.services.dto.LocationDTO;
@@ -31,24 +34,42 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
-import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
 import org.puremvc.as3.interfaces.INotification;
 
-public class ServiceProviderCreateMediator extends FormMediator {
-    public static const NAME:String = "com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator";
+public class ServiceProviderCreateMediator extends IocFormMediator {
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
     private var _newServiceProvider:ServiceProviderDTO;
 
-    public function ServiceProviderCreateMediator(viewComp:ServiceProviderCreateForm) {
-        super(NAME, viewComp);
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        viewComp.btnOk.addEventListener(MouseEvent.CLICK, handleServiceProviderSave);
-        viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+    public function ServiceProviderCreateMediator(name : String = null, viewComp:ServiceProviderCreateForm = null) {
+        super(name, viewComp);
 
     }
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent()) {
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handleServiceProviderSave);
+            view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+    private function init():void {
+        view.btnOk.addEventListener(MouseEvent.CLICK, handleServiceProviderSave);
+        view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+    }
+
 
     override public function bindModel():void {
 
@@ -114,10 +135,10 @@ public class ServiceProviderCreateMediator extends FormMediator {
     private function handleServiceProviderSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            _proxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newServiceProvider);
-            _proxy.currentIdentityApplianceElement = _newServiceProvider;
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
-            sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newServiceProvider);
+            _projectProxy.currentIdentityApplianceElement = _newServiceProvider;
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+            sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
             closeWindow();
         }
         else {
@@ -158,5 +179,6 @@ public class ServiceProviderCreateMediator extends FormMediator {
 
 
     }
+
 }
 }

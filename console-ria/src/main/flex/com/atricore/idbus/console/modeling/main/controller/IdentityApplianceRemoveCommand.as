@@ -25,9 +25,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-
 import com.atricore.idbus.console.services.spi.request.RemoveIdentityApplianceRequest;
-
 import com.atricore.idbus.console.services.spi.response.RemoveIdentityApplianceResponse;
 
 import mx.rpc.Fault;
@@ -36,28 +34,32 @@ import mx.rpc.events.FaultEvent;
 import mx.rpc.remoting.mxml.RemoteObject;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.command.SimpleCommand;
+import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class IdentityApplianceRemoveCommand extends SimpleCommand implements IResponder {
+public class IdentityApplianceRemoveCommand extends IocSimpleCommand implements IResponder {
 
-//    public static const SUCCESS : String = "IdentityApplianceRemoveCommand.SUCCESS";
-//    public static const FAILURE : String = "IdentityApplianceRemoveCommand.FAILURE";
+    private var _registry:ServiceRegistry;
+    private var _projectProxy:ProjectProxy;
 
-//    override public function execute(notification:INotification):void {
-//        var identityAppliance:IdentityApplianceDTO = notification.getBody() as IdentityApplianceDTO;
-//        var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
-//
-//        proxy.currentIdentityAppliance = null;
-//        proxy.currentIdentityApplianceElementOwner = false;
-//        proxy.currentIdentityApplianceElement = false;
-//        // reflect removal in views and diagram editor
-//        sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-//        sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
-//    }
+    public function get registry():ServiceRegistry {
+        return _registry;
+    }
+
+    public function set registry(value:ServiceRegistry):void {
+        _registry = value;
+    }
+
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
 
     override public function execute(notification:INotification):void {
         var identityAppliance:IdentityApplianceDTO = notification.getBody() as IdentityApplianceDTO;
-        var registry:ServiceRegistry = facade.retrieveProxy(ServiceRegistry.NAME) as ServiceRegistry;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
 
 //        identityAppliance.state = IdentityApplianceStateDTO.PROJECTED.toString();
@@ -69,14 +71,13 @@ public class IdentityApplianceRemoveCommand extends SimpleCommand implements IRe
     }
 
     public function result(data:Object):void {
-        var proxy:ProjectProxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
         var resp:RemoveIdentityApplianceResponse = data.result as RemoveIdentityApplianceResponse;
-        proxy.currentIdentityAppliance = null;
-        proxy.currentIdentityApplianceElementOwner = false;
-        proxy.currentIdentityApplianceElement = false;
-        sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-        sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_LIST_LOAD);
-        sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG,
+        projectProxy.currentIdentityAppliance = null;
+        projectProxy.currentIdentityApplianceElementOwner = false;
+        projectProxy.currentIdentityApplianceElement = false;
+        sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
                     "The identity appliance has been successfully removed.");
     }
 
@@ -85,10 +86,10 @@ public class IdentityApplianceRemoveCommand extends SimpleCommand implements IRe
         var msg:String = fault.faultString.substring((fault.faultString.indexOf('.') + 1), fault.faultString.length);
         trace(msg);
 //        sendNotification(FAILURE, msg);
-        sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+        sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                     "There an error removing the identity appliance. Find more details in log file.");
 
-    }    
+    }
 
 }
 }

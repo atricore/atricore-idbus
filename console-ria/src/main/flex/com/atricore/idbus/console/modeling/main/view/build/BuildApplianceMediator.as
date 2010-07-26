@@ -22,7 +22,7 @@
 package com.atricore.idbus.console.modeling.main.view.build {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand;
 
@@ -33,23 +33,43 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class BuildApplianceMediator extends FormMediator
+public class BuildApplianceMediator extends IocFormMediator
 {
-    public static const NAME:String = "BuildApplianceMediator";
     public static const RUN:String = "BuildApplianceMediator.RUN";
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
 
     private var _processingStarted:Boolean;
 
-    public function BuildApplianceMediator(viewComp:BuildApplianceView) {
-        super(NAME, viewComp);
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        viewComp.selectedAppliance.text = _proxy.currentIdentityAppliance.idApplianceDefinition.name;
-        viewComp.btnNext.addEventListener(MouseEvent.CLICK, handleNextClick);
-        viewComp.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+    public function BuildApplianceMediator(name : String = null, viewComp:BuildApplianceView = null) {
+        super(name, viewComp);
     }
-    
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.btnNext.removeEventListener(MouseEvent.CLICK, handleNextClick);
+            view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+    private function init():void {
+        view.selectedAppliance.text = projectProxy.currentIdentityAppliance.idApplianceDefinition.name;
+        view.btnNext.addEventListener(MouseEvent.CLICK, handleNextClick);
+        view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+    }
+
     override public function listNotificationInterests():Array {
         return [BuildIdentityApplianceCommand.SUCCESS,
                 BuildIdentityApplianceCommand.FAILURE,
@@ -59,24 +79,22 @@ public class BuildApplianceMediator extends FormMediator
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case ProcessingMediator.CREATED:
-                sendNotification(ApplicationFacade.NOTE_BUILD_IDENTITY_APPLIANCE,
-                        [_proxy.currentIdentityAppliance.id.toString(), view.deployAppliance.selected]);
+                sendNotification(ApplicationFacade.BUILD_IDENTITY_APPLIANCE,
+                        [projectProxy.currentIdentityAppliance.id.toString(), view.deployAppliance.selected]);
                 break;
             case BuildIdentityApplianceCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 var msg:String = "Appliance has been successfully built.";
                 if (view.deployAppliance.selected) {
                     msg =  "Appliance has been successfully built and deployed.";
                 }
-                sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG, msg);
-                facade.removeMediator(BuildApplianceMediator.NAME);
+                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, msg);
                 break;
             case BuildIdentityApplianceCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                     "There was an error building appliance.");
-                facade.removeMediator(BuildApplianceMediator.NAME);
                 break;
         }
 
@@ -93,14 +111,12 @@ public class BuildApplianceMediator extends FormMediator
     }
 
     private function handleClose(event:Event):void {
-        if (!_processingStarted) {
-            facade.removeMediator(BuildApplianceMediator.NAME);
-        }
     }
 
     protected function get view():BuildApplianceView
     {
         return viewComponent as BuildApplianceView;
     }
+
 }
 }

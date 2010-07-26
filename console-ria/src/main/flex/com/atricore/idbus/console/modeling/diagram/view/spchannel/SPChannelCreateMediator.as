@@ -20,10 +20,12 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.spchannel {
+import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.services.dto.BindingDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
 import com.atricore.idbus.console.services.dto.LocationDTO;
-
 import com.atricore.idbus.console.services.dto.ProfileDTO;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
 
@@ -32,23 +34,32 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
-import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
 import org.puremvc.as3.interfaces.INotification;
 
-public class SPChannelCreateMediator extends FormMediator {
-    public static const NAME:String = "com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator";
+public class SPChannelCreateMediator extends IocFormMediator {
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
     private var _newSpChannel:ServiceProviderChannelDTO;
 
-    public function SPChannelCreateMediator(viewComp:SPChannelCreateForm) {
-        super(NAME, viewComp);
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        viewComp.btnOk.addEventListener(MouseEvent.CLICK, handleSpChannelSave);
-        viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+    public function SPChannelCreateMediator(name:String = null, viewComp:SPChannelCreateForm = null) {
+        super(name, viewComp);
 
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handleSpChannelSave);
+            view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+    private function init():void {
+        view.btnOk.addEventListener(MouseEvent.CLICK, handleSpChannelSave);
+        view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
     }
 
     override public function bindModel():void {
@@ -66,31 +77,31 @@ public class SPChannelCreateMediator extends FormMediator {
         loc.uri = view.spChannelLocationPath.text;
         spChannel.location = loc;
 
-//        spChannel.signAuthenticationAssertions = view.signAuthAssertionCheck.selected;
-//        spChannel.encryptAuthenticationAssertions = view.encryptAuthAssertionCheck.selected;
+        //        spChannel.signAuthenticationAssertions = view.signAuthAssertionCheck.selected;
+        //        spChannel.encryptAuthenticationAssertions = view.encryptAuthAssertionCheck.selected;
 
         spChannel.activeBindings = new ArrayCollection();
-        if(view.samlBindingHttpPostCheck.selected){
+        if (view.samlBindingHttpPostCheck.selected) {
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_POST);
         }
-        if(view.samlBindingArtifactCheck.selected){
+        if (view.samlBindingArtifactCheck.selected) {
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_ARTIFACT);
         }
-        if(view.samlBindingHttpRedirectCheck.selected){
+        if (view.samlBindingHttpRedirectCheck.selected) {
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_REDIRECT);
         }
-        if(view.samlBindingSoapCheck.selected){
+        if (view.samlBindingSoapCheck.selected) {
             spChannel.activeBindings.addItem(BindingDTO.SAMLR2_SOAP);
-        }        
+        }
 
         spChannel.activeProfiles = new ArrayCollection();
-        if(view.samlProfileSSOCheck.selected){
+        if (view.samlProfileSSOCheck.selected) {
             spChannel.activeProfiles.addItem(ProfileDTO.SSO);
         }
-        if(view.samlProfileSLOCheck.selected){
+        if (view.samlProfileSLOCheck.selected) {
             spChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
         }
-        
+
         // TODO save remaining fields, calling appropriate lookup methods
         //userInformationLookup
         //authenticationContract
@@ -103,14 +114,14 @@ public class SPChannelCreateMediator extends FormMediator {
     private function handleSpChannelSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            var idp:IdentityProviderDTO = _proxy.currentIdentityApplianceElementOwner as IdentityProviderDTO;
-            if(idp.channels == null){
+            var idp:IdentityProviderDTO = _projectProxy.currentIdentityApplianceElementOwner as IdentityProviderDTO;
+            if (idp.channels == null) {
                 idp.channels = new ArrayCollection();
             }
             idp.channels.addItem(_newSpChannel);
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
-            sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+            sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             closeWindow();
         }
         else {
@@ -130,7 +141,6 @@ public class SPChannelCreateMediator extends FormMediator {
     {
         return viewComponent as SPChannelCreateForm;
     }
-
 
 
     override public function registerValidators():void {

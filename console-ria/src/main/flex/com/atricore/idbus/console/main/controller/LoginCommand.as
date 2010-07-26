@@ -34,9 +34,9 @@ import mx.rpc.events.FaultEvent;
 import mx.rpc.remoting.mxml.RemoteObject;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.command.SimpleCommand;
+import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class LoginCommand extends SimpleCommand implements IResponder
+public class LoginCommand extends IocSimpleCommand implements IResponder
 {
     public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.LoginCommand.SUCCESS";
     public static const FAILURE:String = "com.atricore.idbus.console.main.controller.LoginCommand.FAILURE";
@@ -45,10 +45,17 @@ public class LoginCommand extends SimpleCommand implements IResponder
     public static const AUTH_FAILED:String = "com.atricore.idbus.console.main.controller.LoginCommand.AuthFailed";
     public static const REQUEST_DENIED:String = "com.atricore.idbus.console.main.controller.LoginCommand.RequestDenied";
 
-    
+    private var _registry:ServiceRegistry;
+
     private var _password:String;
 
-    public function LoginCommand() {
+
+    public function get registry():ServiceRegistry {
+        return _registry;
+    }
+
+    public function set registry(value:ServiceRegistry):void {
+        _registry = value;
     }
 
     override public function execute(notification:INotification):void {
@@ -59,7 +66,6 @@ public class LoginCommand extends SimpleCommand implements IResponder
         signOnRequest.username = loginRequest.username;
         signOnRequest.password = loginRequest.password;
 
-        var registry:ServiceRegistry = facade.retrieveProxy(ServiceRegistry.NAME) as ServiceRegistry;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.SIGN_ON_SERVICE);
         var call:Object = service.signOn(signOnRequest);
         call.addResponder(this);

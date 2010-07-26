@@ -21,48 +21,50 @@
 
 package com.atricore.idbus.console.modeling.diagram.view.dbidentityvault
 {
-import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
 import com.atricore.idbus.console.components.wizard.WizardEvent;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.services.dto.DbIdentityVaultDTO;
 import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
 
-import flash.events.DataEvent;
 import flash.events.Event;
-import flash.events.MouseEvent;
-import flash.events.ProgressEvent;
-import flash.net.FileFilter;
-import flash.net.FileReference;
 
 import mx.events.CloseEvent;
 import mx.utils.ObjectProxy;
 
-import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.mediator.Mediator;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class DbIdentityVaultWizardViewMediator extends Mediator
+public class DbIdentityVaultWizardViewMediator extends IocMediator
 {
-    public static const NAME:String = "DbIdentityVaultWizardViewMediator";
-//    public static const RUN:String = "Note.start.RunSimpleSSOSetup";
 
     private var _wizardDataModel:ObjectProxy = new ObjectProxy();
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
 
     private var _newDbIdentityVault:DbIdentityVaultDTO;
 
-    public function DbIdentityVaultWizardViewMediator(viewComp:DbIdentityVaultWizardView) {
-        super(NAME, viewComp);
+    public function DbIdentityVaultWizardViewMediator(name : String = null, viewComp:DbIdentityVaultWizardView = null) {
+        super(name, viewComp);
+    }
 
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.removeEventListener(WizardEvent.WIZARD_COMPLETE, onDbIdentityVaultWizardComplete);
+            view.removeEventListener(WizardEvent.WIZARD_CANCEL, onDbIdentityVaultWizardCancelled);
+            view.removeEventListener(CloseEvent.CLOSE, handleClose);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+    private function init():void {
         
-        viewComp.dataModel = _wizardDataModel;
-        viewComp.addEventListener(WizardEvent.WIZARD_COMPLETE, onDbIdentityVaultWizardComplete);
-        viewComp.addEventListener(WizardEvent.WIZARD_CANCEL, handleClose);
-        viewComp.addEventListener(CloseEvent.CLOSE, handleClose);
-
+        view.dataModel = _wizardDataModel;
+        view.addEventListener(WizardEvent.WIZARD_COMPLETE, onDbIdentityVaultWizardComplete);
+        view.addEventListener(WizardEvent.WIZARD_CANCEL, onDbIdentityVaultWizardCancelled);
+        view.addEventListener(CloseEvent.CLOSE, handleClose);
     }
 
     private function onDbIdentityVaultWizardComplete(event:WizardEvent):void {
@@ -71,11 +73,11 @@ public class DbIdentityVaultWizardViewMediator extends Mediator
         } else {
             _newDbIdentityVault = _wizardDataModel.step2ExternalData as DbIdentityVaultDTO;
         }
-        _proxy.currentIdentityAppliance.idApplianceDefinition.identityVaults.addItem(_newDbIdentityVault);
-        _proxy.currentIdentityApplianceElement = _newDbIdentityVault;
-        sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
-        sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-        sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.identityVaults.addItem(_newDbIdentityVault);
+        _projectProxy.currentIdentityApplianceElement = _newDbIdentityVault;
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+        sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
 
         //closeWizard();
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
@@ -83,8 +85,12 @@ public class DbIdentityVaultWizardViewMediator extends Mediator
         //sendNotification(ApplicationFacade.NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);
     }
 
+    private function onDbIdentityVaultWizardCancelled(event:WizardEvent):void {
+
+    }
+    
+
     private function handleClose(event:Event):void {
-        facade.removeMediator(DbIdentityVaultWizardViewMediator.NAME);
     }
 
     protected function get view():DbIdentityVaultWizardView

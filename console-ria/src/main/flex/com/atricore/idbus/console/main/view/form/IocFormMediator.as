@@ -22,7 +22,7 @@
 package com.atricore.idbus.console.main.view.form {
 import mx.validators.Validator;
 
-import org.puremvc.as3.patterns.mediator.Mediator;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 /**
  * This class would be abstract if ActionScript supported such a construct. It is intended to provide
@@ -34,39 +34,49 @@ import org.puremvc.as3.patterns.mediator.Mediator;
  * <li>bindForm - to bind model fields onto the form</li>
  * <li>bindModel - to bind form fields back onto the model</li>
  */
-public class FormMediator extends Mediator{
-   protected var _validators : Array;
+public class IocFormMediator extends IocMediator {
+    protected var _validators:Array;
 
-   public function FormMediator(mediatorName : String, viewComponent : Object) {
-      super(mediatorName, viewComponent);
-      _validators = [];
-      registerValidators();
-   }
+    public function IocFormMediator(mediatorName:String = null, viewComponent:Object = null) {
 
-   /**
-    * This method should be overridden to initialise the list of validators so that reset validators
-    * and validate fill work correctly
-    */
-   public function registerValidators() : void { }
+        super(mediatorName, viewComponent);
 
-   /**
-    * This function should be overriden to bind model fields onto the form.
-    */
-   public function bindForm() : void { }
+    }
 
-   /**
-    * This function should be overriden to bind form fields onto the model.
-    */
-   public function bindModel() : void { }
+    override public function setViewComponent(viewComponent:Object):void {
+        super.setViewComponent(viewComponent);
 
-   public function validate(revalidate : Boolean) : Boolean {
-      return FormUtility.validateAll(_validators, revalidate);
-   }
+        _validators = [];
+        registerValidators();
+    }
 
-   public function resetValidation() : void {
-      for each(var validator : Validator in _validators) {
-         validator.source.errorString = "";
-      }
-   }
+    /**
+     * This method should be overridden to initialise the list of validators so that reset validators
+     * and validate fill work correctly
+     */
+    public function registerValidators():void {
+    }
+
+    /**
+     * This function should be overriden to bind model fields onto the form.
+     */
+    public function bindForm():void {
+    }
+
+    /**
+     * This function should be overriden to bind form fields onto the model.
+     */
+    public function bindModel():void {
+    }
+
+    public function validate(revalidate:Boolean):Boolean {
+        return FormUtility.validateAll(_validators, revalidate);
+    }
+
+    public function resetValidation():void {
+        for each(var validator:Validator in _validators) {
+            validator.source.errorString = "";
+        }
+    }
 }
 }

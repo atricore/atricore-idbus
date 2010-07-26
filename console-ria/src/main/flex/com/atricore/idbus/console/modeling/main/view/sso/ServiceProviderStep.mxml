@@ -32,9 +32,9 @@
         <mx:Script>
         <![CDATA[
 
-			import com.atricore.idbus.console.services.dto.LocationDTO;
+            import com.atricore.idbus.console.services.dto.LocationDTO;
             import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
-            
+
             [Bindable]
             private var validators:Array;
 

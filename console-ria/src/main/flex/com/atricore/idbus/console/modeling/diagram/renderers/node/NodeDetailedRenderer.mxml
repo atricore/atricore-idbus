@@ -34,19 +34,15 @@
 		<![CDATA[
 
         import com.atricore.idbus.console.main.EmbeddedIcons;
-
         import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
         import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
         import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
-
         import com.atricore.idbus.console.services.dto.BindingProviderDTO;
         import com.atricore.idbus.console.services.dto.ChannelDTO;
         import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnitDTO;
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnitTypeDTO;
         import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
-
         import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
         import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
 
@@ -103,7 +99,7 @@
                             _linkLabel = bp.name;
                             //iconImage.source = EmbeddedIcons.bpIcon;
                         } else {
-                            if(obj is ChannelDTO){
+                            if (obj is ChannelDTO) {
                                 _linkLabel = (obj as ChannelDTO).name;
                             } else {
 

@@ -23,8 +23,8 @@ package com.atricore.idbus.console.main.view.certificate {
 
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.KeystoreProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
 import com.atricore.idbus.console.main.view.form.FormUtility;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
 import com.atricore.idbus.console.services.dto.KeystoreDTO;
 import com.atricore.idbus.console.services.dto.ResourceDTO;
@@ -41,13 +41,12 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class ManageCertificateMediator extends FormMediator
+public class ManageCertificateMediator extends IocFormMediator
 {
-    public static const NAME:String = "ManageCertificateMediator";
     public static const CREATE:String = "ManageCertificateMediator.CREATE";
     public static const EDIT:String = "ManageCertificateMediator.EDIT";
 
-    private var _proxy:KeystoreProxy;
+    private var _keystoreProxy:KeystoreProxy;
     private var _keystore:KeystoreDTO;
     private var _resourceId:String;
     private var _fileRef:FileReference;
@@ -55,23 +54,60 @@ public class ManageCertificateMediator extends FormMediator
     [Bindable]
     public var _selectedFiles:Array;
 
-    public function ManageCertificateMediator(viewComp:ManageCertificateView) {
-        super(NAME, viewComp);
-        _proxy = KeystoreProxy(facade.retrieveProxy(KeystoreProxy.NAME));
-        viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
-        viewComp.btnConfirm.addEventListener(MouseEvent.CLICK, handleConfirm);
-        viewComp.btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
-        viewComp.certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
-        viewComp.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+
+    public function ManageCertificateMediator(mediatorName:String = null, viewComponent:Object = null) {
+
+        super(mediatorName, viewComponent);
+
+    }
+
+    public function set keystoreProxy(value:KeystoreProxy) {
+        _keystoreProxy = value;
+    }
+
+    public function get keystoreProxy():KeystoreProxy {
+        return _keystoreProxy;
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+
+        if (getViewComponent() != null) {
+
+            view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
+            view.btnConfirm.removeEventListener(MouseEvent.CLICK, handleConfirm);
+            view.btnUpload.removeEventListener(MouseEvent.CLICK, handleUpload);
+            view.certificateKeyPair.removeEventListener(MouseEvent.CLICK, browseHandler);
+            view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
+
+            _fileRef.removeEventListener(Event.SELECT, fileSelectHandler);
+            _fileRef.removeEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
+            _fileRef.removeEventListener(Event.COMPLETE, uploadCompleteHandler);
+            _fileRef.removeEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+
+    public function init():void {
+
+        view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+        view.btnConfirm.addEventListener(MouseEvent.CLICK, handleConfirm);
+        view.btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
+        view.certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
+        view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
 
         _fileRef = new FileReference();
         _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
         _fileRef.addEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
         _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
         _fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
-        
-        BindingUtils.bindProperty(viewComp.certificateKeyPair, "dataProvider", this, "_selectedFiles");
-        viewComp.certificateKeyPair.prompt = "Browse Key Pair";
+
+        BindingUtils.bindProperty(view.certificateKeyPair, "dataProvider", this, "_selectedFiles");
+        view.certificateKeyPair.prompt = "Browse Key Pair";
+
     }
 
     override public function registerValidators():void {
@@ -80,27 +116,27 @@ public class ManageCertificateMediator extends FormMediator
         _validators.push(view.keystorePasswordValidator);
         _validators.push(view.keyPasswordValidator);
     }
-    
+
     override public function listNotificationInterests():Array {
         return [CREATE,EDIT, UploadProgressMediator.CREATED,
-                UploadProgressMediator.UPLOAD_CANCELED];
+            UploadProgressMediator.UPLOAD_CANCELED];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case CREATE :
-                _proxy.viewAction = KeystoreProxy.ACTION_ITEM_CREATE;
+                _keystoreProxy.viewAction = KeystoreProxy.ACTION_ITEM_CREATE;
                 bindForm();
                 view.focusManager.setFocus(view.certificateKeyPair);
                 break;
             case EDIT :
-                _proxy.viewAction = KeystoreProxy.ACTION_ITEM_EDIT;
+                _keystoreProxy.viewAction = KeystoreProxy.ACTION_ITEM_EDIT;
                 bindForm();
                 view.focusManager.setFocus(view.certificateAlias);
                 break;
             case UploadProgressMediator.CREATED:
                 // upload progress window created, start upload
-                sendNotification(ApplicationFacade.NOTE_UPLOAD, _fileRef);
+                sendNotification(ApplicationFacade.UPLOAD, _fileRef);
                 break;
             case UploadProgressMediator.UPLOAD_CANCELED:
                 if (_fileRef != null)
@@ -111,14 +147,14 @@ public class ManageCertificateMediator extends FormMediator
     }
 
     override public function bindForm():void {
-        if (_proxy.currentKeystore != null) {
-            view.keystoreFormat.selectedItem = _proxy.currentKeystore.type;
-            view.certificateAlias.text = _proxy.currentKeystore.certificateAlias;
-            view.keyAlias.text = _proxy.currentKeystore.privateKeyName;
-            view.keyPassword.text = _proxy.currentKeystore.privateKeyPassword;
-            view.keystorePassword.text = _proxy.currentKeystore.password;
+        if (_keystoreProxy.currentKeystore != null) {
+            view.keystoreFormat.selectedItem = _keystoreProxy.currentKeystore.type;
+            view.certificateAlias.text = _keystoreProxy.currentKeystore.certificateAlias;
+            view.keyAlias.text = _keystoreProxy.currentKeystore.privateKeyName;
+            view.keyPassword.text = _keystoreProxy.currentKeystore.privateKeyPassword;
+            view.keystorePassword.text = _keystoreProxy.currentKeystore.password;
         }
-        
+
         FormUtility.clearValidationErrors(_validators);
     }
 
@@ -137,7 +173,7 @@ public class ManageCertificateMediator extends FormMediator
     private function handleConfirm(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            _proxy.currentKeystore = _keystore;
+            _keystoreProxy.currentKeystore = _keystore;
             closeWindow();
         }
         else {
@@ -165,7 +201,7 @@ public class ManageCertificateMediator extends FormMediator
     private function handleUpload(event:MouseEvent):void {
         //_fileRef.load();  //this is available from flash player 10 and maybe flex sdk 3.4
         //_fileRef.data;
-        sendNotification(ApplicationFacade.NOTE_SHOW_UPLOAD_PROGRESS, _fileRef);
+        sendNotification(ApplicationFacade.SHOW_UPLOAD_PROGRESS, _fileRef);
     }
 
     private function fileSelectHandler(evt:Event):void {
@@ -198,7 +234,7 @@ public class ManageCertificateMediator extends FormMediator
     }
 
     private function handleClose(event:Event):void {
-        facade.removeMediator(ManageCertificateMediator.NAME);
+
     }
 
     protected function get view():ManageCertificateView

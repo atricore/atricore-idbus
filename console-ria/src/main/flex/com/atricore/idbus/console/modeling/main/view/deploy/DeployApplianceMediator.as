@@ -22,7 +22,7 @@
 package com.atricore.idbus.console.modeling.main.view.deploy {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand;
 
@@ -33,69 +33,78 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class DeployApplianceMediator extends FormMediator
+public class DeployApplianceMediator extends IocFormMediator
 {
-    public static const NAME:String = "DeployApplianceMediator";
     public static const RUN:String = "DeployApplianceMediator.RUN";
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
 
     private var _processingStarted:Boolean;
 
-    public function DeployApplianceMediator(viewComp:DeployApplianceView) {
-        super(NAME, viewComp);
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        viewComp.selectedAppliance.text = _proxy.currentIdentityAppliance.idApplianceDefinition.name;
-        viewComp.btnNext.addEventListener(MouseEvent.CLICK, handleNextClick);
-        viewComp.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+    public function DeployApplianceMediator(name:String = null, viewComp:DeployApplianceView = null) {
+        super(name, viewComp);
     }
-    
+
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (viewComponent != null) {
+            view.btnNext.removeEventListener(MouseEvent.CLICK, handleNextClick);
+            view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+
+    }
+
+    private function init():void {
+        view.selectedAppliance.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.name;
+        view.btnNext.addEventListener(MouseEvent.CLICK, handleNextClick);
+        view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+    }
+
     override public function listNotificationInterests():Array {
         return [DeployIdentityApplianceCommand.SUCCESS,
-                DeployIdentityApplianceCommand.FAILURE,
-                ProcessingMediator.CREATED];
+            DeployIdentityApplianceCommand.FAILURE,
+            ProcessingMediator.CREATED];
     }
-    
+
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case ProcessingMediator.CREATED:
-                sendNotification(ApplicationFacade.NOTE_DEPLOY_IDENTITY_APPLIANCE,
-                        [_proxy.currentIdentityAppliance.id.toString(), view.startAppliance.selected]);
+                sendNotification(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE,
+                        [_projectProxy.currentIdentityAppliance.id.toString(), view.startAppliance.selected]);
                 break;
             case DeployIdentityApplianceCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 var msg:String = "Appliance has been successfully deployed.";
                 if (view.startAppliance.selected) {
-                    msg =  "Appliance has been successfully deployed and started.";
+                    msg = "Appliance has been successfully deployed and started.";
                 }
-                sendNotification(ApplicationFacade.NOTE_SHOW_SUCCESS_MSG, msg);
-                facade.removeMediator(DeployApplianceMediator.NAME);
+                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, msg);
                 break;
             case DeployIdentityApplianceCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.NOTE_SHOW_ERROR_MSG,
-                    "There was an error deploying appliance.");
-                facade.removeMediator(DeployApplianceMediator.NAME);
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                        "There was an error deploying appliance.");
                 break;
         }
 
     }
-    
+
     private function handleNextClick(event:MouseEvent):void {
         _processingStarted = true;
         closeWindow();
         sendNotification(ProcessingMediator.START, "Deploying appliance ...");
     }
-    
+
     private function closeWindow():void {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
     private function handleClose(event:Event):void {
-        if (!_processingStarted) {
-            facade.removeMediator(DeployApplianceMediator.NAME);
-        }
     }
 
     protected function get view():DeployApplianceView

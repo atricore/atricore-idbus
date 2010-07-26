@@ -26,16 +26,32 @@ import com.atricore.idbus.console.modeling.palette.event.PaletteEvent;
 import com.atricore.idbus.console.modeling.palette.model.PaletteDrawer;
 import com.atricore.idbus.console.modeling.palette.model.PaletteEntry;
 import com.atricore.idbus.console.modeling.palette.model.PaletteRoot;
-import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.mediator.Mediator;
-import org.puremvc.as3.patterns.observer.Notification;
 
-public class PaletteMediator extends Mediator {
-    public static const NAME:String = "com.atricore.idbus.console.modeling.palette.PaletteMediator";
+import org.puremvc.as3.interfaces.INotification;
+import org.puremvc.as3.patterns.observer.Notification;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
+
+public class PaletteMediator extends IocMediator {
     private var selectedIndex:int;
 
-    public function PaletteMediator(viewComp:PaletteView) {
-        super(NAME, viewComp);
+    public function PaletteMediator(name : String = null, viewComp:PaletteView = null) {
+        super(name, viewComp);
+
+
+    }
+
+    override public function setViewComponent(viewComponent:Object):void {
+
+        if (getViewComponent() != null) {
+            view.removeEventListener(PaletteEvent.CLICK, handlePaletteClick);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+    private function init():void {
 
         // bind view to palette model
         var saml2PaletteDrawer:PaletteDrawer = new PaletteDrawer("SAML 2", null, null);
@@ -63,18 +79,19 @@ public class PaletteMediator extends Mediator {
         var pr:PaletteRoot  = new PaletteRoot("Identity Appliance Modeler Palette", null, null);
         pr.add(saml2PaletteDrawer);
 
-        viewComp.rptPaletteRoot.dataProvider = pr;
-        viewComp.addEventListener(PaletteEvent.CLICK, handlePaletteClick);
+        view.rptPaletteRoot.dataProvider = pr;
+        view.addEventListener(PaletteEvent.CLICK, handlePaletteClick);
 
     }
 
-    private function handlePaletteClick(event : PaletteEvent) : void {
+
+    public function handlePaletteClick(event : PaletteEvent) : void {
        var notification:Notification;
 
        switch(event.action) {
           case PaletteEvent.ACTION_PALETTE_ITEM_CLICKED :
              var selectedPaletteEntry:PaletteEntry = event.data as PaletteEntry;
-             sendNotification(ApplicationFacade.NOTE_DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
+             sendNotification(ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
              break;
        }
 
@@ -86,6 +103,10 @@ public class PaletteMediator extends Mediator {
 
     override public function handleNotification(notification:INotification):void {
         super.handleNotification(notification);
+    }
+
+    public function get view():PaletteView {
+        return viewComponent as PaletteView;
     }
 
 }

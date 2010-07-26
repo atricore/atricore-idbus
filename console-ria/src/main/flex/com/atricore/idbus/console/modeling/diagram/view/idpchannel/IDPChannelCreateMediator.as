@@ -20,12 +20,13 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.idpchannel {
-import com.atricore.idbus.console.modeling.diagram.view.sp.*;
+import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.services.dto.BindingDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
 import com.atricore.idbus.console.services.dto.LocationDTO;
 import com.atricore.idbus.console.services.dto.ProfileDTO;
-
 import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
 
 import flash.events.MouseEvent;
@@ -33,24 +34,33 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
-import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.main.view.form.FormMediator;
 import org.puremvc.as3.interfaces.INotification;
 
-public class IDPChannelCreateMediator extends FormMediator {
-    public static const NAME:String = "com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator";
-
-    private var _proxy:ProjectProxy;
+public class IDPChannelCreateMediator extends IocFormMediator {
+    private var _projectProxy:ProjectProxy;
     private var _newIdpChannel:IdentityProviderChannelDTO;
 
-    public function IDPChannelCreateMediator(viewComp:IDPChannelCreateForm) {
-        super(NAME, viewComp);
-        _proxy = ProjectProxy(facade.retrieveProxy(ProjectProxy.NAME));
-        viewComp.btnOk.addEventListener(MouseEvent.CLICK, handleIdpChannelSave);
-        viewComp.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
 
+    public function IDPChannelCreateMediator(name:String = null, viewComp:IDPChannelCreateForm = null) {
+        super(name, viewComp);
     }
+
+    override public function setViewComponent(viewComponent:Object):void {
+        if (getViewComponent() != null) {
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handleIdpChannelSave);
+            view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
+        }
+
+        super.setViewComponent(viewComponent);
+
+        init();
+    }
+
+    private function init():void {
+        view.btnOk.addEventListener(MouseEvent.CLICK, handleIdpChannelSave);
+        view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+    }
+
 
     override public function bindModel():void {
         var idpChannel:IdentityProviderChannelDTO = new IdentityProviderChannelDTO();
@@ -66,31 +76,31 @@ public class IDPChannelCreateMediator extends FormMediator {
         loc.uri = view.idpChannelLocationPath.text;
         idpChannel.location = loc;
 
-//        serviceProvider.signAuthenticationRequest = view.signAuthRequestCheck.selected;
-//        serviceProvider.encryptAuthenticationRequest = view.encryptAuthRequestCheck.selected;
+        //        serviceProvider.signAuthenticationRequest = view.signAuthRequestCheck.selected;
+        //        serviceProvider.encryptAuthenticationRequest = view.encryptAuthRequestCheck.selected;
 
         idpChannel.activeBindings = new ArrayCollection();
-        if(view.samlBindingHttpPostCheck.selected){
+        if (view.samlBindingHttpPostCheck.selected) {
             idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_POST);
         }
-        if(view.samlBindingArtifactCheck.selected){
+        if (view.samlBindingArtifactCheck.selected) {
             idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_ARTIFACT);
         }
-        if(view.samlBindingHttpRedirectCheck.selected){
+        if (view.samlBindingHttpRedirectCheck.selected) {
             idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_REDIRECT);
         }
-        if(view.samlBindingSoapCheck.selected){
+        if (view.samlBindingSoapCheck.selected) {
             idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_SOAP);
         }
 
         idpChannel.activeProfiles = new ArrayCollection();
-        if(view.samlProfileSSOCheck.selected){
+        if (view.samlProfileSSOCheck.selected) {
             idpChannel.activeProfiles.addItem(ProfileDTO.SSO);
         }
-        if(view.samlProfileSLOCheck.selected){
+        if (view.samlProfileSLOCheck.selected) {
             idpChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
         }
-        
+
         // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
         //userInformationLookup
         //authenticationContract
@@ -103,14 +113,14 @@ public class IDPChannelCreateMediator extends FormMediator {
     private function handleIdpChannelSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            var sp:ServiceProviderDTO = _proxy.currentIdentityApplianceElementOwner as ServiceProviderDTO;
-            if(sp.channels == null){
+            var sp:ServiceProviderDTO = _projectProxy.currentIdentityApplianceElementOwner as ServiceProviderDTO;
+            if (sp.channels == null) {
                 sp.channels = new ArrayCollection();
             }
             sp.channels.addItem(_newIdpChannel);
-            sendNotification(ApplicationFacade.NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE);
-            sendNotification(ApplicationFacade.NOTE_UPDATE_IDENTITY_APPLIANCE);
-            sendNotification(ApplicationFacade.NOTE_IDENTITY_APPLIANCE_CHANGED);
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+            sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             closeWindow();
         }
         else {
@@ -132,7 +142,6 @@ public class IDPChannelCreateMediator extends FormMediator {
     }
 
 
-
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
         _validators.push(view.portValidator);
@@ -151,5 +160,6 @@ public class IDPChannelCreateMediator extends FormMediator {
 
 
     }
+
 }
 }

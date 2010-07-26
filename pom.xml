@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Atricore IDBus
   ~
@@ -41,8 +40,10 @@
         <idbus.cap.management.version>1.0.0-SNAPSHOT</idbus.cap.management.version>
 
         <idbus.bundle.javax-jdo2-v2_3-ec.version>1.0.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
-        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
-        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0-SNAPSHOT
+        </idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.0-SNAPSHOT
+        </idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
         <idbus.bundle.datanucleus-core-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_3.version>
         <idbus.bundle.datanucleus-rdbms-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_3.version>
         <idbus.bundle.apache-maven-v3_0.version>1.0.0-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
@@ -54,7 +55,7 @@
         <idbus.idojo.memorysessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.memorysessionstore.version>
         <idbus.idojo.serializedsessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
         <idbus.idojo.strongauthscheme.version>1.0.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
-        
+
         <apache.derby.version>10.5.3.0_1</apache.derby.version>
         <apache.tiles.version>2.0.6</apache.tiles.version>
         <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
@@ -69,8 +70,18 @@
         <!--
         <flex.framework.version>3.2.0.3958</flex.framework.version>
         -->
+        <!--
         <flex.framework.version>3.3.0.4852</flex.framework.version>
+        -->
+        <flex.framework.version>4.0.0.14159</flex.framework.version>
+        <flash.version>10.0.0</flash.version>
         <flexlib.version>2.4.0</flexlib.version>
+
+        <!-- AS3Commons -->
+        <as3commons-reflect.version>1.3</as3commons-reflect.version>
+        <as3commons-lang.version>0.2.1</as3commons-lang.version>
+        <as3commons-logging.version>1.1.1</as3commons-logging.version>
+
         <hsqldb.version>1.8.0.9</hsqldb.version>
         <javax.jdo2.version>2.3-ec</javax.jdo2.version>
         <javax.portlet.version>1.0.0</javax.portlet.version>
@@ -149,7 +160,7 @@
                 <artifactId>org.atricore.idbus.capabilities.josso.main</artifactId>
                 <version>${idbus.cap.josso.version}</version>
             </dependency>
-            
+
 
             <dependency>
                 <groupId>org.atricore.idbus.bundles</groupId>
@@ -296,18 +307,18 @@
             </dependency>
 
             <dependency>
-               <groupId>com.adobe.flex.framework</groupId>
-               <artifactId>datavisualization</artifactId>
-               <version>${flex.framework.version}</version>
-               <type>swc</type>
+                <groupId>com.adobe.flex.framework</groupId>
+                <artifactId>datavisualization</artifactId>
+                <version>${flex.framework.version}</version>
+                <type>swc</type>
             </dependency>
 
             <dependency>
-               <groupId>com.adobe.flex.framework</groupId>
-               <artifactId>datavisualization</artifactId>
-               <version>${flex.framework.version}</version>
-               <classifier>en_US</classifier>
-               <type>rb.swc</type>
+                <groupId>com.adobe.flex.framework</groupId>
+                <artifactId>datavisualization</artifactId>
+                <version>${flex.framework.version}</version>
+                <classifier>en_US</classifier>
+                <type>rb.swc</type>
             </dependency>
 
             <dependency>
@@ -322,6 +333,149 @@
                 <artifactId>flexlib</artifactId>
                 <version>${flexlib.version}</version>
                 <type>swc</type>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springextensions.actionscript</groupId>
+                <artifactId>spring-actionscript-puremvc-standard</artifactId>
+                <version>1.0RC1</version>
+                <type>swc</type>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>flex</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>flex-framework</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>playerglobal</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>framework</artifactId>
+                    </exclusion>
+                 <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>rpc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>utilities</artifactId>
+                </exclusion>
+
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.as3commons</groupId>
+                <artifactId>as3commons-lang</artifactId>
+                <version>${as3commons-lang.version}</version>
+                <type>swc</type>
+                <scope>compile</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>flex</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>flex-framework</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>playerglobal</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>framework</artifactId>
+                    </exclusion>
+                 <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>rpc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>utilities</artifactId>
+                </exclusion>
+
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.as3commons</groupId>
+                <artifactId>as3commons-reflect</artifactId>
+                <version>${as3commons-reflect.version}</version>
+                <type>swc</type>
+                <scope>compile</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>flex</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>flex-framework</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>playerglobal</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>framework</artifactId>
+                    </exclusion>
+                 <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>rpc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>utilities</artifactId>
+                </exclusion>
+
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.as3commons</groupId>
+                <artifactId>as3commons-logging</artifactId>
+                <version>${as3commons-logging.version}</version>
+                <type>swc</type>
+                <scope>compile</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>flex</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>flex-framework</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>playerglobal</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>framework</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.as3commons</groupId>
+                        <artifactId>as3commons-logging</artifactId>
+                    </exclusion>
+                 <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>rpc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.adobe.flex.framework</groupId>
+                    <artifactId>utilities</artifactId>
+                </exclusion>
+
+                </exclusions>
             </dependency>
 
             <dependency>
@@ -388,60 +542,60 @@
             </dependency>
 
             <dependency>
-                 <groupId>org.springframework.osgi</groupId>
-                 <artifactId>spring-osgi-core</artifactId>
-                 <version>${spring.osgi.version}</version>
-                 <exclusions>
-                     <!-- We want our own spring version! -->
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>spring-core</artifactId>
-                     </exclusion>
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>spring-context</artifactId>
-                     </exclusion>
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>spring-beans</artifactId>
-                     </exclusion>
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>spring-aop</artifactId>
-                     </exclusion>
+                <groupId>org.springframework.osgi</groupId>
+                <artifactId>spring-osgi-core</artifactId>
+                <version>${spring.osgi.version}</version>
+                <exclusions>
+                    <!-- We want our own spring version! -->
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-context</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-beans</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-aop</artifactId>
+                    </exclusion>
 
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>org.springframework.core</artifactId>
-                     </exclusion>
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>org.springframework.context</artifactId>
-                     </exclusion>
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>org.springframework.beans</artifactId>
-                     </exclusion>
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>org.springframework.aop</artifactId>
-                     </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>org.springframework.core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>org.springframework.context</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>org.springframework.beans</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>org.springframework.aop</artifactId>
+                    </exclusion>
 
-                 </exclusions>
-             </dependency>
+                </exclusions>
+            </dependency>
 
-             <dependency>
-                 <groupId>org.springframework.osgi</groupId>
-                 <artifactId>spring-osgi-web</artifactId>
-                 <version>${spring.osgi.version}</version>
-                 <exclusions>
-                     <exclusion>
-                         <groupId>org.aopalliance</groupId>
-                         <artifactId>com.springsource.org.aopalliance</artifactId>
-                     </exclusion>
-                 </exclusions>
-             </dependency>
-            
+            <dependency>
+                <groupId>org.springframework.osgi</groupId>
+                <artifactId>spring-osgi-web</artifactId>
+                <version>${spring.osgi.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.aopalliance</groupId>
+                        <artifactId>com.springsource.org.aopalliance</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
 
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -569,7 +723,7 @@
                 <artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
                 <version>${commons-fileupload.version}</version>
             </dependency>
-            
+
             <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>
@@ -596,7 +750,7 @@
                 <artifactId>commons-lang</artifactId>
                 <version>${commons-lang.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.apache.velocity</groupId>
                 <artifactId>com.springsource.org.apache.velocity</artifactId>
@@ -652,13 +806,15 @@
                     <configuration>
                         <contextRoot>com.atricore.idbus.console</contextRoot>
                         <debug>true</debug>
+                        <optimize>false</optimize>
                         <contextRoot>/</contextRoot>
                         <sourceFile>AtricoreConsole.mxml</sourceFile>
-                        <compiledLocales><!-- Compiled localization -->
+                        <compiledLocales>
                             <locale>en_US</locale>
                         </compiledLocales>
                         <configurationReport>true</configurationReport>
                         <keepGeneratedActionscript>false</keepGeneratedActionscript>
+                        <targetplayer>${flash.version}</targetplayer>
                         <licenses>
                             <flexbuilder3>1377-4004-5203-8817-7220-1547</flexbuilder3>
                         </licenses>
@@ -669,6 +825,19 @@
                             <artifactId>compiler</artifactId>
                             <version>${flex.framework.version}</version>
                             <type>pom</type>
+                            <exclusions>
+                                <exclusion>
+                                    <groupId>com.adobe.flex.framework</groupId>
+                                    <artifactId>playerglobal</artifactId>
+                                </exclusion>
+                            </exclusions>
+                        </dependency>
+                        <dependency>
+                            <groupId>com.adobe.flex.framework</groupId>
+                            <artifactId>playerglobal</artifactId>
+                            <version>${flex.framework.version}</version>
+                            <classifier>10.0</classifier>
+                            <type>swc</type>
                         </dependency>
                         <dependency>
                             <groupId>com.adobe.flex</groupId>
@@ -682,25 +851,25 @@
         </pluginManagement>
 
         <plugins>
-           <!--
-            <plugin>
-                 <groupId>org.codehaus.mojo</groupId>
-                 <artifactId>buildnumber-maven-plugin</artifactId>
-                 <version>1.0-beta-4</version>
-                 <executions>
-                     <execution>
-                         <phase>validate</phase>
-                         <goals>
-                             <goal>create</goal>
-                         </goals>
-                     </execution>
-                 </executions>
-                 <configuration>
-                     <doCheck>false</doCheck>
-                     <doUpdate>false</doUpdate>
-                 </configuration>
-             </plugin>
-             -->
+            <!--
+           <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.0-beta-4</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doCheck>false</doCheck>
+                    <doUpdate>false</doUpdate>
+                </configuration>
+            </plugin>
+            -->
         </plugins>
 
     </build>
@@ -718,7 +887,7 @@
             <url>scp://repository.atricore.org/var/www/repository.atricore.org/m2-snapshot-repository</url>
         </snapshotRepository>
 
-    </distributionManagement>    
+    </distributionManagement>
 
 
     <repositories>
@@ -755,8 +924,8 @@
 
             <snapshots>
                 <checksumPolicy>fail</checksumPolicy>
-                <enabled>true</enabled>  
-            </snapshots>  
+                <enabled>true</enabled>
+            </snapshots>
 
         </repository>
 
@@ -812,9 +981,9 @@
         </repository>
 
         <repository>
-           <id>apache.incubating</id>
-           <name>Apache Incubating Repository</name>
-           <url>http://people.apache.org/repo/m2-incubating-repository</url>
+            <id>apache.incubating</id>
+            <name>Apache Incubating Repository</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository</url>
         </repository>
 
         <!-- Apache ServiceMix  -->
@@ -949,10 +1118,10 @@
             </releases>
         </repository>
 
-	<repository>
-		<id>datanucleus</id>
-		<url>http://www.datanucleus.org/downloads/maven2</url>
-	</repository>
+        <repository>
+            <id>datanucleus</id>
+            <url>http://www.datanucleus.org/downloads/maven2</url>
+        </repository>
 
         <repository>
             <id>com.springsource.repository.bundles.release</id>
@@ -964,6 +1133,22 @@
             <id>com.springsource.repository.bundles.external</id>
             <name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
             <url>http://repository.springsource.com/maven/bundles/external</url>
+        </repository>
+
+        <!-- Spring for Action Script repositories -->
+        <repository>
+            <id>yoolab.org-releases</id>
+            <url>http://projects.yoolab.org/maven/content/repositories/releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>yoolab.org-snapshots</id>
+            <url>http://projects.yoolab.org/maven/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
 
     </repositories>

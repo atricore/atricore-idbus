@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flex-config>
+    <includes>
+        <!--
+        <symbol>mx.logging.targets.TraceTarget</symbol>
+        <symbol>org.pranaframework.ioc.factory.MethodInvokingObject</symbol>
+        -->
+        <symbol>flash.utils.Dictionary</symbol>
+        <symbol>com.atricore.idbus.console.main.controller.ApplicationStartUpCommand</symbol>
+        <symbol>com.atricore.idbus.console.main.ApplicationMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.ModelerMediator</symbol>
+        <symbol>com.atricore.idbus.console.main.service.ServiceRegistry</symbol>
+
+        <symbol>com.atricore.idbus.console.main.ApplicationMediator</symbol>
+        <symbol>com.atricore.idbus.console.main.view.form.IocFormMediator</symbol>
+        <symbol>com.atricore.idbus.console.main.view.certificate.ManageCertificateMediator</symbol>
+        <symbol>com.atricore.idbus.console.main.view.upload.UploadProgressMediator</symbol>
+        <symbol>com.atricore.idbus.console.main.view.progress.ProcessingMediator</symbol>
+        <symbol>com.atricore.idbus.console.main.view.login.LoginMediator</symbol>
+        <symbol>com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator</symbol>
+        <symbol>com.atricore.idbus.console.lifecycle.LifecycleViewMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.ModelerMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.propertysheet.PropertySheetMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.DiagramMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardViewMediator
+        </symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.browser.BrowserMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.palette.PaletteMediator</symbol>
+
+        <symbol>com.atricore.idbus.console.main.controller.LoginCommand</symbol>
+        <symbol>com.atricore.idbus.console.main.controller.UploadCommand</symbol>
+        <symbol>com.atricore.idbus.console.main.controller.SetupServerCommand</symbol>
+        <symbol>com.atricore.idbus.console.main.controller.RegisterCommand</symbol>
+        <symbol>com.atricore.idbus.console.main.controller.ApplicationStartUpCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityVaultRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.ServiceProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOSetupCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand</symbol>
+        <symbol>mx.messaging.channels.AMFChannel</symbol>
+        <symbol>mx.messaging.ChannelSet</symbol>
+        <symbol>mx.rpc.remoting.mxml.RemoteObject</symbol>
+
+        <symbol>com.atricore.idbus.console.main.model.ProjectProxy</symbol>
+        <symbol>com.atricore.idbus.console.main.model.KeystoreProxy</symbol>
+        <symbol>com.atricore.idbus.console.main.model.SecureContextProxy</symbol>
+        <symbol>com.atricore.idbus.console.main.model.ProfileProxy</symbol>
+
+        <symbol>com.atricore.idbus.console.modeling.main.view.ModelerPopUpManager</symbol>
+
+    </includes>
+</flex-config>

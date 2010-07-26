@@ -23,11 +23,10 @@ package com.atricore.idbus.console.main.model
 {
 import com.atricore.idbus.console.services.dto.KeystoreDTO;
 
-import org.puremvc.as3.patterns.proxy.Proxy;
+import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
-public class KeystoreProxy extends Proxy
+public class KeystoreProxy extends IocProxy
 {
-    public static const NAME:String = "com.atricore.idbus.console.main.model.KeystoreProxy";
 
     public static const ACTION_ITEM_CREATE : int = 1;
     public static const ACTION_ITEM_EDIT : int = 2;

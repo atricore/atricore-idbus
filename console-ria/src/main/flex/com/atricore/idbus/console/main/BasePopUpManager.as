@@ -43,6 +43,8 @@ import org.puremvc.as3.interfaces.INotification;
 
 public class BasePopUpManager {
 
+    protected var _app:AtricoreConsole;
+
     protected var _lastWindowNotification:INotification;
     protected var _popup:SizeableTitleWindow;
     protected var _popupVisible:Boolean = false;
@@ -63,12 +65,13 @@ public class BasePopUpManager {
     protected var _facade:IFacade;
     protected var _secureContext:SecureContextProxy;
 
+    protected var _processingMediator:ProcessingMediator;
     protected var _processingView:ProcessingView;
 
-    public function BasePopUpManager(facade:IFacade, popupParent:UIComponent) {
+
+    public function init(facade:IFacade, popupParent:UIComponent):void {
         _facade = facade;
         _popupParent = popupParent;
-        _secureContext = SecureContextProxy(_facade.retrieveProxy(SecureContextProxy.NAME));
         //_projectProxy = ProjectProxy(_facade.retrieveProxy(ProjectProxy.NAME));
 
         _popup = new SizeableTitleWindow();
@@ -88,6 +91,15 @@ public class BasePopUpManager {
         createProgressOpenCloseEffects();
 
         createWizardOpenCloseEffects();
+    }
+
+
+    public function get processingMediator():ProcessingMediator {
+        return _processingMediator;
+    }
+
+    public function set processingMediator(value:ProcessingMediator):void {
+        _processingMediator = value;
     }
 
     protected function createPopUpOpenCloseEffects():void {
@@ -237,10 +249,9 @@ public class BasePopUpManager {
     }
 
     private function handleProcessingWindowCreated(event:FlexEvent):void {
-        var mediator:ProcessingMediator = new ProcessingMediator(_processingView);
-        _facade.removeMediator(ProcessingMediator.NAME);
-        _facade.registerMediator(mediator);
-        mediator.handleNotification(_lastWindowNotification);
+        processingMediator.setViewComponent(_processingView);
+        processingMediator.handleNotification(_lastWindowNotification);
     }
+
 }
 }

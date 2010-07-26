@@ -21,30 +21,10 @@
 
 package com.atricore.idbus.console.main
 {
-import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
-import com.atricore.idbus.console.main.controller.RegisterCommand;
-import com.atricore.idbus.console.main.controller.SetupServerCommand;
-import com.atricore.idbus.console.main.controller.UploadCommand;
-import com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand;
-import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand;
-import com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceRemoveCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand;
+import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
+import org.springextensions.actionscript.puremvc.patterns.facade.IocFacade;
 
-import com.atricore.idbus.console.modeling.main.controller.IdentityVaultRemoveCommand;
-import com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand;
-import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand;
-
-import com.atricore.idbus.console.modeling.main.controller.ServiceProviderRemoveCommand;
-
-import com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand;
-
-import org.puremvc.as3.patterns.facade.Facade;
-
-public class ApplicationFacade extends Facade {
+public class ApplicationFacade extends IocFacade implements IIocFacade {
 
     public static const USER_PROVISIONING_SERVICE:String = "userProvisioningService";
     public static const IDENTITY_APPLIANCE_MANAGEMENT_SERVICE:String = "identityApplianceManagementService";
@@ -52,57 +32,68 @@ public class ApplicationFacade extends Facade {
     public static const SIGN_ON_SERVICE:String = "signOnService";
 
     // Notification name constants application
-    public static const NOTE_STARTUP:String = "startup";
-    public static const NOTE_SETUP_SERVER:String = "Note.SetupServer";
 
-    public static const NOTE_SHOW_ERROR_MSG:String = "Note.ShowErrorMsg";
-    public static const NOTE_SHOW_SUCCESS_MSG:String = "Note.ShowSuccessMsg";
-    public static const NOTE_LOGIN:String = "Note.Login";
-    public static const NOTE_NAVIGATE:String = "Note.Navigate";
-    public static const NOTE_CLEAR_MSG:String = "Note.ClearMsg";
-    public static const NOTE_REGISTER:String = "Note.Register";
-    public static const NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE:String = "Note.CreateSimpleSSOIdentityAppliance";
-    public static const NOTE_LOOKUP_IDENTITY_APPLIANCE_BY_ID:String = "Note.LookupIdentityApplianceById";
-    public static const NOTE_IDENTITY_APPLIANCE_LIST_LOAD:String = "Note.IdentityApplianceListLoad";
-    public static const NOTE_CREATE_IDENTITY_APPLIANCE:String = "Note.CreateIdentityAppliance";
-    public static const NOTE_IDENTITY_APPLIANCE_REMOVE:String = "Node.IdentityApplianceRemove" ;
-    public static const NOTE_IDENTITY_PROVIDER_REMOVE:String = "Node.IdentityProviderRemove" ;
-    public static const NOTE_SERVICE_PROVIDER_REMOVE:String = "Node.ServiceProviderRemove" ;
-    public static const NOTE_IDP_CHANNEL_REMOVE:String = "Node.IdpChannelRemove" ;
-    public static const NOTE_SP_CHANNEL_REMOVE:String = "Note.ISpChannelRemove" ;
-    public static const NOTE_DB_IDENTITY_VAULT_REMOVE:String = "Note.IdentityVaultRemove" ;    
-    public static const NOTE_IDENTITY_APPLIANCE_CHANGED:String = "Note.IdentityApplianceChanged";
-    public static const NOTE_EDIT_IDENTITY_APPLIANCE:String = "Note.EditIdentityAppliance";
-    public static const NOTE_UPDATE_IDENTITY_APPLIANCE:String = "Note.UpdateIdentityAppliance";
-    public static const NOTE_DISPLAY_APPLIANCE_MODELER:String = "Note.DisplayApplianceModeler";
-    public static const NOTE_DRAG_ELEMENT_TO_DIAGRAM:String = "Note.DragElementToDiagram";
-    public static const NOTE_CREATE_DIAGRAM_ELEMENT:String = "Note.CreateDiagramElement";
-    public static const NOTE_CREATE_IDENTITY_PROVIDER_ELEMENT:String = "Note.CreateIdentityProviderElement";
-    public static const NOTE_CREATE_SERVICE_PROVIDER_ELEMENT:String = "Note.CreateServiceProviderElement";
-    public static const NOTE_DIAGRAM_ELEMENT_CREATION_COMPLETE:String = "Note.DiagramElementCreationComplete";
-    public static const NOTE_DIAGRAM_ELEMENT_SELECTED:String = "Note.DiagramElementSelected";
-    public static const NOTE_DIAGRAM_ELEMENT_UPDATED:String = "Note.DiagramElementUpdated";
-    public static const NOTE_DIAGRAM_ELEMENT_REMOVE:String = "Note.DiagramElementRemove";
-    public static const NOTE_REMOVE_IDENTITY_APPLIANCE_ELEMENT:String = "Node.RemoveIdentityApplianceElement";
-    public static const NOTE_REMOVE_IDENTITY_PROVIDER_ELEMENT:String = "Node.RemoveIdentityProviderElement";
-    public static const NOTE_CREATE_IDP_CHANNEL_ELEMENT:String = "Note.CreateIdpChannelElement";
-    public static const NOTE_REMOVE_IDP_CHANNEL_ELEMENT:String = "Node.RemoveIdpChannelElement";
-    public static const NOTE_CREATE_SP_CHANNEL_ELEMENT:String = "Note.CreateSpChannelElement";
-    public static const NOTE_REMOVE_SP_CHANNEL_ELEMENT:String = "Note.RemoveSpChannelElement";
-    public static const NOTE_CREATE_DB_IDENTITY_VAULT_ELEMENT:String = "Note.CreateIdentityVaultElement";
-    public static const NOTE_REMOVE_DB_IDENTITY_VAULT_ELEMENT:String = "Note.RemoveIdentityVaultElement";
-    public static const NOTE_REMOVE_SERVICE_PROVIDER_ELEMENT:String = "Node.RemoveServiceProviderElement";
-    public static const NOTE_MANAGE_CERTIFICATE:String = "Note.ManageCertificate";
-    public static const NOTE_SHOW_UPLOAD_PROGRESS:String = "Note.UploadProgress";
-    public static const NOTE_UPLOAD:String = "Note.Upload";
-    public static const NOTE_BUILD_IDENTITY_APPLIANCE:String = "Note.BuildIdentityAppliance";
-    public static const NOTE_DEPLOY_IDENTITY_APPLIANCE:String = "Note.DeployIdentityAppliance";
+    // command-backed notifications
+    public static const STARTUP:String = "startup";
+    public static const SETUP_SERVER:String = "Note.SetupServer";
+    public static const REGISTER:String = "Note.Register";
+    public static const CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE:String = "createSimpleSSOIdentityAppliance";
+    public static const LOOKUP_IDENTITY_APPLIANCE_BY_ID:String = "lookupIdentityApplianceById";
+    public static const IDENTITY_APPLIANCE_LIST_LOAD:String = "identityApplianceListLoad";
+    public static const CREATE_IDENTITY_APPLIANCE:String = "createIdentityAppliance";
+    public static const IDENTITY_APPLIANCE_REMOVE:String = "identityApplianceRemove";
+    public static const IDENTITY_PROVIDER_REMOVE:String = "identityProviderRemove";
+    public static const SERVICE_PROVIDER_REMOVE:String = "serviceProviderRemove";
+    public static const IDP_CHANNEL_REMOVE:String = "idpChannelRemove";
+    public static const SP_CHANNEL_REMOVE:String = "spChannelRemove";
+    public static const DB_IDENTITY_VAULT_REMOVE:String = "identityVaultRemove";
+    public static const IDENTITY_APPLIANCE_UPDATE:String = "identityApplianceUpdate";
+    public static const UPLOAD:String = "upload";
+    public static const BUILD_IDENTITY_APPLIANCE:String = "buildIdentityAppliance";
+    public static const DEPLOY_IDENTITY_APPLIANCE:String = "deployIdentityAppliance";
+
+    // mediator-backed notifications
+    public static const SHOW_ERROR_MSG:String = "showErrorMsg";
+    public static const SHOW_SUCCESS_MSG:String = "showSuccessMsg";
+    public static const LOGIN:String = "login";
+    public static const NAVIGATE:String = "navigate";
+    public static const CLEAR_MSG:String = "clearMsg";
+    public static const IDENTITY_APPLIANCE_CHANGED:String = "identityApplianceChanged";
+    public static const UPDATE_IDENTITY_APPLIANCE:String = "updateIdentityAppliance";
+    public static const DISPLAY_APPLIANCE_MODELER:String = "displayApplianceModeler";
+    public static const DRAG_ELEMENT_TO_DIAGRAM:String = "dragElementToDiagram";
+    public static const CREATE_DIAGRAM_ELEMENT:String = "createDiagramElement";
+    public static const CREATE_IDENTITY_PROVIDER_ELEMENT:String = "createIdentityProviderElement";
+    public static const CREATE_SERVICE_PROVIDER_ELEMENT:String = "createServiceProviderElement";
+    public static const DIAGRAM_ELEMENT_CREATION_COMPLETE:String = "diagramElementCreationComplete";
+    public static const DIAGRAM_ELEMENT_SELECTED:String = "diagramElementSelected";
+    public static const DIAGRAM_ELEMENT_UPDATED:String = "diagramElementUpdated";
+    public static const DIAGRAM_ELEMENT_REMOVE:String = "diagramElementRemove";
+    public static const REMOVE_IDENTITY_APPLIANCE_ELEMENT:String = "removeIdentityApplianceElement";
+    public static const REMOVE_IDENTITY_PROVIDER_ELEMENT:String = "removeIdentityProviderElement";
+    public static const CREATE_IDP_CHANNEL_ELEMENT:String = "createIdpChannelElement";
+    public static const REMOVE_IDP_CHANNEL_ELEMENT:String = "removeIdpChannelElement";
+    public static const CREATE_SP_CHANNEL_ELEMENT:String = "createSpChannelElement";
+    public static const REMOVE_SP_CHANNEL_ELEMENT:String = "removeSpChannelElement";
+    public static const CREATE_DB_IDENTITY_VAULT_ELEMENT:String = "createIdentityVaultElement";
+    public static const REMOVE_DB_IDENTITY_VAULT_ELEMENT:String = "removeIdentityVaultElement";
+    public static const REMOVE_SERVICE_PROVIDER_ELEMENT:String = "removeServiceProviderElement";
+    public static const MANAGE_CERTIFICATE:String = "manageCertificate";
+    public static const SHOW_UPLOAD_PROGRESS:String = "uploadProgress";
 
 
-    public static function getInstance():ApplicationFacade {
+    public function ApplicationFacade(p_configuration:* = null) {
+        super(p_configuration);
+    }
+
+    /**
+     * Singleton ApplicationFacade Factory Method
+     */
+    public static function getInstance(p_configSource:* = null):ApplicationFacade {
         if (instance == null) {
-            instance = new ApplicationFacade();
+            new ApplicationFacade(p_configSource);
         }
+
         return instance as ApplicationFacade;
     }
 
@@ -111,27 +102,9 @@ public class ApplicationFacade extends Facade {
      */
     override protected function initializeController():void {
         super.initializeController();
-        registerCommand(NOTE_STARTUP, ApplicationStartUpCommand);
-        registerCommand(NOTE_SETUP_SERVER, SetupServerCommand);
-        registerCommand(NOTE_REGISTER, RegisterCommand);
-        registerCommand(NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, CreateSimpleSSOIdentityApplianceCommand);
-        registerCommand(NOTE_CREATE_IDENTITY_APPLIANCE, IdentityApplianceCreateCommand);
-        registerCommand(NOTE_IDENTITY_APPLIANCE_REMOVE, IdentityApplianceRemoveCommand);
-        registerCommand(NOTE_IDENTITY_PROVIDER_REMOVE, IdentityProviderRemoveCommand);
-        registerCommand(NOTE_SERVICE_PROVIDER_REMOVE, ServiceProviderRemoveCommand);
-        registerCommand(NOTE_IDP_CHANNEL_REMOVE, IdpChannelRemoveCommand);
-        registerCommand(NOTE_SP_CHANNEL_REMOVE, SpChannelRemoveCommand);
-        registerCommand(NOTE_DB_IDENTITY_VAULT_REMOVE, IdentityVaultRemoveCommand);
-        registerCommand(NOTE_LOOKUP_IDENTITY_APPLIANCE_BY_ID, LookupIdentityApplianceByIdCommand);
-        registerCommand(NOTE_IDENTITY_APPLIANCE_LIST_LOAD, IdentityApplianceListLoadCommand);
-        registerCommand(NOTE_UPLOAD, UploadCommand);
-        registerCommand(NOTE_BUILD_IDENTITY_APPLIANCE, BuildIdentityApplianceCommand);
-        registerCommand(NOTE_DEPLOY_IDENTITY_APPLIANCE, DeployIdentityApplianceCommand);
-        registerCommand(NOTE_EDIT_IDENTITY_APPLIANCE, IdentityApplianceUpdateCommand);
+
+        registerCommandByConfigName(STARTUP, CommandNames.STARTUP_CMD);
     }
 
-    public function startUp(app:AtricoreConsole):void {
-        sendNotification(NOTE_STARTUP, app);
-    }
 }
 }

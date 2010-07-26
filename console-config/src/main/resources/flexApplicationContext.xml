@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<objects
+        xmlns="http://www.springactionscript.org/schema/objects"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.springactionscript.org/schema/objects
+        http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd">
+
+
+    <!-- Proxies -->
+    <object id="serviceRegistry" class="com.atricore.idbus.console.main.service.ServiceRegistry"/>
+    <object id="projectProxy" class="com.atricore.idbus.console.main.model.ProjectProxy"/>
+    <object id="keystoreProxy" class="com.atricore.idbus.console.main.model.KeystoreProxy"/>
+    <object id="profileProxy" class="com.atricore.idbus.console.main.model.ProfileProxy"/>
+    <object id="secureContextProxy" class="com.atricore.idbus.console.main.model.SecureContextProxy"/>
+
+    <!-- Commands -->
+    <object id="loginCommand" class="com.atricore.idbus.console.main.controller.LoginCommand"/>
+    <object id="uploadCommand" class="com.atricore.idbus.console.main.controller.UploadCommand"/>
+    <object id="setupServerCommand" class="com.atricore.idbus.console.main.controller.SetupServerCommand"/>
+    <object id="registerCommand" class="com.atricore.idbus.console.main.controller.RegisterCommand"/>
+    <object id="applicationStartUpCommand"
+            class="com.atricore.idbus.console.main.controller.ApplicationStartUpCommand"/>
+    <object id="identityApplianceUpdateCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand"/>
+    <object id="identityVaultRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.IdentityVaultRemoveCommand"/>
+    <object id="createSimpleSSOIdentityApplianceCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand"/>
+    <object id="identityApplianceListLoadCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand"/>
+    <object id="identityApplianceRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.IdentityApplianceRemoveCommand"/>
+    <object id="serviceProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ServiceProviderRemoveCommand"/>
+    <object id="deployIdentityApplianceCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand"/>
+    <object id="identityApplianceCreateCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand"/>
+    <object id="spChannelRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand"/>
+    <object id="idpChannelRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand"/>
+    <object id="identityProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand"/>
+    <object id="createSimpleSSOSetupCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOSetupCommand"/>
+    <object id="buildIdentityApplianceCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand"/>
+    <object id="lookupIdentityApplianceByIdCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand"/>
+
+    <!-- Mediators -->
+    <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
+        <property name="popupManager" ref="consolePopUpManager"/>
+    </object>
+    <object id="modelerMediator" class="com.atricore.idbus.console.modeling.main.ModelerMediator">
+        <property name="popupManager" ref="modelerPopUpManager"/>
+    </object>
+    <object id="manageCertificateMediator"
+            class="com.atricore.idbus.console.main.view.certificate.ManageCertificateMediator">
+        <property name="keystoreProxy" ref="keystoreProxy"/>
+    </object>
+
+    <object id="uploadProgressMediator" class="com.atricore.idbus.console.main.view.upload.UploadProgressMediator"/>
+    <object id="processingMediator" class="com.atricore.idbus.console.main.view.progress.ProcessingMediator"/>
+    <object id="loginMediator" class="com.atricore.idbus.console.main.view.login.LoginMediator"/>
+    <object id="setupWizardViewMediator" class="com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator">
+        <property name="profileProxy" ref="profileProxy"/>
+    </object>
+
+    <object id="lifecycleViewMediator" class="com.atricore.idbus.console.lifecycle.LifecycleViewMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="buildApplianceMediator"
+            class="com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator"/>
+    <object id="deployApplianceMediator"
+            class="com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator"/>
+    <object id="simpleSSOWizardViewMediator"
+            class="com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator"/>
+    <object id="identityApplianceMediator"
+            class="com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator"/>
+    <object id="propertySheetMediator" class="com.atricore.idbus.console.modeling.propertysheet.PropertySheetMediator"/>
+    <object id="diagramMediator" class="com.atricore.idbus.console.modeling.diagram.DiagramMediator"/>
+    <object id="identityProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator"/>
+    <object id="dbIdentityVaultWizardViewMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardViewMediator"/>
+    <object id="idpChannelCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator"/>
+    <object id="spChannelCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator"/>
+    <object id="serviceProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator"/>
+    <object id="browserMediator" class="com.atricore.idbus.console.modeling.browser.BrowserMediator"/>
+    <object id="paletteMediator" class="com.atricore.idbus.console.modeling.palette.PaletteMediator"/>
+
+    <!-- support components -->
+    <object id="consolePopUpManager" class="com.atricore.idbus.console.main.ConsolePopUpManager">
+        <property name="identityApplianceMediator" ref="identityApplianceMediator"/>
+    </object>
+
+    <object id="modelerPopUpManager" class="com.atricore.idbus.console.modeling.main.view.ModelerPopUpManager">
+    </object>
+
+
+    <object id="startupCommand" class="com.atricore.idbus.console.main.controller.ApplicationStartUpCommand">
+        <!-- Proxies wiring -->
+        <property name="serviceRegistry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+        <property name="keystoreProxy" ref="keystoreProxy"/>
+        <property name="profileProxy" ref="profileProxy"/>
+        <property name="secureContextProxy" ref="secureContextProxy"/>
+
+        <!-- Commands wiring -->
+        <property name="loginCommand" ref="loginCommand"/>
+        <property name="uploadCommand" ref="uploadCommand"/>
+        <property name="setupServerCommand" ref="setupServerCommand"/>
+        <property name="registerCommand" ref="registerCommand"/>
+        <property name="identityApplianceUpdateCommand" ref="identityApplianceUpdateCommand"/>
+        <property name="identityVaultRemoveCommand" ref="identityVaultRemoveCommand"/>
+        <property name="createSimpleSSOIdentityApplianceCommand" ref="createSimpleSSOIdentityApplianceCommand"/>
+        <property name="identityApplianceListLoadCommand" ref="identityApplianceListLoadCommand"/>
+        <property name="identityApplianceRemoveCommand" ref="identityApplianceRemoveCommand"/>
+        <property name="serviceProviderRemoveCommand" ref="serviceProviderRemoveCommand"/>
+        <property name="deployIdentityApplianceCommand" ref="deployIdentityApplianceCommand"/>
+        <property name="identityApplianceCreateCommand" ref="identityApplianceCreateCommand"/>
+        <property name="spChannelRemoveCommand" ref="spChannelRemoveCommand"/>
+        <property name="idpChannelRemoveCommand" ref="idpChannelRemoveCommand"/>
+        <property name="identityProviderRemoveCommand" ref="identityProviderRemoveCommand"/>
+        <property name="createSimpleSSOSetupCommand" ref="createSimpleSSOSetupCommand"/>
+        <property name="buildIdentityApplianceCommand" ref="buildIdentityApplianceCommand"/>
+        <property name="lookupIdentityApplianceByIdCommand" ref="lookupIdentityApplianceByIdCommand"/>
+
+        <!-- Mediators wiring -->
+        <property name="applicationMediator" ref="applicationMediator"/>
+        <property name="modelerMediator" ref="modelerMediator"/>
+        <property name="manageCertificateMediator" ref="manageCertificateMediator"/>
+        <property name="uploadProgressMediator" ref="uploadProgressMediator"/>
+        <property name="processingMediator" ref="processingMediator"/>
+        <property name="loginMediator" ref="loginMediator"/>
+        <property name="setupWizardViewMediator" ref="setupWizardViewMediator"/>
+        <property name="lifecycleViewMediator" ref="lifecycleViewMediator"/>
+        <property name="buildApplianceMediator" ref="buildApplianceMediator"/>
+        <property name="deployApplianceMediator" ref="deployApplianceMediator"/>
+        <property name="simpleSSOWizardViewMediator" ref="simpleSSOWizardViewMediator"/>
+        <property name="identityApplianceMediator" ref="identityApplianceMediator"/>
+        <property name="propertySheetMediator" ref="propertySheetMediator"/>
+        <property name="diagramMediator" ref="diagramMediator"/>
+        <property name="identityProviderCreateMediator" ref="identityProviderCreateMediator"/>
+        <property name="dbIdentityVaultWizardViewMediator" ref="dbIdentityVaultWizardViewMediator"/>
+        <property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>
+        <property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>
+        <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>
+        <property name="browserMediator" ref="browserMediator"/>
+        <property name="paletteMediator" ref="paletteMediator"/>
+    </object>
+
+</objects>

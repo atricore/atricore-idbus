@@ -22,7 +22,6 @@
 package com.atricore.idbus.console.modeling.diagram.model.request {
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
-
 public class CreateIdentityProviderElementRequest {
     private var _identityAppliance:IdentityApplianceDTO;
     private var _notationalElementId:String;

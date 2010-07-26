@@ -1,69 +1,105 @@
 package com.atricore.idbus.console.lifecycle
 {
 
-import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.model.ProjectProxy;
-
 import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
 
-import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
 import mx.collections.HierarchicalData;
 import mx.controls.Alert;
-import mx.controls.ComboBox;
 import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 import mx.events.CloseEvent;
 import mx.events.DragEvent;
-import mx.managers.DragManager;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.mediator.Mediator;
+import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class LifecycleViewMediator extends Mediator {
-    public static const NAME:String = "LifecycleViewMediator";
+public class LifecycleViewMediator extends IocMediator {
 
-    private var _proxy:ProjectProxy;
+    private var _projectProxy:ProjectProxy;
 
-    public function LifecycleViewMediator(viewComp:LifecycleView) {
-        super(NAME, viewComp);
-        _proxy = facade.retrieveProxy(ProjectProxy.NAME) as ProjectProxy;
-
-        // Saved Appliances Grid
-        viewComp.grdSavedAppliances.dataProvider = new HierarchicalData(_proxy.identityApplianceList);
-        viewComp.grdSavedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-        viewComp.grdSavedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-        viewComp.grdSavedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-        viewComp.colSavedApplianceName.labelFunction = identityApplianceNameLabel;
-
-        // Compiled Appliances Grid
-        viewComp.grdCompiledAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-        viewComp.grdCompiledAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-        viewComp.grdCompiledAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-        viewComp.grdCompiledAppliances.addEventListener(DragEvent.DRAG_DROP, dropInSavedAppliance);
-        viewComp.colCompiledApplianceName.labelFunction = identityApplianceNameLabel;
-
-        // Deployed Appliances Grid
-        viewComp.grdDeployedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-        viewComp.grdDeployedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-        viewComp.grdDeployedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-        viewComp.grdDeployedAppliances.addEventListener(DragEvent.DRAG_DROP, dropInCompiledAppliance);
-        viewComp.grdDeployedAppliances.labelFunction = identityApplianceNameLabel;
-        viewComp.colDeployedApplianceName.labelFunction = identityApplianceNameLabel;
-
-        // Disposed Appliances Grid
-        viewComp.grdDisposedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-        viewComp.grdDisposedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-        viewComp.grdDisposedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-        viewComp.grdDisposedAppliances.addEventListener(DragEvent.DRAG_DROP, dropInDeployedAppliance);
-        viewComp.grdDisposedAppliances.labelFunction = identityApplianceNameLabel;
-        viewComp.colDisposedApplianceName.labelFunction = identityApplianceNameLabel;
-
+    public function LifecycleViewMediator(name:String = null, viewComp:LifecycleView = null) {
+        super(name, viewComp);
 
     }
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
+
+    override public function setViewComponent(viewComponent:Object):void {
+
+        if (getViewComponent() != null) {
+            view.grdSavedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
+            view.grdSavedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+            view.grdSavedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+            view.grdCompiledAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
+            view.grdCompiledAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+            view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+            view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInSavedAppliance);
+            view.grdDeployedAppliances.
+                    (LifecycleGridButtonEvent.CLICK, handleGridButton);
+            view.grdDeployedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+            view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+            view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInCompiledAppliance);
+            view.grdDeployedAppliances.labelFunction = identityApplianceNameLabel;
+            view.grdDisposedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
+            view.grdDisposedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+            view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+            view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInDeployedAppliance);
+        }
+
+
+        super.setViewComponent(viewComponent);
+
+        /* TODO: invoke only upon the view is created
+         init();
+         */
+    }
+
+    private function init():void {
+
+        // Saved Appliances Grid
+        view.grdSavedAppliances.dataProvider = new HierarchicalData(projectProxy.identityApplianceList);
+        view.grdSavedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
+        view.grdSavedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+        view.grdSavedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+        view.colSavedApplianceName.labelFunction = identityApplianceNameLabel;
+
+        // Compiled Appliances Grid
+        view.grdCompiledAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
+        view.grdCompiledAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+        view.grdCompiledAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+        view.grdCompiledAppliances.addEventListener(DragEvent.DRAG_DROP, dropInSavedAppliance);
+        view.colCompiledApplianceName.labelFunction = identityApplianceNameLabel;
+
+        // Deployed Appliances Grid
+        view.grdDeployedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
+        view.grdDeployedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+        view.grdDeployedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+        view.grdDeployedAppliances.addEventListener(DragEvent.DRAG_DROP, dropInCompiledAppliance);
+        view.grdDeployedAppliances.labelFunction = identityApplianceNameLabel;
+        view.colDeployedApplianceName.labelFunction = identityApplianceNameLabel;
+
+        // Disposed Appliances Grid
+        view.grdDisposedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
+        view.grdDisposedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+        view.grdDisposedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+        view.grdDisposedAppliances.addEventListener(DragEvent.DRAG_DROP, dropInDeployedAppliance);
+        view.grdDisposedAppliances.labelFunction = identityApplianceNameLabel;
+        view.colDisposedApplianceName.labelFunction = identityApplianceNameLabel;
+
+    }
+
 
     private function identityApplianceNameLabel(item:Object, column:AdvancedDataGridColumn):String {
         return (item as IdentityApplianceDTO).idApplianceDefinition.name;
