@@ -60,7 +60,7 @@ public class DbIdentityVaultWizardViewMediator extends Mediator
         
         viewComp.dataModel = _wizardDataModel;
         viewComp.addEventListener(WizardEvent.WIZARD_COMPLETE, onDbIdentityVaultWizardComplete);
-        viewComp.addEventListener(WizardEvent.WIZARD_CANCEL, onDbIdentityVaultWizardCancelled);
+        viewComp.addEventListener(WizardEvent.WIZARD_CANCEL, handleClose);
         viewComp.addEventListener(CloseEvent.CLOSE, handleClose);
 
     }
@@ -81,14 +81,6 @@ public class DbIdentityVaultWizardViewMediator extends Mediator
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 
         //sendNotification(ApplicationFacade.NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);
-    }
-
-    private function onDbIdentityVaultWizardCancelled(event:WizardEvent):void {
-        closeWizard();
-    }
-
-    private function closeWizard():void {
-        view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
     private function handleClose(event:Event):void {

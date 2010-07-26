@@ -75,7 +75,7 @@ public class SimpleSSOWizardViewMediator extends Mediator
         
         viewComp.dataModel = _wizardDataModel;
         viewComp.addEventListener(WizardEvent.WIZARD_COMPLETE, onSimpleSSOWizardComplete);
-        viewComp.addEventListener(WizardEvent.WIZARD_CANCEL, onSimpleSSOWizardCancelled);
+        viewComp.addEventListener(WizardEvent.WIZARD_CANCEL, handleClose);
         viewComp.addEventListener(CloseEvent.CLOSE, handleClose);
 
         // upload bindings
@@ -161,7 +161,6 @@ public class SimpleSSOWizardViewMediator extends Mediator
         }
         */
 
-        //closeWizard();
         _processingStarted = true;
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 
@@ -169,9 +168,9 @@ public class SimpleSSOWizardViewMediator extends Mediator
         //sendNotification(ApplicationFacade.NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);
     }
 
-    private function onSimpleSSOWizardCancelled(event:WizardEvent):void {
-        closeWizard();
-    }
+//    private function onSimpleSSOWizardCancelled(event:WizardEvent):void {
+//        closeWizard();
+//    }
 
     private function createIdentityVault():IdentityVaultDTO {
         if ((_wizardDataModel.step1Data as IdentityVaultDTO).embedded) {
@@ -242,10 +241,6 @@ public class SimpleSSOWizardViewMediator extends Mediator
         _resourceId = event.data;
         view.steps[1].lblUploadMsg.text = "Keystore successfully uploaded";
         view.steps[1].lblUploadMsg.visible = true;
-    }
-
-    private function closeWizard():void {
-        view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
     private function handleClose(event:Event):void {

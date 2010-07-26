@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.main {
 import com.adobe.components.SizeableTitleWindow;
 import com.atricore.idbus.console.components.wizard.Wizard;
+import com.atricore.idbus.console.components.wizard.WizardEvent;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingView;
@@ -201,6 +202,7 @@ public class BasePopUpManager {
         _wizard.horizontalScrollPolicy = "off";
         _wizard.showCloseButton = true;
         _wizard.addEventListener(CloseEvent.CLOSE, handleHideWizard);
+        _wizard.addEventListener(WizardEvent.WIZARD_CANCEL, handleHideWizard);
         _wizard.addEventListener(FlexEvent.CREATION_COMPLETE, onWizardCreationComplete, false, 0);
 
         //PopUpManager.addPopUp(_wizard, _popupParent, true);
