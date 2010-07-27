@@ -20,8 +20,10 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.sp {
+import com.atricore.idbus.console.components.ListItemValueObject;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.services.dto.BindingDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
@@ -70,6 +72,29 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
     }
 
+    private function resetForm():void {
+        view.serviceProvName.text = "";
+        view.serviceProvDescription.text = "";
+        view.spLocationProtocol.selectedIndex = 0;
+        view.spLocationDomain.text = "";
+        view.spLocationPort.text = "";
+        view.spLocationContext.text = "";
+        view.spLocationPath.text = "";
+        view.signAuthRequestCheck.selected = false;
+        view.encryptAuthRequestCheck.selected = false;
+        view.samlBindingHttpPostCheck.selected = false;
+        view.samlBindingArtifactCheck.selected = false;
+        view.samlBindingHttpRedirectCheck.selected = false;
+        view.samlBindingSoapCheck.selected = false;
+        view.samlProfileSSOCheck.selected = false;
+        view.samlProfileSLOCheck.selected = false;
+
+        for each(var liv:ListItemValueObject in  view.authMechanismCombo.dataProvider){
+            liv.isSelected = false;
+        }        
+
+        FormUtility.clearValidationErrors(_validators);
+    }
 
     override public function bindModel():void {
 
@@ -151,6 +176,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
     }
 
     private function closeWindow():void {
+        resetForm();
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 

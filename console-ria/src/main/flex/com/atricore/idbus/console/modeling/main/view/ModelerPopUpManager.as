@@ -158,8 +158,9 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _popup.width = 690;
         _popup.height = 510;
         _popup.x = (_popupParent.width / 2) - 225;
-        _popup.y = 80;
+        _popup.y = 80;        
         showPopup(_identityProviderCreateForm);
+        //on show call bindForm()
     }
 
     private function createIdentityProviderCreateForm():void {

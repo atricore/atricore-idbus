@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.modeling.diagram.view.spchannel {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.services.dto.BindingDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
@@ -68,6 +69,26 @@ public class SPChannelCreateMediator extends IocFormMediator {
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleSpChannelSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+    }
+
+    private function resetForm():void {
+        view.serviceProvChannelName.text = "";
+        view.serviceProvChannelDescription.text = "";
+        view.spChannelLocationProtocol.selectedIndex = 0;
+        view.spChannelLocationDomain.text = "";
+        view.spChannelLocationPort.text = "";
+        view.spChannelLocationContext.text = "";
+        view.spChannelLocationPath.text = "";
+        view.signAuthAssertionCheck.selected = false;
+        view.encryptAuthAssertionCheck.selected = false;
+        view.samlBindingHttpPostCheck.selected = false;
+        view.samlBindingArtifactCheck.selected = false;
+        view.samlBindingHttpRedirectCheck.selected = false;
+        view.samlBindingSoapCheck.selected = false;
+        view.samlProfileSSOCheck.selected = false;
+        view.samlProfileSLOCheck.selected = false;
+
+        FormUtility.clearValidationErrors(_validators);
     }
 
     override public function bindModel():void {
@@ -142,6 +163,7 @@ public class SPChannelCreateMediator extends IocFormMediator {
     }
 
     private function closeWindow():void {
+        resetForm();
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 

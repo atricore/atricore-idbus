@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.modeling.diagram.view.idp {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.services.dto.BindingDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
@@ -70,17 +71,24 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
     }
 
-    override public function bindForm():void {
-        //        if (_proxy.currentIdentityAppliance != null) {
-        //            view.applianceName.text = _proxy.currentIdentityAppliance.idApplianceDefinition.name;
-        //            view.applianceDescription.text = _proxy.currentIdentityAppliance.idApplianceDefinition.description;
-        //            view.applianceLocationDomain.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.host;
-        //            view.applianceLocationPort.text = new Number(_proxy.currentIdentityAppliance.idApplianceDefinition.location.port).toString();
-        //            view.applianceLocationProtocol.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.protocol;
-        //            view.applianceLocationPath.text = _proxy.currentIdentityAppliance.idApplianceDefinition.location.context;
-        //        }
-        //
-        //        FormUtility.clearValidationErrors(_validators);
+    private function resetForm():void {
+        view.identityProviderName.text = "";
+        view.identityProvDescription.text = "";
+        view.idpLocationProtocol.selectedIndex = 0;
+        view.idpLocationDomain.text = "";
+        view.idpLocationPort.text = "";
+        view.idpLocationContext.text = "";
+        view.idpLocationPath.text = "";
+        view.signAuthAssertionCheck.selected = false;
+        view.encryptAuthAssertionCheck.selected = false;
+        view.samlBindingHttpPostCheck.selected = false;
+        view.samlBindingArtifactCheck.selected = false;
+        view.samlBindingHttpRedirectCheck.selected = false;
+        view.samlBindingSoapCheck.selected = false;
+        view.samlProfileSSOCheck.selected = false;
+        view.samlProfileSLOCheck.selected = false;
+
+        FormUtility.clearValidationErrors(_validators);
     }
 
     override public function bindModel():void {
@@ -166,6 +174,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
     }
 
     private function closeWindow():void {
+        resetForm();
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
