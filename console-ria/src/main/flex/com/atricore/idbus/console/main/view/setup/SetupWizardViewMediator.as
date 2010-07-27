@@ -46,7 +46,7 @@ public class SetupWizardViewMediator extends IocMediator
 
     }
 
-    public function set profileProxy(value:ProfileProxy) {
+    public function set profileProxy(value:ProfileProxy):void {
         _profileProxy = value;
     }
 

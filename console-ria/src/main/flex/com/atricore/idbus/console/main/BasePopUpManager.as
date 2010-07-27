@@ -23,7 +23,6 @@ package com.atricore.idbus.console.main {
 import com.adobe.components.SizeableTitleWindow;
 import com.atricore.idbus.console.components.wizard.Wizard;
 import com.atricore.idbus.console.components.wizard.WizardEvent;
-import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingView;
 
@@ -63,8 +62,7 @@ public class BasePopUpManager {
     protected var _wizardCloseEffect:Effect;
 
     protected var _facade:IFacade;
-    protected var _secureContext:SecureContextProxy;
-
+    
     protected var _processingMediator:ProcessingMediator;
     protected var _processingView:ProcessingView;
 
@@ -72,8 +70,7 @@ public class BasePopUpManager {
     public function init(facade:IFacade, popupParent:UIComponent):void {
         _facade = facade;
         _popupParent = popupParent;
-        //_projectProxy = ProjectProxy(_facade.retrieveProxy(ProjectProxy.NAME));
-
+        
         _popup = new SizeableTitleWindow();
         _popup.styleName = "";
         _popup.verticalScrollPolicy = "off";

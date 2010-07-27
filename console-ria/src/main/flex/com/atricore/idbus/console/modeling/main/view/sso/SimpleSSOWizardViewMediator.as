@@ -23,7 +23,6 @@ package com.atricore.idbus.console.modeling.main.view.sso
 {
 import com.atricore.idbus.console.components.wizard.WizardEvent;
 import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
 import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand;
@@ -54,8 +53,6 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
     private var _wizardDataModel:ObjectProxy = new ObjectProxy();
 
-    private var _projectProxy:ProjectProxy;
-
     [Bindable]
     private var _fileRef:FileReference;
 
@@ -77,10 +74,12 @@ public class SimpleSSOWizardViewMediator extends IocMediator
             view.addEventListener(WizardEvent.WIZARD_CANCEL, onSimpleSSOWizardCancelled);
             view.addEventListener(CloseEvent.CLOSE, handleClose);
 
-            _fileRef.removeEventListener(Event.SELECT, fileSelectHandler);
-            _fileRef.removeEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
-            _fileRef.removeEventListener(Event.COMPLETE, uploadCompleteHandler);
-            _fileRef.removeEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
+            if (_fileRef != null) {
+                _fileRef.removeEventListener(Event.SELECT, fileSelectHandler);
+                _fileRef.removeEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
+                _fileRef.removeEventListener(Event.COMPLETE, uploadCompleteHandler);
+                _fileRef.removeEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
+            }
         }
 
         super.setViewComponent(viewComponent);
@@ -100,6 +99,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         view.steps[1].btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
         view.steps[1].certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
 
+        _fileRef = new FileReference();
         _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
         _fileRef.addEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
         _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
@@ -112,7 +112,6 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     override public function listNotificationInterests():Array {
         return [CreateSimpleSSOIdentityApplianceCommand.FAILURE,
             CreateSimpleSSOIdentityApplianceCommand.SUCCESS,
-            ProcessingMediator.CREATED,
             UploadProgressMediator.CREATED,
             UploadProgressMediator.UPLOAD_CANCELED];
     }
@@ -124,27 +123,6 @@ public class SimpleSSOWizardViewMediator extends IocMediator
                 break;
             case CreateSimpleSSOIdentityApplianceCommand.FAILURE :
                 handleSSOSetupFailure();
-                break;
-            case ProcessingMediator.CREATED:
-                // persisting data could end before processing window was created
-                // and processing window will be left unclosed because it didn't receive
-                // STOP notification, so we start the persisting once the processing window
-                // is created
-                var identityAppliance:IdentityApplianceDTO = _wizardDataModel.applianceData;
-                var identityApplianceDefinition:IdentityApplianceDefinitionDTO = identityAppliance.idApplianceDefinition;
-                identityApplianceDefinition.identityVaults = new ArrayCollection();
-                identityApplianceDefinition.identityVaults.addItem(createIdentityVault());
-
-                identityApplianceDefinition.providers = new ArrayCollection();
-                for (var i:int = 0; i < _wizardDataModel.step3Data.length; i++) {
-                    var sp:ServiceProviderDTO = _wizardDataModel.step3Data[i] as ServiceProviderDTO;
-                    identityApplianceDefinition.providers.addItem(sp);
-                }
-
-                var keystore:KeystoreDTO = _wizardDataModel.certificateData;
-                identityApplianceDefinition.certificate = keystore;
-
-                sendNotification(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);
                 break;
             case UploadProgressMediator.CREATED:
                 // upload progress window created, start upload
@@ -180,7 +158,22 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 
         sendNotification(ProcessingMediator.START);
-        //sendNotification(ApplicationFacade.NOTE_CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);
+
+        var identityAppliance:IdentityApplianceDTO = _wizardDataModel.applianceData;
+        var identityApplianceDefinition:IdentityApplianceDefinitionDTO = identityAppliance.idApplianceDefinition;
+        identityApplianceDefinition.identityVaults = new ArrayCollection();
+        identityApplianceDefinition.identityVaults.addItem(createIdentityVault());
+
+        identityApplianceDefinition.providers = new ArrayCollection();
+        for (var i:int = 0; i < _wizardDataModel.step3Data.length; i++) {
+            var sp:ServiceProviderDTO = _wizardDataModel.step3Data[i] as ServiceProviderDTO;
+            identityApplianceDefinition.providers.addItem(sp);
+        }
+
+        var keystore:KeystoreDTO = _wizardDataModel.certificateData;
+        identityApplianceDefinition.certificate = keystore;
+
+        sendNotification(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);
     }
 
     private function onSimpleSSOWizardCancelled(event:WizardEvent):void {

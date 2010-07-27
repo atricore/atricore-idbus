@@ -54,11 +54,29 @@ public class IdentityApplianceMediator extends IocFormMediator
         super(name, viewComp);
     }
 
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set keystoreProxy(value:KeystoreProxy):void {
+        _keystoreProxy = value;
+    }
+
+    public function get keystoreProxy():KeystoreProxy {
+        return _keystoreProxy;
+    }
+
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
             view.btnSave.removeEventListener(MouseEvent.CLICK, handleIdentityApplianceSave);
-            view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
+            if (view.parent != null) {
+                view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
+            }
         }
 
         super.setViewComponent(viewComponent);
@@ -81,17 +99,20 @@ public class IdentityApplianceMediator extends IocFormMediator
 
     override public function listNotificationInterests():Array {
         return [CREATE,EDIT,IdentityApplianceCreateCommand.SUCCESS,
-            IdentityApplianceCreateCommand.FAILURE,
-            ProcessingMediator.CREATED];
+            IdentityApplianceCreateCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case CREATE :
-                _projectProxy.viewAction = ProjectProxy.ACTION_ITEM_CREATE;
-                view.btnSave.label = "Save";
-                bindForm();
-                view.focusManager.setFocus(view.applianceName);
+                if (view != null) {
+                    _projectProxy.viewAction = ProjectProxy.ACTION_ITEM_CREATE;
+                    view.btnSave.label = "Save";
+                    bindForm();
+                    if (view.focusManager != null) {
+                        view.focusManager.setFocus(view.applianceName);
+                    }
+                }
                 break;
             case EDIT :
                 _projectProxy.viewAction = ProjectProxy.ACTION_ITEM_EDIT;
@@ -111,21 +132,6 @@ public class IdentityApplianceMediator extends IocFormMediator
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         "There was an error creating appliance.");
-                break;
-            case ProcessingMediator.CREATED:
-                // persisting data could end before processing window was created
-                // and processing window will be left unclosed because it didn't receive
-                // STOP notification, so we start the persisting once the processing window
-                // is created
-                if (_projectProxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
-                    sendNotification(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
-
-                    _projectProxy.currentIdentityApplianceElement = _newIdentityAppliance;
-                    sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
-                }
-                else {
-                    sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                }
                 break;
         }
 
@@ -179,6 +185,15 @@ public class IdentityApplianceMediator extends IocFormMediator
             _processingStarted = true;
             closeWindow();
             sendNotification(ProcessingMediator.START);
+            if (_projectProxy.viewAction == ProjectProxy.ACTION_ITEM_CREATE) {
+                sendNotification(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, _newIdentityAppliance);
+
+                _projectProxy.currentIdentityApplianceElement = _newIdentityAppliance;
+                sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+            }
+            else {
+                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+            }
         }
         else {
             event.stopImmediatePropagation();

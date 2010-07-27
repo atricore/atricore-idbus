@@ -68,7 +68,6 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _uploadProgressMediator:IIocMediator;
     private var _buildApplianceMediator:IIocMediator;
     private var _deployApplianceMediator:IIocMediator;
-    private var _managerCertificateMediator:IIocMediator;
     private var _processingMediator:IIocMediator;
     private var _loginMediator:IIocMediator;
     private var _setupWizardViewMediator:IIocMediator;
@@ -214,14 +213,6 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set deployApplianceMediator(value:IIocMediator):void {
         _deployApplianceMediator = value;
-    }
-
-    public function get managerCertificateMediator():IIocMediator {
-        return _managerCertificateMediator;
-    }
-
-    public function set managerCertificateMediator(value:IIocMediator):void {
-        _managerCertificateMediator = value;
     }
 
     public function get setupWizardViewMediator():IIocMediator {
@@ -467,7 +458,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(applicationMediator.getConfigName());
 
         modelerMediator.setViewComponent(app.modelerView);
-        iocFacade.registerMediatorByConfigName(applicationMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(modelerMediator.getConfigName());
 
         lifecycleViewMediator.setViewComponent(app.lifecycleView);
         iocFacade.registerMediatorByConfigName(lifecycleViewMediator.getConfigName());
@@ -499,6 +490,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(uploadProgressMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(buildApplianceMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(deployApplianceMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(processingMediator.getConfigName());
 
         // register commands
         iocFacade.registerCommandByConfigName(ApplicationFacade.SETUP_SERVER, setupServerCommand.getConfigName());
@@ -517,6 +509,13 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, buildIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE, deployIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE, identityApplianceUpdateCommand.getConfigName());
+
+        // IDENTITY_APPLIANCE_LIST_LOAD notification is sent from
+        // modelerMediator.setViewComponent() -> modelerMediator.init()
+        // but the identityApplianceListLoadCommand is registered after that, so we must send it again.
+        // Maybe we should first register commands, then mediators (so they can be 100% ready
+        // to catch notifications from commands), and then set views components?
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
 
         checkFirstRun();
     }

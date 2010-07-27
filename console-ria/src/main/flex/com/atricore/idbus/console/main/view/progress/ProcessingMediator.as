@@ -28,7 +28,7 @@ import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class ProcessingMediator extends IocMediator
 {
-    public static const CREATED:String = "Note.ProcessingCreated";
+    //public static const CREATED:String = "Note.ProcessingCreated";
     public static const START:String = "Note.StartProcessing";
     public static const STOP:String = "Note.StopProcessing";
 
@@ -48,12 +48,14 @@ public class ProcessingMediator extends IocMediator
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case START:
-                var progressBarLabel:String = view.progressBar.label;
-                if (notification.getBody() != null) {
-                    progressBarLabel = notification.getBody() as String;
+                if (view != null) {
+                    var progressBarLabel:String = view.progressBar.label;
+                    if (notification.getBody() != null) {
+                        progressBarLabel = notification.getBody() as String;
+                    }
+                    view.progressBar.label = progressBarLabel;
+                    //sendNotification(CREATED);
                 }
-                view.progressBar.label = progressBarLabel;
-                sendNotification(CREATED);
                 break;
             case STOP:
                 closeWindow();

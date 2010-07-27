@@ -61,7 +61,7 @@ public class ManageCertificateMediator extends IocFormMediator
 
     }
 
-    public function set keystoreProxy(value:KeystoreProxy) {
+    public function set keystoreProxy(value:KeystoreProxy):void {
         _keystoreProxy = value;
     }
 

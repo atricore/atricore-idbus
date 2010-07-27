@@ -45,6 +45,14 @@ public class IDPChannelCreateMediator extends IocFormMediator {
         super(name, viewComp);
     }
 
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
             view.btnOk.removeEventListener(MouseEvent.CLICK, handleIdpChannelSave);

@@ -45,11 +45,20 @@ public class DeployApplianceMediator extends IocFormMediator
         super(name, viewComp);
     }
 
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
 
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+    
     override public function setViewComponent(viewComponent:Object):void {
-        if (viewComponent != null) {
+        if (getViewComponent() != null) {
             view.btnNext.removeEventListener(MouseEvent.CLICK, handleNextClick);
-            view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
+            if (view.parent != null) {
+                view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
+            }
         }
 
         super.setViewComponent(viewComponent);
@@ -66,16 +75,11 @@ public class DeployApplianceMediator extends IocFormMediator
 
     override public function listNotificationInterests():Array {
         return [DeployIdentityApplianceCommand.SUCCESS,
-            DeployIdentityApplianceCommand.FAILURE,
-            ProcessingMediator.CREATED];
+            DeployIdentityApplianceCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ProcessingMediator.CREATED:
-                sendNotification(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE,
-                        [_projectProxy.currentIdentityAppliance.id.toString(), view.startAppliance.selected]);
-                break;
             case DeployIdentityApplianceCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
@@ -98,6 +102,8 @@ public class DeployApplianceMediator extends IocFormMediator
         _processingStarted = true;
         closeWindow();
         sendNotification(ProcessingMediator.START, "Deploying appliance ...");
+        sendNotification(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE,
+                [_projectProxy.currentIdentityAppliance.id.toString(), view.startAppliance.selected]);
     }
 
     private function closeWindow():void {
