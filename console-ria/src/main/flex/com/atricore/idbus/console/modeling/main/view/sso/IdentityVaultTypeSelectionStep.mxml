@@ -90,7 +90,8 @@
 
         <utils:ValidatingForm id="ssoWizStep1Form" width="100%" height="100%" validators="{validators}" labelWidth="50">
 
-            <utils:GroupBox verticalAlign="middle" width="100%" height="100%" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.usersRepository')}">
+            <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.usersRepository')}"
+                           width="100%" height="100%" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
                 <mx:FormItem paddingLeft="60" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.userRepositoryName')}:" required="true">
                     <mx:TextInput id="userRepositoryName" width="300" change="handleFormChange(event);"/>
                 </mx:FormItem>
@@ -101,7 +102,7 @@
                     <mx:RadioButton groupName="repositoryType" id="external" value="external"
                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.externalRepository')}"/>
                 </mx:FormItem>
-            </utils:GroupBox>
+            </utils:TitledBorderBox>
        </utils:ValidatingForm>
 
     </mx:VBox>

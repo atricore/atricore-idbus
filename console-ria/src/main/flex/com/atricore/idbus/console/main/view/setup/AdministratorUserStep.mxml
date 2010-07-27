@@ -107,7 +107,8 @@
     </mx:Array>
 
     <mx:Form>
-        <utils:GroupBox width="100%" height="100%" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.title')}">
+        <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.title')}"
+                           width="100%" height="100%" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.username')}" required="true" labelWidth="80">
                 <mx:TextInput id="userName" text="&lt;atricore&gt;" change="handleFormChange()" focusOut="trimStr(event)" width="200"/>
             </mx:FormItem>
@@ -127,7 +128,7 @@
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.adminUser.email')}" labelWidth="80">
                 <mx:TextInput id="email" change="handleFormChange()" focusOut="trimStr(event)" width="200"/>
             </mx:FormItem>
-        </utils:GroupBox>
+        </utils:TitledBorderBox>
     </mx:Form>
 
 </WizardStep>

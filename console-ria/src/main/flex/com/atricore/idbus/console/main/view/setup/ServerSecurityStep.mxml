@@ -183,14 +183,15 @@
     </mx:Script>
 
     <mx:Form>
-        <utils:GroupBox width="300" height="200" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.title')}">
+        <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.title')}"
+                           width="300" height="200" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
 			<mx:HBox>
             	<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.certificate')}">
             		<mx:ComboBox id="certificate" dataProvider="{_certificates}" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.certificate.prompt')}" mouseUp="browseFiles()" />
             	</mx:FormItem>
 				<!--mx:Button label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.certificate.upload')}" id="btnUpload" click="startUpload(true)" /-->
 			</mx:HBox>
-        </utils:GroupBox>
+        </utils:TitledBorderBox>
     </mx:Form>
 
 </WizardStep>

@@ -24,7 +24,8 @@
          xmlns:utils="com.atricore.idbus.console.components.*"
          defaultButton="{btnNext}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
 
-    <utils:GroupBox width="400" height="150" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.build.options.title')}">
+    <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.build.options.title')}"
+                           width="400" height="150" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.build.options.selectedAppliance')}" labelWidth="130" paddingTop="35" paddingLeft="35">
             <mx:TextInput id="selectedAppliance" editable="false" />
         </mx:FormItem>
@@ -32,7 +33,7 @@
         <mx:FormItem labelWidth="130" paddingLeft="35">
             <mx:CheckBox id="deployAppliance" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.build.options.deployAppliance')}"/>
         </mx:FormItem>
-    </utils:GroupBox>
+    </utils:TitledBorderBox>
 
     <mx:HBox width="100%">
         <mx:Spacer width="325"/>

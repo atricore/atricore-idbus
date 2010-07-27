@@ -34,7 +34,7 @@ CONDITIONS OF ANY KIND, either express or implied. See the License for the
 specific language governing permissions and limitations under the License. 
 */
 package  com.atricore.idbus.console.components.wizard {
-import com.atricore.idbus.console.components.GroupBox;
+import com.atricore.idbus.console.components.TitledBorderBox;
 
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
@@ -386,9 +386,14 @@ use namespace mx_internal;
 //			_summaryStep.stepDescription = ResourceManager.getInstance().getString("FlashmatticomponentsLabelsResourceBundle", "wizard.step.summary.description");
 			_summaryStep.percentHeight = 100;
 			_summaryStep.percentWidth = 100;
-            var gBox:GroupBox = new GroupBox();
+            var gBox:TitledBorderBox = new TitledBorderBox();
 			gBox.percentHeight = 100;
-			gBox.percentWidth = 100;            
+			gBox.percentWidth = 100;
+            gBox.setStyle("cornerRadius", 5);
+            gBox.setStyle("paddingLeft", 10);
+            gBox.setStyle("paddingRight", 5);
+            gBox.setStyle("paddingTop", 20);
+            gBox.setStyle("paddingBottom", 5);
             gBox.title = ResourceManager.getInstance().getString("FlashmatticomponentsLabelsResourceBundle", "wizard.step.summary.description");
 			_summaryText = new TextArea();
 			_summaryText.percentHeight = 100;
