@@ -94,7 +94,7 @@
         </mx:FormItem>    
 
         <mx:HBox width="100%">
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.auth.mechanism')}:" labelWidth="215">
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.auth.mechanism')}:" labelWidth="190">
                 <mx:List id="authMechanismCombo"
                                dataProvider="{authMechanismColl}"
                                alternatingItemColors="[#EEEEEE, white]"
@@ -121,7 +121,7 @@
         </mx:HBox>
 
         <mx:HBox width="100%">
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.account.linkage.policy')}:" labelWidth="215">
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.account.linkage.policy')}:" labelWidth="190">
                 <mx:ComboBox id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0"/>
             </mx:FormItem>
             <mx:Button id="configureAccLinkagePolicy"
@@ -129,7 +129,7 @@
         </mx:HBox>
 
         <mx:HBox width="100%">
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.auth.contract')}:" labelWidth="215">
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.auth.contract')}:" labelWidth="190">
                 <mx:ComboBox id="authContractCombo" width="200" labelField="name" selectedIndex="0"/>
             </mx:FormItem>
         </mx:HBox>
