@@ -164,6 +164,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
             _projectProxy.currentIdentityApplianceElement = _newServiceProvider;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
             sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             closeWindow();
         }
         else {
