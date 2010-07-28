@@ -158,7 +158,7 @@ public class BasePopUpManager {
         _popupVisible = false;
     }
 
-    protected function handleHideProgress(event:Event):void {
+    public function handleHideProgress(event:Event):void {
         PopUpManager.removePopUp(_progress);
         _progress.removeAllChildren();
         _progressCloseEffect.end();
@@ -250,5 +250,9 @@ public class BasePopUpManager {
         processingMediator.handleNotification(_lastWindowNotification);
     }
 
+    public function hideProcessingWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        handleHideProgress(null);
+    }
 }
 }

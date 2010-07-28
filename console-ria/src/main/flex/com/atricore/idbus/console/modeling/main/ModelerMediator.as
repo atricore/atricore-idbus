@@ -144,12 +144,14 @@ public class ModelerMediator extends IocMediator {
         trace("Open Button Click: " + event);
         if (view.appliances.selectedItem != null) {
             var applianceId:String = (view.appliances.selectedItem as IdentityApplianceDTO).id.toString();
+            sendNotification(ProcessingMediator.START, "Opening identity appliance...");
             sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, applianceId);
         }
     }
 
     private function handleSaveClick(event:MouseEvent):void {
         trace("Save Button Click: " + event);
+        sendNotification(ProcessingMediator.START);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
     }
 
@@ -180,6 +182,7 @@ public class ModelerMediator extends IocMediator {
             ApplicationFacade.SHOW_UPLOAD_PROGRESS,
             ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
             ProcessingMediator.START,
+            ProcessingMediator.STOP,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             LookupIdentityApplianceByIdCommand.SUCCESS,
@@ -254,6 +257,9 @@ public class ModelerMediator extends IocMediator {
             case ProcessingMediator.START:
                 popupManager.showProcessingWindow(notification);
                 break;
+            case ProcessingMediator.STOP:
+                popupManager.hideProcessingWindow(notification);
+                break;
             case BuildApplianceMediator.RUN:
                 popupManager.showBuildIdentityApplianceWindow(notification);
                 break;
@@ -262,12 +268,14 @@ public class ModelerMediator extends IocMediator {
                 break;
             case LookupIdentityApplianceByIdCommand.SUCCESS:
                 view.btnSave.enabled = false;
+                sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
                         "Appliance successfully opened.");
                 break;
             case LookupIdentityApplianceByIdCommand.FAILURE:
+                sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         "There was an error opening appliance.");
                 break;
@@ -280,12 +288,14 @@ public class ModelerMediator extends IocMediator {
                 break;
             case IdentityApplianceUpdateCommand.SUCCESS:
                 view.btnSave.enabled = false;
+                sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
                         "Appliance successfully updated.");
                 break;
             case IdentityApplianceUpdateCommand.FAILURE:
+                sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         "There was an error updating appliance.");
                 break;

@@ -310,36 +310,39 @@ public class PropertySheetMediator extends IocMediator {
 
         identityProvider = _currentIdentityApplianceElement as IdentityProviderDTO;
 
-        // bind view
-        _ipCoreSection.identityProviderName.text = identityProvider.name;
-        _ipCoreSection.identityProvDescription.text = identityProvider.description;
-        //TODO
+        // if identityProvider is null that means some other element was selected before completing this
+        if (identityProvider != null) {
+            // bind view
+            _ipCoreSection.identityProviderName.text = identityProvider.name;
+            _ipCoreSection.identityProvDescription.text = identityProvider.description;
+            //TODO
 
-        for (var i:int = 0; i < _ipCoreSection.idpLocationProtocol.dataProvider.length; i++) {
-            if (identityProvider.location != null && _ipCoreSection.idpLocationProtocol.dataProvider[i].label == identityProvider.location.protocol) {
-                _ipCoreSection.idpLocationProtocol.selectedIndex = i;
-                break;
+            for (var i:int = 0; i < _ipCoreSection.idpLocationProtocol.dataProvider.length; i++) {
+                if (identityProvider.location != null && _ipCoreSection.idpLocationProtocol.dataProvider[i].label == identityProvider.location.protocol) {
+                    _ipCoreSection.idpLocationProtocol.selectedIndex = i;
+                    break;
+                }
             }
+            _ipCoreSection.idpLocationDomain.text = identityProvider.location.host;
+            _ipCoreSection.idpLocationPort.text = identityProvider.location.port.toString();
+            _ipCoreSection.idpLocationContext.text = identityProvider.location.context;
+            _ipCoreSection.idpLocationPath.text = identityProvider.location.uri;
+
+            _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipCoreSection.idpLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipCoreSection.idpLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipCoreSection.idpLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipCoreSection.idpLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipCoreSection.idpLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+
+            //clear all existing validators and add idp core section validators
+            _validators = [];
+            _validators.push(_ipCoreSection.nameValidator);
+            _validators.push(_ipCoreSection.portValidator);
+            _validators.push(_ipCoreSection.domainValidator);
+            _validators.push(_ipCoreSection.pathValidator);
         }
-        _ipCoreSection.idpLocationDomain.text = identityProvider.location.host;
-        _ipCoreSection.idpLocationPort.text = identityProvider.location.port.toString();
-        _ipCoreSection.idpLocationContext.text = identityProvider.location.context;
-        _ipCoreSection.idpLocationPath.text = identityProvider.location.uri;
-
-        _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
-        _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        _ipCoreSection.idpLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
-        _ipCoreSection.idpLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
-        _ipCoreSection.idpLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
-        _ipCoreSection.idpLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
-        _ipCoreSection.idpLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
-
-        //clear all existing validators and add idp core section validators
-        _validators = [];
-        _validators.push(_ipCoreSection.nameValidator);
-        _validators.push(_ipCoreSection.portValidator);
-        _validators.push(_ipCoreSection.domainValidator);
-        _validators.push(_ipCoreSection.pathValidator);
     }
 
 
@@ -377,45 +380,48 @@ public class PropertySheetMediator extends IocMediator {
 
         identityProvider = _currentIdentityApplianceElement as IdentityProviderDTO;
 
-        _ipContractSection.signAuthAssertionCheck.selected = identityProvider.signAuthenticationAssertions;
-        _ipContractSection.encryptAuthAssertionCheck.selected = identityProvider.encryptAuthenticationAssertions;
+        // if identityProvider is null that means some other element was selected before completing this
+        if (identityProvider != null) {
+            _ipContractSection.signAuthAssertionCheck.selected = identityProvider.signAuthenticationAssertions;
+            _ipContractSection.encryptAuthAssertionCheck.selected = identityProvider.encryptAuthenticationAssertions;
 
-        var defaultChannel:ChannelDTO = identityProvider.defaultChannel;
-        if (defaultChannel != null) {
-            for (var j:int = 0; j < defaultChannel.activeBindings.length; j ++) {
-                var tmpBinding:BindingDTO = defaultChannel.activeBindings.getItemAt(j) as BindingDTO;
-                if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_POST.name) {
-                    _ipContractSection.samlBindingHttpPostCheck.selected = true;
+            var defaultChannel:ChannelDTO = identityProvider.defaultChannel;
+            if (defaultChannel != null) {
+                for (var j:int = 0; j < defaultChannel.activeBindings.length; j ++) {
+                    var tmpBinding:BindingDTO = defaultChannel.activeBindings.getItemAt(j) as BindingDTO;
+                    if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_POST.name) {
+                        _ipContractSection.samlBindingHttpPostCheck.selected = true;
+                    }
+                    if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_REDIRECT.name) {
+                        _ipContractSection.samlBindingHttpRedirectCheck.selected = true;
+                    }
+                    if (tmpBinding.name == BindingDTO.SAMLR2_ARTIFACT.name) {
+                        _ipContractSection.samlBindingArtifactCheck.selected = true;
+                    }
+                    if (tmpBinding.name == BindingDTO.SAMLR2_SOAP.name) {
+                        _ipContractSection.samlBindingSoapCheck.selected = true;
+                    }
                 }
-                if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_REDIRECT.name) {
-                    _ipContractSection.samlBindingHttpRedirectCheck.selected = true;
-                }
-                if (tmpBinding.name == BindingDTO.SAMLR2_ARTIFACT.name) {
-                    _ipContractSection.samlBindingArtifactCheck.selected = true;
-                }
-                if (tmpBinding.name == BindingDTO.SAMLR2_SOAP.name) {
-                    _ipContractSection.samlBindingSoapCheck.selected = true;
+                for (j = 0; j < defaultChannel.activeProfiles.length; j++) {
+                    var tmpProfile:ProfileDTO = defaultChannel.activeProfiles.getItemAt(j) as ProfileDTO;
+                    if (tmpProfile.name == ProfileDTO.SSO.name) {
+                        _ipContractSection.samlProfileSSOCheck.selected = true;
+                    }
+                    if (tmpProfile.name == ProfileDTO.SSO_SLO.name) {
+                        _ipContractSection.samlProfileSLOCheck.selected = true;
+                    }
                 }
             }
-            for (j = 0; j < defaultChannel.activeProfiles.length; j++) {
-                var tmpProfile:ProfileDTO = defaultChannel.activeProfiles.getItemAt(j) as ProfileDTO;
-                if (tmpProfile.name == ProfileDTO.SSO.name) {
-                    _ipContractSection.samlProfileSSOCheck.selected = true;
-                }
-                if (tmpProfile.name == ProfileDTO.SSO_SLO.name) {
-                    _ipContractSection.samlProfileSLOCheck.selected = true;
-                }
-            }
+
+            _ipContractSection.signAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipContractSection.encryptAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipContractSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _ipContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
         }
-
-        _ipContractSection.signAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _ipContractSection.encryptAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _ipContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _ipContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _ipContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _ipContractSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _ipContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _ipContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
     }
 
     private function handleIdentityProviderContractPropertyTabRollOut(event:Event):void {
@@ -467,36 +473,40 @@ public class PropertySheetMediator extends IocMediator {
         var serviceProvider:ServiceProviderDTO;
 
         serviceProvider = _currentIdentityApplianceElement as ServiceProviderDTO;
-        // bind view
-        _spCoreSection.serviceProvName.text = serviceProvider.name;
-        _spCoreSection.serviceProvDescription.text = serviceProvider.description;
-        //TODO
 
-        for (var i:int = 0; i < _spCoreSection.spLocationProtocol.dataProvider.length; i++) {
-            if (serviceProvider.location != null && _spCoreSection.spLocationProtocol.dataProvider[i].label == serviceProvider.location.protocol) {
-                _spCoreSection.spLocationProtocol.selectedIndex = i;
-                break;
+        // if serviceProvider is null that means some other element was selected before completing this
+        if (serviceProvider != null) {
+            // bind view
+            _spCoreSection.serviceProvName.text = serviceProvider.name;
+            _spCoreSection.serviceProvDescription.text = serviceProvider.description;
+            //TODO
+
+            for (var i:int = 0; i < _spCoreSection.spLocationProtocol.dataProvider.length; i++) {
+                if (serviceProvider.location != null && _spCoreSection.spLocationProtocol.dataProvider[i].label == serviceProvider.location.protocol) {
+                    _spCoreSection.spLocationProtocol.selectedIndex = i;
+                    break;
+                }
             }
+            _spCoreSection.spLocationDomain.text = serviceProvider.location.host;
+            _spCoreSection.spLocationPort.text = serviceProvider.location.port.toString();
+            _spCoreSection.spLocationContext.text = serviceProvider.location.context;
+            _spCoreSection.spLocationPath.text = serviceProvider.location.uri;
+
+            _spCoreSection.serviceProvName.addEventListener(Event.CHANGE, handleSectionChange);
+            _spCoreSection.serviceProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _spCoreSection.spLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+            _spCoreSection.spLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
+            _spCoreSection.spLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
+            _spCoreSection.spLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
+            _spCoreSection.spLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+            _spCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_spCoreSection.nameValidator);
+            _validators.push(_spCoreSection.portValidator);
+            _validators.push(_spCoreSection.domainValidator);
+            _validators.push(_spCoreSection.pathValidator);
         }
-        _spCoreSection.spLocationDomain.text = serviceProvider.location.host;
-        _spCoreSection.spLocationPort.text = serviceProvider.location.port.toString();
-        _spCoreSection.spLocationContext.text = serviceProvider.location.context;
-        _spCoreSection.spLocationPath.text = serviceProvider.location.uri;
-
-        _spCoreSection.serviceProvName.addEventListener(Event.CHANGE, handleSectionChange);
-        _spCoreSection.serviceProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        _spCoreSection.spLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
-        _spCoreSection.spLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
-        _spCoreSection.spLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
-        _spCoreSection.spLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
-        _spCoreSection.spLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
-        _spCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
-
-        _validators = [];
-        _validators.push(_spCoreSection.nameValidator);
-        _validators.push(_spCoreSection.portValidator);
-        _validators.push(_spCoreSection.domainValidator);
-        _validators.push(_spCoreSection.pathValidator);
     }
 
     private function handleServiceProviderCorePropertyTabRollOut(e:Event):void {
@@ -533,43 +543,46 @@ public class PropertySheetMediator extends IocMediator {
 
         serviceProvider = _currentIdentityApplianceElement as ServiceProviderDTO;
 
-//        _spContractSection.signAuthRequestCheck.selected = serviceProvider.signAuthenticationAssertions;
-//        _spContractSection.encryptAuthRequestCheck.selected = serviceProvider.encryptAuthenticationAssertions;
+        // if serviceProvider is null that means some other element was selected before completing this
+        if (serviceProvider != null) {
+            //_spContractSection.signAuthRequestCheck.selected = serviceProvider.signAuthenticationAssertions;
+            //_spContractSection.encryptAuthRequestCheck.selected = serviceProvider.encryptAuthenticationAssertions;
+    
+            var defaultChannel:ChannelDTO = serviceProvider.defaultChannel;
+            if (defaultChannel != null) {
+                for (var j:int = 0; j < defaultChannel.activeBindings.length; j ++) {
+                    var tmpBinding:BindingDTO = defaultChannel.activeBindings.getItemAt(j) as BindingDTO;
+                    if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_POST.name) {
+                        _spContractSection.samlBindingHttpPostCheck.selected = true;
+                    }
+                    if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_REDIRECT.name) {
+                        _spContractSection.samlBindingHttpRedirectCheck.selected = true;
+                    }
+                    if (tmpBinding.name == BindingDTO.SAMLR2_ARTIFACT.name) {
+                        _spContractSection.samlBindingArtifactCheck.selected = true;
+                    }
+                    if (tmpBinding.name == BindingDTO.SAMLR2_SOAP.name) {
+                        _spContractSection.samlBindingSoapCheck.selected = true;
+                    }
+                }
+                for (j = 0; j < defaultChannel.activeProfiles.length; j++) {
+                    var tmpProfile:ProfileDTO = defaultChannel.activeProfiles.getItemAt(j) as ProfileDTO;
+                    if (tmpProfile.name == ProfileDTO.SSO.name) {
+                        _spContractSection.samlProfileSSOCheck.selected = true;
+                    }
+                    if (tmpProfile.name == ProfileDTO.SSO_SLO.name) {
+                        _spContractSection.samlProfileSLOCheck.selected = true;
+                    }
+                }
+            }
 
-        var defaultChannel:ChannelDTO = serviceProvider.defaultChannel;
-        if (defaultChannel != null) {
-            for (var j:int = 0; j < defaultChannel.activeBindings.length; j ++) {
-                var tmpBinding:BindingDTO = defaultChannel.activeBindings.getItemAt(j) as BindingDTO;
-                if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_POST.name) {
-                    _spContractSection.samlBindingHttpPostCheck.selected = true;
-                }
-                if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_REDIRECT.name) {
-                    _spContractSection.samlBindingHttpRedirectCheck.selected = true;
-                }
-                if (tmpBinding.name == BindingDTO.SAMLR2_ARTIFACT.name) {
-                    _spContractSection.samlBindingArtifactCheck.selected = true;
-                }
-                if (tmpBinding.name == BindingDTO.SAMLR2_SOAP.name) {
-                    _spContractSection.samlBindingSoapCheck.selected = true;
-                }
-            }
-            for (j = 0; j < defaultChannel.activeProfiles.length; j++) {
-                var tmpProfile:ProfileDTO = defaultChannel.activeProfiles.getItemAt(j) as ProfileDTO;
-                if (tmpProfile.name == ProfileDTO.SSO.name) {
-                    _spContractSection.samlProfileSSOCheck.selected = true;
-                }
-                if (tmpProfile.name == ProfileDTO.SSO_SLO.name) {
-                    _spContractSection.samlProfileSLOCheck.selected = true;
-                }
-            }
+            _spContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spContractSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
         }
-
-        _spContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _spContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _spContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _spContractSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _spContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _spContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
     }
 
     private function handleServiceProviderContractPropertyTabRollOut(event:Event):void {
@@ -656,36 +669,40 @@ public class PropertySheetMediator extends IocMediator {
         var idpChannel:IdentityProviderChannelDTO;
 
         idpChannel = _currentIdentityApplianceElement as IdentityProviderChannelDTO;
-        // bind view
-        _idpChannelCoreSection.identityProvChannelName.text = idpChannel.name;
-        _idpChannelCoreSection.identityProvChannelDescription.text = idpChannel.description;
-        //TODO
 
-        for (var i:int = 0; i < _idpChannelCoreSection.idpChannelLocationProtocol.dataProvider.length; i++) {
-            if (idpChannel.location != null && _idpChannelCoreSection.idpChannelLocationProtocol.dataProvider[i].label == idpChannel.location.protocol) {
-                _idpChannelCoreSection.idpChannelLocationProtocol.selectedIndex = i;
-                break;
+        // if idpChannel is null that means some other element was selected before completing this
+        if (idpChannel != null) {
+            // bind view
+            _idpChannelCoreSection.identityProvChannelName.text = idpChannel.name;
+            _idpChannelCoreSection.identityProvChannelDescription.text = idpChannel.description;
+            //TODO
+
+            for (var i:int = 0; i < _idpChannelCoreSection.idpChannelLocationProtocol.dataProvider.length; i++) {
+                if (idpChannel.location != null && _idpChannelCoreSection.idpChannelLocationProtocol.dataProvider[i].label == idpChannel.location.protocol) {
+                    _idpChannelCoreSection.idpChannelLocationProtocol.selectedIndex = i;
+                    break;
+                }
             }
+            _idpChannelCoreSection.idpChannelLocationDomain.text = idpChannel.location.host;
+            _idpChannelCoreSection.idpChannelLocationPort.text = idpChannel.location.port.toString();
+            _idpChannelCoreSection.idpChannelLocationContext.text = idpChannel.location.context;
+            _idpChannelCoreSection.idpChannelLocationPath.text = idpChannel.location.uri;
+
+            _idpChannelCoreSection.identityProvChannelName.addEventListener(Event.CHANGE, handleSectionChange);
+            _idpChannelCoreSection.identityProvChannelDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _idpChannelCoreSection.idpChannelLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+            _idpChannelCoreSection.idpChannelLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
+            _idpChannelCoreSection.idpChannelLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
+            _idpChannelCoreSection.idpChannelLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
+            _idpChannelCoreSection.idpChannelLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+            _idpChannelCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_idpChannelCoreSection.nameValidator);
+            _validators.push(_idpChannelCoreSection.portValidator);
+            _validators.push(_idpChannelCoreSection.domainValidator);
+            _validators.push(_idpChannelCoreSection.pathValidator);
         }
-        _idpChannelCoreSection.idpChannelLocationDomain.text = idpChannel.location.host;
-        _idpChannelCoreSection.idpChannelLocationPort.text = idpChannel.location.port.toString();
-        _idpChannelCoreSection.idpChannelLocationContext.text = idpChannel.location.context;
-        _idpChannelCoreSection.idpChannelLocationPath.text = idpChannel.location.uri;
-
-        _idpChannelCoreSection.identityProvChannelName.addEventListener(Event.CHANGE, handleSectionChange);
-        _idpChannelCoreSection.identityProvChannelDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        _idpChannelCoreSection.idpChannelLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
-        _idpChannelCoreSection.idpChannelLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
-        _idpChannelCoreSection.idpChannelLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
-        _idpChannelCoreSection.idpChannelLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
-        _idpChannelCoreSection.idpChannelLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
-        _idpChannelCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
-
-        _validators = [];
-        _validators.push(_idpChannelCoreSection.nameValidator);
-        _validators.push(_idpChannelCoreSection.portValidator);
-        _validators.push(_idpChannelCoreSection.domainValidator);
-        _validators.push(_idpChannelCoreSection.pathValidator);        
     }
 
     private function handleIdpChannelCorePropertyTabRollOut(e:Event):void {
@@ -726,41 +743,44 @@ public class PropertySheetMediator extends IocMediator {
 
         idpChannel = _currentIdentityApplianceElement as IdentityProviderChannelDTO;
 
-//        _spContractSection.signAuthRequestCheck.selected = serviceProvider.signAuthenticationAssertions;
-//        _spContractSection.encryptAuthRequestCheck.selected = serviceProvider.encryptAuthenticationAssertions;
-
+        // if idpChannel is null that means some other element was selected before completing this
         if (idpChannel != null) {
-            for (var j:int = 0; j < idpChannel.activeBindings.length; j ++) {
-                var tmpBinding:BindingDTO = idpChannel.activeBindings.getItemAt(j) as BindingDTO;
-                if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_POST.name) {
-                    _idpChannelContractSection.samlBindingHttpPostCheck.selected = true;
-                }
-                if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_REDIRECT.name) {
-                    _idpChannelContractSection.samlBindingHttpRedirectCheck.selected = true;
-                }
-                if (tmpBinding.name == BindingDTO.SAMLR2_ARTIFACT.name) {
-                    _idpChannelContractSection.samlBindingArtifactCheck.selected = true;
-                }
-                if (tmpBinding.name == BindingDTO.SAMLR2_SOAP.name) {
-                    _idpChannelContractSection.samlBindingSoapCheck.selected = true;
-                }                      
-            }
-            for (j = 0; j < idpChannel.activeProfiles.length; j++) {
-                var tmpProfile:ProfileDTO = idpChannel.activeProfiles.getItemAt(j) as ProfileDTO;
-                if (tmpProfile.name == ProfileDTO.SSO.name) {
-                    _idpChannelContractSection.samlProfileSSOCheck.selected = true;
-                }
-                if (tmpProfile.name == ProfileDTO.SSO_SLO.name) {
-                    _idpChannelContractSection.samlProfileSLOCheck.selected = true;
-                }
-            }
-        }
+            //_spContractSection.signAuthRequestCheck.selected = serviceProvider.signAuthenticationAssertions;
+            //_spContractSection.encryptAuthRequestCheck.selected = serviceProvider.encryptAuthenticationAssertions;
 
-        _idpChannelContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _idpChannelContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _idpChannelContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _idpChannelContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _idpChannelContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            if (idpChannel != null) {
+                for (var j:int = 0; j < idpChannel.activeBindings.length; j ++) {
+                    var tmpBinding:BindingDTO = idpChannel.activeBindings.getItemAt(j) as BindingDTO;
+                    if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_POST.name) {
+                        _idpChannelContractSection.samlBindingHttpPostCheck.selected = true;
+                    }
+                    if (tmpBinding.name == BindingDTO.SAMLR2_HTTP_REDIRECT.name) {
+                        _idpChannelContractSection.samlBindingHttpRedirectCheck.selected = true;
+                    }
+                    if (tmpBinding.name == BindingDTO.SAMLR2_ARTIFACT.name) {
+                        _idpChannelContractSection.samlBindingArtifactCheck.selected = true;
+                    }
+                    if (tmpBinding.name == BindingDTO.SAMLR2_SOAP.name) {
+                        _idpChannelContractSection.samlBindingSoapCheck.selected = true;
+                    }
+                }
+                for (j = 0; j < idpChannel.activeProfiles.length; j++) {
+                    var tmpProfile:ProfileDTO = idpChannel.activeProfiles.getItemAt(j) as ProfileDTO;
+                    if (tmpProfile.name == ProfileDTO.SSO.name) {
+                        _idpChannelContractSection.samlProfileSSOCheck.selected = true;
+                    }
+                    if (tmpProfile.name == ProfileDTO.SSO_SLO.name) {
+                        _idpChannelContractSection.samlProfileSLOCheck.selected = true;
+                    }
+                }
+            }
+
+            _idpChannelContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _idpChannelContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _idpChannelContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _idpChannelContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _idpChannelContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        }
     }
 
     private function handleIdpChannelContractPropertyTabRollOut(event:Event):void {
@@ -835,36 +855,40 @@ public class PropertySheetMediator extends IocMediator {
         var spChannel:ServiceProviderChannelDTO;
 
         spChannel = _currentIdentityApplianceElement as ServiceProviderChannelDTO;
-        // bind view
-        _spChannelCoreSection.serviceProvChannelName.text = spChannel.name;
-        _spChannelCoreSection.serviceProvChannelDescription.text = spChannel.description;
-        //TODO
 
-        for (var i:int = 0; i < _spChannelCoreSection.spChannelLocationProtocol.dataProvider.length; i++) {
-            if (spChannel.location != null && _spChannelCoreSection.spChannelLocationProtocol.dataProvider[i].label == spChannel.location.protocol) {
-                _spChannelCoreSection.spChannelLocationProtocol.selectedIndex = i;
-                break;
+        // if spChannel is null that means some other element was selected before completing this
+        if (spChannel != null) {
+            // bind view
+            _spChannelCoreSection.serviceProvChannelName.text = spChannel.name;
+            _spChannelCoreSection.serviceProvChannelDescription.text = spChannel.description;
+            //TODO
+
+            for (var i:int = 0; i < _spChannelCoreSection.spChannelLocationProtocol.dataProvider.length; i++) {
+                if (spChannel.location != null && _spChannelCoreSection.spChannelLocationProtocol.dataProvider[i].label == spChannel.location.protocol) {
+                    _spChannelCoreSection.spChannelLocationProtocol.selectedIndex = i;
+                    break;
+                }
             }
+            _spChannelCoreSection.spChannelLocationDomain.text = spChannel.location.host;
+            _spChannelCoreSection.spChannelLocationPort.text = spChannel.location.port.toString();
+            _spChannelCoreSection.spChannelLocationContext.text = spChannel.location.context;
+            _spChannelCoreSection.spChannelLocationPath.text = spChannel.location.uri;
+
+            _spChannelCoreSection.serviceProvChannelName.addEventListener(Event.CHANGE, handleSectionChange);
+            _spChannelCoreSection.serviceProvChannelDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _spChannelCoreSection.spChannelLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+            _spChannelCoreSection.spChannelLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
+            _spChannelCoreSection.spChannelLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
+            _spChannelCoreSection.spChannelLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
+            _spChannelCoreSection.spChannelLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+            _spChannelCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_spChannelCoreSection.nameValidator);
+            _validators.push(_spChannelCoreSection.portValidator);
+            _validators.push(_spChannelCoreSection.domainValidator);
+            _validators.push(_spChannelCoreSection.pathValidator);
         }
-        _spChannelCoreSection.spChannelLocationDomain.text = spChannel.location.host;
-        _spChannelCoreSection.spChannelLocationPort.text = spChannel.location.port.toString();
-        _spChannelCoreSection.spChannelLocationContext.text = spChannel.location.context;
-        _spChannelCoreSection.spChannelLocationPath.text = spChannel.location.uri;
-
-        _spChannelCoreSection.serviceProvChannelName.addEventListener(Event.CHANGE, handleSectionChange);
-        _spChannelCoreSection.serviceProvChannelDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        _spChannelCoreSection.spChannelLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
-        _spChannelCoreSection.spChannelLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
-        _spChannelCoreSection.spChannelLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
-        _spChannelCoreSection.spChannelLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
-        _spChannelCoreSection.spChannelLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
-        _spChannelCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
-
-        _validators = [];
-        _validators.push(_spChannelCoreSection.nameValidator);
-        _validators.push(_spChannelCoreSection.portValidator);
-        _validators.push(_spChannelCoreSection.domainValidator);
-        _validators.push(_spChannelCoreSection.pathValidator);
     }
 
     private function handleSpChannelCorePropertyTabRollOut(e:Event):void {
@@ -905,6 +929,7 @@ public class PropertySheetMediator extends IocMediator {
 
         spChannel = _currentIdentityApplianceElement as ServiceProviderChannelDTO;
 
+        // if spChannel is null that means some other element was selected before completing this
         if (spChannel != null) {
             for (var j:int = 0; j < spChannel.activeBindings.length; j ++) {
                 var tmpBinding:BindingDTO = spChannel.activeBindings.getItemAt(j) as BindingDTO;
@@ -930,13 +955,13 @@ public class PropertySheetMediator extends IocMediator {
                     _spChannelContractSection.samlProfileSLOCheck.selected = true;
                 }
             }
-        }
 
-        _spChannelContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _spChannelContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _spChannelContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _spChannelContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        _spChannelContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spChannelContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spChannelContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spChannelContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spChannelContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _spChannelContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
+        }
     }
 
     private function handleSpChannelContractPropertyTabRollOut(event:Event):void {
@@ -995,26 +1020,30 @@ public class PropertySheetMediator extends IocMediator {
         var dbIdentityVault:DbIdentityVaultDTO;
 
         dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVaultDTO;
-        // bind view
-        _embeddedDbVaultCoreSection.userRepositoryName.text = dbIdentityVault.name;
-        _embeddedDbVaultCoreSection.serverPort.text = dbIdentityVault.port.toString();
-        _embeddedDbVaultCoreSection.schema.text = dbIdentityVault.schema;
-        _embeddedDbVaultCoreSection.admin.text = dbIdentityVault.admin;
-        _embeddedDbVaultCoreSection.adminPass.text = dbIdentityVault.password;
-        _embeddedDbVaultCoreSection.confirmAdminPass.text = dbIdentityVault.password;
 
-        _embeddedDbVaultCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
-        _embeddedDbVaultCoreSection.serverPort.addEventListener(Event.CHANGE, handleSectionChange);
-        _embeddedDbVaultCoreSection.schema.addEventListener(Event.CHANGE, handleSectionChange);
-        _embeddedDbVaultCoreSection.admin.addEventListener(Event.CHANGE, handleSectionChange);
-        _embeddedDbVaultCoreSection.adminPass.addEventListener(Event.CHANGE, handleSectionChange);
-        _embeddedDbVaultCoreSection.confirmAdminPass.addEventListener(Event.CHANGE, handleSectionChange);
+        // if dbIdentityVault is null that means some other element was selected before completing this
+        if (dbIdentityVault != null) {
+            // bind view
+            _embeddedDbVaultCoreSection.userRepositoryName.text = dbIdentityVault.name;
+            _embeddedDbVaultCoreSection.serverPort.text = dbIdentityVault.port.toString();
+            _embeddedDbVaultCoreSection.schema.text = dbIdentityVault.schema;
+            _embeddedDbVaultCoreSection.admin.text = dbIdentityVault.admin;
+            _embeddedDbVaultCoreSection.adminPass.text = dbIdentityVault.password;
+            _embeddedDbVaultCoreSection.confirmAdminPass.text = dbIdentityVault.password;
 
-        _validators = [];
-        _validators.push(_embeddedDbVaultCoreSection.nameValidator);
-        _validators.push(_embeddedDbVaultCoreSection.serverPortValidator);
-        _validators.push(_embeddedDbVaultCoreSection.schemaValidator);
-        _validators.push(_embeddedDbVaultCoreSection.adminValidator);        
+            _embeddedDbVaultCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
+            _embeddedDbVaultCoreSection.serverPort.addEventListener(Event.CHANGE, handleSectionChange);
+            _embeddedDbVaultCoreSection.schema.addEventListener(Event.CHANGE, handleSectionChange);
+            _embeddedDbVaultCoreSection.admin.addEventListener(Event.CHANGE, handleSectionChange);
+            _embeddedDbVaultCoreSection.adminPass.addEventListener(Event.CHANGE, handleSectionChange);
+            _embeddedDbVaultCoreSection.confirmAdminPass.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_embeddedDbVaultCoreSection.nameValidator);
+            _validators.push(_embeddedDbVaultCoreSection.serverPortValidator);
+            _validators.push(_embeddedDbVaultCoreSection.schemaValidator);
+            _validators.push(_embeddedDbVaultCoreSection.adminValidator);
+        }
     }
 
     private function handleEmbeddedDbVaultCorePropertyTabRollOut(e:Event):void {
@@ -1074,31 +1103,33 @@ public class PropertySheetMediator extends IocMediator {
         var dbIdentityVault:DbIdentityVaultDTO;
 
         dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVaultDTO;
-        // bind view
-        _externalDbVaultCoreSection.userRepositoryName.text = dbIdentityVault.name;
-        _externalDbVaultCoreSection.connectionName.text = dbIdentityVault.connectionName;
-        //TODO DRIVER
-        _externalDbVaultCoreSection.driverName.text = dbIdentityVault.driverName;
-        _externalDbVaultCoreSection.connectionUrl.text = dbIdentityVault.connectionUrl;
-        _externalDbVaultCoreSection.dbUsername.text = dbIdentityVault.admin;
-        _externalDbVaultCoreSection.dbPassword.text = dbIdentityVault.password;
 
-        _externalDbVaultCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
-        _externalDbVaultCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
-        _externalDbVaultCoreSection.driverName.addEventListener(Event.CHANGE, handleSectionChange);
-        _externalDbVaultCoreSection.connectionUrl.addEventListener(Event.CHANGE, handleSectionChange);
-        _externalDbVaultCoreSection.dbUsername.addEventListener(Event.CHANGE, handleSectionChange);
-        _externalDbVaultCoreSection.dbPassword.addEventListener(Event.CHANGE, handleSectionChange);
+        // if dbIdentityVault is null that means some other element was selected before completing this
+        if (dbIdentityVault != null) {
+            // bind view
+            _externalDbVaultCoreSection.userRepositoryName.text = dbIdentityVault.name;
+            _externalDbVaultCoreSection.connectionName.text = dbIdentityVault.connectionName;
+            //TODO DRIVER
+            _externalDbVaultCoreSection.driverName.text = dbIdentityVault.driverName;
+            _externalDbVaultCoreSection.connectionUrl.text = dbIdentityVault.connectionUrl;
+            _externalDbVaultCoreSection.dbUsername.text = dbIdentityVault.admin;
+            _externalDbVaultCoreSection.dbPassword.text = dbIdentityVault.password;
 
-        _validators = [];
-        _validators.push(_externalDbVaultCoreSection.nameValidator);
-        _validators.push(_externalDbVaultCoreSection.connNameValidator);
-        _validators.push(_externalDbVaultCoreSection.driverNameValidator);
-        _validators.push(_externalDbVaultCoreSection.connUrlValidator);
-        _validators.push(_externalDbVaultCoreSection.dbUsernameValidator);
-        _validators.push(_externalDbVaultCoreSection.dbPasswordValidator);
+            _externalDbVaultCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalDbVaultCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalDbVaultCoreSection.driverName.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalDbVaultCoreSection.connectionUrl.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalDbVaultCoreSection.dbUsername.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalDbVaultCoreSection.dbPassword.addEventListener(Event.CHANGE, handleSectionChange);
 
-
+            _validators = [];
+            _validators.push(_externalDbVaultCoreSection.nameValidator);
+            _validators.push(_externalDbVaultCoreSection.connNameValidator);
+            _validators.push(_externalDbVaultCoreSection.driverNameValidator);
+            _validators.push(_externalDbVaultCoreSection.connUrlValidator);
+            _validators.push(_externalDbVaultCoreSection.dbUsernameValidator);
+            _validators.push(_externalDbVaultCoreSection.dbPasswordValidator);
+        }
     }
 
     private function handleExternalDbVaultCorePropertyTabRollOut(e:Event):void {
@@ -1124,20 +1155,24 @@ public class PropertySheetMediator extends IocMediator {
         var dbIdentityVault:DbIdentityVaultDTO;
 
         dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVaultDTO;
-        // bind view
-//        if(dbIdentityVault.userInformationLookup == null){
-//           dbIdentityVault.userInformationLookup = new UserInformationLookupDTO();
-//        }
 
-        _externalDbVaultLookupSection.userQuery.text = dbIdentityVault.userInformationLookup.userQueryString;
-        _externalDbVaultLookupSection.rolesQuery.text = dbIdentityVault.userInformationLookup.rolesQueryString;
-        _externalDbVaultLookupSection.credentialsQuery.text = dbIdentityVault.userInformationLookup.credentialsQueryString;
-        _externalDbVaultLookupSection.propertiesQuery.text = dbIdentityVault.userInformationLookup.userPropertiesQueryString;
+        // if dbIdentityVault is null that means some other element was selected before completing this
+        if (dbIdentityVault != null) {
+            // bind view
+            //if(dbIdentityVault.userInformationLookup == null){
+                //dbIdentityVault.userInformationLookup = new UserInformationLookupDTO();
+            //}
 
-        _externalDbVaultLookupSection.userQuery.addEventListener(Event.CHANGE, handleSectionChange);
-        _externalDbVaultLookupSection.credentialsQuery.addEventListener(Event.CHANGE, handleSectionChange);
-        _externalDbVaultLookupSection.rolesQuery.addEventListener(Event.CHANGE, handleSectionChange);
-        _externalDbVaultLookupSection.propertiesQuery.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalDbVaultLookupSection.userQuery.text = dbIdentityVault.userInformationLookup.userQueryString;
+            _externalDbVaultLookupSection.rolesQuery.text = dbIdentityVault.userInformationLookup.rolesQueryString;
+            _externalDbVaultLookupSection.credentialsQuery.text = dbIdentityVault.userInformationLookup.credentialsQueryString;
+            _externalDbVaultLookupSection.propertiesQuery.text = dbIdentityVault.userInformationLookup.userPropertiesQueryString;
+
+            _externalDbVaultLookupSection.userQuery.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalDbVaultLookupSection.credentialsQuery.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalDbVaultLookupSection.rolesQuery.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalDbVaultLookupSection.propertiesQuery.addEventListener(Event.CHANGE, handleSectionChange);
+        }
     }
 
     private function handleExternalDbVaultLookupPropertyTabRollOut(e:Event):void {

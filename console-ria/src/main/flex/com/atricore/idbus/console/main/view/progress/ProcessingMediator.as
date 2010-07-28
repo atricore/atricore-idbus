@@ -21,14 +21,11 @@
 
 package com.atricore.idbus.console.main.view.progress
 {
-import mx.events.CloseEvent;
-
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class ProcessingMediator extends IocMediator
 {
-    //public static const CREATED:String = "Note.ProcessingCreated";
     public static const START:String = "Note.StartProcessing";
     public static const STOP:String = "Note.StopProcessing";
 
@@ -42,7 +39,7 @@ public class ProcessingMediator extends IocMediator
     }
 
     override public function listNotificationInterests():Array {
-        return [START,STOP];
+        return [START];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -54,20 +51,8 @@ public class ProcessingMediator extends IocMediator
                         progressBarLabel = notification.getBody() as String;
                     }
                     view.progressBar.label = progressBarLabel;
-                    //sendNotification(CREATED);
                 }
                 break;
-            case STOP:
-                closeWindow();
-                break;
-        }
-    }
-    
-    private function closeWindow():void {
-        if (view.parent != null) {
-            view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
-        } else {
-            view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
         }
     }
     
