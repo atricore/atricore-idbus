@@ -118,8 +118,8 @@ public class ModelerMediator extends IocMediator {
     public function init():void {
         _modelActionToolBar = view.modelActionToolBar;
         //(_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_NEW_BUTTON_IDX) as ButtonBarButton).enabled = true;
-        (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_BUILD_BUTTON_IDX) as ButtonBarButton).enabled = false;
-        (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX) as ButtonBarButton).enabled = false;
+        (_modelActionToolBar.dataGroup.getElementAt(MODEL_ACTION_BAR_BUILD_BUTTON_IDX) as ButtonBarButton).enabled = false;
+        (_modelActionToolBar.dataGroup.getElementAt(MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX) as ButtonBarButton).enabled = false;
 
         view.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
         view.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
