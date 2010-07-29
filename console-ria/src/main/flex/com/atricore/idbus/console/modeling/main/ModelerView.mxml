@@ -49,9 +49,8 @@
 
         <!-- TODO remove temp declarations -->
         <mx:ArrayList>
-            <browser:BrowserView id="browser" height="99%" width="20%"/>
-            <diagram:DiagramView id="diagram" width="60%" height="99%"/>
-            <palette:PaletteView id="palette" width="20%" height="99%"/>
+            <!--<diagram:DiagramView id="diagram" width="60%" height="99%"/>-->
+            <!--<palette:PaletteView id="palette" width="20%" height="99%"/>-->
         </mx:ArrayList>
     </fx:Declarations>
 
@@ -75,13 +74,12 @@
                         <s:Button id="btnSave" label="Save"/>
                     </s:HGroup>
                     <s:HGroup width="99%" height="65%">
-                        <!--<browser:BrowserView id="browser" height="99%" width="20%"/>-->
-                        <!--<diagram:DiagramView id="diagram" width="60%" height="99%"/>-->
-                        <!--<palette:PaletteView id="palette" width="20%" height="99%"/>-->
+                        <browser:BrowserView id="browser" height="99%" width="20%"/>
+                        <diagram:DiagramView id="diagram" width="60%" height="99%"/>
+                        <palette:PaletteView id="palette" width="20%" height="99%"/>
                     </s:HGroup>
                     <s:HGroup height="30%" width="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
                              <!--borderStyle="solid">-->
-                        <!--<s:Border></s:Border>-->
                         <propertysheet:PropertySheetView id="propertysheet" height="100%" width="100%"/>
                     </s:HGroup>
                 </s:VGroup>
