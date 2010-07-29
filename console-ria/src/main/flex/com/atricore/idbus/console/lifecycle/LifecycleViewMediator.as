@@ -2,24 +2,36 @@ package com.atricore.idbus.console.lifecycle
 {
 
 import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand;
+import com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
 
+import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
 import mx.collections.HierarchicalData;
+import mx.controls.AdvancedDataGrid;
 import mx.controls.Alert;
 import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 import mx.events.CloseEvent;
 import mx.events.DragEvent;
+
+import mx.events.FlexEvent;
+
+import mx.managers.DragManager;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class LifecycleViewMediator extends IocMediator {
 
+    public static const viewName:String = "LifecycleView";
+    
     private var _projectProxy:ProjectProxy;
 
     public function LifecycleViewMediator(name:String = null, viewComp:LifecycleView = null) {
@@ -42,43 +54,48 @@ public class LifecycleViewMediator extends IocMediator {
             view.grdSavedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
             view.grdSavedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
             view.grdSavedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+            view.grdSavedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
             view.grdCompiledAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
             view.grdCompiledAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
             view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+            view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
             view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInSavedAppliance);
             view.grdDeployedAppliances.
                     (LifecycleGridButtonEvent.CLICK, handleGridButton);
             view.grdDeployedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
             view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+            view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
             view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInCompiledAppliance);
             view.grdDeployedAppliances.labelFunction = identityApplianceNameLabel;
             view.grdDisposedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
             view.grdDisposedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
             view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+            view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
             view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInDeployedAppliance);
         }
-
-
+        
+        (viewComponent as LifecycleView).addEventListener(FlexEvent.SHOW, init);
+        
         super.setViewComponent(viewComponent);
-
-        /* TODO: invoke only upon the view is created
-         init();
-         */
     }
 
-    private function init():void {
+    private function init(event:Event):void {
+
+        projectProxy.currentView = viewName;
 
         // Saved Appliances Grid
         view.grdSavedAppliances.dataProvider = new HierarchicalData(projectProxy.identityApplianceList);
         view.grdSavedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
         view.grdSavedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
         view.grdSavedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+        view.grdSavedAppliances.addEventListener(DragEvent.DRAG_OVER, handleDragOver);
         view.colSavedApplianceName.labelFunction = identityApplianceNameLabel;
 
         // Compiled Appliances Grid
         view.grdCompiledAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
         view.grdCompiledAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
         view.grdCompiledAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+        view.grdCompiledAppliances.addEventListener(DragEvent.DRAG_OVER, handleDragOver);
         view.grdCompiledAppliances.addEventListener(DragEvent.DRAG_DROP, dropInSavedAppliance);
         view.colCompiledApplianceName.labelFunction = identityApplianceNameLabel;
 
@@ -86,7 +103,8 @@ public class LifecycleViewMediator extends IocMediator {
         view.grdDeployedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
         view.grdDeployedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
         view.grdDeployedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-        view.grdDeployedAppliances.addEventListener(DragEvent.DRAG_DROP, dropInCompiledAppliance);
+        view.grdDeployedAppliances.addEventListener(DragEvent.DRAG_OVER, handleDragOver);
+        view.grdDeployedAppliances.addEventListener(DragEvent.DRAG_DROP, dropInCompiledAppliance)
         view.grdDeployedAppliances.labelFunction = identityApplianceNameLabel;
         view.colDeployedApplianceName.labelFunction = identityApplianceNameLabel;
 
@@ -94,6 +112,7 @@ public class LifecycleViewMediator extends IocMediator {
         view.grdDisposedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
         view.grdDisposedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
         view.grdDisposedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+        view.grdDisposedAppliances.addEventListener(DragEvent.DRAG_OVER, handleDragOver);
         view.grdDisposedAppliances.addEventListener(DragEvent.DRAG_DROP, dropInDeployedAppliance);
         view.grdDisposedAppliances.labelFunction = identityApplianceNameLabel;
         view.colDisposedApplianceName.labelFunction = identityApplianceNameLabel;
@@ -121,17 +140,26 @@ public class LifecycleViewMediator extends IocMediator {
 
         var items:Array = event.dragSource.dataForFormat('treeDataGridItems') as Array;
 
-        // TODO: spawn a build
         trace("Building Appliances " + items);
+
+        sendNotification(ProcessingMediator.START, "Building appliance ...");
+        for (var i:int = 0; i < items.length; i++) {
+            var appliance:IdentityApplianceDTO = items[i] as IdentityApplianceDTO;
+            sendNotification(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, [appliance.id.toString(), false]);
+        }
     }
 
     private function dropInCompiledAppliance(event:DragEvent):void {
 
         var items:Array = event.dragSource.dataForFormat('treeDataGridItems') as Array;
 
-        // TODO: spawn a deployment
         trace("Deploying Appliances " + items);
 
+        sendNotification(ProcessingMediator.START, "Deploying appliance ...");
+        for (var i:int = 0; i < items.length; i++) {
+            var appliance:IdentityApplianceDTO = items[i] as IdentityApplianceDTO;
+            sendNotification(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE, [appliance.id.toString(), false]);
+        }
     }
 
     private function dropInDeployedAppliance(event:DragEvent):void {
@@ -143,14 +171,56 @@ public class LifecycleViewMediator extends IocMediator {
 
     }
 
+    private function handleDragOver(event:DragEvent):void {
+        var sourceGrid:AdvancedDataGrid = event.dragInitiator as AdvancedDataGrid;
+        var targetGrid:AdvancedDataGrid = event.currentTarget as AdvancedDataGrid;
 
+        if ((sourceGrid.id == targetGrid.id) ||
+                (sourceGrid.id == "grdSavedAppliances" && targetGrid.id != "grdCompiledAppliances") ||
+                (sourceGrid.id == "grdCompiledAppliances" && targetGrid.id != "grdDeployedAppliances") ||
+                (sourceGrid.id == "grdDeployedAppliances" && targetGrid.id != "grdDisposedAppliances")) {
+            event.preventDefault();
+            DragManager.showFeedback(DragManager.NONE);
+        }
+    }
+    
     override public function listNotificationInterests():Array {
-        return [];
+        return [BuildIdentityApplianceCommand.SUCCESS,
+                BuildIdentityApplianceCommand.FAILURE,
+                DeployIdentityApplianceCommand.SUCCESS,
+                DeployIdentityApplianceCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-
+            case BuildIdentityApplianceCommand.SUCCESS:
+                if (projectProxy.currentView == viewName) {
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                            "Appliance has been successfully built.");
+                }
+                break;
+            case BuildIdentityApplianceCommand.FAILURE:
+                if (projectProxy.currentView == viewName) {
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                        "There was an error building appliance.");
+                }
+                break;
+            case DeployIdentityApplianceCommand.SUCCESS:
+                if (projectProxy.currentView == viewName) {
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                            "Appliance has been successfully deployed.");
+                }
+                break;
+            case DeployIdentityApplianceCommand.FAILURE:
+                if (projectProxy.currentView == viewName) {
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                            "There was an error deploying appliance.");
+                }
+                break;
         }
     }
 

@@ -39,10 +39,12 @@ import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMedia
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
+import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.controls.ButtonBar;
 import mx.controls.buttonBarClasses.ButtonBarButton;
+import mx.events.FlexEvent;
 import mx.events.ItemClickEvent;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -50,6 +52,8 @@ import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class ModelerMediator extends IocMediator {
 
+    public static const viewName:String = "ModelerView";
+    
     public static const BUNDLE:String = "console";
 
     public static const ORIENTATION_MENU_ITEM_INDEX:int = 3;
@@ -105,12 +109,17 @@ public class ModelerMediator extends IocMediator {
             _modelActionToolBar.removeEventListener(ItemClickEvent.ITEM_CLICK, handleModelActionToolBarClick);
         }
 
+        (p_viewComponent as ModelerView).addEventListener(FlexEvent.SHOW, init);
+
         super.setViewComponent(p_viewComponent);
 
-        init();
+        init(null);
     }
 
-    public function init():void {
+    public function init(event:Event):void {
+
+        projectProxy.currentView = viewName;
+
         _modelActionToolBar = view.modelActionToolBar;
 
         //(_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_NEW_BUTTON_IDX) as ButtonBarButton).enabled = true;

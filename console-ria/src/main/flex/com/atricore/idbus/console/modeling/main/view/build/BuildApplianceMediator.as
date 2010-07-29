@@ -24,6 +24,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.main.ModelerMediator;
 import com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand;
 
 import flash.events.Event;
@@ -80,18 +81,22 @@ public class BuildApplianceMediator extends IocFormMediator
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case BuildIdentityApplianceCommand.SUCCESS:
-                sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                var msg:String = "Appliance has been successfully built.";
-                if (view.deployAppliance.selected) {
-                    msg =  "Appliance has been successfully built and deployed.";
+                if (projectProxy.currentView == ModelerMediator.viewName) {
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                    var msg:String = "Appliance has been successfully built.";
+                    if (view.deployAppliance.selected) {
+                        msg =  "Appliance has been successfully built and deployed.";
+                    }
+                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, msg);
                 }
-                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, msg);
                 break;
             case BuildIdentityApplianceCommand.FAILURE:
-                sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                    "There was an error building appliance.");
+                if (projectProxy.currentView == ModelerMediator.viewName) {
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                        "There was an error building appliance.");
+                }
                 break;
         }
 
