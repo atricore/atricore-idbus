@@ -20,17 +20,24 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:Application xmlns:mx="library://ns.adobe.com/flex/mx"
+                xmlns:fx="http://ns.adobe.com/mxml/2009"
+                xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:view="com.atricore.idbus.console.modeling.view.*"
                 xmlns:modeler="com.atricore.idbus.console.modeling.main.*"
                 xmlns:comp="com.atricore.idbus.console.components.*"
                 xmlns:login="com.atricore.idbus.console.main.view.login.*"
                 xmlns:lifecycle="com.atricore.idbus.console.lifecycle.*"
-                layout="absolute" horizontalAlign="left" height="100%" width="100%" minWidth="955" minHeight="600"
                 creationComplete="onCreationComplete()">
+    <s:layout>
+        <!--<s:VerticalLayout horizontalAlign="left" />-->
+        <s:BasicLayout />
+        <!--layout="absolute" horizontalAlign="left" height="100%" width="100%" -->
+        <!--<s:HorizontalLayout horizontalAlign="left" />-->
+    </s:layout>
 
 
-    <mx:Script>
+    <fx:Script>
       <![CDATA[
         import com.atricore.idbus.console.main.ApplicationFacade;
 
@@ -56,35 +63,54 @@
             m_facade.notifyObservers(new Notification(ApplicationFacade.STARTUP, this));
         }
       ]]>
-    </mx:Script>
+    </fx:Script>
 
-    <mx:Iris id="irisIn" scaleXFrom="0" scaleYFrom="0" scaleXTo="1" scaleYTo="1" duration="200"/>
-    <mx:Iris id="irisOut" scaleXFrom="1" scaleYFrom="1" scaleXTo="0" scaleYTo="0" duration="200"/>
-    <mx:WipeDown id="wipeDown" duration="200"/>
-    <mx:WipeUp id="wipeUp" duration="200"/>
-    <mx:WipeRight id="wipeRight" duration="200"/>
-
-    <mx:Metadata>
-        [ResourceBundle("console")]
-    </mx:Metadata>
-
-    <mx:Style source="../resources/style/yflexskin.css"/>
-    <mx:Style source="../resources/style/style.css"/>
-
-    <!--<mx:VBox x="71" y="31" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"-->
-    <mx:VBox  paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"    
-             borderStyle="solid" width="100%" height="100%" visible="true">
-        <mx:HBox paddingTop="2" paddingLeft="10">
-            <comp:MessageBox id="messageBox" showEffect="{wipeRight}"/>
-        </mx:HBox>
-        <mx:ToggleButtonBar dataProvider="modulesViewStack"/>
-        <mx:ViewStack id="modulesViewStack" width="100%" height="100%">
-            <modeler:ModelerView id="modelerView" visible="false" label="Modeler"/>
+    <fx:Declarations>
+        <mx:Iris id="irisIn" scaleXFrom="0" scaleYFrom="0" scaleXTo="1" scaleYTo="1" duration="200"/>
+        <mx:Iris id="irisOut" scaleXFrom="1" scaleYFrom="1" scaleXTo="0" scaleYTo="0" duration="200"/>
+        <mx:WipeDown id="wipeDown" duration="200"/>
+        <mx:WipeUp id="wipeUp" duration="200"/>
+        <mx:WipeRight id="wipeRight" duration="200"/>
+        <mx:ArrayList>
+            <!--<modeler:ModelerView id="modelerView" visible="false" label="Modeler"/>-->
             <lifecycle:LifecycleView id="lifecycleView" visible="true" label="Lifecycle"/>
-            <mx:Canvas label="Setup" width="95%" height="95%">
-            </mx:Canvas>
-            <mx:Canvas label="Deployment" width="95%" height="95%">
-            </mx:Canvas>
-        </mx:ViewStack>
-    </mx:VBox>
-</mx:Application>
+        </mx:ArrayList>
+    </fx:Declarations>
+
+    <fx:Metadata>
+        [ResourceBundle("console")]
+    </fx:Metadata>
+
+    <fx:Style source="../resources/style/yflexskin.css"/>
+    <fx:Style source="../resources/style/style.css"/>
+
+    <!--<mx:VBox paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"-->
+             <!--borderStyle="solid" width="100%" height="100%" visible="true"-->
+             <!--minWidth="955" minHeight="600">-->
+
+    <s:VGroup paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
+              width="100%" height="100%" visible="true">
+              <!--minHeight="955" minWidth="600">-->
+        <s:HGroup paddingTop="2" paddingLeft="10">
+            <comp:MessageBox id="messageBox" showEffect="{wipeRight}"/>
+        </s:HGroup>
+        <s:ButtonBar dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name"/>
+        <!--<s:ButtonBar dataProvider="{modulesViewStack}" labelField="name"/>-->
+        <!--<mx:ViewStack id="modulesViewStack" width="100%" height="100%">-->
+        <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%">
+            <modeler:ModelerView id="modelerView" visible="false" name="Modeler2"/>
+            <!--<lifecycle:LifecycleView id="lifecycleView" visible="true" label="Lifecycle"/>-->
+            <!--<mx:Canvas label="Setup" width="95%" height="95%">-->
+            <!--</mx:Canvas>-->
+            <s:Group width="95%" height="95%" name="Setup">
+                <s:Label text="Setup"/>
+            </s:Group>
+            <!--<mx:Canvas label="Deployment" width="95%" height="95%">-->
+            <!--</mx:Canvas>-->
+            <s:Group width="95%" height="95%" name="Deployment">
+                <s:Label text="Deployment"/>
+            </s:Group>
+        </comp:CustomViewStack>
+        <!--</mx:ViewStack>-->
+    </s:VGroup>
+</s:Application>

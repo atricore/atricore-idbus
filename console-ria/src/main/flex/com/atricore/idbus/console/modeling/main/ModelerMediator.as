@@ -41,8 +41,13 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
 import flash.events.MouseEvent;
 
-import mx.controls.ButtonBar;
-import mx.controls.buttonBarClasses.ButtonBarButton;
+import mx.controls.Alert;
+
+import spark.components.ButtonBar;
+import spark.components.ButtonBarButton;
+
+//import mx.controls.ButtonBar;
+//import mx.controls.buttonBarClasses.ButtonBarButton;
 import mx.events.ItemClickEvent;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -112,7 +117,6 @@ public class ModelerMediator extends IocMediator {
 
     public function init():void {
         _modelActionToolBar = view.modelActionToolBar;
-
         //(_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_NEW_BUTTON_IDX) as ButtonBarButton).enabled = true;
         (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_BUILD_BUTTON_IDX) as ButtonBarButton).enabled = false;
         (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX) as ButtonBarButton).enabled = false;
