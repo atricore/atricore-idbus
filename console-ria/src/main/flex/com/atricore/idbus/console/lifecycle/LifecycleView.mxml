@@ -147,7 +147,7 @@
                                                headerText="Identity Appliance"
                                                headerStyleName="applianceHeader"
                                                showDataTips="true" dataField="applianceLabel" wordWrap="true"/>
-                    <mx:AdvancedDataGridColumn headerText="State" dataField="state" width="50" textAlign="center"
+                    <mx:AdvancedDataGridColumn headerText="State" dataField="state" width="75" textAlign="center"
                                                showDataTips="true"/>
                     <mx:AdvancedDataGridColumn headerText="Actions" width="100">
                         <mx:itemRenderer>

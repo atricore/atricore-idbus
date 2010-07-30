@@ -122,9 +122,14 @@ public class ModelerMediator extends IocMediator {
 
         _modelActionToolBar = view.modelActionToolBar;
 
-        //(_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_NEW_BUTTON_IDX) as ButtonBarButton).enabled = true;
-        (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_BUILD_BUTTON_IDX) as ButtonBarButton).enabled = false;
-        (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX) as ButtonBarButton).enabled = false;
+        if (projectProxy.currentIdentityAppliance != null) {
+            sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+            enableIdentityApplianceActionButtons();
+        } else {
+            //(_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_NEW_BUTTON_IDX) as ButtonBarButton).enabled = true;
+            (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_BUILD_BUTTON_IDX) as ButtonBarButton).enabled = false;
+            (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX) as ButtonBarButton).enabled = false;
+        }
 
         view.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
         view.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
@@ -277,6 +282,7 @@ public class ModelerMediator extends IocMediator {
                 break;
             case LookupIdentityApplianceByIdCommand.SUCCESS:
                 view.btnSave.enabled = false;
+                enableIdentityApplianceActionButtons();
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
@@ -313,8 +319,8 @@ public class ModelerMediator extends IocMediator {
     }
 
     private function updateIdentityAppliance():void {
-
         _identityAppliance = projectProxy.currentIdentityAppliance;
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
     }
 
     private function enableIdentityApplianceActionButtons():void {

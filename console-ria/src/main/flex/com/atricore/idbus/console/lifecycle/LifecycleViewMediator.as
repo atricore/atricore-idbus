@@ -7,8 +7,12 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand;
+import com.atricore.idbus.console.modeling.main.controller.StartIdentityApplianceCommand;
+import com.atricore.idbus.console.modeling.main.controller.StopIdentityApplianceCommand;
+import com.atricore.idbus.console.modeling.main.controller.UndeployIdentityApplianceCommand;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
+import com.atricore.idbus.console.services.dto.IdentityApplianceStateDTO;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -84,7 +88,6 @@ public class LifecycleViewMediator extends IocMediator {
         projectProxy.currentView = viewName;
 
         // Saved Appliances Grid
-        view.grdSavedAppliances.dataProvider = new HierarchicalData(projectProxy.identityApplianceList);
         view.grdSavedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
         view.grdSavedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
         view.grdSavedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
@@ -105,7 +108,6 @@ public class LifecycleViewMediator extends IocMediator {
         view.grdDeployedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
         view.grdDeployedAppliances.addEventListener(DragEvent.DRAG_OVER, handleDragOver);
         view.grdDeployedAppliances.addEventListener(DragEvent.DRAG_DROP, dropInCompiledAppliance)
-        view.grdDeployedAppliances.labelFunction = identityApplianceNameLabel;
         view.colDeployedApplianceName.labelFunction = identityApplianceNameLabel;
 
         // Disposed Appliances Grid
@@ -116,9 +118,33 @@ public class LifecycleViewMediator extends IocMediator {
         view.grdDisposedAppliances.addEventListener(DragEvent.DRAG_DROP, dropInDeployedAppliance);
         view.grdDisposedAppliances.labelFunction = identityApplianceNameLabel;
         view.colDisposedApplianceName.labelFunction = identityApplianceNameLabel;
-
+        
+        initGrids();
     }
 
+    private function initGrids():void {
+        var savedAppliances:ArrayCollection = new ArrayCollection();
+        var compiledAppliances:ArrayCollection = new ArrayCollection();
+        var deployedAppliances:ArrayCollection = new ArrayCollection();
+        var disposedAppliances:ArrayCollection = new ArrayCollection();
+        
+        for (var i:int = 0; i < projectProxy.identityApplianceList.length; i++) {
+            var appliance:IdentityApplianceDTO = projectProxy.identityApplianceList[i] as IdentityApplianceDTO;
+            if (appliance.idApplianceDeployment == null) {
+                savedAppliances.addItem(appliance);
+            } else if (appliance.state == IdentityApplianceStateDTO.PROJECTED.name) {
+                compiledAppliances.addItem(appliance);
+            } else if (appliance.state == IdentityApplianceStateDTO.INSTALLED.name ||
+                    appliance.state == IdentityApplianceStateDTO.STARTED.name) {
+                deployedAppliances.addItem(appliance);
+            }
+        }
+
+        view.grdSavedAppliances.dataProvider = new HierarchicalData(savedAppliances);
+        view.grdCompiledAppliances.dataProvider = new HierarchicalData(compiledAppliances);
+        view.grdDeployedAppliances.dataProvider = new HierarchicalData(deployedAppliances);
+        view.grdDisposedAppliances.dataProvider = new HierarchicalData(disposedAppliances);
+    }
 
     private function identityApplianceNameLabel(item:Object, column:AdvancedDataGridColumn):String {
         return (item as IdentityApplianceDTO).idApplianceDefinition.name;
@@ -166,11 +192,15 @@ public class LifecycleViewMediator extends IocMediator {
 
         var items:Array = event.dragSource.dataForFormat('treeDataGridItems') as Array;
 
-        // TODO: spawn an undeploy
         trace("Undeploying Appliances " + items);
 
+        sendNotification(ProcessingMediator.START, "Undeploying appliance ...");
+        for (var i:int = 0; i < items.length; i++) {
+            var appliance:IdentityApplianceDTO = items[i] as IdentityApplianceDTO;
+            sendNotification(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, appliance.id.toString());
+        }
     }
-
+    
     private function handleDragOver(event:DragEvent):void {
         var sourceGrid:AdvancedDataGrid = event.dragInitiator as AdvancedDataGrid;
         var targetGrid:AdvancedDataGrid = event.currentTarget as AdvancedDataGrid;
@@ -181,6 +211,15 @@ public class LifecycleViewMediator extends IocMediator {
                 (sourceGrid.id == "grdDeployedAppliances" && targetGrid.id != "grdDisposedAppliances")) {
             event.preventDefault();
             DragManager.showFeedback(DragManager.NONE);
+            return;
+        }
+
+        if (targetGrid.id == "grdDisposedAppliances") {
+            var items:Array = event.dragSource.dataForFormat('treeDataGridItems') as Array;
+            if ((items[0] as IdentityApplianceDTO).state == IdentityApplianceStateDTO.STARTED.name) {
+                event.preventDefault();
+                DragManager.showFeedback(DragManager.NONE);
+            }
         }
     }
     
@@ -188,13 +227,20 @@ public class LifecycleViewMediator extends IocMediator {
         return [BuildIdentityApplianceCommand.SUCCESS,
                 BuildIdentityApplianceCommand.FAILURE,
                 DeployIdentityApplianceCommand.SUCCESS,
-                DeployIdentityApplianceCommand.FAILURE];
+                DeployIdentityApplianceCommand.FAILURE,
+                StartIdentityApplianceCommand.SUCCESS,
+                StartIdentityApplianceCommand.FAILURE,
+                StopIdentityApplianceCommand.SUCCESS,
+                StopIdentityApplianceCommand.FAILURE,
+                UndeployIdentityApplianceCommand.SUCCESS,
+                UndeployIdentityApplianceCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case BuildIdentityApplianceCommand.SUCCESS:
                 if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(false);
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
                             "Appliance has been successfully built.");
@@ -202,6 +248,7 @@ public class LifecycleViewMediator extends IocMediator {
                 break;
             case BuildIdentityApplianceCommand.FAILURE:
                 if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(true);
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         "There was an error building appliance.");
@@ -209,6 +256,7 @@ public class LifecycleViewMediator extends IocMediator {
                 break;
             case DeployIdentityApplianceCommand.SUCCESS:
                 if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(false);
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
                             "Appliance has been successfully deployed.");
@@ -216,9 +264,58 @@ public class LifecycleViewMediator extends IocMediator {
                 break;
             case DeployIdentityApplianceCommand.FAILURE:
                 if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(true);
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                             "There was an error deploying appliance.");
+                }
+                break;
+            case UndeployIdentityApplianceCommand.SUCCESS:
+                if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(false);
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                            "Appliance has been successfully undeployed.");
+                }
+                break;
+            case UndeployIdentityApplianceCommand.FAILURE:
+                if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(true);
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                            "There was an error uneploying appliance.");
+                }
+                break;
+            case StartIdentityApplianceCommand.SUCCESS:
+                if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(false);
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                            "Appliance has been successfully started.");
+                }
+                break;
+            case StartIdentityApplianceCommand.FAILURE:
+                if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(true);
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                            "There was an error starting appliance.");
+                }
+                break;
+            case StopIdentityApplianceCommand.SUCCESS:
+                if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(false);
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                            "Appliance has been successfully stopped.");
+                }
+                break;
+            case StopIdentityApplianceCommand.FAILURE:
+                if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(true);
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                            "There was an error stopping appliance.");
                 }
                 break;
         }
@@ -243,6 +340,16 @@ public class LifecycleViewMediator extends IocMediator {
                 var parent:IdentityApplianceDTO = event.data as IdentityApplianceDTO;
                 Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null, removeConfirmed, null, Alert.YES);
                 break;
+            case LifecycleGridButtonEvent.ACTION_START :
+                var appliance:IdentityApplianceDTO = event.data as IdentityApplianceDTO;
+                sendNotification(ProcessingMediator.START, "Starting appliance ...");
+                sendNotification(ApplicationFacade.START_IDENTITY_APPLIANCE, appliance.id.toString());
+                break;
+            case LifecycleGridButtonEvent.ACTION_STOP :
+                var appliance:IdentityApplianceDTO = event.data as IdentityApplianceDTO;
+                sendNotification(ProcessingMediator.START, "Stopping appliance ...");
+                sendNotification(ApplicationFacade.STOP_IDENTITY_APPLIANCE, appliance.id.toString());
+                break;
         }
     }
 
@@ -263,6 +370,25 @@ public class LifecycleViewMediator extends IocMediator {
     private function buildToolTip(row:Object):String {
         var appliance:IdentityApplianceDefinitionDTO = row as IdentityApplianceDefinitionDTO;
         return appliance ? appliance.name : "";
+    }
+
+    private function updateAppliancesList(error:Boolean):void {
+        if (!error) {
+            var modifiedAppliance:IdentityApplianceDTO = projectProxy.currentIdentityAppliance;
+            if (modifiedAppliance != null) {
+                for (var i:int = 0; i < projectProxy.identityApplianceList.length; i++) {
+                    var appliance:IdentityApplianceDTO = projectProxy.identityApplianceList[i] as IdentityApplianceDTO;
+                    if (modifiedAppliance.id == appliance.id) {
+                        projectProxy.identityApplianceList[i] = modifiedAppliance;
+                        break;
+                    }
+                }
+            }
+        }
+        initGrids();
+        
+        // TODO: retrieve the list instead of modifying the existing one?
+        //sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
     }
 
     public function get view():LifecycleView {
