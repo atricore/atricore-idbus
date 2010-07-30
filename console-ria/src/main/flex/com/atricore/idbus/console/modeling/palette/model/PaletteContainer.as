@@ -20,26 +20,27 @@
  */
 
 package com.atricore.idbus.console.modeling.palette.model {
+import mx.collections.ArrayList;
 import mx.controls.Image;
 
 public class PaletteContainer extends PaletteEntry {
-    private var _children:Array;
+    private var _children:ArrayList;
 
     public function PaletteContainer(label:String, icon:Image, description:String) {
         super(label, icon, description, -1);
 
-        _children = new Array();
+        _children = new ArrayList();
     }
 
     public function add(entry:PaletteEntry, ...args):void {
         if (args[0] is Number) {
             _children[args[0]] = entry;
         } else {
-            _children.push(entry);
+            _children.addItem(entry);
         }
     }
 
-    public function get children():Array {
+    public function get children():ArrayList {
         return _children;
     }
 }

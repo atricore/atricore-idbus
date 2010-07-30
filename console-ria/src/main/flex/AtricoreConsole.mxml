@@ -56,11 +56,16 @@
             m_facade.addConfigSource("flex/flexApplicationContext.xml");
             m_facade.addEventListener(Event.COMPLETE, startupApp);
             m_facade.initializeIocContainer();
+            stackButtonBar.selectedIndex = 0;
         }
 
         private function startupApp(p_event:Event):void {
             m_facade.removeEventListener(Event.COMPLETE, startupApp);
             m_facade.notifyObservers(new Notification(ApplicationFacade.STARTUP, this));
+        }
+
+        private function stackChanged():void {
+            modulesViewStack.selectedIndex = stackButtonBar.selectedIndex;
         }
       ]]>
     </fx:Script>
@@ -94,11 +99,13 @@
         <s:HGroup paddingTop="2" paddingLeft="10">
             <comp:MessageBox id="messageBox" showEffect="{wipeRight}"/>
         </s:HGroup>
-        <s:ButtonBar dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name"/>
-        <!--<s:ButtonBar dataProvider="{modulesViewStack}" labelField="name"/>-->
-        <!--<mx:ViewStack id="modulesViewStack" width="100%" height="100%">-->
+        <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name" change="stackChanged()"/>
+        <!--<s:ButtonBar dataProvider="{modulesViewStack}"/>-->
+        <!--<mx:ViewStack id="modulesViewStack" width="100%" height="100%" selectedIndex="0">-->
         <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%">
-            <modeler:ModelerView id="modelerView" visible="false" name="Modeler2"/>
+            <!--<s:NavigatorContent label="Modeler">-->
+            <modeler:ModelerView id="modelerView" visible="false" name="Modeler"/>
+            <!--</s:NavigatorContent>-->
             <!--<lifecycle:LifecycleView id="lifecycleView" visible="true" label="Lifecycle"/>-->
             <!--<mx:Canvas label="Setup" width="95%" height="95%">-->
             <!--</mx:Canvas>-->

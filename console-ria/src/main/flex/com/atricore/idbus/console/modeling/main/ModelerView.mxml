@@ -49,8 +49,10 @@
 
         <!-- TODO remove temp declarations -->
         <mx:ArrayList>
+            <!--<browser:BrowserView id="browser" height="99%" width="20%"/>-->
             <!--<diagram:DiagramView id="diagram" width="60%" height="99%"/>-->
             <!--<palette:PaletteView id="palette" width="20%" height="99%"/>-->
+            <!--<propertysheet:PropertySheetView id="propertysheet" height="100%" width="100%"/>-->
         </mx:ArrayList>
     </fx:Declarations>
 

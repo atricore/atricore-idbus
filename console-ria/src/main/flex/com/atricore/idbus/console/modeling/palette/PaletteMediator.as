@@ -81,7 +81,7 @@ public class PaletteMediator extends IocMediator {
         var pr:PaletteRoot  = new PaletteRoot("Identity Appliance Modeler Palette", null, null);
         pr.add(saml2PaletteDrawer);
 
-        view.rptPaletteRoot.dataProvider = IList(pr);
+        view.rptPaletteRoot.dataProvider = pr;
         view.addEventListener(PaletteEvent.CLICK, handlePaletteClick);
 
     }
