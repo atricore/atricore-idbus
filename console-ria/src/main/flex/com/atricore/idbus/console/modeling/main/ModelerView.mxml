@@ -48,12 +48,12 @@
         </mx:ArrayCollection>
 
         <!-- TODO remove temp declarations -->
-        <mx:ArrayList>
+        <!--<mx:ArrayList>-->
             <!--<browser:BrowserView id="browser" height="99%" width="20%"/>-->
             <!--<diagram:DiagramView id="diagram" width="60%" height="99%"/>-->
             <!--<palette:PaletteView id="palette" width="20%" height="99%"/>-->
             <!--<propertysheet:PropertySheetView id="propertysheet" height="100%" width="100%"/>-->
-        </mx:ArrayList>
+        <!--</mx:ArrayList>-->
     </fx:Declarations>
 
     <s:HGroup width="100%" height="100%" x="0" y="0" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
