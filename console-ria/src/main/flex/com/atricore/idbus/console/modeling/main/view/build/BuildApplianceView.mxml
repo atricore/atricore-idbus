@@ -20,23 +20,25 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml"
+<mx:Form xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:utils="com.atricore.idbus.console.components.*"
          defaultButton="{btnNext}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
 
     <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.build.options.title')}"
                            width="400" height="150" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.build.options.selectedAppliance')}" labelWidth="130" paddingTop="35" paddingLeft="35">
-            <mx:TextInput id="selectedAppliance" editable="false" />
+            <s:TextInput id="selectedAppliance" editable="false" />
         </mx:FormItem>
 
         <mx:FormItem labelWidth="130" paddingLeft="35">
-            <mx:CheckBox id="deployAppliance" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.build.options.deployAppliance')}"/>
+            <s:CheckBox id="deployAppliance" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.build.options.deployAppliance')}"/>
         </mx:FormItem>
     </utils:TitledBorderBox>
 
-    <mx:HBox width="100%">
+    <s:HGroup width="100%">
         <mx:Spacer width="325"/>
-        <mx:Button id="btnNext" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.build.options.build')}"/>
-    </mx:HBox>
+        <s:Button id="btnNext" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.build.options.build')}"/>
+    </s:HGroup>
 </mx:Form>

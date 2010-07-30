@@ -313,8 +313,11 @@ public class ModelerMediator extends IocMediator {
     }
 
     private function enableIdentityApplianceActionButtons():void {
-        (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_BUILD_BUTTON_IDX) as ButtonBarButton).enabled = true;
-        (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX) as ButtonBarButton).enabled = true;
+//        (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_BUILD_BUTTON_IDX) as ButtonBarButton).enabled = true;
+//        (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX) as ButtonBarButton).enabled = true;
+
+        (_modelActionToolBar.dataGroup.getElementAt(MODEL_ACTION_BAR_BUILD_BUTTON_IDX) as ButtonBarButton).enabled = true;
+        (_modelActionToolBar.dataGroup.getElementAt(MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX) as ButtonBarButton).enabled = true;
 
         // TODO: associate behavior to build and deploy buttons
 

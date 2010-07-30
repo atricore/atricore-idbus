@@ -20,6 +20,7 @@
  */
 
 package com.atricore.idbus.console.modeling.propertysheet {
+import com.atricore.idbus.console.components.CustomViewStack;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
@@ -51,9 +52,19 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
-import mx.containers.Canvas;
-import mx.containers.ViewStack;
-import mx.controls.TabBar;
+
+import spark.components.Group;
+import spark.components.Panel;
+import spark.components.Scroller;
+
+//import mx.containers.Canvas;
+
+import spark.components.TabBar;
+import spark.events.IndexChangeEvent;
+
+//import mx.controls.TabBar;
+
+//import spark.components.TextInput;
 import mx.controls.TextInput;
 import mx.events.FlexEvent;
 
@@ -67,7 +78,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _projectProxy:ProjectProxy;
 
     private var _tabbedPropertiesTabBar:TabBar;
-    private var _propertySheetsViewStack:ViewStack;
+    private var _propertySheetsViewStack:CustomViewStack;
     private var _iaCoreSection:IdentityApplianceCoreSection;
     private var _ipCoreSection:IdentityProviderCoreSection;
     private var _spCoreSection:ServiceProviderCoreSection;
@@ -110,8 +121,13 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack = view.propertySheetsViewStack;
         _dirty = false;
         _validators = [];
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+        _tabbedPropertiesTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
     }
 
+    private function stackChanged():void {
+        _propertySheetsViewStack.selectedIndex = _tabbedPropertiesTabBar.selectedIndex;
+    }
 
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE,
@@ -164,17 +180,25 @@ public class PropertySheetMediator extends IocMediator {
         // Attach appliance editor form to property tabbed view
         _propertySheetsViewStack.removeAllChildren();
 
-        var corePropertyTab:Canvas = new Canvas();
+        var corePropertyTab:Group = new Group();
         corePropertyTab.id = "propertySheetCoreSection";
-        corePropertyTab.label = "Core";
-        corePropertyTab.width = Number("100%");
-        corePropertyTab.height = Number("100%");
+        corePropertyTab.name = "Core";
+//        corePropertyTab.width = Number("100%");
+//        corePropertyTab.height = Number("100%");
         corePropertyTab.setStyle("borderStyle", "solid");
 
         _iaCoreSection = new IdentityApplianceCoreSection();
-        corePropertyTab.addChild(_iaCoreSection);
-        _propertySheetsViewStack.addChild(corePropertyTab);
+        corePropertyTab.addElement(_iaCoreSection);
+//        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        var scroller:Scroller = new Scroller();
+        scroller.viewport = corePropertyTab;
+        scroller.name = "Core";
+        scroller.width = _propertySheetsViewStack.width - 10;
+        scroller.height = _propertySheetsViewStack.height - 10;        
+        _propertySheetsViewStack.addNewChild(scroller);
 
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+        
         _iaCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityApplianceCorePropertyTabRollOut);
 
@@ -240,31 +264,33 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack.removeAllChildren();
 
         // Core Tab
-        var corePropertyTab:Canvas = new Canvas();
+        var corePropertyTab:Group = new Group();
         corePropertyTab.id = "propertySheetCoreSection";
-        corePropertyTab.label = "Core";
+        corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
         corePropertyTab.height = Number("100%");
         corePropertyTab.setStyle("borderStyle", "solid");
 
         _ipCoreSection = new IdentityProviderCoreSection();
-        corePropertyTab.addChild(_ipCoreSection);
-        _propertySheetsViewStack.addChild(corePropertyTab);
+        corePropertyTab.addElement(_ipCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+
+        _tabbedPropertiesTabBar.selectedIndex = 0;
 
         _ipCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityProviderCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityProviderCorePropertyTabRollOut);
 
         // Contract Tab
-        var contractPropertyTab:Canvas = new Canvas();
+        var contractPropertyTab:Group = new Group();
         contractPropertyTab.id = "propertySheetContractSection";
-        contractPropertyTab.label = "Contract";
+        contractPropertyTab.name = "Contract";
         contractPropertyTab.width = Number("100%");
         contractPropertyTab.height = Number("100%");
         contractPropertyTab.setStyle("borderStyle", "solid");
 
         _ipContractSection = new IdentityProviderContractSection();
-        contractPropertyTab.addChild(_ipContractSection);
-        _propertySheetsViewStack.addChild(contractPropertyTab);
+        contractPropertyTab.addElement(_ipContractSection);
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
 
         _ipContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityProviderContractPropertyTabCreationComplete);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityProviderContractPropertyTabRollOut);
@@ -275,31 +301,33 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack.removeAllChildren();
 
         // Core Tab
-        var corePropertyTab:Canvas = new Canvas();
+        var corePropertyTab:Group = new Group();
         corePropertyTab.id = "propertySheetCoreSection";
-        corePropertyTab.label = "Core";
+        corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
         corePropertyTab.height = Number("100%");
         corePropertyTab.setStyle("borderStyle", "solid");
 
         _spCoreSection = new ServiceProviderCoreSection();
-        corePropertyTab.addChild(_spCoreSection);
-        _propertySheetsViewStack.addChild(corePropertyTab);
+        corePropertyTab.addElement(_spCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
 
         _spCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleServiceProviderCorePropertyTabRollOut);
 
         // Contract Tab
-        var contractPropertyTab:Canvas = new Canvas();
+        var contractPropertyTab:Group = new Group();
         contractPropertyTab.id = "propertySheetContractSection";
-        contractPropertyTab.label = "Contract";
+        contractPropertyTab.name = "Contract";
         contractPropertyTab.width = Number("100%");
         contractPropertyTab.height = Number("100%");
         contractPropertyTab.setStyle("borderStyle", "solid");
 
         _spContractSection = new ServiceProviderContractSection();
-        contractPropertyTab.addChild(_spContractSection);
-        _propertySheetsViewStack.addChild(contractPropertyTab);
+        contractPropertyTab.addElement(_spContractSection);
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
+
+        _tabbedPropertiesTabBar.selectedIndex = 0;
 
         _spContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderContractPropertyTabCreationComplete);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleServiceProviderContractPropertyTabRollOut);
@@ -635,31 +663,33 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack.removeAllChildren();
 
         // Core Tab
-        var corePropertyTab:Canvas = new Canvas();
+        var corePropertyTab:Group = new Group();
         corePropertyTab.id = "propertySheetCoreSection";
-        corePropertyTab.label = "Core";
+        corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
         corePropertyTab.height = Number("100%");
         corePropertyTab.setStyle("borderStyle", "solid");
 
         _idpChannelCoreSection = new IDPChannelCoreSection();
-        corePropertyTab.addChild(_idpChannelCoreSection);
-        _propertySheetsViewStack.addChild(corePropertyTab);
+        corePropertyTab.addElement(_idpChannelCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+
+        _tabbedPropertiesTabBar.selectedIndex = 0;
 
         _idpChannelCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdpChannelCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdpChannelCorePropertyTabRollOut);
 
         // Contract Tab
-        var contractPropertyTab:Canvas = new Canvas();
+        var contractPropertyTab:Group = new Group();
         contractPropertyTab.id = "propertySheetContractSection";
-        contractPropertyTab.label = "Contract";
+        contractPropertyTab.name = "Contract";
         contractPropertyTab.width = Number("100%");
         contractPropertyTab.height = Number("100%");
         contractPropertyTab.setStyle("borderStyle", "solid");
 
         _idpChannelContractSection = new IDPChannelContractSection();
-        contractPropertyTab.addChild(_idpChannelContractSection);
-        _propertySheetsViewStack.addChild(contractPropertyTab);
+        contractPropertyTab.addElement(_idpChannelContractSection);
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
 
         _idpChannelContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdpChannelContractPropertyTabCreationComplete);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdpChannelContractPropertyTabRollOut);
@@ -821,31 +851,33 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack.removeAllChildren();
 
         // Core Tab
-        var corePropertyTab:Canvas = new Canvas();
+        var corePropertyTab:Group = new Group();
         corePropertyTab.id = "propertySheetCoreSection";
-        corePropertyTab.label = "Core";
+        corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
         corePropertyTab.height = Number("100%");
         corePropertyTab.setStyle("borderStyle", "solid");
 
         _spChannelCoreSection = new SPChannelCoreSection();
-        corePropertyTab.addChild(_spChannelCoreSection);
-        _propertySheetsViewStack.addChild(corePropertyTab);
+        corePropertyTab.addElement(_spChannelCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+
+        _tabbedPropertiesTabBar.selectedIndex = 0;
 
         _spChannelCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSpChannelCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleSpChannelCorePropertyTabRollOut);
 
         // Contract Tab
-        var contractPropertyTab:Canvas = new Canvas();
+        var contractPropertyTab:Group = new Group();
         contractPropertyTab.id = "propertySheetContractSection";
-        contractPropertyTab.label = "Contract";
+        contractPropertyTab.name = "Contract";
         contractPropertyTab.width = Number("100%");
         contractPropertyTab.height = Number("100%");
         contractPropertyTab.setStyle("borderStyle", "solid");
 
         _spChannelContractSection = new SPChannelContractSection();
-        contractPropertyTab.addChild(_spChannelContractSection);
-        _propertySheetsViewStack.addChild(contractPropertyTab);
+        contractPropertyTab.addElement(_spChannelContractSection);
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
 
         _spChannelContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSpChannelContractPropertyTabCreationComplete);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleSpChannelContractPropertyTabRollOut);
@@ -1001,16 +1033,18 @@ public class PropertySheetMediator extends IocMediator {
         // Attach embedded DB identity vault editor form to property tabbed view
         _propertySheetsViewStack.removeAllChildren();
 
-        var corePropertyTab:Canvas = new Canvas();
+        var corePropertyTab:Group = new Group();
         corePropertyTab.id = "propertySheetCoreSection";
-        corePropertyTab.label = "Core";
+        corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
         corePropertyTab.height = Number("100%");
         corePropertyTab.setStyle("borderStyle", "solid");
 
         _embeddedDbVaultCoreSection = new EmbeddedDBIdentityVaultCoreSection();
-        corePropertyTab.addChild(_embeddedDbVaultCoreSection);
-        _propertySheetsViewStack.addChild(corePropertyTab);
+        corePropertyTab.addElement(_embeddedDbVaultCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+
+        _tabbedPropertiesTabBar.selectedIndex = 0;
 
         _embeddedDbVaultCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleEmbeddedDbVaultCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleEmbeddedDbVaultCorePropertyTabRollOut);
@@ -1069,31 +1103,33 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack.removeAllChildren();
 
         // Core Tab
-        var corePropertyTab:Canvas = new Canvas();
+        var corePropertyTab:Group = new Group();
         corePropertyTab.id = "propertySheetCoreSection";
-        corePropertyTab.label = "Core";
+        corePropertyTab.name = "Core";
         corePropertyTab.width = Number("100%");
         corePropertyTab.height = Number("100%");
         corePropertyTab.setStyle("borderStyle", "solid");
 
         _externalDbVaultCoreSection = new ExternalDBIdentityVaultCoreSection();
-        corePropertyTab.addChild(_externalDbVaultCoreSection);
-        _propertySheetsViewStack.addChild(corePropertyTab);
+        corePropertyTab.addElement(_externalDbVaultCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+
+        _tabbedPropertiesTabBar.selectedIndex = 0;
 
         _externalDbVaultCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalDbVaultCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalDbVaultCorePropertyTabRollOut);
 
         // Contract Tab
-        var contractPropertyTab:Canvas = new Canvas();
+        var contractPropertyTab:Group = new Group();
         contractPropertyTab.id = "propertySheetContractSection";
-        contractPropertyTab.label = "Lookup";
+        contractPropertyTab.name = "Lookup";
         contractPropertyTab.width = Number("100%");
         contractPropertyTab.height = Number("100%");
         contractPropertyTab.setStyle("borderStyle", "solid");
 
         _externalDbVaultLookupSection = new ExternalDBIdentityVaultLookupSection();
-        contractPropertyTab.addChild(_externalDbVaultLookupSection);
-        _propertySheetsViewStack.addChild(contractPropertyTab);
+        contractPropertyTab.addElement(_externalDbVaultLookupSection);
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
 
         _externalDbVaultLookupSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalDbVaulLookupPropertyTabCreationComplete);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalDbVaultLookupPropertyTabRollOut);

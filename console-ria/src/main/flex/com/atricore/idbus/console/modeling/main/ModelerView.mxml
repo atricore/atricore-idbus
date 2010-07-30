@@ -62,17 +62,15 @@
                          paddingBottom="5">
                     <s:HGroup>
                         <s:Button id="btnNew" label="New"/>
-                        <mx:ComboBox id="applianceStyle" labelField="label" selectedIndex="0" width="210" dataProvider="{applianceStyleCollection}">
-                        </mx:ComboBox>
-                        <!--<s:ButtonBar id="modelActionToolBar" height="5%" dataProvider="{actionList}"/>-->
-                        <s:ButtonBar id="modelActionToolBar" height="5%">
+                        <s:DropDownList id="applianceStyle" labelField="label" selectedIndex="0" width="210" dataProvider="{applianceStyleCollection}" />
+                        <s:ButtonBar id="modelActionToolBar">
                             <s:dataProvider>
                                 <mx:ArrayCollection source="['Build', 'Deploy']" />
                             </s:dataProvider>
                         </s:ButtonBar>
 
                         <s:Button id="btnOpen" label="Open"/>
-                        <mx:ComboBox id="appliances" width="250" prompt="Select an appliance to open"/>
+                        <s:DropDownList id="appliances" width="250" prompt="Select an appliance to open"/>
                         <s:Button id="btnSave" label="Save"/>
                     </s:HGroup>
                     <s:HGroup width="99%" height="65%">

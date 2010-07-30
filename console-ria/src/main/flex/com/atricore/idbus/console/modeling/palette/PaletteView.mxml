@@ -27,8 +27,7 @@
 >
    <mx:Repeater id="rptPaletteRoot">
         <mx:Repeater id="rptPaletteDrawers" dataProvider="{rptPaletteRoot.currentItem.children}">
-            <mx:VBox width="100%" height="100%" name="{rptPaletteDrawers.currentItem.label}">
-                <!--label="{rptPaletteDrawers.currentItem.label}"-->
+            <mx:VBox width="100%" height="100%" label="{rptPaletteDrawers.currentItem.label}">                
                 <s:List width="100%" height="100%"
                         dataProvider="{rptPaletteDrawers.currentItem.children}">
                     <s:itemRenderer>

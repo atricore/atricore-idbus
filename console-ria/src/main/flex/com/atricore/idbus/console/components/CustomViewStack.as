@@ -62,7 +62,7 @@ import mx.core.IVisualElement;
 		/**
 		 * Represents the current IVisualElement on the display list.
 		 */
-		protected var _selectedChild:IVisualElement
+		protected var _selectedChild:IVisualElement;
 
 		/**
 		 * Held value for selectedIndex.
@@ -193,5 +193,21 @@ import mx.core.IVisualElement;
 			// else just hold a reference for binding update.
 			else _selectedChild = value;
 		}
+
+        public function removeAllChildren():void {
+            _content = new Array();
+            _selectedIndex = -1;
+            _selectedChild = null;
+            _pendingSelectedIndex = -1;            
+        }
+
+        public function addNewChild(child:IVisualElement):void {
+            var tmpArray:Array = new Array();
+            for each(var el:IVisualElement in _content){
+                tmpArray.push(el);
+            }
+            tmpArray.push(child);
+            content = tmpArray;
+        }
 	}
 }
