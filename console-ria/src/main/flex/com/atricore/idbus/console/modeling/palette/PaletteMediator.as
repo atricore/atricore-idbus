@@ -27,6 +27,8 @@ import com.atricore.idbus.console.modeling.palette.model.PaletteDrawer;
 import com.atricore.idbus.console.modeling.palette.model.PaletteEntry;
 import com.atricore.idbus.console.modeling.palette.model.PaletteRoot;
 
+import mx.collections.IList;
+
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.observer.Notification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
@@ -79,7 +81,7 @@ public class PaletteMediator extends IocMediator {
         var pr:PaletteRoot  = new PaletteRoot("Identity Appliance Modeler Palette", null, null);
         pr.add(saml2PaletteDrawer);
 
-        view.rptPaletteRoot.dataProvider = pr;
+        view.rptPaletteRoot.dataProvider = IList(pr);
         view.addEventListener(PaletteEvent.CLICK, handlePaletteClick);
 
     }
