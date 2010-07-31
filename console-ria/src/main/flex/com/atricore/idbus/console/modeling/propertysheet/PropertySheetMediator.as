@@ -310,7 +310,13 @@ public class PropertySheetMediator extends IocMediator {
 
         _spCoreSection = new ServiceProviderCoreSection();
         corePropertyTab.addElement(_spCoreSection);
-        _propertySheetsViewStack.addNewChild(corePropertyTab);
+
+        var scroller:Scroller = new Scroller();
+        scroller.viewport = corePropertyTab;
+        scroller.name = "Core";
+        scroller.width = _propertySheetsViewStack.width;
+        scroller.height = _propertySheetsViewStack.height;
+        _propertySheetsViewStack.addNewChild(scroller);
 
         _spCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleServiceProviderCorePropertyTabRollOut);
