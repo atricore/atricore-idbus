@@ -193,8 +193,8 @@ public class PropertySheetMediator extends IocMediator {
         var scroller:Scroller = new Scroller();
         scroller.viewport = corePropertyTab;
         scroller.name = "Core";
-        scroller.width = _propertySheetsViewStack.width - 10;
-        scroller.height = _propertySheetsViewStack.height - 10;        
+        scroller.width = Number("100%");
+        scroller.height = Number("100%");
         _propertySheetsViewStack.addNewChild(scroller);
 
         _tabbedPropertiesTabBar.selectedIndex = 0;
@@ -249,7 +249,7 @@ public class PropertySheetMediator extends IocMediator {
 
             identityAppliance.idApplianceDefinition.name = _iaCoreSection.applianceName.text;
             identityAppliance.idApplianceDefinition.description = _iaCoreSection.applianceDescription.text;
-            identityAppliance.idApplianceDefinition.location.protocol = _iaCoreSection.applianceLocationProtocol.selectedLabel;
+            identityAppliance.idApplianceDefinition.location.protocol = _iaCoreSection.applianceLocationProtocol.selectedItem.label;
             identityAppliance.idApplianceDefinition.location.host = _iaCoreSection.applianceLocationDomain.text;
             identityAppliance.idApplianceDefinition.location.port = parseInt(_iaCoreSection.applianceLocationPort.text);
             identityAppliance.idApplianceDefinition.location.context = _iaCoreSection.applianceLocationPath.text;
