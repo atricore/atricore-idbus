@@ -86,6 +86,9 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _uploadCommand:IIocCommand;
     private var _buildIdentityApplianceCommand:IIocCommand;
     private var _deployIdentityApplianceCommand:IIocCommand;
+    private var _undeployIdentityApplianceCommand:IIocCommand;
+    private var _startIdentityApplianceCommand:IIocCommand;
+    private var _stopIdentityApplianceCommand:IIocCommand;
     private var _loginCommand:IIocCommand;
     private var _identityApplianceUpdateCommand:IIocCommand;
     private var _identityVaultRemoveCommand:IIocCommand;
@@ -392,6 +395,30 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _deployIdentityApplianceCommand = value;
     }
 
+    public function get undeployIdentityApplianceCommand():IIocCommand {
+        return _undeployIdentityApplianceCommand;
+    }
+
+    public function set undeployIdentityApplianceCommand(value:IIocCommand):void {
+        _undeployIdentityApplianceCommand = value;
+    }
+
+    public function get startIdentityApplianceCommand():IIocCommand {
+        return _startIdentityApplianceCommand;
+    }
+
+    public function set startIdentityApplianceCommand(value:IIocCommand):void {
+        _startIdentityApplianceCommand = value;
+    }
+
+    public function get stopIdentityApplianceCommand():IIocCommand {
+        return _stopIdentityApplianceCommand;
+    }
+
+    public function set stopIdentityApplianceCommand(value:IIocCommand):void {
+        _stopIdentityApplianceCommand = value;
+    }
+
     public function get loginCommand():IIocCommand {
         return _loginCommand;
     }
@@ -508,6 +535,9 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.UPLOAD, uploadCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, buildIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE, deployIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, undeployIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.START_IDENTITY_APPLIANCE, startIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.STOP_IDENTITY_APPLIANCE, stopIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE, identityApplianceUpdateCommand.getConfigName());
 
         // IDENTITY_APPLIANCE_LIST_LOAD notification is sent from

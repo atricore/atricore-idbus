@@ -38,6 +38,7 @@ public class ProjectProxy extends IocProxy
     private var _currentIdentityAppliance:IdentityApplianceDTO;
     private var _currentIdentityApplianceElement:Object;
     private var _currentIdentityApplianceElementOwner:Object;
+    private var _currentView:String;
 
     public function ProjectProxy()
     {
@@ -82,6 +83,14 @@ public class ProjectProxy extends IocProxy
 
     public function set viewAction(viewAction:int):void {
         _viewAction = viewAction;
+    }
+
+    public function get currentView():String {
+        return _currentView;
+    }
+
+    public function set currentView(currentView:String):void {
+        _currentView = currentView;
     }
 }
 }

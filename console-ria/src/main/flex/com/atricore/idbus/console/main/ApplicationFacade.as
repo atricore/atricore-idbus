@@ -51,6 +51,9 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const UPLOAD:String = "upload";
     public static const BUILD_IDENTITY_APPLIANCE:String = "buildIdentityAppliance";
     public static const DEPLOY_IDENTITY_APPLIANCE:String = "deployIdentityAppliance";
+    public static const UNDEPLOY_IDENTITY_APPLIANCE:String = "uneployIdentityAppliance";
+    public static const START_IDENTITY_APPLIANCE:String = "startIdentityAppliance";
+    public static const STOP_IDENTITY_APPLIANCE:String = "stopIdentityAppliance";
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";

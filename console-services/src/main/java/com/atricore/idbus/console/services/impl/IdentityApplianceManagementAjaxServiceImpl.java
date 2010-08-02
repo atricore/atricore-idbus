@@ -80,6 +80,32 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(beRes, UndeployIdentityApplianceResponse.class);
     }
 
+    public StartIdentityApplianceResponse startIdentityAppliance(StartIdentityApplianceRequest req) throws IdentityServerException {
+        org.atricore.idbus.capabilities.management.main.spi.request.StartIdentityApplianceRequest beReq =
+                dozerMapper.map(req, org.atricore.idbus.capabilities.management.main.spi.request.StartIdentityApplianceRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.StartIdentityApplianceResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.startIdentityAppliance(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, StartIdentityApplianceResponse.class);
+    }
+
+    public StopIdentityApplianceResponse stopIdentityAppliance(StopIdentityApplianceRequest req) throws IdentityServerException {
+        org.atricore.idbus.capabilities.management.main.spi.request.StopIdentityApplianceRequest beReq =
+                dozerMapper.map(req, org.atricore.idbus.capabilities.management.main.spi.request.StopIdentityApplianceRequest.class);
+
+        org.atricore.idbus.capabilities.management.main.spi.response.StopIdentityApplianceResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.stopIdentityAppliance(beReq);
+        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, StopIdentityApplianceResponse.class);
+    }
+
     public ImportIdentityApplianceResponse importIdentityAppliance(ImportIdentityApplianceRequest req) throws IdentityServerException {
         org.atricore.idbus.capabilities.management.main.spi.request.ImportIdentityApplianceRequest beReq =
                 dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ImportIdentityApplianceRequest.class);
