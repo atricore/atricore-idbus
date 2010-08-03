@@ -64,6 +64,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const IDENTITY_APPLIANCE_CHANGED:String = "identityApplianceChanged";
     public static const UPDATE_IDENTITY_APPLIANCE:String = "updateIdentityAppliance";
     public static const DISPLAY_APPLIANCE_MODELER:String = "displayApplianceModeler";
+    public static const DISPLAY_APPLIANCE_LIFECYCLE:String = "displayApplianceLifecycle";
     public static const DRAG_ELEMENT_TO_DIAGRAM:String = "dragElementToDiagram";
     public static const CREATE_DIAGRAM_ELEMENT:String = "createDiagramElement";
     public static const CREATE_IDENTITY_PROVIDER_ELEMENT:String = "createIdentityProviderElement";

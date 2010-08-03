@@ -39,6 +39,7 @@ public class ProjectProxy extends IocProxy
     private var _currentIdentityApplianceElement:Object;
     private var _currentIdentityApplianceElementOwner:Object;
     private var _currentView:String;
+    private var _commandResultIdentityAppliance:IdentityApplianceDTO;
 
     public function ProjectProxy()
     {
@@ -91,6 +92,14 @@ public class ProjectProxy extends IocProxy
 
     public function set currentView(currentView:String):void {
         _currentView = currentView;
+    }
+
+    public function get commandResultIdentityAppliance():IdentityApplianceDTO {
+       return _commandResultIdentityAppliance;
+    }
+
+    public function set commandResultIdentityAppliance(commandResultIdentityAppliance:IdentityApplianceDTO):void {
+        _commandResultIdentityAppliance = commandResultIdentityAppliance;
     }
 }
 }

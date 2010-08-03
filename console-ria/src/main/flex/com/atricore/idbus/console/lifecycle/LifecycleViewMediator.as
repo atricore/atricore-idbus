@@ -87,6 +87,8 @@ public class LifecycleViewMediator extends IocMediator {
 
         projectProxy.currentView = viewName;
 
+        sendNotification(ApplicationFacade.CLEAR_MSG);
+        
         // Saved Appliances Grid
         view.grdSavedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
         view.grdSavedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
@@ -127,16 +129,35 @@ public class LifecycleViewMediator extends IocMediator {
         var compiledAppliances:ArrayCollection = new ArrayCollection();
         var deployedAppliances:ArrayCollection = new ArrayCollection();
         var disposedAppliances:ArrayCollection = new ArrayCollection();
-        
+
+        var savedAppliancesSelectedIndex:int = -1;
+        //var compiledAppliancesSelectedIndex:int = -1;
+        //var deployedAppliancesSelectedIndex:int = -1;
+        //var disposedAppliancesSelectedIndex:int = -1;
+
         for (var i:int = 0; i < projectProxy.identityApplianceList.length; i++) {
             var appliance:IdentityApplianceDTO = projectProxy.identityApplianceList[i] as IdentityApplianceDTO;
+            var selected:Boolean = false;
+            if (projectProxy.currentIdentityAppliance != null &&
+                    appliance.id == projectProxy.currentIdentityAppliance.id) {
+                selected = true;
+            }
             if (appliance.idApplianceDeployment == null) {
                 savedAppliances.addItem(appliance);
+                if (selected) {
+                    savedAppliancesSelectedIndex = savedAppliances.length - 1;
+                }
             } else if (appliance.state == IdentityApplianceStateDTO.PROJECTED.name) {
                 compiledAppliances.addItem(appliance);
+                //if (selected) {
+                //    //compiledAppliancesSelectedIndex = compiledAppliances.length - 1;
+                //}
             } else if (appliance.state == IdentityApplianceStateDTO.INSTALLED.name ||
                     appliance.state == IdentityApplianceStateDTO.STARTED.name) {
                 deployedAppliances.addItem(appliance);
+                //if (selected) {
+                //    deployedAppliancesSelectedIndex = deployedAppliances.length - 1;
+                //}
             }
         }
 
@@ -144,6 +165,19 @@ public class LifecycleViewMediator extends IocMediator {
         view.grdCompiledAppliances.dataProvider = new HierarchicalData(compiledAppliances);
         view.grdDeployedAppliances.dataProvider = new HierarchicalData(deployedAppliances);
         view.grdDisposedAppliances.dataProvider = new HierarchicalData(disposedAppliances);
+
+        // When dataProvider is changed (e.g. after the second lifecycle view openinig),
+        // setting selectedIndex is not working without calling validateNow().
+        // This might be slow for large datasets?
+        // Using callLater() function instead of this is not working as expected.
+        // Another solution would include extending the grid and
+        // overriding set dataProvider function.
+        view.grdSavedAppliances.validateNow();
+        
+        view.grdSavedAppliances.selectedIndex = savedAppliancesSelectedIndex;
+        //view.grdCompiledAppliances.selectedIndex = compiledAppliancesSelectedIndex;
+        //view.grdDeployedAppliances.selectedIndex = deployedAppliancesSelectedIndex;
+        //view.grdDisposedAppliances.selectedIndex = disposedAppliancesSelectedIndex;
     }
 
     private function identityApplianceNameLabel(item:Object, column:AdvancedDataGridColumn):String {
@@ -334,10 +368,12 @@ public class LifecycleViewMediator extends IocMediator {
     private function handleGridButton(event:LifecycleGridButtonEvent):void {
         switch (event.action) {
             case LifecycleGridButtonEvent.ACTION_EDIT :
-                var parent:IdentityApplianceDTO = event.data as IdentityApplianceDTO;
+                var appliance:IdentityApplianceDTO = event.data as IdentityApplianceDTO;
+                sendNotification(ProcessingMediator.START, "Opening identity appliance...");
+                sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, appliance.id.toString());
                 break;
             case LifecycleGridButtonEvent.ACTION_REMOVE :
-                var parent:IdentityApplianceDTO = event.data as IdentityApplianceDTO;
+                var appliance:IdentityApplianceDTO = event.data as IdentityApplianceDTO;
                 Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null, removeConfirmed, null, Alert.YES);
                 break;
             case LifecycleGridButtonEvent.ACTION_START :
@@ -374,7 +410,7 @@ public class LifecycleViewMediator extends IocMediator {
 
     private function updateAppliancesList(error:Boolean):void {
         if (!error) {
-            var modifiedAppliance:IdentityApplianceDTO = projectProxy.currentIdentityAppliance;
+            var modifiedAppliance:IdentityApplianceDTO = projectProxy.commandResultIdentityAppliance;
             if (modifiedAppliance != null) {
                 for (var i:int = 0; i < projectProxy.identityApplianceList.length; i++) {
                     var appliance:IdentityApplianceDTO = projectProxy.identityApplianceList[i] as IdentityApplianceDTO;

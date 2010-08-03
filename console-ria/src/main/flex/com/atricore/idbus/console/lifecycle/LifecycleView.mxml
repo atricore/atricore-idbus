@@ -173,9 +173,6 @@
                                     <mx:LinkButton icon="@Embed('/images/icons/down.png')" width="20"
                                                    toolTip="Stop Identity Appliance"
                                                    click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_STOP));"/>
-                                    <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
-                                                   toolTip="Edit Identity Appliance"
-                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
                                     <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
                                                    toolTip="Remove Identity Appliance"
                                                    click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
@@ -219,9 +216,6 @@
 
                               ]]>
                               </mx:Script>
-                                    <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
-                                                   toolTip="Edit Identity Appliance"
-                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
                                     <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
                                                    toolTip="Remove Identity Appliance"
                                                    click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>

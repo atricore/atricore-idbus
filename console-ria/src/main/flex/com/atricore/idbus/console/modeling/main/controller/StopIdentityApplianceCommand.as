@@ -76,7 +76,7 @@ public class StopIdentityApplianceCommand extends IocSimpleCommand implements IR
 
     public function result(data:Object):void {
         var resp:StopIdentityApplianceResponse = data.result as StopIdentityApplianceResponse;
-        projectProxy.currentIdentityAppliance = resp.appliance;
+        projectProxy.commandResultIdentityAppliance = resp.appliance;
         sendNotification(SUCCESS);
     }
 
