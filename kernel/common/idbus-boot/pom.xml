@@ -54,8 +54,7 @@
                 </configuration>
             </plugin>
 
-            <!-- TODO : Replace git GIT plugin ? -->
-            <!--plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
                 <version>1.0-beta-4</version>
@@ -70,8 +69,15 @@
                 <configuration>
                     <doCheck>false</doCheck>
                     <doUpdate>false</doUpdate>
+
+                    <format>{0,date,yyyy-MM-dd_HH-mm}_{1}</format>
+                    <items>
+                      <item>timestamp</item>
+                      <item>${user.name}</item>
+                    </items>
+
                 </configuration>
-            </plugin-->
+            </plugin>
 
         </plugins>
     </build>
