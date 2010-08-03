@@ -646,7 +646,6 @@
 
         <plugins>
 
-            <!-- Replace with GIT Support
             <plugin>
                  <groupId>org.codehaus.mojo</groupId>
                  <artifactId>buildnumber-maven-plugin</artifactId>
@@ -662,9 +661,16 @@
                  <configuration>
                      <doCheck>false</doCheck>
                      <doUpdate>false</doUpdate>
+
+                     <format>{0,date,yyyy-MM-dd_HH-mm}_{1}</format>
+                     <items>
+                       <item>timestamp</item>
+                       <item>${user.name}</item>
+                     </items>
+                     
                  </configuration>
              </plugin>
-             -->
+
         </plugins>
 
     </build>

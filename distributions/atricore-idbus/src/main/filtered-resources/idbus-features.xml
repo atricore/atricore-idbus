@@ -89,10 +89,14 @@
         <bundle>mvn:org.atricore.idbus.applications.server/org.atricore.idbus.applications.server.web/${idbus.app.server.version}/war</bundle>
     </feature>
 
-    <feature name="atricore-console" version="${atricore.console.version}">
+    <feature name="atricore-console-lifecycle" version="${atricore.console.version}">
         <feature version="${version}">atricore-management</feature>
         <bundle>mvn:com.atricore.idbus.console.lifecycle/com.atricore.idbus.console.lifecycle.main/${atricore.console.version}</bundle>
         <bundle>mvn:com.atricore.idbus.console.lifecycle/com.atricore.idbus.console.lifecycle.command/${atricore.console.version}</bundle>
+    </feature>
+
+    <feature name="atricore-console" version="${atricore.console.version}">
+        <feature version="${atricore.console.version}">atricore-console-lifecycle</feature>
         <bundle>mvn:com.atricore.idbus.console/com.atricore.idbus.console.web/${atricore.console.version}/war</bundle>
     </feature>
 

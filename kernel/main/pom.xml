@@ -365,7 +365,7 @@
                             org.atricore.idbus.bundles.ehcache,
                             *
                         </Import-Package>
-                        <!--DynamicImport-Package>*</DynamicImport-Package-->
+                        
                         <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
                     </instructions>
                 </configuration>
