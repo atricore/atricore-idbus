@@ -13,16 +13,16 @@
     <!-- ==================================================================== -->
     <!--
     <osgi:reference id="userProvisioningServiceManagerBean" cardinality="1..1" timeout="60"
-                interface="org.atricore.idbus.capabilities.management.main.spi.UserProvisioningService"/>
+                interface="com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService"/>
 
     <osgi:reference id="idApplianceManagementService" cardinality="1..1" timeout="60"
-                interface="org.atricore.idbus.capabilities.management.main.spi.IdentityApplianceManagementService"/>
+                interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"/>
 
     <osgi:reference id="profileManagementServiceBean" cardinality="1..1" timeout="60"
-                interface="org.atricore.idbus.capabilities.management.main.spi.ProfileManagementService"/>
+                interface="com.atricore.idbus.console.lifecycle.main.spi.ProfileManagementService"/>
 
     <osgi:reference id="signOnServiceBean" cardinality="1..1" timeout="60"
-                interface="org.atricore.idbus.capabilities.management.main.spi.SignOnService"/>
+                interface="com.atricore.idbus.console.lifecycle.main.spi.SignOnService"/>
 
 
     <bean id="applicationServerInitialization" class="org.atricore.idbus.applications.server.services.util.ApplicationServerInitialization">
@@ -69,12 +69,12 @@
         <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 
-    <bean id="userProvisioningServiceManagerBean" class="org.atricore.idbus.capabilities.management.main.impl.UserProvisioningServiceHashImpl">
+    <bean id="userProvisioningServiceManagerBean" class="com.atricore.idbus.console.lifecycle.main.impl.UserProvisioningServiceHashImpl">
         <property name="passwordHashUtil" ref="passwordHashUtil"/>
     </bean>
 
     <bean name="passwordHashUtil"
-          class="org.atricore.idbus.capabilities.management.main.util.PasswordHashUtil">
+          class="com.atricore.idbus.console.lifecycle.main.util.PasswordHashUtil">
             <property name="hashAlgorithm" value="MD5"/>
             <property name="hashEncoding" value="HEX"/>
     </bean>
@@ -86,7 +86,7 @@
         <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 
-    <bean id="identityApplianceManagementServiceBean" class="org.atricore.idbus.capabilities.management.main.impl.IdentityApplianceManagementServiceHashImpl">
+    <bean id="identityApplianceManagementServiceBean" class="com.atricore.idbus.console.lifecycle.main.impl.IdentityApplianceManagementServiceHashImpl">
     </bean>
 
 </beans>

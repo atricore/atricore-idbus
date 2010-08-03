@@ -21,8 +21,8 @@
 
 package com.atricore.idbus.console.services.spi.request;
 
-import org.atricore.idbus.capabilities.management.main.spi.IdentityApplianceLifeCycleAction;
-import org.atricore.idbus.capabilities.management.main.spi.request.AbstractManagementRequest;
+import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceLifeCycleAction;
+import com.atricore.idbus.console.lifecycle.main.spi.request.AbstractManagementRequest;
 
 
 public class ManageIdentityApplianceLifeCycleRequest extends AbstractManagementRequest {

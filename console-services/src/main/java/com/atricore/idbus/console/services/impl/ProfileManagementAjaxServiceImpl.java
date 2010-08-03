@@ -28,9 +28,9 @@ import com.atricore.idbus.console.services.spi.request.UpdateUserProfileRequest;
 import com.atricore.idbus.console.services.spi.response.FetchGroupMembershipResponse;
 import com.atricore.idbus.console.services.spi.response.UpdateUserPasswordResponse;
 import com.atricore.idbus.console.services.spi.response.UpdateUserProfileResponse;
-import org.atricore.idbus.capabilities.management.main.exception.ProfileManagementException;
+import com.atricore.idbus.console.lifecycle.main.exception.ProfileManagementException;
 import com.atricore.idbus.console.services.spi.ProfileManagementAjaxService;
-import org.atricore.idbus.capabilities.management.main.spi.ProfileManagementService;
+import com.atricore.idbus.console.lifecycle.main.spi.ProfileManagementService;
 import org.dozer.DozerBeanMapper;
 
 /**
@@ -42,10 +42,10 @@ public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxSe
     private DozerBeanMapper dozerMapper;
 
     public UpdateUserProfileResponse updateUserProfile(UpdateUserProfileRequest updateProfileRequest) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.UpdateUserProfileRequest beReq =
-                dozerMapper.map(updateProfileRequest, org.atricore.idbus.capabilities.management.main.spi.request.UpdateUserProfileRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserProfileRequest beReq =
+                dozerMapper.map(updateProfileRequest, com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserProfileRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.UpdateUserProfileResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.UpdateUserProfileResponse beRes = null;
         try {
             beRes = profileManagementService.updateUserProfile(beReq);
         } catch (ProfileManagementException e) {
@@ -55,10 +55,10 @@ public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxSe
     }
 
     public UpdateUserPasswordResponse updateUserPassword(UpdateUserPasswordRequest updatePasswordRequest) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.UpdateUserPasswordRequest beReq =
-                dozerMapper.map(updatePasswordRequest, org.atricore.idbus.capabilities.management.main.spi.request.UpdateUserPasswordRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserPasswordRequest beReq =
+                dozerMapper.map(updatePasswordRequest, com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserPasswordRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.UpdateUserPasswordResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.UpdateUserPasswordResponse beRes = null;
         try {
             beRes = profileManagementService.updateUserPassword(beReq);
         } catch (ProfileManagementException e) {
@@ -68,10 +68,10 @@ public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxSe
     }
 
     public FetchGroupMembershipResponse fetchGroupMembership(FetchGroupMembershipRequest fetchGroupMembership) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.FetchGroupMembershipRequest beReq =
-                dozerMapper.map(fetchGroupMembership, org.atricore.idbus.capabilities.management.main.spi.request.FetchGroupMembershipRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.FetchGroupMembershipRequest beReq =
+                dozerMapper.map(fetchGroupMembership, com.atricore.idbus.console.lifecycle.main.spi.request.FetchGroupMembershipRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.FetchGroupMembershipResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.FetchGroupMembershipResponse beRes = null;
         try {
             beRes = profileManagementService.fetchGroupMembership(beReq);
         } catch (ProfileManagementException e) {

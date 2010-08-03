@@ -21,7 +21,7 @@
 package com.atricore.idbus.console.services.spi.request;
 
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-import org.atricore.idbus.capabilities.management.main.spi.request.AbstractManagementRequest;
+import com.atricore.idbus.console.lifecycle.main.spi.request.AbstractManagementRequest;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

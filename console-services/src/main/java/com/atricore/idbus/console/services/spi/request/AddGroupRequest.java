@@ -21,7 +21,7 @@
 
 package com.atricore.idbus.console.services.spi.request;
 
-import org.atricore.idbus.capabilities.management.main.spi.response.AbstractManagementResponse;
+import com.atricore.idbus.console.lifecycle.main.spi.response.AbstractManagementResponse;
 
 public class AddGroupRequest extends AbstractManagementResponse {
 

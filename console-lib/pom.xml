@@ -63,17 +63,17 @@
                             <outputDirectory>${project.build.directory}/generated-sources/flexmojos</outputDirectory>
                             <includeJavaClasses>
                                 <class>
-                                    org.atricore.idbus.capabilities.management.main.spi.StatusCode
+                                    com.atricore.idbus.console.lifecycle.main.spi.StatusCode
                                 </class>
                                 <class>
-                                    org.atricore.idbus.capabilities.management.main.spi.IdentityApplianceLifeCycleAction
+                                    com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceLifeCycleAction
                                 </class>
                                 <class>
                                     com.atricore.idbus.console.services.dto.*
                                 </class>
 
-                                <class>org.atricore.idbus.capabilities.management.main.spi.request.AbstractManagementRequest</class>
-                                <class>org.atricore.idbus.capabilities.management.main.spi.response.AbstractManagementResponse</class>
+                                <class>com.atricore.idbus.console.lifecycle.main.spi.request.AbstractManagementRequest</class>
+                                <class>com.atricore.idbus.console.lifecycle.main.spi.response.AbstractManagementResponse</class>
 
                                 <class>com.atricore.idbus.console.services.spi.request.*</class>
                                 <class>com.atricore.idbus.console.services.spi.response.*</class>
@@ -81,7 +81,7 @@
                             </includeJavaClasses>
                             <excludeJavaClasses>
                                 <!--<class>-->
-                                    <!--org.atricore.idbus.capabilities.management.main.impl.IdentityBusMetadataManagerImpl-->
+                                    <!--com.atricore.idbus.console.lifecycle.main.impl.IdentityBusMetadataManagerImpl-->
                                 <!--</class>-->
                                 <!--<class>-->
                                     <!--org.atricore.idbus.applications.server.services.impl.IdentityApplianceMetadataAjaxServiceImpl-->
@@ -136,8 +136,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.management</groupId>
-            <artifactId>org.atricore.idbus.capabilities.management.main</artifactId>
+            <groupId>com.atricore.idbus.console.lifecycle</groupId>
+            <artifactId>com.atricore.idbus.console.lifecycle.main</artifactId>
         </dependency>
 
         <dependency>

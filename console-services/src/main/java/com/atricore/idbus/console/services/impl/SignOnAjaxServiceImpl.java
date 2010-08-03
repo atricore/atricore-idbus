@@ -7,8 +7,8 @@ import com.atricore.idbus.console.services.spi.request.UserLoggedRequest;
 import com.atricore.idbus.console.services.spi.response.SignOnResponse;
 import com.atricore.idbus.console.services.spi.response.SignOutResponse;
 import com.atricore.idbus.console.services.spi.response.UserLoggedResponse;
-import org.atricore.idbus.capabilities.management.main.exception.SignOnServiceException;
-import org.atricore.idbus.capabilities.management.main.spi.SignOnService;
+import com.atricore.idbus.console.lifecycle.main.exception.SignOnServiceException;
+import com.atricore.idbus.console.lifecycle.main.spi.SignOnService;
 import org.dozer.DozerBeanMapper;
 
 /**
@@ -20,26 +20,26 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService {
     private DozerBeanMapper dozerMapper;
 
     public SignOnResponse signOn(SignOnRequest signOnRequest) throws SignOnServiceException {
-        org.atricore.idbus.capabilities.management.main.spi.request.SignOnRequest beReq =
-                dozerMapper.map(signOnRequest, org.atricore.idbus.capabilities.management.main.spi.request.SignOnRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.SignOnRequest beReq =
+                dozerMapper.map(signOnRequest, com.atricore.idbus.console.lifecycle.main.spi.request.SignOnRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.SignOnResponse beRes = signOnService.signOn(beReq);
+        com.atricore.idbus.console.lifecycle.main.spi.response.SignOnResponse beRes = signOnService.signOn(beReq);
         return dozerMapper.map(beRes, SignOnResponse.class);
     }
 
     public SignOutResponse signOut(SignOutRequest signOutRequest) throws SignOnServiceException {
-        org.atricore.idbus.capabilities.management.main.spi.request.SignOutRequest beReq =
-                dozerMapper.map(signOutRequest, org.atricore.idbus.capabilities.management.main.spi.request.SignOutRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.SignOutRequest beReq =
+                dozerMapper.map(signOutRequest, com.atricore.idbus.console.lifecycle.main.spi.request.SignOutRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.SignOutResponse beRes = signOnService.signOut(beReq);
+        com.atricore.idbus.console.lifecycle.main.spi.response.SignOutResponse beRes = signOnService.signOut(beReq);
         return dozerMapper.map(beRes, SignOutResponse.class);
     }
 
     public UserLoggedResponse userLogged(UserLoggedRequest userLoggedRequest) throws SignOnServiceException {
-        org.atricore.idbus.capabilities.management.main.spi.request.UserLoggedRequest beReq =
-                dozerMapper.map(userLoggedRequest, org.atricore.idbus.capabilities.management.main.spi.request.UserLoggedRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.UserLoggedRequest beReq =
+                dozerMapper.map(userLoggedRequest, com.atricore.idbus.console.lifecycle.main.spi.request.UserLoggedRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.UserLoggedResponse beRes = signOnService.userLogged(beReq);
+        com.atricore.idbus.console.lifecycle.main.spi.response.UserLoggedResponse beRes = signOnService.userLogged(beReq);
         return dozerMapper.map(beRes, UserLoggedResponse.class);
     }
 

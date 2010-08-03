@@ -21,16 +21,16 @@
 
 package com.atricore.idbus.console.services.util;
 
-import org.atricore.idbus.capabilities.management.main.impl.SignOnServiceImpl;
-import org.atricore.idbus.capabilities.management.main.spi.UserProvisioningService;
-import org.atricore.idbus.capabilities.management.main.spi.request.AddGroupRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.FindGroupByNameRequest;
-import org.atricore.idbus.capabilities.management.main.spi.response.AddGroupResponse;
-import org.atricore.idbus.capabilities.management.main.spi.response.FindGroupByNameResponse;
+import com.atricore.idbus.console.lifecycle.main.impl.SignOnServiceImpl;
+import com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService;
+import com.atricore.idbus.console.lifecycle.main.spi.request.AddGroupRequest;
+import com.atricore.idbus.console.lifecycle.main.spi.request.FindGroupByNameRequest;
+import com.atricore.idbus.console.lifecycle.main.spi.response.AddGroupResponse;
+import com.atricore.idbus.console.lifecycle.main.spi.response.FindGroupByNameResponse;
 import org.springframework.beans.factory.InitializingBean;
-import org.atricore.idbus.capabilities.management.main.exception.GroupNotFoundException;
-import org.atricore.idbus.capabilities.management.main.exception.ProvisioningBusinessException;
-import org.atricore.idbus.capabilities.management.main.domain.Group;
+import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundException;
+import com.atricore.idbus.console.lifecycle.main.exception.ProvisioningBusinessException;
+import com.atricore.idbus.console.lifecycle.main.domain.Group;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -93,7 +93,7 @@ public class ApplicationServerInitialization implements InitializingBean {
 
     public void afterPropertiesSet() throws Exception {
 
-        org.atricore.idbus.capabilities.management.main.spi.request.FindGroupByNameRequest findGroupByNameRequest = new FindGroupByNameRequest();
+        com.atricore.idbus.console.lifecycle.main.spi.request.FindGroupByNameRequest findGroupByNameRequest = new FindGroupByNameRequest();
         findGroupByNameRequest.setName(SignOnServiceImpl.ADMIN_GROUP);
 
         Group adminGroup;
