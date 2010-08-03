@@ -1,0 +1,40 @@
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<ns3:EncryptedAssertion xmlns="http://www.w3.org/2001/04/xmlenc#" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#"
+                        xmlns:ns3="urn:oasis:names:tc:SAML:2.0:assertion">
+    <EncryptedData Type="http://www.w3.org/2001/04/xmlenc#Element">
+        <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"></EncryptionMethod>
+        <CipherData>
+            <CipherValue>
+                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
+            </CipherValue>
+        </CipherData>
+    </EncryptedData>
+    <EncryptedKey>
+        <EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-1_5"></EncryptionMethod>
+        <CipherData>
+            <CipherValue>
+                S/89PgamoBLLF+Fn/TtvlzL7qaFCYEQ1hHjo62v/YgIN1qns6eQzzM7U3fuJkZhtsmdlJ4QqCa2NNNE7m6fJN1B4zRHYhY5WBXKL71qrsdmEU8wfaRRrE5M/kb3gAKKXrH6rzzcngxW+siqWmraA5eYzCc2sou6izi/D14ETNzQ=
+            </CipherValue>
+        </CipherData>
+    </EncryptedKey>
+</ns3:EncryptedAssertion>

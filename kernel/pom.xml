@@ -1,0 +1,933 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- x
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.atricore.idbus</groupId>
+        <artifactId>idbus-pom</artifactId>
+        <version>1-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.atricore.idbus.kernel</groupId>
+    <artifactId>kernel</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Atricore IDBus :: Kernel : POM</name>
+
+    <prerequisites>
+        <maven>2.0.9</maven>
+    </prerequisites>
+
+    <properties>
+        
+        <idbus.bundle.ehcache-v2_1_0.version>1.0.0-SNAPSHOT</idbus.bundle.ehcache-v2_1_0.version>
+        <idbus.bundle.pax-web-jetty-v0_7_2.version>1.0.0-SNAPSHOT</idbus.bundle.pax-web-jetty-v0_7_2.version>
+        <idbus.bundle.wadi-v2_1_2.version>1.0.0-SNAPSHOT</idbus.bundle.wadi-v2_1_2.version>
+        
+        <activemq.version>5.3.2</activemq.version>
+
+        <camel.version>1.6.1</camel.version>
+        <commons-codec.version>1.3</commons-codec.version>
+        <commons-dbcp.version>1.3</commons-dbcp.version>
+        <commons-logging.version>1.1.1</commons-logging.version>
+        <!--cglib.nodep.version>2.1_3</cglib.nodep.version-->
+        <cxf.version>2.2.2</cxf.version>
+
+        <ehcache.version>2.1.0</ehcache.version>
+        <felix.karaf.version>1.6.0</felix.karaf.version>
+        <felix.osgi.version>1.4.0</felix.osgi.version>
+        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <geronimo.wsmetadata.version>1.1.2</geronimo.wsmetadata.version>
+        <gshell-version>1.0-alpha-2</gshell-version>
+
+        <hibernate.version>3.2.6.ga</hibernate.version>
+        <hibernate.core.version>3.3.2.GA</hibernate.core.version>
+        <hibernate.entitymanager.version>3.4.0.GA</hibernate.entitymanager.version>
+        <hibernate.annotations.version>3.4.0.GA</hibernate.annotations.version>
+        <hibernate.commons.annotations.version>3.1.0.GA</hibernate.commons.annotations.version>
+
+        <jbpm.jpdl.version>3.3.1.GA</jbpm.jpdl.version>
+
+        <jaxws.api.version>2.1</jaxws.api.version>
+
+        <jetty.version>6.1.22</jetty.version>
+        <junit.version>4.4</junit.version>
+        <log4j.version>1.2.16</log4j.version>
+        <pax-logging.version>1.3.0</pax-logging.version>
+        <pax-url.version>0.3.3</pax-url.version>
+        <plexus-classworlds.version>1.2-alpha-12</plexus-classworlds.version>
+
+        <servlet.version>2.4</servlet.version>
+        <slf4j.slf4j-log4j12.version>1.5.8</slf4j.slf4j-log4j12.version>
+        <servicemix.specs.version>1.2.0</servicemix.specs.version>
+        <spring.version>2.5.6.SEC01</spring.version>
+        <spring.osgi.version>1.2.0</spring.osgi.version>
+        <xbean.version>3.4.3</xbean.version>
+    </properties>
+    
+
+    <modules>				
+        <module>common</module>
+        <module>fragments</module>
+        <module>planning</module>
+        <module>main</module>
+        <module>ha</module>
+        <module>web</module>
+        <!--
+        <module>agent</module>
+        -->
+    </modules>				
+
+    <repositories>
+        <!-- Dependencies not on central repo -->
+        <repository>
+
+            <id>josso-m2-repo</id>
+            <name>IDBUS Maven2 Repository</name>
+            <url>http://repository.josso.org</url>
+
+            <releases>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>true</enabled>
+            </releases>
+
+            <snapshots>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>false</enabled>
+            </snapshots>
+
+        </repository>
+
+        <!-- Dependencies not on central repo -->
+        <repository>
+
+            <id>josso-m2-snapshot-repo</id>
+            <name>IDBUS Maven2 SanpshotsRepository</name>
+            <url>http://repository.josso.org/m2-snapshot-repository</url>
+
+            <releases>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>false</enabled>
+            </releases>
+
+            <snapshots>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>true</enabled>
+            </snapshots>
+
+        </repository>
+
+        <!-- Apache -->
+        <repository>
+            <id>apache</id>
+            <name>Apache Releases Repository</name>
+            <url>http://people.apache.org/repo/m2-ibiblio-rsync-repository</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+
+        <!-- Apache ServiceMix (Needed for GShell version) -->
+        <repository>
+            <id>apach-servicemix</id>
+            <name>Apache ServiceMix</name>
+            <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- Apache incubating
+        <repository>
+            <id>apache-incubating</id>
+            <name>Apache Incubating Repository</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        -->
+        <!-- Apache snapshot
+        <repository>
+            <id>apache-snapshots</id>
+            <name>Apache Snapshot repository</name>
+            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        -->
+        <!-- Codehaus -->
+        <repository>
+            <id>codehaus</id>
+            <name>Codehaus repository</name>
+            <url>http://repository.codehaus.org</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!-- Java.net -->
+        <repository>
+            <id>java.net</id>
+            <url>http://download.java.net/maven/1</url>
+            <layout>legacy</layout>
+        </repository>
+
+        <!-- JBoss -->
+        <repository>
+            <id>jboss</id>
+            <url>http://repository.jboss.com/maven2</url>
+        </repository>
+
+        <!-- OPS4J -->
+        <repository>
+            <id>ops4j</id>
+            <name>Open Participation Software for Java</name>
+            <url>http://repository.ops4j.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- OpenId4Java -->
+        <repository>
+            <id>openid4java</id>
+            <name>OpenID4Java</name>
+            <url>http://openid4java.googlecode.com/svn/maven-repo</url>
+            <releases>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>forge</id>
+            <url>http://repository.sonatype.org/content/groups/public</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>java.net M2</id>
+            <url>http://download.java.net/maven/2</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <!-- Apache releases -->
+        <pluginRepository>
+            <id>apache-releases</id>
+            <name>Apache Releases repository</name>
+            <url>http://people.apache.org/repo/m2-ibiblio-rsync-repository</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>forge</id>
+            <url>http://repository.sonatype.org/content/groups/public</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+        <!-- Apache incubating
+        <pluginRepository>
+            <id>apache-incubating</id>
+            <name>Apache Incubating Repository</name>
+            <url>http://people.apache.org/repo/m2-incubating-repository</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        -->
+        <!-- Apache snapshot
+        <pluginRepository>
+            <id>apache-snapshots</id>
+            <name>Apache Snapshot repository</name>
+            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+        -->
+    </pluginRepositories>
+
+    <dependencyManagement>
+        
+        <dependencies>
+
+            <dependency>
+                <groupId>org.atricore.idbus.kernel</groupId>
+                <artifactId>org.atricore.idbus.kernel.planning</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.kernel</groupId>
+                <artifactId>org.atricore.idbus.kernel.main</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.atricore.idbus.kernel</groupId>
+                <artifactId>org.atricore.idbus.kernel.web</artifactId>
+                <version>${pom.version}</version>
+                <type>war</type>
+            </dependency>
+            
+
+            <dependency>
+                <groupId>org.atricore.idbus.kernel.common</groupId>
+                <artifactId>org.atricore.idbus.kernel.common.support</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.kernel.common</groupId>
+                <artifactId>org.atricore.idbus.kernel.common.html</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.kernel.common</groupId>
+                <artifactId>org.atricore.idbus.kernel.common.wst</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.bundles</groupId>
+                <artifactId>org.atricore.idbus.bundles.ehcache-v2_1_0</artifactId>
+                <version>${idbus.bundle.ehcache-v2_1_0.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.bundles</groupId>
+                <artifactId>org.atricore.idbus.bundles.pax-web-jetty-v0_7_2</artifactId>
+                <version>${idbus.bundle.pax-web-jetty-v0_7_2.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.atricore.idbus.bundles</groupId>
+                <artifactId>org.atricore.idbus.bundles.wadi-v2_1_2</artifactId>
+                <version>${idbus.bundle.wadi-v2_1_2.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.servicemix.specs</groupId>
+                <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
+                <version>1.2.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.servicemix.specs</groupId>
+                <artifactId>org.apache.servicemix.specs.jaxws-api-${jaxws.api.version}</artifactId>
+                <version>${servicemix.specs.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-ws-metadata_2.0_spec</artifactId>
+                <version>${geronimo.wsmetadata.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-core</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-jms</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-jetty</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-http</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-cxf</artifactId>
+                <version>${camel.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-tx</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-web</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-osgi</artifactId>
+                <version>${camel.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.osgi</groupId>
+                        <artifactId>spring-osgi-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            
+            <dependency>
+                <groupId>net.sf.ehcache</groupId>
+                <artifactId>ehcache-core</artifactId>
+                <version>${ehcache.version}</version>
+            </dependency>
+
+            <!--
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-bundle</artifactId>
+                <version>${cxf.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-beans</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-context</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            -->
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${felix.osgi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>${servlet.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.osgi</groupId>
+                <artifactId>spring-osgi-core</artifactId>
+                <version>${spring.osgi.version}</version>
+                <exclusions>
+                    <!-- We want our own spring version! -->
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-context</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-beans</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-aop</artifactId>
+                    </exclusion>
+
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>org.springframework.core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>org.springframework.context</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>org.springframework.beans</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>org.springframework.aop</artifactId>
+                    </exclusion>
+                    
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.osgi</groupId>
+                <artifactId>spring-osgi-web</artifactId>
+                <version>${spring.osgi.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.aopalliance</groupId>
+                        <artifactId>com.springsource.org.aopallianc</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context-support</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aop</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.xbean</groupId>
+                <artifactId>xbean-spring</artifactId>
+                <version>${xbean.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.jbpm.jbpm3</groupId>
+                <artifactId>jbpm-jpdl</artifactId>
+                <version>${jbpm.jpdl.version}</version>
+            </dependency>
+
+            <dependency>
+                 <groupId>org.hibernate</groupId>
+                 <artifactId>hibernate</artifactId>
+                 <version>${hibernate.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.core.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>${hibernate.entitymanager.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-annotations</artifactId>
+                <version>${hibernate.annotations.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-commons-annotations</artifactId>
+                <version>${hibernate.commons.annotations.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.slf4j-log4j12.version}</version>
+            </dependency>
+
+            <!-- Fore artifacts/versions to avoid conflicts with CXF dependencies! -->
+            <!--dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib-nodep</artifactId>
+                <version>${cglib.nodep.version}</version>
+            </dependency-->
+
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+                <version>1.1</version>
+            </dependency>
+
+            <!-- JAXB -->
+            <dependency>
+                <groupId>org.apache.servicemix.specs</groupId>
+                <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
+                <version>${servicemix.specs.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-ws-metadata_2.0_spec</artifactId>
+                <version>1.1.2</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-dbcp</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>${commons-dbcp.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>org.apache.xbean</groupId>
+                <artifactId>xbean-spring</artifactId>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring</artifactId>
+                    </exclusion>
+                </exclusions>
+                <version>${xbean.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.activemq</groupId>
+                <artifactId>activemq-core</artifactId>
+                <version>${activemq.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.camel</groupId>
+                        <artifactId>camel-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- Test Dependencies -->
+
+            <!-- JAXB -->
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
+                <version>2.1.6_1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>target/generated</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>${felix.plugin.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.sun.tools.xjc.maven2</groupId>
+                    <artifactId>maven-jaxb-plugin</artifactId>
+                    <version>1.1</version>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.4.2</version>
+                    <configuration>
+                        <useFile>true</useFile>
+                        <forkMode>once</forkMode>
+                        <childDelegation>false</childDelegation>
+                        <argLine>-Xmx512M</argLine>
+                        <!--<redirectTestOutputToFile>true</redirectTestOutputToFile>-->
+                        <workingDirectory>${basedir}</workingDirectory>
+                        <systemProperties>
+                            <property>
+                                <name>log4j.configuration</name>
+                                <value>log4j-tests.properties</value>
+                            </property>
+                        </systemProperties>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <configuration>
+                        <warSourceDirectory>src/webapp/</warSourceDirectory>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.2</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.0.2</version>
+                    <configuration>
+                        <source>1.5</source>
+                        <target>1.5</target>
+                        <maxmem>256M</maxmem>
+                        <fork>${compiler.fork}</fork>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-eclipse-plugin</artifactId>
+                    <version>2.3</version>
+                    <configuration>
+                        <buildcommands>
+                            <java.lang.String>org.eclipse.jdt.core.javabuilder</java.lang.String>
+                            <java.lang.String>com.atlassw.tools.eclipse.checkstyle.CheckstyleBuilder</java.lang.String>
+                            <java.lang.String>net.sourceforge.pmd.runtime.pmdBuilder</java.lang.String>
+                        </buildcommands>
+                        <projectnatures>
+                            <nature>org.eclipse.jdt.core.javanature</nature>
+                            <nature>com.atlassw.tools.eclipse.checkstyle.CheckstyleNature</nature>
+                            <nature>net.sourceforge.pmd.runtime.pmdNature</nature>
+                        </projectnatures>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.xbean</groupId>
+                    <artifactId>maven-xbean-plugin</artifactId>
+                    <version>3.4.3</version>
+                    <executions>
+                        <execution>
+                            <configuration>
+                                <namespace>urn:org:atricore:idbus</namespace>
+                            </configuration>
+                            <goals>
+                                <goal>mapping</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+        <plugins>
+        </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ftp</artifactId>
+                <version>1.0-beta-2</version>
+            </extension>
+        </extensions>
+    </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <minmemory>128m</minmemory>
+                    <maxmemory>512</maxmemory>
+                    <breakiterator>true</breakiterator>
+                    <quiet>true</quiet>
+                    <verbose>false</verbose>
+                    <source>1.5</source>
+                    <!--
+                    FIXME: This worked in m1, but m2 complains about it being an invalid flag
+                    
+                    <additionalparam>-J-Djava.awt.headless=true</additionalparam>
+                    -->
+                    <linksource>true</linksource>
+                    <links>
+                        <!-- JSE -->
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api/</link>
+                        <link>http://java.sun.com/j2se/1.4.2/docs/api/</link>
+                        <link>http://java.sun.com/j2se/1.3/docs/api/</link>
+
+                        <!-- JEE -->
+                        <link>http://java.sun.com/j2ee/1.4/docs/api/</link>
+                        <link>http://java.sun.com/j2ee/sdk_1.3/techdocs/api/</link>
+
+                        <!-- Libraries -->
+                        <link>http://jakarta.apache.org/commons/collections/apidocs</link>
+                        <link>http://jakarta.apache.org/commons/logging/apidocs/</link>
+                        <link>http://www.junit.org/junit/javadoc/</link>
+                        <link>http://logging.apache.org/log4j/docs/api/</link>
+                        <link>http://jakarta.apache.org/regexp/apidocs/</link>
+                        <link>http://jakarta.apache.org/velocity/api/</link>
+                    </links>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>1.0.0</version>
+            </plugin>
+        </plugins>
+    </reporting>
+</project>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<s:beans xmlns="urn:org:atricore:idbus:core"
+         xmlns:samlr2="urn:org:atricore:idbus:samlr2"
+         xmlns:im="urn:org:atricore:idbus:default:identity-mediator"
+         xmlns:amq="http://activemq.apache.org/schema/core"
+         xmlns:def-auth="urn:org:atricore:idbus:default:authenticator"
+         xmlns:basic-authscheme="urn:org:atricore:idbus:basic:authscheme"
+         xmlns:memory-istore="urn:org:atricore:idbus:memory:identitystore"
+         xmlns:def-identitymgr="urn:org:atricore:idbus:default:identitymgr"
+         xmlns:def-sessionmgr="urn:org:atricore:idbus:default:sessionmgr"
+         xmlns:def-sidgen="urn:org:atricore:idbus:default:sessionidgen"
+         xmlns:basic-authn="urn:org:atricore:idbus:authentication:basic-authn"
+         xmlns:memory-sstore="urn:org:atricore:idbus:memory:sessionstore"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+        >
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- Circle of Trust, maps to SAMLR2 Entities (SAML2Meta)               -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+
+    <samlr2:cot-manager>
+        <cot>
+            <s:ref bean="cot-1"/>
+        </cot>
+    </samlr2:cot-manager>
+
+    <cot id="cot-1">
+        <members>
+            <!-- A member is similar to a SAML entity, they can be associated to channels -->
+            <s:ref bean="sp-1"/>
+        </members>
+    </cot>
+
+    <!-- Similar to SAMLR2 Entities, alias MUST be present and match SAML EntityID -->
+    <cot-member id="sp-1" alias="http://suse-IdP2.workgroup:8080/nidp/saml2/metadata"
+                metadata-resource ="org/atricore/josso2/samlr2/test/entity-metadata.xml"/>
+
+</s:beans>

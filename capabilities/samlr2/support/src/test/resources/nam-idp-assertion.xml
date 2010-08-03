@@ -1,0 +1,78 @@
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<Assertion xmlns="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:ns2="http://www.w3.org/2001/04/xmlenc#"
+           xmlns:ns3="http://www.w3.org/2000/09/xmldsig#" ID="idKF5S3vKmy-rjrFDXQPI8qz9NzKg"
+           IssueInstant="2009-05-29T10:58:15Z" Version="2.0">
+    <Issuer>http://suse-NAM.workgroup:8080/nidp/saml2/metadata</Issuer>
+    <ns3:Signature>
+        <ns3:SignedInfo>
+            <ns3:CanonicalizationMethod
+                    Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></ns3:CanonicalizationMethod>
+            <ns3:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"></ns3:SignatureMethod>
+            <ns3:Reference URI="#idKF5S3vKmy-rjrFDXQPI8qz9NzKg">
+                <ns3:Transforms>
+                    <ns3:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"></ns3:Transform>
+                    <ns3:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></ns3:Transform>
+                </ns3:Transforms>
+                <ns3:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"></ns3:DigestMethod>
+                <ns3:DigestValue>zOS8sxbzCTHalyat5amCBXMt+2I=</ns3:DigestValue>
+            </ns3:Reference>
+        </ns3:SignedInfo>
+        <ns3:SignatureValue>
+            bYPWk77ITT49ytHxEgTVGFIf638k4Z02eaqQ1+oReWQ0xfaqOSxbJ0kHKZtXHt7RZaB+3ahtsdHy+fZX6BiTrvhPdpiDwvMm2bgv7AmV/rSxkEzgX71oC7JQeEpYG6wfWN7TysUeq9bbvSD8NRD6gnjp2ms8fZQV2RrdsEEZhNpZhD4Py/7wtiKRvvyga7Cohg5sX6DiFRFxev65RV6fasusmkCxPLxGLw9UgOSjuUkB0cBkBaAl2i9apXgW9uczvYH518nB/naaB0prjUxmtB3dndTYo8DPd9rLkoGHxEQvA4gqAMm9utL0Xmrc7EMRz91Zv4xP31zzgQBBfps7+A==
+        </ns3:SignatureValue>
+        <ns3:KeyInfo>
+            <ns3:X509Data>
+                <ns3:X509Certificate>
+                    MIIFKDCCBBCgAwIBAgIkAhwR/6TVMRQGEByXU7/IonSVFPMfX0UkW4K8uzsKAgICMV7FMA0GCSqGSIb3DQEBBQUAMDQxGjAYBgNVBAsTEU9yZ2FuaXphdGlvbmFsIENBMRYwFAYDVQQKFA1zdXNlX05BTV90cmVlMB4XDTA5MDUxMjEwMjA0NloXDTExMDUxMjEwMjA0NlowQDEVMBMGA1UEAxMMdGVzdC1zaWduaW5nMRYwFAYDVQQLEw1hY2Nlc3NNYW5hZ2VyMQ8wDQYDVQQKEwZub3ZlbGwwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDTWa7ln2EqQ/DbIzKnmm4DugVWXFdzSzisFZqedvZXBO0dAfz/ttCEdET0USnS0Kn1rZunAxPXxwf9c7IVY4KzsAuEg+hl7zi1qVRjj1dHAi+mXG0lcZWdE0sWjrYIUx76VZDzKV97tl4NT+5A4mQOjjVZFKXgHWXG+Fk6U6I+z0+VqJbKy+vzWjp8A/P7G6brjg/0m/qIoKSV7v6UYSKfU9rH8/1DVxDTRAr7MkyG5Cetd2CoFbTTGJ36CxQOthd1FVUCIDhwUGB3khDTJYbi2p7Jjlwoo9V7HVQpdSIF9uX8oZ0B/1k7goG7BWJ7Oh54pAcEnPwIFjpmS9H380UtAgMBAAGjggIUMIICEDAdBgNVHQ4EFgQUTOQqMgd9+mdfLIleBBNLd7zM5A8wHwYDVR0jBBgwFoAUTMihYlEDq3la5qeVyOF7GJqciFMwggHMBgtghkgBhvg3AQkEAQSCAbswggG3BAIBAAEB/xMdTm92ZWxsIFNlY3VyaXR5IEF0dHJpYnV0ZSh0bSkWQ2h0dHA6Ly9kZXZlbG9wZXIubm92ZWxsLmNvbS9yZXBvc2l0b3J5L2F0dHJpYnV0ZXMvY2VydGF0dHJzX3YxMC5odG0wggFIoBoBAQAwCDAGAgEBAgFGMAgwBgIBAQIBCgIBaaEaAQEAMAgwBgIBAQIBADAIMAYCAQECAQACAQCiBgIBFwEB/6OCAQSgWAIBAgICAP8CAQADDQCAAAAAAAAAAAAAAAADCQCAAAAAAAAAADAYMBACAQACCH//////////AQEAAgQG8N9IMBgwEAIBAAIIf/////////8BAQACBAbw30ihWAIBAgICAP8CAQADDQBAAAAAAAAAAAAAAAADCQBAAAAAAAAAADAYMBACAQACCH//////////AQEAAgQR/6TVMBgwEAIBAAIIf/////////8BAQACBBH/pNWiTjBMAgECAgEAAgIA/wMNAIAAAAAAAAAAAAAAAAMJAIAAAAAAAAAAMBIwEAIBAAIIf/////////8BAQAwEjAQAgEAAgh//////////wEBADANBgkqhkiG9w0BAQUFAAOCAQEAgqi3ZVt/GVbJu1to+m1zHhoHrQsWblRACpfmzsHHkv0//jk+2eDfZjsDtQYMv5zl3ExuK79Vsz5ZPvh1wCcXutMo7liDHLbbrIJrUuErCZ/elOBXwyNL3s/feLMMgNxuKa6T/h9fhgioADYIauP1EI0l9CRdBm+jaQfnSJoZfkKPiroE/rpgm5PXOhy1kW2Oc3lgr60llyeM5b37AXNOGH2oeLTBplMVTTwnNsrGFfFohZbEi0y5DPDOpco7FjlTHXCHrS+LVpBWN9Z2R9AT1iqEprEjlspL+TZsnpjZotjVq6xv1yxPoSZtlo3fbUnPn0E1M15qz4YVBLCU336vzg==
+                </ns3:X509Certificate>
+            </ns3:X509Data>
+        </ns3:KeyInfo>
+    </ns3:Signature>
+    <Subject>
+        <NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+                NameQualifier="http://suse-NAM.workgroup:8080/nidp/saml2/metadata"
+                SPNameQualifier="http://suse-IdP2.workgroup:8080/nidp/saml2/metadata">
+            9QhN1vcPEkooZhNEPG0cRDpqH0M5ax5AzQaAgQ==
+        </NameID>
+        <SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+            <SubjectConfirmationData InResponseTo="id2QfmeRUO.Ac7vTyD49GNB9B4QAI" NotOnOrAfter="2009-05-29T11:58:15Z"
+                                     Recipient="http://suse-IdP2.workgroup:8080/nidp/saml2/spassertion_consumer"></SubjectConfirmationData>
+        </SubjectConfirmation>
+    </Subject>
+    <Conditions NotBefore="2009-05-29T10:53:15Z" NotOnOrAfter="2009-05-29T11:03:15Z">
+        <AudienceRestriction>
+            <Audience>http://suse-IdP2.workgroup:8080/nidp/saml2/metadata</Audience>
+        </AudienceRestriction>
+    </Conditions>
+    <AuthnStatement AuthnInstant="2009-05-29T10:58:15Z" SessionIndex="7C02A46A481A5AB26E7C607434CDA282"
+                    SessionNotOnOrAfter="2009-05-29T11:58:15Z">
+        <AuthnContext>
+            <AuthnContextDeclRef>name/password/uri</AuthnContextDeclRef>
+        </AuthnContext>
+    </AuthnStatement>
+    <AttributeStatement>
+        <Attribute Name="sent_roles" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:basic">
+            <AttributeValue>Manager</AttributeValue>
+        </Attribute>
+    </AttributeStatement>
+</Assertion>

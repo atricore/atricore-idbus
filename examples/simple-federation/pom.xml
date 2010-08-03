@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.atricore.idbus</groupId>
+        <artifactId>idbus-pom</artifactId>
+        <version>1-SNAPSHOT</version>
+    </parent>    
+
+    <groupId>org.atricore.idbus.examples</groupId>
+    <artifactId>org.atricore.idbus.examples.simplefederation.idau</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>bundle</packaging>
+    <name>Atricore IDBus :: Example : Simple Federation Identity Appliance Unit</name>
+
+    <properties>
+        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <!--felix.plugin.version>2.1.0-SNAPSHOT</felix.plugin.version-->
+
+        <!-- IDBUS -->
+        <idbus.kernel.version>1.0.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.examples.version>1.0.0-SNAPSHOT</idbus.examples.version>
+        <idbus.app.server.version>1.0.0-SNAPSHOT</idbus.app.server.version>
+
+        <idbus.cap.josso.version>1.0.0-SNAPSHOT</idbus.cap.josso.version>
+        <idbus.cap.saml2.version>1.0.0-SNAPSHOT</idbus.cap.saml2.version>
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
+        <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.0.0-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
+        <idbus.bundle.datanucleus-core-v2_0_0-m2.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_0-m2.version>
+        <idbus.bundle.datanucleus-rdbms-v2_0_0-m2.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_0-m2.version>
+        <idbus.bundle.javax-jdo2-v2_3_ec.version>1.0.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3_ec.version>
+        <idbus.bundle.javax-jstl-v1_2.version>1.0.0-SNAPSHOT</idbus.bundle.javax-jstl-v1_2.version>
+        <idbus.bundle.josso-ws-v1_2.version>1.0.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
+
+        <idbus.idojo.dbidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.dbidentitystore.version>
+        <idbus.idojo.dbsessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.dbsessionstore.version>
+        <idbus.idojo.ehcachesessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.ehcachesessionstore.version>
+        <idbus.idojo.ldapidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
+        <idbus.idojo.memoryidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.memoryidentitystore.version>
+        <idbus.idojo.memorysessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.memorysessionstore.version>
+        <idbus.idojo.serializedsessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
+        <idbus.idojo.strongauthscheme.version>1.0.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
+
+        <spring.version>2.5.6.SEC01</spring.version>
+        <spring.osgi.version>1.2.0</spring.osgi.version>
+
+        <apache.derby.version>10.5.3.0_1</apache.derby.version>
+        
+    </properties>
+
+    <dependencies>
+
+        <!-- ========================================================= -->
+        <!-- IDBus Kernel -->
+        <!-- ========================================================= -->
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel</groupId>
+            <artifactId>org.atricore.idbus.kernel.main</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel</groupId>
+            <artifactId>org.atricore.idbus.kernel.planning</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.samlr2</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.wst</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.html</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- ================================================================== -->
+        <!-- IDBus Capabilities -->
+        <!-- ================================================================== -->
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.josso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.josso.main</artifactId>
+            <version>${idbus.cap.josso.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.josso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.josso.main</artifactId>
+            <version>${idbus.cap.josso.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
+            <version>${idbus.cap.saml2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
+            <version>${idbus.cap.saml2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.samlr2.management</artifactId>
+            <version>${idbus.cap.saml2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+
+        <!-- ================================================================== -->
+        <!-- IDBus Kernel Web -->
+        <!-- ================================================================== -->
+        <!--
+        <dependency>
+            <groupId>org.atricore.idbus.kernel</groupId>
+            <artifactId>org.atricore.idbus.kernel.web</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>war</type>
+            <scope>provided</scope>
+        </dependency>
+        -->
+        <!-- ================================================================== -->
+        <!-- IDBus IDOJOs -->
+        <!-- ================================================================== -->
+
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.dbidentitystore</artifactId>
+            <version>${idbus.idojo.dbidentitystore.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.dbsessionstore</artifactId>
+            <version>${idbus.idojo.dbsessionstore.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.ehcachesessionstore</artifactId>
+            <version>${idbus.idojo.ehcachesessionstore.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.memoryidentitystore</artifactId>
+            <version>${idbus.idojo.memoryidentitystore.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.memorysessionstore</artifactId>
+            <version>${idbus.idojo.memorysessionstore.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.ldapidentitystore</artifactId>
+            <version>${idbus.idojo.ldapidentitystore.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- ================================================================== -->
+        <!-- IDBus Bundles -->
+        <!-- ================================================================== -->
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.josso-ws-v1_2</artifactId>
+            <version>${idbus.bundle.josso-ws-v1_2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!--
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>${apache.derby.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${felix.plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Name>Atricore IDBus :: Example : Simple Federation Identity Appliance Unit</Bundle-Name>
+                        <Bundle-Description>Identity Bus Simple Federation Example Identity Appliance Unit</Bundle-Description>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Private-Package>!*</Private-Package>
+                        <Export-Package>
+                            org.atricore.idbus.examples.simplefederation.idau; version="${pom.version}"
+                        </Export-Package>
+                        <Import-Package>
+                            org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
+                            org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
+                            org.springframework.instrument; resolution:=optional; version="${spring.version}",
+                            org.springframework.osgi; version="${spring.osgi.version}",
+                            org.springframework.osgi.context; version="${spring.osgi.version}",
+                            org.springframework.core; version="${spring.version}",
+                            org.springframework.context; version="${spring.version}",
+                            org.springframework.context.support; version="${spring.version}",
+                            org.springframework.beans; version="${spring.version}",
+                            org.springframework.util; version="${spring.version}",
+                            org.springframework.jmx; version="${spring.version}",
+                            org.springframework.jmx.access; version="${spring.version}",
+                            org.springframework.jmx.export; version="${spring.version}",
+                            org.springframework.jmx.export.annotation; version="${spring.version}",
+                            org.springframework.jmx.export.assembler; version="${spring.version}",
+                            org.springframework.jmx.export.metadata; version="${spring.version}",
+                            org.springframework.jmx.export.naming; version="${spring.version}",
+                            org.springframework.jmx.export.notification; version="${spring.version}",
+                            org.springframework.jmx.support; version="${spring.version}",
+                            org.atricore.idbus.kernel.planning.jbpm,
+                            org.atricore.idbus.kernel.main.mediation,
+                            org.apache.camel.util.jndi,
+                            org.apache.camel,
+                            org.apache.camel.osgi,
+                            org.apache.camel.impl,
+                            org.osgi.framework,
+                        </Import-Package>
+                        <Require-Bundle>
+                           org.atricore.idbus.kernel.common.support,
+                           org.atricore.idbus.kernel.common.samlr2,
+                           org.atricore.idbus.kernel.common.sso,
+                           org.atricore.idbus.kernel.common.html,
+                           org.atricore.idbus.kernel.main,
+                           org.atricore.idbus.kernel.planning,
+                           org.atricore.idbus.capabilities.sts.main,
+                           org.atricore.idbus.capabilities.samlr2.management,
+                           org.atricore.idbus.capabilities.samlr2.main,
+                           org.atricore.idbus.capabilities.samlr2.support,
+                           org.atricore.idbus.capabilities.josso.main,
+                           org.atricore.idbus.idojos.dbidentitystore,
+                           org.atricore.idbus.idojos.memorysessionstore,
+                           org.atricore.idbus.idojos.ehcachesessionstore,
+                           org.atricore.idbus.idojos.memoryidentitystore,
+                           org.atricore.idbus.idojos.ldapidentitystore, 
+                           org.apache.cxf.bundle,
+                           org.apache.activemq.activemq-core,
+                           org.atricore.idbus.bundles.ehcache-v2_1_0,
+                           com.springsource.org.hsqldb,
+                           org.apache.servicemix.specs.jaxb-api-2.1
+                        </Require-Bundle>
+                        <!--DynamicImport-Package>*</DynamicImport-Package-->
+                        <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

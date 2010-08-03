@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.atricore.idbus</groupId>
+  <artifactId>all</artifactId>
+  <packaging>pom</packaging>
+  
+  <version>1.0.0-SNAPSHOT</version>
+  <name>Atricore IDBus All POM</name>
+  <inceptionYear>2009</inceptionYear>
+
+  <modules>
+    <module>kernel</module>
+      
+    <module>bundles/josso-ws-v1_2</module>
+    <module>bundles/apache-tiles-jsp-v2_0_6</module>
+    <module>bundles/javax-jdo2-v2_3-eb</module>
+    <module>bundles/javax-jdo2-v2_3-ec</module>
+    <module>bundles/javax-jstl-v1_2</module>
+    <module>bundles/datanucleus-core-v2_0_3</module>
+    <module>bundles/datanucleus-rdbms-v2_0_3</module>
+    <module>bundles/apache-derby-network-v10_5_3_0_1</module>
+    <module>bundles/apache-derby-client-v10_5_3_0_1</module>
+    <module>bundles/apache-maven-v3_0</module>
+    <module>bundles/ehcache-v2_1_0</module>
+    <module>bundles/pax-web-jetty-v0_7_2</module>
+    <module>bundles/wadi-v2_1_2</module>
+
+    <module>capabilities/samlr2</module>
+    <module>capabilities/josso</module>
+    <module>capabilities/sts</module>
+    
+    <module>idojos/idbus-db-identitystore</module>
+    <module>idojos/idbus-db-sessionstore</module>   
+    <module>idojos/idbus-ldap-identitystore</module> 
+    <module>idojos/idbus-memory-identitystore</module>	
+    <module>idojos/idbus-memory-sessionstore</module>    
+    <module>idojos/idbus-serialized-sessionstore</module> 
+    <module>idojos/idbus-ehcache-sessionstore</module>
+    <module>idojos/idbus-strong-authscheme</module>
+
+    <module>applications/idbus-server</module>
+    <module>examples/simple-federation</module>
+    <module>examples/salesforce</module>
+    
+    <module>distributions</module>
+  </modules>
+
+  <prerequisites>
+      <maven>2.0.9</maven>
+  </prerequisites>
+
+  <profiles>
+      <profile>
+          <id>setup.eclipse</id>
+          <modules>
+              <module>assembly</module>
+          </modules>
+          <properties>
+              <eclipse.workspace.dir>${basedir}/../workspace</eclipse.workspace.dir>
+          </properties>
+          <build>
+              <defaultGoal>eclipse:eclipse</defaultGoal>
+              <plugins>
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-eclipse-plugin</artifactId>
+                      <inherited>false</inherited>
+                      <executions>
+                          <execution>
+                              <id>setup.eclipse.workspace</id>
+                              <phase>process-test-sources</phase>
+                              <goals>
+                                  <goal>add-maven-repo</goal>
+                              </goals>
+                              <configuration>
+                                  <workspace>${eclipse.workspace.dir}</workspace>
+                              </configuration>
+                          </execution>
+                      </executions>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
+  </profiles>
+
+</project>

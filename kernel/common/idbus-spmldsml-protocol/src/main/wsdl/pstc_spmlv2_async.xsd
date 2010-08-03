@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<schema targetNamespace="urn:oasis:names:tc:SPML:2:0:async"
+        xmlns:spml="urn:oasis:names:tc:SPML:2:0"
+        xmlns:spmlasync="urn:oasis:names:tc:SPML:2:0:async"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified">
+
+    <import namespace="urn:oasis:names:tc:SPML:2:0"
+            schemaLocation="pstc_spmlv2_core.xsd"/>
+
+    <complexType name="CancelRequestType">
+        <complexContent>
+            <extension base="spml:RequestType">
+                <attribute name="asyncRequestID" type="xsd:string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="CancelResponseType">
+        <complexContent>
+            <extension base="spml:ResponseType">
+                <attribute name="asyncRequestID" type="xsd:string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="StatusRequestType">
+        <complexContent>
+            <extension base="spml:RequestType">
+                <attribute name="returnResults" type="xsd:boolean" use="optional" default="false"/>
+                <attribute name="asyncRequestID" type="xsd:string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="StatusResponseType">
+        <complexContent>
+            <extension base="spml:ResponseType">
+                <attribute name="asyncRequestID" type="xsd:string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="cancelRequest" type="spmlasync:CancelRequestType"/>
+    <element name="cancelResponse" type="spmlasync:CancelResponseType"/>
+    <element name="statusRequest" type="spmlasync:StatusRequestType"/>
+    <element name="statusResponse" type="spmlasync:StatusResponseType"/>
+
+</schema>

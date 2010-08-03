@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<process-definition name='SAMLR2 Response from SAMLR2 LogoutRequest'>
+
+    <description>Emit a SamlR2 Response (auth) from a SamlR2 Logout Request</description>
+
+    <start-state name="start">
+        <transition to="validateLogoutRequest" />
+    </start-state>
+
+    <!--
+     Validate Logout Request
+    -->
+    <process-fragment-state name="validateLogoutRequest">
+        <process-fragment lifecycle="genenrate-sloresponse" phase="validate-recieved-request"/>
+        <transition to="initializeResponse"/>
+    </process-fragment-state>
+
+
+    <!--
+     Initialize Response
+    -->
+    <process-fragment-state name="initializeResponse">
+        <process-fragment lifecycle="generate-sloresponse" phase="initialize"/>
+
+        <transition to="provideResponseContent"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:cot" access="read"/>
+        <variable name="urn:org:atricore:idbus:channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        <variable name="urn:org:atricore:idbus:request" access="read"/>
+
+
+    </process-fragment-state>
+
+    <!--
+     Provide Response Content
+    -->
+    <process-fragment-state name="provideResponseContent">
+        <process-fragment lifecycle="generate-sloresponse" phase="provide-content"/>
+        <transition to="provideResponseStatus"/>
+
+    </process-fragment-state>
+
+    <!--
+     Provide Response Status
+    -->
+    <process-fragment-state name="provideResponseStatus">
+        <process-fragment lifecycle="generate-sloresponse" phase="provide-status"/>
+        <transition to="ensureContentConfidentiality"/>
+
+    </process-fragment-state>
+
+    <!--
+    Encrypt response content (attributes, assertions, etc)
+    -->
+    <process-fragment-state name="ensureContentConfidentiality">
+        <process-fragment lifecycle="generate-sloresponse" phase="ensure-content-confidentiality"/>
+        <transition to="ensureAuthenticity"/>
+    </process-fragment-state>
+
+    <!--
+    Ensure response authenticity
+    -->
+    <process-fragment-state name="ensureAuthenticity">
+        <process-fragment lifecycle="generate-sloresponse" phase="ensure-authenticity"/>
+        <transition to="validateResponse"/>
+    </process-fragment-state>
+
+    <!--
+    Validate the generated response
+    -->
+    <process-fragment-state name="validateResponse">
+        <process-fragment lifecycle="generate-sloresponse" phase="validate"/>
+        <transition to="ensureConfidentiality"/>
+    </process-fragment-state>
+
+    <!--
+    Encrypt the entire response ?
+    -->
+    <process-fragment-state name="ensureConfidentiality">
+        <process-fragment lifecycle="generate-sloresponse" phase="ensure-confidentiality"/>
+        <transition to="end"/>
+    </process-fragment-state>
+
+    <end-state name="end"/>
+
+</process-definition>

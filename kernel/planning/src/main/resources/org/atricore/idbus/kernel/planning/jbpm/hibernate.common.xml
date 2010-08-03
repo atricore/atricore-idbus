@@ -1,0 +1,55 @@
+
+    <!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+    <!-- DataSource properties (begin) ===
+    <property name="hibernate.connection.datasource">java:comp/env/jdbc/JbpmDataSource</property>
+    ==== DataSource properties (end) -->
+
+    <!-- JTA transaction properties (begin) ===
+    <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JTATransactionFactory</property>
+    <property name="hibernate.transaction.manager_lookup_class">org.hibernate.transaction.JBossTransactionManagerLookup</property>
+    ==== JTA transaction properties (end) -->
+
+    <!-- CMT transaction properties (begin) ===
+    <property name="hibernate.transaction.factory_class">org.hibernate.transaction.CMTTransactionFactory</property>
+    <property name="hibernate.transaction.manager_lookup_class">org.hibernate.transaction.JBossTransactionManagerLookup</property>
+    ==== CMT transaction properties (end) -->
+
+    <!-- ################################### -->
+    <!-- # common settings                 # -->
+    <!-- ################################### -->
+
+    <!-- Simple memory-only cache -->
+    <property name="hibernate.cache.provider_class">org.hibernate.cache.HashtableCacheProvider</property>
+
+    <!-- logging properties --> 
+    <property name="hibernate.format_sql">true</property>
+    <property name="hibernate.use_sql_comments">true</property>
+
+    <!-- ############################################ -->
+    <!-- # mapping files with external dependencies # -->
+    <!-- ############################################ -->
+
+    <!-- Additional mappings defined per module go here -->
+    <mapping resource="hibernate.extra.hbm.xml" />
+    <mapping resource="hibernate.identity.hbm.xml" />
+    

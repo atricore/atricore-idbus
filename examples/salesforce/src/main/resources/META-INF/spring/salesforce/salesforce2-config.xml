@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<s:beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:osgi="http://www.springframework.org/schema/osgi"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
+        >
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!--  Salesforce (SP) Definition                                        -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+    <bean name="salesforce2" class="org.atricore.idbus.kernel.main.mediation.provider.RemoteProviderImpl">
+        <property name="name" value="salesforce2"/>
+        <property name="role" value="{urn:oasis:names:tc:SAML:2.0:metadata}IDPSSODescriptor"/>
+        <property name="description" value="Salesforce Service Provider (Remote)"/>
+        <property name="circleOfTrust" ref="sfidau-cot"/>
+
+        <property name="members">
+            <list>
+                <ref bean="salesforce2-default-md"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean  name="salesforce2-default-md"
+           class="org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl">
+        <property name="id" value="salesforce2-default-md"/>
+        <property name="alias" value="https://saml.salesforce.com/2"/>
+        <property name="resource" value="classpath:org/atricore/idbus/examples/salesforce/idau/salesforce/salesforce2-samlr2-metadata.xml"/>
+    </bean>
+
+</s:beans>

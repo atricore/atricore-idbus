@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<Assertion IssueInstant="2009-05-26T23:03:22.000Z" ID="_6FBE120C92DAED61" Version="2.0"
+           xmlns:ns3="http://www.w3.org/2001/04/xmlenc#" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#"
+           xmlns="urn:oasis:names:tc:SAML:2.0:assertion">
+    <Issuer Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">http://idp.atricore.com</Issuer>
+    <Subject>
+        <NameID Format="urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified">user1</NameID>
+        <SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer">
+            <SubjectConfirmationData
+                    Recipient="http://www.sp.com/assertion-consumer-endpoint"
+                    NotOnOrAfter="2009-05-26T23:08:22.000Z"
+                    NotBefore="2009-05-26T22:58:22.000Z"/>
+        </SubjectConfirmation>
+    </Subject>
+    <Conditions NotOnOrAfter="2009-05-26T22:58:22.000Z" NotBefore="2009-05-26T23:08:22.000Z">
+        <AudienceRestriction>
+            <Audience>sp_test</Audience>
+            <Audience>sp_atricore</Audience>
+        </AudienceRestriction>
+    </Conditions>
+    <AuthnStatement SessionNotOnOrAfter="2009-05-27T00:03:22.000Z" SessionIndex=""
+                    AuthnInstant="2009-05-26T23:03:22.000Z">
+        <AuthnContext>
+            <AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport
+            </AuthnContextClassRef>
+        </AuthnContext>
+    </AuthnStatement>
+    <AttributeStatement>
+        <Attribute Name="urn:oasis:names:tc:SAML:2.0:profiles:attribute:DCE:groups">
+            <AttributeValue xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                            xmlns:xs="http://www.w3.org/2001/XMLSchema">role2
+            </AttributeValue>
+            <AttributeValue xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                            xmlns:xs="http://www.w3.org/2001/XMLSchema">role1
+            </AttributeValue>
+        </Attribute>
+        <Attribute Name="urn:oasis:names:tc:SAML:2.0:profiles:attribute:DCE:principal">
+            <AttributeValue xsi:type="xs:string" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                            xmlns:xs="http://www.w3.org/2001/XMLSchema">user1
+            </AttributeValue>
+        </Attribute>
+    </AttributeStatement>
+</Assertion>

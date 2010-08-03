@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<s:beans xmlns:s="http://www.springframework.org/schema/beans"
+       xmlns="urn:org:atricore:idbus:capabilities:josso"
+       xmlns:core="urn:org:atricore:idbus:kernel"
+       xmlns:josso11="urn:org:atricore:idbus:capabilities:josso"
+       xmlns:def-assertionmgr="urn:org:atricore:idbus:capabilities:josso"
+       xmlns:memory-astore="urn:org:atricore:idbus:capabilities:josso"
+       xmlns:def-aidgen="urn:org:atricore:idbus:capabilities:josso"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+       >
+
+    <core:binding-channel name="binding_channel_1">
+        <core:target>
+            <s:ref bean="idp_channel_1"/>
+        </core:target>
+        <mediator>
+            <s:ref bean="mediator1"/>
+        </mediator>
+    </core:binding-channel>
+
+    <core:binding-channel name="binding_channel_2">
+        <mediator>
+            <s:ref bean="mediator2"/>
+        </mediator>
+
+    </core:binding-channel>
+
+    <core:idp-channel name="idp_channel_1">
+        <core:location>http://localhost:8181/IDPCH1</core:location>        
+    </core:idp-channel>
+
+    <josso11:binding-mediator id="mediator1">
+
+    </josso11:binding-mediator>
+
+    <josso11:binding-mediator id="mediator2">
+        <josso11:idpSSOLocationHttpRedirectBinding>http://localhost:8080/josso</josso11:idpSSOLocationHttpRedirectBinding>
+        <josso11:josso11ACSUrl>http://localhost:8282/josso_security_check/</josso11:josso11ACSUrl>
+        <josso11:assertionManager>
+            <s:ref bean="josso-assertion-manager"/>
+        </josso11:assertionManager>
+    </josso11:binding-mediator>
+
+    <!-- ===================================================================== -->
+    <!-- SSO Assertion anager, referencing assertion store                     -->
+    <!-- ===================================================================== -->
+    <def-assertionmgr:assertion-manager id="josso-assertion-manager">
+
+        <def-assertionmgr:assertion-id-generator>
+            <def-aidgen:id-generator/>
+        </def-assertionmgr:assertion-id-generator>
+
+        <def-assertionmgr:assertion-store>
+            <s:ref bean="josso-assertion-store"/>
+        </def-assertionmgr:assertion-store>
+
+    </def-assertionmgr:assertion-manager>
+
+    <!-- ===================================================================== -->
+    <!-- JOSSO Assertion Store, the id is very important because it is         -->
+    <!-- referenced by the assertion manager and who knows where elese         -->
+    <!-- ===================================================================== -->
+    <memory-astore:memory-store id="josso-assertion-store"/>
+
+
+</s:beans>

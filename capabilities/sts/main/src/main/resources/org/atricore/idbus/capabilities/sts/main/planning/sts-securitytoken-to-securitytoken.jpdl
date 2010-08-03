@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<process-definition name='SecurityToken from SecurityToken'>
+
+    <description>Emit a Security Token based on a recieved Security Token</description>
+
+    <start-state name="start">
+        <transition to="initializeSecurityToken" />
+    </start-state>
+
+    <!--
+     Initialize the new Security token, ID, issuer, etc
+    -->
+    <process-fragment-state name="initializeSecurityToken">
+        <process-fragment lifecycle="emit-st" phase="initialize-token"/>
+        <transition to="providedIdentityInformation"/>
+        <!-- IN/OUT Artifacts are automatically propagated! -->
+        <!-- Subject -->
+        <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
+                  access="read" />
+
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
+                  access="read"/>
+
+
+    </process-fragment-state>
+
+    <!--
+     Provide information about the token's subject
+    -->
+    <process-fragment-state name="providedIdentityInformation">
+        <process-fragment lifecycle="emit-st" phase="provide-identity-info"/>
+        <transition to="provideContentInformation"/>
+        <!-- IN/OUT Artifacts are automatically propagated! -->
+        <!-- Subject -->
+        <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
+                  access="read"/>
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
+                  access="read"/>
+    </process-fragment-state>
+
+    <!--
+    Provide other content information (statements, etc)
+    -->
+    <process-fragment-state name="provideContentInformation">
+        <process-fragment lifecycle="emit-st" phase="provide-content-info"/>
+        <transition to="ensureContentConfidentiality"/>
+        <!-- IN/OUT Artifacts are automatically propagated! -->
+        <!-- Subject -->
+        <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
+                  access="read"/>
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
+                  access="read"/>
+
+    </process-fragment-state>
+
+    <!--
+    Encrypt token content (attributes, etc)
+    -->
+    <process-fragment-state name="ensureContentConfidentiality">
+        <process-fragment lifecycle="emit-st" phase="ensure-content-confidentiality"/>
+        <transition to="ensureAuthenticity"/>
+        <!-- IN/OUT Artifacts are automatically propagated! -->
+        <!-- Subject -->
+        <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
+                  access="read"/>
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
+                  access="read"/>
+
+    </process-fragment-state>
+
+    <!--
+    Add authenticity mechanism like checksums, signatures, etc
+    -->
+    <process-fragment-state name="ensureAuthenticity">
+        <process-fragment lifecycle="emit-st" phase="ensure-authenticity"/>
+        <transition to="validateEmittedToken"/>
+        <!-- IN/OUT Artifacts are automatically propagated! -->
+        <!-- Subject -->
+        <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
+                  access="read" />
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
+                  access="read"/>
+
+    </process-fragment-state>
+
+    <!--
+    Validate the generated token
+    -->
+    <process-fragment-state name="validateEmittedToken">
+        <process-fragment lifecycle="emit-st" phase="validate-emitted-token"/>
+        <transition to="ensureConfidentiality"/>
+        <!-- IN/OUT Artifacts are automatically propagated! -->
+        <!-- Subject -->
+        <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
+                  access="read" />
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
+                  access="read"/>
+
+    </process-fragment-state>
+
+    <!--
+    Encrypt the entire token ?
+    -->
+    <process-fragment-state name="ensureConfidentiality">
+        <process-fragment lifecycle="emit-st" phase="ensure-token-confidentiality"/>
+        <transition to="end"/>
+        <!-- IN/OUT Artifacts are automatically propagated! -->
+        <!-- Subject -->
+        <variable name="urn:org:atricore:idbus:kernel:main:sts:Subject"
+                  access="read" />
+        <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
+                  access="read"/>
+        
+    </process-fragment-state>
+
+    <end-state name="end" />
+
+</process-definition>

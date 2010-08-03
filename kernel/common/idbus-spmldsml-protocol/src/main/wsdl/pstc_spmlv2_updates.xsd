@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<schema targetNamespace="urn:oasis:names:tc:SPML:2:0:updates"
+        xmlns:spml="urn:oasis:names:tc:SPML:2:0"
+        xmlns:spmlupdates="urn:oasis:names:tc:SPML:2:0:updates"
+        xmlns:spmlsearch="urn:oasis:names:tc:SPML:2:0:search"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified">
+
+    <import namespace="urn:oasis:names:tc:SPML:2:0"
+            schemaLocation="pstc_spmlv2_core.xsd"/>
+
+    <import namespace="urn:oasis:names:tc:SPML:2:0:search"
+            schemaLocation="pstc_spmlv2_search.xsd"/>
+
+    <complexType name="UpdatesRequestType">
+        <complexContent>
+            <extension base="spml:RequestType">
+                <sequence>
+                    <element ref="spmlsearch:query" minOccurs="0"/>
+                    <element name="updatedByCapability" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                </sequence>
+                <attribute name="updatedSince" type="xsd:dateTime" use="optional"/>
+                <attribute name="token" type="xsd:string" use="optional"/>
+                <attribute name="maxSelect" type="xsd:int" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <simpleType name="UpdateKindType">
+        <restriction base="string">
+            <enumeration value="add"/>
+            <enumeration value="modify"/>
+            <enumeration value="delete"/>
+            <enumeration value="capability"/>
+        </restriction>
+    </simpleType>
+
+    <complexType name="UpdateType">
+        <complexContent>
+            <extension base="spml:ExtensibleType">
+                <sequence>
+                    <element name="psoID" type="spml:PSOIdentifierType"/>
+                </sequence>
+                <attribute name="timestamp" type="xsd:dateTime" use="required"/>
+                <attribute name="updateKind" type="spmlupdates:UpdateKindType" use="required"/>
+                <attribute name="wasUpdatedByCapability" type="xsd:string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="ResultsIteratorType">
+        <complexContent>
+            <extension base="spml:ExtensibleType">
+                <attribute name="ID" type="xsd:ID"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="UpdatesResponseType">
+        <complexContent>
+            <extension base="spml:ResponseType">
+                <sequence>
+                    <element name="update" type="spmlupdates:UpdateType" minOccurs="0" maxOccurs="unbounded"/>
+                    <element name="iterator" type="spmlupdates:ResultsIteratorType" minOccurs="0"/>
+                </sequence>
+                <attribute name="token" type="xsd:string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="IterateRequestType">
+        <complexContent>
+            <extension base="spml:RequestType">
+                <sequence>
+                    <element name="iterator" type="spmlupdates:ResultsIteratorType"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="CloseIteratorRequestType">
+        <complexContent>
+            <extension base="spml:RequestType">
+                <sequence>
+                    <element name="iterator" type="spmlupdates:ResultsIteratorType"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="updatesRequest" type="spmlupdates:UpdatesRequestType"/>
+    <element name="updatesResponse" type="spmlupdates:UpdatesResponseType"/>
+    <element name="iterateRequest" type="spmlupdates:IterateRequestType"/>
+    <element name="iterateResponse" type="spmlupdates:UpdatesResponseType"/>
+    <element name="closeIteratorRequest" type="spmlupdates:CloseIteratorRequestType"/>
+    <element name="closeIteratorResponse" type="spml:ResponseType"/>
+
+</schema>

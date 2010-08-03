@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://saml.salesforce.com" validUntil="2020-03-15T20:11:08.690Z">
+   <md:SPSSODescriptor WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+      <md:KeyDescriptor use="signing">
+         <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+            <ds:X509Data>
+               <ds:X509Certificate>MIICoDCCAgkCCQCP3MN3sQ6/RDANBgkqhkiG9w0BAQUFADCBozELMAkGA1UEBhMCVVMxEzA
+RBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBGcmFuY2lzY28xFzAVBgNVBAoTDl
+NhbGVzZm9yY2UuY29tMRwwGgYDVQQLExNRdWFsaXR5IEVuZ2luZWVyaW5nMTAwLgYDVQQDE
+ydGVGVzdCBIb21lZ3Jvd24gQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMDgwMzE0MTg1
+ODM1WhcNMTMwMjE2MTg1ODM1WjCBhDELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRYwFAY
+DVQQHEw1TYW4gRnJhbmNpc2NvMRcwFQYDVQQKEw5TYWxlc2ZvcmNlLmNvbTEcMBoGA1UECx
+MTUXVhbGl0eSBFbmdpbmVlcmluZzEZMBcGA1UEAwwQKi5zYWxlc2ZvcmNlLmNvbTCBnzANB
+gkqhkiG9w0BAQEFAAOBjQAwgYkCgYEAwOu7uG2FRiIiykW7loKRXqM+tV1MSgws5fIyzXvh
+8GmLuh+NDfLy8+C9fY4l+Y8W/jyU3CNf2rxizozvFtf4uatXvelr4fMNkLuZUfoQHFTKOnw
+LFoxUYGCMRoWfIurnsUnMlTwBZaKmMv00lGUTIJTcPGMSdX1l7TQvX404j+cCAwEAATANBg
+kqhkiG9w0BAQUFAAOBgQAST0eWSefnlMXJxIuIS8gFrTC5CXmNCkm6MMBvJt2Sdvp36kSYx
+0B4w/OnPVih36rwYWWw6y3rSRbZhWuXqhnpBf93JFYLByuotgn2noEEbcjGPr6IPAMbOQdN
+rMzNbLsCtLDTyoBJSFLR57xhfQTbprGskoDbzTXsQbTYhCIqtQ==</ds:X509Certificate>
+            </ds:X509Data>
+         </ds:KeyInfo>
+      </md:KeyDescriptor>
+      <md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://login.salesforce.com/?saml=EK03Almz90S3gVXw_2HGIArT1pc6Ek..DU_N3RyROjW6vChZ9kdC0hJT.S" index="0" isDefault="true"/>
+      <!--
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://login.salesforce.com/?saml=MgoTx78aEPJUp0R43S9oUThgszQTWIO6EJKRDLyJsWrKRG.9kzyrxQyqq6J4bQ2zsFQZP8dnBviGDWv2a8cFdAHd7eFqKgfyfTDVA=" index="0" isDefault="true"/>
+      <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://login.salesforce.com/?saml=02HKiPoin4CdIrGDqhMi3IGLo7EO79VBPT3mQNHT5JiaKSPz8f2XLUNBnQ" index="0" isDefault="true"/>
+      -->
+
+   </md:SPSSODescriptor>
+</md:EntityDescriptor>

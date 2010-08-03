@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<process-definition name='IDP Unsolicited Response to Subject'>
+
+    <description>Emit a Subject from an IdP unsolicited response</description>
+
+    <start-state name="start">
+        <transition to="validateIDPUnsolicitedResponse" />
+    </start-state>
+
+
+    <!--
+     Initialize the IDP unsolicited response
+    -->
+    <process-fragment-state name="initializeUnsolicitedResponse">
+        <process-fragment lifecycle="consume-unsolicited-response" phase="initialize"/>
+        <transition to="validateIDPUnsolicitedResponse"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:cot" access="read"/>
+        <variable name="urn:org:atricore:idbus:channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:response" access="read"/>
+
+    </process-fragment-state>
+
+    <!--
+     Validate IDP unsolicited response
+    -->
+    <process-fragment-state name="validateIDPUnsolicitedResponse">
+        <process-fragment lifecycle="consume-unsolicited-response" phase="validate"/>
+        <transition to="createSubjectFromAssertion"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:cot" access="read"/>
+        <variable name="urn:org:atricore:idbus:channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:response" access="read"/>
+
+    </process-fragment-state>
+
+
+    <!--
+     Create SP-scoped Subject based on the Unsolicited Response Assertion
+    -->
+    <process-fragment-state name="createSubjectFromAssertion">
+        <process-fragment lifecycle="consume-unsolicited-response" phase="create-subject"/>
+        <transition to="end"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:cot" access="read"/>
+        <variable name="urn:org:atricore:idbus:channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:response" access="read"/>
+
+    </process-fragment-state>
+
+    <!--
+     Map to local account
+    -->
+    <process-fragment-state name="linkAccount">
+        <process-fragment lifecycle="consume-unsolicited-response" phase="link-account"/>
+        <transition to="end"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:cot" access="read"/>
+        <variable name="urn:org:atricore:idbus:channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read"/>
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read"/>
+        <variable name="urn:org:atricore:idbus:response" access="read"/>
+
+    </process-fragment-state>
+
+
+    <end-state name="end"/>
+
+</process-definition>

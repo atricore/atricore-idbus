@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<s:beans xmlns:s="http://www.springframework.org/schema/beans"
+         xmlns="urn:org:atricore:idbus:core"
+         xmlns:im="urn:org:atricore:idbus:default:identity-mediator"
+         xmlns:core="urn:org:atricore:idbus:core"
+         xmlns:amq="http://activemq.apache.org/schema/core"
+         xmlns:josso11="urn:org:atricore:idbus:websso:josso11"
+         xmlns:def-sdselector="urn:org:atricore:idbus:default:secdomainselector"
+         xmlns:def-sdregistry="urn:org:atricore:idbus:default:secdomainregistry"
+         xmlns:simple-sdmatcher="urn:org:atricore:idbus:simple:secdomainmatcher"
+         xmlns:vhost-sdmatcher="urn:org:atricore:idbus:vhost:secdomainmatcher"
+         xmlns:appcxt-sdmatcher="urn:org:atricore:idbus:appctx:secdomainmatcher"
+         xmlns:def-auth="urn:org:atricore:idbus:default:authenticator"
+         xmlns:basic-authscheme="urn:org:atricore:idbus:basic:authscheme"
+         xmlns:bind-authscheme="urn:org:atricore:idbus:bind:authscheme"
+         xmlns:ntlm-authscheme="urn:org:atricore:idbus:ntlm:authscheme"
+         xmlns:strong-authscheme="urn:org:atricore:idbus:strong:authscheme"
+         xmlns:memory-istore="urn:org:atricore:idbus:memory:identitystore"
+         xmlns:def-identitymgr="urn:org:atricore:idbus:default:identitymgr"
+         xmlns:def-identityprv="urn:org:atricore:idbus:default:identityprovider"
+         xmlns:def-sessionmgr="urn:org:atricore:idbus:default:sessionmgr"
+         xmlns:memory-sstore="urn:org:atricore:idbus:memory:sessionstore"
+         xmlns:def-sidgen="urn:org:atricore:idbus:default:sessionidgen"
+         xmlns:def-assertionmgr="urn:org:atricore:idbus:default:assertionmgr"
+         xmlns:memory-astore="urn:org:atricore:idbus:memory:assertionstore"
+         xmlns:def-aidgen="urn:org:atricore:idbus:default:assertionidgen"
+         xmlns:def-auditmgr="urn:org:atricore:idbus:default:auditmgr"
+         xmlns:logger-atrailhandler="urn:org:atricore:idbus:logger:audittrailhandler"
+         xmlns:def-eventmgr="urn:org:atricore:idbus:default:eventmgr"
+         xmlns:def-pwdmgr="urn:org:atricore:idbus:default:passwordmgr"
+         xmlns:def-pwdgen="urn:org:atricore:idbus:default:passwordgenerator"
+         xmlns:email-pwddist="urn:org:atricore:idbus:email:passworddistributor"
+         xmlns:simple-lostpwd="urn:org:atricore:idbus:simple:lostpasswordprocess"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd"
+        >
+
+    <!-- Authentication schemes configuration -->
+    <s:import resource="josso-gateway-auth.xml"/>
+
+    <!-- SSO Self services configuration -->
+    <s:import resource="josso-gateway-selfservices.xml"/>
+
+    <!-- Identity, Session and Assertion Stores configuration -->
+    <s:import resource="josso-gateway-stores.xml" />
+
+    <!-- Web configuration (login form, etc) -->
+    <s:import resource="josso-gateway-web.xml" />
+
+    <!-- JMX, used internally -->
+    <!--<s:import resource="josso-gateway-jmx.xml" />-->
+
+    <mediation>
+        <channels>
+            <s:ref bean="bc_idp_josso11_channel1"/>
+            <s:ref bean="idp_channel1"/>
+            <s:ref bean="claim_channel1"/>
+        </channels>
+    </mediation>
+
+    <binding-channel name="bc_idp_josso11_channel1">
+        <location>http://localhost:8181/BINDCH1</location>
+        <target>
+            <s:ref bean="idp_channel1"/>
+        </target>
+        <engine>
+            <s:ref bean="engine1"/>
+        </engine>
+        <mediator>
+            <s:ref bean="mediator1"/>
+        </mediator>
+    </binding-channel>
+
+    <idp-channel name="idp_channel1">
+        <location>http://localhost:8181/IDPCH1</location>
+        <claims-provider>
+            <s:ref bean="claim_channel1"/>
+        </claims-provider>
+        <security-domain>
+            <s:ref bean="security_domain_1"/>
+        </security-domain>
+        <member>
+            <s:ref bean="member1"/>
+        </member>
+        <engine>
+            <s:ref bean="engine1"/>
+        </engine>
+        <mediator>
+            <s:ref bean="mediator2"/>
+        </mediator>
+    </idp-channel>
+
+    <claim-channel name="claim_channel1">
+        <location>http://localhost:8181/CLAIMCH1</location>
+        <engine>
+            <s:ref bean="engine1"/>
+        </engine>
+        <mediator>
+            <s:ref bean="mediator3"/>
+        </mediator>
+    </claim-channel>
+
+    <!-- Trusted partners -->
+    <cot>
+        <members>
+            <s:ref bean="member1"/>
+        </members>
+    </cot>
+
+    <member id="member1" alias="member1"/>
+
+    <im:identity-mediation-engine id="engine1">
+        <im:mediators>
+            <s:ref bean="mediator1"/>
+            <s:ref bean="mediator2"/>
+            <s:ref bean="mediator3"/>
+        </im:mediators>
+    </im:identity-mediation-engine>
+
+    <!--  Binding mediator for JOSSO 1.1 protocol -->
+    <josso11:binding-mediator id="mediator1">
+        <josso11:artifactQueueManager>
+            <s:ref bean="artifactQueueManager"/>
+        </josso11:artifactQueueManager>
+    </josso11:binding-mediator>
+
+    <!--  Test IdP mediator that publishes a Mock IdP endpoint -->
+    <s:bean id="mediator2" class="org.atricore.idbus.capabilities.josso.test.support.SampleIdPMediator">
+        <s:property name="artifactQueueManager" ref="artifactQueueManager"/>
+    </s:bean>
+
+    <!--  Test Claims mediator that provides test identity request claims -->
+    <s:bean id="mediator3" class="org.atricore.idbus.capabilities.josso.test.support.SampleClaimsMediator">
+        <s:property name="artifactQueueManager" ref="artifactQueueManager"/>
+    </s:bean>
+
+    <!--MOM support used as a cross-channel message bus -->
+    <s:bean id="artifactQueueManager" class="org.atricore.josso2.mediation.MessageQueueManager"
+          depends-on="bindingBroker"
+          singleton="true"
+          destroy-method="shutDown">
+        <s:property name="artifactGenerator">
+            <s:bean class="org.atricore.josso2.mediation.ArtifactGeneratorImpl"/>
+        </s:property>
+        <s:property name="connectionFactory" ref="bindingConnectionFactory"/>
+        <s:property name="jmsProviderDestinationName" value="Queue/JOSSO/Artifact"/>
+    </s:bean>
+
+    <s:bean id="bindingConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <s:property name="brokerURL" value="tcp://localhost:61217"/>
+    </s:bean>
+
+    <amq:broker id="bindingBroker" brokerName="bindingBroker" persistent="false">
+        <amq:transportConnectors>
+            <amq:transportConnector uri="tcp://localhost:61217"/>
+        </amq:transportConnectors>
+    </amq:broker>
+
+
+    <!-- JOSSO Gateway springmetadata -->
+    <gateway>
+        <sso-domain-selector>
+            <def-sdselector:default-domain-selector/>
+        </sso-domain-selector>
+
+        <sso-domains-registry>
+            <def-sdregistry:default-domains-registry/>
+        </sso-domains-registry>
+
+        <domains>
+            <s:ref bean="security_domain_1"/>
+        </domains>
+    </gateway>
+
+    <domain name="security_domain_1" type="web">
+
+        <sso-web-configuration>
+            <s:ref bean="josso-web-configuraiton"/>
+        </sso-web-configuration>
+
+        <matchers>
+            <simple-sdmatcher:simple-matcher/>
+        </matchers>
+
+        <authenticator>
+            <s:ref bean="josso-authenticator"/>
+        </authenticator>
+
+        <identity-manager>
+            <s:ref bean="josso-identity-manager"/>
+        </identity-manager>
+
+        <session-manager>
+            <s:ref bean="josso-session-manager"/>
+        </session-manager>
+
+        <assertion-manager>
+            <s:ref bean="josso-assertion-manager"/>
+        </assertion-manager>
+
+        <identity-provider>
+            <s:ref bean="josso-identity-provider"/>
+        </identity-provider>
+
+        <audit-manager>
+            <s:ref bean="josso-audit-manager"/>
+        </audit-manager>
+
+        <event-manager>
+            <s:ref bean="josso-event-manager"/>
+        </event-manager>
+
+        <!-- Only needed when using NTLM -->
+        <protocol-manager>
+            <s:ref bean="josso-protocol-manager"/>
+        </protocol-manager>
+
+        <!-- Only neede for self-services (lost password, etc). -->
+        <password-manager>
+            <s:ref bean="josso-password-manager"/>
+        </password-manager>
+
+    </domain>
+
+
+    <!-- ===================================================================== -->
+    <!-- SSO Authenticator, all authentication schemes must be configured here -->
+    <!-- ===================================================================== -->
+    <def-auth:authenticator id="josso-authenticator">
+        <def-auth:schemes>
+            <s:ref bean="josso-basic-authentication"/>
+        </def-auth:schemes>
+    </def-auth:authenticator>
+
+    <!-- ===================================================================== -->
+    <!-- SSO Identity manager, referencing identity store                      -->
+    <!-- ===================================================================== -->
+    <def-identitymgr:identity-manager id="josso-identity-manager">
+
+        <def-identitymgr:identityStore>
+            <s:ref bean="josso-identity-store"/>
+        </def-identitymgr:identityStore>
+
+        <def-identitymgr:identityStoreKeyAdapter>
+            <s:ref bean="josso-simple-key-adapter"/>
+        </def-identitymgr:identityStoreKeyAdapter>
+
+    </def-identitymgr:identity-manager>
+
+    <!-- ===================================================================== -->
+    <!-- SSO Identity provider                                                 -->
+    <!-- ===================================================================== -->
+    <def-identityprv:identity-provider id="josso-identity-provider"/>
+
+    <!-- ===================================================================== -->
+    <!-- SSO Session manager, referencing session store                        -->
+    <!-- ===================================================================== -->
+    <def-sessionmgr:session-manager id="josso-session-manager"
+            maxInactiveInterval="30"
+            maxSessionsPerUser="-1"
+            invalidateExceedingSessions="false"
+            sessionMonitorInterval="10000">
+
+        <def-sessionmgr:session-id-generator>
+            <def-sidgen:id-generator algorithm="MD5"/>
+        </def-sessionmgr:session-id-generator>
+
+        <def-sessionmgr:session-store>
+            <s:ref bean="josso-session-store"/>
+        </def-sessionmgr:session-store>
+
+    </def-sessionmgr:session-manager>
+
+    <!-- ===================================================================== -->
+    <!-- SSO Assertion anager, referencing assertion store                     -->
+    <!-- ===================================================================== -->
+    <def-assertionmgr:assertion-manager id="josso-assertion-manager">
+
+        <def-assertionmgr:assertion-id-generator>
+            <def-aidgen:id-generator/>
+        </def-assertionmgr:assertion-id-generator>
+
+        <def-assertionmgr:assertion-store>
+            <s:ref bean="josso-assertion-store"/>
+        </def-assertionmgr:assertion-store>
+
+    </def-assertionmgr:assertion-manager>
+
+    <!-- ===================================================================== -->
+    <!-- SSO Audit Manager with audit trail handlers                           -->
+    <!-- ===================================================================== -->
+    <def-auditmgr:audit-manager id="josso-audit-manager">
+
+        <!-- Audit Trail Handlers list -->
+        <def-auditmgr:handlers>
+            <logger-atrailhandler:audittrail-logger category="org.josso.AUDIT"/>
+        </def-auditmgr:handlers>
+
+    </def-auditmgr:audit-manager>
+
+    <!-- ===================================================================== -->
+    <!-- SSO Protocol Manager with handlers                                    -->
+    <!-- ===================================================================== -->
+    <default-protocol-manager id="josso-protocol-manager">
+        <!-- To enable NTLM, uncomment this :
+        <handlers>
+            <ntlm-authscheme:ntlm-protocol-handler/>
+        </handlers>
+        -->
+    </default-protocol-manager>
+
+    <!-- ===================================================================== -->
+    <!-- SSO Event manager, based on spring jmx                                -->
+    <!-- ===================================================================== -->
+    <def-eventmgr:springjmx-event-manager id="josso-event-manager">
+        <def-eventmgr:listeners>
+            <s:ref bean="josso-audit-manager"/>
+        </def-eventmgr:listeners>
+    </def-eventmgr:springjmx-event-manager>
+
+    <!-- ===================================================================== -->
+    <!-- SSO Simple key addapter used in several components                    -->
+    <!-- ===================================================================== -->
+    <simple-key-adapter id="josso-simple-key-adapter"/>
+
+    <!-- ===================================================================== -->
+    <!-- Spring Mail Sender bean.  Configure mail delivery settings here       -->
+    <!-- ===================================================================== -->
+    <s:bean id="josso-spring-mailsender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <!-- Spring JavaMaileSender properties :
+            protocol, host, port, username, password -->
+        <s:property name="host" value="mail.mycompany.com"/>
+    </s:bean>
+
+
+
+</s:beans>

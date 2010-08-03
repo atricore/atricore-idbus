@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<schema targetNamespace="urn:oasis:names:tc:SPML:2:0:reference"
+        xmlns:spmlref="urn:oasis:names:tc:SPML:2:0:reference"
+        xmlns:spml="urn:oasis:names:tc:SPML:2:0"
+        xmlns="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+    <import namespace="urn:oasis:names:tc:SPML:2:0"
+            schemaLocation="pstc_spmlv2_core.xsd"/>
+
+    <complexType name="ReferenceType">
+        <complexContent>
+            <extension base="spml:ExtensibleType">
+                <sequence>
+                    <element name="toPsoID" type="spml:PSOIdentifierType" minOccurs="0"/>
+                    <element name="referenceData" type="spml:ExtensibleType" minOccurs="0"/>
+                </sequence>
+                <attribute name="typeOfReference" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="ReferenceDefinitionType">
+        <complexContent>
+            <extension base="spml:ExtensibleType">
+
+                <sequence>
+                    <element name="schemaEntity" type="spml:SchemaEntityRefType"/>
+                    <element name="canReferTo" type="spml:SchemaEntityRefType" minOccurs="0" maxOccurs="unbounded"/>
+                    <element name="referenceDataType" type="spml:SchemaEntityRefType" minOccurs="0"
+                             maxOccurs="unbounded"/>
+                </sequence>
+                <attribute name="typeOfReference" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="HasReferenceType">
+        <complexContent>
+            <extension base="spml:QueryClauseType">
+                <sequence>
+                    <element name="toPsoID" type="spml:PSOIdentifierType" minOccurs="0"/>
+                    <element name="referenceData" type="spml:ExtensibleType" minOccurs="0"/>
+                </sequence>
+                <attribute name="typeOfReference" type="string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="hasReference" type="spmlref:HasReferenceType"/>
+    <element name="reference" type="spmlref:ReferenceType"/>
+    <element name="referenceDefinition" type="spmlref:ReferenceDefinitionType"/>
+
+</schema>

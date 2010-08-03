@@ -1,0 +1,197 @@
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:josso11b="urn:org:atricore:idbus:websso:josso11"
+       xmlns:ws-axis="urn:org:atricore:idbus:websso:josso11:client:axis"
+       xmlns:def-sessionmgr="urn:org:atricore:idbus:default:sessionmgr"
+       xmlns:memory-sstore="urn:org:atricore:idbus:memory:sessionstore"
+       xmlns:def-sidgen="urn:org:atricore:idbus:default:sessionidgen"
+       xmlns:def-assertionmgr="urn:org:atricore:idbus:default:assertionmgr"
+       xmlns:memory-astore="urn:org:atricore:idbus:memory:assertionstore"
+       xmlns:def-aidgen="urn:org:atricore:idbus:default:assertionidgen"
+       xmlns:def-identitymgr="urn:org:atricore:idbus:default:identitymgr"
+       xmlns:memory-istore="urn:org:atricore:idbus:memory:identitystore"
+       xmlns:core="urn:org:atricore:idbus:core"
+       xmlns:def-identityprv="urn:org:atricore:idbus:default:identityprovider"
+       xmlns:def-auth="urn:org:atricore:idbus:default:authenticator"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+    <import resource="josso-gateway-auth.xml"/>
+
+    <!-- ===================================================================== -->
+    <!-- Identity Manager WS -->
+    <!-- ===================================================================== -->
+
+    <jaxws:endpoint id="SSOIdentityManagerImpl"
+                    implementor="#josso11b-identity-manager"
+                    address="http://localhost:8080/josso/services/SSOIdentityManager"
+                    endpointName="s:SSOIdentityManagerSoap"
+                    serviceName="s:SSOIdentityManagerWS"
+                    xmlns:s="urn:org:atricore:idbus:gateway:ws:1.1.1:wsdl"/>
+
+    <josso11b:ws-identity-manager id="josso11b-identity-manager">
+        <josso11b:sessionManager>
+            <ref bean="josso-session-manager"/>
+        </josso11b:sessionManager>
+        <josso11b:identityManager>
+            <ref bean="josso-identity-manager"/>
+        </josso11b:identityManager>
+    </josso11b:ws-identity-manager>
+
+    <!-- ===================================================================== -->
+    <!-- Identity Provider WS -->
+    <!-- ===================================================================== -->
+
+    <jaxws:endpoint id="SSOIdentityProviderImpl"
+                    implementor="#josso11b-identity-provider"
+                    address="http://localhost:8080/josso/services/SSOIdentityProvider"
+                    endpointName="s:SSOIdentityProviderSoap"
+                    serviceName="s:SSOIdentityProviderWS"
+                    xmlns:s="urn:org:atricore:idbus:gateway:ws:1.1.1:wsdl"/>
+
+
+    <josso11b:ws-identity-provider id="josso11b-identity-provider">
+        <josso11b:assertionManager>
+            <ref bean="josso-assertion-manager"/>
+        </josso11b:assertionManager>
+        <josso11b:identityProvider>
+            <ref bean="josso-identity-provider"/>
+        </josso11b:identityProvider>
+    </josso11b:ws-identity-provider>
+
+    <!-- ===================================================================== -->
+    <!-- Session Manager WS -->
+    <!-- ===================================================================== -->
+
+    <jaxws:endpoint id="SSOSessionManagerImpl"
+                    implementor="#josso11b-session-manager"
+                    address="http://localhost:8080/josso/services/SSOSessionManager"
+                    endpointName="s:SSOSessionManagerSoap"
+                    serviceName="s:SSOSessionManagerWS"
+                    xmlns:s="urn:org:atricore:idbus:gateway:ws:1.1.1:wsdl"/>
+
+    <josso11b:ws-session-manager id="josso11b-session-manager">
+        <josso11b:sessionManager>
+            <ref bean="josso-session-manager"/>
+        </josso11b:sessionManager>
+    </josso11b:ws-session-manager>
+
+    <!-- ===================================================================== -->
+    <!-- SSO Session manager, referencing session store                        -->
+    <!-- ===================================================================== -->
+    <def-sessionmgr:session-manager id="josso-session-manager"
+                                    maxInactiveInterval="30"
+                                    maxSessionsPerUser="-1"
+                                    invalidateExceedingSessions="false"
+                                    sessionMonitorInterval="10000">
+
+        <def-sessionmgr:session-id-generator>
+            <def-sidgen:id-generator algorithm="MD5"/>
+        </def-sessionmgr:session-id-generator>
+
+        <def-sessionmgr:session-store>
+            <ref bean="josso-session-store"/>
+        </def-sessionmgr:session-store>
+
+    </def-sessionmgr:session-manager>
+
+    <!-- ===================================================================== -->
+    <!-- SSO Identity Manager                                                  -->
+    <!-- ===================================================================== -->
+    <def-identitymgr:identity-manager id="josso-identity-manager">
+
+        <def-identitymgr:identityStore>
+            <ref bean="josso-identity-store"/>
+        </def-identitymgr:identityStore>
+
+        <def-identitymgr:identityStoreKeyAdapter>
+            <ref bean="josso-simple-key-adapter"/>
+        </def-identitymgr:identityStoreKeyAdapter>
+
+    </def-identitymgr:identity-manager>
+
+    <memory-istore:memory-store id="josso-identity-store"
+                                credentialsFileName="josso-credentials.xml"
+                                usersFileName="josso-users.xml"/>
+
+    <core:simple-key-adapter id="josso-simple-key-adapter"/>
+    <!-- ===================================================================== -->
+    <!-- SSO Assertion anager, referencing assertion store                     -->
+    <!-- ===================================================================== -->
+    <def-assertionmgr:assertion-manager id="josso-assertion-manager">
+
+        <def-assertionmgr:assertion-id-generator>
+            <def-aidgen:id-generator/>
+        </def-assertionmgr:assertion-id-generator>
+
+        <def-assertionmgr:assertion-store>
+            <ref bean="josso-assertion-store"/>
+        </def-assertionmgr:assertion-store>
+
+    </def-assertionmgr:assertion-manager>
+
+    <!-- ===================================================================== -->
+    <!-- JOSSO Session Store, the id is very important because it is           -->
+    <!-- referenced by the session manager and who knows where else            -->
+    <!-- ===================================================================== -->
+    <memory-sstore:memory-store id="josso-session-store"/>
+
+    <!-- ===================================================================== -->
+    <!-- JOSSO Assertion Store, the id is very important because it is         -->
+    <!-- referenced by the assertion manager and who knows where elese         -->
+    <!-- ===================================================================== -->
+    <memory-astore:memory-store id="josso-assertion-store"/>
+
+    <!-- ===================================================================== -->
+    <!-- SSO Identity provider                                                 -->
+    <!-- ===================================================================== -->
+    <def-identityprv:identity-provider id="josso-identity-provider">
+        <def-identityprv:assertionManager>
+            <ref bean="josso-assertion-manager"/>
+        </def-identityprv:assertionManager>
+        <def-identityprv:authenticator>
+            <ref bean="josso-authenticator"/>
+        </def-identityprv:authenticator>
+        <def-identityprv:sessionManager>
+            <ref bean="josso-session-manager"/>
+        </def-identityprv:sessionManager>
+        <def-identityprv:identityManager>
+            <ref bean="josso-identity-manager"/>
+        </def-identityprv:identityManager>
+    </def-identityprv:identity-provider>
+
+
+    <def-auth:authenticator id="josso-authenticator">
+        <def-auth:schemes>
+            <ref bean="josso-basic-authentication"/>
+            <!-- Others like NTLM and BIND go here -->
+        </def-auth:schemes>
+    </def-auth:authenticator>
+
+    <!-- used by testcase only! -->
+    <ws-axis:ws-service-locator id="ws-servicelocator" endpoint="localhost:8080"/>
+
+</beans>

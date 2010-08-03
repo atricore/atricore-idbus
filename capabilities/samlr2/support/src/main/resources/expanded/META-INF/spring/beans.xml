@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<s:beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:osgi="http://www.springframework.org/schema/osgi"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
+        >
+
+    <bean name="idmu1" class="org.atricore.idbus.kernel.main.mediation.SpringMediationUnitImpl"
+            depends-on="cot1,samlr2-cot-mgr" >
+
+        <property name="name" value="Identity Mediation Unit #1"/>
+
+        <property name="channels">
+            <list>
+                <ref bean="idp1-to-sp-default-channel"/>
+                <ref bean="idp1-claim-channel"/>
+                <ref bean="sp1-to-idp-default-channel"/>
+                <ref bean="sp1-josso-binding-channel"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- Circle of Trust, maps to SAMLR2 Entities (SAML2Meta)               -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+
+    <bean name="cot1"
+          class="org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl"
+            depends-on="idp1,sp1">
+
+        <property name="name" value="cot1"/>
+        <property name="providers">
+            <set>
+                <ref bean="idp1"/>
+                <ref bean="sp1"/>
+            </set>
+        </property>
+    </bean>
+
+    <!-- We use a SAMLR2 Cricle of Trust manager implementation -->
+    <bean name="samlr2-cot-mgr" class="org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager">
+        <property name="cot" ref="cot1"/>
+    </bean>
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- Identity Mediators Registry                                        -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+
+    <import resource="idp1/idp1-config.xml"/>
+    <import resource="sp1/sp1-config.xml"/>
+
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- SSO Base services defintion                                        -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+
+    <!-- ================================================================== -->
+    <!-- SSO Session Manager Service                                        -->
+    <!-- ================================================================== -->
+    <!-- TODO : This is used by SPs, this must be changed -->
+    <bean name="idp1-session-manager"
+          class="org.atricore.idbus.kernel.main.session.service.SSOSessionManagerImpl">
+        <property name="maxInactiveInterval" value="30"/>
+        <property name="maxSessionsPerUser" value="-1"/>
+        <property name="invalidateExceedingSessions" value="false"/>
+        <property name="sessionMonitorInterval" value="10000"/>
+        <property name="sessionIdGenerator">
+            <bean class="org.atricore.idbus.kernel.main.session.service.SessionIdGeneratorImpl">
+                <property name="algorithm" value="MD5"/>
+            </bean>
+        </property>
+        <property name="sessionStore">
+            <bean class="org.atricore.idbus.idojos.memorysessionstore.MemorySessionStore" />
+        </property>
+    </bean>
+
+</s:beans>

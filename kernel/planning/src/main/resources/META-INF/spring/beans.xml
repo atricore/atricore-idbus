@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:osgi="http://www.springframework.org/schema/osgi"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+    <!-- Process Fragment Contributions -->
+    <osgi:list id="process-fragment-list" interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"
+               context-class-loader="service-provider" cardinality="0..N">
+        <osgi:listener ref="process-fragment-lifecycle-listener" bind-method="onBind" unbind-method="onUnbind"/>
+    </osgi:list>
+
+    <bean name="process-fragment-lifecycle-listener" class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentLifecycleListener">
+        <property name="processFragmentRegistry" ref="process-fragment-registry"/>
+    </bean>
+
+    <!-- Process Descriptor Contributions -->
+    <osgi:list id="process-descriptor-list" interface="org.atricore.idbus.kernel.planning.jbpm.ProcessDescriptor"
+               context-class-loader="service-provider"
+               cardinality="0..N">
+        <osgi:listener ref="process-descriptor-lifecycle-listener" bind-method="onBind" unbind-method="onUnbind"/>
+    </osgi:list>
+
+    <bean name="process-descriptor-lifecycle-listener" class="org.atricore.idbus.kernel.planning.jbpm.ProcessDescriptorLifecycleListener">
+        <property name="processFragmentRegistry" ref="process-fragment-registry"/>
+    </bean>
+
+    <!-- Process Action Contributions -->
+    <osgi:list id="process-action-list" interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"
+               context-class-loader="service-provider"
+               cardinality="0..N" >
+        <osgi:listener ref="process-action-lifecycle-listener" bind-method="onBind" unbind-method="onUnbind"/>
+    </osgi:list>
+
+    <bean name="process-action-lifecycle-listener" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionLifecycleListener">
+        <property name="registry" ref="process-fragment-registry"/>
+    </bean>
+
+    <!-- Process Fragment Registry -->
+    <bean name="process-fragment-registry" class="org.atricore.idbus.kernel.planning.jbpm.ProcessRegistryImpl">
+        <property name="processFragments" ref="process-fragment-list"/>
+        <property name="processDescriptors" ref="process-descriptor-list"/>
+    </bean>
+
+    <!--
+    <osgi:service id="osgi-process-fragment-registry"
+                  ref="process-fragment-registry"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentRegistry"/>
+
+    -->
+    <!-- BPM Service -->
+    <bean name="bpms-manager" class="org.atricore.idbus.kernel.planning.jbpm.JbpmManager">
+        <property name="processFragmentRegistry" ref="process-fragment-registry"/>        
+    </bean>
+
+    <osgi:service id="osgi-bpms-manager"
+                  ref="bpms-manager"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.BPMSManager" />
+
+    <!-- =================================================================== -->
+    <!-- Atricore IDBus MBean Server reference-->
+    <!-- =================================================================== -->
+    <bean name="mBeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean" scope="singleton">
+        <property name="locateExistingServerIfPossible" value="true"/>
+    </bean>
+    <bean name="planning-mbean-exporter" class="org.springframework.jmx.export.MBeanExporter">
+        <!-- Locate Container MBean Server -->
+        <property name="server" ref="mBeanServer"/>
+
+        <!-- MBeans -->
+        <property name="beans">
+            <map>
+                <entry key="org.atricore.idbus.kernel.planning:type=JbpmManager,name=idbusJbpmManager" value-ref="bpms-manager" />
+            </map>
+        </property>
+    </bean>
+
+
+</beans>

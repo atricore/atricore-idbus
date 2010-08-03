@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:osgi="http://www.springframework.org/schema/osgi"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+      http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
+        >
+
+    <!-- ====================================================================== -->
+    <!-- SAMLR2 Capability Process Actions                                      -->
+    <!-- ====================================================================== -->
+
+    <!-- Initialize Request Action -->
+    <bean name="samlr2-initialize-request-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+        <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.common.plans.actions.InitializeRequestAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-initialize-request-action"
+                  ref="samlr2-initialize-request-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Initialize SAMLR2 Request Action -->
+    <bean name="samlr2-sp-initialize-authn-request-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+        <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.sp.plans.actions.InitializeAuthnRequestAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-initialize-authn-request-action"
+                  ref="samlr2-sp-initialize-authn-request-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <bean name="samlr2-set-sectoken-to-id-request-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+        <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.sp.plans.actions.SetSecTokenInfoToReqAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-set-sectoken-to-id-request-action"
+                  ref="samlr2-set-sectoken-to-id-request-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+
+
+    <!-- Sign SAMLR2 Request Action -->
+    <bean name="samlr2-sign-request-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+        <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.common.plans.actions.SignRequestAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-sign-request-action"
+                  ref="samlr2-sign-request-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction" />
+
+
+    <!-- Sign SAMLR2 Response Action -->
+    <bean name="samlr2-sign-response-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+        <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.common.plans.actions.SignResponseAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-sign-response-action"
+                  ref="samlr2-sign-response-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Initialize SAMLR2 SLO Request -->
+    <bean name="samlr2-initialize-slo-request-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+        <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.sp.plans.actions.InitializeLogoutRequestAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-initialize-slo-request-action"
+                  ref="samlr2-initialize-slo-request-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Build SAMLR2 Authn Assertion Conditions -->
+    <bean name="samlr2-build-authnassertion-conditions-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.emitter.plans.actions.BuildAuthnAssertionConditionsAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-build-authnassertion-conditions-action"
+                  ref="samlr2-build-authnassertion-conditions-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Build SAMLR2 Authn Assertion Audience -->
+    <bean name="samlr2-build-authnassertion-audience-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.emitter.plans.actions.BuildAuthnAssertionAudienceAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-build-authnassertion-audience-action"
+                  ref="samlr2-build-authnassertion-audience-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+    
+    <!-- Build SAMLR2 Authn Assertion AuthStatement -->
+    <bean name="samlr2-build-authnassertion-authstmt-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.emitter.plans.actions.BuildAuthnAssertionAuthStatementAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-build-authnassertion-authstmt-action"
+                  ref="samlr2-build-authnassertion-authstmt-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+    
+    <!-- Build SAMLR2 Authn Assertion Statement -->
+    <bean name="samlr2-build-authnassertion-stmt-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.emitter.plans.actions.BuildAuthnAssertionStatementsAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-build-authnassertion-stmt-action"
+                  ref="samlr2-build-authnassertion-stmt-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Build SAMLR2 Authn Assertion Subject -->
+    <bean name="samlr2-build-authnassertion-subject-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.emitter.plans.actions.BuildAuthnAssertionSubjectAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-build-authnassertion-subject-action"
+                  ref="samlr2-build-authnassertion-subject-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Encrypt SAMLR2 Assertion Attributes -->
+    <bean name="samlr2-encrypt-assertion-attrs-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.common.plans.actions.EncryptAssertionAttributesAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-encrypt-assertion-attrs-action"
+                  ref="samlr2-encrypt-assertion-attrs-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Encrypt SAMLR2 Assertion -->
+    <bean name="samlr2-encrypt-assertion-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.common.plans.actions.EncryptAssertionAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-encrypt-assertion-action"
+                  ref="samlr2-encrypt-assertion-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Initialize SAMLR2 Assertion -->
+    <bean name="samlr2-init-assertion-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.common.plans.actions.InitializeAssertionAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-init-assertion-action"
+                  ref="samlr2-init-assertion-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Sign SAMLR2 Assertion -->
+    <bean name="samlr2-sign-assertion-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+        <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.common.plans.actions.SignAssertionAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-sign-assertion-action"
+                  ref="samlr2-sign-assertion-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Set SAMLR2 AuthN Statement to Assertion -->
+    <bean name="samlr2-set-authnstmt-assertion-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.idp.plans.actions.SetAuthnAssertionAuthStatementAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-set-authnstmt-assertion-action"
+                  ref="samlr2-set-authnstmt-assertion-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Add SAMLR2 Assertion to Response -->
+    <bean name="samlr2-add-assertion-to-response-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.idp.plans.actions.AddAssertionToResponseAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-add-assertion-to-response-action"
+                  ref="samlr2-add-assertion-to-response-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Initialize SAMLR2 Response -->
+    <bean name="samlr2-init-response-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.common.plans.actions.InitializeResponseAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-init-response-action"
+                  ref="samlr2-init-response-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Initialize SAMLR2 SLO Request -->
+    <bean name="samlr2-initialize-idp-slo-request-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+        <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.idp.plans.actions.InitializeLogoutRequestAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-idp-initialize-slo-request-action"
+                  ref="samlr2-initialize-idp-slo-request-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+
+    <!-- Initialize SAMLR2 Authn Response -->
+    <bean name="samlr2-init-authn-response-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.idp.plans.actions.InitializeAuthnResponseAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-init-auth-response-action"
+                  ref="samlr2-init-authn-response-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Set SAMLR2 Response Statius-->
+    <bean name="samlr2-set-response-status-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.idp.plans.actions.SetAuthnResponseStatusAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-set-response-status-action"
+                  ref="samlr2-set-response-status-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <bean name="samlr2-idp-initialize-authn-request-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+        <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.idp.plans.actions.InitializeAuthnRequestAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-idp-initialize-authn-request-action"
+                  ref="samlr2-idp-initialize-authn-request-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+</s:beans>

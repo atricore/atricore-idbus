@@ -1,0 +1,63 @@
+[INFO] 
+NOTE: Maven is executing in offline mode. Any artifacts not already in your local
+repository will be inaccessible.
+
+[INFO] Scanning for projects...
+[INFO] Searching repository for plugin with prefix: 'dependency'.
+WAGON_VERSION: 1.0-beta-2
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Atricore IDBus :: Kernel : Planning
+[INFO]    task-segment: [dependency:tree]
+[INFO] ------------------------------------------------------------------------
+[INFO] [dependency:tree]
+[INFO] org.atricore.idbus.kernel:org.atricore.idbus.kernel.planning:bundle:1.0.0-SNAPSHOT
+[INFO] +- org.springframework:spring-context:jar:2.5.6.SEC01:provided
+[INFO] |  +- aopalliance:aopalliance:jar:1.0:provided
+[INFO] |  \- org.springframework:spring-core:jar:2.5.6.SEC01:provided
+[INFO] +- org.springframework:spring-beans:jar:2.5.6.SEC01:provided
+[INFO] +- org.apache.felix:org.osgi.core:jar:1.4.0:provided
+[INFO] +- org.springframework.osgi:spring-osgi-core:jar:1.2.0:provided
+[INFO] |  +- org.springframework.osgi:spring-osgi-io:jar:1.2.0:provided
+[INFO] |  +- org.springframework:org.springframework.aop:jar:2.5.6.A:provided
+[INFO] |  |  \- org.aopalliance:com.springsource.org.aopalliance:jar:1.0.0:provided
+[INFO] |  +- org.springframework:org.springframework.beans:jar:2.5.6.A:provided
+[INFO] |  +- org.springframework:org.springframework.context:jar:2.5.6.A:provided
+[INFO] |  \- org.springframework:org.springframework.core:jar:2.5.6.A:provided
+[INFO] +- org.apache.xbean:xbean-spring:jar:3.4.3:compile
+[INFO] |  \- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] +- org.jbpm.jbpm3:jbpm-jpdl:jar:3.3.1.GA:compile
+[INFO] |  +- bsh:bsh:jar:1.3.0:compile
+[INFO] |  +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  +- junit:junit:jar:4.4:compile (version managed from 3.8.1)
+[INFO] |  +- org.apache.ant:ant:jar:1.7.0:compile
+[INFO] |  |  \- org.apache.ant:ant-launcher:jar:1.7.0:compile
+[INFO] |  \- org.apache.jackrabbit:jackrabbit-core:jar:1.4.5:compile
+[INFO] |     +- concurrent:concurrent:jar:1.3.4:compile
+[INFO] |     +- org.apache.jackrabbit:jackrabbit-api:jar:1.4:compile
+[INFO] |     +- org.apache.jackrabbit:jackrabbit-jcr-commons:jar:1.4:compile
+[INFO] |     +- org.apache.jackrabbit:jackrabbit-spi-commons:jar:1.4:compile
+[INFO] |     +- org.apache.jackrabbit:jackrabbit-spi:jar:1.4:compile
+[INFO] |     +- org.apache.jackrabbit:jackrabbit-text-extractors:jar:1.4:compile
+[INFO] |     |  +- poi:poi:jar:2.5.1-final-20040804:compile
+[INFO] |     |  +- pdfbox:pdfbox:jar:0.6.4:compile
+[INFO] |     |  +- org.textmining:tm-extractors:jar:0.4:compile
+[INFO] |     |  +- nekohtml:nekohtml:jar:0.9.4:compile
+[INFO] |     |  \- xerces:xercesImpl:jar:2.8.1:compile
+[INFO] |     |     \- xml-apis:xml-apis:jar:1.3.03:compile
+[INFO] |     +- org.apache.lucene:lucene-core:jar:2.2.0:compile
+[INFO] |     \- org.apache.derby:derby:jar:10.2.1.6:compile
+[INFO] \- org.hibernate:hibernate:jar:3.2.6.ga:compile
+[INFO]    +- net.sf.ehcache:ehcache:jar:1.2.3:compile
+[INFO]    +- javax.transaction:jta:jar:1.0.1B:compile
+[INFO]    +- asm:asm-attrs:jar:1.5.3:compile
+[INFO]    +- antlr:antlr:jar:2.7.6:compile
+[INFO]    +- cglib:cglib:jar:2.1_3:compile
+[INFO]    +- asm:asm:jar:1.5.3:compile
+[INFO]    \- commons-collections:commons-collections:jar:2.1.1:compile
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESSFUL
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 4 seconds
+[INFO] Finished at: Fri Dec 04 14:09:36 GMT-03:00 2009
+[INFO] Final Memory: 17M/163M
+[INFO] ------------------------------------------------------------------------

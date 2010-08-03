@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:osgi="http://www.springframework.org/schema/osgi"
+xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+xmlns:ctx="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context.xsd
+                    http://www.springframework.org/schema/osgi-compendium
+                    http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
+                    ">
+
+
+    <osgi:reference id="cacheManagerFactory" cardinality="1..1" timeout="60"
+                  interface="org.atricore.idbus.bundles.ehcache.CacheManagerFactory"/>
+
+    <bean name="cacheManager"
+          factory-bean="cacheManagerFactory"
+          factory-method="getCacheManager"
+          class="net.sf.ehcache.CacheManager"/>
+
+    <bean name="sessionHandlerBuilder" scope="singleton" init-method="doStart" destroy-method="doStop"
+          class="org.ops4j.pax.web.service.jetty.ehcache.EHCacheSessionHandlerBuilder">
+        <property name="cacheManager" ref="cacheManager"/>
+    </bean>
+
+
+    <!-- WADI Support
+    <bean name="sessionHandlerBuilder" scope="singleton" init-method="start"
+          class="org.ops4j.pax.web.service.jetty.wadi.WadiClusterManager">
+        <property name="wadiCluster" ref="wadiCluster"/>
+
+        <property name="nbReplica" value="${wadi.nbReplica}"/>
+        <property name="numPartitions" value="${wadi.numPartitions}"/>
+        <property name="sweepInterval" value="${wadi.sweepInterval}"/>
+        <property name="enableReplication" value="${wadi.enableReplication}"/>
+        <property name="deltaReplication" value="${wadi.deltaReplication}"/>
+    </bean>
+
+    <bean name="wadiCluster" class="org.ops4j.pax.web.service.jetty.wadi.TribesWadiCluster">
+        
+        <constructor-arg value="${wadi.clusterName}"/>
+        <constructor-arg value="${wadi.nodeName}"/>
+        <constructor-arg value="${wadi.clusterName}"/>
+
+        <property name="disableMulticast" value="${wadi.tribes.disableMulticast}"/>
+        <property name="receivingPort" value="${wadi.tribes.receivingPort}"/>
+
+        <property name="mcastPort" value="${wadi.tribes.mcastPort}"/>
+        <property name="mcastAddress" value="${wadi.tribes.mcastAddress}"/>
+        <property name="memberDropTime" value="${wadi.tribes.memberDropTime}"/>
+        <property name="mcastFrequency" value="${wadi.tribes.mcastFrequency}"/>
+        <property name="tcpListenPort" value="${wadi.tribes.tcpListenPort}"/>
+        <property name="tcpListenHost" value="${wadi.tribes.tcpListenHost}"/>
+        <property name="bindAddress" value="${wadi.tribes.bindAddress}"/>
+
+    </bean>
+
+    <osgix:cm-properties id="wadiProps" persistent-id="org.atricore.idbus.pax.web.wadi">
+        <prop key="wadi.clusterName" >IDBUS-HTTP-CLUSTER</prop>
+        <prop key="wadi.nodeName" >node1</prop>
+        <prop key="wadi.clusterEndpoint" >http://localhost/wadi</prop>
+        <prop key="wadi.nbReplica" >2</prop>
+        <prop key="wadi.numPartitions" >24</prop>
+        <prop key="wadi.sweepInterval" >360</prop>
+        <prop key="wadi.enableReplication" >true</prop>
+        <prop key="wadi.deltaReplication" >false</prop>
+        
+        <prop key="wadi.tribes.disableMulticast">false</prop>
+        <prop key="wadi.tribes.receivingPort">4000</prop>
+        <prop key="wadi.tribes.mcastPort">45564</prop>
+        <prop key="wadi.tribes.mcastAddress">228.0.0.4</prop>
+        <prop key="wadi.tribes.memberDropTime">3000</prop>
+        <prop key="wadi.tribes.mcastFrequency">500</prop>
+        <prop key="wadi.tribes.tcpListenPort"/>
+        <prop key="wadi.tribes.tcpListenHost"/>
+        <prop key="wadi.tribes.bindAddress"/>
+
+    </osgix:cm-properties>
+
+    <ctx:property-placeholder properties-ref="wadiProps" />
+
+    -->
+
+
+
+</beans>

@@ -1,0 +1,65 @@
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../main/config/ehcache.xsd">
+
+    <diskStore path="${karaf.base}/data/ehcache"/>
+
+    <!-- Discover Cache peers using RMI Multicast -->
+    <cacheManagerPeerProviderFactory
+            class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+            properties="peerDiscovery=automatic,
+                        multicastGroupAddress=230.0.0.1,
+                        multicastGroupPort=4446, timeToLive=0"
+            propertySeparator=","
+            />
+
+    <!-- Discover Cache peers using JMS
+    <cacheManagerPeerProviderFactory
+            class="net.sf.ehcache.distribution.jms.JMSCacheManagerPeerProviderFactory"
+            properties="initialContextFactoryName=org.atricore.idbus.bundles.ehcache.distribution.jms.EHCacheActiveMQInitialContextFactory,
+                providerURL=tcp://localhost:61217,
+                replicationTopicConnectionFactoryBindingName=TopicConnectionFactory,
+                getQueueConnectionFactoryBindingName=QueueConnectionFactory,
+                replicationTopicBindingName=Topic/IDBUS/EHCacheReplication,
+                getQueueBindingName=Queue/IDBUS/EHCacheReplication,
+                listenToTopic=true"
+            propertySeparator=","
+            />
+    -->
+
+    <!-- Listen Cache peers using RMI -->
+    <cacheManagerPeerListenerFactory class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+                                      properties="port=40001, remoteObjectPort=47001"/>
+    <defaultCache
+            maxElementsInMemory="10000"
+            eternal="true"
+            overflowToDisk="true">
+        <!-- Replicate cache elements using JMS
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.jms.JMSCacheReplicatorFactory"
+                                   properties="replicateAsynchronously=true,
+                                                 replicatePuts=true,
+                                                 replicateUpdates=true,
+                                                 replicateUpdatesViaCopy=true,
+                                                 replicateRemovals=true,
+                                                 asynchronousReplicationIntervalMillis=500"
+                                   propertySeparator=","/>
+        -->
+
+        <!-- Replicate cache elements using RMI (not working in OSGi!) -->
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
+                                    properties="replicateAsynchronously=true,
+                                     replicatePuts=true,
+                                     replicatePutsViaCopy=true,
+                                     replicateUpdates=true,
+                                     replicateUpdatesViaCopy=true,
+                                     replicateRemovals=true,
+                                     asynchronousReplicationIntervalMillis=10"/>
+
+        <!-- Bootstrap cache using RMI -->
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+                                    properties="bootstrapAsynchronously=false,
+                                                maximumChunkSizeBytes=5000000"
+                                    propertySeparator=","/>
+
+     </defaultCache>
+
+
+</ehcache>

@@ -1,0 +1,722 @@
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<wsdl:definitions
+        name="SPML Service"
+        targetNamespace="urn:oasis:names:tc:SPML:2:0:wsdl"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="urn:oasis:names:tc:SPML:2:0:wsdl"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:spmlasync="urn:oasis:names:tc:SPML:2:0:async"
+        xmlns:spmlbatch="urn:oasis:names:tc:SPML:2:0:batch"
+        xmlns:spmlbulk="urn:oasis:names:tc:SPML:2:0:bulk"
+        xmlns:spmlcore="urn:oasis:names:tc:SPML:2:0"
+        xmlns:spmldsml="urn:oasis:names:tc:SPML:2:0:dsml"
+        xmlns:spmlpassword="urn:oasis:names:tc:SPML:2:0:password"
+        xmlns:spmlreference="urn:oasis:names:tc:SPML:2:0:reference"
+        xmlns:spmlsearch="urn:oasis:names:tc:SPML:2:0:search"
+        xmlns:spmlsuspend="urn:oasis:names:tc:SPML:2:0:suspend"
+        xmlns:spmlupdates="urn:oasis:names:tc:SPML:2:0:updates"
+        xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+
+    <wsdl:types>
+
+        <xsd:schema elementFormDefault="qualified"
+                    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+                    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+                    jaxb:extensionBindingPrefixes="xjc"
+                    jaxb:version="2.0">
+
+            <xsd:import namespace="urn:oasis:names:tc:SPML:2:0:async"
+                        schemaLocation="pstc_spmlv2_async.xsd"/>
+
+            <xsd:import namespace="urn:oasis:names:tc:SPML:2:0:batch"
+                        schemaLocation="pstc_spmlv2_batch.xsd"/>
+
+            <xsd:import namespace="urn:oasis:names:tc:SPML:2:0:bulk"
+                        schemaLocation="pstc_spmlv2_bulk.xsd"/>
+
+            <xsd:import namespace="urn:oasis:names:tc:SPML:2:0"
+                        schemaLocation="pstc_spmlv2_core.xsd"/>
+
+            <xsd:import namespace="urn:oasis:names:tc:SPML:2:0:DSML"
+                        schemaLocation="pstc_spmlv2_dsml.xsd"/>
+
+            <xsd:import namespace="urn:oasis:names:tc:SPML:2:0:password"
+                        schemaLocation="pstc_spmlv2_password.xsd"/>
+
+            <xsd:import namespace="urn:oasis:names:tc:SPML:2:0:reference"
+                        schemaLocation="pstc_spmlv2_reference.xsd"/>
+
+            <xsd:import namespace="urn:oasis:names:tc:SPML:2:0:search"
+                        schemaLocation="pstc_spmlv2_search.xsd"/>
+
+            <xsd:import namespace="urn:oasis:names:tc:SPML:2:0:suspend"
+                        schemaLocation="pstc_spmlv2_suspend.xsd"/>
+
+            <xsd:import namespace="urn:oasis:names:tc:SPML:2:0:updates"
+                        schemaLocation="pstc_spmlv2_updates.xsd"/>
+
+            <xsd:import namespace="urn:oasis:names:tc:DSML:2:0:core"
+                        schemaLocation="pstc_dsmlv2.xsd"/>
+        </xsd:schema>
+
+    </wsdl:types>
+
+    <!-- async message definitions -->
+    <wsdl:message name="SPMLCancelRequestMessage">
+        <wsdl:part name="body" element="spmlasync:cancelRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLCancelResponseMessage">
+        <wsdl:part name="body" element="spmlasync:cancelResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLStatusRequestMessage">
+        <wsdl:part name="body" element="spmlasync:statusRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLStatusResponseMessage">
+        <wsdl:part name="body" element="spmlasync:statusResponse"/>
+    </wsdl:message>
+
+    <!-- batch message definitions -->
+    <wsdl:message name="SPMLBatchRequestMessage">
+        <wsdl:part name="body" element="spmlbatch:batchRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLBatchResponseMessage">
+        <wsdl:part name="body" element="spmlbatch:batchResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLBulkAddRequestMessage">
+        <wsdl:part name="body" element="spmlbulk:bulkAddRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLBulkAddResponseMessage">
+        <wsdl:part name="body" element="spmlbulk:bulkAddResponse"/>
+    </wsdl:message>
+
+    <!-- bulk message definitions -->
+    <wsdl:message name="SPMLBulkModifyRequestMessage">
+        <wsdl:part name="body" element="spmlbulk:bulkModifyRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLBulkModifyResponseMessage">
+        <wsdl:part name="body" element="spmlbulk:bulkModifyResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLBulkDeleteRequestMessage">
+        <wsdl:part name="body" element="spmlbulk:bulkDeleteRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLBulkDeleteResponseMessage">
+        <wsdl:part name="body" element="spmlbulk:bulkDeleteResponse"/>
+    </wsdl:message>
+
+    <!-- core message definitions -->
+    <wsdl:message name="SPMLAddRequestMessage">
+        <wsdl:part name="body" element="spmlcore:addRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLAddResponseMessage">
+        <wsdl:part name="body" element="spmlcore:addResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLModifyRequestMessage">
+        <wsdl:part name="body" element="spmlcore:modifyRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLModifyResponseMessage">
+        <wsdl:part name="body" element="spmlcore:modifyResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLDeleteRequestMessage">
+        <wsdl:part name="body" element="spmlcore:deleteRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLDeleteResponseMessage">
+        <wsdl:part name="body" element="spmlcore:deleteResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLLookupRequestMessage">
+        <wsdl:part name="body" element="spmlcore:lookupRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLLookupResponseMessage">
+        <wsdl:part name="body" element="spmlcore:lookupResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLListTargetsRequestMessage">
+        <wsdl:part name="body" element="spmlcore:listTargetsRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLListTargetsResponseMessage">
+        <wsdl:part name="body" element="spmlcore:listTargetsResponse"/>
+    </wsdl:message>
+
+    <!-- password message definitions -->
+    <wsdl:message name="SPMLSetPasswordRequestMessage">
+        <wsdl:part name="body" element="spmlpassword:setPasswordRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLSetPasswordResponseMessage">
+        <wsdl:part name="body" element="spmlpassword:setPasswordResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLExpirePasswordRequestMessage">
+        <wsdl:part name="body" element="spmlpassword:expirePasswordRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLExpirePasswordResponseMessage">
+        <wsdl:part name="body" element="spmlpassword:expirePasswordResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLResetPasswordRequestMessage">
+        <wsdl:part name="body" element="spmlpassword:resetPasswordRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLResetPasswordResponseMessage">
+        <wsdl:part name="body" element="spmlpassword:resetPasswordResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLValidatePasswordRequestMessage">
+        <wsdl:part name="body" element="spmlpassword:validatePasswordRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLValidatePasswordResponseMessage">
+        <wsdl:part name="body" element="spmlpassword:validatePasswordResponse"/>
+    </wsdl:message>
+
+    <!-- search message definitions -->
+
+    <wsdl:message name="SPMLSearchRequestMessage">
+        <wsdl:part name="body" element="spmlsearch:searchRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLSearchResponseMessage">
+        <wsdl:part name="body" element="spmlsearch:searchResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLSearchIterateRequestMessage">
+        <wsdl:part name="body" element="spmlsearch:iterateRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLSearchIterateResponseMessage">
+        <wsdl:part name="body" element="spmlsearch:iterateResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLSearchCloseIteratorRequestMessage">
+        <wsdl:part name="body" element="spmlsearch:closeIteratorRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLSearchCloseIteratorResponseMessage">
+        <wsdl:part name="body" element="spmlsearch:closeIteratorResponse"/>
+    </wsdl:message>
+
+    <!-- suspend message definitions -->
+    <wsdl:message name="SPMLSuspendRequestMessage">
+        <wsdl:part name="body" element="spmlsuspend:suspendRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLSuspendResponseMessage">
+        <wsdl:part name="body" element="spmlsuspend:suspendResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLResumeRequestMessage">
+        <wsdl:part name="body" element="spmlsuspend:resumeRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLResumeResponseMessage">
+        <wsdl:part name="body" element="spmlsuspend:resumeResponse"/>
+    </wsdl:message>
+
+
+    <wsdl:message name="SPMLActiveRequestMessage">
+        <wsdl:part name="body" element="spmlsuspend:activeRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLActiveResponseMessage">
+        <wsdl:part name="body" element="spmlsuspend:activeResponse"/>
+    </wsdl:message>
+
+    <!-- updates message definitions -->
+    <wsdl:message name="SPMLUpdatesRequestMessage">
+        <wsdl:part name="body" element="spmlupdates:updatesRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLUpdatesResponseMessage">
+        <wsdl:part name="body" element="spmlupdates:updatesResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLUpdatesIterateRequestMessage">
+        <wsdl:part name="body" element="spmlupdates:iterateRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLUpdatesIterateResponseMessage">
+        <wsdl:part name="body" element="spmlupdates:iterateResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLUpdatesCloseIteratorRequestMessage">
+        <wsdl:part name="body" element="spmlupdates:closeIteratorRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SPMLUpdatesCloseIteratorResponseMessage">
+        <wsdl:part name="body" element="spmlupdates:closeIteratorResponse"/>
+    </wsdl:message>
+
+
+    <wsdl:portType name="SPMLRequestPortType">
+
+        <!-- async abstract operations -->
+        <wsdl:operation name="SPMLCancelRequest">
+            <wsdl:input name="SPMLCancelRequestInput"
+                        message="tns:SPMLCancelRequestMessage"/>
+            <wsdl:output name="SPMLCancelRequestOutput"
+                         message="tns:SPMLCancelResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLStatusRequest">
+            <wsdl:input name="SPMLStatusRequestInput"
+                        message="tns:SPMLStatusRequestMessage"/>
+            <wsdl:output name="SPMLStatusRequestOutput"
+                         message="tns:SPMLStatusResponseMessage"/>
+        </wsdl:operation>
+
+        <!-- batch abstract operations -->
+        <wsdl:operation name="SPMLBatchRequest">
+            <wsdl:input name="SPMLBatchRequestInput"
+                        message="tns:SPMLBatchRequestMessage"/>
+            <wsdl:output name="SPMLBatchRequestOutput"
+                         message="tns:SPMLBatchResponseMessage"/>
+        </wsdl:operation>
+
+        <!-- bulk abstract operations -->
+        <wsdl:operation name="SPMLBulkModifyRequest">
+            <wsdl:input name="SPMLBulkModifyRequestInput"
+                        message="tns:SPMLBulkModifyRequestMessage"/>
+            <wsdl:output name="SPMLBulkModifyRequestOutput"
+                         message="tns:SPMLBulkModifyResponseMessage"/>
+        </wsdl:operation>
+
+        <!-- core abstract operations -->
+
+        <wsdl:operation name="SPMLAddRequest">
+            <wsdl:input name="SPMLAddRequestInput"
+                        message="tns:SPMLAddRequestMessage"/>
+            <wsdl:output name="SPMLAddRequestOutput"
+                         message="tns:SPMLAddResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLModifyRequest">
+            <wsdl:input name="SPMLModifyRequestInput"
+                        message="tns:SPMLModifyRequestMessage"/>
+            <wsdl:output name="SPMLModifyRequestOutput"
+                         message="tns:SPMLModifyResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLDeleteRequest">
+            <wsdl:input name="SPMLDeleteRequestInput"
+                        message="tns:SPMLDeleteRequestMessage"/>
+            <wsdl:output name="SPMLDeleteRequestOutput"
+                         message="tns:SPMLDeleteResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLLookupRequest">
+            <wsdl:input name="SPMLLookupRequestInput"
+                        message="tns:SPMLLookupRequestMessage"/>
+            <wsdl:output name="SPMLLookupRequestOutput"
+                         message="tns:SPMLLookupResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLListTargetsRequest">
+            <wsdl:input name="SPMLListTargetsRequestInput"
+                        message="tns:SPMLListTargetsRequestMessage"/>
+            <wsdl:output name="SPMLListTargetsRequestOutput"
+                         message="tns:SPMLListTargetsResponseMessage"/>
+        </wsdl:operation>
+
+        <!-- password abstract operations -->
+        <wsdl:operation name="SPMLSetPasswordRequest">
+            <wsdl:input name="SPMLSetPasswordRequestInput"
+                        message="tns:SPMLSetPasswordRequestMessage"/>
+            <wsdl:output name="SPMLSetPasswordRequestOutput"
+                         message="tns:SPMLSetPasswordResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLExpirePasswordRequest">
+            <wsdl:input name="SPMLExpirePasswordRequestInput"
+                        message="tns:SPMLExpirePasswordRequestMessage"/>
+            <wsdl:output name="SPMLExpirePasswordRequestOutput"
+                         message="tns:SPMLExpirePasswordResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLResetPasswordRequest">
+            <wsdl:input name="SPMLResetPasswordRequestInput"
+                        message="tns:SPMLResetPasswordRequestMessage"/>
+            <wsdl:output name="SPMLResetPasswordRequestOutput"
+                         message="tns:SPMLResetPasswordResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLValidatePasswordRequest">
+            <wsdl:input name="SPMLValidatePasswordRequestInput"
+                        message="tns:SPMLValidatePasswordRequestMessage"/>
+            <wsdl:output name="SPMLValidatePasswordRequestOutput"
+                         message="tns:SPMLValidatePasswordResponseMessage"/>
+        </wsdl:operation>
+
+        <!-- search abstract operations -->
+        <wsdl:operation name="SPMLSearchRequest">
+            <wsdl:input name="SPMLSearchRequestInput"
+                        message="tns:SPMLSearchRequestMessage"/>
+            <wsdl:output name="SPMLSearchRequestOutput"
+                         message="tns:SPMLSearchResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLSearchIterateRequest">
+            <wsdl:input name="SPMLSearchIterateRequestInput"
+                        message="tns:SPMLSearchIterateRequestMessage"/>
+            <wsdl:output name="SPMLSearchIterateRequestOutput"
+                         message="tns:SPMLSearchIterateResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLSearchCloseIteratorRequest">
+            <wsdl:input name="SPMLSearchCloseIteratorRequestInput"
+                        message="tns:SPMLSearchCloseIteratorRequestMessage"/>
+            <wsdl:output name="SPMLSearchCloseIteratorRequestOutput"
+                         message="tns:SPMLSearchCloseIteratorResponseMessage"/>
+        </wsdl:operation>
+
+        <!-- suspend abstract operations -->
+        <wsdl:operation name="SPMLSuspendRequest">
+            <wsdl:input name="SPMLSuspendRequestInput"
+                        message="tns:SPMLSuspendRequestMessage"/>
+            <wsdl:output name="SPMLSuspendRequestOutput"
+                         message="tns:SPMLSuspendResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLResumeRequest">
+            <wsdl:input name="SPMLResumeRequestInput"
+                        message="tns:SPMLResumeRequestMessage"/>
+            <wsdl:output name="SPMLResumeRequestOutput"
+                         message="tns:SPMLResumeResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLActiveRequest">
+            <wsdl:input name="SPMLActiveRequestInput"
+                        message="tns:SPMLActiveRequestMessage"/>
+            <wsdl:output name="SPMLActiveRequestOutput"
+                         message="tns:SPMLActiveResponseMessage"/>
+        </wsdl:operation>
+
+        <!-- updates abstract operations -->
+        <wsdl:operation name="SPMLUpdatesRequest">
+            <wsdl:input name="SPMLUpdatesRequestInput"
+                        message="tns:SPMLUpdatesRequestMessage"/>
+            <wsdl:output name="SPMLUpdatesRequestOutput"
+                         message="tns:SPMLUpdatesResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLUpdatesIterateRequest">
+            <wsdl:input name="SPMLUpdatesIterateRequestInput"
+                        message="tns:SPMLUpdatesIterateRequestMessage"/>
+            <wsdl:output name="SPMLUpdatesIterateRequestOutput"
+                         message="tns:SPMLUpdatesIterateResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLUpdatesCloseIteratorRequest">
+            <wsdl:input name="SPMLUpdatesCloseIteratorRequestInput"
+                        message="tns:SPMLUpdatesCloseIteratorRequestMessage"/>
+            <wsdl:output name="SPMLUpdatesCloseIteratorRequestOutput"
+                         message="tns:SPMLUpdatesCloseIteratorResponseMessage"/>
+        </wsdl:operation>
+
+    </wsdl:portType>
+
+    <wsdl:binding name="SPMLSoapBinding" type="tns:SPMLRequestPortType">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <!-- SOAP binding for async operations -->
+        <wsdl:operation name="SPMLCancelRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/cancelRequest"/>
+
+            <wsdl:input name="SPMLCancelRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLCancelRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLStatusRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/statusRequest"/>
+            <wsdl:input name="SPMLStatusRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLStatusRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <!-- SOAP binding for batch operations -->
+        <wsdl:operation name="SPMLBatchRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/batchRequest"/>
+            <wsdl:input name="SPMLBatchRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLBatchRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <!-- SOAP binding for bulk operations -->
+        <wsdl:operation name="SPMLBulkModifyRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/bulkModifyRequest"/>
+            <wsdl:input name="SPMLBulkModifyRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLBulkModifyRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+
+        <!-- SOAP binding for core operations -->
+        <wsdl:operation name="SPMLAddRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/addRequest"/>
+            <wsdl:input name="SPMLAddRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLAddRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLModifyRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/modifyRequest"/>
+            <wsdl:input name="SPMLModifyRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLModifyRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLDeleteRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/deleteRequest"/>
+            <wsdl:input name="SPMLDeleteRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLDeleteRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLLookupRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/lookupRequest"/>
+            <wsdl:input name="SPMLLookupRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLLookupRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLListTargetsRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/listTargetsRequest"/>
+            <wsdl:input name="SPMLListTargetsRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLListTargetsRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <!-- SOAP binding for password operations -->
+        <wsdl:operation name="SPMLSetPasswordRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/setPasswordRequest"/>
+            <wsdl:input name="SPMLSetPasswordRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLSetPasswordRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLExpirePasswordRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/expirePasswordRequest"/>
+            <wsdl:input name="SPMLExpirePasswordRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLExpirePasswordRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLResetPasswordRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/resetPasswordRequest"/>
+            <wsdl:input name="SPMLResetPasswordRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLResetPasswordRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLValidatePasswordRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/validatePasswordRequest"/>
+            <wsdl:input name="SPMLValidatePasswordRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLValidatePasswordRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <!-- SOAP binding for search operations -->
+        <wsdl:operation name="SPMLSearchRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/searchRequest"/>
+            <wsdl:input name="SPMLSearchRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLSearchRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLSearchIterateRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/searchIterateRequest"/>
+            <wsdl:input name="SPMLSearchIterateRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLSearchIterateRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLSearchCloseIteratorRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/searchCloseIteratorRequest"/>
+            <wsdl:input name="SPMLSearchCloseIteratorRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLSearchCloseIteratorRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <!-- SOAP binding for suspend operations -->
+        <wsdl:operation name="SPMLSuspendRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/suspendRequest"/>
+            <wsdl:input name="SPMLSuspendRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLSuspendRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLResumeRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/resumeRequest"/>
+            <wsdl:input name="SPMLResumeRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLResumeRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLActiveRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/activeRequest"/>
+            <wsdl:input name="SPMLActiveRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLActiveRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <!-- SOAP binding for updates operations -->
+        <wsdl:operation name="SPMLUpdatesRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/updatesRequest"/>
+            <wsdl:input name="SPMLUpdatesRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLUpdatesRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLUpdatesIterateRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/updatesIterateRequest"/>
+            <wsdl:input name="SPMLUpdatesIterateRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLUpdatesIterateRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SPMLUpdatesCloseIteratorRequest">
+            <soap:operation style="document"
+                            soapAction="urn:oasis:names:tc:SPML:2:0:req/updatesCloseIteratorRequest"/>
+            <wsdl:input name="SPMLUpdatesCloseIteratorRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SPMLUpdatesCloseIteratorRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+
+
+    <wsdl:service name="SPMLService">
+        <documentation>SPMLv2 Service</documentation>
+        <port name="soap"
+              binding="tns:SPMLSoapBinding">
+            <soap:address location="http://localhost:8192/SPMLService/"/>
+        </port>
+    </wsdl:service>
+
+</wsdl:definitions>

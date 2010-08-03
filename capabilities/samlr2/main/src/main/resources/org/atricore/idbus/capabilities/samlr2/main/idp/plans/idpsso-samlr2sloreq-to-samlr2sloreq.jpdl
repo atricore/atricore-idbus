@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<process-definition name='SAMLR2 SLO Request to SAMLR2 SLO Request'>
+
+    <description>Emit a SamlR2 SLO Request from another SAMLR2 SLO Request</description>
+
+    <start-state name="start">
+        <transition to="initializeSloRequest" />
+    </start-state>
+
+    <!--
+     Initialize the new Authn Request
+    -->
+    <process-fragment-state name="initializeSloRequest">
+        <process-fragment lifecycle="generate-idp-sloreq" phase="initialize"/>
+        <transition to="provideSloRequestContent"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:cot" access="read" />
+        <variable name="urn:org:atricore:idbus:channel" access="read" />
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        <variable name="urn:org:atricore:idbus:security-context" access="read"/>
+
+    </process-fragment-state>
+
+    <!--
+     Create the new Authn Request content
+    -->
+    <process-fragment-state name="provideSloRequestContent">
+        <process-fragment lifecycle="generate-idp-sloreq" phase="provide-content"/>
+        <transition to="ensureContentConfidentiality"/>
+    </process-fragment-state>
+
+
+    <!--
+    Encrypt request content (attributes, etc)
+    -->
+    <process-fragment-state name="ensureContentConfidentiality">
+        <process-fragment lifecycle="generate-idp-sloreq" phase="ensure-content-confidentiality"/>
+        <transition to="ensureAuthenticity"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:channel" access="read" />
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+
+    </process-fragment-state>
+
+    <!--
+    Add authenticity mechanism like checksums, signatures, etc
+    -->
+    <process-fragment-state name="ensureAuthenticity">
+        <process-fragment lifecycle="generate-idp-sloreq" phase="ensure-authenticity"/>
+        <transition to="validateSloRequest"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:channel" access="read" />
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read" />
+
+    </process-fragment-state>
+
+    <!--
+    Validate the generated token
+    -->
+    <process-fragment-state name="validateSloRequest">
+        <process-fragment lifecycle="generate-idp-sloreq" phase="validate"/>
+        <transition to="ensureConfidentiality"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:channel" access="read" />
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+
+    </process-fragment-state>
+
+    <!--
+    Encrypt the entire token ?
+    -->
+    <process-fragment-state name="ensureConfidentiality">
+        <process-fragment lifecycle="generate-idp-sloreq" phase="ensure-confidentiality"/>
+        <transition to="end"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:channel" access="read" />
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        
+    </process-fragment-state>
+
+    <end-state name="end"/>
+
+</process-definition>

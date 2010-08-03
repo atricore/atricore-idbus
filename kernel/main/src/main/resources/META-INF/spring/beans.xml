@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:osgi="http://www.springframework.org/schema/osgi"
+xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+xmlns:ctx="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context.xsd
+                    http://www.springframework.org/schema/osgi-compendium
+                    http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
+                    ">
+
+    <!-- =================================================================== -->
+    <!-- CXF Engine setup                                                    -->
+    <!-- =================================================================== -->
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-extension-http.xml" />
+    <!--import resource="classpath:META-INF/cxf/osgi/cxf-extension-osgi.xml" /-->
+
+    <!-- Export CXF Engine as OSGi service -->
+    <osgi:service id="cxfExporter"
+                  interface="org.apache.cxf.Bus"
+                  ref="cxf" />
+
+    <!-- =================================================================== -->
+    <!-- EHCache setup                                                       -->
+    <!-- =================================================================== -->
+    <bean name="cacheManagerFactory"
+            class="org.atricore.idbus.bundles.ehcache.SpringCacheManagerFactoryImpl">
+        <property name="configuration" value="${ehcache.config}" />
+    </bean>
+
+    <!-- For some reason, we can't export this using Spring-DM,
+    therefore we created a convininece Factory located in the EHCache bundle -->
+    <bean id="cacheManager" scope="singleton"
+            factory-bean="cacheManagerFactory"
+            factory-method="getCacheManager"
+            class="net.sf.ehcache.CacheManager"
+            depends-on="aqmBroker"/>
+
+    <osgi:service id="cacheManagerFactoryExporter" ref="cacheManagerFactory"
+                  interface="org.atricore.idbus.bundles.ehcache.CacheManagerFactory"/>
+
+    <!-- =================================================================== -->
+    <!-- Atricore IDBus JMS Broker definition -->
+    <!-- =================================================================== -->
+
+    <bean name="aqmBroker" class="org.apache.activemq.xbean.XBeanBrokerService">
+        <property name="brokerName" value="${aqm.brokerName}"/>
+        <property name="dataDirectory" value="data/activemq-idbus"/>
+        <property name="deleteAllMessagesOnStartup" value="true"/>
+        <property name="useJmx" value="false"/>
+
+        <!--
+        <property name="managementContext">
+            <bean class="org.apache.activemq.broker.jmx.ManagementContext">
+                <constructor-arg ref="mBeanServer"/>
+            </bean>
+        </property>
+        -->
+
+        <property name="transportConnectors">
+            <list>
+
+                <bean class="org.apache.activemq.broker.TransportConnector">
+                    <property name="uri" value="${aqm.transportUri}"/>
+                </bean>
+
+            </list>
+        </property>
+
+    </bean>
+
+    <!-- =================================================================== -->
+    <!-- Mediation Engine setup                                              -->
+    <!-- =================================================================== -->
+
+    <!-- Mediation components -->
+    <bean id="mediationEngine" class="org.atricore.idbus.kernel.main.mediation.MediationEngineImpl">
+        <property name="registry" ref="idsuRegistry"/>
+    </bean>
+            
+    <bean id="idsuRegistry" class="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistryImpl" >
+        <property name="listeners">
+            <set>
+                <ref bean="mediationEngine"/>
+            </set>
+        </property>
+    </bean>
+
+    <bean id="osgiIdsuRegistry" class="org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnitRegistry">
+        <constructor-arg ref="idsuRegistry" />
+    </bean>
+
+    <osgi:service id="idsuRegistryExporter" ref="idsuRegistry"
+                  interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry" />
+
+    <osgi:list id="identityMediationUnits" interface="org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit"
+               cardinality="0..N" >
+        <osgi:listener ref="osgiIdsuRegistry" bind-method="register" unbind-method="unregister" />
+    </osgi:list>
+
+    <!-- =================================================================== -->
+    <!-- Configuration Admin entry                                           -->
+    <!-- =================================================================== -->
+    <osgix:cm-properties id="kernelProps" persistent-id="org.atricore.idbus.kernel.main">
+        <!-- AQM Properties -->
+        <prop key="aqm.brokerName">idbusAqmBroker</prop>
+        <prop key="aqm.host">localhost</prop>
+        <prop key="aqm.bind">127.0.0.1</prop>
+        <prop key="aqm.port">61217</prop>
+        <prop key="aqm.transportUri">vm://${aqm.host}/${aqm.brokerName}</prop>
+        <prop key="aqm.brokerUrl">vm://${aqm.host}/${aqm.brokerName}</prop>
+        <prop key="aqm.discoveryUri"></prop>
+        <prop key="aqm.networkUri"></prop>
+        <prop key="aqm.sendTimeout">30000</prop>
+        <prop key="aqm.receiveTimeout">30000</prop>
+        <prop key="aqm.useCompression">false</prop>
+        <!-- EHCache properties -->
+        <prop key="ehcache.config">file:${karaf.base}/etc/ehcache.xml</prop>
+    </osgix:cm-properties>
+
+    <ctx:property-placeholder properties-ref="kernelProps" />
+
+    <bean name="kernelConfig" class="org.atricore.idbus.kernel.main.util.ConfigurationContextImpl">
+        <constructor-arg ref="kernelProps"/>
+    </bean>
+
+    <osgi:service id="kernelConfigExporter" ref="kernelConfig" 
+                  interface="org.atricore.idbus.kernel.main.util.ConfigurationContext"/>
+
+    <!-- placeholder configurer -->
+
+
+</beans>

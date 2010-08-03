@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:osgi="http://www.springframework.org/schema/osgi"
+xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+xmlns:ctx="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context.xsd
+                    http://www.springframework.org/schema/osgi-compendium
+                    http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
+                    ">
+
+    <!-- =================================================================== -->
+    <!-- Atricore IDBus JMS Broker definition for HA Enviroments             -->
+    <!-- =================================================================== -->
+
+    <!-- replace original aqmBroker for standalone deployments -->
+    <bean name="aqmBroker" class="org.apache.activemq.xbean.XBeanBrokerService" >
+        <property name="brokerName" value="${aqm.brokerName}"/>
+        <property name="dataDirectory" value="${karaf.base}/data/activemq-idbus"/>
+        <property name="deleteAllMessagesOnStartup" value="false"/>
+        <property name="useJmx" value="true"/>
+        <property name="advisorySupport" value="true"/>
+
+        <property name="plugins">
+            <bean class="org.apache.activemq.broker.util.LoggingBrokerPlugin">
+                <property name="logAll" value="true" />
+            </bean>
+        </property>
+
+        <property name="managementContext">
+            <bean class="org.apache.activemq.broker.jmx.ManagementContext">
+                <constructor-arg ref="mBeanServer"/>
+                <property name="createConnector" value="false" />
+                <property name="createMBeanServer" value="false" />
+            </bean>
+        </property>
+
+        <!-- ######################################################################################## -->
+        <!--                                                                                          -->
+        <!-- WARNING !!!!! Order of construction of networks/persistence/transports IS important !!!! -->
+        <!--                                                                                          -->
+        <!-- ######################################################################################## -->
+
+        <!-- ===================================== -->
+        <!--  Network Connectors                   -->
+        <!-- ===================================== -->
+        <property name="networkConnectors">
+            <list>
+                <bean class="org.apache.activemq.network.DiscoveryNetworkConnector">
+                    <property name="uri" value="${aqm.networkUri}"/>
+                    <property name="duplex" value="false"/>
+
+                    <!-- Added for HA support -->
+                    <property name="prefetchSize" value="1"/>
+                    <property name="dynamicOnly" value="true"/>
+                    <property name="conduitSubscriptions" value="true"/>
+                    <property name="suppressDuplicateQueueSubscriptions" value="true"/>
+                    <!--property name="networkTTL" value="3"/-->
+                </bean>
+            </list>
+        </property>
+
+
+        <!-- ===================================== -->
+        <!-- Persistence Adapter                   -->
+        <!-- ===================================== -->
+        <!-- If we need to store messages so that they're not lost on startups (Recommended) -->
+        <property name="persistenceAdapter">
+            <bean class="org.apache.activemq.store.memory.MemoryPersistenceAdapter"/>
+            <!--
+            <bean id="store" class="org.apache.activemq.store.kahadb.KahaDBStore" >
+                <property name="directory" value="${karaf.base}/data/activemq-idbus/kahadb"/>
+                <property name="journalMaxFileLength" value="1000000" />
+                <property name="checkpointInterval" value="5000" />
+                <property name="cleanupInterval" value="5000" />
+                <property name="indexWriteBatchSize" value="100" />
+                <property name="enableIndexWriteAsync" value="true" />
+            </bean>
+            -->
+            <!--
+            <bean class="org.apache.activemq.store.kahadb.KahaDBPersistenceAdapter">
+                <property name="directory" value="${karaf.base}/data/activemq-idbus/kahadb"/>
+            </bean>
+            <bean class="org.apache.activemq.store.jdbc.JDBCPersistenceAdapter">
+                <property name="dataSource" ref="aqmDs"/>
+            </bean>
+              -->
+        </property>
+        <!--
+        <bean id="aqmDs" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+           <osgix:managed-properties persistent-id="org.atricore.idbus.kernel.main.aqm.ds"/>
+        </bean>
+        -->
+
+        <!-- ===================================== -->
+        <!-- Transport Connector                   -->
+        <!-- ===================================== -->
+        <property name="transportConnectors">
+            <list>
+                <bean class="org.apache.activemq.broker.TransportConnector">
+                    <property name="uri" value="${aqm.transportUri}"/>
+                    <property name="discoveryUri" value="${aqm.discoveryUri}"/>
+                </bean>
+            </list>
+        </property>
+
+    </bean>
+
+    <!-- =================================================================== -->
+    <!-- Configuration Admin entry                                           -->
+    <!-- =================================================================== -->
+    <osgix:cm-properties id="kernelProps" persistent-id="org.atricore.idbus.kernel.main">
+        <!-- AQM properties -->
+        <prop key="aqm.brokerName">idbusAqmBrokerHA</prop>
+        <prop key="aqm.host">localhost</prop>
+        <prop key="aqm.bind">0.0.0.0</prop>
+        <prop key="aqm.port">61217</prop>
+        <prop key="aqm.transportUri">tcp://${aqm.bind}:${aqm.port}?wireFormat.maxInactivityDuration=0</prop>
+        <prop key="aqm.brokerUrl">tcp://${aqm.host}:${aqm.port}?wireFormat.maxInactivityDuration=0</prop>
+        <prop key="aqm.discoveryUri">multicast://224.1.2.6:6123</prop>
+        <prop key="aqm.networkUri">multicast://224.1.2.6:6123</prop>
+        <prop key="aqm.sendTimeout">30000</prop>
+        <prop key="aqm.receiveTimeout">30000</prop>
+        <prop key="aqm.useCompression">false</prop>
+        <!-- EHCache properties -->
+        <prop key="ehcache.config">file:${karaf.base}/etc/ehcache-ha.xml</prop>
+    </osgix:cm-properties>
+
+</beans>

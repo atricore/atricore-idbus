@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<s:beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:s="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+      http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
+      >
+
+    <!--           -->
+    <!-- Fragments -->
+    <!--           -->
+
+    <!-- SAML SP Fragments -->
+    <s:import resource="fragments/samlr2-sp/jbpm-process-fragment-samlr2-sp.xml" />
+
+    <!-- SAML IDP Fragments -->
+    <s:import resource="fragments/samlr2-idp/jbpm-process-fragment-samlr2-idp.xml" />
+
+    <!-- SAML Emitter Fragments -->
+    <s:import resource="fragments/samlr2-emitter/jbpm-process-fragment-samlr2-emitter.xml" />
+
+    <!--                  -->
+    <!--      Plans       -->
+    <!--                  -->
+
+    <!-- Emitter -->
+    <s:import resource="plans/emitter-securitytoken-to-authnassertion-plan.xml" />
+
+    <!-- SP -->
+    <s:import resource="plans/spsso-idpunsolicitedresponse-to-subject-plan.xml" />
+    <s:import resource="plans/spsso-spinitiatedauthnreq-to-samlr2authnreq-plan.xml" />
+    <s:import resource="plans/spsso-spinitiatedsloreq-to-samlr2sloreq-plan.xml" />
+    <s:import resource="plans/spsso-assertidwithsimplauthreq-to-samlr2authnreq-plan.xml"/>
+    <s:import resource="plans/spsso-samlr2sloreq-to-samlr2response-plan.xml"/>
+    <s:import resource="plans/spsso-sessionheartbeatreq-to-samlr2authnreq-plan.xml"/>
+
+    <!-- IDP -->
+    <s:import resource="plans/idpsso-samlr2authnreq-to-samlr2response-plan.xml" />
+    <s:import resource="plans/idpsso-samlr2sloreq-to-samlr2response-plan.xml" />
+    <s:import resource="plans/idpsso-samlr2sloreq-to-samlr2sloreq-plan.xml"/>
+    <s:import resource="plans/idpsso-idpinitiatedauthnreq-to-samlr2authnreq-plan.xml" />
+
+
+    <!--                  -->
+    <!--      Actions     -->
+    <!--                  -->
+    <s:import resource="actions/jbpm-process-action-samlr2.xml" />
+
+
+</s:beans>

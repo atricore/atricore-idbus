@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<wsdl:definitions
+        targetNamespace="http://schemas.xmlsoap.org/ws/2005/02/trust/wsdl"
+        xmlns:tns="http://schemas.xmlsoap.org/ws/2005/02/trust/wsdl"
+        xmlns:wst="http://schemas.xmlsoap.org/ws/2005/02/trust"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        >
+    <!-- this is the WS-I BP-compliant way to import a schema -->
+    <wsdl:types>
+        <xs:schema elementFormDefault="qualified"
+                   xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+                   xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+                   jaxb:extensionBindingPrefixes="xjc"
+                   jaxb:version="2.0">
+            <xs:annotation>
+                <xs:appinfo>
+                    <jaxb:serializable/>
+                </xs:appinfo>
+            </xs:annotation>
+
+            <xs:import
+                    namespace="http://schemas.xmlsoap.org/ws/2005/02/trust"
+                    schemaLocation="ws-trust.xsd"/>
+        </xs:schema>
+    </wsdl:types>
+
+    <!-- WS-Trust defines the following GEDs -->
+    <wsdl:message name="RequestSecurityTokenMsg">
+        <wsdl:part name="request" element="wst:RequestSecurityToken"/>
+    </wsdl:message>
+    <wsdl:message name="RequestSecurityTokenResponseMsg">
+        <wsdl:part name="response"
+                   element="wst:RequestSecurityTokenResponse"/>
+    </wsdl:message>
+    <wsdl:message name="RequestSecurityTokenResponseCollectionMsg">
+        <wsdl:part name="responseCollection"
+                   element="wst:RequestSecurityTokenResponseCollection"/>
+    </wsdl:message>
+
+    <!-- This portType models the full request/response the Security Token Service: -->
+
+    <wsdl:portType name="WSSecurityRequestor">
+        <wsdl:operation name="SecurityTokenResponse">
+            <wsdl:input
+                    message="tns:RequestSecurityTokenResponseMsg"/>
+        </wsdl:operation>
+        <wsdl:operation name="SecurityTokenResponse2">
+            <wsdl:input
+                    message="tns:RequestSecurityTokenResponseCollectionMsg"/>
+        </wsdl:operation>
+        <wsdl:operation name="Challenge">
+            <wsdl:input message="tns:RequestSecurityTokenResponseMsg"/>
+            <wsdl:output message="tns:RequestSecurityTokenResponseMsg"/>
+        </wsdl:operation>
+        <wsdl:operation name="Challenge2">
+            <wsdl:input message="tns:RequestSecurityTokenResponseMsg"/>
+            <wsdl:output
+                    message="tns:RequestSecurityTokenResponseCollectionMsg"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <!-- These portTypes model the individual message exchanges -->
+
+    <wsdl:portType name="SecurityTokenRequestService">
+        <wsdl:operation name="RequestSecurityToken">
+            <wsdl:input message="tns:RequestSecurityTokenMsg"/>
+        </wsdl:operation>
+    </wsdl:portType>
+
+    <wsdl:portType name="SecurityTokenService">
+        <wsdl:operation name="RequestSecurityToken">
+            <wsdl:input name="RequestSecurityTokenMsgInput" message="tns:RequestSecurityTokenMsg"/>
+            <wsdl:output name="RequestSecurityTokenResponseMsgOutput" message="tns:RequestSecurityTokenResponseMsg"/>
+        </wsdl:operation>
+        <!--  TODO: this operation should be owned by a distinct port type - refactor to latest ws-trust wsdl 
+        <wsdl:operation name="RequestSecurityToken2">
+            <wsdl:input name="RequestSecurityTokenMsgInput" message="tns:RequestSecurityTokenMsg"/>
+            <wsdl:output
+                    name="RequestSecurityTokenResponseCollectionMsgOutput"
+                    message="tns:RequestSecurityTokenResponseCollectionMsg"/>
+        </wsdl:operation>
+        -->
+    </wsdl:portType>
+
+    <wsdl:binding name="SecurityTokenServiceSoapBinding" type="tns:SecurityTokenService">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <wsdl:operation name="RequestSecurityToken">
+            <wsdl:input name="RequestSecurityTokenMsgInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="RequestSecurityTokenResponseMsgOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <!--  TODO: this operation should be owned by a distinct port type - refactor to latest ws-trust wsdl 
+        <wsdl:operation name="RequestSecurityToken2">
+            <wsdl:input name="RequestSecurityTokenMsgInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output
+                    name="RequestSecurityTokenResponseCollectionMsgOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+        -->
+    </wsdl:binding>
+
+    <wsdl:service name="SecurityTokenService">
+        <wsdl:documentation>Security Token Service</wsdl:documentation>
+        <wsdl:port name="soap"
+                   binding="tns:SecurityTokenServiceSoapBinding">
+            <soap:address location="http://localhost:8192/STS/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

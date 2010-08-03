@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<s:beans xmlns:s="http://www.springframework.org/schema/beans"
+       xmlns="urn:org:atricore:idbus:default:identity-mediator"
+       xmlns:core="urn:org:atricore:idbus:core"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+       >
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- Channel Registry, (Maps to SAMLR2 Roles, SAMLMeta)                 -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+    <core:mediation/>
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- Identity Mediators Registry                                        -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+    <identity-mediation-engine id="mediation-engine"/>
+
+    <!-- ================================================================== -->
+    <!-- IDBUS HTTP Server                                                 -->
+    <!-- ================================================================== -->
+    <s:bean id="jetty-server"
+            class="org.mortbay.jetty.Server" init-method="start" destroy-method="stop">
+        <s:property name="connectors">
+            <s:list>
+                <s:bean id="connector" class="org.mortbay.jetty.nio.SelectChannelConnector">
+                    <s:property name="port" value="8181"/>
+                </s:bean>
+            </s:list>
+        </s:property>
+
+        <s:property name="handler">
+            <s:bean id="handlers"
+                    class="org.mortbay.jetty.handler.HandlerCollection">
+                <s:property name="handlers">
+                    <s:list>
+
+                        <!-- Create this programatically
+                        <s:bean class="org.mortbay.jetty.servlet.Context">
+
+                            <s:property name="contextPath" value="/IDBUS"/>
+
+                            <s:property name="sessionHandler">
+                                <s:bean class="org.mortbay.jetty.servlet.SessionHandler"/>
+                            </s:property>
+
+                            <s:property name="servletHandler">
+                                <s:bean class="org.mortbay.jetty.servlet.ServletHandler">
+                                    <s:property name="servlets">
+                                        <s:list>
+                                            <s:bean class="org.mortbay.jetty.servlet.ServletHolder">
+                                                <s:property name="name" value="josso2-servlet"/>
+                                                <s:property name="servlet">
+                                                    <s:bean class="org.atricore.josso2.mediation.camel.component.http.IDBusServlet"/>
+                                                </s:property>
+
+                                                <s:property name="initParameters">
+                                                    <s:map>
+                                                        <s:entry key="contextConfigLocation"
+                                                               value="classpath:/spring-ws-embedded-context.xml"/>
+                                                    </s:map>
+                                                </s:property>
+
+                                            </s:bean>
+                                        </s:list>
+                                    </s:property>
+                                    <s:property name="servletMappings">
+                                        <s:list>
+                                            <s:bean class="org.mortbay.jetty.servlet.ServletMapping">
+                                                  <s:property name="servletName" value="josso2-servlet"/>
+                                                  <s:property name="pathSpec" value="/*"/>
+                                            </s:bean>
+                                        </s:list>
+                                    </s:property>
+                                </s:bean>
+                            </s:property>
+                        </s:bean>
+                        -->
+                    </s:list>
+                </s:property>
+            </s:bean>
+        </s:property>
+    </s:bean>
+    
+
+</s:beans>

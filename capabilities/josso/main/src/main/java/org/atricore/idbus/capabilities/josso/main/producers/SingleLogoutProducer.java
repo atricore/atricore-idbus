@@ -1,0 +1,226 @@
+/*
+ * Atricore IDBus
+ *
+ * Copyright (c) 2009, Atricore Inc.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ */
+
+package org.atricore.idbus.capabilities.josso.main.producers;
+
+import org.apache.camel.Endpoint;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.josso.main.*;
+import org.atricore.idbus.capabilities.josso.main.binding.JossoBinding;
+import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.metadata.SamlR2Service;
+import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
+import org.atricore.idbus.common.sso._1_0.protocol.SPInitiatedLogoutRequestType;
+import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
+import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
+import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
+import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
+import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+
+/**
+ * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
+ * @version $Id$
+ */
+public class SingleLogoutProducer extends AbstractJossoProducer {
+
+    private static final Log logger = LogFactory.getLog(SingleLogoutProducer.class);
+
+    private UUIDGenerator uuidGenerator = new UUIDGenerator();
+
+    public SingleLogoutProducer(Endpoint endpoint) {
+        super(endpoint);
+    }
+
+    protected void doProcess(CamelMediationExchange exchange) throws Exception {
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        if (in.getMessage().getContent() instanceof SSOResponseType) {
+
+            SSOResponseType res = (SSOResponseType) in.getMessage().getContent();
+
+            if (logger.isDebugEnabled())
+                logger.debug("Processing SLO Response " + res.getID());
+
+            doProcessSloResponse(exchange, (SSOResponseType) in.getMessage().getContent());
+        } else {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Processing JOSSO SLO Request ");
+
+            doProcessJossoSloRequest(exchange);
+        }
+
+    }
+
+
+    protected void doProcessSloResponse(CamelMediationExchange exchange, SSOResponseType sloResponse ) {
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        // TODO : Validate destination, inReplyTo, etc
+        SSOResponseType SSOResponseType = (SSOResponseType) in.getMessage().getContent();
+
+        // Retrieve and clear local variables:
+
+        SPInitiatedLogoutRequestType ssoReq =
+                (SPInitiatedLogoutRequestType) in.getMessage().getState().
+                        getLocalVariable("urn:org:atricore:idbus:capabilities:josso:SPInitiatedLogoutRequest");
+        in.getMessage().getState().
+                        removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:SPInitiatedLogoutRequest");
+
+        String receivedBackTo =
+                (String) in.getMessage().getState().
+                        getLocalVariable("urn:org:atricore:idbus:capabilities:josso:backTo");
+        in.getMessage().getState().
+                        removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:backTo");
+
+        String appId =
+                (String) in.getMessage().getState().
+                        getLocalVariable("urn:org:atricore:idbus:capabilities:josso:appId");
+        in.getMessage().getState().
+                        removeLocalVariable("urn:org:atricore:idbus:capabilities:josso:appId");
+
+        // Process response
+        PartnerAppMapping mapping = resolveAppMapping((BindingChannel) channel, appId);
+        String backTo = mapping.getPartnerAppSLO();
+        if (logger.isDebugEnabled())
+            logger.debug("Using backTo URL:" + backTo + " received backTo URL ignored: " + receivedBackTo);
+
+        EndpointDescriptor ed = new EndpointDescriptorImpl(
+                "SSOLogoutRequest",
+                "SSOLogoutRequest",
+                JossoBinding.JOSSO_REDIRECT.getValue(),
+                backTo,
+                null);
+
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        out.setMessage(new MediationMessageImpl(null,
+                null,
+                "AuthenticationAssertion",
+                null,
+                ed,
+                in.getMessage().getState()));
+
+        exchange.setOut(out);
+    }
+
+    protected void doProcessJossoSloRequest(CamelMediationExchange exchange) throws IdentityMediationException, JossoException {
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        BindingChannel bChannel = (BindingChannel) channel;
+
+        String appId = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_APPID_VAR);
+
+        // This producer just redirects the user to the configured target IDP.
+        BindingChannel spBinding = resolveSpBindingChannel(bChannel, appId);
+
+        String backTo = in.getMessage().getState().getTransientVariable(JossoConstants.JOSSO_BACK_TO_VAR);
+
+        EndpointDescriptor destination = resolveSPInitiatedSSOEndpointDescriptor(exchange, spBinding);
+
+        // Create SP AuthnRequest
+        // TODO : Support on_error ?
+        SPInitiatedLogoutRequestType request = buildSLORequest(exchange);
+
+        // Store state
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:backTo", backTo);
+        in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:capabilities:josso:SPInitiatedLogoutRequest", request);
+
+        CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+        out.setMessage(new MediationMessageImpl(request.getID(),
+                request,
+                "SSOLogoutRequest",
+                null,
+                destination,
+                in.getMessage().getState()));
+
+        exchange.setOut(out);
+
+    }
+
+    protected EndpointDescriptor resolveSPInitiatedSSOEndpointDescriptor(CamelMediationExchange exchange, BindingChannel idP) throws JossoException {
+
+        try {
+
+            logger.debug("Looking for " + SamlR2Service.SPInitiatedSingleLogoutService.toString());
+
+            for (IdentityMediationEndpoint endpoint : idP.getEndpoints()) {
+
+                logger.debug("Processing endpoint : " + endpoint.getType() + "["+endpoint.getBinding()+"]");
+
+                if (endpoint.getType().equals(SamlR2Service.SPInitiatedSingleLogoutService.toString())) {
+
+                    if (endpoint.getBinding().equals(SamlR2Binding.SSO_ARTIFACT.getValue())) {
+                        // This is the endpoint we're looking for
+                        return  idP.getIdentityMediator().resolveEndpoint(idP, endpoint);
+                    }
+                }
+            }
+        } catch (IdentityMediationException e) {
+            throw new JossoException(e);
+        }
+
+        throw new JossoException("No SP endpoint found for SP Initiated SLO using JOSSO Artifact binding");
+    }
+
+
+    protected SPInitiatedLogoutRequestType buildSLORequest(CamelMediationExchange exchange) throws IdentityMediationException {
+
+        SPInitiatedLogoutRequestType req = new SPInitiatedLogoutRequestType();
+        req.setID(uuidGenerator.generateId());
+        JossoMediator mediator = ((JossoMediator)(channel).getIdentityMediator());
+
+        for (IdentityMediationEndpoint endpoint : channel.getEndpoints()) {
+
+            if (endpoint.getType().equals(JossoService.SingleLogoutService.toString())) {
+                if (endpoint.getBinding().equals(JossoBinding.SSO_ARTIFACT.getValue())) {
+                    EndpointDescriptor ed = mediator.resolveEndpoint(channel, endpoint);
+                    req.setReplyTo(ed.getResponseLocation() != null ? ed.getResponseLocation() : ed.getLocation());
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("SLORequest.Reply-To:" + req.getReplyTo());
+                    
+                }
+            }
+        }
+
+        CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
+        // Send all transient vars to SP
+        for (String tvarName : in.getMessage().getState().getTransientVarNames()) {
+            RequestAttributeType a = new RequestAttributeType ();
+            a.setName(tvarName);
+            a.setValue(in.getMessage().getState().getTransientVariable(tvarName));
+            req.getRequestAttribute().add(a);
+        }
+
+        return req;
+        
+    }
+
+
+
+
+}
+

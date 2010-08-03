@@ -1,0 +1,680 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<s:beans xmlns="urn:org:atricore:idbus:core"
+         xmlns:samlr2="urn:org:atricore:idbus:samlr2"
+         xmlns:samlr2-support="urn:org:atricore:idbus:samlr2:support"
+         xmlns:im="urn:org:atricore:idbus:default:identity-mediator"
+         xmlns:amq="http://activemq.apache.org/schema/core"
+         xmlns:def-auth="urn:org:atricore:idbus:default:authenticator"
+         xmlns:basic-authscheme="urn:org:atricore:idbus:basic:authscheme"
+         xmlns:memory-istore="urn:org:atricore:idbus:memory:identitystore"
+         xmlns:def-identitymgr="urn:org:atricore:idbus:default:identitymgr"
+         xmlns:def-sessionmgr="urn:org:atricore:idbus:default:sessionmgr"
+         xmlns:def-sidgen="urn:org:atricore:idbus:default:sessionidgen"
+         xmlns:basic-authn="urn:org:atricore:idbus:authentication:basic-authn"
+         xmlns:memory-sstore="urn:org:atricore:idbus:memory:sessionstore"
+		 xmlns:account-link="urn:org:atricore:idbus:accountlink"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+        >
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- Circle of Trust, maps to SAMLR2 Entities (SAML2Meta)               -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+
+    <cot id="cot-1">
+        <members>
+            <!-- A member is the equivalent to a SAML entity -->
+            <s:ref bean="entity-1"/>
+        </members>
+    </cot>
+
+    <!-- We use a SAMLR2 Cricle of Trust manager implementation -->
+    <samlr2:cot-manager id="samlr2-cot-mgr">
+        <cot>
+            <s:ref bean="cot-1"/>
+        </cot>
+    </samlr2:cot-manager>
+
+    <!-- ================================================================== -->
+    <!-- A member is similar to a SAMLR2 Entity,                            -->
+    <!-- Member alias MUST be present and match SAML EntityID               -->
+    <!-- ================================================================== -->
+    <cot-member id="entity-1"
+                alias="http://localhost:8181/IDBUS/SAML2/MD"
+                metadata-resource ="org/atricore/josso2/samlr2/test/entity-1-metadata.xml"/>
+
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- Channel Registry, (Maps to SAMLR2 Roles, SAMLMeta)                 -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+    <mediation>
+        <channels>
+            <s:ref bean="idp-channel-1"/>
+            <s:ref bean="claim-channel-1"/>
+            <s:ref bean="sp-channel-1"/>
+        </channels>
+    </mediation>
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- Identity Mediators Registry                                        -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+    <im:identity-mediation-engine id="mediation-engine"/>
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!--  SAML R2 IDP Channel Definition (Maps to SAMLR2 Roles, SAMLMeta)   -->
+    <!-- Channel role MUST match SAMLR2 Role descriptor elements            -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+    <idp-channel name="idp-channel-1" role="urn:oasis:names:tc:SAML:2.0:metadata:IDPSSODescriptor">
+
+        <!-- Circle of Trust Member -->
+        <member>
+            <s:ref bean="entity-1"/>
+        </member>
+
+        <!-- Channel Base Location -->
+        <location>http://localhost:8181/IDBUS/IDP-1</location>
+
+        <!-- ============================================================= -->
+        <!-- Endpoints are realted to SAMLR2 Metadata endpoints            -->
+        <!-- IdentityMediationEndpoint binding MUST match SAMLR2 SamlR2Binding                    -->
+        <!-- Location and Response location is OPTIONAL and overrides SAML -->
+        <!-- definitions                                                   -->
+        <!-- ============================================================= -->
+        <endpoints>
+
+            <!-- SLO HTTP POST -->
+            <endpoint name="idp1-slo-http-post"
+                      type="urn:oasis:names:tc:SAML:2.0:metadata:SingleLogoutService"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"/>
+
+            <!-- SLO HTTP Redirect-->
+            <endpoint name="idp1-slo-http-redirect"
+                      type="urn:oasis:names:tc:SAML:2.0:metadata:SingleLogoutService"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"/>
+
+
+            <!-- SLO SOAP
+            <endpoint name="idp1-slo-soap"
+                      type="urn:oasis:names:tc:SAML:2.0:springmetadata:SingleLogoutService"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"/>
+            -->
+
+            <!-- SSO HTTP POST -->
+            <endpoint name="idp1-sso-http-post"
+                      type="urn:oasis:names:tc:SAML:2.0:metadata:SingleSignOnService"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">
+
+                <identity-plans>
+                    <s:list>
+                        <s:ref bean="samlr2:samlr2authnreq-to-samlr2resp-plan"/>
+                        <s:ref bean="samlr2authnstmt-to-samlr2assertion-plan"/>
+                    </s:list>
+                </identity-plans>
+
+            </endpoint>
+
+            <!-- SSO HTTP Artifact -->
+            <endpoint name="idp1-sso-http-artifact"
+                      type="urn:oasis:names:tc:SAML:2.0:metadata:SingleSignOnService"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact">
+
+                <identity-plans>
+                    <s:list>
+                        <s:ref bean="samlr2:samlr2authnreq-to-samlr2resp-plan"/>
+                        <s:ref bean="samlr2authnstmt-to-samlr2assertion-plan"/>
+                    </s:list>
+                </identity-plans>
+
+            </endpoint>
+
+            <!-- SSO HTTP Redirect-->
+            <endpoint name="idp1-sso-http-redirect"
+                      type="urn:oasis:names:tc:SAML:2.0:metadata:SingleSignOnService"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect">
+                <identity-plans>
+                    <s:list>
+                        <s:ref bean="samlr2:samlr2authnreq-to-samlr2resp-plan"/>
+                        <s:ref bean="samlr2authnstmt-to-samlr2assertion-plan"/>
+                    </s:list>
+                </identity-plans>
+            </endpoint>
+
+            <!-- JOSSO HTTP Artifact -->
+            <endpoint name="idp1-josso-http-artifact"
+                      type="urn:oasis:names:tc:SAML:2.0:metadata:SingleSignOnService"
+                      binding="urn:org:atricore:idbus:sso:bindings:HTTP-Artifact"
+                      location="/IDBUS/SSO/ARTIFACT">
+
+                <identity-plans>
+                    <s:list>
+                        <s:ref bean="samlr2:samlr2authnreq-to-samlr2resp-plan"/>
+                        <s:ref bean="samlr2authnstmt-to-samlr2assertion-plan"/>
+                    </s:list>
+                </identity-plans>
+
+            </endpoint>
+
+        </endpoints>
+
+        <!-- Claims channel -->
+        <claims-provider>
+            <s:ref bean="claim-channel-1"/>
+        </claims-provider>
+
+        <!-- WST Service -->
+        <security-token-service>
+            <s:ref bean="sts"/>
+        </security-token-service>
+
+        <!-- SSO Session Management Service-->
+        <sso-session-manager>
+            <s:ref bean="josso-session-manager"/>
+        </sso-session-manager>
+
+        <!-- SSO Identity Management Service-->
+        <sso-identity-manager>
+            <s:ref bean="josso-identity-manager"/>
+        </sso-identity-manager>
+
+
+        <member>
+            <s:ref bean="entity-1"/>
+        </member>
+
+        <!-- SAMLR2 IDP Mediator -->
+        <mediator>
+            <s:ref bean="samlr2-idp-mediator"/>
+        </mediator>
+
+        <!-- Mediation Engine -->
+        <engine>
+            <s:ref bean="mediation-engine"/>
+        </engine>
+
+        <cot-manager>
+            <s:ref bean="samlr2-cot-mgr"/>
+        </cot-manager>
+
+    </idp-channel>
+
+    <samlr2:idp-mediator
+            id="samlr2-idp-mediator"
+            log-messages="true">
+
+        <samlr2:artifact-queue-mgr>
+            <s:ref bean="artifactQueueManager" />
+        </samlr2:artifact-queue-mgr>
+
+        <samlr2:logger>
+            <s:ref bean="idp-1-mediation-logger"/>
+        </samlr2:logger>
+        
+    </samlr2:idp-mediator >
+
+    <mediation-logger id="idp-1-mediation-logger" category="org.josso2.mediation.IDP-1.wire">
+        <msg-builders>
+            <samlr2:http-logmsg-builder/>
+        </msg-builders>
+    </mediation-logger>
+
+    <samlr2:samlr2authnreq-to-samlr2resp-plan id="samlr2:samlr2authnreq-to-samlr2resp-plan"/>
+
+    <samlr2:samlr2authnstmt-to-samlr2assertion-plan id="samlr2authnstmt-to-samlr2assertion-plan"/>
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!--  CLAMINS Channel Definition                                        -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+    <claim-channel name="claim-channel-1">
+        <location>http://localhost:8181/IDBUS/CC-1</location>
+
+        <!-- Claim channels do not have members ... -->
+
+        <endpoints>
+
+            <endpoint name="cc-1-pwd"
+                      binding="urn:org:atricore:idbus:sso:bindings:HTTP-Artifact"
+                      location="/IDBUS/PWD/ARTIFACT"
+                      type="urn:oasis:names:tc:SAML:2.0:ac:classes:Password"/>
+
+            <!--
+            <endpoint name="cc-1-rememberme"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
+                      location="/CC-1/REMEMBERME"
+                      type="urn:oasis:names:tc:SAML:2.0:ac:classes:PreviousSession"/>
+
+            <endpoint name="cc-1-x509"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"
+                      location="/CC-1/X509"
+                      type="urn:oasis:names:tc:SAML:2.0:ac:classes:X509"/>
+
+            -->        
+
+        </endpoints>
+
+        <!-- Mediator -->
+        <mediator>
+            <s:ref bean="samlr2-claims-mediator"/>
+        </mediator>
+
+        <!-- Mediation Engine -->
+        <engine>
+            <s:ref bean="mediation-engine"/>
+        </engine>
+
+    </claim-channel>
+
+    <!-- TODO : Move 'loginFormLocation' property to endpoit declaration
+    -->
+    <samlr2:claims-mediator id="samlr2-claims-mediator"
+            log-messages="true"                
+            loginFormLocation="http://localhost:8282/idbus-ui/BasicAuthnFormLogin.action">
+        
+        <samlr2:artifact-queue-mgr>
+            <s:ref bean="artifactQueueManager" />
+        </samlr2:artifact-queue-mgr>
+
+        <samlr2:logger>
+            <s:ref bean="claims-1-mediation-logger"/>
+        </samlr2:logger>
+
+    </samlr2:claims-mediator>
+
+    <mediation-logger id="claims-1-mediation-logger"
+                      category="org.josso2.mediation.CLAIMS-1.wire">
+        <msg-builders>
+            <samlr2:http-logmsg-builder/>
+        </msg-builders>
+    </mediation-logger>
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!--  SP Channel Definition                                             -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+    <sp-channel name="sp-channel-1" role="urn:oasis:names:tc:SAML:2.0:metadata:SPSSODescriptor">
+
+        <location>http://localhost:8181/IDBUS/SP-1</location>
+
+        <!--<preferred-idp>http://localhost:8181/IDBUS/SAML2/MD</preferred-idp>-->
+
+        <endpoints>
+
+            <!-- SLO HTTP POST -->
+            <endpoint name="sp1-slo-http-post"
+                      type="urn:oasis:names:tc:SAML:2.0:metadata:SingleLogoutService"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"/>
+
+            <!-- SLO HTTP Redirect-->
+            <endpoint name="sp1-slo-http-redirect"
+                      type="urn:oasis:names:tc:SAML:2.0:metadata:SingleLogoutService"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"/>
+
+            <!-- SLO SOAP
+            <endpoint name="sp1-slo-soap"
+                      type=":urn:oasis:names:tc:SAML:2.0:springmetadata:SingleLogoutService"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"/>
+            -->
+
+            <!-- AC HTTP POST -->
+            <endpoint name="sp1-ac-http-post"
+                      type="urn:oasis:names:tc:SAML:2.0:metadata:AssertionConsumerService"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">
+                <identity-plans>
+                    <s:list>
+                        <s:ref bean="idpunsolicitedresponse-to-subject-plan"/>
+                    </s:list>
+                </identity-plans>
+
+            </endpoint>
+
+            <!-- AC HTTP Redirect-->
+            <endpoint name="sp1-ac-http-redirect"
+                      type="urn:oasis:names:tc:SAML:2.0:metadata:AssertionConsumerService"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"/>
+
+            <!-- AC HTTP Artifact -->
+            <endpoint name="sp1-ac-http-artifact"
+                      type="urn:oasis:names:tc:SAML:2.0:metadata:AssertionConsumerService"
+                      binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact"/>
+
+            <!-- SP Agent, this does not have a SAMLR2 Counterpart in SAML Metadata  -->
+            <endpoint name="sp1-josso-http-redirect"
+                      type="urn:org:atricore:idbus:SPInitiatedSingleSignOnService"
+                      binding="urn:org:atricore:idbus:sso:bindings:HTTP-Redirect"
+                      location="/IDBUS/SSO/REDIR">
+
+                <identity-plans>
+                    <s:list>
+                        <s:ref bean="spinitiatedauthnreq-to-samlr2autnreq-plan"/>
+                    </s:list>
+                </identity-plans>
+                
+            </endpoint>
+
+        </endpoints>
+
+
+        <member>
+            <s:ref bean="entity-1"/>
+        </member>
+
+        <mediator>
+            <s:ref bean="samlr2-sp-mediator"/>
+        </mediator>
+
+        <!-- Mediation Engine -->
+        <engine>
+            <s:ref bean="mediation-engine"/>
+        </engine>
+
+        <cot-manager>
+            <s:ref bean="samlr2-cot-mgr"/>
+        </cot-manager>
+
+        <account-link:accountLinkLifecycle>
+            <s:ref bean="default-account-link-lifecycle"/>
+        </account-link:accountLinkLifecycle>
+
+        <accountLinkEmitter>
+            <s:bean class="org.atricore.idbus.capabilities.samlr2.main.test.components.OneToOneAccountLinkEmitter">
+                <!-- Account linker emitter properties
+                <s:property name="emitterProp1Name" value="emitterProp1Value"/>
+                -->
+            </s:bean>
+        </accountLinkEmitter>
+
+        <identityMapper>
+            <s:bean class="org.atricore.idbus.capabilities.samlr2.main.test.components.RestrictedAccessIdentityMapper">
+                <!-- identity mapper properties
+                <s:property name="identityMapperProp1Name" value="identityMapperProp1Value"/>
+                -->
+            </s:bean>
+        </identityMapper>
+    </sp-channel>
+
+    <!-- Default Account Link Lifecycle used by SPs for managing account links -->
+    <account-link:account-link-lifecycle id="default-account-link-lifecycle">
+        <identityStore>
+            <s:ref bean="josso-identity-store"/>
+       </identityStore>
+    </account-link:account-link-lifecycle>
+
+    <samlr2:sp-mediator id="samlr2-sp-mediator"
+    					preferred-idp="http://localhost:8181/IDBUS/SAML2/MD"
+    					preferred-idp-sso-binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+    					log-messages="true">    
+        <samlr2:artifact-queue-mgr>
+            <s:ref bean="artifactQueueManager" />
+        </samlr2:artifact-queue-mgr>
+
+        <logger>
+            <s:ref bean="sp-1-mediation-logger"/>
+        </logger>
+    </samlr2:sp-mediator>
+
+    <mediation-logger id="sp-1-mediation-logger"
+                      category="org.josso2.mediation.SP-1.wire">
+        <msg-builders>
+            <samlr2:http-logmsg-builder/>
+        </msg-builders>
+    </mediation-logger>
+
+    <samlr2:spinitiatedauthnreq-to-samlr2autnreq-plan id="spinitiatedauthnreq-to-samlr2autnreq-plan">
+
+    </samlr2:spinitiatedauthnreq-to-samlr2autnreq-plan>
+
+    <samlr2:idpunsolicitedresponse-to-subject-plan id="idpunsolicitedresponse-to-subject-plan">
+
+    </samlr2:idpunsolicitedresponse-to-subject-plan>
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- STS Service Definition                                             -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+    <security-token-service id="sts">
+
+        <emitters>
+            <s:ref bean="samlr2-assertion-emitter"/>
+        </emitters>
+
+        <authenticators>
+            <s:ref bean="default-securitytoken-authenticator"/>
+        </authenticators>
+
+        <artifact-queue-mgr>
+            <s:ref bean="artifactQueueManager"/>
+        </artifact-queue-mgr>
+
+    </security-token-service>
+
+    <!-- Default Security Token authenticator -->
+    <security-token-authenticator id="default-securitytoken-authenticator">
+        <authenticator>
+            <s:ref bean="josso-authenticator"/>
+        </authenticator>
+    </security-token-authenticator>
+
+    <!-- SAMLR2 Security Token emitter (Assertions) -->
+    <samlr2:token-emitter id="samlr2-assertion-emitter">
+        <samlr2:identity-plan>
+            <s:ref bean="samlr2-sectoken-to-authnassertion-plan"/>
+        </samlr2:identity-plan>
+    </samlr2:token-emitter>
+
+    <samlr2:sectoken-to-authassertion-plan id="samlr2-sectoken-to-authnassertion-plan">
+        <samlr2:identity-manager>
+            <s:ref bean="josso-identity-manager"/>
+        </samlr2:identity-manager>
+    </samlr2:sectoken-to-authassertion-plan>
+
+    <samlr2-support:samlr2-encrypter id="samlr2-assertion-encrypter"
+            symmetricKeyAlgorithmURI="http://www.w3.org/2001/04/xmlenc#aes128-cbc"
+            kekAlgorithmURI="http://www.w3.org/2001/04/xmlenc#rsa-1_5">
+        <samlr2-support:key-resolver>
+            <s:ref bean="ks-crypto-resolver"/>
+        </samlr2-support:key-resolver>
+    </samlr2-support:samlr2-encrypter>
+
+    <samlr2-support:keystore-keyresolver id="ks-crypto-resolver"
+                          keystoreType="JKS"
+                          keystoreFile="keystore.jks"
+                          keystorePass="xmlsecurity"
+                          privateKeyAlias="rsa-keys"
+                          privateKeyPass="rsa-keys-pwd"
+                          certificateAlias="rsa-keys"/>
+
+    <!-- SAMLR2 Identity artifact Signer (requests, responses, assertions, etc) -->
+    <samlr2-support:samlr2-signer>
+        <samlr2-support:key-resolver>
+            <s:ref bean="ks-keyresolver"/>
+        </samlr2-support:key-resolver>
+    </samlr2-support:samlr2-signer>
+
+    <samlr2-support:keystore-keyresolver id="ks-keyresolver"
+                          keystoreType="JKS"
+                          keystoreFile="keystore.jks"
+                          keystorePass="xmlsecurity"
+                          privateKeyAlias="test"
+                          privateKeyPass="xmlsecurity"
+                          certificateAlias="test"/>
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- SSO Base services defintion                                        -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+
+    <!-- ================================================================== -->
+    <!-- MOM support used as a cross-channel message bus                    -->
+    <!-- ================================================================== -->
+    <artifact-queue-mgr id="artifactQueueManager"
+            depends-on="bindingBroker"
+            singleton="true"
+            destroy-method="shutDown"
+            jmsProviderDestinationName="Queue/JOSSO/Artifact">
+
+        <artifact-generator>
+            <artifact-generator/>
+        </artifact-generator>
+
+        <connection-factory>
+            <s:ref bean="bindingConnectionFactory"/>
+        </connection-factory>
+        
+    </artifact-queue-mgr>
+
+    <s:bean id="bindingConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <s:property name="brokerURL" value="tcp://localhost:61217"/>
+    </s:bean>
+
+    <amq:broker id="bindingBroker" brokerName="bindingBroker" persistent="false">
+        <amq:transportConnectors>
+            <amq:transportConnector uri="tcp://localhost:61217"/>
+        </amq:transportConnectors>
+    </amq:broker>
+
+    <def-auth:authenticator id="josso-authenticator">
+        <def-auth:schemes>
+            <s:ref bean="josso-basic-authentication"/>
+        </def-auth:schemes>
+    </def-auth:authenticator>
+
+    <!-- ================================================================== -->
+    <!-- Basic Authentication Scheme                                        -->
+    <!-- ================================================================== -->
+    <basic-authscheme:basic-auth-scheme
+            id="josso-basic-authentication"
+            hashAlgorithm="MD5"
+            hashEncoding="HEX"
+            ignorePasswordCase="false"
+            ignoreUserCase="false">
+
+        <credentialStore>
+            <s:ref bean="josso-identity-store"/>
+        </credentialStore>
+
+        <credentialStoreKeyAdapter>
+            <s:ref bean="josso-simple-key-adapter"/>
+        </credentialStoreKeyAdapter>
+
+    </basic-authscheme:basic-auth-scheme>
+
+    <!-- ================================================================== -->
+    <!-- SSO Identity Manager Service                                       -->
+    <!-- ================================================================== -->
+    <def-identitymgr:identity-manager id="josso-identity-manager">
+
+        <def-identitymgr:identityStore>
+            <s:ref bean="josso-identity-store"/>
+        </def-identitymgr:identityStore>
+
+        <def-identitymgr:identityStoreKeyAdapter>
+            <s:ref bean="josso-simple-key-adapter"/>
+        </def-identitymgr:identityStoreKeyAdapter>
+
+    </def-identitymgr:identity-manager>
+
+    <!-- ================================================================== -->
+    <!-- SSO Memory Identity Store                                          -->
+    <!-- ================================================================== -->
+    <memory-istore:memory-store id="josso-identity-store"
+                                credentialsFileName="josso-credentials.xml"
+                                usersFileName="josso-users.xml" s:scope="singleton"/>
+
+    <simple-key-adapter id="josso-simple-key-adapter"/>
+
+    <!-- ================================================================== -->
+    <!-- SSO Session Manager Service                                        -->
+    <!-- ================================================================== -->
+    <def-sessionmgr:session-manager id="josso-session-manager"
+                                    maxInactiveInterval="30"
+                                    maxSessionsPerUser="-1"
+                                    invalidateExceedingSessions="false"
+                                    sessionMonitorInterval="10000">
+
+        <def-sessionmgr:session-id-generator>
+            <def-sidgen:id-generator algorithm="MD5"/>
+        </def-sessionmgr:session-id-generator>
+
+        <def-sessionmgr:session-store>
+            <s:ref bean="sso-session-store"/>
+        </def-sessionmgr:session-store>
+
+    </def-sessionmgr:session-manager>
+
+    <!-- ================================================================== -->
+    <!-- SSO Session Store                                                  -->
+    <!-- ================================================================== -->
+    <memory-sstore:memory-store id="sso-session-store"/>
+
+    <!-- ================================================================== -->
+    <!-- IDBUS UI Server                                                   -->
+    <!-- ================================================================== -->
+    <s:bean id="server"
+            class="org.mortbay.jetty.Server" init-method="start" destroy-method="stop">
+        <s:property name="connectors">
+            <s:list>
+                <s:bean id="connector" class="org.mortbay.jetty.nio.SelectChannelConnector">
+                    <s:property name="port" value="8282"/>
+                </s:bean>
+            </s:list>
+        </s:property>
+
+        <s:property name="handler">
+            <s:bean id="handlers"
+                    class="org.mortbay.jetty.handler.HandlerCollection">
+                <s:property name="handlers">
+                    <s:list>
+                        <s:bean id="contexts"
+                                class="org.mortbay.jetty.handler.ContextHandlerCollection">
+                            <s:property name="handlers">
+                                <s:list>
+                                    <s:bean class="org.mortbay.jetty.webapp.WebAppContext">
+                                        <s:property name="contextPath" value="/idbus-ui"/>
+                                        <s:property name="war"
+                                                    value="../../../components/josso2-authn-ui/target/josso2-authn-ui-2.0.0-SNAPSHOT.war"/>
+                                        <s:property name="extractWAR" value="true"/>
+                                    </s:bean>
+                                </s:list>
+                            </s:property>
+                        </s:bean>
+                    </s:list>
+                </s:property>
+            </s:bean>
+        </s:property>
+    </s:bean>
+
+</s:beans>

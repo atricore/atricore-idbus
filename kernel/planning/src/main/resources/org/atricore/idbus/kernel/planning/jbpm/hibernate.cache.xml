@@ -1,0 +1,83 @@
+
+  <!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+  <!-- ################################### -->
+  <!-- # cache settings                  # -->
+  <!-- # strategy="nonstrict-read-write" # -->
+  <!-- # can be used with hibernate.cache.provider_class=org.hibernate.cache.HashtableCacheProvider # -->
+  <!-- ################################### -->
+  
+  <class-cache class="org.jbpm.context.def.VariableAccess" usage="nonstrict-read-write" />
+  
+  <collection-cache collection="org.jbpm.file.def.FileDefinition.processFiles" usage="nonstrict-read-write" />
+  
+  <collection-cache collection="org.jbpm.graph.action.Script.variableAccesses" usage="nonstrict-read-write" />
+  
+  <class-cache class="org.jbpm.graph.def.Action" usage="nonstrict-read-write" />
+  
+  <class-cache class="org.jbpm.graph.def.Event" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.graph.def.Event.actions" usage="nonstrict-read-write" />
+  
+  <class-cache class="org.jbpm.graph.def.ExceptionHandler" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.graph.def.ExceptionHandler.actions" usage="nonstrict-read-write" />
+  
+  <class-cache class="org.jbpm.graph.def.Node" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.graph.def.Node.events" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.graph.def.Node.exceptionHandlers" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.graph.def.Node.leavingTransitions" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.graph.def.Node.arrivingTransitions" usage="nonstrict-read-write" />
+  
+  <class-cache class="org.jbpm.graph.def.ProcessDefinition" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.graph.def.ProcessDefinition.events" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.graph.def.ProcessDefinition.exceptionHandlers" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.graph.def.ProcessDefinition.nodes" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.graph.def.ProcessDefinition.actions" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.graph.def.ProcessDefinition.definitions" usage="nonstrict-read-write" />
+  
+  <collection-cache collection="org.jbpm.graph.def.SuperState.nodes" usage="nonstrict-read-write" />
+  
+  <class-cache class="org.jbpm.graph.def.Transition" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.graph.def.Transition.events" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.graph.def.Transition.exceptionHandlers" usage="nonstrict-read-write" />
+  
+  <collection-cache collection="org.jbpm.graph.node.Decision.decisionConditions" usage="nonstrict-read-write" />
+  
+  <collection-cache collection="org.jbpm.graph.node.ProcessState.variableAccesses" usage="nonstrict-read-write" />
+  
+  <collection-cache collection="org.jbpm.graph.node.TaskNode.tasks" usage="nonstrict-read-write" />
+  
+  <class-cache class="org.jbpm.instantiation.Delegation" usage="nonstrict-read-write" />
+  
+  <class-cache class="org.jbpm.module.def.ModuleDefinition" usage="nonstrict-read-write" />
+  
+  <collection-cache collection="org.jbpm.taskmgmt.def.Swimlane.tasks" usage="nonstrict-read-write" />
+  
+  <class-cache class="org.jbpm.taskmgmt.def.TaskController" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.taskmgmt.def.TaskController.variableAccesses" usage="nonstrict-read-write" />
+  
+  <class-cache class="org.jbpm.taskmgmt.def.Task" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.taskmgmt.def.Task.events" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.taskmgmt.def.Task.exceptionHandlers" usage="nonstrict-read-write" />
+  
+  <collection-cache collection="org.jbpm.taskmgmt.def.TaskMgmtDefinition.swimlanes" usage="nonstrict-read-write" />
+  <collection-cache collection="org.jbpm.taskmgmt.def.TaskMgmtDefinition.tasks" usage="nonstrict-read-write" />
+

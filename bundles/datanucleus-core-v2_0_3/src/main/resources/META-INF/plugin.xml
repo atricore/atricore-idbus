@@ -1,0 +1,928 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<!--**********************************************************************
+Copyright (c) 2006 Erik Bengtson and others. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+2006 Andy Jefferson - added enhancer extension point
+2006 Andy Jefferson - added datasource extension point
+2006 Andy Jefferson - added L2 cache, value generators, etc
+2008 Andy Jefferson - added persistence properties, query methods
+2009 Andy Jefferson - query caching options
+    ...
+**********************************************************************-->
+<plugin id="org.datanucleus" name="DataNucleus Core" provider-name="DataNucleus">
+    <extension-point id="api_adapter" name="Api Adapter" schema="schema/apidapter.exsd"/>
+    <extension-point id="autostart" name="AutoStartMechanism" schema="schema/autostart.exsd"/>
+    <extension-point id="cache_level1" name="Level1 Cache" schema="schema/cache_level1.exsd"/>
+    <extension-point id="cache_level2" name="Level2 Cache" schema="schema/cache_level2.exsd"/>
+    <extension-point id="cache_query_compilation" name="Query Compilation Cache" schema="schema/cache_query_compilation.exsd"/>
+    <extension-point id="cache_query_compilation_store" name="Query Datastore Compilation Cache" schema="schema/cache_query_compilation_store.exsd"/>
+    <extension-point id="cache_query_result" name="Query Result Cache" schema="schema/cache_query_result.exsd"/>
+    <extension-point id="callbackhandler" name="Callback Handler" schema="schema/callbackhandler.exsd"/>
+    <extension-point id="classloader_resolver" name="ClassLoader Resolver" schema="schema/classloader_resolver.exsd"/>
+    <extension-point id="identity_translator" name="Identity Translator" schema="schema/identity_translator.exsd"/>
+    <extension-point id="implementation_creator" name="Implementation Creator" schema="schema/implementation_creator.exsd"/>
+    <extension-point id="jta_locator" name="JTA Locator" schema="schema/jta_locator.exsd"/>
+    <extension-point id="management_server" name="Management Server" schema="schema/management_server.exsd"/>
+    <extension-point id="metadata_handler" name="MetaData Handler" schema="schema/metadata_handler.exsd"/>
+    <extension-point id="metadata_manager" name="MetaDataManager" schema="schema/metadata_manager.exsd"/>
+    <extension-point id="store_datastoreadapter" name="Datastore Adapter" schema="schema/datastoreadapter.exsd"/>
+    <extension-point id="store_datastoreidentity" name="Datastore Identity" schema="schema/datastoreidentity.exsd"/>
+    <extension-point id="store_identifierfactory" name="Identifier Factory" schema="schema/identifierfactory.exsd"/>
+    <extension-point id="store_manager" name="Store Manager" schema="schema/store_manager.exsd"/>
+    <extension-point id="store_mapping" name="Types Mapping" schema="schema/mapping.exsd"/>
+    <extension-point id="store_query_query" name="Query" schema="schema/query.exsd"/>
+    <extension-point id="query_method_evaluators" name="Query Method Evaluators" schema="schema/query_method_evaluator.exsd"/>
+    <extension-point id="store_valuegenerator" name="Value Generator" schema="schema/valuegenerator.exsd"/>
+    <extension-point id="store_objectvaluegenerator" name="Object Value Generator" schema="schema/objectvaluegenerator.exsd"/>
+    <extension-point id="store_connectionfactory" name="Connection Factory" schema="schema/connectionfactory.exsd"/>
+    <extension-point id="java_type" name="Java Type" schema="schema/java_type.exsd"/>
+    <extension-point id="persistence_properties" name="Persistence Properties" schema="schema/persistenceproperties.exsd"/>
+    <extension-point id="annotations" name="Annotations" schema="schema/annotations.exsd"/>
+    <extension-point id="metadata_entityresolver" name="MetaDataEntityResolver" schema="schema/metadata_entityresolver.exsd"/>
+
+    <!-- PERSISTENCE PROPERTIES -->
+    <extension point="org.datanucleus.persistence_properties">
+        <persistence-property name="datanucleus.ConnectionDriverName" datastore="true"/>
+        <persistence-property name="datanucleus.ConnectionURL" datastore="true"/>
+        <persistence-property name="datanucleus.ConnectionUserName" datastore="true"/>
+        <persistence-property name="datanucleus.ConnectionPassword" datastore="true"/>
+        <persistence-property name="datanucleus.ConnectionPasswordDecrypter"/>
+        <persistence-property name="datanucleus.ConnectionFactoryName" datastore="true"/>
+        <persistence-property name="datanucleus.ConnectionFactory2Name" datastore="true"/>
+        <persistence-property name="datanucleus.ConnectionFactory" datastore="true"/>
+        <persistence-property name="datanucleus.ConnectionFactory2" datastore="true"/>
+        <persistence-property name="datanucleus.connection.resourceType"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="datanucleus.connection2.resourceType"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+
+        <persistence-property name="datanucleus.IgnoreCache" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.Optimistic" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.Multithreaded" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.RetainValues" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.RestoreValues" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.NontransactionalRead" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.NontransactionalWrite" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.DetachAllOnCommit" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.DetachAllOnRollback" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.CopyOnAttach" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.TransactionType"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="datanucleus.Name"/>
+        <persistence-property name="datanucleus.PersistenceUnitName"/>
+        <persistence-property name="datanucleus.persistenceXmlFilename"/>
+        <persistence-property name="datanucleus.ServerTimeZoneID"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="datanucleus.Mapping"
+            validator="org.datanucleus.properties.StringPropertyValidator"/>
+        <persistence-property name="datanucleus.mapping.Catalog" datastore="true"/>
+        <persistence-property name="datanucleus.mapping.Schema" datastore="true"/>
+        <persistence-property name="datanucleus.SerializeRead"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.datastoreReadTimeout" datastore="true"
+            validator="org.datanucleus.properties.IntegerPropertyValidator"/>
+        <persistence-property name="datanucleus.datastoreWriteTimeout" datastore="true"
+            validator="org.datanucleus.properties.IntegerPropertyValidator"/>
+
+        <persistence-property name="datanucleus.propertiesFile"/>
+        <persistence-property name="datanucleus.persistenceUnitLoadTables" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+
+        <persistence-property name="datanucleus.singletonPMFForName" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.plugin.pluginRegistryClassName"/>
+        <persistence-property name="datanucleus.plugin.pluginRegistryBundleCheck" value="EXCEPTION"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="datanucleus.classLoaderResolverName" value="jdo"/>
+        <persistence-property name="datanucleus.primaryClassLoader"/>
+        <persistence-property name="datanucleus.managedRuntime" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.storeManagerType"/>
+        <persistence-property name="datanucleus.localisation.messageCodes" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.localisation.language"/>
+        <persistence-property name="datanucleus.implementationCreatorName" value="asm"/>
+        <persistence-property name="datanucleus.datastoreIdentityType" value="datanucleus"/>
+        <persistence-property name="datanucleus.persistenceApiName" value="JDO"/>
+        <persistence-property name="datanucleus.persistenceByReachabilityAtCommit" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.DetachOnClose" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.attachSameDatastore" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.manageRelationships" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.manageRelationshipsChecks" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.deletionPolicy" value="JDO2"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="datanucleus.attachPolicy" value="attach-dirty"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="datanucleus.detachAsWrapped" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.detachmentFields" value="load-fields"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="datanucleus.defaultInheritanceStrategy" value="JDO2"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+
+        <persistence-property name="datanucleus.identityTranslatorType"/>
+
+        <persistence-property name="datanucleus.cache.level1.type" value="soft"/>
+        <persistence-property name="datanucleus.cache.level2.type" value="soft"/>
+        <persistence-property name="datanucleus.cache.level2.cacheName" value="datanucleus"/>
+        <persistence-property name="datanucleus.cache.level2.maxSize" value="-1"
+            validator="org.datanucleus.properties.IntegerPropertyValidator"/>
+        <persistence-property name="datanucleus.cache.collections" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.cache.collections.lazy"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+
+        <persistence-property name="datanucleus.metadata.validate" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.metadata.autoregistration" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.metadata.supportORM"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.metadata.jdoFileExtension" value="jdo"/>
+        <persistence-property name="datanucleus.metadata.ormFileExtension" value="orm"/>
+        <persistence-property name="datanucleus.metadata.jdoqueryFileExtension" value="jdoquery"/>
+
+        <persistence-property name="datanucleus.jtaLocator"/>
+        <persistence-property name="datanucleus.jtaJndiLocation"/>
+        <persistence-property name="datanucleus.transactionIsolation" value="read-committed"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="datanucleus.valuegeneration.transactionIsolation" value="read-committed"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="datanucleus.valuegeneration.transactionAttribute" value="New"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="datanucleus.datastoreTransactionFlushLimit" value="1"
+            validator="org.datanucleus.properties.IntegerPropertyValidator"/>
+        <persistence-property name="datanucleus.datastoreTransactionDelayOperations" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.maxFetchDepth" value="1"
+            validator="org.datanucleus.properties.IntegerPropertyValidator"/>
+
+        <!-- All properties below here are datastore level -->
+        <persistence-property name="datanucleus.autoStartMechanism" value="None"/>
+        <persistence-property name="datanucleus.autoStartMechanismMode" value="Quiet"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="datanucleus.autoStartMechanismXmlFile" value="datanucleusAutoStart.xml"/>
+        <persistence-property name="datanucleus.autoStartClassNames"/>
+        <persistence-property name="datanucleus.autoStartMetaDataFiles"/>
+
+        <persistence-property name="datanucleus.autoCreateSchema" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.autoCreateTables" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.autoCreateColumns" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.autoCreateConstraints" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.validateTables" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.validateColumns" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.validateConstraints" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.autoCreateWarnOnError" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.readOnlyDatastore" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.fixedDatastore" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.readOnlyDatastoreAction" value="EXCEPTION"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+
+        <persistence-property name="datanucleus.identifier.case" datastore="true" value="UPPERCASE"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="datanucleus.identifier.tablePrefix" datastore="true"/>
+        <persistence-property name="datanucleus.identifier.tableSuffix" datastore="true"/>
+        <persistence-property name="datanucleus.identifier.wordSeparator" datastore="true"/>
+        <persistence-property name="datanucleus.identifierFactory" datastore="true" value="datanucleus2"/>
+
+        <persistence-property name="datanucleus.cache.queryCompilation.type" value="soft"/>
+        <persistence-property name="datanucleus.cache.queryCompilationDatastore.type" value="soft"/>
+        <persistence-property name="datanucleus.cache.queryResults.type" value="soft"/>
+        <persistence-property name="datanucleus.cache.queryResults.cacheName" value="datanucleus-query"/>
+        <persistence-property name="datanucleus.cache.queryResults.maxSize" value="-1"
+            validator="org.datanucleus.properties.IntegerPropertyValidator"/>
+        <persistence-property name="datanucleus.query.JPQL.implementation"/>
+        <persistence-property name="datanucleus.query.JDOQL.implementation"/>
+        <persistence-property name="datanucleus.query.sql.allowAll" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.query.flushBeforeExecution" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.query.useFetchPlan" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+
+        <persistence-property name="datanucleus.connectionPoolingType" datastore="true"/>
+
+        <!-- JDO properties TODO Move to datanucleus-jdo when we split it -->
+        <persistence-property name="javax.jdo.PersistenceManagerFactoryClass"/>
+        <persistence-property name="javax.jdo.option.ConnectionDriverName"
+            internal-name="datanucleus.ConnectionDriverName"/>
+        <persistence-property  name="javax.jdo.option.ConnectionURL"
+            internal-name="datanucleus.ConnectionURL"/>
+        <persistence-property  name="javax.jdo.option.ConnectionUserName"
+            internal-name="datanucleus.ConnectionUserName"/>
+        <persistence-property  name="javax.jdo.option.ConnectionPassword"
+            internal-name="datanucleus.ConnectionPassword"/>
+        <persistence-property  name="javax.jdo.option.ConnectionFactoryName"
+            internal-name="datanucleus.ConnectionFactoryName"/>
+        <persistence-property  name="javax.jdo.option.ConnectionFactory2Name"
+            internal-name="datanucleus.ConnectionFactory2Name"/>
+        <persistence-property  name="javax.jdo.option.ConnectionFactory"
+            internal-name="datanucleus.ConnectionFactory"/>
+        <persistence-property  name="javax.jdo.option.ConnectionFactory2"
+            internal-name="datanucleus.ConnectionFactory2"/>
+        <persistence-property name="javax.jdo.option.IgnoreCache"
+            internal-name="datanucleus.IgnoreCache"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.Optimistic"
+            internal-name="datanucleus.Optimistic"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.Multithreaded"
+            internal-name="datanucleus.Multithreaded"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.RetainValues"
+            internal-name="datanucleus.RetainValues"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.RestoreValues"
+            internal-name="datanucleus.RestoreValues"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.NontransactionalRead"
+            internal-name="datanucleus.NontransactionalRead"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.NontransactionalWrite"
+            internal-name="datanucleus.NontransactionalWrite"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.DetachAllOnCommit"
+            internal-name="datanucleus.DetachAllOnCommit"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.CopyOnAttach"
+            internal-name="datanucleus.CopyOnAttach"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.TransactionType"
+            internal-name="datanucleus.TransactionType"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="javax.jdo.option.Name"
+            internal-name="datanucleus.Name"
+            validator="org.datanucleus.properties.StringPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.PersistenceUnitName"
+            internal-name="datanucleus.PersistenceUnitName"
+            validator="org.datanucleus.properties.StringPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.ServerTimeZoneID"
+            internal-name="datanucleus.ServerTimeZoneID"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="javax.jdo.option.ReadOnly"
+            internal-name="datanucleus.readOnlyDatastore"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.TransactionIsolationLevel"
+            internal-name="datanucleus.transactionIsolation"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="javax.jdo.option.Mapping"
+            internal-name="datanucleus.Mapping"
+            validator="org.datanucleus.properties.StringPropertyValidator"/>
+        <persistence-property name="javax.jdo.mapping.Catalog"
+            internal-name="datanucleus.mapping.Catalog"
+            validator="org.datanucleus.properties.StringPropertyValidator"/>
+        <persistence-property name="javax.jdo.mapping.Schema"
+            internal-name="datanucleus.mapping.Schema"
+            validator="org.datanucleus.properties.StringPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.DatastoreReadTimeoutMillis"
+            internal-name="datanucleus.datastoreReadTimeout" value="0"
+            validator="org.datanucleus.properties.IntegerPropertyValidator"/>
+        <persistence-property name="javax.jdo.option.DatastoreWriteTimeoutMillis"
+            internal-name="datanucleus.datastoreWriteTimeout" value="0"
+            validator="org.datanucleus.properties.IntegerPropertyValidator"/>
+    </extension>
+
+    <!-- LEVEL1 CACHES -->
+    <extension point="org.datanucleus.cache_level1">
+        <cache name="strong" class-name="org.datanucleus.cache.StrongRefCache"/>
+        <cache name="soft" class-name="org.datanucleus.cache.SoftRefCache"/>
+        <cache name="weak" class-name="org.datanucleus.cache.WeakRefCache"/>
+    </extension>
+
+    <!-- LEVEL2 CACHES -->
+    <extension point="org.datanucleus.cache_level2">
+        <cache name="weak" class-name="org.datanucleus.cache.WeakLevel2Cache"/>
+        <cache name="soft" class-name="org.datanucleus.cache.SoftLevel2Cache"/>
+        <cache name="none" class-name="org.datanucleus.cache.NullLevel2Cache"/>
+    </extension>
+
+    <!-- JTA LOCATORS -->
+    <extension point="org.datanucleus.jta_locator">
+        <jta_locator name="jboss" class-name="org.datanucleus.jta.JBossTransactionManagerLocator"/>
+        <jta_locator name="jonas" class-name="org.datanucleus.jta.JOnASTransactionManagerLocator"/>
+        <jta_locator name="jotm" class-name="org.datanucleus.jta.JOTMTransactionManagerLocator"/>
+        <jta_locator name="oc4j" class-name="org.datanucleus.jta.OC4JTransactionManagerLocator"/>
+        <jta_locator name="orion" class-name="org.datanucleus.jta.OrionTransactionManagerLocator"/>
+        <jta_locator name="resin" class-name="org.datanucleus.jta.ResinTransactionManagerLocator"/>
+        <jta_locator name="sap" class-name="org.datanucleus.jta.SAPWebASTransactionManagerLocator"/>
+        <jta_locator name="sun" class-name="org.datanucleus.jta.SunTransactionManagerLocator"/>
+        <jta_locator name="weblogic" class-name="org.datanucleus.jta.WebLogicTransactionManagerLocator"/>
+        <jta_locator name="websphere" class-name="org.datanucleus.jta.WebSphereTransactionManagerLocator"/>
+        <jta_locator name="custom_jndi" class-name="org.datanucleus.jta.CustomJNDITransactionManagerLocator"/>
+    </extension>
+
+    <!-- DATASTORE IDENTITY -->
+    <extension point="org.datanucleus.store_datastoreidentity">
+        <datastoreidentity name="datanucleus" class-name="org.datanucleus.identity.OIDImpl"/>
+        <datastoreidentity name="kodo" class-name="org.datanucleus.identity.OIDImplKodo"/>
+        <datastoreidentity name="xcalia" class-name="org.datanucleus.identity.OIDImplXcalia"/>
+        <datastoreidentity name="unique" class-name="org.datanucleus.identity.DatastoreUniqueOID"/>
+    </extension>
+
+    <!-- IDENTITY TRANSLATOR -->
+    <extension point="org.datanucleus.identity_translator">
+        <identitytranslator name="xcalia" class-name="org.datanucleus.identity.XcaliaIdentityTranslator"/>
+    </extension>
+
+    <!-- IDENTIFIER FACTORIES -->
+    <extension point="org.datanucleus.store_identifierfactory">
+        <identifierfactory name="jpa" class-name="org.datanucleus.store.mapped.identifier.JPAIdentifierFactory"/>
+        <identifierfactory name="datanucleus" class-name="org.datanucleus.store.mapped.identifier.DNIdentifierFactory"/>
+        <identifierfactory name="datanucleus2" class-name="org.datanucleus.store.mapped.identifier.DN2IdentifierFactory"/>
+		<identifierfactory name="jpox" class-name="org.datanucleus.store.mapped.identifier.JPOXIdentifierFactory"/>
+    </extension>
+
+    <!-- JAVA TYPES -->
+    <extension point="org.datanucleus.java_type">
+        <!-- "primitive" types -->
+        <java-type name="boolean" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="byte" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="char" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="double" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="float" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="int" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="long" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="short" persistent="true" dfg="true" embedded="true"/>
+
+        <!-- "java.lang" types -->
+        <java-type name="java.lang.Boolean" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="java.lang.Byte" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="java.lang.Character" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="java.lang.Double" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="java.lang.Float" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="java.lang.Integer" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="java.lang.Long" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="java.lang.Short" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="java.lang.Number" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="java.lang.String" persistent="true" dfg="true" embedded="true"/>
+        <java-type name="java.lang.StringBuffer" embedded="true"
+            string-converter="org.datanucleus.store.types.StringBufferStringConverter"/>
+        <java-type name="java.lang.Enum" persistent="true" dfg="true" embedded="true"/>
+
+        <!-- "java.awt" types -->
+        <java-type name="java.awt.Color" embedded="true"
+            string-converter="org.datanucleus.store.types.ColorStringConverter"/>
+        <java-type name="java.awt.Point" wrapper-type="org.datanucleus.sco.simple.Point"
+            string-converter="org.datanucleus.store.types.PointStringConverter"/>
+        <java-type name="java.awt.Rectangle" embedded="true"
+            string-converter="org.datanucleus.store.types.RectangleStringConverter"/>
+        <java-type name="java.awt.geom.Arc2D$Double" embedded="true"/>
+        <java-type name="java.awt.geom.Arc2D$Float" embedded="true"/>
+        <java-type name="java.awt.geom.CubicCurve2D$Double" embedded="true"/>
+        <java-type name="java.awt.geom.CubicCurve2D$Float" embedded="true"/>
+        <java-type name="java.awt.geom.Ellipse2D$Double" embedded="true"/>
+        <java-type name="java.awt.geom.Ellipse2D$Float" embedded="true"/>
+        <java-type name="java.awt.geom.Line2D$Double" embedded="true"/>
+        <java-type name="java.awt.geom.Line2D$Float" embedded="true"/>
+        <java-type name="java.awt.geom.Point2D$Double" embedded="true"/>
+        <java-type name="java.awt.geom.Point2D$Float" embedded="true"/>
+        <java-type name="java.awt.geom.QuadCurve2D$Double" embedded="true"/>
+        <java-type name="java.awt.geom.QuadCurve2D$Float" embedded="true"/>
+        <java-type name="java.awt.geom.Rectangle2D$Double" embedded="true"/>
+        <java-type name="java.awt.geom.Rectangle2D$Float" embedded="true"/>
+        <java-type name="java.awt.geom.RoundRectangle2D$Double" embedded="true"/>
+        <java-type name="java.awt.geom.RoundRectangle2D$Float" embedded="true"/>
+
+        <!-- "java.math" types -->
+        <java-type name="java.math.BigDecimal" persistent="true" dfg="true" embedded="true"
+            string-converter="org.datanucleus.store.types.BigDecimalStringConverter"/>
+        <java-type name="java.math.BigInteger" persistent="true" dfg="true" embedded="true"
+            string-converter="org.datanucleus.store.types.BigIntegerStringConverter"/>
+
+        <!-- "java.net" types -->
+        <java-type name="java.net.URL" embedded="true"
+            string-converter="org.datanucleus.store.types.URLStringConverter"/>
+        <java-type name="java.net.URI" embedded="true"
+            string-converter="org.datanucleus.store.types.URIStringConverter"/>
+
+        <!-- "java.sql" types -->
+        <java-type name="java.sql.Date" wrapper-type="org.datanucleus.sco.simple.SqlDate"
+            string-converter="org.datanucleus.store.types.DateStringConverter"
+            long-converter="org.datanucleus.store.types.DateLongConverter"/>
+        <java-type name="java.sql.Time" wrapper-type="org.datanucleus.sco.simple.SqlTime"
+            string-converter="org.datanucleus.store.types.DateStringConverter"
+            long-converter="org.datanucleus.store.types.DateLongConverter"/>
+        <java-type name="java.sql.Timestamp" wrapper-type="org.datanucleus.sco.simple.SqlTimestamp"
+            string-converter="org.datanucleus.store.types.DateStringConverter"
+            long-converter="org.datanucleus.store.types.DateLongConverter"/>
+
+        <!-- "java.util" types -->
+        <java-type name="java.util.Date" persistent="true" dfg="true" embedded="true" wrapper-type="org.datanucleus.sco.simple.Date"
+            string-converter="org.datanucleus.store.types.DateStringConverter"
+            long-converter="org.datanucleus.store.types.DateLongConverter"/>
+        <java-type name="java.util.Locale" persistent="true" embedded="true"
+            string-converter="org.datanucleus.store.types.LocaleStringConverter"/>
+        <java-type name="java.util.Currency" persistent="true" embedded="true"
+            string-converter="org.datanucleus.store.types.CurrencyStringConverter"/>
+        <java-type name="java.util.Calendar" wrapper-type="org.datanucleus.sco.simple.GregorianCalendar"/>
+        <java-type name="java.util.GregorianCalendar" wrapper-type="org.datanucleus.sco.simple.GregorianCalendar"/>
+        <java-type name="java.util.UUID"
+            string-converter="org.datanucleus.store.types.UUIDStringConverter"/>
+        <java-type name="java.util.TimeZone"
+            string-converter="org.datanucleus.store.types.TimeZoneStringConverter"/>
+        <java-type name="java.util.ArrayList" persistent="true" wrapper-type="org.datanucleus.sco.simple.ArrayList"
+            wrapper-type-backed="org.datanucleus.sco.backed.ArrayList"/>
+        <java-type name="java.util.BitSet" wrapper-type="org.datanucleus.sco.simple.BitSet"
+            string-converter="org.datanucleus.store.types.BitSetStringConverter"/>
+        <java-type name="java.util.Collection" persistent="true" wrapper-type="org.datanucleus.sco.simple.Collection"
+            wrapper-type-backed="org.datanucleus.sco.backed.Collection"/>
+        <java-type name="java.util.HashMap" persistent="true" wrapper-type="org.datanucleus.sco.simple.HashMap"
+            wrapper-type-backed="org.datanucleus.sco.backed.HashMap"/>
+        <java-type name="java.util.HashSet" persistent="true" wrapper-type="org.datanucleus.sco.simple.HashSet"
+            wrapper-type-backed="org.datanucleus.sco.backed.HashSet"/>
+        <java-type name="java.util.Hashtable" persistent="true" wrapper-type="org.datanucleus.sco.simple.Hashtable"
+            wrapper-type-backed="org.datanucleus.sco.backed.Hashtable"/>
+        <java-type name="java.util.LinkedHashMap" persistent="true" wrapper-type="org.datanucleus.sco.simple.LinkedHashMap"
+            wrapper-type-backed="org.datanucleus.sco.backed.LinkedHashMap"/>
+        <java-type name="java.util.LinkedHashSet" persistent="true" wrapper-type="org.datanucleus.sco.simple.LinkedHashSet"
+            wrapper-type-backed="org.datanucleus.sco.backed.LinkedHashSet"/>
+        <java-type name="java.util.LinkedList" persistent="true" wrapper-type="org.datanucleus.sco.simple.LinkedList"
+            wrapper-type-backed="org.datanucleus.sco.backed.LinkedList"/>
+        <java-type name="java.util.List" persistent="true" wrapper-type="org.datanucleus.sco.simple.List"
+            wrapper-type-backed="org.datanucleus.sco.backed.List"/>
+        <java-type name="java.util.Map" persistent="true" wrapper-type="org.datanucleus.sco.simple.Map"
+            wrapper-type-backed="org.datanucleus.sco.backed.Map"/>
+        <java-type name="java.util.PriorityQueue" wrapper-type="org.datanucleus.sco.simple.PriorityQueue"
+            wrapper-type-backed="org.datanucleus.sco.backed.PriorityQueue"/>
+        <java-type name="java.util.Properties" wrapper-type="org.datanucleus.sco.simple.Properties"
+            wrapper-type-backed="org.datanucleus.sco.backed.Properties"/>
+        <java-type name="java.util.Queue" wrapper-type="org.datanucleus.sco.simple.Queue"
+            wrapper-type-backed="org.datanucleus.sco.backed.Queue"/>
+        <java-type name="java.util.Set" persistent="true" wrapper-type="org.datanucleus.sco.simple.Set"
+            wrapper-type-backed="org.datanucleus.sco.backed.Set"/>
+        <java-type name="java.util.SortedSet" persistent="true" wrapper-type="org.datanucleus.sco.simple.SortedSet"
+            wrapper-type-backed="org.datanucleus.sco.backed.SortedSet"/>
+        <java-type name="java.util.SortedMap" persistent="true" wrapper-type="org.datanucleus.sco.simple.SortedMap"
+            wrapper-type-backed="org.datanucleus.sco.backed.SortedMap"/>
+        <java-type name="java.util.Stack" wrapper-type="org.datanucleus.sco.simple.Stack"
+            wrapper-type-backed="org.datanucleus.sco.backed.Stack"/>
+        <java-type name="java.util.TreeMap" persistent="true" wrapper-type="org.datanucleus.sco.simple.TreeMap"
+            wrapper-type-backed="org.datanucleus.sco.backed.TreeMap"/>
+        <java-type name="java.util.TreeSet" persistent="true" wrapper-type="org.datanucleus.sco.simple.TreeSet"
+            wrapper-type-backed="org.datanucleus.sco.backed.TreeSet"/>
+        <java-type name="java.util.Vector" persistent="true" wrapper-type="org.datanucleus.sco.simple.Vector"
+            wrapper-type-backed="org.datanucleus.sco.backed.Vector"/>
+
+        <!-- array types -->
+        <java-type name="[B" persistent="true" embedded="true"/>
+        <java-type name="[C" persistent="true" embedded="true"/>
+        <java-type name="[D" persistent="true" embedded="true"/>
+        <java-type name="[F" persistent="true" embedded="true"/>
+        <java-type name="[I" persistent="true" embedded="true"/>
+        <java-type name="[J" persistent="true" embedded="true"/>
+        <java-type name="[S" persistent="true" embedded="true"/>
+        <java-type name="[Z" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.lang.Boolean;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.lang.Byte;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.lang.Character;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.lang.Double;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.lang.Float;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.lang.Integer;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.lang.Long;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.lang.Short;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.lang.Number;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.lang.String;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.math.BigInteger;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.math.BigDecimal;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.util.Date;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.util.Locale;" persistent="true" embedded="true"/>
+        <java-type name="[Ljava.lang.Enum;" persistent="true" embedded="true"/>
+    </extension>
+
+    <!-- JAVA TYPES MAPPING, for "mapped" datastores -->
+    <extension point="org.datanucleus.store_mapping">
+        <!-- "primitive" types -->
+        <mapping java-type="boolean" mapping-class="org.datanucleus.store.mapped.mapping.BooleanMapping"/>
+        <mapping java-type="byte" mapping-class="org.datanucleus.store.mapped.mapping.ByteMapping"/>
+        <mapping java-type="char" mapping-class="org.datanucleus.store.mapped.mapping.CharacterMapping"/>
+        <mapping java-type="double" mapping-class="org.datanucleus.store.mapped.mapping.DoubleMapping"/>
+        <mapping java-type="float" mapping-class="org.datanucleus.store.mapped.mapping.FloatMapping" />
+        <mapping java-type="int" mapping-class="org.datanucleus.store.mapped.mapping.IntegerMapping"/>
+        <mapping java-type="long" mapping-class="org.datanucleus.store.mapped.mapping.LongMapping"/>
+        <mapping java-type="short" mapping-class="org.datanucleus.store.mapped.mapping.ShortMapping"/>
+
+        <!-- "java.lang" types -->
+        <mapping java-type="java.lang.Boolean" mapping-class="org.datanucleus.store.mapped.mapping.BooleanMapping"/>
+        <mapping java-type="java.lang.Byte" mapping-class="org.datanucleus.store.mapped.mapping.ByteMapping" />
+        <mapping java-type="java.lang.Character" mapping-class="org.datanucleus.store.mapped.mapping.CharacterMapping" />
+        <mapping java-type="java.lang.Double" mapping-class="org.datanucleus.store.mapped.mapping.DoubleMapping" />
+        <mapping java-type="java.lang.Float" mapping-class="org.datanucleus.store.mapped.mapping.FloatMapping" />
+        <mapping java-type="java.lang.Integer" mapping-class="org.datanucleus.store.mapped.mapping.IntegerMapping" />
+        <mapping java-type="java.lang.Long" mapping-class="org.datanucleus.store.mapped.mapping.LongMapping" />
+        <mapping java-type="java.lang.Short" mapping-class="org.datanucleus.store.mapped.mapping.ShortMapping" />
+
+        <mapping java-type="java.lang.Number" mapping-class="org.datanucleus.store.mapped.mapping.NumberMapping"/>
+        <mapping java-type="java.lang.Object" mapping-class="org.datanucleus.store.mapped.mapping.SerialisedMapping"/>
+        <mapping java-type="java.lang.String" mapping-class="org.datanucleus.store.mapped.mapping.StringMapping"/>
+        <mapping java-type="java.lang.StringBuffer" mapping-class="org.datanucleus.store.mapped.mapping.StringBufferMapping"/>
+        <mapping java-type="java.lang.Enum" mapping-class="org.datanucleus.store.mapped.mapping.EnumMapping"/>
+
+        <!-- "java.awt" types -->
+        <mapping java-type="java.awt.Color" mapping-class="org.datanucleus.store.mapped.mapping.ColorMapping"/>
+        <mapping java-type="java.awt.Rectangle" mapping-class="org.datanucleus.store.mapped.mapping.RectangleMapping"/>
+        <mapping java-type="java.awt.Point" mapping-class="org.datanucleus.store.mapped.mapping.PointMapping"/>
+<!--        <mapping java-type="java.awt.Polygon" mapping-class="org.datanucleus.store.mapping.PolygonMapping"/> -->
+        <mapping java-type="java.awt.geom.Arc2D$Double" mapping-class="org.datanucleus.store.mapped.mapping.Arc2dDoubleMapping"/>
+        <mapping java-type="java.awt.geom.Arc2D$Float" mapping-class="org.datanucleus.store.mapped.mapping.Arc2dFloatMapping"/>
+        <mapping java-type="java.awt.geom.CubicCurve2D$Double" mapping-class="org.datanucleus.store.mapped.mapping.CubicCurve2dDoubleMapping"/>
+        <mapping java-type="java.awt.geom.CubicCurve2D$Float" mapping-class="org.datanucleus.store.mapped.mapping.CubicCurve2dFloatMapping"/>
+        <mapping java-type="java.awt.geom.Ellipse2D$Double" mapping-class="org.datanucleus.store.mapped.mapping.Ellipse2dDoubleMapping"/>
+        <mapping java-type="java.awt.geom.Ellipse2D$Float" mapping-class="org.datanucleus.store.mapped.mapping.Ellipse2dFloatMapping"/>
+        <mapping java-type="java.awt.geom.Line2D$Double" mapping-class="org.datanucleus.store.mapped.mapping.Line2dDoubleMapping"/>
+        <mapping java-type="java.awt.geom.Line2D$Float" mapping-class="org.datanucleus.store.mapped.mapping.Line2dFloatMapping"/>
+        <mapping java-type="java.awt.geom.Point2D$Double" mapping-class="org.datanucleus.store.mapped.mapping.Point2dDoubleMapping"/>
+        <mapping java-type="java.awt.geom.Point2D$Float" mapping-class="org.datanucleus.store.mapped.mapping.Point2dFloatMapping"/>
+        <mapping java-type="java.awt.geom.QuadCurve2D$Double" mapping-class="org.datanucleus.store.mapped.mapping.QuadCurve2dDoubleMapping"/>
+        <mapping java-type="java.awt.geom.QuadCurve2D$Float" mapping-class="org.datanucleus.store.mapped.mapping.QuadCurve2dFloatMapping"/>
+        <mapping java-type="java.awt.geom.Rectangle2D$Double" mapping-class="org.datanucleus.store.mapped.mapping.Rectangle2dDoubleMapping"/>
+        <mapping java-type="java.awt.geom.Rectangle2D$Float" mapping-class="org.datanucleus.store.mapped.mapping.Rectangle2dFloatMapping"/>
+        <mapping java-type="java.awt.geom.RoundRectangle2D$Double" mapping-class="org.datanucleus.store.mapped.mapping.RoundRectangle2dDoubleMapping"/>
+        <mapping java-type="java.awt.geom.RoundRectangle2D$Float" mapping-class="org.datanucleus.store.mapped.mapping.RoundRectangle2dFloatMapping"/>
+        <mapping java-type="java.awt.image.BufferedImage" mapping-class="org.datanucleus.store.mapped.mapping.BufferedImageMapping"/>
+
+        <!-- "java.io" types -->
+        <mapping java-type="java.io.Serializable" mapping-class="org.datanucleus.store.mapped.mapping.SerialisedMapping"/>
+
+        <!-- "java.math" types -->
+        <mapping java-type="java.math.BigDecimal" mapping-class="org.datanucleus.store.mapped.mapping.BigDecimalMapping"/>
+        <mapping java-type="java.math.BigInteger" mapping-class="org.datanucleus.store.mapped.mapping.BigIntegerMapping"/>
+
+        <!-- "java.net" types -->
+        <mapping java-type="java.net.URL" mapping-class="org.datanucleus.store.mapped.mapping.URLMapping"/>
+        <mapping java-type="java.net.URI" mapping-class="org.datanucleus.store.mapped.mapping.URIMapping"/>
+
+        <!-- "java.util" types -->
+        <mapping java-type="java.util.Calendar" mapping-class="org.datanucleus.store.mapped.mapping.GregorianCalendarMapping"/>
+        <mapping java-type="java.util.Date" mapping-class="org.datanucleus.store.mapped.mapping.DateMapping"/>
+        <mapping java-type="java.util.Locale" mapping-class="org.datanucleus.store.mapped.mapping.LocaleMapping" />
+        <mapping java-type="java.util.TimeZone" mapping-class="org.datanucleus.store.mapped.mapping.TimeZoneMapping"/>
+
+        <!-- "java.sql" types -->
+        <mapping java-type="java.sql.Date" mapping-class="org.datanucleus.store.mapped.mapping.SqlDateMapping"/>
+        <mapping java-type="java.sql.Time" mapping-class="org.datanucleus.store.mapped.mapping.SqlTimeMapping"/>
+        <mapping java-type="java.sql.Timestamp" mapping-class="org.datanucleus.store.mapped.mapping.SqlTimestampMapping"/>
+
+        <!-- array types -->
+        <mapping java-type="[B" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[C" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[D" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[F" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[I" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[J" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[S" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Z" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+
+        <mapping java-type="[Ljava.lang.Boolean;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Ljava.lang.Byte;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Ljava.lang.Character;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Ljava.lang.Double;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Ljava.lang.Float;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Ljava.lang.Integer;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Ljava.lang.Long;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Ljava.lang.Short;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+
+        <mapping java-type="[Ljava.lang.Number;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Ljava.lang.String;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Ljava.lang.Enum;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Ljava.math.BigInteger;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Ljava.math.BigDecimal;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Ljava.util.Date;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+        <mapping java-type="[Ljava.util.Locale;" mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"/>
+
+        <!-- container types -->
+        <mapping java-type="java.util.ArrayList" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="java.util.BitSet" mapping-class="org.datanucleus.store.mapped.mapping.BitSetMapping"/>
+        <mapping java-type="java.util.Collection" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="java.util.Currency" mapping-class="org.datanucleus.store.mapped.mapping.CurrencyMapping"/>
+        <mapping java-type="java.util.GregorianCalendar" mapping-class="org.datanucleus.store.mapped.mapping.GregorianCalendarMapping"/>
+        <mapping java-type="java.util.HashMap" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="java.util.HashSet" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="java.util.Hashtable" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="java.util.LinkedList" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="java.util.List" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="java.util.LinkedHashMap" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="java.util.LinkedHashSet" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="java.util.Map" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="java.util.PriorityQueue" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="java.util.Properties" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="java.util.Queue" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="java.util.Set" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="java.util.SortedMap" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="java.util.SortedSet" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="java.util.Stack" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="java.util.TreeMap" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="java.util.TreeSet" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="java.util.UUID" mapping-class="org.datanucleus.store.mapped.mapping.UUIDMapping"/>
+        <mapping java-type="java.util.Vector" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+
+        <!-- DataNucleus types -->
+        <mapping java-type="org.datanucleus.identity.OID" mapping-class="org.datanucleus.store.mapped.mapping.OIDMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.ArrayList" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.Collection" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.HashMap" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.HashSet" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.Hashtable" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.LinkedList" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.List" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.LinkedHashSet" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.LinkedHashMap" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.Map" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.PriorityQueue" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.Properties" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.Queue" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.Set" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.SortedMap" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.SortedSet" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.Stack" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.TreeMap" mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.TreeSet" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+        <mapping java-type="org.datanucleus.sco.backed.Vector" mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"/>
+    </extension>
+
+    <!-- VALUE GENERATORS -->
+    <extension point="org.datanucleus.store_valuegenerator">
+        <valuegenerator name="timestamp" class-name="org.datanucleus.store.valuegenerator.TimestampGenerator" unique="true"/>
+        <valuegenerator name="timestamp-value" class-name="org.datanucleus.store.valuegenerator.TimestampValueGenerator" unique="true"/>
+        <valuegenerator name="auid" class-name="org.datanucleus.store.valuegenerator.AUIDGenerator" unique="true"/>
+        <valuegenerator name="uuid-hex" class-name="org.datanucleus.store.valuegenerator.UUIDHexGenerator" unique="true"/>
+        <valuegenerator name="uuid-string" class-name="org.datanucleus.store.valuegenerator.UUIDStringGenerator" unique="true"/>
+    </extension>
+
+    <!-- PERSISTENCE APIS -->
+    <extension point="org.datanucleus.api_adapter">
+        <api-adapter name="JDO" class-name="org.datanucleus.jdo.JDOAdapter"/>
+    </extension>
+
+    <!-- CLASS LOADERS -->
+    <extension point="org.datanucleus.classloader_resolver">
+        <class-loader-resolver name="jdo" class-name="org.datanucleus.JDOClassLoaderResolver"/>
+    </extension>
+
+    <!-- AUTOSTART MECHANISMS -->
+    <extension point="org.datanucleus.autostart">
+        <autostart class-name="org.datanucleus.store.autostart.ClassesAutoStarter" name="Classes"/>
+        <autostart class-name="org.datanucleus.store.autostart.XMLAutoStarter" name="XML"/>
+        <autostart class-name="org.datanucleus.store.autostart.MetaDataAutoStarter" name="MetaData"/>
+    </extension>
+
+    <!-- CALLBACK HANDLERS -->
+    <extension point="org.datanucleus.callbackhandler">
+        <callback-handler class-name="org.datanucleus.jdo.JDOCallbackHandler" name="JDO"/>
+    </extension>
+
+    <!-- ANNOTATIONS -->
+    <extension point="org.datanucleus.annotations">
+        <annotations annotation-class="javax.jdo.annotations.PersistenceCapable" reader="org.datanucleus.jdo.metadata.JDOAnnotationReader"/>
+        <annotations annotation-class="javax.jdo.annotations.PersistenceAware" reader="org.datanucleus.jdo.metadata.JDOAnnotationReader"/>
+    </extension>
+
+    <!-- QUERY COMPILATION CACHE (GENERIC) -->
+    <extension point="org.datanucleus.cache_query_compilation">
+        <cache name="soft" class-name="org.datanucleus.query.cache.SoftQueryCompilationCache"/>
+        <cache name="weak" class-name="org.datanucleus.query.cache.WeakQueryCompilationCache"/>
+        <cache name="strong" class-name="org.datanucleus.query.cache.StrongQueryCompilationCache"/>
+    </extension>
+
+    <!-- QUERY COMPILATION CACHE (DATASTORE) -->
+    <extension point="org.datanucleus.cache_query_compilation_store">
+        <cache name="soft" class-name="org.datanucleus.store.query.cache.SoftQueryDatastoreCompilationCache"/>
+        <cache name="weak" class-name="org.datanucleus.store.query.cache.WeakQueryDatastoreCompilationCache"/>
+        <cache name="strong" class-name="org.datanucleus.store.query.cache.StrongQueryDatastoreCompilationCache"/>
+    </extension>
+
+    <!-- QUERY RESULT CACHE -->
+    <extension point="org.datanucleus.cache_query_result">
+        <cache name="soft" class-name="org.datanucleus.store.query.cache.SoftQueryResultsCache"/>
+        <cache name="weak" class-name="org.datanucleus.store.query.cache.WeakQueryResultsCache"/>
+        <cache name="strong" class-name="org.datanucleus.store.query.cache.StrongQueryResultsCache"/>
+    </extension>
+
+    <!-- QUERY METHODS -->
+    <extension point="org.datanucleus.query_method_evaluators">
+        <query-method-evaluator method="JDOHelper.getObjectId"
+            evaluator="org.datanucleus.query.evaluator.memory.JDOHelperGetObjectIdFunctionEvaluator"/>
+        <query-method-evaluator method="JDOHelper.getVersion"
+            evaluator="org.datanucleus.query.evaluator.memory.JDOHelperGetVersionFunctionEvaluator"/>
+        <query-method-evaluator method="Math.abs"
+            evaluator="org.datanucleus.query.evaluator.memory.AbsFunctionEvaluator"/>
+        <query-method-evaluator method="Math.sqrt"
+            evaluator="org.datanucleus.query.evaluator.memory.SqrtFunctionEvaluator"/>
+        <query-method-evaluator method="CURRENT_DATE"
+            evaluator="org.datanucleus.query.evaluator.memory.CurrentDateFunctionEvaluator"/>
+        <query-method-evaluator method="CURRENT_TIME"
+            evaluator="org.datanucleus.query.evaluator.memory.CurrentTimeFunctionEvaluator"/>
+        <query-method-evaluator method="CURRENT_TIMESTAMP"
+            evaluator="org.datanucleus.query.evaluator.memory.CurrentTimestampFunctionEvaluator"/>
+        <query-method-evaluator method="ABS"
+            evaluator="org.datanucleus.query.evaluator.memory.AbsFunctionEvaluator"/>
+        <query-method-evaluator method="SQRT"
+            evaluator="org.datanucleus.query.evaluator.memory.SqrtFunctionEvaluator"/>
+        <query-method-evaluator method="MOD"
+            evaluator="org.datanucleus.query.evaluator.memory.ModFunctionEvaluator"/>
+        <query-method-evaluator method="COALESCE"
+            evaluator="org.datanucleus.query.evaluator.memory.CoalesceFunctionEvaluator"/>
+        <query-method-evaluator method="NULLIF"
+            evaluator="org.datanucleus.query.evaluator.memory.NullIfFunctionEvaluator"/>
+        <query-method-evaluator method="SIZE"
+            evaluator="org.datanucleus.query.evaluator.memory.SizeFunctionEvaluator"/>
+        <query-method-evaluator method="UPPER"
+            evaluator="org.datanucleus.query.evaluator.memory.UpperFunctionEvaluator"/>
+        <query-method-evaluator method="LOWER"
+            evaluator="org.datanucleus.query.evaluator.memory.LowerFunctionEvaluator"/>
+        <query-method-evaluator method="LENGTH"
+            evaluator="org.datanucleus.query.evaluator.memory.LengthFunctionEvaluator"/>
+        <query-method-evaluator method="CONCAT"
+            evaluator="org.datanucleus.query.evaluator.memory.ConcatFunctionEvaluator"/>
+        <query-method-evaluator method="SUBSTRING"
+            evaluator="org.datanucleus.query.evaluator.memory.SubstringFunctionEvaluator"/>
+        <query-method-evaluator method="LOCATE"
+            evaluator="org.datanucleus.query.evaluator.memory.LocateFunctionEvaluator"/>
+        <query-method-evaluator method="TRIM"
+            evaluator="org.datanucleus.query.evaluator.memory.TrimFunctionEvaluator"/>
+        <query-method-evaluator method="TRIM_LEADING"
+            evaluator="org.datanucleus.query.evaluator.memory.TrimFunctionEvaluator"/>
+        <query-method-evaluator method="TRIM_TRAILING"
+            evaluator="org.datanucleus.query.evaluator.memory.TrimFunctionEvaluator"/>
+
+        <query-method-evaluator class="java.lang.Object" method="getClass"
+            evaluator="org.datanucleus.query.evaluator.memory.GetClassMethodEvaluator"/>
+        <query-method-evaluator class="java.lang.String" method="startsWith"
+            evaluator="org.datanucleus.query.evaluator.memory.StringStartsWithMethodEvaluator"/>
+        <query-method-evaluator class="java.lang.String" method="endsWith"
+            evaluator="org.datanucleus.query.evaluator.memory.StringEndsWithMethodEvaluator"/>
+        <query-method-evaluator class="java.lang.String" method="indexOf"
+            evaluator="org.datanucleus.query.evaluator.memory.StringIndexOfMethodEvaluator"/>
+        <query-method-evaluator class="java.lang.String" method="substring"
+            evaluator="org.datanucleus.query.evaluator.memory.StringSubstringMethodEvaluator"/>
+        <query-method-evaluator class="java.lang.String" method="toUpperCase"
+            evaluator="org.datanucleus.query.evaluator.memory.StringToUpperCaseMethodEvaluator"/>
+        <query-method-evaluator class="java.lang.String" method="toLowerCase"
+            evaluator="org.datanucleus.query.evaluator.memory.StringToLowerCaseMethodEvaluator"/>
+        <query-method-evaluator class="java.lang.String" method="matches"
+            evaluator="org.datanucleus.query.evaluator.memory.StringMatchesMethodEvaluator"/>
+        <query-method-evaluator class="java.lang.String" method="trim"
+            evaluator="org.datanucleus.query.evaluator.memory.StringTrimMethodEvaluator"/>
+        <query-method-evaluator class="java.lang.String" method="trimLeft"
+            evaluator="org.datanucleus.query.evaluator.memory.StringTrimLeftMethodEvaluator"/>
+        <query-method-evaluator class="java.lang.String" method="trimRight"
+            evaluator="org.datanucleus.query.evaluator.memory.StringTrimRightMethodEvaluator"/>
+        <query-method-evaluator class="java.lang.String" method="length"
+            evaluator="org.datanucleus.query.evaluator.memory.StringLengthMethodEvaluator"/>
+
+        <query-method-evaluator class="java.util.Collection" method="size"
+            evaluator="org.datanucleus.query.evaluator.memory.ContainerSizeMethodEvaluator"/>
+        <query-method-evaluator class="java.util.Collection" method="isEmpty"
+            evaluator="org.datanucleus.query.evaluator.memory.ContainerIsEmptyMethodEvaluator"/>
+        <query-method-evaluator class="java.util.Collection" method="contains"
+            evaluator="org.datanucleus.query.evaluator.memory.CollectionContainsMethodEvaluator"/>
+        <query-method-evaluator class="java.util.Map" method="size"
+            evaluator="org.datanucleus.query.evaluator.memory.ContainerSizeMethodEvaluator"/>
+        <query-method-evaluator class="java.util.Map" method="isEmpty"
+            evaluator="org.datanucleus.query.evaluator.memory.ContainerIsEmptyMethodEvaluator"/>
+        <query-method-evaluator class="java.util.Map" method="containsKey"
+            evaluator="org.datanucleus.query.evaluator.memory.MapContainsKeyMethodEvaluator"/>
+        <query-method-evaluator class="java.util.Map" method="containsValue"
+            evaluator="org.datanucleus.query.evaluator.memory.MapContainsValueMethodEvaluator"/>
+        <query-method-evaluator class="java.util.Map" method="get"
+            evaluator="org.datanucleus.query.evaluator.memory.MapGetMethodEvaluator"/>
+
+        <query-method-evaluator class="java.util.Date" method="getTime"
+            evaluator="org.datanucleus.query.evaluator.memory.DateGetTimeMethodEvaluator"/>
+        <query-method-evaluator class="java.util.Date" method="getDay"
+            evaluator="org.datanucleus.query.evaluator.memory.DateGetDayMethodEvaluator"/>
+        <query-method-evaluator class="java.util.Date" method="getMonth"
+            evaluator="org.datanucleus.query.evaluator.memory.DateGetMonthMethodEvaluator"/>
+        <query-method-evaluator class="java.util.Date" method="getYear"
+            evaluator="org.datanucleus.query.evaluator.memory.DateGetYearMethodEvaluator"/>
+        <query-method-evaluator class="java.util.Date" method="getHours"
+            evaluator="org.datanucleus.query.evaluator.memory.DateGetHoursMethodEvaluator"/>
+        <query-method-evaluator class="java.util.Date" method="getMinutes"
+            evaluator="org.datanucleus.query.evaluator.memory.DateGetMinutesMethodEvaluator"/>
+        <query-method-evaluator class="java.util.Date" method="getSeconds"
+            evaluator="org.datanucleus.query.evaluator.memory.DateGetSecondsMethodEvaluator"/>
+
+        <query-method-evaluator class="java.lang.Enum" method="matches"
+            evaluator="org.datanucleus.query.evaluator.memory.EnumMatchesMethodEvaluator"/>
+        <query-method-evaluator class="java.lang.Enum" method="toString"
+            evaluator="org.datanucleus.query.evaluator.memory.EnumToStringMethodEvaluator"/>
+        <query-method-evaluator class="java.lang.Enum" method="ordinal"
+            evaluator="org.datanucleus.query.evaluator.memory.EnumOrdinalMethodEvaluator"/>
+    </extension>
+
+    <!-- METADATA HANDLERS -->
+    <extension point="org.datanucleus.metadata_handler">
+        <handler class-name="org.datanucleus.jdo.metadata.JDOMetaDataHandler" name="JDO"
+            entity-resolver="org.datanucleus.metadata.xml.PluginEntityResolver"/>
+        <handler class-name="org.datanucleus.metadata.xml.PersistenceFileMetaDataHandler" name="Persistence"
+            entity-resolver="org.datanucleus.metadata.xml.PluginEntityResolver"/>
+    </extension>
+
+    <!-- METADATA MANAGERS -->
+    <extension point="org.datanucleus.metadata_manager">
+       <metadata-manager class="org.datanucleus.jdo.metadata.JDOMetaDataManager" name="JDO"/>
+    </extension>
+
+    <!-- METADATA RESOLVERS -->
+    <extension point="org.datanucleus.metadata_entityresolver">
+       <entityresolver identity="-//Sun Microsystems, Inc.//DTD Java Data Objects Metadata 1.0//EN"
+             type="PUBLIC" url="/org/datanucleus/jdo/jdo_1_0.dtd"/>
+       <entityresolver identity="-//Sun Microsystems, Inc.//DTD Java Data Objects Metadata 2.0//EN"
+             type="PUBLIC" url="/org/datanucleus/jdo/jdo_2_0.dtd"/>
+       <entityresolver identity="-//Sun Microsystems, Inc.//DTD Java Data Objects Metadata 2.1//EN"
+             type="PUBLIC" url="/org/datanucleus/jdo/jdo_2_0.dtd"/>
+       <entityresolver identity="-//Sun Microsystems, Inc.//DTD Java Data Objects Metadata 2.2//EN"
+             type="PUBLIC" url="/org/datanucleus/jdo/jdo_2_2.dtd"/>
+       <entityresolver identity="-//Sun Microsystems, Inc.//DTD Java Data Objects Metadata 2.3//EN"
+             type="PUBLIC" url="/org/datanucleus/jdo/jdo_2_3.dtd"/>
+       <entityresolver identity="-//Sun Microsystems, Inc.//DTD Java Data Objects Mapping Metadata 2.0//EN"
+             type="PUBLIC" url="/org/datanucleus/jdo/jdo_orm_2_0.dtd"/>
+       <entityresolver identity="-//Sun Microsystems, Inc.//DTD Java Data Objects Mapping Metadata 2.1//EN"
+             type="PUBLIC" url="/org/datanucleus/jdo/jdo_orm_2_0.dtd"/>
+       <entityresolver identity="-//Sun Microsystems, Inc.//DTD Java Data Objects Mapping Metadata 2.2//EN"
+             type="PUBLIC" url="/org/datanucleus/jdo/jdo_orm_2_2.dtd"/>
+       <entityresolver identity="-//Sun Microsystems, Inc.//DTD Java Data Objects Query Metadata 2.0//EN"
+             type="PUBLIC" url="/org/datanucleus/jdo/jdoquery_2_0.dtd"/>
+       <entityresolver identity="-//Sun Microsystems, Inc.//DTD Java Data Objects Query Metadata 2.1//EN"
+             type="PUBLIC" url="/org/datanucleus/jdo/jdoquery_2_0.dtd"/>
+       <entityresolver identity="-//Sun Microsystems, Inc.//DTD Java Data Objects Query Metadata 2.2//EN"
+             type="PUBLIC" url="/org/datanucleus/jdo/jdoquery_2_2.dtd"/>
+
+       <entityresolver identity="file:/javax/jdo/jdo.dtd"
+             type="SYSTEM" url="/org/datanucleus/jdo/jdo_2_0.dtd"/>
+       <entityresolver identity="file:/javax/jdo/orm.dtd"
+             type="SYSTEM" url="/org/datanucleus/jdo/jdo_orm_2_0.dtd"/>
+       <entityresolver identity="file:/javax/jdo/jdoquery.dtd"
+             type="SYSTEM" url="/org/datanucleus/jdo/jdoquery_2_0.dtd"/>
+
+       <entityresolver identity="http://java.sun.com/xml/ns/jdo/jdoquery_2_2.xsd"
+             type="SYSTEM" url="/org/datanucleus/jdo/jdoquery_2_2.xsd"/>
+       <entityresolver identity="http://java.sun.com/xml/ns/jdo/jdoquery_2_1.xsd"
+             type="SYSTEM" url="/org/datanucleus/jdo/jdoquery_2_1.xsd"/>
+       <entityresolver identity="http://java.sun.com/xml/ns/jdo/jdoquery_2_0.xsd"
+             type="SYSTEM" url="/org/datanucleus/jdo/jdoquery_2_0.xsd"/>
+
+       <entityresolver identity="http://java.sun.com/xml/ns/jdo/orm_2_2.xsd"
+             type="SYSTEM" url="/org/datanucleus/jdo/jdo_orm_2_2.xsd"/>
+       <entityresolver identity="http://java.sun.com/xml/ns/jdo/orm_2_1.xsd"
+             type="SYSTEM" url="/org/datanucleus/jdo/jdo_orm_2_1.xsd"/>
+       <entityresolver identity="http://java.sun.com/xml/ns/jdo/orm_2_0.xsd"
+             type="SYSTEM" url="/org/datanucleus/jdo/jdo_orm_2_0.xsd"/>
+
+       <entityresolver identity="http://java.sun.com/xml/ns/jdo/jdo_2_3.xsd"
+             type="SYSTEM" url="/org/datanucleus/jdo/jdo_2_3.xsd"/>
+       <entityresolver identity="http://java.sun.com/xml/ns/jdo/jdo_2_2.xsd"
+             type="SYSTEM" url="/org/datanucleus/jdo/jdo_2_2.xsd"/>
+       <entityresolver identity="http://java.sun.com/xml/ns/jdo/jdo_2_1.xsd"
+             type="SYSTEM" url="/org/datanucleus/jdo/jdo_2_1.xsd"/>
+       <entityresolver identity="http://java.sun.com/xml/ns/jdo/jdo_2_0.xsd"
+             type="SYSTEM" url="/org/datanucleus/jdo/jdo_2_0.xsd"/>
+
+       <entityresolver identity="http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+             type="SYSTEM" url="/org/datanucleus/jpa/jpa_persistence_1_0.xsd"/>
+       <entityresolver identity="http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             type="SYSTEM" url="/org/datanucleus/jpa/jpa_persistence_2_0.xsd"/>
+
+       <entityresolver url="/org/datanucleus/jdo/jdoquery_2_2.xsd"/>
+       <entityresolver url="/org/datanucleus/jdo/jdo_orm_2_2.xsd"/>
+       <entityresolver url="/org/datanucleus/jdo/jdo_2_2.xsd"/>
+       <entityresolver url="/org/datanucleus/jpa/jpa_persistence_1_0.xsd"/>
+    </extension>
+</plugin>

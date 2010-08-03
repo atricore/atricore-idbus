@@ -1,0 +1,253 @@
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<wsdl:definitions
+        name="SSO Service"
+        targetNamespace="urn:org:atricore:idbus:common:sso:1.0:wsdl"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="urn:org:atricore:idbus:common:sso:1.0:wsdl"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:ssop="urn:org:atricore:idbus:common:sso:1.0:protocol"
+        xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <wsdl:types>
+        <xsd:schema>
+            <xsd:import namespace="urn:org:atricore:idbus:common:sso:1.0:protocol"
+                        schemaLocation="sso-schema-1.0.xsd"/>
+        </xsd:schema>
+
+    </wsdl:types>
+
+    <message name="SPInitiatedAuthnRequestMessage">
+        <part name="body" element="ssop:SPInitiatedAuthnRequest"/>
+    </message>
+
+    <message name="IDPInitiatedAuthnRequestMessage">
+        <part name="body" element="ssop:IDPInitiatedAuthnRequest"/>
+    </message>
+
+    <message name="IDPInitiatedLogoutRequestMessage">
+        <part name="body" element="ssop:IDPInitiatedLogoutRequest"/>
+    </message>
+
+    <message name="AssertIdentityWithSimpleAuthenticationRequestMessage">
+        <part name="body" element="ssop:AssertIdentityWithSimpleAuthenticationRequest"/>
+    </message>
+
+    <message name="SPAuthnResponseMessage">
+        <part name="body" element="ssop:SPAuthnResponse"/>
+    </message>
+
+    <message name="IDPAuthnResponseMessage">
+        <part name="body" element="ssop:IDPAuthnResponse"/>
+    </message>
+
+    <message name="SPInitiatedLogoutRequestMessage">
+        <part name="body" element="ssop:SPInitiatedLogoutRequest"/>
+    </message>
+
+    <message name="SPSessionHeartBeatRequestMessage">
+        <part name="body" element="ssop:SPSessionHeartBeatRequest"/>
+    </message>
+
+    <message name="SPSessionHeartBeatResponseMessage">
+        <part name="body" element="ssop:SPSessionHeartBeatResponse"/>
+    </message>
+
+    <message name="IDPSessionHeartBeatRequestMessage">
+        <part name="body" element="ssop:IDPSessionHeartBeatRequest"/>
+    </message>
+
+    <message name="IDPSessionHeartBeatResponseMessage">
+        <part name="body" element="ssop:IDPSessionHeartBeatResponse"/>
+    </message>
+
+
+    <message name="SPAuthnResponseMessage">
+        <part name="body" element="ssop:SPAuthnResponse"/>
+    </message>
+
+    <message name="SSOResponseMessage">
+        <part name="body" element="ssop:SSOResponse"/>
+    </message>
+    
+    
+    <portType name="SSORequestPortType">
+
+        <operation name="SPInitiatedAuthnRequest">
+            <input name="SPInitiatedAuthnRequestInput"
+                        message="tns:SPInitiatedAuthnRequestMessage"/>
+            <output name="SPAuthnResponseOutput"
+                         message="tns:SPAuthnResponseMessage"/>
+        </operation>
+        
+        <operation name="IDPInitiatedAuthnRequest">
+            <input name="IDPInitiatedAuthnRequestInput"
+                        message="tns:IDPInitiatedAuthnRequestMessage"/>
+            <output name="IDPAuthnResponseOutput"
+                         message="tns:IDPAuthnResponseMessage"/>
+        </operation>
+
+        <operation name="SPInitiatedLogoutRequest">
+            <input name="SPInitiatedLogoutRequestInput"
+                        message="tns:SPInitiatedLogoutRequestMessage"/>
+            <output name="SSOResponseOutput"
+                         message="tns:SSOResponseMessage"/>
+        </operation>
+
+        <operation name="IDPInitiatedLogoutRequest">
+            <input name="IDPInitiatedLogoutRequestInput"
+                        message="tns:IDPInitiatedLogoutRequestMessage"/>
+            <output name="IDPLogoutResponseOutput"
+                         message="tns:SSOResponseMessage"/>
+        </operation>
+
+        
+        <operation name="AssertIdentityWithSimpleAuthenticationRequest">
+            <input name="AssertIdentityWithSimpleAuthenticationRequestInput"
+                        message="tns:AssertIdentityWithSimpleAuthenticationRequestMessage"/>
+            <output name="SPAuthnResponseOutput"
+                         message="tns:SPAuthnResponseMessage"/>
+        </operation>
+
+        <operation name="SPSessionHeartBeatRequest">
+            <input name="SPSessionHeartBeatRequestInput"
+                        message="tns:SPSessionHeartBeatRequestMessage"/>
+            <output name="SPSessionHeartBeatResponseOutput"
+                         message="tns:SPSessionHeartBeatResponseMessage"/>
+        </operation>
+
+        <operation name="IDPSessionHeartBeatRequest">
+            <input name="IDPSessionHeartBeatRequestInput"
+                        message="tns:IDPSessionHeartBeatRequestMessage"/>
+            <output name="IDPSessionHeartBeatResponseOutput"
+                         message="tns:IDPSessionHeartBeatResponseMessage"/>
+        </operation>
+
+    </portType>
+    
+    <binding name="SSOSoapBinding" type="tns:SSORequestPortType">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <operation name="SPInitiatedAuthnRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="SPInitiatedAuthnRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="SPAuthnResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+        <operation name="IDPInitiatedAuthnRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="IDPInitiatedAuthnRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="IDPAuthnResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+        <operation name="IDPInitiatedLogoutRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="IDPInitiatedLogoutRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="IDPLogoutResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+
+        <operation name="SPInitiatedLogoutRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="SPInitiatedLogoutRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="SSOResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+        </operation>
+
+        <operation name="AssertIdentityWithSimpleAuthenticationRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="AssertIdentityWithSimpleAuthenticationRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="SPAuthnResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+
+        </operation>
+
+        <operation name="SPSessionHeartBeatRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="SPSessionHeartBeatRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="SPSessionHeartBeatResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+
+        </operation>
+
+        <operation name="IDPSessionHeartBeatRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <input name="IDPSessionHeartBeatRequestInput">
+                <soap:body use="literal"/>
+            </input>
+            <output name="IDPSessionHeartBeatResponseOutput">
+                <soap:body use="literal"/>
+            </output>
+
+        </operation>
+
+
+
+    </binding>
+
+
+    <wsdl:service name="SSOService">
+        <documentation>SSO Service</documentation>
+        <port name="soap"
+              binding="tns:SSOSoapBinding">
+            <soap:address location="http://localhost:8192/SSOService/"/>
+        </port>
+    </wsdl:service>
+    
+</wsdl:definitions>

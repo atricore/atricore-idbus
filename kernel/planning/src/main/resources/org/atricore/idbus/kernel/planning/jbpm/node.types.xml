@@ -1,0 +1,41 @@
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<node-types>
+  <node-type element="start-state" class="org.jbpm.graph.node.StartState" />
+  <node-type element="end-state" class="org.jbpm.graph.node.EndState" />
+  <node-type element="node" class="org.jbpm.graph.def.Node" />
+  <node-type element="state" class="org.jbpm.graph.node.State" />
+  <node-type element="task-node" class="org.jbpm.graph.node.TaskNode" />
+  <node-type element="fork" class="org.jbpm.graph.node.Fork" />
+  <node-type element="join" class="org.jbpm.graph.node.Join" />
+  <node-type element="decision" class="org.jbpm.graph.node.Decision" />
+  <node-type element="process-state" class="org.jbpm.graph.node.ProcessState" />
+  <node-type element="process-fragment-state" class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentState" />
+  <node-type element="super-state" class="org.jbpm.graph.def.SuperState" />
+  <node-type element="merge" class="org.jbpm.graph.node.Merge" />
+  <node-type element="milestone-node" class="org.jbpm.graph.node.MilestoneNode" />
+  <node-type element="interleave-start" class="org.jbpm.graph.node.InterleaveStart" />
+  <node-type element="interleave-end" class="org.jbpm.graph.node.InterleaveEnd" />
+  <node-type element="mail-node" class="org.jbpm.graph.node.MailNode" />
+  <node-type element="page" class="org.jboss.seam.pageflow.Page" />
+  <node-type element="start-page" class="org.jboss.seam.pageflow.Page" />
+</node-types>

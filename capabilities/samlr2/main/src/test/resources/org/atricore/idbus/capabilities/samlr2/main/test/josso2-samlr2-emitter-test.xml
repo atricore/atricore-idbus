@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<s:beans xmlns="urn:org:atricore:idbus:core"
+         xmlns:samlr2="urn:org:atricore:idbus:samlr2"
+         xmlns:samlr2-support="urn:org:atricore:idbus:samlr2:support"
+         xmlns:im="urn:org:atricore:idbus:default:identity-mediator"
+         xmlns:amq="http://activemq.apache.org/schema/core"
+         xmlns:def-auth="urn:org:atricore:idbus:default:authenticator"
+         xmlns:basic-authscheme="urn:org:atricore:idbus:basic:authscheme"
+         xmlns:memory-istore="urn:org:atricore:idbus:memory:identitystore"
+         xmlns:def-identitymgr="urn:org:atricore:idbus:default:identitymgr"
+         xmlns:def-sessionmgr="urn:org:atricore:idbus:default:sessionmgr"
+         xmlns:def-sidgen="urn:org:atricore:idbus:default:sessionidgen"
+         xmlns:basic-authn="urn:org:atricore:idbus:authentication:basic-authn"
+         xmlns:memory-sstore="urn:org:atricore:idbus:memory:sessionstore"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+        >
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- STS Service Definition                                             -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+    <security-token-service id="sts">
+
+        <emitters>
+            <s:ref bean="samlr2-assertion-emitter"/>
+        </emitters>
+
+        <authenticators>
+            <s:ref bean="default-securitytoken-authenticator" />
+        </authenticators>
+
+    </security-token-service>
+
+    <!-- Default Security Token authenticator -->
+    <security-token-authenticator id="default-securitytoken-authenticator">
+        <authenticator>
+            <s:ref bean="josso-authenticator"/>
+        </authenticator>
+    </security-token-authenticator>
+
+    <!-- SAMLR2 Security Token emitter (Assertions) -->
+    <samlr2:token-emitter id="samlr2-assertion-emitter">
+        <samlr2:identity-plan>
+            <s:ref bean="samlr2-authn-assertion-from-token-plan"/>
+        </samlr2:identity-plan>
+    </samlr2:token-emitter>
+
+    <samlr2:sectoken-to-authassertion-plan id="samlr2-authn-assertion-from-token-plan">
+        <samlr2:identity-manager>
+            <s:ref bean="josso-identity-manager"/>
+        </samlr2:identity-manager>
+    </samlr2:sectoken-to-authassertion-plan>
+
+    <samlr2-support:samlr2-encrypter id="samlr2-assertion-encrypter"
+            symmetricKeyAlgorithmURI="http://www.w3.org/2001/04/xmlenc#aes128-cbc"
+            kekAlgorithmURI="http://www.w3.org/2001/04/xmlenc#rsa-1_5">
+        <samlr2-support:key-resolver>
+            <s:ref bean="ks-crypto-resolver"/>
+        </samlr2-support:key-resolver>
+    </samlr2-support:samlr2-encrypter>
+
+    <samlr2-support:keystore-keyresolver id="ks-crypto-resolver"
+                          keystoreType="JKS"
+                          keystoreFile="keystore.jks"
+                          keystorePass="xmlsecurity"
+                          privateKeyAlias="rsa-keys"
+                          privateKeyPass="rsa-keys-pwd"
+                          certificateAlias="rsa-keys"/>
+
+    <!-- SAMLR2 Identity artifact Signer (requests, responses, assertions, etc) -->
+    <samlr2-support:samlr2-signer>
+        <samlr2-support:key-resolver>
+            <s:ref bean="ks-sign-resolver"/>
+        </samlr2-support:key-resolver>
+    </samlr2-support:samlr2-signer>
+
+    <samlr2-support:keystore-keyresolver id="ks-sign-resolver"
+                          keystoreType="JKS"
+                          keystoreFile="keystore.jks"
+                          keystorePass="xmlsecurity"
+                          privateKeyAlias="test"
+                          privateKeyPass="xmlsecurity"
+                          certificateAlias="test"/>
+
+
+    <def-auth:authenticator id="josso-authenticator">
+        <def-auth:schemes>
+            <s:ref bean="josso-basic-authentication"/>
+        </def-auth:schemes>
+    </def-auth:authenticator>
+
+    <!-- ================================================================== -->
+    <!-- Basic Authentication Scheme                                        -->
+    <!-- ================================================================== -->
+    <basic-authscheme:basic-auth-scheme
+            id="josso-basic-authentication"
+            hashAlgorithm="MD5"
+            hashEncoding="HEX"
+            ignorePasswordCase="false"
+            ignoreUserCase="false">
+
+        <credentialStore>
+            <s:ref bean="josso-identity-store"/>
+        </credentialStore>
+
+        <credentialStoreKeyAdapter>
+            <s:ref bean="josso-simple-key-adapter"/>
+        </credentialStoreKeyAdapter>
+
+    </basic-authscheme:basic-auth-scheme>
+
+    <!-- ================================================================== -->
+    <!-- SSO Identity Manager Service                                       -->
+    <!-- ================================================================== -->
+    <def-identitymgr:identity-manager id="josso-identity-manager">
+
+        <def-identitymgr:identityStore>
+            <s:ref bean="josso-identity-store"/>
+        </def-identitymgr:identityStore>
+
+        <def-identitymgr:identityStoreKeyAdapter>
+            <s:ref bean="josso-simple-key-adapter"/>
+        </def-identitymgr:identityStoreKeyAdapter>
+
+    </def-identitymgr:identity-manager>
+
+    <!-- ================================================================== -->
+    <!-- SSO Memory Identity Store                                          -->
+    <!-- ================================================================== -->
+    <memory-istore:memory-store id="josso-identity-store"
+                                credentialsFileName="josso-credentials.xml"
+                                usersFileName="josso-users.xml" s:scope="singleton"/>
+
+    <simple-key-adapter id="josso-simple-key-adapter"/>
+
+    <!-- ================================================================== -->
+    <!-- SSO Session Manager Service                                        -->
+    <!-- ================================================================== -->
+    <def-sessionmgr:session-manager id="sso-session-manager"
+                                    maxInactiveInterval="30"
+                                    maxSessionsPerUser="-1"
+                                    invalidateExceedingSessions="false"
+                                    sessionMonitorInterval="10000">
+
+        <def-sessionmgr:session-id-generator>
+            <def-sidgen:id-generator algorithm="MD5"/>
+        </def-sessionmgr:session-id-generator>
+
+        <def-sessionmgr:session-store>
+            <s:ref bean="sso-session-store"/>
+        </def-sessionmgr:session-store>
+
+    </def-sessionmgr:session-manager>
+
+    <!-- ================================================================== -->
+    <!-- SSO Session Store                                                  -->
+    <!-- ================================================================== -->
+    <memory-sstore:memory-store id="sso-session-store"/>
+
+</s:beans>

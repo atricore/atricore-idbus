@@ -1,0 +1,325 @@
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<wsdl:definitions
+        name="SAML V2 Service"
+        targetNamespace="urn:oasis:names:tc:SAML:2.0:wsdl"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="urn:oasis:names:tc:SAML:2.0:wsdl"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+        xmlns:samli="urn:oasis:names:tc:SAML:2.0:idbus"
+        xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <wsdl:types>
+        <xsd:schema>
+            <xsd:import namespace="urn:oasis:names:tc:SAML:2.0:idbus"
+                        schemaLocation="saml-schema-idbus-2.0.xsd"/>
+        </xsd:schema>
+
+        <xsd:schema>
+            <xsd:import namespace="urn:oasis:names:tc:SAML:2.0:metadata"
+                        schemaLocation="saml-schema-metadata-2.0.xsd"/>
+        </xsd:schema>
+    </wsdl:types>
+
+    <!-- protocol message definitions -->
+    <wsdl:message name="SAMLAssertionIDRequestMessage">
+        <wsdl:part name="body" element="samlp:AssertionIDRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLSubjectQueryMessage">
+        <wsdl:part name="body" element="samlp:SubjectQuery"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLAuthnQueryMessage">
+        <wsdl:part name="body" element="samlp:AuthnQuery"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLAttributeQueryMessage">
+        <wsdl:part name="body" element="samlp:AttributeQuery"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLAuthzDecisionQueryMessage">
+        <wsdl:part name="body" element="samlp:AuthzDecisionQuery"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLAuthnRequestMessage">
+        <wsdl:part name="body" element="samlp:AuthnRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLResponseMessage">
+        <wsdl:part name="body" element="samlp:Response"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLArtifactResolveMessage">
+        <wsdl:part name="body" element="samlp:ArtifactResolve"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLArtifactResponseMessage">
+        <wsdl:part name="body" element="samlp:ArtifactResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLManageNameIDRequestMessage">
+        <wsdl:part name="body" element="samlp:ManageNameIDRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLManageNameIDResponseMessage">
+        <wsdl:part name="body" element="samlp:ManageNameIDResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLLogoutRequestMessage">
+        <wsdl:part name="body" element="samlp:LogoutRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLLogoutResponseMessage">
+        <wsdl:part name="body" element="samlp:LogoutResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLNameIDMappingRequestMessage">
+        <wsdl:part name="body" element="samlp:NameIDMappingRequest"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLNameIDMappingResponseMessage">
+        <wsdl:part name="body" element="samlp:NameIDMappingResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="SAMLSecTokenAuthnRequestMessage">
+        <wsdl:part name="body" element="samli:SecTokenAuthnRequest"/>
+    </wsdl:message>
+
+    <wsdl:portType name="SAMLRequestPortType">
+
+        <wsdl:operation name="SAMLAssertionIDRequest">
+            <wsdl:input name="SAMLAssertionIDRequestInput"
+                        message="tns:SAMLAssertionIDRequestMessage"/>
+            <wsdl:output name="SAMLResponseOutput"
+                         message="tns:SAMLResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLAuthnQueryRequest">
+            <wsdl:input name="SAMLAuthnQueryInput"
+                        message="tns:SAMLAuthnQueryMessage"/>
+            <wsdl:output name="SAMLResponseOutput"
+                         message="tns:SAMLResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLAttributeQueryRequest">
+            <wsdl:input name="SAMLAttributeQueryInput"
+                        message="tns:SAMLAttributeQueryMessage"/>
+            <wsdl:output name="SAMLResponseOutput"
+                         message="tns:SAMLResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLAuthzDecisionQueryRequest">
+            <wsdl:input name="SAMLAuthzDecisionQueryInput"
+                        message="tns:SAMLAuthzDecisionQueryMessage"/>
+            <wsdl:output name="SAMLResponseOutput"
+                         message="tns:SAMLResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLAuthnRequest">
+            <wsdl:input name="SAMLAuthnRequestInput"
+                        message="tns:SAMLAuthnRequestMessage"/>
+            <wsdl:output name="SAMLResponseOutput"
+                         message="tns:SAMLResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLArtifactResolveRequest">
+            <wsdl:input name="SAMLArtifactResolveInput"
+                        message="tns:SAMLArtifactResolveMessage"/>
+            <wsdl:output name="SAMLArtifactResponseOutput"
+                         message="tns:SAMLArtifactResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLManageNameIDRequest">
+            <wsdl:input name="SAMLManageNameIDRequestInput"
+                        message="tns:SAMLManageNameIDRequestMessage"/>
+            <wsdl:output name="SAMLManageNameIDResponseOutput"
+                         message="tns:SAMLManageNameIDResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLLogoutRequest">
+            <wsdl:input name="SAMLLogoutRequestInput"
+                        message="tns:SAMLLogoutRequestMessage"/>
+            <wsdl:output name="SAMLLogoutResponseOutput"
+                         message="tns:SAMLLogoutResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLNameIDMappingRequest">
+            <wsdl:input name="SAMLNameIDMappingRequestInput"
+                        message="tns:SAMLNameIDMappingRequestMessage"/>
+            <wsdl:output name="SAMLNameIDMappingRequestOutput"
+                         message="tns:SAMLNameIDMappingResponseMessage"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLSecTokenAuthnRequest">
+            <wsdl:input name="SAMLSecTokenAuthnRequestInput"
+                        message="tns:SAMLSecTokenAuthnRequestMessage"/>
+            <wsdl:output name="SAMLResponseOutput"
+                         message="tns:SAMLResponseMessage"/>
+        </wsdl:operation>
+
+    </wsdl:portType>
+
+    <wsdl:binding name="SAMLSoapBinding" type="tns:SAMLRequestPortType">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <wsdl:operation name="SAMLAssertionIDRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <wsdl:input name="SAMLAssertionIDRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SAMLResponseOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLAuthnQueryRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <wsdl:input name="SAMLAuthnQueryInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SAMLResponseOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLAttributeQueryRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <wsdl:input name="SAMLAttributeQueryInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output name="SAMLResponseOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLAuthzDecisionQueryRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <wsdl:input name="SAMLAuthzDecisionQueryInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SAMLResponseOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLAuthnRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <wsdl:input name="SAMLAuthnRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SAMLResponseOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLArtifactResolveRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <wsdl:input name="SAMLArtifactResolveInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output name="SAMLArtifactResponseOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLManageNameIDRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <wsdl:input name="SAMLManageNameIDRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SAMLManageNameIDResponseOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLLogoutRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <wsdl:input name="SAMLLogoutRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+
+            <wsdl:output name="SAMLLogoutResponseOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="SAMLNameIDMappingRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <wsdl:input name="SAMLNameIDMappingRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SAMLNameIDMappingRequestOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+
+        <wsdl:operation name="SAMLSecTokenAuthnRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <wsdl:input name="SAMLSecTokenAuthnRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="SAMLResponseOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+    </wsdl:binding>
+
+    <wsdl:service name="SAMLService">
+        <documentation>SAML V2 Service</documentation>
+        <port name="soap"
+              binding="tns:SAMLSoapBinding">
+            <soap:address location="http://localhost:8192/SAMLService/"/>
+        </port>
+    </wsdl:service>
+
+</wsdl:definitions>

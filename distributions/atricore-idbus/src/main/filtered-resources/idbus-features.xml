@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<features  name="atricore-idbus-${version}">
+
+    <feature name="atricore" version="${version}">
+        <feature version="${version}">atricore-support</feature>
+        <feature version="${version}">atricore-branding</feature>
+        <feature version="${felix.karaf.version}">webconsole</feature>
+        <feature version="${version}">atricore-idbus</feature>
+        <feature version="${version}">atricore-idojos</feature>
+        <feature version="${version}">atricore-sts</feature>
+        <feature version="${version}">atricore-saml2</feature>
+        <feature version="${version}">atricore-josso</feature>
+        <feature version="${version}">atricore-idbus-ui</feature>
+    </feature>
+
+    <feature name="atricore-ha" version="${version}">
+        <feature version="${version}">atricore-ha-main</feature>
+        <feature version="${version}">atricore-ha-web</feature>
+        <feature version="${version}">atricore</feature>
+    </feature>
+
+    <feature name="atricore-ha-main" version="${version}">
+        <bundle>mvn:org.atricore.idbus.kernel.ha/org.atricore.idbus.kernel.ha.main/${idbus.kernel.version}</bundle>
+    </feature>
+
+    <feature name="atricore-ha-web" version="${version}">
+        <bundle>mvn:org.atricore.idbus.kernel.ha/org.atricore.idbus.kernel.ha.web/${idbus.kernel.version}</bundle>
+    </feature>
+
+    <feature name="atricore-branding" version="${version}">
+        <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.webconsole.branding/${idbus.kernel.version}</bundle>
+    </feature>
+
+    <feature name="atricore-support" version="${version}">
+        <feature version="${version}">common</feature>
+        <feature version="${version}">web</feature>
+        <feature version="${cxf.version}">cxf</feature>
+        <feature version="${version}">persistence</feature>
+        <feature version="${activemq.version}">activemq</feature>
+        <feature version="${camel.version}">camel</feature>
+        <feature version="${ehcache.version}">ehcache</feature>
+        <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.support/${idbus.kernel.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.samlr2/${idbus.kernel.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.samlr11/${idbus.kernel.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.sso/${idbus.kernel.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.wst/${idbus.kernel.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.html/${idbus.kernel.version}</bundle>
+    </feature>
+
+    <feature name="atricore-idbus" version="${version}">
+        <bundle>mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.main/${idbus.kernel.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.planning/${idbus.kernel.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.web/${idbus.kernel.version}/war</bundle>
+    </feature>
+
+    <feature name="atricore-idojos" version="${version}">
+        <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.dbidentitystore/${idbus.idojo.dbidentitystore.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.ldapidentitystore/${idbus.idojo.ldapidentitystore.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.memoryidentitystore/${idbus.idojo.memoryidentitystore.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.memorysessionstore/${idbus.idojo.memorysessionstore.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.ehcachesessionstore/${idbus.idojo.ehcachesessionstore.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.serializedsessionstore/${idbus.idojo.serializedsessionstore.version}</bundle>
+        <!--bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.strongauthscheme/${idbus.idojo.strongauthscheme.version}</bundle-->
+    </feature>
+
+    <feature name="atricore-sts" version="${version}">
+        <bundle>mvn:org.atricore.idbus.capabilities.sts/org.atricore.idbus.capabilities.sts.main/${idbus.cap.sts.version}</bundle>
+    </feature>
+
+
+    <feature name="atricore-josso" version="${version}">
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.josso-ws-v1_2/${idbus.bundle.josso-ws-v1_2.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.josso/org.atricore.idbus.capabilities.josso.main/${idbus.cap.josso.version}</bundle>
+    </feature>
+
+    <feature name="atricore-saml2" version="${version}">
+        <bundle>mvn:org.atricore.idbus.capabilities.samlr2/org.atricore.idbus.capabilities.samlr2.main/${idbus.cap.saml2.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.samlr2/org.atricore.idbus.capabilities.samlr2.support/${idbus.cap.saml2.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.samlr2/org.atricore.idbus.capabilities.samlr2.management/${idbus.cap.saml2.version}</bundle>
+    </feature>
+
+    <feature name="atricore-idbus-ui" version="${version}">
+        <bundle>mvn:org.atricore.idbus.applications.server/org.atricore.idbus.applications.server.ui/${idbus.app.server.version}/war</bundle>
+    </feature>
+
+
+    <feature name="atricore-idbus-server-web" version="${version}">
+        <bundle>mvn:org.atricore.idbus.applications.server/org.atricore.idbus.applications.server.web/${idbus.app.server.version}/war</bundle>
+    </feature>
+
+    <feature name="atricore-console" version="${atricore.console.version}">
+        <feature version="${version}">atricore-management</feature>
+        <bundle>mvn:com.atricore.idbus.console.lifecycle/com.atricore.idbus.console.lifecycle.main/${atricore.console.version}</bundle>
+        <bundle>mvn:com.atricore.idbus.console.lifecycle/com.atricore.idbus.console.lifecycle.command/${atricore.console.version}</bundle>
+        <bundle>mvn:com.atricore.idbus.console/com.atricore.idbus.console.web/${atricore.console.version}/war</bundle>
+    </feature>
+
+    <feature name="atricore-examples" version="${version}">
+        <bundle>mvn:org.atricore.idbus.examples/org.atricore.idbus.examples.simplefederation.idau/${idbus.examples.version}</bundle>
+    </feature>
+
+    <feature name="atricore-management" version="${version}">
+        <feature version="${felix.karaf.version}">management</feature>
+        <bundle>mvn:org.apache.velocity/com.springsource.org.apache.velocity/${velocity.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-vfs/${commons-vfs.version}</bundle>
+        <feature version="${idbus.bundle.apache-maven-v3_0.version}">maven-v3</feature>
+    </feature>
+
+    <feature name="atricore-extensions" version="${idbus.extensions.version}">
+        <bundle>mvn:com.atricore.idbus.capabilities.management/com.atricore.idbus.applications.shell.wrapper/${idbus.extensions.version}</bundle>
+        <bundle>mvn:com.atricore.idbus.capabilities.management/com.atricore.idbus.applications.shell.mvn/${idbus.extensions.version}</bundle>
+    </feature>
+
+    <feature name="ehcache" version="${ehcache.version}">
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ehcache-v2_1_0/${idbus.bundle.ehcache-v2_1_0.version}</bundle>
+    </feature>
+
+    <feature name="maven-v3" version="${idbus.bundle.apache-maven-v3_0.version}">
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apache-maven-v3_0/${idbus.bundle.apache-maven-v3_0.version}</bundle>
+    </feature>
+
+    <feature name="camel" version="${camel.version}">
+        <feature version="${version}">common</feature>
+        <feature version="${camel.version}">camel-core</feature>
+        <feature version="${camel.version}">camel-spring</feature>
+        <feature version="${camel.version}">camel-osgi</feature>
+        <feature version="${camel.version}">camel-cxf</feature>
+        <feature version="${camel.version}">camel-http</feature>
+        <feature version="${camel.version}">camel-jetty</feature>
+    </feature>
+
+    <feature name="camel-core" version="${camel.version}">
+        <feature version="${version}">common</feature>
+        <bundle>mvn:org.apache.camel/camel-core/${camel.version}</bundle>
+    </feature>
+
+    <feature name="camel-spring" version="${camel.version}">
+        <feature version="${version}">persistence</feature>
+        <bundle>mvn:org.apache.camel/camel-spring/${camel.version}</bundle>
+    </feature>
+
+    <feature name="camel-osgi" version="${camel.version}">
+        <bundle>mvn:org.apache.camel/camel-osgi/${camel.version}</bundle>
+    </feature>
+
+    <feature name="camel-cxf" version="${camel.version}">
+        <feature version="${cxf.version}">cxf</feature>
+        <bundle>mvn:org.apache.camel/camel-cxf/${camel.version}</bundle>
+    </feature>
+
+    <feature name="camel-http" version="${camel.version}">
+        <feature version="${version}">web</feature>
+        <bundle>mvn:org.apache.camel/camel-http/${camel.version}</bundle>
+    </feature>
+
+    <feature name="camel-jetty" version="${camel.version}">
+        <feature version="${version}">web</feature>
+        <bundle>mvn:org.apache.camel/camel-jetty/${camel.version}</bundle>
+    </feature>
+
+    <feature name="web-core" version="${version}">
+        <feature version="${felix.karaf.version}">war</feature>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-el_1.0_spec/1.0.1</bundle>
+        <bundle>mvn:javax.portlet/com.springsource.javax.portlet/1.0.0</bundle>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.javax-jstl-v1_2/${idbus.bundle.javax-jstl-v1_2.version}</bundle>
+    </feature>
+
+    <feature name="web" version="${version}">
+        <feature version="${version}">web-core</feature>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apache-tiles-jsp-v2_0_6/${idbus.bundle.apache-tiles-jsp-v2_0_6.version}</bundle>
+        <bundle>mvn:org.springframework/spring-web/2.5.6.SEC01</bundle>
+        <bundle>mvn:org.springframework/spring-webmvc/2.5.6.SEC01</bundle>
+        <bundle>mvn:org.springframework.osgi/spring-osgi-web/1.2.0</bundle>
+    </feature>
+
+     <feature name="activemq" version="${activemq.version}">
+        <feature version="${version}">connector</feature>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-j2ee-management_1.1_spec/${geronimo.j2ee.management.version}</bundle>
+        <bundle>mvn:commons-pool/commons-pool/${commons-pool.version}</bundle>
+        <bundle>mvn:org.apache.xbean/xbean-spring/${xbean.version}</bundle>
+        <bundle>mvn:org.apache.activemq/kahadb/${activemq.version}</bundle>
+        <bundle>mvn:org.apache.activemq/activemq-core/${activemq.version}</bundle>
+        <bundle>mvn:org.apache.activemq/activemq-ra/${activemq.version}</bundle>
+        <bundle>mvn:org.apache.activemq/activemq-console/${activemq.version}</bundle>
+        <bundle>mvn:org.apache.activemq/activemq-pool/${activemq.version}</bundle>
+    </feature>
+
+    <feature name="cxf" version="${cxf.version}">
+        <bundle>mvn:org.apache.cxf/cxf-bundle/${cxf.version}</bundle>
+    </feature>
+
+    <feature name="cxf-osgi" version="${cxf.version}">
+        <feature version="${cxf.version}">cxf</feature>
+        <feature version="${version}">web-core</feature>
+        <bundle>mvn:org.ops4j.pax.web-extender/pax-web-ex-whiteboard/${pax.web.extender.version}</bundle>
+    </feature>
+
+    <feature name="cxf-jaxrs" version="${cxf.version}">
+        <feature version="${cxf.version}">cxf-osgi</feature>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.abdera/${abdera.version}</bundle>
+        <bundle>mvn:org.codehaus.jettison/jettison/${jettison.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlbeans/${xmlbeans.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jsr311-api-${jaxrs.api.version}/${servicemix.specs.version}</bundle>
+    </feature>
+
+    <feature name="persistence" version="${version}">
+        <feature version="${version}">connector</feature>
+        <bundle>mvn:commons-dbcp/commons-dbcp/${commons-dbcp.version}</bundle>
+        <bundle>mvn:org.hsqldb/com.springsource.org.hsqldb/1.8.0.9</bundle>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1/${idbus.bundle.apache-derby-network-v10_5_3_0_1.version}</bundle>
+    </feature>
+
+    <feature name="connector" version="${version}">
+        <feature version="${version}">transaction</feature>
+        <bundle>mvn:org.apache.geronimo.components/geronimo-transaction/2.2-r634076</bundle>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-j2ee-connector_1.5_spec/${geronimo.j2ee.connector.version}</bundle>
+        <bundle>mvn:org.apache.geronimo.components/geronimo-connector/${geronimo.connector.version}</bundle>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimo.jms.version}</bundle>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-servlet_2.5_spec/${geronimo.servlet.version}</bundle>  <!-- looks like Jencks 2.2 needs this -->
+        <bundle>mvn:org.springframework/spring-tx/${spring.version}</bundle>                                  <!-- looks like Jencks 2.2 needs this -->
+        <bundle>mvn:org.jencks/jencks/${jencks.version}</bundle>
+    </feature>
+
+    <feature name="transaction" version="${version}">
+        <bundle>mvn:org.springframework/spring-tx/2.5.6.SEC01</bundle>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.javax-jdo2-v2_3-ec/${idbus.bundle.javax-jdo2-v2_3_ec.version}</bundle>
+        <bundle>mvn:javax.persistence/com.springsource.javax.persistence/1.0.0</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.howl/1.0.1-1_1</bundle>
+        <bundle>mvn:org.springframework/spring-tx/2.5.6.SEC01</bundle>
+        <bundle>mvn:org.springframework/spring-jdbc/2.5.6.SEC01</bundle>
+        <bundle>mvn:org.springframework/spring-orm/2.5.6.SEC01</bundle>
+    </feature>
+
+    <feature name="common" version="${version}">
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-io/${commons-io.version}</bundle>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/${geronimo.annotation.version}</bundle>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-ws-metadata_2.0_spec/${geronimo.wsmetadata.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.saaj-api-1.3/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxb-api-${jaxb.api.version}/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jaxws-api-${jaxws.api.version}/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax.mail/${javax.mail.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.asm/${asm.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.fastinfoset/${fastinfoset.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jaxb-impl/${jaxb.impl.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.neethi/${neethi.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.saaj-impl/${saaj.impl.version}</bundle>
+        <bundle>mvn:org.codehaus.woodstox/stax2-api/${woodstox.stax2api.version}</bundle>
+        <bundle>mvn:org.codehaus.woodstox/woodstox-core-asl/${woodstox.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.wsdl4j/${wsdl4j.version}</bundle>
+        <bundle>mvn:org.apache.ws.commons.schema/XmlSchema/${xmlschema.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlresolver/${xmlresolver.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/${xerces.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.bcel/${bcel.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/${xalan.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jsr311-api-${jaxrs.api.version}/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlsec/${xmlsec.version}</bundle>
+        <bundle>mvn:org.apache.ws.security/wss4j/${wss4j.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlbeans/${xmlbeans.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-codec/${commons-codec.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-httpclient/${commons-httpclient.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-lang/${commons-lang.version}</bundle>
+        <bundle>mvn:commons-digester/commons-digester/${commons-digester.version}</bundle>
+        <!--<bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-beanutils/${commons-beanutils.version}</bundle>-->
+        <bundle>mvn:org.apache.commons/com.springsource.org.apache.commons.beanutils/${commons-beanutils.version}</bundle>
+        <bundle>mvn:commons-collections/commons-collections/${commons-collections.version}</bundle>
+        <bundle>mvn:org.jdom/com.springsource.org.jdom/${jdom.version}</bundle>
+        <bundle>mvn:org.apache.commons/com.springsource.org.apache.commons.jxpath/${commons-jxpath.version}</bundle>
+        <bundle>mvn:org.apache.commons/com.springsource.org.apache.commons.fileupload/${commons-fileupload.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.wadi-v2_1_2/${idbus.bundle.wadi-v2_1_2.version}</bundle>
+    </feature>
+
+    <feature name="mysql-connector-java" version="5.1.10">
+        <bundle>mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.fragment.mysql-connector-java_v5_1_10/${idbus.fragment.mysql-connector-java_v5_1_10.version}</bundle>
+    </feature>
+
+</features>

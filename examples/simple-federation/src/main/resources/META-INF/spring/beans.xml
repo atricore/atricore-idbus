@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<s:beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:osgi="http://www.springframework.org/schema/osgi"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
+        >
+
+    <bean name="idau1-mediation-unit" class="org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit"
+          depends-on="idau1-cot,idau1-samlr2-cot-mgr,bpms-manager,cxf">
+
+        <property name="name" value="idau1-mediation-unit1"/>
+        <property name="container" ref="idau1-container"/>
+
+        <property name="channels">
+            <list>
+                <!-- =================================== -->
+                <!-- IdP1 Channels                       -->
+                <!-- =================================== -->
+                <ref bean="idp1-to-sp-default-channel"/>
+                <ref bean="idp1-claim-channel"/>
+
+                <!-- =================================== -->
+                <!-- SP1 Channels                        -->
+                <!-- =================================== -->
+                <!-- SP1 to IdPs Channels -->
+                <ref bean="sp1-to-idp-default-channel"/>
+                <!-- SP1 to Binding channel -->
+                <ref bean="sp1-ssop-binding-channel"/>
+
+                <!-- =================================== -->
+                <!-- SP2 Channels                        -->
+                <!-- =================================== -->
+                <!-- SP2 to IdPs Channels -->
+                <ref bean="sp2-to-idp-default-channel"/>
+                <!-- SP2 to Binding channel -->
+                <ref bean="sp2-ssop-binding-channel"/>
+
+                <!-- =================================== -->
+                <!-- SP3 Channels                        -->
+                <!-- =================================== -->
+                <!-- SP3 to IdPs Channels -->
+                <ref bean="sp3-to-idp-default-channel"/>
+                <!-- SP2 to Binding channel -->
+                <ref bean="sp3-ssop-binding-channel"/>
+
+                <!-- =================================== -->
+                <!-- Agent 1 Binding channel             -->
+                <!-- =================================== -->
+                <ref bean="bp1-josso-binding-channel"/>
+
+                <!-- =================================== -->
+                <!-- Agent 2 Binding channel             -->
+                <!-- =================================== -->
+                <ref bean="bp2-josso-binding-channel"/>
+
+
+            </list>
+        </property>
+    </bean>
+
+    <bean name="idau1-container"
+          class="org.atricore.idbus.kernel.main.mediation.camel.OsgiCamelIdentityMediationUnitContainerImpl">
+        <property name="name" value="idau1-engine" />
+        <property name="cxfBus" ref="cxf"/>
+    </bean>
+    
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- Circle of Trust, maps to SAMLR2 Entities (SAML2Meta)               -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+
+    <bean name="idau1-cot"
+          class="org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl"
+          depends-on="idp1,sp1">
+
+        <property name="name" value="cot1"/>
+        <property name="providers">
+            <set>
+                <ref bean="idp1"/>
+
+                <ref bean="sp1"/>
+                <ref bean="sp2"/>
+                <ref bean="sp3"/>
+                
+                <ref bean="bp1-josso"/>
+                <ref bean="bp2-josso"/>
+            </set>
+        </property>
+    </bean>
+
+    <!-- We use a SAMLR2 Cricle of Trust manager implementation -->
+    <bean name="idau1-samlr2-cot-mgr" class="org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager">
+        <property name="cot" ref="idau1-cot"/>
+    </bean>
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- Identity Mediators Registry                                        -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+
+    <import resource="idp1/idp1-config.xml"/>
+    <import resource="sp1/sp1-config.xml"/>
+    <import resource="sp2/sp2-config.xml"/>
+    <import resource="sp3/sp3-config.xml"/>
+    <import resource="bp1/bp1-config.xml"/>
+    <import resource="bp2/bp2-config.xml"/>
+
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- SSO Base services defintion                                        -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+
+    <!-- TODO : Check this, it should be improved -->
+    <bean name="session-event-manager" factory-method="getInstance"
+          class="org.atricore.idbus.kernel.main.session.SSOSessionEventManager">
+        <property name="listeners">
+            <list>
+                <bean class="org.atricore.idbus.capabilities.samlr2.main.idp.IdPSessionEventListener">
+                    <property name="identityProvider" ref="idp1"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ================================================================== -->
+    <!-- IDAU1 State Manager Service                                        -->
+    <!-- ================================================================== -->
+    <bean name="idau1-state-manager"
+          class="org.atricore.idbus.kernel.main.mediation.state.EHCacheProviderStateManagerImpl">
+        <constructor-arg ref="idbus-config" />
+        <property name="cacheManager" ref="idau1-cache-manager"/>
+        <property name="cacheName" value="idau1-psm-cache"/>
+        <property name="forceNonDirtyStorage" value="false"/>
+
+    </bean>
+
+    <bean name="idau1-cache-manager"
+          factory-bean="cache-manager-factory"
+          factory-method="getCacheManager"
+          class="net.sf.ehcache.CacheManager"/>
+
+    <s:bean name="mBeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean" scope="singleton">
+        <s:property name="locateExistingServerIfPossible" value="true"/>
+    </s:bean>
+
+    <!-- ====================================================================== -->
+    <!-- Configuration beans                                                    -->
+    <!-- ====================================================================== -->
+
+    <bean name="idau1-bundle-config" class="org.atricore.idbus.kernel.main.util.ConfigurationContextImpl">
+        <constructor-arg ref="idau1-properties"/>
+    </bean>
+
+    <bean name="idau1-config" class="org.atricore.idbus.kernel.main.util.ComposedConfigurationContext">
+        <constructor-arg>
+            <list>
+                <ref bean="idau1-bundle-config"/>
+                <ref bean="idbus-config"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+</s:beans>

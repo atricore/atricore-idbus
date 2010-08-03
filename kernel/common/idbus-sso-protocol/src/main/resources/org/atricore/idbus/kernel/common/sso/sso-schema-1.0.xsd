@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ JOSSO: Java Open Single Sign-On
+  ~
+  ~ Copyright 2004-2009, Atricore, Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  ~
+  -->
+
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="urn:org:atricore:idbus:common:sso:1.0:protocol"
+        xmlns:ssop="urn:org:atricore:idbus:common:sso:1.0:protocol"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        elementFormDefault="qualified">
+
+    <complexType name="SSORequestAbstractType" abstract="true">
+
+        <sequence>
+            <element ref="ssop:RequestAttribute" minOccurs="0" maxOccurs="unbounded" />
+        </sequence>
+        <attribute name="ID" type="ID" use="required"/>
+        <attribute name="replyTo" type="string" use="optional"/>
+        <attribute name="issuer" type="string" use="optional"/>
+
+        <!--
+        <attribute name="Version" type="string" use="required"/>
+        <attribute name="IssueInstant" type="dateTime" use="required"/>
+        <attribute name="Destination" type="anyURI" use="optional"/>
+        -->
+    </complexType>
+
+    <element name="SPInitiatedAuthnRequest" type="ssop:SPInitiatedAuthnRequestType"/>
+    <complexType name="SPInitiatedAuthnRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <attribute name="Passive" type="boolean" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="IDPInitiatedAuthnRequest" type="ssop:IDPInitiatedAuthnRequestType"/>
+    <complexType name="IDPInitiatedAuthnRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <attribute name="Passive" type="boolean" use="required"/>
+                <attribute name="PreferredResponseFormat" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="SPInitiatedLogoutRequest" type="ssop:SPInitiatedLogoutRequestType"/>
+    <complexType name="SPInitiatedLogoutRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <attribute name="ssoSessionId" type="string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="IDPInitiatedLogoutRequest" type="ssop:IDPInitiatedLogoutRequestType"/>
+    <complexType name="IDPInitiatedLogoutRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <attribute name="ssoSessionId" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="AssertIdentityWithSimpleAuthenticationRequest" type="ssop:AssertIdentityWithSimpleAuthenticationRequestType"/>
+    <complexType name="AssertIdentityWithSimpleAuthenticationRequestType">
+        <complexContent>
+            <extension base="ssop:SPInitiatedAuthnRequestType">
+                <attribute name="username" type="string" use="required"/>
+                <attribute name="password" type="token" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="SPSessionHeartBeatRequest" type="ssop:SPSessionHeartBeatRequestType"/>
+    <complexType name="SPSessionHeartBeatRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <attribute name="ssoSessionId" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="SPSessionHeartBeatResponse" type="ssop:SPSessionHeartBeatResponseType"/>
+    <complexType name="SPSessionHeartBeatResponseType">
+        <complexContent>
+            <extension base="ssop:SSOResponseType">
+                <attribute name="ssoSessionId" type="string" use="required"/>
+                <attribute name="valid" type="boolean" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+
+    <element name="IDPSessionHeartBeatRequest" type="ssop:IDPSessionHeartBeatRequestType"/>
+    <complexType name="IDPSessionHeartBeatRequestType">
+        <complexContent>
+            <extension base="ssop:SSORequestAbstractType">
+                <attribute name="ssoSessionId" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="IDPSessionHeartBeatResponse" type="ssop:IDPSessionHeartBeatResponseType"/>
+    <complexType name="IDPSessionHeartBeatResponseType">
+        <complexContent>
+            <extension base="ssop:SSOResponseType">
+                <attribute name="ssoSessionId" type="string" use="required"/>
+                <attribute name="valid" type="boolean" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+
+    <element name="SSOResponse" type="ssop:SSOResponseType"/>
+    <complexType name="SSOResponseType" >
+        <attribute name="ID" type="ID" use="required"/>
+        <attribute name="InReplayTo" type="ID" use="required"/>
+        <!--
+        <attribute name="Version" type="string" use="required"/>
+        <attribute name="IssueInstant" type="dateTime" use="required"/>
+        <attribute name="Destination" type="anyURI" use="optional"/>
+        -->
+        <attribute name="PrimaryErrorCode" type="string" use="optional"/>
+        <attribute name="SecondaryErrorCode" type="string" use="optional"/>
+
+    </complexType>
+
+    <element name="SPAuthnResponse" type="ssop:SPAuthnResponseType"/>
+    <complexType name="SPAuthnResponseType">
+        <complexContent>
+            <extension base="ssop:SSOResponseType">
+
+                <sequence>
+                    <element name="Subject" type="ssop:SubjectType"/>
+                </sequence>
+                <attribute name="SessionIndex" type="string" use="required"/>
+                <attribute name="Failed" type="boolean" use="required"/>
+
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="IDPAuthnResponse" type="ssop:IDPAuthnResponseType"/>
+    <complexType name="IDPAuthnResponseType">
+        <complexContent>
+            <extension base="ssop:SSOResponseType">
+
+                <sequence>
+                    <element name="Subject" type="ssop:SubjectType"/>
+                </sequence>
+                <attribute name="SessionIndex" type="string" use="required"/>
+                <attribute name="Failed" type="boolean" use="required"/>
+
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="Subject" type="ssop:SubjectType"/>
+    <complexType name="SubjectType">
+        <sequence>
+            <element ref="ssop:AbstractPrincipal" minOccurs="0" maxOccurs="unbounded" />
+            <!-- Credentials ? -->
+        </sequence>
+    </complexType>
+
+    <element name="AbstractPrincipal" type="ssop:AbstractPrincipalType"/>
+    <complexType name="AbstractPrincipalType" abstract="true">
+        <attribute name="id" type="long"/>
+    </complexType>
+    
+    <element name="SubjectNameID" type="ssop:SubjectNameIDType"/>
+    <complexType name="SubjectNameIDType">
+        <complexContent>
+            <extension base="ssop:AbstractPrincipalType">
+                <attribute name="name" type="string" use="required"/>
+                <attribute name="format" type="string" use="optional"/>
+                <attribute name="localNameQualifier" type="string" use="optional"/>
+                <attribute name="nameQualifier" type="string" use="optional"/>
+                <attribute name="localName" type="string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    
+    <element name="SubjectRole" type="ssop:SubjectRoleType"/>
+    <complexType name="SubjectRoleType">
+        <complexContent>
+            <extension base="ssop:AbstractPrincipalType">
+                <attribute name="name" type="string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    
+    <element name="SubjectAttribute" type="ssop:SubjectAttributeType"/>
+    <complexType name="SubjectAttributeType">
+        <complexContent>
+            <extension base="ssop:AbstractPrincipalType">
+                <attribute name="name" type="string" use="required"/>
+                <attribute name="value" type="string" use="optional"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="RequestAttribute" type="ssop:RequestAttributeType"/>
+    <complexType name="RequestAttributeType">
+        <attribute name="name" type="string" use="required"/>
+        <attribute name="value" type="string" use="optional"/>
+    </complexType>
+
+</schema>

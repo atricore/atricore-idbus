@@ -1,0 +1,125 @@
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<saml:EncryptedAssertion xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion">
+    <xenc:EncryptedData xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"
+                        Type="http://www.w3.org/2001/04/xmlenc#Element">
+        <xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
+        <xenc:CipherData>
+            <xenc:CipherValue>FjIKY4L97d1veXlyTtV7w5HA1ieg2X4LCMiZKkn/qNlLoaME0fbOdDvnm9vitjkMxIiM3cK7mDU6
+                vZ1W/ngcSPecL8i9e1y1uYWp78YvvkVcQ2JtbKljjoGKuk7SKPcM1ru2uAf9UA0UubNzZiT9+c+u
+                aidNyyB5K/T/HUQ4XhunaLhwwAQtOIfX5u1pvqiBR113T+0YYFwlZFCviTfbe7PJFcpJ4bQy39f6
+                sRhSQ0djNQvTOvo9V4GeOmLyTFBTiQgEddRxXrb1QZ7KII5X7FzYznOhjtC7f2Tugeh920XYlmql
+                clBtG7bX7z+rzVMIxtT/rQ9IX7GMLnqJMCEBWRwOu6ibjnIHJ/otloBKorydTyi+WQtpECLfHKX2
+                /wkpZE9hb1SKCRBI/jcAdMke063GhAK2o0heUx26z7DtddFy73dEJyYQE83t+o1n+vJSVIeik3MH
+                f5LZQvA3uvazKxPDTTFFxHkt30Y5CLQ4dXRSWlhDpHopOMepvRLmQcpbtV+vVg8Z+iu2LiShCoel
+                Nj+olLOQUuFdikqSZkDhavVoF43H25tSEFGXXV8vLqLfzCI3kQV1QRViqvhqe2nWHquyBKukczG/
+                OtAvd6j+BHwTEAEdOkzUr6wkUuovLLtH5XDGE+kY4jRI9yRw1pu9teAJTIRPQZx1PLWGYz1AzIlK
+                KYaG7Zoy7XB5KNtFbXOa3B03809orD4VqHCSQaUJhL8kIBn242PMSIH4arWUBnobyyCYhzm0fo2/
+                UYxdM49Y7BZwF7hWjSs0fy9cvTZF+FXjC3q2oGIKljL9DQTiX/M0eKSGBU6jQII17GZW7sVLWhxs
+                DIR61IpWSyhbX3BbbD4Rb/uxj+8tZnwORqPBx2sHRffz6jnK/naLAr/XJEpQejcq56nR+WF0jZAv
+                eiJfrQ0UmPy7EaFSI+ngZSAM0nm+0U2Vq4B/ZIK2b+83GUxqbosiAMasfm0FU/+rHiqAXx7fS1tD
+                ll8pUsjuSqghQ9fA/WdbkNd4mo3mV71tFVEx7RjbuYKjk6UIaaWm7bppiRWCYgfj+6HgvZqd1vL9
+                P93h1ukP+7F2SojNu3Qpm4BXbN6BSR6kk8CSPLelXXOhyE6/STO3Sj2naix5ETmZ5nu2iaij1YUY
+                adD43fblvaXC18QXnNKupOJkGYmWtGfD3Ka9Tj03fciltOj0G/24AZrL7+IZ4X8XWxWlrgdmiWPm
+                aFJTA7/Rdwff0w3DBkbO0JY8l8+VtWGpZdJPfFro7zEOskVr0isFGAP8+V2zF+SNB/vsmq4ICXeU
+                X2AyG1Q4SEEr96cG1/+Rs5V1lvaknFT7sGax5LFLRotluBlnFvRfkGeSrN31IZtCKRUcQKFP087d
+                0/ROGgbPhVp50e5hptGG/pYfnROPqzi7vtEFEGchZg/Fmx79nyw3aLrkJFFStPqgOnCb9A0SkQ2Q
+                s1uSHBpsuvlW9ik5cFomH7/AO8BqV7OF1iI5s5pb6dpIy5SON2rgRGtal+Udf5xHkQte1iYLDIX5
+                q+Uqtror5KpINnSHSSnkV3FMdkCs3CAL9rPg079WhFpEXSe0hsW54SDcVBo8SbsAqT6D6FbEX9MU
+                wcexMXpQrHKjQHxZFYRzKw/2Mp2Mfnp7Ub9WACaUF9iaxPu0iSXu64pGGabswYpI/XEEOeC/88oc
+                nZ6ZvpYiAyYwqPOnkbqwguTbYOPxTsJma5psrsnzdpLZxcmLKD/rmmtsaSK6AQgH0G905QLYoCXI
+                kGDqSHolbOElnCtiWaRhDSiOiEvgpaRxFbhivuqqUZjMBST5n3jzIQ/vQwn7tF8pFYPSUJO2A7Ac
+                3Q7XgSilU1OEMR64fWgMDIt6LMlrkr0jZxAVeFosBU9bUD28HdRlYN2g7Bk+JcSJxb2Alvv1OO02
+                uPCJEm2hXz6cSlCCdFcZoZoo9n5NZAfuTyLHiglg3qgwO/jqlqndScx2dqpfMRMFs7adsLaKbkyW
+                bouPp4oAN4dE6iooVxSb8sDwDrgefde/iJWEvUYl0kP7z4v5A/1DaLwzQ96NiktvRkXbde0KZs/c
+                E3CJk5WYtoA+KqlZuI8tnvtS9x1E5YF3WUOHeQZPu/ZjKhzc+xiHGQ2UoDfOo9XaayMe3aw1ieah
+                LYbP5pDr11X1j5AgTWuMHCZjn6GhVfKevU4fwd+ZwuNDebQeOTv3hnD6zO3UGwAGvkgy0EIH6M0o
+                RLCko849dn4Bv6zmLk6wyHtTEqlp8b2pWPOeAJRG7CnQ26mGxOVOkAcLTvRdpw4W4ldiuqJJkIDN
+                fngcZRFRo0n7jXGv//Eb1E6p9GQGDnr7V06JfV8fiuu5wADLFWL3R6jPCnAybHmWWI4doSHIbDIo
+                K78T1IePek2aONEU5iPzAqyiygOiNV+Gjg7v9FYs2NR99yhNlDFGpdGaTBLqylzo1gG8zTRvRusw
+                m00AQP4N8fcyBjMwUqf/JHU51hDDIzn37AwC2aVwrvClka+cIQI4D2ewKjNCw+2cVJIgwFJYD9VK
+                jPX4OUXQQSHM0Vnf/e8eeX/ZzVNsegheGVna427MFOw7nlQO8M3MQ+1ki1VdWXN6PUI7Udn0ud5l
+                SmkxbBUHEG/N0EG5ZEVzUVoBklWWIbzlHhngp8bYN5fThACmjuETzmz5XJ5dTS+g5l49ZM1x/hHo
+                mzWzSCTNb7+vQN/J3f6bYspDwOUqQdMtIUugAxbc6yrihrf3onntIFFtHu61sDzevDuERC9VameS
+                Ne7pj8mztWL74wlWUm/hpA4MsmwJZPuXXYLvRe8vHV8wlWjXLZXt9W2qKO09TOzPSgSxV/9EGtmE
+                F1u7XI8//GCl27OtwiKgyvqo3iCJZc+fTonIG1GQl2LGzJ4F4HqcMES7FkzKJvxstLeAOB0/GDfI
+                emWNY2aUXNT1l4mYDAviKXRZ2uB7kRHvgNX9zDZW533WzuwdjJUoBhjOhqE+T1RiaLbbujSdCZDL
+                w0XjU0hGC4rYyzAaaRic7U1ODyBMfJuM2duHylZ7/bJNq3D7j1+tG1FN+cQ2Hz46mfX9NwzAj8j4
+                rc4OirBB3RFZqsRhbqVpl4oHq0KTttIjAvRKJHMlPUyf7RTO6nJAMurN2SRmxst8yWzMteFWaUVO
+                A/IJTNto550eTx3GMO8QOf0g+JfxYgF2ZgSrfmLoZwyo9zIoX+HslQKtHRwthBYAA6agKekGyGX8
+                dda3R/YKbm1XeNkEW6BtYQdT3DuI95SPkaAJtK11ou8hRepGRhj/3kzhS1tkm7Y0bs67q8pHQfMh
+                Qf/QtxdenfNlTPXhNQRa9cN9R7m2tNfZNN+0+JERs6ePWR4i9xwT5ZacTM+CH0mFC1F4HCvQTOMq
+                XaiqcZOwYKsOb0F5Npjl/gn7NPUzi6rshGl47znnHtdTJWd0Hu3so34wF9PwRz/1lyek/+TXuL87
+                Jhve0UMJsagateyQL/0vUXpYJKkF+jgWnwiCPvXmj4XKxnAuD9xRAsLz5jdhVw5jyN7iOlo4+Few
+                ZEwEmiFejNfoglfKcw7HsfVv20noByDgpj6EZ1Ww/vpfhHTcn9QtHeiCMneiajNr/ED3/kW6qCFh
+                TAfe05F08+iCsw+ZIRJ30589tyD3yzsrkOO/bmK+NZ8c6Rl49NZjqZLrGEdSduKYNvsLkZ9nCENl
+                yUjF3d7wU6LVWAJRhGElhgRfg00Wu5cn2oV+K5mH1hr0wAoOc3nWKUDWf2o6gOEpDgmt75mYHEyb
+                MtB7mhRdsyYsuvp6WPaZQ7GOMn0ocYsr3312iRJvS9PytPd9WPQ43srFvcSCiBTUUkYyP+MhEbJJ
+                2Pa5vDfv0hcrcGlBH0FlGCgRBIPelz7j6OGQ3Uo+lnUhBag1UHEwe4svtYdpBO44GS94m9rN5lPk
+                GwD74oupKjMSIAFPYPKAOJA4kBAdRCEVvAV0nTMpbqK+HgeFW0RCpYemLNTyvaf1H7I1cdMCH+GD
+                D6OZXj9zK4b9+2EQg9gFCqLU4bzSRDKEdmxvSX/nsI+YHr1or0B7UuHWmm1gmyuF4pi39XIrXCGa
+                ZyrFdNXz9WFouBDM0WCDnP6ITHHAOn7hOYRb0EYVSyxHVsDf3S3crEoPNzKWf5w8y3M9zuyDXFlp
+                hcgiHFzH3eDFKjZNjPtgyyeb6Po6wqTikVfswiHGdiPWZ8iRGAzf7wMw1m59gLFV5mF3/AIi0A9X
+                4AvJjKH50ndSBjPbro+e3txEXJl/1K+WPY7Gj5jwpYLfvgDbKTA/HY8EOK1AJrM38LFLVBtVn6F8
+                DOs2ZbwvETM0T7Vd7ajU7jGjIgnIZXRKY77u/nvUo7MbbHl1ZDuzWORZifYzP7iZW7aDVUsahepB
+                0e8Tdo63KuyNt5ytmcq0TD5nzhl57OG9TUyZ3SC9soRPdXBV/lOT8whfpl6cWOntrlVOVatuf2sU
+                jfxF+F0ulvXYpftQB1uEjBJDZw7CTCcTYlTf9aUFmyy4T5x1PtVCCaNy8mIAOf+7wFDU2zPLBKgp
+                /c0c4wonEcwEmjstz2juxGL72jJn6fIb/ZL+dWr/k0grAmi9gYUs8HAlTJRECU40pBNKf5kSqM1N
+                kPeF/rgEYbm6HYeAI62GQaVuBzNSh51zKl26pwA0gUf4xEJWJo0izAKDtGzWhPyxhjTlUDb2Ac7o
+                CwuFs5cAe/7ecIjCrw0D1BsyQ0Q/49QGD/4Wzvw1DcmBB+qzHugu6d1oCmXT5wYvQrg63DDIurr/
+                2ksOc+mG/TXmLpSO62KS4es2OuLBYwXtkaZ6rgDpICnHvOwALrba6zZO5PdraFi2ExAUpvSpm6wr
+                UspeaAUfprlHbXXWQgu5D5/VuTTSxIpQ5Z/Q24il7Zh7JiXVhTLZ4xHygrXWK014edOumksnqRVs
+                9NSiEj+PpYwwqTOEOJZ3WzXgY5hidw/BDF3X65BRva1rvy5xG7ccAPEc/vWaH5lVNFl3SeSsXqDw
+                +HySNjCm2JtSvi547s5/POg550EEFWK33AaGHRKT0qPqruUUQKCUBotCnUJki783mIkuYmV8uiyp
+                /X61gnbYhKiXNKQGuU2eaVvziSOOy3beHOyKEZlLHTZILJiIHOtoHC5LYZhnRIN3ZkVZMR6Y1Dvb
+                Oa4XUfwxKuWlKJ0u1uHtFFXtkHLP7WZSud9OBqwgg8zo9rrnHLNWhPFeZFmi5AP9QVCCLyCYQqpW
+                tfKeQsvv5Ctm7f+Jw0M5JCuO4rcOY6o80olaj45Bztz7MvCpO8tS+YtCRiCgxswRa1g1W5Xhbhdr
+                r+MvB4lpK41gG69I5DXFMtygKe6jc+ELmlJiGo1mTP+H9K+wlr/d+/7zeiCyXVWNVdPnc87K9pFU
+                UAdxnblKEHRhjLr+ncWMuY3YzEN8fyHJWMPruB80JzKlF61O6m/DlsuOolIfjVX9/W5PLtozSvHm
+                PceWor28HuIzjxIa2ywOkxQd3PN/xW1BpMayXFsaZpNYCPVp8ZnWKV/p0yXt5D1h9weoYivBUVB/
+                Jhp6PVmf3GkuMejvO1E+fzFpYDLQn1NPezTitCDEFTeyQ9CsJCFI/WVZ3sceill2Qr2m+KOGLkqx
+                LpUBRMx8bLkL0Sy6RO1sNQg+TQYF4I4rn+XTNRMm3FRc3+iRmEc6cvpCETe0aADRFoO751xn2GKQ
+                mbXBX3xT1VSZ9YtbnBDFUUPxga56/7QQHs/nJF1q357TGfNJaXUnysfIShiBNcSZNZ8HIEOAtmFQ
+                nkroUA4H+C8VNW7Y8C1ap6kKu4bvSlhgTe/8jA4BsBLVkqjsqYWIHWJeFsU0vmxLmvFoT8h8rVd2
+                kxSrW/tqyxfwGAnnmZyxQ0cBKI1PNL/CEw1gM4iNqFhmZAEuoErxMlrvHGxlfxUeZm5r0pfBbajn
+                8+wmg5t+FyHeG7S5+Nx+zG7/BCA5ex76/0/3OpGVD7UIEuh3MuRIOovAcCDjreSGvauXhV/XhyVf
+                wKfJIXgYCgt9eyl1HedcnW+olLZ8a1AhND8vACnJ09Q9Ka7DbvYSk9B0Vj8Y+/X6Sjyh5vE1/WYx
+                aw6iG+cQVwz91T4zu4vRbFfMv6DIPD0vwVFDNnJK/gQt6Kl26dKoFx0JxUeAjpAAZa0LptvY27oH
+                uv9ynCy0oCBYvzyO2fPXHFdmxTpgT76c9usPuTjcY+uUXamMvOuHou+L6Yewy7wxwRjWXJUvYNpY
+                tsjye9gA3vUpKGlJZbYWXnkcsIJdvZaAIJVwHP1YtPtakUjR41Ra7pGRJVWEXyT85cPnvcJKoa4a
+                xbqZGIh26I5+eF5xvbNOED9I5Nm/z5eKboXQqSz7XR1fArVEoeUUELev5CUFVU/USnMlVHMwU/Ur
+                YbGZCCFCzKJ4yAAKg6FZAM0BDEcaHOssFDr39ezyvTWdz7I+KrXEHotaxHllloxv+U655AY=
+            </xenc:CipherValue>
+        </xenc:CipherData>
+    </xenc:EncryptedData>
+    <xenc:EncryptedKey xmlns:xenc="http://www.w3.org/2001/04/xmlenc#">
+        <xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/>
+        <xenc:CipherData>
+            <xenc:CipherValue>gz+slJrwcwAsl0KV2NOZAUL8r7i+QlpCI8CVuR5I7t6lJ3fIwuZwQJAx0OjcAkEgcEBYbz2ISYAN
+                tj4qosbCuKe/rLRXggPaZkr5cczf9SmJLwaf3MoMQLQ6svjuFS/PCfD0DUWRUik6tMUms/DUxoOz
+                CkS+L+BISa9MBrGBz0iX30EIJpQyf/TrfC8/ezAiwvbcdkzKc8H6cvdOg/FVOfxwBPg9lZ69FanP
+                HDN79mB213C9yA2ZgLjK/p+HK29iaqeCpHuV2oFKaCEUSn6NC2DidBtYHuXZ7NO/FIp+R9uTwOE7
+                egA6THF2JrVZIJmJbcIYDISO7BV79zv0NnaERg==
+            </xenc:CipherValue>
+        </xenc:CipherData>
+    </xenc:EncryptedKey>
+</saml:EncryptedAssertion>
