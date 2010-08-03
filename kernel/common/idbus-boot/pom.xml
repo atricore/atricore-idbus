@@ -54,7 +54,8 @@
                 </configuration>
             </plugin>
 
-            <plugin>
+            <!-- TODO : Replace git GIT plugin ? -->
+            <!--plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
                 <version>1.0-beta-4</version>
@@ -70,7 +71,7 @@
                     <doCheck>false</doCheck>
                     <doUpdate>false</doUpdate>
                 </configuration>
-            </plugin>
+            </plugin-->
 
         </plugins>
     </build>

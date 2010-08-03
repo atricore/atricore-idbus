@@ -643,7 +643,10 @@
             </plugins>
         </pluginManagement>
 
+
         <plugins>
+
+            <!-- Replace with GIT Support
             <plugin>
                  <groupId>org.codehaus.mojo</groupId>
                  <artifactId>buildnumber-maven-plugin</artifactId>
@@ -661,6 +664,7 @@
                      <doUpdate>false</doUpdate>
                  </configuration>
              </plugin>
+             -->
         </plugins>
 
     </build>
