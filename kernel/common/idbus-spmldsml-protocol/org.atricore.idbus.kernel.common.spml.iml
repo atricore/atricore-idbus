@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.servicemix.specs:org.apache.servicemix.specs.jaxb-api-2.1:1.2.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0:1.2.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.geronimo.specs:geronimo-activation_1.1_spec:1.0.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.servicemix.specs:org.apache.servicemix.specs.jaxws-api-2.1:1.2.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.servicemix.specs:org.apache.servicemix.specs.saaj-api-1.3:1.2.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.geronimo.specs:geronimo-ws-metadata_2.0_spec:1.1.2" level="project" />
+  </component>
+</module>
+

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Osmorc" name="OSGi">
+      <configuration osmorcControlsManifest="true" manifestLocation="" jarfileLocation="$MODULE_DIR$/target/org.atricore.idbus.bundles.apache-derby-client-v10_5_3_0_1.jar" useBndFile="false" bndFileLocation="" bundleActivator="" bundleSymbolicName="org.atricore.idbus.bundles.apache-derby-client-v10_5_3_0_1" bundleVersion="1.0.0-SNAPSHOT" ignoreFilePattern="" useProjectDefaultManifestFileLocation="true" alwaysRebuildBundleJAR="false">
+        <additionalProperties>
+          <property key="Bundle-Name" value="Atricore IDBus :: Bundle : Apache Derby Client v10.5.3.0_1" />
+          <property key="Private-Package" value="org.apache.derby.loc," />
+          <property key="Bundle-Description" value="This bundle includes Apache Derby Client 10.5.3.0_1" />
+          <property key="Embed-Dependency" value="*;artifactId=derbyLocale*," />
+          <property key="Import-Package" value="org.apache.commons.logging; version=&quot;[1.0,1.1.99)&quot;; provider=paxlogging," />
+          <property key="Export-Package" value="org.apache.derby.*;version=10.5.3.0_1," />
+        </additionalProperties>
+        <additionalJARContents />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_5" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/target" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyclient:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyLocale_cs:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derby:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyLocale_de_DE:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyLocale_es:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyLocale_fr:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyLocale_hu:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyLocale_it:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyLocale_ja_JP:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyLocale_ko_KR:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyLocale_pl:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyLocale_pt_BR:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyLocale_ru:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyLocale_zh_CN:10.5.3.0_1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.derby:derbyLocale_zh_TW:10.5.3.0_1" level="project" />
+  </component>
+</module>
+
