@@ -1,0 +1,365 @@
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request
+END
+LookupAttributeProfileByIdRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 184
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/LookupAttributeProfileByIdRequest.java
+END
+SignOutRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/SignOutRequest.java
+END
+RemoveIdentityApplianceDefinitionRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 191
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/RemoveIdentityApplianceDefinitionRequest.java
+END
+UpdateGroupRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/UpdateGroupRequest.java
+END
+ManageIdentityApplianceLifeCycleRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 190
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ManageIdentityApplianceLifeCycleRequest.java
+END
+ImportIdentityApplianceRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ImportIdentityApplianceRequest.java
+END
+ListAttributeProfilesRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ListAttributeProfilesRequest.java
+END
+SearchUserRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/SearchUserRequest.java
+END
+FindGroupByIdRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/FindGroupByIdRequest.java
+END
+AddGroupRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/AddGroupRequest.java
+END
+LookupAuthenticationMechanismByIdRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 191
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/LookupAuthenticationMechanismByIdRequest.java
+END
+ExportApplianceDefinitionRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ExportApplianceDefinitionRequest.java
+END
+LookupIdentityApplianceByIdRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 185
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/LookupIdentityApplianceByIdRequest.java
+END
+LookupAccountLinkagePolicyByIdRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/LookupAccountLinkagePolicyByIdRequest.java
+END
+ListUserRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ListUserRequest.java
+END
+ManagementRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ManagementRequest.java
+END
+LookupUserInformationLookupByIdRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 189
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/LookupUserInformationLookupByIdRequest.java
+END
+UpdateUserRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/UpdateUserRequest.java
+END
+LookupAuthAssertionEmissionPolicyByIdRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 195
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/LookupAuthAssertionEmissionPolicyByIdRequest.java
+END
+SearchGroupRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/SearchGroupRequest.java
+END
+ListAuthenticationMechanismsRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ListAuthenticationMechanismsRequest.java
+END
+ListIdentityVaultsRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ListIdentityVaultsRequest.java
+END
+RemoveIdentityApplianceRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/RemoveIdentityApplianceRequest.java
+END
+StartIdentityApplianceRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 180
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/StartIdentityApplianceRequest.java
+END
+ListIdentityAppliancesRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 180
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ListIdentityAppliancesRequest.java
+END
+BuildIdentityApplianceRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 180
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/BuildIdentityApplianceRequest.java
+END
+UndeployIdentityApplianceRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/UndeployIdentityApplianceRequest.java
+END
+AddUserRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/AddUserRequest.java
+END
+FindUserByIdRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/FindUserByIdRequest.java
+END
+ListGroupRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ListGroupRequest.java
+END
+AddIdentityApplianceDefinitionRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/AddIdentityApplianceDefinitionRequest.java
+END
+FindGroupByNameRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/FindGroupByNameRequest.java
+END
+LookupResourceByIdRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svnroot/atricore/!svn/ver/904/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/LookupResourceByIdRequest.java
+END
+RemoveUserRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/RemoveUserRequest.java
+END
+ListAuthenticationContractsRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 185
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ListAuthenticationContractsRequest.java
+END
+ListUserInformationLookupsRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 184
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ListUserInformationLookupsRequest.java
+END
+SignOnRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 164
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/SignOnRequest.java
+END
+ListIdentityApplianceDefinitionsRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 190
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ListIdentityApplianceDefinitionsRequest.java
+END
+UserLoggedRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/UserLoggedRequest.java
+END
+AbstractManagementRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/AbstractManagementRequest.java
+END
+ImportApplianceDefinitionRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ImportApplianceDefinitionRequest.java
+END
+AddResourceRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svnroot/atricore/!svn/ver/904/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/AddResourceRequest.java
+END
+UpdateUserProfileRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/UpdateUserProfileRequest.java
+END
+UpdateUserPasswordRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/UpdateUserPasswordRequest.java
+END
+LookupIdentityVaultByIdRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/LookupIdentityVaultByIdRequest.java
+END
+ExportIdentityApplianceRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ExportIdentityApplianceRequest.java
+END
+LookupIdentityApplianceDefinitionRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 191
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/LookupIdentityApplianceDefinitionRequest.java
+END
+GetUsersByGroupRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/GetUsersByGroupRequest.java
+END
+UpdateIdentityApplianceRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/UpdateIdentityApplianceRequest.java
+END
+RemoveGroupRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/RemoveGroupRequest.java
+END
+FindUserByUsernameRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/FindUserByUsernameRequest.java
+END
+ListAccountLinkagePoliciesRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 184
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ListAccountLinkagePoliciesRequest.java
+END
+StopIdentityApplianceRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/StopIdentityApplianceRequest.java
+END
+AddIdentityApplianceRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/AddIdentityApplianceRequest.java
+END
+LookupAuthenticationContractByIdRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 190
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/LookupAuthenticationContractByIdRequest.java
+END
+ListIdentityAppliancesByStateRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 187
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ListIdentityAppliancesByStateRequest.java
+END
+LookupIdentityApplianceDefinitionByIdRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 195
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/LookupIdentityApplianceDefinitionByIdRequest.java
+END
+FetchGroupMembershipRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/FetchGroupMembershipRequest.java
+END
+DeployIdentityApplianceRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/DeployIdentityApplianceRequest.java
+END
+ListAuthAssertionEmissionPoliciesRequest.java
+K 25
+svn:wc:ra_dav:version-url
+V 191
+/svnroot/atricore/!svn/ver/873/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/spi/request/ListAuthAssertionEmissionPoliciesRequest.java
+END

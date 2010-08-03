@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svnroot/atricore/!svn/ver/917/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/serializers
+END
+CopySerializer.java
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svnroot/atricore/!svn/ver/894/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/serializers/CopySerializer.java
+END
+VelocitySerializer.java
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svnroot/atricore/!svn/ver/917/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/serializers/VelocitySerializer.java
+END
+Saml2Serializer.java
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svnroot/atricore/!svn/ver/875/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/serializers/Saml2Serializer.java
+END
+SpringSerializer.java
+K 25
+svn:wc:ra_dav:version-url
+V 177
+/svnroot/atricore/!svn/ver/852/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/serializers/SpringSerializer.java
+END
+BinarySerializer.java
+K 25
+svn:wc:ra_dav:version-url
+V 177
+/svnroot/atricore/!svn/ver/894/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/serializers/BinarySerializer.java
+END

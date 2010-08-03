@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/exception
+END
+IdentityServerException.java
+K 25
+svn:wc:ra_dav:version-url
+V 172
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/exception/IdentityServerException.java
+END
+ProvisioningBusinessException.java
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/exception/ProvisioningBusinessException.java
+END
+IDBusMetadataManagementException.java
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/exception/IDBusMetadataManagementException.java
+END
+IdentityApplianceMetadataManagementException.java
+K 25
+svn:wc:ra_dav:version-url
+V 193
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/exception/IdentityApplianceMetadataManagementException.java
+END
+GroupNotFoundException.java
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/exception/GroupNotFoundException.java
+END
+TransformException.java
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/exception/TransformException.java
+END
+UserNotFoundException.java
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/exception/UserNotFoundException.java
+END
+ProfileManagementException.java
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/exception/ProfileManagementException.java
+END
+IDBusMetadataElementNotFoundException.java
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/exception/IDBusMetadataElementNotFoundException.java
+END
+IdentityApplianceMetadataElementNotFoundException.java
+K 25
+svn:wc:ra_dav:version-url
+V 198
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/exception/IdentityApplianceMetadataElementNotFoundException.java
+END
+SignOnServiceException.java
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/exception/SignOnServiceException.java
+END

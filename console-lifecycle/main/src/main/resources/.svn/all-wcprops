@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/resources
+END
+server-bundle.properties
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/resources/server-bundle.properties
+END
+xenc-schema.xsd
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/resources/xenc-schema.xsd
+END
+xmldsig-core-schema.xsd
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/resources/xmldsig-core-schema.xsd
+END
+catalog.xml
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/resources/catalog.xml
+END

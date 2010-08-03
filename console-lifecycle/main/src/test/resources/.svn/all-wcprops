@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/test/resources
+END
+datanucleus-tests.properties
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/test/resources/datanucleus-tests.properties
+END
+log4j-tests.properties
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/test/resources/log4j-tests.properties
+END

@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 185
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/support/springmetadata/src/main/resources/org/atricore/idbus/capabilities/management/support/springmetadata/model/osgi
+END
+package.jdo
+K 25
+svn:wc:ra_dav:version-url
+V 197
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/support/springmetadata/src/main/resources/org/atricore/idbus/capabilities/management/support/springmetadata/model/osgi/package.jdo
+END
+package-default.orm
+K 25
+svn:wc:ra_dav:version-url
+V 205
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/support/springmetadata/src/main/resources/org/atricore/idbus/capabilities/management/support/springmetadata/model/osgi/package-default.orm
+END

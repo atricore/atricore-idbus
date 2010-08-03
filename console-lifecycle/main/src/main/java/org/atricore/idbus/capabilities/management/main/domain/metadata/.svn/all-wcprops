@@ -1,0 +1,209 @@
+K 25
+svn:wc:ra_dav:version-url
+V 149
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata
+END
+Profile.java
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/Profile.java
+END
+ServiceProviderChannel.java
+K 25
+svn:wc:ra_dav:version-url
+V 177
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/ServiceProviderChannel.java
+END
+AuthenticationMechanism.java
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/AuthenticationMechanism.java
+END
+Organization.java
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/Organization.java
+END
+AbstractProviderConfig.java
+K 25
+svn:wc:ra_dav:version-url
+V 177
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/AbstractProviderConfig.java
+END
+JossoBPConfig.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svnroot/atricore/!svn/ver/921/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/JossoBPConfig.java
+END
+IdentityVault.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/IdentityVault.java
+END
+Channel.java
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/Channel.java
+END
+Binding.java
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/Binding.java
+END
+ServiceProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/ServiceProvider.java
+END
+AuthenticationContract.java
+K 25
+svn:wc:ra_dav:version-url
+V 177
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/AuthenticationContract.java
+END
+UserInformationLookup.java
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/UserInformationLookup.java
+END
+IdentityApplianceDefinition.java
+K 25
+svn:wc:ra_dav:version-url
+V 182
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/IdentityApplianceDefinition.java
+END
+BindingProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svnroot/atricore/!svn/ver/844/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/BindingProvider.java
+END
+Provider.java
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/Provider.java
+END
+AuthenticationAssertionEmissionPolicy.java
+K 25
+svn:wc:ra_dav:version-url
+V 192
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/AuthenticationAssertionEmissionPolicy.java
+END
+SamlR2ProviderConfig.java
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svnroot/atricore/!svn/ver/844/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/SamlR2ProviderConfig.java
+END
+BindingChannel.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svnroot/atricore/!svn/ver/844/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/BindingChannel.java
+END
+IdentityProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/IdentityProvider.java
+END
+Keystore.java
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/Keystore.java
+END
+LocalProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svnroot/atricore/!svn/ver/844/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/LocalProvider.java
+END
+LdapIdentityVault.java
+K 25
+svn:wc:ra_dav:version-url
+V 172
+/svnroot/atricore/!svn/ver/917/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/LdapIdentityVault.java
+END
+RemoteProvider.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svnroot/atricore/!svn/ver/844/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/RemoteProvider.java
+END
+AccountLinkagePolicy.java
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/AccountLinkagePolicy.java
+END
+Location.java
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/Location.java
+END
+DbIdentityVault.java
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svnroot/atricore/!svn/ver/844/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/DbIdentityVault.java
+END
+ProviderRole.java
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/ProviderRole.java
+END
+ProviderConfig.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svnroot/atricore/!svn/ver/832/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/ProviderConfig.java
+END
+SamlR2IDPConfig.java
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svnroot/atricore/!svn/ver/844/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/SamlR2IDPConfig.java
+END
+AttributeProfile.java
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/AttributeProfile.java
+END
+Resource.java
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/Resource.java
+END
+SamlR2SPConfig.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svnroot/atricore/!svn/ver/844/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/SamlR2SPConfig.java
+END
+Feature.java
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/Feature.java
+END
+IdentityProviderChannel.java
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/domain/metadata/IdentityProviderChannel.java
+END

@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/support/springmetadata/src/test/resources
+END
+datanucleus-tests.properties
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/support/springmetadata/src/test/resources/datanucleus-tests.properties
+END
+log4j-tests.properties
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/support/springmetadata/src/test/resources/log4j-tests.properties
+END

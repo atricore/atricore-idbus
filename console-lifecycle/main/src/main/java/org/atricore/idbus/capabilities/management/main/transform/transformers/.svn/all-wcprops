@@ -1,0 +1,143 @@
+K 25
+svn:wc:ra_dav:version-url
+V 156
+/svnroot/atricore/!svn/ver/926/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers
+END
+IdPTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svnroot/atricore/!svn/ver/926/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/IdPTransformer.java
+END
+IdauSerializerTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 187
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/IdauSerializerTransformer.java
+END
+SPTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svnroot/atricore/!svn/ver/926/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/SPTransformer.java
+END
+IdauBaseComponentsTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 191
+/svnroot/atricore/!svn/ver/926/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/IdauBaseComponentsTransformer.java
+END
+ProjectSetupTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 185
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/ProjectSetupTransformer.java
+END
+SamlR2IdPTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 182
+/svnroot/atricore/!svn/ver/904/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/SamlR2IdPTransformer.java
+END
+IdauDBPersistenceTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 190
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/IdauDBPersistenceTransformer.java
+END
+ExternalStoreTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/ExternalStoreTransformer.java
+END
+ProjectSerializerTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 190
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/ProjectSerializerTransformer.java
+END
+ApplianceDeployerTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 190
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/ApplianceDeployerTransformer.java
+END
+SamlR2MetadataTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 187
+/svnroot/atricore/!svn/ver/875/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/SamlR2MetadataTransformer.java
+END
+BPTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 175
+/svnroot/atricore/!svn/ver/926/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/BPTransformer.java
+END
+ClaimsChannelTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svnroot/atricore/!svn/ver/894/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/ClaimsChannelTransformer.java
+END
+SamlR2SPTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svnroot/atricore/!svn/ver/926/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/SamlR2SPTransformer.java
+END
+AbstractTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svnroot/atricore/!svn/ver/926/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/AbstractTransformer.java
+END
+ApplianceBuilderTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 189
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/ApplianceBuilderTransformer.java
+END
+ArtifactBuilderTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/ArtifactBuilderTransformer.java
+END
+IdentityVaultTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svnroot/atricore/!svn/ver/917/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/IdentityVaultTransformer.java
+END
+IdPChannelTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svnroot/atricore/!svn/ver/926/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/IdPChannelTransformer.java
+END
+EmbeddedStoreTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/EmbeddedStoreTransformer.java
+END
+SPBindingChannelTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 189
+/svnroot/atricore/!svn/ver/926/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/SPBindingChannelTransformer.java
+END
+STSTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svnroot/atricore/!svn/ver/917/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/STSTransformer.java
+END
+SPChannelTransformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 182
+/svnroot/atricore/!svn/ver/926/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/transformers/SPChannelTransformer.java
+END

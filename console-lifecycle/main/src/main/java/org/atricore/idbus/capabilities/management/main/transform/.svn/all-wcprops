@@ -1,0 +1,131 @@
+K 25
+svn:wc:ra_dav:version-url
+V 143
+/svnroot/atricore/!svn/ver/926/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform
+END
+Cycle.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/Cycle.java
+END
+IdentityApplianceDefinitionVisitor.java
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/IdentityApplianceDefinitionVisitor.java
+END
+ReflexiveIdentityApplianceDefinitionWalker.java
+K 25
+svn:wc:ra_dav:version-url
+V 191
+/svnroot/atricore/!svn/ver/852/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/ReflexiveIdentityApplianceDefinitionWalker.java
+END
+TransformEventImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/TransformEventImpl.java
+END
+IdApplianceProject.java
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/IdApplianceProject.java
+END
+Phase.java
+K 25
+svn:wc:ra_dav:version-url
+V 154
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/Phase.java
+END
+Transformer.java
+K 25
+svn:wc:ra_dav:version-url
+V 160
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/Transformer.java
+END
+IdResourceSerializerContext.java
+K 25
+svn:wc:ra_dav:version-url
+V 176
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/IdResourceSerializerContext.java
+END
+VfsIdProjectResourceSerializer.java
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/VfsIdProjectResourceSerializer.java
+END
+IdApplianceTransformationContext.java
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/IdApplianceTransformationContext.java
+END
+TransformerApplianceBuilderImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 180
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/TransformerApplianceBuilderImpl.java
+END
+ProjectModuleLayout.java
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/ProjectModuleLayout.java
+END
+TransformEvent.java
+K 25
+svn:wc:ra_dav:version-url
+V 163
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/TransformEvent.java
+END
+IdResourceSerializationException.java
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/IdResourceSerializationException.java
+END
+TransformerVisitor.java
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/TransformerVisitor.java
+END
+VfsIdResourceSerializerContext.java
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/VfsIdResourceSerializerContext.java
+END
+IdentityApplianceDefinitionWalker.java
+K 25
+svn:wc:ra_dav:version-url
+V 182
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/IdentityApplianceDefinitionWalker.java
+END
+IdProjectModule.java
+K 25
+svn:wc:ra_dav:version-url
+V 164
+/svnroot/atricore/!svn/ver/917/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/IdProjectModule.java
+END
+IdProjectResource.java
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/IdProjectResource.java
+END
+TransformationEngine.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svnroot/atricore/!svn/ver/894/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/TransformationEngine.java
+END
+IdResourceSerializer.java
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/main/java/org/atricore/idbus/capabilities/management/main/transform/IdResourceSerializer.java
+END

@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/resources/org/atricore/idbus/capabilities/management/main/domain
+END
+package.jdo
+K 25
+svn:wc:ra_dav:version-url
+V 157
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/main/resources/org/atricore/idbus/capabilities/management/main/domain/package.jdo
+END
+package-default.orm
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svnroot/atricore/!svn/ver/882/idbus/capabilities/management/trunk/main/src/main/resources/org/atricore/idbus/capabilities/management/main/domain/package-default.orm
+END

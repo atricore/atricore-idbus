@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 145
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/test/resources/org/atricore/idbus/applications/server/management/test
+END
+idbus-model-tree.xml
+K 25
+svn:wc:ra_dav:version-url
+V 166
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/test/resources/org/atricore/idbus/applications/server/management/test/idbus-model-tree.xml
+END
+persistence-test-beans.xml
+K 25
+svn:wc:ra_dav:version-url
+V 172
+/svnroot/atricore/!svn/ver/932/idbus/capabilities/management/trunk/main/src/test/resources/org/atricore/idbus/applications/server/management/test/persistence-test-beans.xml
+END
+idbus-transform-test.xml
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svnroot/atricore/!svn/ver/806/idbus/capabilities/management/trunk/main/src/test/resources/org/atricore/idbus/applications/server/management/test/idbus-transform-test.xml
+END
+keystore.jks
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svnroot/atricore/!svn/ver/894/idbus/capabilities/management/trunk/main/src/test/resources/org/atricore/idbus/applications/server/management/test/keystore.jks
+END

@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 170
+/svnroot/atricore/!svn/ver/917/idbus/capabilities/management/trunk/main/src/main/filtered-resources/org/atricore/idbus/capabilities/management/main/transformers/templates
+END
+mvn-settings-project.vm
+K 25
+svn:wc:ra_dav:version-url
+V 194
+/svnroot/atricore/!svn/ver/826/idbus/capabilities/management/trunk/main/src/main/filtered-resources/org/atricore/idbus/capabilities/management/main/transformers/templates/mvn-settings-project.vm
+END
+mvn-pom-appliance.vm
+K 25
+svn:wc:ra_dav:version-url
+V 191
+/svnroot/atricore/!svn/ver/826/idbus/capabilities/management/trunk/main/src/main/filtered-resources/org/atricore/idbus/capabilities/management/main/transformers/templates/mvn-pom-appliance.vm
+END
+mvn-pom-federation-idau.vm
+K 25
+svn:wc:ra_dav:version-url
+V 197
+/svnroot/atricore/!svn/ver/917/idbus/capabilities/management/trunk/main/src/main/filtered-resources/org/atricore/idbus/capabilities/management/main/transformers/templates/mvn-pom-federation-idau.vm
+END
+idbus-features-appliance.vm
+K 25
+svn:wc:ra_dav:version-url
+V 198
+/svnroot/atricore/!svn/ver/826/idbus/capabilities/management/trunk/main/src/main/filtered-resources/org/atricore/idbus/capabilities/management/main/transformers/templates/idbus-features-appliance.vm
+END
+mvn-pom-project.vm
+K 25
+svn:wc:ra_dav:version-url
+V 189
+/svnroot/atricore/!svn/ver/903/idbus/capabilities/management/trunk/main/src/main/filtered-resources/org/atricore/idbus/capabilities/management/main/transformers/templates/mvn-pom-project.vm
+END

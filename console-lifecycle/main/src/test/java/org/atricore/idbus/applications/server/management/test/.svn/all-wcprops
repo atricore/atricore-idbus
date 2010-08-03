@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svnroot/atricore/!svn/ver/886/idbus/capabilities/management/trunk/main/src/test/java/org/atricore/idbus/applications/server/management/test
+END
+IDBusMetadataManagementTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svnroot/atricore/!svn/ver/886/idbus/capabilities/management/trunk/main/src/test/java/org/atricore/idbus/applications/server/management/test/IDBusMetadataManagementTest.java
+END
+PersistenceTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svnroot/atricore/!svn/ver/882/idbus/capabilities/management/trunk/main/src/test/java/org/atricore/idbus/applications/server/management/test/PersistenceTest.java
+END
+IdApplianceDeploymentTest.java
+K 25
+svn:wc:ra_dav:version-url
+V 171
+/svnroot/atricore/!svn/ver/814/idbus/capabilities/management/trunk/main/src/test/java/org/atricore/idbus/applications/server/management/test/IdApplianceDeploymentTest.java
+END

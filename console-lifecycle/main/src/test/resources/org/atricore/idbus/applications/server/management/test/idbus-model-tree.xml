@@ -1,0 +1,303 @@
+<!--
+  ~ Copyright (c) 2009., Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <bean name="idApplianceDef1" class="org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityApplianceDefinition">
+
+        <property name="name" value="appliance1"/>
+        <property name="description" value="This is a sample to test Identity Bus deployment facilities."/>
+        <property name="location">
+            <bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.Location">
+                <property name="protocol" value="http"/>
+                <property name="host" value="localhost"/>
+                <property name="port" value="8081"/>
+                <property name="context" value="/IDBUS"/>
+            </bean>
+        </property>
+
+        <property name="providers">
+            <list>
+                <ref bean="idp1"/>
+                <ref bean="sp1"/>
+                <ref bean="bp1-josso"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- =========================================== -->
+    <!-- IDP 1 -->
+    <!-- =========================================== -->
+    <bean name="idp1" class="org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProvider">
+        <property name="name" value="idp1"/>
+        <property name="description" value="Identity Provider #1"/>
+
+        <property name="location">
+            <bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.Location">
+                <property name="protocol" value="http"/>
+                <property name="host" value="localhost"/>
+                <property name="port" value="8081"/>
+                <property name="context" value="/IDBUS"/>
+                <property name="uri" value="IDP1"/>
+            </bean>
+        </property>
+
+        <property name="defaultChannel">
+
+            <bean name="sp-default-channel" class="org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProviderChannel">
+                <property name="name" value="idp1-default-channel"/>
+                <property name="description" value="IdP1 Default Channel"/>
+                <property name="activeBindings">
+                    <set>
+                        <value>SAMLR2_ARTIFACT</value>
+                        <value>SAMLR2_HTTP_POST</value>
+                        <value>SAMLR2_HTTP_REDIRECT</value>
+                    </set>
+                </property>
+                <property name="activeProfiles">
+                    <set>
+                        <value>SSO</value>
+                    </set>
+                </property>
+            </bean>
+
+        </property>
+
+        <property name="config">
+            <bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2ProviderConfig">
+                <property name="name" value="idp1-samlr2-config"/>
+                <property name="description" value="SamlR2 IdP1 Configuraiton"/>
+                <property name="signer">
+					<bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.Keystore">
+						<property name="type" value="JKS"/>
+						<property name="password" value="ATRICORE"/>
+						<property name="privateKeyName" value="josso-sp1"/>
+						<property name="privateKeyPassword" value="ATRICORE"/>
+						<property name="certificateAlias" value="josso-sp1"/>
+                        <property name="store">
+                            <bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.Resource">
+                                <property name="name" value="idp1-keystore"/>
+                                <property name="value" value="/org/atricore/idbus/applications/server/management/test/keystore.jks"/>
+                            </bean>
+                        </property>
+					</bean>
+                </property>
+                <property name="encrypter">
+					<bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.Keystore">
+						<property name="type" value="JKS"/>
+						<property name="password" value="xmlsecurity"/>
+						<property name="privateKeyName" value="rsa-keys"/>
+						<property name="privateKeyPassword" value="rsa-keys-pwd"/>
+						<property name="certificateAlias" value="rsa-keys"/>
+                        <property name="store">
+                            <bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.Resource">
+                                <property name="name" value="idp1-keystore"/>
+                                <property name="value" value="/org/atricore/idbus/applications/server/management/test/keystore.jks"/>
+                            </bean>
+                        </property>
+					</bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- =========================================== -->
+    <!-- SP 1 -->
+    <!-- =========================================== -->
+
+    <bean name="sp1" class="org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProvider">
+        <property name="name" value="sp1"/>
+        <property name="description" value="Service Provider #1"/>
+
+        <property name="location">
+            <bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.Location">
+                <property name="protocol" value="http"/>
+                <property name="host" value="localhost"/>
+                <property name="port" value="8081"/>
+                <property name="context" value="/IDBUS"/>
+                <property name="uri" value="SP1"/>
+            </bean>
+        </property>
+
+        <property name="bindingChannel">
+			<bean name="binding-channel" class="org.atricore.idbus.capabilities.management.main.domain.metadata.BindingChannel">
+                <property name="name" value="sp1-binding-channel"/>
+                <property name="description" value="SP1 Binding Channel"/>
+                <property name="location">
+					<bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.Location">
+						<property name="protocol" value="http"/>
+						<property name="host" value="localhost"/>
+						<property name="port" value="8081"/>
+						<property name="context" value="/IDBUS"/>
+						<property name="uri" value="SP1"/>
+					</bean>
+				</property>
+                <property name="activeBindings">
+                    <set>
+                        <value>SAMLR2_ARTIFACT</value>
+                        <value>SAMLR2_HTTP_REDIRECT</value>
+                    </set>
+                </property>
+                <property name="activeProfiles">
+                    <set>
+                        <value>SSO</value>
+                    </set>
+                </property>
+                <property name="target" ref="bp1-josso"/>
+            </bean>
+        </property>
+
+        <property name="defaultChannel">
+
+            <bean name="idp-default-channel" class="org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProviderChannel">
+                <property name="name" value="sp1-default-channel"/>
+                <property name="description" value="SP1 Default Channel"/>
+                <property name="activeBindings">
+                    <set>
+                        <value>SAMLR2_ARTIFACT</value>
+                        <value>SAMLR2_HTTP_POST</value>
+                        <value>SAMLR2_HTTP_REDIRECT</value>
+                    </set>
+                </property>
+                <property name="activeProfiles">
+                    <set>
+                        <value>SSO</value>
+                    </set>
+                </property>
+            </bean>
+
+        </property>
+
+        <!--property name="channels">
+            <set>
+                <bean name="idp1-idp-channel" class="org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProviderChannel">
+                    <property name="name" value="sp1-idp-channel"/>
+                    <property name="description" value="SP1 IdP1 Channel"/>
+                    <property name="target" ref="idp1"/>
+                    <property name="activeBindings">
+                        <set>
+                            <value>SAMLR2_HTTP_POST</value>
+                            <value>SAMLR2_HTTP_REDIRECT</value>
+                        </set>
+                    </property>
+                    <property name="activeProfiles">
+                        <set>
+                            <value>SSO</value>
+                        </set>
+                    </property>
+                </bean>
+            </set>
+        </property-->
+
+        <property name="config">
+            <bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2ProviderConfig">
+                <property name="name" value="sp1-samlr2-config"/>
+                <property name="description" value="SamlR2 SP1 Configuraiton"/>
+                <property name="signer">
+					<bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.Keystore">
+						<property name="type" value="JKS"/>
+						<property name="password" value="ATRICORE"/>
+						<property name="privateKeyName" value="josso-sp1"/>
+						<property name="privateKeyPassword" value="ATRICORE"/>
+						<property name="certificateAlias" value="josso-sp1"/>
+                        <property name="store">
+                            <bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.Resource">
+                                <property name="name" value="sp1-keystore"/>
+                                <property name="value" value="/org/atricore/idbus/applications/server/management/test/keystore.jks"/>
+                            </bean>
+                        </property>
+					</bean>
+                </property>
+                <property name="encrypter">
+					<bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.Keystore">
+						<property name="type" value="JKS"/>
+						<property name="password" value="ATRICORE"/>
+						<property name="privateKeyName" value="josso-sp1"/>
+						<property name="privateKeyPassword" value="ATRICORE"/>
+						<property name="certificateAlias" value="josso-sp1"/>
+                        <property name="store">
+                            <bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.Resource">
+                                <property name="name" value="sp1-keystore"/>
+                                <property name="value" value="/org/atricore/idbus/applications/server/management/test/keystore.jks"/>
+                            </bean>
+                        </property>
+					</bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+	<!-- =========================================== -->
+    <!-- JOSSO Binding Provider -->
+    <!-- =========================================== -->
+    <bean name="bp1-josso" class="org.atricore.idbus.capabilities.management.main.domain.metadata.BindingProviderDTO">
+        <property name="name" value="bp1-josso"/>
+        <property name="description" value="Binding Provider #1"/>
+
+        <property name="location">
+			<bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.Location">
+				<property name="protocol" value="http"/>
+				<property name="host" value="localhost"/>
+				<property name="port" value="8081"/>
+				<property name="context" value="/IDBUS"/>
+				<property name="uri" value="BP1"/>
+			</bean>
+		</property>
+
+		<property name="bindingChannel">
+			<bean name="binding-channel" class="org.atricore.idbus.capabilities.management.main.domain.metadata.BindingChannel">
+                <property name="name" value="bp1-josso-binding-channel"/>
+                <property name="description" value="JOSSO Agent instance 1 binding channel"/>
+                
+                <property name="activeBindings">
+                    <set>
+                        <value>SSO_ARTIFACT</value>
+                        <value>SSO_REDIRECT</value>
+                    </set>
+                </property>
+                <property name="activeProfiles">
+                    <set>
+                        <value>SSO</value>
+                    </set>
+                </property>
+            </bean>
+        </property>
+
+        <property name="config">
+            <bean class="org.atricore.idbus.capabilities.management.main.domain.metadata.JossoBPConfig">
+                <property name="name" value="bp1-josso-config"/>
+                <property name="description" value="JOSSO Binding Configuraiton"/>
+                <property name="targetPlatform" value="jb42"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer" id="customEditorConfigurer">
+        <property name="customEditors">
+            <map>
+                <entry key="byte[]">
+                    <bean class="org.atricore.idbus.capabilities.management.main.util.FileToByteArrayPropertyEditor"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+</beans>

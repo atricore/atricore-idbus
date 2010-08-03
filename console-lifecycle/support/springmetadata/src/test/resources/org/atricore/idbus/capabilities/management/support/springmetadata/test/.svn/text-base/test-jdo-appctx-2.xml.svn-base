@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  ~ Copyright (c) 2010., Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xsi:schemaLocation="
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+      http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
+      >
+
+    <description>Spring Beans JDO 2 Persistence Test (2)</description>
+
+    <bean name="bean1" class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+        <description>bean1, just the bean</description>
+    </bean>
+
+    <bean name="bean2" class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+        <description>bean2, bean with primitives</description>
+
+        <property name="id">
+            <value>bean2</value>
+        </property>
+
+        <property name="integerProperty">
+            <value>2</value>
+        </property>
+
+        <property name="floatProperty">
+            <value>2.01</value>
+        </property>
+
+        <property name="booleanProperty">
+            <value>true</value>
+        </property>
+
+        <property name="stringProperty">
+            <value>stringTwoTestValue</value>
+        </property>
+
+    </bean>
+
+    <bean name="bean3" class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+        <description>bean3, bean with primitives</description>
+
+        <property name="id">
+            <value>bean3</value>
+        </property>
+
+        <property name="integerProperty">
+            <value>-3</value>
+        </property>
+
+        <property name="booleanProperty">
+            <value>true</value>
+        </property>
+
+        <property name="stringProperty">
+            <value>stringThreeTestValue</value>
+        </property>
+
+        <property name="integerArray">
+            <value>1,2,3</value>
+        </property>
+
+        <!-- cant use commas to define float arrays -->
+        <property name="floatArray">
+            <list>
+                <value>1.1</value>
+                <value>1.2</value>
+            </list>
+        </property>
+
+        <property name="stringArray">
+            <value>a,b,c</value>
+        </property>
+    </bean>
+
+    <bean name="bean4" class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+        <description>bean4, bean with primitives</description>
+
+        <property name="id">
+            <value>bean4</value>
+        </property>
+
+        <property name="integerProperty">
+            <value>4</value>
+        </property>
+
+        <property name="booleanProperty">
+            <value>true</value>
+        </property>
+
+        <property name="stringProperty">
+            <value>stringFourTestValue</value>
+        </property>
+
+        <property name="integerArray">
+            <list>
+                <value>1</value>
+                <value>2</value>
+                <value>3</value>
+                <value>4</value>
+            </list>
+        </property>
+
+        <property name="floatArray">
+            <list>
+                <value>1.1</value>
+                <value>1.2</value>
+            </list>
+        </property>
+
+        <property name="stringArray">
+            <list>
+                <value>a</value>
+                <value>b</value>
+                <value>c</value>
+                <value>d</value>
+                <value>f</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="bean10" class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+        <description>bean10, bean with primitives</description>
+
+        <property name="id">
+            <value>bean10</value>
+        </property>
+
+        <property name="integerProperty">
+            <value>10</value>
+        </property>
+
+        <property name="booleanProperty">
+            <value>true</value>
+        </property>
+
+        <property name="stringProperty">
+            <value>stringTenTestValue</value>
+        </property>
+
+        <property name="beanProperty">
+            <ref bean="bean2"/>
+        </property>
+
+    </bean>
+
+    <bean name="bean11" class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+        <description>bean11, bean with primitives</description>
+
+        <property name="id">
+            <value>bean11</value>
+        </property>
+
+        <property name="integerProperty">
+            <value>11</value>
+        </property>
+
+        <property name="booleanProperty">
+            <value>true</value>
+        </property>
+
+        <property name="stringProperty">
+            <value>stringElevenTestValue</value>
+        </property>
+
+        <property name="beanProperty">
+
+            <bean name="bean11.1" class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+                <description>bean11.1, bean with primitives</description>
+
+                <property name="id">
+                    <value>bean11.1</value>
+                </property>
+
+                <property name="integerProperty">
+                    <value>111</value>
+                </property>
+
+                <property name="booleanProperty">
+                    <value>true</value>
+                </property>
+
+                <property name="stringProperty">
+                    <value>stringElevenDotOneTestValue</value>
+                </property>
+
+            </bean>
+
+        </property>
+
+    </bean>
+
+    <bean name="bean20" class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+        <description>bean20, bean with primitives</description>
+
+        <property name="id">
+            <value>bean20</value>
+        </property>
+
+        <property name="integerProperty">
+            <value>20</value>
+        </property>
+
+        <property name="booleanProperty">
+            <value>true</value>
+        </property>
+
+        <property name="stringProperty">
+            <value>stringTwentyTestValue</value>
+        </property>
+
+        <property name="integerArray">
+            <value>1,2,3,4,5,6</value>
+        </property>
+
+        <property name="stringArray">
+            <value>a,b,c</value>
+        </property>
+
+        <property name="beansList">
+            <list>
+                <ref bean="bean2"/>
+                <ref bean="bean3"/>
+                <bean name="bean20.1"  class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+                    <description>bean20, bean with primitives</description>
+
+                    <property name="id">
+                        <value>bean20.1</value>
+                    </property>
+
+                    <property name="integerProperty">
+                        <value>20</value>
+                    </property>
+
+                    <property name="booleanProperty">
+                        <value>true</value>
+                    </property>
+
+                    <property name="stringProperty">
+                        <value>stringTwentyDotOneTestValue</value>
+                    </property>
+
+                    <property name="integerArray">
+                        <value>1,2,3,4,5,6,20,201</value>
+                    </property>
+
+                    <property name="floatArray">
+                        <list>
+                            <value>20.0</value>
+                            <value>20.1</value>
+                        </list>
+                    </property>
+
+                    <property name="stringArray">
+                        <value>a,b,c,d,e,f,g,h,i,j</value>
+                    </property>
+
+                </bean>
+            </list>
+        </property>
+
+    </bean>
+
+
+    <bean name="bean21" class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+        <description>bean21, bean with primitives</description>
+
+        <property name="id">
+            <value>bean21</value>
+        </property>
+
+        <property name="integerProperty">
+            <value>21</value>
+        </property>
+
+        <property name="booleanProperty">
+            <value>true</value>
+        </property>
+
+        <property name="stringProperty">
+            <value>stringTwentyOneTestValue</value>
+        </property>
+
+        <property name="integerArray">
+            <value>2,1,21</value>
+        </property>
+
+        <property name="stringArray">
+            <value>Two,One,TwentyOne</value>
+        </property>
+
+        <property name="beansArray">
+            <list>
+                <ref bean="bean2"/>
+                <ref bean="bean3"/>
+                <bean name="bean21.1"  class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+                    <description>bean21, bean with primitives</description>
+
+                    <property name="id">
+                        <value>bean21.1</value>
+                    </property>
+
+                    <property name="integerProperty">
+                        <value>21</value>
+                    </property>
+
+                    <property name="booleanProperty">
+                        <value>true</value>
+                    </property>
+
+                    <property name="stringProperty">
+                        <value>stringTwentyOneDotOneTestValue</value>
+                    </property>
+
+                    <property name="integerArray">
+                        <value>1,2,3,4,5,6,21,211</value>
+                    </property>
+
+                    <property name="floatArray">
+                        <list>
+                            <value>21.0</value>
+                            <value>21.1</value>
+                        </list>
+                    </property>
+
+                    <property name="stringArray">
+                        <value>a,b</value>
+                    </property>
+
+                </bean>
+            </list>
+        </property>
+
+    </bean>
+    
+
+
+    <bean name="bean22" class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+        <description>bean22, bean with primitives</description>
+
+        <property name="id">
+            <value>bean22</value>
+        </property>
+
+        <property name="integerProperty">
+            <value>22</value>
+        </property>
+
+        <property name="booleanProperty">
+            <value>true</value>
+        </property>
+
+        <property name="stringProperty">
+            <value>stringTwentyTwoTestValue</value>
+        </property>
+
+        <property name="integerArray">
+            <value>2,2,22</value>
+        </property>
+
+        <property name="stringArray">
+            <value>Two,Two,TwentyTwo</value>
+        </property>
+
+        <property name="beansSet">
+            <set>
+                <ref bean="bean2"/>
+                <ref bean="bean3"/>
+                <bean name="bean22.1"  class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+                    <description>bean22.1, bean with primitives</description>
+
+                    <property name="id">
+                        <value>bean22.1</value>
+                    </property>
+
+                    <property name="integerProperty">
+                        <value>22</value>
+                    </property>
+
+                    <property name="booleanProperty">
+                        <value>true</value>
+                    </property>
+
+                    <property name="stringProperty">
+                        <value>stringTwentyDotOneTestValue</value>
+                    </property>
+
+                    <property name="integerArray">
+                        <value>1,2,3,4,5,6,22,221</value>
+                    </property>
+
+                    <property name="floatArray">
+                        <list>
+                            <value>22.0</value>
+                            <value>22.1</value>
+                        </list>
+                    </property>
+
+                    <property name="stringArray">
+                        <value>a,b,c,d</value>
+                    </property>
+
+                </bean>
+            </set>
+        </property>
+
+    </bean>
+
+    <bean name="bean23" class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+        <description>bean22, bean with primitives</description>
+
+        <property name="id">
+            <value>bean22</value>
+        </property>
+
+        <property name="integerProperty">
+            <value>23</value>
+        </property>
+
+        <property name="booleanProperty">
+            <value>true</value>
+        </property>
+
+        <property name="stringProperty">
+            <value>stringTwentyThreeTestValue</value>
+        </property>
+
+        <property name="integerArray">
+            <value>2,3,23</value>
+        </property>
+
+        <property name="stringArray">
+            <value>Two,Three,TwentyThree</value>
+        </property>
+
+
+        <property name="beansMap">
+            <map key-type="java.lang.String">
+                <entry>
+                    <key>
+                        <value>bean2key</value>
+                    </key>
+                    <ref bean="bean2"/>
+                </entry>
+
+                <entry>
+                    <key>
+                        <value>bean20key</value>
+                    </key>
+                    <ref bean="bean20"/>
+                </entry>
+                <entry>
+                    <key>
+                        <value>bean21key</value>
+                    </key>
+                    <ref bean="bean21"/>
+                </entry>
+                <entry>
+                    <key>
+                        <value>bean22key</value>
+                    </key>
+                    <ref bean="bean22"/>
+                </entry>
+                <entry>
+                    <key>
+                        <value>bean2key</value>
+                    </key>
+                    <bean name="bean23.4" class="org.atricore.idbus.capabilities.management.support.springmetadata.test.util.ComplexTestBean">
+                        <description>bean23.4, bean with primitives</description>
+
+                        <property name="id">
+                            <value>bean23.4</value>
+                        </property>
+
+                        <property name="integerProperty">
+                            <value>234</value>
+                        </property>
+
+                        <property name="booleanProperty">
+                            <value>true</value>
+                        </property>
+
+                        <property name="stringProperty">
+                            <value>stringTwentyThreeDotFourTestValue</value>
+                        </property>
+
+                        <property name="integerArray">
+                            <list>
+                                <value>1</value>
+                                <value>2</value>
+                                <value>3</value>
+                                <value>4</value>
+                            </list>
+                        </property>
+
+                        <property name="floatArray">
+                            <list>
+                                <value>1.1</value>
+                                <value>1.2</value>
+                            </list>
+                        </property>
+
+                        <property name="stringArray">
+                            <list>
+                                <value>a</value>
+                                <value>b</value>
+                                <value>c</value>
+                                <value>d</value>
+                                <value>f</value>
+                            </list>
+                        </property>
+                    </bean>
+                </entry>
+                
+            </map>
+        </property>
+    </bean>
+
+    <alias name="bean1" alias="beanOne"/>
+
+    <alias name="bean22" alias="beanTwentyTwo"/>
+
+</beans>
