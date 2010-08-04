@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.lifecycle.command.completers;
+package com.atricore.idbus.console.lifecycle.command;
 
 import org.apache.felix.karaf.shell.console.OsgiCommandSupport;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;

@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.lifecycle.command.completers;
+package com.atricore.idbus.console.lifecycle.command;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

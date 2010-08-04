@@ -23,46 +23,46 @@
     <command-bundle xmlns="http://felix.apache.org/karaf/xmlns/shell/v1.0.0">
         
         <command name="appliance/build">
-            <action class="com.atricore.idbus.console.lifecycle.command.completers.BuildApplianceCommand"/>
+            <action class="com.atricore.idbus.console.lifecycle.command.BuildApplianceCommand"/>
             <completers>
                 <ref component-id="buildApplianceCompleter" />
             </completers>
         </command>
 
         <command name="appliance/list">
-            <action class="com.atricore.idbus.console.lifecycle.command.completers.ListAppliancesCommand"/>
+            <action class="com.atricore.idbus.console.lifecycle.command.ListAppliancesCommand"/>
         </command>
 
         <command name="appliance/deploy">
-            <action class="com.atricore.idbus.console.lifecycle.command.completers.DeployApplianceCommand"/>
+            <action class="com.atricore.idbus.console.lifecycle.command.DeployApplianceCommand"/>
             <completers>
                 <ref component-id="deployApplianceCompleter" />
             </completers>
         </command>
 
         <command name="appliance/undeploy">
-            <action class="com.atricore.idbus.console.lifecycle.command.completers.UndeployApplianceCommand"/>
+            <action class="com.atricore.idbus.console.lifecycle.command.UndeployApplianceCommand"/>
             <completers>
                 <ref component-id="undeployApplianceCompleter" />
             </completers>
         </command>
 
         <command name="appliance/start">
-            <action class="com.atricore.idbus.console.lifecycle.command.completers.StartApplianceCommand"/>
+            <action class="com.atricore.idbus.console.lifecycle.command.StartApplianceCommand"/>
             <completers>
                 <ref component-id="startApplianceCompleter" />
             </completers>
         </command>
 
         <command name="appliance/stop">
-            <action class="com.atricore.idbus.console.lifecycle.command.completers.StopApplianceCommand"/>
+            <action class="com.atricore.idbus.console.lifecycle.command.StopApplianceCommand"/>
             <completers>
                 <ref component-id="stopApplianceCompleter" />
             </completers>
         </command>
 
         <command name="appliance/import-definition">
-            <action class="com.atricore.idbus.console.lifecycle.command.completers.ImportApplianceDefinitionCommand"/>
+            <action class="com.atricore.idbus.console.lifecycle.command.ImportApplianceDefinitionCommand"/>
         </command>
 
     </command-bundle>

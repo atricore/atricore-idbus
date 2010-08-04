@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.lifecycle.command.completers;
+package com.atricore.idbus.console.lifecycle.command;
 
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
@@ -11,8 +11,8 @@ import com.atricore.idbus.console.lifecycle.main.spi.response.ManageIdentityAppl
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-@Command(scope = "appliance", name = "restart", description = "Restart Identity Appliance")
-public class RestartApplianceCommand extends ManagementCommandSupport {
+@Command(scope = "appliance", name = "start", description = "Start Identity Appliance")
+public class StartApplianceCommand extends ManagementCommandSupport {
 
     @Argument(index = 0, name = "id", description = "The id of the identity appliance", required = true, multiValued = false)
     String id;
@@ -29,7 +29,7 @@ public class RestartApplianceCommand extends ManagementCommandSupport {
     protected Object doExecute(IdentityApplianceManagementService svc) throws Exception {
         ManageIdentityApplianceLifeCycleRequest req = new ManageIdentityApplianceLifeCycleRequest();
         req.setApplianceId(id);
-        req.setAction(IdentityApplianceLifeCycleAction.RESTART);
+        req.setAction(IdentityApplianceLifeCycleAction.START);
         ManageIdentityApplianceLifeCycleResponse res = svc.manageIdentityApplianceLifeCycle(req);
         return null;
     }

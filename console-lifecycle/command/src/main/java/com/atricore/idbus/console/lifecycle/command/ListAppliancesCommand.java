@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.lifecycle.command.completers;
+package com.atricore.idbus.console.lifecycle.command;
 
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
