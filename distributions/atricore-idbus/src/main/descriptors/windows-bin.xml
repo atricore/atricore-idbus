@@ -20,6 +20,13 @@
     <formats>
         <format>zip</format>
     </formats>
+
+    <fileSet>
+        <directory>target/dependency/zip/atricore-idbus-${atricore.idbus.version}</directory>
+        <outputDirectory>/</outputDirectory>
+    </fileSet>
+
+
     <fileSets>
 
       <!-- Copy license and other files from root -->

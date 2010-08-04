@@ -1608,7 +1608,6 @@
                             <goal>copy-dependencies</goal>
                         </goals>
 
-                        <!-- TODO : Exclude unnecessary/unwated dependencies! -->
                         <configuration>
                             <copyPom>true</copyPom>
                             <useRepositoryLayout>true</useRepositoryLayout>

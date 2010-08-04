@@ -210,7 +210,7 @@
                             org.apache.activemq,
                             org.xml.sax;resolution:=optional,
                             org.xml.sax.helpers,
-                            org.w3c.dom;resolution:=optional,
+                            org.w3c.dom;resolution:=optional
                             *
                         </Import-Package>
 
