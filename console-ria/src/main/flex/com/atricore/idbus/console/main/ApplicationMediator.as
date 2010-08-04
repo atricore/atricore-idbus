@@ -99,6 +99,7 @@ public class ApplicationMediator extends IocMediator {
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.SHOW_ERROR_MSG,
             ApplicationFacade.SHOW_SUCCESS_MSG,
+            ApplicationFacade.CLEAR_MSG,
             ApplicationStartUpCommand.SUCCESS,
             ApplicationStartUpCommand.FAILURE,
             SetupServerCommand.SUCCESS,
@@ -106,7 +107,8 @@ public class ApplicationMediator extends IocMediator {
             SetupWizardViewMediator.RUN,
             SimpleSSOWizardViewMediator.RUN,
             IdentityApplianceMediator.CREATE,
-            ApplicationFacade.DISPLAY_APPLIANCE_MODELER
+            ApplicationFacade.DISPLAY_APPLIANCE_MODELER,
+            ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE
         ];
     }
 
@@ -134,8 +136,14 @@ public class ApplicationMediator extends IocMediator {
             case ApplicationFacade.SHOW_SUCCESS_MSG :
                 app.messageBox.showSuccessMessage(notification.getBody() as String);
                 break;
+            case ApplicationFacade.CLEAR_MSG :
+                app.messageBox.clearAndHide();
+                break;
             case ApplicationFacade.DISPLAY_APPLIANCE_MODELER:
-                app.modelerView.setVisible(true);
+                app.modulesViewStack.selectedChild = app.modelerView;
+                break;
+            case ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE:
+                app.modulesViewStack.selectedChild = app.lifecycleView;
                 break;
         }
     }

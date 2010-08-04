@@ -74,7 +74,7 @@ public class UndeployIdentityApplianceCommand extends IocSimpleCommand implement
 
     public function result(data:Object):void {
         var resp:UndeployIdentityApplianceResponse = data.result as UndeployIdentityApplianceResponse;
-        projectProxy.currentIdentityAppliance = resp.appliance;
+        projectProxy.commandResultIdentityAppliance = resp.appliance;
         sendNotification(SUCCESS);
     }
 

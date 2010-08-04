@@ -83,6 +83,7 @@ public class DeployApplianceMediator extends IocFormMediator
         switch (notification.getName()) {
             case DeployIdentityApplianceCommand.SUCCESS:
                 if (projectProxy.currentView == ModelerMediator.viewName) {
+                    projectProxy.currentIdentityAppliance = projectProxy.commandResultIdentityAppliance;
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                     var msg:String = "Appliance has been successfully deployed.";

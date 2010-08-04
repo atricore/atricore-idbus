@@ -25,9 +25,9 @@ import com.atricore.idbus.console.services.spi.IdentityApplianceManagementAjaxSe
 import com.atricore.idbus.console.services.spi.IdentityServerException;
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
-import org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.*;
-import org.atricore.idbus.capabilities.management.main.spi.IdentityApplianceManagementService;
+import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
 import org.dozer.DozerBeanMapper;
 
 import java.util.ArrayList;
@@ -42,104 +42,104 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
     private DozerBeanMapper dozerMapper;
 
     public BuildIdentityApplianceResponse buildIdentityAppliance(BuildIdentityApplianceRequest req) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.BuildIdentityApplianceRequest beReq =
-                dozerMapper.map(req, org.atricore.idbus.capabilities.management.main.spi.request.BuildIdentityApplianceRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.BuildIdentityApplianceRequest beReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.BuildIdentityApplianceRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.BuildIdentityApplianceResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.BuildIdentityApplianceResponse beRes = null;
         try {
             beRes = idApplianceManagementService.buildIdentityAppliance(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, BuildIdentityApplianceResponse.class);
     }
     
     public DeployIdentityApplianceResponse deployIdentityAppliance(DeployIdentityApplianceRequest req) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.DeployIdentityApplianceRequest beReq =
-                dozerMapper.map(req, org.atricore.idbus.capabilities.management.main.spi.request.DeployIdentityApplianceRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.DeployIdentityApplianceRequest beReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.DeployIdentityApplianceRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.DeployIdentityApplianceResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.DeployIdentityApplianceResponse beRes = null;
         try {
             beRes = idApplianceManagementService.deployIdentityAppliance(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, DeployIdentityApplianceResponse.class);
     }
 
     public UndeployIdentityApplianceResponse undeployIdentityAppliance(UndeployIdentityApplianceRequest req) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.UndeployIdentityApplianceRequest beReq =
-                dozerMapper.map(req, org.atricore.idbus.capabilities.management.main.spi.request.UndeployIdentityApplianceRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.UndeployIdentityApplianceRequest beReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.UndeployIdentityApplianceRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.UndeployIdentityApplianceResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.UndeployIdentityApplianceResponse beRes = null;
         try {
             beRes = idApplianceManagementService.undeployIdentityAppliance(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, UndeployIdentityApplianceResponse.class);
     }
 
     public StartIdentityApplianceResponse startIdentityAppliance(StartIdentityApplianceRequest req) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.StartIdentityApplianceRequest beReq =
-                dozerMapper.map(req, org.atricore.idbus.capabilities.management.main.spi.request.StartIdentityApplianceRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.StartIdentityApplianceRequest beReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.StartIdentityApplianceRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.StartIdentityApplianceResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.StartIdentityApplianceResponse beRes = null;
         try {
             beRes = idApplianceManagementService.startIdentityAppliance(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, StartIdentityApplianceResponse.class);
     }
 
     public StopIdentityApplianceResponse stopIdentityAppliance(StopIdentityApplianceRequest req) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.StopIdentityApplianceRequest beReq =
-                dozerMapper.map(req, org.atricore.idbus.capabilities.management.main.spi.request.StopIdentityApplianceRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.StopIdentityApplianceRequest beReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.StopIdentityApplianceRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.StopIdentityApplianceResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.StopIdentityApplianceResponse beRes = null;
         try {
             beRes = idApplianceManagementService.stopIdentityAppliance(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, StopIdentityApplianceResponse.class);
     }
 
     public ImportIdentityApplianceResponse importIdentityAppliance(ImportIdentityApplianceRequest req) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.ImportIdentityApplianceRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ImportIdentityApplianceRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.ImportIdentityApplianceRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ImportIdentityApplianceRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.ImportIdentityApplianceResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.ImportIdentityApplianceResponse beRes = null;
         try {
             beRes = idApplianceManagementService.importIdentityAppliance(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ImportIdentityApplianceResponse.class);
     }
 
     public ExportIdentityApplianceResponse ExportIdentityAppliance(ExportIdentityApplianceRequest req) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.ExportIdentityApplianceRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ExportIdentityApplianceRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.ExportIdentityApplianceRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ExportIdentityApplianceRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.ExportIdentityApplianceResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.ExportIdentityApplianceResponse beRes = null;
         try {
             beRes = idApplianceManagementService.exportIdentityAppliance(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ExportIdentityApplianceResponse.class);
     }
 
     public ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.ManageIdentityApplianceLifeCycleRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ManageIdentityApplianceLifeCycleRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.ManageIdentityApplianceLifeCycleRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ManageIdentityApplianceLifeCycleRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.ManageIdentityApplianceLifeCycleResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.ManageIdentityApplianceLifeCycleResponse beRes = null;
         try {
             beRes = idApplianceManagementService.manageIdentityApplianceLifeCycle(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ManageIdentityApplianceLifeCycleResponse.class);
@@ -195,14 +195,14 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             iad.getCertificate().setStore(null);
         }
 
-        org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest addIdApplianceReq =
-                new org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest();
+        com.atricore.idbus.console.lifecycle.main.spi.request.AddIdentityApplianceRequest addIdApplianceReq =
+                new com.atricore.idbus.console.lifecycle.main.spi.request.AddIdentityApplianceRequest();
         addIdApplianceReq.setIdentityAppliance(dozerMapper.map(idAppliance, IdentityAppliance.class));
-        org.atricore.idbus.capabilities.management.main.spi.response.AddIdentityApplianceResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.AddIdentityApplianceResponse beRes = null;
 
         try {
             beRes = idApplianceManagementService.addIdentityAppliance(addIdApplianceReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         AddIdentityApplianceResponse res = dozerMapper.map(beRes, AddIdentityApplianceResponse.class);
@@ -232,16 +232,16 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             }
         }
 
-//        org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
-//                new  org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest();
+//        com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
+//                new  com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest();
 //
 //        beLookupReq.setIdentityApplianceId(new Long(idAppliance.getId()).toString());
 //
-//        org.atricore.idbus.capabilities.management.main.spi.response.LookupIdentityApplianceByIdResponse beLookupRes =
+//        com.atricore.idbus.console.lifecycle.main.spi.response.LookupIdentityApplianceByIdResponse beLookupRes =
 //                null;
 //        try {
 //            beLookupRes = idApplianceManagementService.lookupIdentityApplianceById(beLookupReq);
-//        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+//        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
 //            throw new IdentityServerException(e);
 //        }
 
@@ -253,14 +253,14 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             LookupResourceByIdRequest lookupStoreReq = new LookupResourceByIdRequest();
             lookupStoreReq.setResourceId(new Long(storeId).toString());
 
-            org.atricore.idbus.capabilities.management.main.spi.request.LookupResourceByIdRequest beLookupStoreReq =
-                    dozerMapper.map(lookupStoreReq, org.atricore.idbus.capabilities.management.main.spi.request.LookupResourceByIdRequest.class);
+            com.atricore.idbus.console.lifecycle.main.spi.request.LookupResourceByIdRequest beLookupStoreReq =
+                    dozerMapper.map(lookupStoreReq, com.atricore.idbus.console.lifecycle.main.spi.request.LookupResourceByIdRequest.class);
 
-            org.atricore.idbus.capabilities.management.main.spi.response.LookupResourceByIdResponse beLookupStoreRes = null;
+            com.atricore.idbus.console.lifecycle.main.spi.response.LookupResourceByIdResponse beLookupStoreRes = null;
 
             try {
                 beLookupStoreRes = idApplianceManagementService.lookupResourceById(beLookupStoreReq);
-            } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+            } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
                 throw new IdentityServerException(e);
             }
 
@@ -276,26 +276,26 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
     }
 
     public AddIdentityApplianceResponse addIdentityAppliance(AddIdentityApplianceRequest req) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.AddIdentityApplianceRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.AddIdentityApplianceRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.AddIdentityApplianceRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.AddIdentityApplianceResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.AddIdentityApplianceResponse beRes = null;
         try {
             beRes = idApplianceManagementService.addIdentityAppliance(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, AddIdentityApplianceResponse.class);
     }
 
     public LookupIdentityApplianceByIdResponse lookupIdentityApplianceById(LookupIdentityApplianceByIdRequest req) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.LookupIdentityApplianceByIdResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.LookupIdentityApplianceByIdResponse beRes = null;
         try {
             beRes = idApplianceManagementService.lookupIdentityApplianceById(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, LookupIdentityApplianceByIdResponse.class);
@@ -303,8 +303,8 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
     public UpdateIdentityApplianceResponse updateIdentityAppliance(UpdateIdentityApplianceRequest req) throws IdentityServerException{
         //First find identity appliance in DB
-        org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
-                new  org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest();
+        com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
+                new  com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest();
 
         IdentityAppliance updatedAppliance = prepareApplianceForUpdate(req.getAppliance());
 
@@ -314,16 +314,16 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
     }
 
     private IdentityAppliance prepareApplianceForUpdate(IdentityApplianceDTO updatedApplianceDto) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
-                new  org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest();
+        com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
+                new  com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest();
 
         beLookupReq.setIdentityApplianceId(new Long(updatedApplianceDto.getId()).toString());
 
-        org.atricore.idbus.capabilities.management.main.spi.response.LookupIdentityApplianceByIdResponse beLookupRes =
+        com.atricore.idbus.console.lifecycle.main.spi.response.LookupIdentityApplianceByIdResponse beLookupRes =
                 null;
         try {
             beLookupRes = idApplianceManagementService.lookupIdentityApplianceById(beLookupReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
 
@@ -336,15 +336,15 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
     private UpdateIdentityApplianceResponse updateAppliance(IdentityAppliance appliance) throws IdentityServerException {
         //Prepare Request object for calling BE updateIdentityAppliance method
-        org.atricore.idbus.capabilities.management.main.spi.request.UpdateIdentityApplianceRequest beReq =
-              new org.atricore.idbus.capabilities.management.main.spi.request.UpdateIdentityApplianceRequest();
+        com.atricore.idbus.console.lifecycle.main.spi.request.UpdateIdentityApplianceRequest beReq =
+              new com.atricore.idbus.console.lifecycle.main.spi.request.UpdateIdentityApplianceRequest();
 
         beReq.setAppliance(appliance);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.UpdateIdentityApplianceResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.UpdateIdentityApplianceResponse beRes = null;
         try {
             beRes = idApplianceManagementService.updateIdentityAppliance(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, UpdateIdentityApplianceResponse.class);
@@ -353,44 +353,44 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
     public RemoveIdentityApplianceResponse removeIdentityAppliance(RemoveIdentityApplianceRequest req) throws IdentityServerException{
         //First find identity appliance in DB
-        org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
-                new  org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityApplianceByIdRequest();
+        com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
+                new  com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest();
 
         beLookupReq.setIdentityApplianceId(new Long(req.getIdentityAppliance().getId()).toString());
 
-        org.atricore.idbus.capabilities.management.main.spi.response.LookupIdentityApplianceByIdResponse beLookupRes =
+        com.atricore.idbus.console.lifecycle.main.spi.response.LookupIdentityApplianceByIdResponse beLookupRes =
                 null;
         try {
             beLookupRes = idApplianceManagementService.lookupIdentityApplianceById(beLookupReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
 
         IdentityAppliance foundAppliance = beLookupRes.getIdentityAppliance();
 
         //Prepare Request object for calling BE updateIdentityAppliance method
-        org.atricore.idbus.capabilities.management.main.spi.request.RemoveIdentityApplianceRequest beReq =
-                new org.atricore.idbus.capabilities.management.main.spi.request.RemoveIdentityApplianceRequest();
+        com.atricore.idbus.console.lifecycle.main.spi.request.RemoveIdentityApplianceRequest beReq =
+                new com.atricore.idbus.console.lifecycle.main.spi.request.RemoveIdentityApplianceRequest();
 
         beReq.setIdentityAppliance(foundAppliance);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.RemoveIdentityApplianceResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.RemoveIdentityApplianceResponse beRes = null;
         try {
             beRes = idApplianceManagementService.removeIdentityAppliance(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, RemoveIdentityApplianceResponse.class);
     }
 
     public ListIdentityAppliancesResponse listIdentityAppliances(ListIdentityAppliancesRequest req) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.ListIdentityAppliancesRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ListIdentityAppliancesRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityAppliancesRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityAppliancesRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.ListIdentityAppliancesResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListIdentityAppliancesResponse beRes = null;
         try {
             beRes = idApplianceManagementService.listIdentityAppliances(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ListIdentityAppliancesResponse.class);
@@ -405,26 +405,26 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
     }
 
     public AddResourceResponse addResource(AddResourceRequest req) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.AddResourceRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.AddResourceRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.AddResourceRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.AddResourceRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.AddResourceResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.AddResourceResponse beRes = null;
         try {
             beRes = idApplianceManagementService.addResource(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, AddResourceResponse.class);
     }
 
     public LookupResourceByIdResponse lookupResourceById(LookupResourceByIdRequest req) throws IdentityServerException {
-        org.atricore.idbus.capabilities.management.main.spi.request.LookupResourceByIdRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.LookupResourceByIdRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.LookupResourceByIdRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.LookupResourceByIdRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.LookupResourceByIdResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.LookupResourceByIdResponse beRes = null;
         try {
             beRes = idApplianceManagementService.lookupResourceById(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, LookupResourceByIdResponse.class);
@@ -434,91 +434,91 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
      * List methods
      ***************************/
     public ListIdentityVaultsResponse listIdentityVaults(ListIdentityVaultsRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.ListIdentityVaultsRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ListIdentityVaultsRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityVaultsRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityVaultsRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.ListIdentityVaultsResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListIdentityVaultsResponse beRes = null;
         try {
             beRes = idApplianceManagementService.listIdentityVaults(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ListIdentityVaultsResponse.class);
     }
 
     public ListUserInformationLookupsResponse listUserInformationLookups(ListUserInformationLookupsRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.ListUserInformationLookupsRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ListUserInformationLookupsRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListUserInformationLookupsRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ListUserInformationLookupsRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.ListUserInformationLookupsResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListUserInformationLookupsResponse beRes = null;
         try {
             beRes = idApplianceManagementService.listUserInformationLookups(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ListUserInformationLookupsResponse.class);
     }
 
     public ListAccountLinkagePoliciesResponse listAccountLinkagePolicies(ListAccountLinkagePoliciesRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.ListAccountLinkagePoliciesRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ListAccountLinkagePoliciesRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListAccountLinkagePoliciesRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ListAccountLinkagePoliciesRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.ListAccountLinkagePoliciesResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListAccountLinkagePoliciesResponse beRes = null;
         try {
             beRes = idApplianceManagementService.listAccountLinkagePolicies(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ListAccountLinkagePoliciesResponse.class);
     }
 
     public ListAuthenticationContractsResponse listAuthenticationContracts(ListAuthenticationContractsRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.ListAuthenticationContractsRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ListAuthenticationContractsRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListAuthenticationContractsRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ListAuthenticationContractsRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.ListAuthenticationContractsResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListAuthenticationContractsResponse beRes = null;
         try {
             beRes = idApplianceManagementService.listAuthenticationContracts(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ListAuthenticationContractsResponse.class);
     }
 
     public ListAuthenticationMechanismsResponse listAuthenticationMechanisms(ListAuthenticationMechanismsRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.ListAuthenticationMechanismsRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ListAuthenticationMechanismsRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListAuthenticationMechanismsRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ListAuthenticationMechanismsRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.ListAuthenticationMechanismsResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListAuthenticationMechanismsResponse beRes = null;
         try {
             beRes = idApplianceManagementService.listAuthenticationMechanisms(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ListAuthenticationMechanismsResponse.class);
     }
 
     public ListAttributeProfilesResponse listAttributeProfiles(ListAttributeProfilesRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.ListAttributeProfilesRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ListAttributeProfilesRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListAttributeProfilesRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ListAttributeProfilesRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.ListAttributeProfilesResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListAttributeProfilesResponse beRes = null;
         try {
             beRes = idApplianceManagementService.listAttributeProfiles(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ListAttributeProfilesResponse.class);
     }
 
     public ListAuthAssertionEmissionPoliciesResponse listAuthAssertionEmissionPolicies(ListAuthAssertionEmissionPoliciesRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.ListAuthAssertionEmissionPoliciesRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.ListAuthAssertionEmissionPoliciesRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListAuthAssertionEmissionPoliciesRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ListAuthAssertionEmissionPoliciesRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.ListAuthAssertionEmissionPoliciesResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListAuthAssertionEmissionPoliciesResponse beRes = null;
         try {
             beRes = idApplianceManagementService.listAuthAssertionEmissionPolicies(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ListAuthAssertionEmissionPoliciesResponse.class);
@@ -529,91 +529,91 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
      * Lookup methods
      ***************************/
     public LookupIdentityVaultByIdResponse lookupIdentityVaultById(LookupIdentityVaultByIdRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityVaultByIdRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.LookupIdentityVaultByIdRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityVaultByIdRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityVaultByIdRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.LookupIdentityVaultByIdResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.LookupIdentityVaultByIdResponse beRes = null;
         try {
             beRes = idApplianceManagementService.lookupIdentityVaultById(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, LookupIdentityVaultByIdResponse.class);
     }
 
     public LookupUserInformationLookupByIdResponse lookupUserInformationLookupById(LookupUserInformationLookupByIdRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.LookupUserInformationLookupByIdRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.LookupUserInformationLookupByIdRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.LookupUserInformationLookupByIdRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.LookupUserInformationLookupByIdRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.LookupUserInformationLookupByIdResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.LookupUserInformationLookupByIdResponse beRes = null;
         try {
             beRes = idApplianceManagementService.lookupUserInformationLookupById(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, LookupUserInformationLookupByIdResponse.class);
     }
 
     public LookupAccountLinkagePolicyByIdResponse lookupAccountLinkagePolicyById(LookupAccountLinkagePolicyByIdRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.LookupAccountLinkagePolicyByIdRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.LookupAccountLinkagePolicyByIdRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.LookupAccountLinkagePolicyByIdRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.LookupAccountLinkagePolicyByIdRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.LookupAccountLinkagePolicyByIdResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.LookupAccountLinkagePolicyByIdResponse beRes = null;
         try {
             beRes = idApplianceManagementService.lookupAccountLinkagePolicyById(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, LookupAccountLinkagePolicyByIdResponse.class);
     }
 
     public LookupAuthenticationContractByIdResponse lookupAuthenticationContractById(LookupAuthenticationContractByIdRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.LookupAuthenticationContractByIdRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.LookupAuthenticationContractByIdRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.LookupAuthenticationContractByIdRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.LookupAuthenticationContractByIdRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.LookupAuthenticationContractByIdResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.LookupAuthenticationContractByIdResponse beRes = null;
         try {
             beRes = idApplianceManagementService.lookupAuthenticationContractById(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, LookupAuthenticationContractByIdResponse.class);
     }
 
     public LookupAuthenticationMechanismByIdResponse lookupAuthenticationMechanismById(LookupAuthenticationMechanismByIdRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.LookupAuthenticationMechanismByIdRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.LookupAuthenticationMechanismByIdRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.LookupAuthenticationMechanismByIdRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.LookupAuthenticationMechanismByIdRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.LookupAuthenticationMechanismByIdResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.LookupAuthenticationMechanismByIdResponse beRes = null;
         try {
             beRes = idApplianceManagementService.lookupAuthenticationMechanismById(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, LookupAuthenticationMechanismByIdResponse.class);
     }
 
     public LookupAttributeProfileByIdResponse lookupAttributeProfileById(LookupAttributeProfileByIdRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.LookupAttributeProfileByIdRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.LookupAttributeProfileByIdRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.LookupAttributeProfileByIdRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.LookupAttributeProfileByIdRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.LookupAttributeProfileByIdResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.LookupAttributeProfileByIdResponse beRes = null;
         try {
             beRes = idApplianceManagementService.lookupAttributeProfileById(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, LookupAttributeProfileByIdResponse.class);
     }
 
     public LookupAuthAssertionEmissionPolicyByIdResponse lookupAuthAssertionEmissionPolicyById(LookupAuthAssertionEmissionPolicyByIdRequest req) throws IdentityServerException{
-        org.atricore.idbus.capabilities.management.main.spi.request.LookupAuthAssertionEmissionPolicyByIdRequest beReq =
-                dozerMapper.map(req,  org.atricore.idbus.capabilities.management.main.spi.request.LookupAuthAssertionEmissionPolicyByIdRequest.class);
+        com.atricore.idbus.console.lifecycle.main.spi.request.LookupAuthAssertionEmissionPolicyByIdRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.LookupAuthAssertionEmissionPolicyByIdRequest.class);
 
-        org.atricore.idbus.capabilities.management.main.spi.response.LookupAuthAssertionEmissionPolicyByIdResponse beRes = null;
+        com.atricore.idbus.console.lifecycle.main.spi.response.LookupAuthAssertionEmissionPolicyByIdResponse beRes = null;
         try {
             beRes = idApplianceManagementService.lookupAuthAssertionEmissionPolicyById(beReq);
-        } catch (org.atricore.idbus.capabilities.management.main.exception.IdentityServerException e) {
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, LookupAuthAssertionEmissionPolicyByIdResponse.class);

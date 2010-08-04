@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<!DOCTYPE orm PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Java Data Objects ORM Metadata 2.0//EN"
+        "http://java.sun.com/dtd/orm_2_0.dtd">
+
+<orm>
+
+    <package name="com.atricore.idbus.console.lifecycle.main.domain">
+
+        <class name="Group" table="IB_GROUP" >
+            <field name="name" >
+                <column allows-null="false"/>
+            </field>
+        </class>
+
+        <class name="User" table="IB_USER">
+            <field name="groups" table="IB_USERGROUPS" />
+        </class>
+
+        <class name="IdentityAppliance" table="IB_IDENTITYAPPLIANCE" />
+
+
+        <class name="IdentityApplianceDeployment" table="IB_IDENTITYAPPLIANCEDEPLOYMENT">
+             <field name="idaus" table="IB_IDAPPLIANCEDEPLOYMENT_UNITS"/>
+        </class>
+
+        <class name="IdentityApplianceUnit" table="IB_IDENTITYAPPLIANCEUNIT">
+            <field name="providers" table="IB_IDAPPLIANCEUNIT_PROVIDERS"/>
+        </class>
+
+        <class name="IdentityServer" detachable="IB_IDENTITYSERVER" />
+
+    </package>
+
+    <package name="com.atricore.idbus.console.lifecycle.main.domain.metadata">
+
+        <class name="IdentityApplianceDefinition" table="IB_IDAPPLIANCEDEFINITION">
+            <field name="name" >
+                <column allows-null="false"/>
+            </field>
+            <field name="providers"/>
+            <!--table="IB_IDAPPLIANCEDEFINITION_PROVIDERS"/>-->
+            <field name="identityVaults" />
+            <!--table="IB_IDAPPLIANCEDEFINITION_VAULTS"/>-->
+        </class>
+
+        <!-- ================================================================= -->
+        <!-- Provider -->
+        <!-- ================================================================= -->
+
+        <class name="Provider" table="IB_PROVIDER"/>
+
+        <class name="LocalProvider" table="IB_LOCALPROVIDER">
+            <field name="channels" table="IB_PROVIDER_CHANNELS"/>
+        </class>
+
+        <class name="RemoteProvider" table="IB_REMOTEPROVIDER"/>
+
+        <class name="ServiceProvider" table="IB_SERVICEPROVIDER"/>
+
+        <class name="IdentityProvider" table="IB_IDENTITYPROVIDER"/>
+
+        <class name="BindingProvider" table="IB_BINDINGPROVIDER"/>
+
+        <!-- ================================================================= -->
+        <!-- Channel -->
+        <!-- ================================================================= -->
+
+        <class name="Channel" table="IB_CHANNEL">
+            <field name="activeBindings" table="IB_CHANNEL_BINDINGS"/>
+            <field name="activeProfiles" table="IB_CHANNEL_PROFILES"/>
+        </class>
+
+        <class name="BindingChannel" table="IB_BINDINGCHANNEL"/>
+
+        <class name="IdentityProviderChannel" table="IB_IDPCHANNEL"/>
+
+        <class name="ServiceProviderChannel" table="IB_SPCHANNEL"/>
+
+        <!-- ================================================================= -->
+        <!-- Identity Vault -->
+        <!-- ================================================================= -->
+
+        <class name="IdentityVault" table="IB_IDENTITYVAULT"/>
+
+        <class name="DbIdentityVault" table="IB_DBIDENTITYVAULT"/>
+
+        <class name="LdapIdentityVault" table="IB_LDAPIDENTITYVAULT"/>
+
+        <!-- ================================================================= -->
+        <!-- Provider Config -->
+        <!-- ================================================================= -->
+
+
+        <class name="AbstractProviderConfig" table="IB_ABSTRACTPROVIDERCONFIG"/>
+
+        <class name="JossoBPConfig" table="IB_JOSSOBPCONFIG" />
+
+        <class name="SamlR2ProviderConfig" table="IB_SAMLR2PROVIDERCONFIG" />
+
+        <class name="SamlR2IDPConfig" table="IB_SAMLR2IDPPROVIDERCONFIG"/>
+
+        <class name="SamlR2SPConfig" table="IB_SAMLR2SPCONFIG" />
+
+        <!-- ================================================================= -->
+        <!-- Other -->
+        <!-- ================================================================= -->
+
+        <class name="Location" table="IB_LOCATION"/>
+
+        <class name="UserInformationLookup" table="IB_USERINFOLOOKUP"/>
+
+        <class name="Resource" table="IB_RESOURCE" />
+
+        <class name="AccountLinkagePolicy" table="IB_ACCOUNTLINKAGEPOLICY" />
+
+        <class name="AuthenticationMechanism" table="IB_AUTHENTICATIONMECHANISM" />
+
+        <class name="AuthenticationContract" table="IB_AUTHENTICATIONCONTRACT" />
+
+        <class name="AttributeProfile" table="IB_ATTRIBUTEPROFILE" />
+
+        <class name="AuthenticationAssertionEmissionPolicy" table="IB_AUTHASSERTIONEMISSIONPOLICY" />
+
+        <class name="Keystore" table="IB_KEYSTORE" />
+
+    </package>
+</orm>

@@ -100,8 +100,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.management</groupId>
-            <artifactId>org.atricore.idbus.capabilities.management.main</artifactId>
+            <groupId>com.atricore.idbus.console.lifecycle</groupId>
+            <artifactId>com.atricore.idbus.console.lifecycle.main</artifactId>
         </dependency>
 
         <dependency>

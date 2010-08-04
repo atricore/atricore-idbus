@@ -21,14 +21,14 @@
 
 package com.atricore.idbus.console.services.test;
 
-import org.atricore.idbus.capabilities.management.support.springmetadata.exception.SpringMetadataManagementException;
-import org.atricore.idbus.capabilities.management.support.springmetadata.impl.SpringMetadataManagerImpl;
-import org.atricore.idbus.capabilities.management.support.springmetadata.model.Bean;
-import org.atricore.idbus.capabilities.management.support.springmetadata.model.Property;
-import org.atricore.idbus.capabilities.management.support.springmetadata.model.Ref;
-import org.atricore.idbus.capabilities.management.support.springmetadata.model.Value;
-import org.atricore.idbus.capabilities.management.support.springmetadata.spi.SpringMetadataManager;
-import org.atricore.idbus.capabilities.management.support.springmetadata.util.BeanUtils;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.exception.SpringMetadataManagementException;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.impl.SpringMetadataManagerImpl;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Property;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Value;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.spi.SpringMetadataManager;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils;
 import org.junit.Before;
 import org.junit.Test;
 

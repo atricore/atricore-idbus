@@ -5,10 +5,10 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.management.main.domain.metadata.Resource;
-import org.atricore.idbus.capabilities.management.main.spi.IdentityApplianceManagementService;
-import org.atricore.idbus.capabilities.management.main.spi.request.AddResourceRequest;
-import org.atricore.idbus.capabilities.management.main.spi.response.AddResourceResponse;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource;
+import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
+import com.atricore.idbus.console.lifecycle.main.spi.request.AddResourceRequest;
+import com.atricore.idbus.console.lifecycle.main.spi.response.AddResourceResponse;
 import org.springframework.web.HttpRequestHandler;
 
 import javax.servlet.ServletException;

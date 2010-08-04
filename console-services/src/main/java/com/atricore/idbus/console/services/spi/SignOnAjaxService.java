@@ -27,7 +27,7 @@ import com.atricore.idbus.console.services.spi.request.UserLoggedRequest;
 import com.atricore.idbus.console.services.spi.response.SignOnResponse;
 import com.atricore.idbus.console.services.spi.response.SignOutResponse;
 import com.atricore.idbus.console.services.spi.response.UserLoggedResponse;
-import org.atricore.idbus.capabilities.management.main.exception.SignOnServiceException;
+import com.atricore.idbus.console.lifecycle.main.exception.SignOnServiceException;
 
 /**
  * Author: Dejan Maric

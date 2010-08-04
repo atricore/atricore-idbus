@@ -29,14 +29,14 @@ package com.atricore.idbus.console.services.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.management.main.impl.ProfileManagementServiceImpl;
-import org.atricore.idbus.capabilities.management.main.impl.UserProvisioningServiceJDOImpl;
-import org.atricore.idbus.capabilities.management.main.spi.ProfileManagementService;
-import org.atricore.idbus.capabilities.management.main.spi.UserProvisioningService;
-import org.atricore.idbus.capabilities.management.main.spi.request.AddUserRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.FindUserByUsernameRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.UpdateUserPasswordRequest;
-import org.atricore.idbus.capabilities.management.main.spi.request.UpdateUserProfileRequest;
+import com.atricore.idbus.console.lifecycle.main.impl.ProfileManagementServiceImpl;
+import com.atricore.idbus.console.lifecycle.main.impl.UserProvisioningServiceJDOImpl;
+import com.atricore.idbus.console.lifecycle.main.spi.ProfileManagementService;
+import com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService;
+import com.atricore.idbus.console.lifecycle.main.spi.request.AddUserRequest;
+import com.atricore.idbus.console.lifecycle.main.spi.request.FindUserByUsernameRequest;
+import com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserPasswordRequest;
+import com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserProfileRequest;
 import org.junit.Before;
 import org.junit.Test;
 

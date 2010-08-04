@@ -39,13 +39,12 @@ import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMedia
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
+import com.atricore.idbus.console.services.dto.IdentityApplianceStateDTO;
+
 import flash.events.Event;
 import flash.events.MouseEvent;
 
-import mx.controls.ButtonBar;
-import mx.controls.buttonBarClasses.ButtonBarButton;
 import mx.events.FlexEvent;
-import mx.events.ItemClickEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
@@ -58,16 +57,7 @@ public class ModelerMediator extends IocMediator {
 
     public static const ORIENTATION_MENU_ITEM_INDEX:int = 3;
 
-    //private static const MODEL_ACTION_BAR_NEW_BUTTON_IDX:int = 0;
-
-    private static const MODEL_ACTION_BAR_BUILD_BUTTON_IDX:int = 0;
-
-    private static const MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX:int = 1;
-
-
     private var _projectProxy:ProjectProxy;
-
-    private var _modelActionToolBar:ButtonBar;
 
     private var _identityAppliance:IdentityApplianceDTO;
 
@@ -106,7 +96,7 @@ public class ModelerMediator extends IocMediator {
             view.btnNew.removeEventListener(MouseEvent.CLICK, handleNewClick);
             view.btnOpen.removeEventListener(MouseEvent.CLICK, handleOpenClick);
             view.btnSave.removeEventListener(MouseEvent.CLICK, handleSaveClick);
-            _modelActionToolBar.removeEventListener(ItemClickEvent.ITEM_CLICK, handleModelActionToolBarClick);
+            view.btnLifecycle.removeEventListener(MouseEvent.CLICK, handleLifecycleClick);
         }
 
         (p_viewComponent as ModelerView).addEventListener(FlexEvent.SHOW, init);
@@ -120,22 +110,20 @@ public class ModelerMediator extends IocMediator {
 
         projectProxy.currentView = viewName;
 
-        _modelActionToolBar = view.modelActionToolBar;
+        sendNotification(ApplicationFacade.CLEAR_MSG);
 
         if (projectProxy.currentIdentityAppliance != null) {
             sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
             enableIdentityApplianceActionButtons();
         } else {
-            //(_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_NEW_BUTTON_IDX) as ButtonBarButton).enabled = true;
-            (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_BUILD_BUTTON_IDX) as ButtonBarButton).enabled = false;
-            (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX) as ButtonBarButton).enabled = false;
+            view.btnLifecycle.enabled = false;
         }
 
         view.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
         view.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
         view.btnSave.addEventListener(MouseEvent.CLICK, handleSaveClick);
-        _modelActionToolBar.addEventListener(ItemClickEvent.ITEM_CLICK, handleModelActionToolBarClick);
-
+        view.btnLifecycle.addEventListener(MouseEvent.CLICK, handleLifecycleClick);
+        
         view.appliances.labelFunction = applianceListLabelFunc;
         view.btnSave.enabled = false;
 
@@ -169,16 +157,15 @@ public class ModelerMediator extends IocMediator {
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
     }
 
-    private function handleModelActionToolBarClick(event:ItemClickEvent):void {
-        if (event.index == 0) {
-            trace("Build Button Click: " + event);
-            sendNotification(BuildApplianceMediator.RUN);
-        } else if (event.index == 1) {
-            trace("Deploy Button Click: " + event);
-            sendNotification(DeployApplianceMediator.RUN);
+    private function handleLifecycleClick(event:MouseEvent):void {
+        trace("Lifecycle Button Click: " + event);
+        if (view.btnSave.enabled) {
+            sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "Identity appliance not saved!");
+        } else {
+            sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE);
         }
     }
-
+    
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
             ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT,
@@ -266,7 +253,9 @@ public class ModelerMediator extends IocMediator {
                 popupManager.showUploadProgressWindow(notification);
                 break;
             case ApplicationFacade.IDENTITY_APPLIANCE_CHANGED:
-                view.btnSave.enabled = true;
+                if (projectProxy.currentIdentityAppliance.state == IdentityApplianceStateDTO.PROJECTED.name) {
+                    view.btnSave.enabled = true;
+                }
                 break;
             case ProcessingMediator.START:
                 popupManager.showProcessingWindow(notification);
@@ -282,6 +271,7 @@ public class ModelerMediator extends IocMediator {
                 break;
             case LookupIdentityApplianceByIdCommand.SUCCESS:
                 view.btnSave.enabled = false;
+                view.btnLifecycle.enabled = false;
                 enableIdentityApplianceActionButtons();
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
@@ -324,11 +314,10 @@ public class ModelerMediator extends IocMediator {
     }
 
     private function enableIdentityApplianceActionButtons():void {
-        (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_BUILD_BUTTON_IDX) as ButtonBarButton).enabled = true;
-        (_modelActionToolBar.getChildAt(MODEL_ACTION_BAR_DEPLOY_BUTTON_IDX) as ButtonBarButton).enabled = true;
-
-        // TODO: associate behavior to build and deploy buttons
-
+        var appliance:IdentityApplianceDTO = projectProxy.currentIdentityAppliance;
+        if (appliance != null && appliance.idApplianceDeployment == null) {
+            view.btnLifecycle.enabled = true;
+        }
     }
 
     private function applianceListLabelFunc(item:Object):String {

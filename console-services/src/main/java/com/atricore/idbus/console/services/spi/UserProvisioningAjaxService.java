@@ -23,10 +23,10 @@ package com.atricore.idbus.console.services.spi;
 
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
-import org.atricore.idbus.capabilities.management.main.exception.GroupNotFoundException;
-import org.atricore.idbus.capabilities.management.main.exception.ProvisioningBusinessException;
-//import org.atricore.idbus.capabilities.management.main.spi.request.*;
-//import org.atricore.idbus.capabilities.management.main.spi.response.*;
+import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundException;
+import com.atricore.idbus.console.lifecycle.main.exception.ProvisioningBusinessException;
+//import com.atricore.idbus.console.lifecycle.main.spi.request.*;
+//import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 
 /**
  * Author: Dejan Maric

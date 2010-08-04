@@ -82,6 +82,7 @@ public class BuildApplianceMediator extends IocFormMediator
         switch (notification.getName()) {
             case BuildIdentityApplianceCommand.SUCCESS:
                 if (projectProxy.currentView == ModelerMediator.viewName) {
+                    projectProxy.currentIdentityAppliance = projectProxy.commandResultIdentityAppliance;
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                     var msg:String = "Appliance has been successfully built.";

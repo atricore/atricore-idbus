@@ -184,15 +184,15 @@
                             WEB-INF/lib/blazeds-common-3.0.jar,
                             WEB-INF/lib/blazeds-core-3.0.jar,
                             WEB-INF/lib/blazeds-remoting-3.0.jar,
-                            <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.main-1.0.0-SNAPSHOT.jar,-->
+                            <!--WEB-INF/lib/com.atricore.idbus.console.lifecycle.main-1.0.0-SNAPSHOT.jar,-->
                             WEB-INF/lib/dozer-5.2.2.jar,
                             WEB-INF/lib/console-services-1.0.0-SNAPSHOT.jar,
-                            <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.support.springmetadata-1.0.0-SNAPSHOT.jar-->
+                            <!--WEB-INF/lib/com.atricore.idbus.console.lifecycle.support.springmetadata-1.0.0-SNAPSHOT.jar-->
                             <!--WEB-INF/lib/org.atricore.idbus.bundles.datanucleus-core-v2_0_3-1.0.0-SNAPSHOT.jar,-->
                             <!--WEB-INF/lib/org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3-1.0.0-SNAPSHOT.jar-->
                         </Bundle-ClassPath>
                         <Require-Bundle>
-                            org.atricore.idbus.capabilities.management.main
+                            com.atricore.idbus.console.lifecycle.main
                         </Require-Bundle>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
@@ -231,14 +231,14 @@
                             org.atricore.idbus.bundles.apache.derby,
                             org.atricore.idbus.kernel.common.support.osgi,
                             org.atricore.idbus.kernel.main.authn.util,
-                            org.atricore.idbus.capabilities.management.main.domain,
-                            org.atricore.idbus.capabilities.management.main.domain.metadata,
-                            org.atricore.idbus.capabilities.management.main.exception,
-                            org.atricore.idbus.capabilities.management.main.impl,
-                            org.atricore.idbus.capabilities.management.main.spi,
-                            org.atricore.idbus.capabilities.management.main.spi.request,
-                            org.atricore.idbus.capabilities.management.main.spi.response,
-                            org.atricore.idbus.capabilities.management.main.util,
+                            com.atricore.idbus.console.lifecycle.main.domain,
+                            com.atricore.idbus.console.lifecycle.main.domain.metadata,
+                            com.atricore.idbus.console.lifecycle.main.exception,
+                            com.atricore.idbus.console.lifecycle.main.impl,
+                            com.atricore.idbus.console.lifecycle.main.spi,
+                            com.atricore.idbus.console.lifecycle.main.spi.request,
+                            com.atricore.idbus.console.lifecycle.main.spi.response,
+                            com.atricore.idbus.console.lifecycle.main.util,
                             <!--org.apache.derby.jdbc,-->
                             <!--org.hsqldb,-->
                             org.springframework.core.io,
@@ -293,12 +293,12 @@
 
         <!--<dependency>-->
             <!--<groupId>${project.groupId}</groupId>-->
-            <!--<artifactId>org.atricore.idbus.capabilities.management.support.springmetadata</artifactId>-->
+            <!--<artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>-->
         <!--</dependency>-->
 
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.management</groupId>
-            <artifactId>org.atricore.idbus.capabilities.management.main</artifactId>
+            <groupId>com.atricore.idbus.console.lifecycle</groupId>
+            <artifactId>com.atricore.idbus.console.lifecycle.main</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -555,8 +555,6 @@
                                 <supportedProjectType>war</supportedProjectType>
                             </supportedProjectTypes>
                             <instructions>
-                                <Bundle-Name>Atricore IDBus :: Application : Server Admin Web distribution</Bundle-Name>
-                                <Bundle-Description>Identity Bus Server Admin Web distribution</Bundle-Description>
                                 <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                                 <Bundle-ClassPath>
                                     .,
@@ -566,14 +564,14 @@
                                     WEB-INF/lib/blazeds-common-3.0.jar,
                                     WEB-INF/lib/blazeds-core-3.0.jar,
                                     WEB-INF/lib/blazeds-remoting-3.0.jar,
-                                    <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.main-1.0.0-SNAPSHOT.jar,-->
+                                    <!--WEB-INF/lib/com.atricore.idbus.console.lifecycle.main-1.0.0-SNAPSHOT.jar,-->
                                     WEB-INF/lib/console-services-1.0.0-SNAPSHOT.jar,
-                                    <!--WEB-INF/lib/org.atricore.idbus.capabilities.management.support.springmetadata-1.0.0-SNAPSHOT.jar-->
+                                    <!--WEB-INF/lib/com.atricore.idbus.console.lifecycle.support.springmetadata-1.0.0-SNAPSHOT.jar-->
                                     <!--WEB-INF/lib/org.atricore.idbus.bundles.datanucleus-core-v2_0_3-1.0.0-SNAPSHOT.jar,-->
                                     <!--WEB-INF/lib/org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3-1.0.0-SNAPSHOT.jar-->
                                 </Bundle-ClassPath>
                                 <Require-Bundle>
-                                    org.atricore.idbus.capabilities.management.main
+                                    com.atricore.idbus.console.lifecycle.main
                                 </Require-Bundle>
                                 <Import-Package>
                                     org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
@@ -612,14 +610,14 @@
                                     org.atricore.idbus.bundles.apache.derby,
                                     org.atricore.idbus.kernel.common.support.osgi,
                                     org.atricore.idbus.kernel.main.authn.util,
-                                    org.atricore.idbus.capabilities.management.main.domain,
-                                    org.atricore.idbus.capabilities.management.main.domain.metadata,
-                                    org.atricore.idbus.capabilities.management.main.exception,
-                                    org.atricore.idbus.capabilities.management.main.impl,
-                                    org.atricore.idbus.capabilities.management.main.spi,
-                                    org.atricore.idbus.capabilities.management.main.spi.request,
-                                    org.atricore.idbus.capabilities.management.main.spi.response,
-                                    org.atricore.idbus.capabilities.management.main.util,
+                                    com.atricore.idbus.console.lifecycle.main.domain,
+                                    com.atricore.idbus.console.lifecycle.main.domain.metadata,
+                                    com.atricore.idbus.console.lifecycle.main.exception,
+                                    com.atricore.idbus.console.lifecycle.main.impl,
+                                    com.atricore.idbus.console.lifecycle.main.spi,
+                                    com.atricore.idbus.console.lifecycle.main.spi.request,
+                                    com.atricore.idbus.console.lifecycle.main.spi.response,
+                                    com.atricore.idbus.console.lifecycle.main.util,
                                     <!--org.apache.derby.jdbc,-->
                                     <!--org.hsqldb,-->
                                     org.springframework.core.io,
@@ -677,12 +675,12 @@
 
                 <!--<dependency>-->
                 <!--<groupId>${project.groupId}</groupId>-->
-                <!--<artifactId>org.atricore.idbus.capabilities.management.support.springmetadata</artifactId>-->
+                <!--<artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>-->
                 <!--</dependency>-->
 
                 <dependency>
-                    <groupId>org.atricore.idbus.capabilities.management</groupId>
-                    <artifactId>org.atricore.idbus.capabilities.management.main</artifactId>
+                    <groupId>com.atricore.idbus.console.lifecycle</groupId>
+                    <artifactId>com.atricore.idbus.console.lifecycle.main</artifactId>
                 </dependency>
 
                 <dependency>

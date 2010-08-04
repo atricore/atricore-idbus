@@ -76,7 +76,7 @@ public class StartIdentityApplianceCommand extends IocSimpleCommand implements I
 
     public function result(data:Object):void {
         var resp:StartIdentityApplianceResponse = data.result as StartIdentityApplianceResponse;
-        projectProxy.currentIdentityAppliance = resp.appliance;
+        projectProxy.commandResultIdentityAppliance = resp.appliance;
         sendNotification(SUCCESS);
     }
 

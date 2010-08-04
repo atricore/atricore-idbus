@@ -207,8 +207,8 @@
             </dependency>
 
             <dependency>
-                <groupId>org.atricore.idbus.capabilities.management</groupId>
-                <artifactId>org.atricore.idbus.capabilities.management.main</artifactId>
+                <groupId>com.atricore.idbus.console.lifecycle</groupId>
+                <artifactId>com.atricore.idbus.console.lifecycle.main</artifactId>
                 <version>${pom.version}</version>
             </dependency>
 
@@ -219,8 +219,8 @@
             </dependency>
 
             <dependency>
-                <groupId>org.atricore.idbus.capabilities.management</groupId>
-                <artifactId>org.atricore.idbus.capabilities.management.support.springmetadata</artifactId>
+                <groupId>com.atricore.idbus.console.lifecycle</groupId>
+                <artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>
                 <version>${pom.version}</version>
             </dependency>
 
@@ -1254,6 +1254,7 @@
 
 
     <modules>
+        <module>console-lifecycle</module>
         <module>console-config</module>
         <module>console-services</module>
         <module>console-lib</module>

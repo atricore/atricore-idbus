@@ -3,12 +3,12 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://dozer.sourceforge.net http://dozer.sourceforge.net/schema/beanmapping.xsd">
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.IdentityAppliance</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance</class-a>
         <class-b>com.atricore.idbus.console.services.dto.IdentityApplianceDTO</class-b>
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.IdentityApplianceDeployment</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment</class-a>
         <class-b>com.atricore.idbus.console.services.dto.IdentityApplianceDeploymentDTO</class-b>
         <field relationship-type="non-cumulative" remove-orphans="true">
             <a>idaus</a>
@@ -17,15 +17,15 @@
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.IdentityApplianceUnit</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceUnit</class-a>
         <class-b>com.atricore.idbus.console.services.dto.IdentityApplianceUnitDTO</class-b>
         <field relationship-type="non-cumulative" remove-orphans="true">
             <a>providers</a>
             <b>providers</b>
             <a-hint>
-                org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProvider,
-                org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProvider,
-                org.atricore.idbus.capabilities.management.main.domain.metadata.BindingProvider
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingProvider
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
@@ -36,16 +36,16 @@
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityApplianceDefinition</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition</class-a>
         <class-b>com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO</class-b>
         <field relationship-type="non-cumulative" remove-orphans="true">
               <a>providers</a>
               <b>providers</b>
               <a-hint>
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProvider,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProvider,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.BindingProvider
-            </a-hint>
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingProvider
+              </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderDTO,
@@ -56,8 +56,8 @@
             <a>identityVaults</a>
             <b>identityVaults</b>
             <a-hint>
-                org.atricore.idbus.capabilities.management.main.domain.metadata.DbIdentityVault,
-                org.atricore.idbus.capabilities.management.main.domain.metadata.LdapIdentityVault
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DbIdentityVault,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.LdapIdentityVault
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.DbIdentityVaultDTO,
@@ -75,16 +75,16 @@
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.LocalProvider</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.LocalProvider</class-a>
         <class-b>com.atricore.idbus.console.services.dto.LocalProviderDTO</class-b>
         <field relationship-type="non-cumulative" remove-orphans="true">
               <a>channels</a>
               <b>channels</b>
               <a-hint>
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProviderChannel,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProviderChannel,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.BindingChannel
-            </a-hint>
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProviderChannel,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingChannel
+              </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO,
@@ -95,10 +95,10 @@
             <a>defaultChannel</a>
             <b>defaultChannel</b>
               <a-hint>
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProviderChannel,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProviderChannel,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.BindingChannel
-            </a-hint>
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProviderChannel,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingChannel
+              </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO,
@@ -109,11 +109,11 @@
             <a>config</a>
             <b>config</b>
               <a-hint>
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.JossoBPConfig,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2ProviderConfig,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2IDPConfig,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2SPConfig
-            </a-hint>
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.JossoBPConfig,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2IDPConfig,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2SPConfig
+              </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.JossoBPConfigDTO,
                   com.atricore.idbus.console.services.dto.SamlR2ProviderConfigDTO,
@@ -124,16 +124,16 @@
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProvider</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider</class-a>
         <class-b>com.atricore.idbus.console.services.dto.IdentityProviderDTO</class-b>
         <field relationship-type="non-cumulative" remove-orphans="true">
               <a>channels</a>
               <b>channels</b>
               <a-hint>
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProviderChannel,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProviderChannel,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.BindingChannel
-            </a-hint>
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProviderChannel,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingChannel
+              </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO,
@@ -144,10 +144,10 @@
             <a>defaultChannel</a>
             <b>defaultChannel</b>
               <a-hint>
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProviderChannel,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProviderChannel,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.BindingChannel
-            </a-hint>
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProviderChannel,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingChannel
+              </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO,
@@ -158,11 +158,11 @@
             <a>config</a>
             <b>config</b>
               <a-hint>
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.JossoBPConfig,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2ProviderConfig,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2IDPConfig,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2SPConfig
-            </a-hint>
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.JossoBPConfig,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2IDPConfig,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2SPConfig
+              </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.JossoBPConfigDTO,
                   com.atricore.idbus.console.services.dto.SamlR2ProviderConfigDTO,
@@ -173,16 +173,16 @@
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProvider</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider</class-a>
         <class-b>com.atricore.idbus.console.services.dto.ServiceProviderDTO</class-b>
         <field relationship-type="non-cumulative" remove-orphans="true">
               <a>channels</a>
               <b>channels</b>
               <a-hint>
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProviderChannel,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProviderChannel,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.BindingChannel
-            </a-hint>
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProviderChannel,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingChannel
+              </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO,
@@ -193,10 +193,10 @@
             <a>defaultChannel</a>
             <b>defaultChannel</b>
               <a-hint>
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProviderChannel,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProviderChannel,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.BindingChannel
-            </a-hint>
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProviderChannel,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingChannel
+              </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO,
@@ -207,11 +207,11 @@
             <a>config</a>
             <b>config</b>
               <a-hint>
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.JossoBPConfig,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2ProviderConfig,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2IDPConfig,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2SPConfig
-            </a-hint>
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.JossoBPConfig,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2IDPConfig,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2SPConfig
+              </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.JossoBPConfigDTO,
                   com.atricore.idbus.console.services.dto.SamlR2ProviderConfigDTO,
@@ -223,7 +223,7 @@
             <a>bindingChannel</a>
             <b>bindingChannel</b>
             <a-hint>
-                org.atricore.idbus.capabilities.management.main.domain.metadata.BindingChannel
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingChannel
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.BindingChannelDTO
@@ -232,13 +232,13 @@
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.BindingProvider</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingProvider</class-a>
         <class-b>com.atricore.idbus.console.services.dto.BindingProviderDTO</class-b>
         <field>
             <a>bindingChannel</a>
             <b>bindingChannel</b>
             <a-hint>
-                org.atricore.idbus.capabilities.management.main.domain.metadata.BindingChannel
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingChannel
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.BindingChannelDTO
@@ -247,16 +247,16 @@
     </mapping>
     
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.Organization</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Organization</class-a>
         <class-b>com.atricore.idbus.console.services.dto.OrganizationDTO</class-b>
         <field relationship-type="non-cumulative" remove-orphans="true">
               <a>providers</a>
               <b>providers</b>
               <a-hint>
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProvider,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProvider,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.BindingProvider
-            </a-hint>
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingProvider
+              </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderDTO,
@@ -266,7 +266,7 @@
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.Channel</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Channel</class-a>
         <class-b>com.atricore.idbus.console.services.dto.ChannelDTO</class-b>
         <field relationship-type="non-cumulative" remove-orphans="true">
             <a>activeBindings</a>
@@ -280,10 +280,10 @@
             <a>target</a>
             <b>target</b>
               <a-hint>
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProvider,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProvider,
-                  org.atricore.idbus.capabilities.management.main.domain.metadata.BindingProvider
-            </a-hint>
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingProvider
+              </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderDTO,
@@ -293,14 +293,14 @@
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.IdentityProviderChannel</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProviderChannel</class-a>
         <class-b>com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO</class-b>
         <field>
             <a>identityVault</a>
             <b>identityVault</b>
             <a-hint>
-                org.atricore.idbus.capabilities.management.main.domain.metadata.DbIdentityVault,
-                org.atricore.idbus.capabilities.management.main.domain.metadata.LdapIdentityVault
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DbIdentityVault,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.LdapIdentityVault
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.DbIdentityVaultDTO,
@@ -310,14 +310,14 @@
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.ServiceProviderChannel</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel</class-a>
         <class-b>com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO</class-b>
         <field>
             <a>identityVault</a>
             <b>identityVault</b>
             <a-hint>
-                org.atricore.idbus.capabilities.management.main.domain.metadata.DbIdentityVault,
-                org.atricore.idbus.capabilities.management.main.domain.metadata.LdapIdentityVault
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.DbIdentityVault,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.LdapIdentityVault
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.DbIdentityVaultDTO,
@@ -327,30 +327,30 @@
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.BindingChannel</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingChannel</class-a>
         <class-b>com.atricore.idbus.console.services.dto.BindingChannelDTO</class-b>
     </mapping>
 
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.DbIdentityVault</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.DbIdentityVault</class-a>
         <class-b>com.atricore.idbus.console.services.dto.DbIdentityVaultDTO</class-b>
         <field>
             <a>driver</a>
             <b>driver</b>
-            <a-hint>org.atricore.idbus.capabilities.management.main.domain.metadata.Resource</a-hint>
+            <a-hint>com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource</a-hint>
             <b-hint>com.atricore.idbus.console.services.dto.ResourceDTO</b-hint>
         </field>
         <field>
             <a>userInformationLookup</a>
             <b>userInformationLookup</b>
-            <a-hint>org.atricore.idbus.capabilities.management.main.domain.metadata.UserInformationLookup</a-hint>
+            <a-hint>com.atricore.idbus.console.lifecycle.main.domain.metadata.UserInformationLookup</a-hint>
             <b-hint>com.atricore.idbus.console.services.dto.UserInformationLookupDTO</b-hint>
         </field>
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.Resource</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource</class-a>
         <class-b>com.atricore.idbus.console.services.dto.ResourceDTO</class-b>
         <field  copy-by-reference="true">
             <a>value</a>
@@ -359,22 +359,22 @@
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2ProviderConfig</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig</class-a>
         <class-b>com.atricore.idbus.console.services.dto.SamlR2ProviderConfigDTO</class-b>
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2IDPConfig</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2IDPConfig</class-a>
         <class-b>com.atricore.idbus.console.services.dto.SamlR2IDPConfigDTO</class-b>
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.SamlR2SPConfig</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2SPConfig</class-a>
         <class-b>com.atricore.idbus.console.services.dto.SamlR2SPConfigDTO</class-b>
     </mapping>
 
     <mapping>
-        <class-a>org.atricore.idbus.capabilities.management.main.domain.metadata.Keystore</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore</class-a>
         <class-b>com.atricore.idbus.console.services.dto.KeystoreDTO</class-b>
     </mapping>    
     
@@ -382,7 +382,7 @@
 
     <!--<mapping>-->
         <!--<class-a>org.atricore.idbus.applications.server.services.spi.request.GetUsersByGroupRequest</class-a>-->
-        <!--<class-b>org.atricore.idbus.capabilities.management.main.spi.request.GetUsersByGroupRequest</class-b>-->
+        <!--<class-b>com.atricore.idbus.console.lifecycle.main.spi.request.GetUsersByGroupRequest</class-b>-->
     <!--</mapping>-->
 
 </mappings>

@@ -75,7 +75,7 @@ public class DeployIdentityApplianceCommand extends IocSimpleCommand implements 
 
     public function result(data:Object):void {
         var resp:DeployIdentityApplianceResponse = data.result as DeployIdentityApplianceResponse;
-        projectProxy.currentIdentityAppliance = resp.appliance;
+        projectProxy.commandResultIdentityAppliance = resp.appliance;
         sendNotification(SUCCESS);
     }
 
