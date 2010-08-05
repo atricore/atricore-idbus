@@ -96,7 +96,7 @@
     </bean>
 
 
-    <!-- Should be exported by Spring reference ID value must match the one used to export the service! -->
+    <!-- Should be exported by Spring. Reference ID value must match the one used to export the service! -->
     <reference id="idApplianceManagementService"
                interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"
                availability="mandatory"
