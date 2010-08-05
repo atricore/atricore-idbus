@@ -92,6 +92,7 @@
         <log4j.version>1.2.14</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
         <ravis.version>1.0.0.RC2</ravis.version>
+        <ravis.version>1.0.0.RC2-20100628</ravis.version>
         <spring.security.version>2.0.4</spring.security.version>
         <spring.version>2.5.6.SEC01</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
