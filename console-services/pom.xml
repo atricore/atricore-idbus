@@ -105,6 +105,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.atricore.idbus.console.activation</groupId>
+            <artifactId>com.atricore.idbus.console.activation.main</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
             <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
             <scope>provided</scope>

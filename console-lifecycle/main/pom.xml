@@ -261,8 +261,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>Atricore Identity Bus Console :: Lifecycle</Bundle-Name>
-                        <Bundle-Description>Atricore Identity Bus Console :: Lifecycle</Bundle-Description>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             com.atricore.idbus.console.lifecycle.main.*; version="${pom.version}",

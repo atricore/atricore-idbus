@@ -24,6 +24,9 @@
     <osgi:reference id="signOnServiceBean" cardinality="1..1" timeout="60"
                 interface="com.atricore.idbus.console.lifecycle.main.spi.SignOnService"/>
 
+    <osgi:reference id="activationServiceBean" cardinality="1..1" timeout="60"
+                interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
+
 
     <bean id="applicationServerInitialization" class="com.atricore.idbus.console.services.util.ApplicationServerInitialization">
         <property name="userProvisioningService" ref="userProvisioningServiceManagerBean"/>        
@@ -60,6 +63,12 @@
     <bean id="signOnAjaxServiceBean" class="com.atricore.idbus.console.services.impl.SignOnAjaxServiceImpl">
         <property name="signOnService" ref="signOnServiceBean"/>
         <property name="dozerMapper" ref="dozerMapper" />
+    </bean>
+
+    <bean id="activationAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ActivationAjaxServiceImpl">
+        <property name="activationService" ref="activationServiceBean"/>
+        <property name="dozerMapper" ref="dozerMapper" />
+
     </bean>
 
     <bean id="userProvisioningAjaxServiceBean" class="com.atricore.idbus.console.services.impl.UserProvisioningAjaxServiceImpl">

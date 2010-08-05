@@ -244,7 +244,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${artifactId}</Bundle-SymbolicName>
-                        <Export-Package>${pom.artifactId}*;version=${project.version}</Export-Package>
+                        <Export-Package>com.atricore.idbus.console.activation.main.*; version="${pom.version}",</Export-Package>
                         <Import-Package>
                             !${pom.artifactId}*,
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,

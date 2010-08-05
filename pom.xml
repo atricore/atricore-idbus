@@ -211,6 +211,13 @@
             </dependency>
 
             <dependency>
+                <groupId>com.atricore.idbus.console.activation</groupId>
+                <artifactId>com.atricore.idbus.console.activation.main</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+            
+
+            <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-services</artifactId>
                 <version>${pom.version}</version>
