@@ -21,9 +21,7 @@
 
 package com.atricore.idbus.console.services.spi.request;
 
-import com.atricore.idbus.console.lifecycle.main.spi.request.AbstractManagementRequest;
-
-public class FindGroupByNameRequest extends AbstractManagementRequest {
+public class FindGroupByNameRequest extends AbstractProvisioningRequest {
 
     private String name;
 

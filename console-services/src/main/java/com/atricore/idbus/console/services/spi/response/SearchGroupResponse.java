@@ -22,12 +22,11 @@
 package com.atricore.idbus.console.services.spi.response;
 
 import com.atricore.idbus.console.services.dto.GroupDTO;
-import com.atricore.idbus.console.lifecycle.main.spi.response.AbstractManagementResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchGroupResponse extends AbstractManagementResponse {
+public class SearchGroupResponse extends AbstractProvisioningResponse {
 
     private List<GroupDTO> groups;
 

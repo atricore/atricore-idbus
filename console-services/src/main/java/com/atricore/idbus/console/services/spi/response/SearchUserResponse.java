@@ -22,12 +22,11 @@
 package com.atricore.idbus.console.services.spi.response;
 
 import com.atricore.idbus.console.services.dto.UserDTO;
-import com.atricore.idbus.console.lifecycle.main.spi.response.AbstractManagementResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchUserResponse extends AbstractManagementResponse {
+public class SearchUserResponse extends AbstractProvisioningResponse {
 
     private List<UserDTO> users;
 

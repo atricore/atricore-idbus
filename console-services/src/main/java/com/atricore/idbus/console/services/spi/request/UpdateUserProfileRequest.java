@@ -21,10 +21,7 @@
 
 package com.atricore.idbus.console.services.spi.request;
 
-import com.atricore.idbus.console.lifecycle.main.spi.request.AbstractManagementRequest;
-
-
-public class UpdateUserProfileRequest extends AbstractManagementRequest {
+public class UpdateUserProfileRequest extends AbstractProvisioningRequest {
 
     private String username;
     private String firstName;

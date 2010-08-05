@@ -21,9 +21,7 @@
 
 package com.atricore.idbus.console.services.spi.request;
 
-import com.atricore.idbus.console.lifecycle.main.spi.request.AbstractManagementRequest;
-
-public class SearchUserRequest extends AbstractManagementRequest {
+public class SearchUserRequest extends AbstractProvisioningRequest {
 
     private String userName;
     private String firstName;

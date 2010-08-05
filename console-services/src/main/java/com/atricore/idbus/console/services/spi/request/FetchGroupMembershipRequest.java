@@ -21,9 +21,7 @@
 
 package com.atricore.idbus.console.services.spi.request;
 
-import com.atricore.idbus.console.lifecycle.main.spi.request.AbstractManagementRequest;
-
-public class FetchGroupMembershipRequest extends AbstractManagementRequest {
+public class FetchGroupMembershipRequest extends AbstractProvisioningRequest {
 
     private String username;
 

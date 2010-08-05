@@ -21,7 +21,5 @@
 
 package com.atricore.idbus.console.services.spi.response;
 
-import com.atricore.idbus.console.lifecycle.main.spi.response.AbstractManagementResponse;
-
-public class RemoveUserResponse extends AbstractManagementResponse {
+public class RemoveUserResponse extends AbstractProvisioningResponse {
 }

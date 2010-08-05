@@ -22,9 +22,8 @@
 package com.atricore.idbus.console.services.spi.response;
 
 import com.atricore.idbus.console.services.dto.UserDTO;
-import com.atricore.idbus.console.lifecycle.main.spi.response.AbstractManagementResponse;
 
-public class FindUserByIdResponse extends AbstractManagementResponse {
+public class FindUserByIdResponse extends AbstractProvisioningResponse {
 
     private UserDTO user;
 

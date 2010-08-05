@@ -22,9 +22,8 @@
 package com.atricore.idbus.console.services.spi.response;
 
 import com.atricore.idbus.console.services.dto.GroupDTO;
-import com.atricore.idbus.console.lifecycle.main.spi.response.AbstractManagementResponse;
 
-public class FindGroupByNameResponse extends AbstractManagementResponse {
+public class FindGroupByNameResponse extends AbstractProvisioningResponse {
 
     private GroupDTO group;
 

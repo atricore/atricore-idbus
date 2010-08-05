@@ -22,11 +22,10 @@
 package com.atricore.idbus.console.services.spi.request;
 
 import com.atricore.idbus.console.services.dto.GroupDTO;
-import com.atricore.idbus.console.lifecycle.main.spi.response.AbstractManagementResponse;
 
 import java.util.Date;
 
-public class AddUserRequest extends AbstractManagementResponse {
+public class AddUserRequest extends AbstractProvisioningRequest {
 
     private long id;
     
