@@ -75,6 +75,10 @@ public class PaletteMediator extends IocMediator {
                     new PaletteEntry("DB Identity Vault", null, "Database Identity Vault Entry", DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE)
 
                 );
+        saml2PaletteDrawer.add(
+                    new PaletteEntry("Connection", null, "Connection Entry", DiagramElementTypes.CONNECTION_ELEMENT_TYPE)
+                
+                );
 
         var pr:PaletteRoot  = new PaletteRoot("Identity Appliance Modeler Palette", null, null);
         pr.add(saml2PaletteDrawer);

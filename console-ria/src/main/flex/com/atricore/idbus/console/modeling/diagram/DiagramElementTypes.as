@@ -27,5 +27,6 @@ public class DiagramElementTypes {
     public static const IDP_CHANNEL_ELEMENT_TYPE:int = 3;
     public static const SP_CHANNEL_ELEMENT_TYPE:int = 4;
     public static const DB_IDENTITY_VAULT_ELEMENT_TYPE = 5;
+    public static const CONNECTION_ELEMENT_TYPE = 6;
 }
 }

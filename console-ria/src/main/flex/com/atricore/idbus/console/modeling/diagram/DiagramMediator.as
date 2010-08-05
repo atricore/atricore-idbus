@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.modeling.diagram
 {
+import com.atricore.idbus.console.components.CustomVisualGraph;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.util.Constants;
@@ -28,6 +29,7 @@ import com.atricore.idbus.console.modeling.browser.model.BrowserModelFactory;
 import com.atricore.idbus.console.modeling.browser.model.BrowserNode;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
+import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
 import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityVaultElementRequest;
@@ -68,7 +70,6 @@ import org.un.cava.birdeye.ravis.graphLayout.data.Graph;
 import org.un.cava.birdeye.ravis.graphLayout.data.INode;
 import org.un.cava.birdeye.ravis.graphLayout.layout.HierarchicalLayouter;
 import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
-import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
 import org.un.cava.birdeye.ravis.graphLayout.visual.edgeRenderers.BaseEdgeRenderer;
 import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;
 
@@ -78,7 +79,7 @@ public class DiagramMediator extends IocMediator {
 
     public static const ORIENTATION_MENU_ITEM_INDEX:int = 3;
 
-    private var _identityApplianceDiagram:VisualGraph;
+    private var _identityApplianceDiagram:CustomVisualGraph;
 
     private var _identityAppliance:IdentityApplianceDTO;
 
@@ -115,6 +116,7 @@ public class DiagramMediator extends IocMediator {
         if (getViewComponent() != null) {
             _identityApplianceDiagram.removeEventListener(VNodeSelectedEvent.VNODE_SELECTED, nodeSelectedEventHandler);
             _identityApplianceDiagram.removeEventListener(VNodeRemoveEvent.VNODE_REMOVE, nodeRemoveEventHandler);
+            _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.VNODES_LINKED, nodesLinkedEventHandler);
         }
 
         super.setViewComponent(viewComponent);
@@ -127,6 +129,7 @@ public class DiagramMediator extends IocMediator {
         _identityApplianceDiagram = view.identityApplianceDiagram;
         _identityApplianceDiagram.addEventListener(VNodeSelectedEvent.VNODE_SELECTED, nodeSelectedEventHandler);
         _identityApplianceDiagram.addEventListener(VNodeRemoveEvent.VNODE_REMOVE, nodeRemoveEventHandler);
+        _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.VNODES_LINKED, nodesLinkedEventHandler);
         _emptyNotationModel = <Graph/>;
 
         resetGraph();
@@ -150,9 +153,14 @@ public class DiagramMediator extends IocMediator {
                 init();
                 break;
             case ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM:
-                if (_currentlySelectedNode != null) {
-                    var elementType:int = notification.getBody() as int;
+                var elementType:int = notification.getBody() as int;
 
+                if (_applianceId != null && elementType == DiagramElementTypes.CONNECTION_ELEMENT_TYPE) {
+                    _identityApplianceDiagram.enterConnectionMode();
+                    break;
+                }
+
+                if (_currentlySelectedNode != null) {
 
                     switch (elementType) {
                         case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
@@ -234,7 +242,7 @@ public class DiagramMediator extends IocMediator {
                                         );
 
                                 // this notification will be grabbed by the modeler mediator which will open
-                                // the corresponding form                                
+                                // the corresponding form
                                 sendNotification(ApplicationFacade.CREATE_DB_IDENTITY_VAULT_ELEMENT, civ);
                             }
 
@@ -438,6 +446,8 @@ public class DiagramMediator extends IocMediator {
 
         _identityApplianceDiagram.draw();
         _identityApplianceDiagram.refresh();
+
+        _identityApplianceDiagram.exitConnectionMode();
     }
 
     private function nodeSelectedEventHandler(event:VNodeSelectedEvent):void
@@ -481,9 +491,23 @@ public class DiagramMediator extends IocMediator {
                 elementType = DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE;
             }
             //TODO - add other element types
-            
+
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE, elementType);
         }
+    }
+
+    private function nodesLinkedEventHandler(event:VNodesLinkedEvent):void {
+        var node1:IVisualNode = event.vnode1;
+        var node2:IVisualNode = event.vnode2;
+
+        // TODO: link node1.data and node2.data
+        if ((node1.data is IdentityProviderDTO && node2.data is ServiceProviderDTO) ||
+                (node1.data is ServiceProviderDTO && node2.data is IdentityProviderDTO)) {
+            // connect IDP and SP
+        }
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
     }
 
     private function toggleUnselectedNodesOff(visualCompToCheck:Object, selectedItem:Object):void {
