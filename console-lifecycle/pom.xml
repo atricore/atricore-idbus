@@ -43,60 +43,6 @@
         <maven>2.0.9</maven>
     </prerequisites>
 
-    <properties>
-
-        <atricore.idbus.version>1.0.0-SNAPSHOT</atricore.idbus.version>
-
-        <idbus.kernel.version>1.0.0-SNAPSHOT</idbus.kernel.version>
-        <idbus.cap.saml2.version>1.0.0-SNAPSHOT</idbus.cap.saml2.version>
-        <idbus.cap.josso.version>1.0.0-SNAPSHOT</idbus.cap.josso.version>
-        <idbus.cap.sts.version>1.0.0-SNAPSHOT</idbus.cap.sts.version>
-
-        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.0.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
-        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
-        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.datanucleus-core-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_3.version>
-        <idbus.bundle.datanucleus-rdbms-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_3.version>
-        <idbus.bundle.apache-maven-v3_0.version>1.0.0-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
-        <idbus.bundle.josso-ws-v1_2.version>1.0.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
-
-        <idbus.idojo.dbidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.dbidentitystore.version>
-        <idbus.idojo.ehcachesessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.ehcachesessionstore.version>
-        <idbus.idojo.ldapidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
-        <idbus.idojo.memoryidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.memoryidentitystore.version>
-        <idbus.idojo.memorysessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.memorysessionstore.version>
-        <idbus.idojo.serializedsessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
-        <idbus.idojo.strongauthscheme.version>1.0.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
-
-        <apache.derby.version>10.5.3.0_1</apache.derby.version>
-        <apache.tiles.version>2.0.6</apache.tiles.version>
-        <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
-        <commons-vfs.version>1.0_1</commons-vfs.version>
-        <commons-lang.version>2.4</commons-lang.version>
-        <datanucleus.version>2.0.3</datanucleus.version>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
-        <felix.osgi.version>1.4.0</felix.osgi.version>
-        <hsqldb.version>1.8.0.9</hsqldb.version>
-        <javax.jdo2.version>2.3-ec</javax.jdo2.version>
-        <javax.portlet.version>1.0.0</javax.portlet.version>
-        <javax.servlet.version>2.5</javax.servlet.version>
-        <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
-        <junit.version>4.4</junit.version>
-        <karaf.version>1.4.0</karaf.version>
-        <log4j.version>1.2.16</log4j.version>
-        <mysql.connector.version>5.1.10</mysql.connector.version>
-        <spring.security.version>2.0.4</spring.security.version>
-        <spring.version>2.5.6.SEC01</spring.version>
-        <spring.osgi.version>1.2.0</spring.osgi.version>
-        <velocity.version>1.6.2</velocity.version>
-        <xbean.version>3.5</xbean.version>
-        <xalan.version>2.7.1</xalan.version>
-        <xercesImpl.version>2.9.1</xercesImpl.version>
-
-        <bnd.version.policy>[$(version;==;$(@)),$(version;+;$(@)))</bnd.version.policy>
-        
-    </properties>
-
     <dependencyManagement>
 
         <dependencies>
@@ -161,7 +107,7 @@
                 <artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>
                 <version>${pom.version}</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>com.atricore.idbus.console.lifecycle</groupId>
                 <artifactId>com.atricore.idbus.console.lifecycle.main</artifactId>
@@ -287,59 +233,59 @@
             </dependency>
 
             <dependency>
-                 <groupId>org.springframework.osgi</groupId>
-                 <artifactId>spring-osgi-core</artifactId>
-                 <version>${spring.osgi.version}</version>
-                 <exclusions>
-                     <!-- We want our own spring version! -->
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>spring-core</artifactId>
-                     </exclusion>
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>spring-context</artifactId>
-                     </exclusion>
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>spring-beans</artifactId>
-                     </exclusion>
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>spring-aop</artifactId>
-                     </exclusion>
+                <groupId>org.springframework.osgi</groupId>
+                <artifactId>spring-osgi-core</artifactId>
+                <version>${spring.osgi.version}</version>
+                <exclusions>
+                    <!-- We want our own spring version! -->
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-context</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-beans</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-aop</artifactId>
+                    </exclusion>
 
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>org.springframework.core</artifactId>
-                     </exclusion>
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>org.springframework.context</artifactId>
-                     </exclusion>
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>org.springframework.beans</artifactId>
-                     </exclusion>
-                     <exclusion>
-                         <groupId>org.springframework</groupId>
-                         <artifactId>org.springframework.aop</artifactId>
-                     </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>org.springframework.core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>org.springframework.context</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>org.springframework.beans</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>org.springframework.aop</artifactId>
+                    </exclusion>
 
-                 </exclusions>
-             </dependency>
+                </exclusions>
+            </dependency>
 
-             <dependency>
-                 <groupId>org.springframework.osgi</groupId>
-                 <artifactId>spring-osgi-web</artifactId>
-                 <version>${spring.osgi.version}</version>
-                 <exclusions>
-                     <exclusion>
-                         <groupId>org.aopalliance</groupId>
-                         <artifactId>com.springsource.org.aopalliance</artifactId>
-                     </exclusion>
-                 </exclusions>
-             </dependency>
+            <dependency>
+                <groupId>org.springframework.osgi</groupId>
+                <artifactId>spring-osgi-web</artifactId>
+                <version>${spring.osgi.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.aopalliance</groupId>
+                        <artifactId>com.springsource.org.aopalliance</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
 
 
             <dependency>
@@ -491,10 +437,10 @@
             </dependency>
 
             <!--<dependency>-->
-                <!--<groupId>net.sf.dozer</groupId>-->
-                <!--<artifactId>dozer</artifactId>-->
-                <!--<version>5.2.2</version>-->
-                <!--<scope>test</scope>-->
+            <!--<groupId>net.sf.dozer</groupId>-->
+            <!--<artifactId>dozer</artifactId>-->
+            <!--<version>5.2.2</version>-->
+            <!--<scope>test</scope>-->
             <!--</dependency>            -->
 
         </dependencies>
@@ -541,9 +487,9 @@
         </pluginRepository>
 
     </pluginRepositories>
-    
 
-    <modules>				
+
+    <modules>
         <module>support/springmetadata</module>
         <module>main</module>
         <module>command</module>
@@ -568,7 +514,7 @@
                         <maxmem>256M</maxmem>
                         <fork>${compiler.fork}</fork>
                     </configuration>
-                </plugin>                
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins/>

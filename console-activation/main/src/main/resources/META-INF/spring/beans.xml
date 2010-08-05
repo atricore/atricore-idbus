@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+
+    <!-- ===================================================================== -->
+    <!-- Activation componentes                                                -->
+    <!-- ===================================================================== -->
+
+    <!-- Define a DB Server for IDBus Server application                       -->
+    <bean id="activationService"
+          class="com.atricore.idbus.console.activation.main.impl.ActivationServiceImpl" >
+
+        <!-- TODO : Improve -->
+        <property name="jossoVersion" value="1.8.2"/>
+        <property name="printer" ref="printerServiceBean"/>
+        <property name="installers">
+            <list>
+                
+                <ref bean="tc60-installer"/>
+                <ref bean="tc55-installer"/>
+                <ref bean="tc50-installer"/>
+                <ref bean="jb5-installer"/>
+                <ref bean="jb42-installer"/>
+                <ref bean="jb40-installer"/>
+                <ref bean="jb32-installer"/>
+                <ref bean="wl92-installer"/>
+                <ref bean="wl10-installer"/>
+                <ref bean="wc21-installer"/>
+                <ref bean="liferay-installer"/>
+                <ref bean="alfresco-installer"/>
+                
+            </list>
+        </property>
+    </bean>
+
+    <!-- Contribute the DB Server Descriptor using Spring DM -->
+    <osgi:service id="osgiActivationService"
+                  ref="activationService"
+            interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
+    
+    <bean name="printerServiceBean" class="com.atricore.idbus.console.activation.main.impl.MessagePrinterService"/>
+
+    <!-- ============================================== -->
+    <!-- Install Platforms                              -->
+    <!-- ============================================== -->
+
+    <!-- Apache Tomcat 6.0.x -->
+
+    <bean name="tc60-installer" class="org.josso.tooling.gshell.install.installer.TomcatInstaller">
+        
+        
+        <constructor-arg index="0" ref="tc60"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="tc60" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="tc60"/>
+        <property name="family" value="tomcat"/>
+        <property name="platformName" value="Apache Tomcat"/>
+        <property name="version" value="6.0.x"/>
+
+        <property name="binDir" value="${target}/bin"/>
+        <property name="libDir" value="${target}/lib"/>
+        <property name="configDir" value="${target}/conf"/>
+        <property name="deployDir" value="${target}/webapps"/>
+        <property name="endorsedLibDir" value="${target}/lib"/>
+
+        <property name="JOSSOConfDir" value="${target}/lib"/>
+        <property name="JOSSOLibDir" value="${target}/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/lib"/>
+
+        <property name="JOSSOWarName" value="josso"/>
+        <property name="JOSSOWarExploded" value="true"/>
+
+    </bean>
+
+    <!-- Apache Tomcat 5.5.x -->
+
+    <bean name="tc55-installer" class="org.josso.tooling.gshell.install.installer.TomcatInstaller">
+        <constructor-arg index="0" ref="tc55"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="tc55" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="tc55"/>
+        <property name="family" value="tomcat"/>
+        <property name="platformName" value="Apache Tomcat"/>
+        <property name="version" value="5.5.x"/>
+
+        <property name="binDir" value="${target}/bin"/>
+        <property name="libDir" value="${target}/server/lib"/>
+        <property name="configDir" value="${target}/conf"/>
+        <property name="deployDir" value="${target}/webapps"/>
+        <property name="endorsedLibDir" value="${target}/common/endorsed"/>
+
+        <property name="JOSSOConfDir" value="${target}/common/classes"/>
+        <property name="JOSSOLibDir" value="${target}/server/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/common/lib"/>
+
+        <property name="JOSSOWarName" value="josso"/>
+        <property name="JOSSOWarExploded" value="true"/>
+
+    </bean>
+
+    <!-- Apache Tomcat 5.0.x -->
+
+    <bean name="tc50-installer" class="org.josso.tooling.gshell.install.installer.TomcatInstaller">
+        <constructor-arg index="0" ref="tc50"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="tc50" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="tc50"/>
+        <property name="family" value="tomcat"/>
+        <property name="platformName" value="Apache Tomcat"/>
+        <property name="version" value="5.0.x"/>
+
+        <property name="binDir" value="${target}/bin"/>
+        <property name="libDir" value="${target}/server/lib"/>
+        <property name="configDir" value="${target}/conf"/>
+        <property name="deployDir" value="${target}/webapps"/>
+        <property name="endorsedLibDir" value="${target}/common/endorsed"/>
+
+        <property name="JOSSOConfDir" value="${target}/common/classes"/>
+        <property name="JOSSOLibDir" value="${target}/server/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/common/lib"/>
+
+        <property name="JOSSOWarName" value="josso"/>
+        <property name="JOSSOWarExploded" value="true"/>
+
+    </bean>
+
+    <!-- JBoss 5.x -->
+    <bean name="jb5-installer" class="org.josso.tooling.gshell.install.installer.JBossInstaller">
+        <constructor-arg index="0" ref="jb5"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="jb5" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="jb5"/>
+        <property name="family" value="jboss"/>
+        <property name="platformName" value="JBoss AS"/>
+        <property name="version" value="5.x"/>
+
+        <property name="binDir" value="${target}/bin"/>
+        <property name="libDir" value="${target}/server/${instance}/lib"/>
+        <property name="configDir" value="${target}/server/${instance}/conf"/>
+        <property name="deployDir" value="${target}/server/instance/deploy"/>
+        <property name="endorsedLibDir" value="${target}/lib/endorsed"/>
+
+        <property name="JOSSOConfDir" value="${target}/server/${instance}/conf"/>
+        <property name="JOSSOLibDir" value="${target}/server/${instance}/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/server/${instance}/lib"/>
+
+        <property name="JOSSOWarName" value="josso.war"/>
+        <property name="JOSSOWarExploded" value="true"/>
+
+    </bean>
+
+    <!-- JBoss 4.2 -->
+    <bean name="jb42-installer" class="org.josso.tooling.gshell.install.installer.JBossInstaller">
+        <constructor-arg index="0" ref="jb42"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="jb42" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="jb42"/>
+        <property name="family" value="jboss"/>
+        <property name="platformName" value="JBoss AS"/>
+        <property name="version" value="4.2.x"/>
+
+        <property name="binDir" value="${target}/bin"/>
+        <property name="libDir" value="${target}/server/${instance}/lib"/>
+        <property name="configDir" value="${target}/server/${instance}/conf"/>
+        <property name="deployDir" value="${target}/server/instance/deploy"/>
+        <property name="endorsedLibDir" value="${target}/lib/endorsed"/>
+
+        <property name="JOSSOConfDir" value="${target}/server/${instance}/conf"/>
+        <property name="JOSSOLibDir" value="${target}/server/${instance}/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/server/${instance}/lib"/>
+
+        <property name="JOSSOWarName" value="josso.war"/>
+        <property name="JOSSOWarExploded" value="true"/>
+
+    </bean>
+
+    <!-- JBoss 4.0 -->
+    <bean name="jb40-installer" class="org.josso.tooling.gshell.install.installer.JBossInstaller">
+        <constructor-arg index="0" ref="jb40"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="jb40" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="jb40"/>
+        <property name="family" value="jboss"/>
+        <property name="platformName" value="JBoss AS"/>
+        <property name="version" value="4.0.2+"/>
+
+        <property name="binDir" value="${target}/bin"/>
+        <property name="libDir" value="${target}/server/${instance}/lib"/>
+        <property name="configDir" value="${target}/server/${instance}/conf"/>
+        <property name="deployDir" value="${target}/server/instance/deploy"/>
+        <property name="endorsedLibDir" value="${target}/lib/endorsed"/>
+
+        <property name="JOSSOConfDir" value="${target}/server/${instance}/conf"/>
+        <property name="JOSSOLibDir" value="${target}/server/${instance}/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/server/${instance}/lib"/>
+
+        <property name="JOSSOWarName" value="josso.war"/>
+        <property name="JOSSOWarExploded" value="true"/>
+
+    </bean>
+
+    <!-- JBoss 3.2 -->
+    <bean name="jb32-installer" class="org.josso.tooling.gshell.install.installer.JBossInstaller">
+        <constructor-arg index="0" ref="jb32"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+
+    <bean name="jb32" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="jb32"/>
+        <property name="family" value="jboss"/>
+        <property name="platformName" value="JBoss AS"/>
+        <property name="version" value="3.2.6+"/>
+
+        <property name="binDir" value="${target}/bin"/>
+        <property name="libDir" value="${target}/server/${instance}/lib"/>
+        <property name="configDir" value="${target}/server/${instance}/conf"/>
+        <property name="deployDir" value="${target}/server/instance/deploy"/>
+        <property name="endorsedLibDir" value="${target}/lib/endorsed"/>
+
+        <property name="JOSSOConfDir" value="${target}/server/${instance}/conf"/>
+        <property name="JOSSOLibDir" value="${target}/server/${instance}/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/server/${instance}/lib"/>
+
+        <property name="JOSSOWarName" value="josso.war"/>
+        <property name="JOSSOWarExploded" value="true"/>
+
+    </bean>
+
+    <!-- JBoss 3.2 -->
+    <bean name="wl92-installer" class="org.josso.tooling.gshell.install.installer.WeblogicInstaller">
+        <constructor-arg index="0" ref="wl92"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+
+    <bean name="wl92" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="wl92"/>
+        <property name="family" value="weblogic"/>
+        <property name="platformName" value="Weblogic"/>
+        <property name="version" value="9.2+"/>
+
+        <property name="binDir" value="${target}/${domain}/bin"/>
+        <property name="libDir" value="${target}/${domain}/lib"/>
+        <property name="configDir" value="${target}/${domain}/conf"/>
+        <property name="deployDir" value="${target}/${domain}/autodeploy"/>
+        <property name="endorsedLibDir" value="${target}/${domain}/lib"/>
+
+        <property name="JOSSOConfDir" value="${target}/${domain}"/>
+        <property name="JOSSOLibDir" value="${target}/${domain}/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/${domain}/lib"/>
+
+        <property name="JOSSOWarName" value="josso.war"/>
+        <property name="JOSSOWarExploded" value="false"/>
+
+    </bean>
+
+    <!-- Weblogic 10.x-->
+    <bean name="wl10-installer" class="org.josso.tooling.gshell.install.installer.WeblogicInstaller">
+        <constructor-arg index="0" ref="wl10"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+
+    <bean name="wl10" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="wl10"/>
+        <property name="family" value="weblogic"/>
+        <property name="platformName" value="Weblogic"/>
+        <property name="version" value="10.x"/>
+
+        <property name="binDir" value="${target}/${domain}/bin"/>
+        <property name="libDir" value="${target}/${domain}/lib"/>
+        <property name="configDir" value="${target}/${domain}/conf"/>
+        <property name="deployDir" value="${target}/${domain}/autodeploy"/>
+        <property name="endorsedLibDir" value="${target}/${domain}/lib"/>
+
+        <property name="JOSSOConfDir" value="${target}/${domain}"/>
+        <property name="JOSSOLibDir" value="${target}/${domain}/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/${domain}/lib"/>
+
+        <property name="JOSSOWarName" value="josso.war"/>
+        <property name="JOSSOWarExploded" value="false"/>
+
+    </bean>
+
+    <!-- WASCE 2.1 -->
+    <bean name="wc21-installer" class="org.josso.tooling.gshell.install.installer.WasceInstaller">
+        <constructor-arg index="0" ref="wc21"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="wc21" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="wc21"/>
+        <property name="family" value="wasce"/>
+        <property name="platformName" value="Webspehere AS CE"/>
+        <property name="version" value="2.1"/>
+
+        <property name="binDir" value="${target}/bin"/>
+        <property name="libDir" value="${target}/lib"/>
+        <property name="configDir" value="${target}/var/config"/>
+        <property name="deployDir" value="${target}/deploy"/>
+        <property name="endorsedLibDir" value="${target}/lib/endorsed"/>
+
+        <property name="JOSSOConfDir" value="${target}/var/shared/classes"/>
+        <property name="JOSSOLibDir" value="${target}/var/shared/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/var/shared/lib"/>
+
+        <property name="JOSSOWarName" value="josso.war"/>
+        <property name="JOSSOWarExploded" value="false"/>
+
+    </bean>
+
+    <!-- Liferay 5.2.x -->
+    <bean name="liferay-installer" class="org.josso.tooling.gshell.install.installer.LiferayInstaller">
+        <constructor-arg index="0" ref="liferay"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="liferay" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="liferay"/>
+        <property name="family" value="liferay"/>
+        <property name="platformName" value="Liferay Portal"/>
+        <property name="version" value="5.2.x"/>
+
+        <property name="libDir" value="${target}/WEB-INF/lib"/>
+        <property name="configDir" value="${target}/WEB-INF/classes"/>
+    </bean>
+
+    <!-- Alfresco 3.3 -->
+    <bean name="alfresco-installer" class="org.josso.tooling.gshell.install.installer.LiferayInstaller">
+        <constructor-arg index="0" ref="alfresco"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="alfresco" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="alfresco"/>
+        <property name="family" value="alfresco"/>
+        <property name="platformName" value="Alfresco"/>
+        <property name="version" value="3.3"/>
+
+        <property name="libDir" value="${target}/WEB-INF/lib"/>
+        <property name="configDir" value="${target}/WEB-INF/classes"/>
+    </bean>
+    
+
+</beans>
