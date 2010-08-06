@@ -21,28 +21,17 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.request;
 
-import com.atricore.idbus.console.lifecycle.main.spi.response.AbstractManagementResponse;
-
-
 /**
- * Created by IntelliJ IDEA.
- * User: eugenia
- * Date: 19-oct-2009
- * Time: 16:22:58
- * To change this template use File | Settings | File Templates.
+ * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ *
  */
-public class AddGroupRequest extends AbstractManagementResponse {
+public class AddGroupRequest extends AbstractProvisioningRequest {
 
-    private long id;
     private String name;
     private String description;
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+    public AddGroupRequest(String partitionId) {
+        super(partitionId);
     }
 
     public String getName() {

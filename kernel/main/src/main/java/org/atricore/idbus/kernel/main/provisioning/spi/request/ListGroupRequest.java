@@ -28,5 +28,9 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  * Time: 16:23:18
  * To change this template use File | Settings | File Templates.
  */
-public class ListGroupRequest extends AbstractManagementRequest {
+public class ListGroupRequest extends AbstractProvisioningRequest {
+
+    public ListGroupRequest(String partitionId) {
+        super(partitionId);
+    }
 }

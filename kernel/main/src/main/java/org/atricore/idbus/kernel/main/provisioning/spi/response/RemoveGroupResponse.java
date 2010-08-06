@@ -29,5 +29,5 @@ package org.atricore.idbus.kernel.main.provisioning.spi.response;
  * Time: 16:26:43
  * To change this template use File | Settings | File Templates.
  */
-public class RemoveGroupResponse extends AbstractManagementResponse {
+public class RemoveGroupResponse extends AbstractProvisioningResponse {
 }

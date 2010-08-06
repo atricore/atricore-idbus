@@ -25,9 +25,13 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  * User: gnastov
  * email: gnastov@atricore.org
  */
-public class GetUsersByGroupRequest extends AbstractManagementRequest {
+public class GetUsersByGroupRequest extends AbstractProvisioningRequest {
 
     private String group;
+
+    public GetUsersByGroupRequest(String partitionId) {
+        super(partitionId);
+    }
 
     public String getGroup() {
         return group;

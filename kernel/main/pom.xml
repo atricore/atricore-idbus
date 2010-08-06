@@ -47,7 +47,7 @@
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.support</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.html</artifactId>
@@ -57,7 +57,7 @@
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.wst</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.ehcache-v2_1_0</artifactId>
@@ -105,7 +105,7 @@
             <artifactId>ehcache-core</artifactId>
             <scope>provided</scope>
         </dependency>
-        
+
 
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -261,9 +261,32 @@
             </exclusions>
         </dependency>
 
+        <!-- Persistence -->
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.jdo</groupId>
+            <artifactId>jdo2-api</artifactId>
+        </dependency>
+
+
         <!-- Test Dependencies -->
 
         <!-- JAXB -->
+
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
@@ -281,6 +304,24 @@
             <artifactId>log4j</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.apache-derby-client-v10_5_3_0_1</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!--dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <scope>test</scope>
+        </dependency-->
 
     </dependencies>
 
@@ -308,6 +349,52 @@
         </resources>
 
         <plugins>
+
+            <plugin>
+                <groupId>org.datanucleus</groupId>
+                <artifactId>maven-datanucleus-plugin</artifactId>
+                <version>2.0.1</version>
+                <configuration>
+                    <fork>false</fork>
+                    <mappingIncludes>**/*.jdo</mappingIncludes>
+                    <log4jConfiguration>${basedir}/jdo/datanucleus-log4j.properties</log4jConfiguration>
+                    <verbose>true</verbose>
+                    <props>${basedir}/jdo/datanucleus.properties</props>
+                    <outputFile>idbus-kernel-provisioning.ddl</outputFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>enhance</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.datanucleus</groupId>
+                        <artifactId>datanucleus-core</artifactId>
+                        <version>${datanucleus.version}</version>
+                        <scope>runtime</scope>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.datanucleus</groupId>
+                        <artifactId>datanucleus-rdbms</artifactId>
+                        <version>${datanucleus.version}</version>
+                        <scope>runtime</scope>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.datanucleus</groupId>
+                        <artifactId>datanucleus-enhancer</artifactId>
+                        <version>[2.0, 2.0.99)</version>
+                        <scope>runtime</scope>
+                    </dependency>
+
+                </dependencies>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -365,8 +452,9 @@
                             org.atricore.idbus.bundles.ehcache,
                             *
                         </Import-Package>
-                        
-                        <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
+
+                        <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false
+                        </Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>

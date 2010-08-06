@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.response;
 
-import com.atricore.idbus.console.lifecycle.main.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.List;
  * Time: 17:19:33
  * To change this template use File | Settings | File Templates.
  */
-public class SearchUserResponse extends AbstractManagementResponse {
+public class SearchUserResponse extends AbstractProvisioningResponse {
 
     private List<User> users;
 

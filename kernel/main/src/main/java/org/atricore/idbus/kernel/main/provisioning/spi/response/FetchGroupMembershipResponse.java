@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.response;
 
-import com.atricore.idbus.console.lifecycle.main.domain.Group;
+import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 
 /**
  * User: eugenia
@@ -29,7 +29,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.Group;
  * Time: 10:22:02
  * email: erocha@atricore.org
  */
-public class FetchGroupMembershipResponse extends AbstractManagementResponse {
+public class FetchGroupMembershipResponse extends AbstractProvisioningResponse {
 
     private Group[] groups;
 

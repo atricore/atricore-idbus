@@ -27,9 +27,13 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  * Time: 10:22:02
  * email: erocha@atricore.org
  */
-public class FetchGroupMembershipRequest extends AbstractManagementRequest {
+public class FetchGroupMembershipRequest extends AbstractProvisioningRequest {
 
     private String username;
+
+    public FetchGroupMembershipRequest(String partitionId) {
+        super(partitionId);
+    }
 
     public String getUsername() {
         return username;

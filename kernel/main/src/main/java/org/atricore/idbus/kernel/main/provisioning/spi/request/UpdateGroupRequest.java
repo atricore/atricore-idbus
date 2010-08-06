@@ -28,11 +28,15 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  * Time: 16:23:43
  * To change this template use File | Settings | File Templates.
  */
-public class UpdateGroupRequest extends AbstractManagementRequest {
+public class UpdateGroupRequest extends AbstractProvisioningRequest {
 
     long id;
     String name;
     String description;
+
+    public UpdateGroupRequest(String partitionId) {
+        super(partitionId);
+    }
 
     public long getId() {
         return id;

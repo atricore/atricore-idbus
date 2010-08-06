@@ -2,6 +2,7 @@ package org.atricore.idbus.kernel.main.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.derby.drda.NetworkServerControl;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -46,59 +47,5 @@ public class AbstractDBServerTest {
     public static void tearDownClass() throws Exception{
         derbyServer.shutdown();
     }
-
-    protected void assertEquivalent(BeansDefinition b1, BeansDefinition b2) {
-        assert b1.getName().equals(b2.getName()) : "BeanDefinitions name do not match [" + b1.getName() + "/" + b2.getName() + "]";
-
-        // TODO : Other attribues ...
-        assertEquivalent(b1.getBeans(), b2.getBeans());
-
-    }
-
-    protected void assertEquivalent(Beans b1, Beans b2) {
-        assert b1.getImportsAndAliasAndBeen().size() == b2.getImportsAndAliasAndBeen().size();
-
-        // TODO : Add more conditions?
-
-        // Will JDO respect the original order in the list ?
-    }
-
-
-    protected void assertEquivalent(Bean b1, Bean b2) {
-        assert b1.getName().equals(b2.getName());
-        assert b1.getClazz().equals(b2.getClazz());
-        // TODO : more
-    }
-
-
-    protected static BeansDefinition importBeans(String beansDefinitionResource) throws Exception {
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(beansDefinitionResource);
-        assert is != null  : "Beans resource not found " + beansDefinitionResource;
-
-        Beans beans = BeanUtils.unmarshal(is);
-        PersistenceManager pm = pmf.getPersistenceManager();
-        Transaction tx = pm.currentTransaction();
-
-        try {
-            tx.begin();
-
-            BeansDefinition def = new BeansDefinition();
-            def.setName(beansDefinitionResource);
-            def.setBeans(beans);
-
-            pm.makePersistent(def);
-
-            tx.commit();
-
-            return def;
-        } finally {
-            if (tx.isActive()) {
-                logger.warn("Transaction rollback!");
-                tx.rollback();
-            }
-        }
-
-    }
-
 
 }

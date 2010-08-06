@@ -29,5 +29,5 @@ package org.atricore.idbus.kernel.main.provisioning.spi.response;
  * Time: 16:28:27
  * To change this template use File | Settings | File Templates.
  */
-public class UpdateUserResponse extends AbstractManagementResponse {
+public class UpdateUserResponse extends AbstractProvisioningResponse {
 }

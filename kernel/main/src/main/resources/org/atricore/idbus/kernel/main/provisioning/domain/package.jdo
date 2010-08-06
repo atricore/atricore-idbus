@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2010., Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<jdo xmlns="http://java.sun.com/xml/ns/jdo/jdo"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://java.sun.com/xml/ns/jdo/jdo
+        http://java.sun.com/xml/ns/jdo/jdo_2_0.xsd">
+
+
+    <package name="org.atricore.idbus.kernel.main.provisioning.domain">
+
+        <class name="IdentityVault">
+            <inheritance strategy="new-table"/>
+            <field name="id" primary-key="true" value-strategy="native"/>
+            <field name="name">
+                <column name="NAME"  length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="description">
+                <column name="DESCRIPTION" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+        </class>
+
+        <class name="IdentityPartition">
+            <inheritance strategy="new-table"/>
+            <field name="id" primary-key="true" value-strategy="native"/>
+            <field name="name">
+                <column name="NAME"  length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="description">
+                <column name="DESCRIPTION" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="vault" default-fetch-group="true"/>            
+
+        </class>
+
+
+        <class name="Group">
+            <inheritance strategy="new-table"/>
+            <field name="id" primary-key="true" value-strategy="native"/>
+            <field name="name">
+                <column name="NAME"  length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="description">
+                <column name="DESCRIPTION" length="255" jdbc-type="VARCHAR"/>
+            </field>
+        </class>
+
+        <class name="User">
+            <inheritance strategy="new-table"/>
+            <field name="id" primary-key="true" value-strategy="increment"/>
+            <field name="userName">
+                <column name="USERNAME"  length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="firstName">
+                <column name="FIRSTNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="surename">
+                <column name="SURENAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="commonName">
+                <column name="COMMONNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="givenName">
+                <column name="GIVENNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="initials">
+                <column name="INITIALS" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="generationQualifier">
+                <column name="GENERATIONQUALIFIER" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="distinguishedName">
+                <column name="DISTINGUISHEDNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="email">
+                <column name="EMAIL" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="telephoneNumber">
+                <column name="TELEPHONENUMBER"  length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="facsimilTelephoneNumber">
+                <column name="FACSIMILTELEPHONENUMBER" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="countryName">
+                <column name="COUNTRYNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="localityName">
+                <column name="LOCALITYNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="stateOrProvinceName">
+                <column name="STATEORPROVINCENAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="streetAddress">
+                <column name="STREETADDRESS" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="organizationName">
+                <column name="ORGANIZATIONNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="organizationUnitName">
+                <column name="ORGANIZATIONUNITNAME" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="personalTitle">
+                <column name="PERSONALTITLE" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="businessCategory">
+                <column name="BUSINESSCATEGORY" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="postalAddress">
+                <column name="POSTALADDRESS" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="postalCode">
+                <column name="POSTALCODE" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="postOfficeBox">
+                <column name="POSTOFFICEBOX" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="language">
+                <column name="LANGUAGE" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="accountDisabled">
+                <column name="ACCOUNTDISABLED"/>
+            </field>
+            <field name="accountExpires">
+                <column name="ACCOUNTEXPIRES" />
+            </field>
+            <field name="accountExpirationDate">
+                <column name="ACCOUNTEXPIRATIONDATE" jdbc-type="DATE"/>
+            </field>
+            <field name="limitSimultaneousLogin">
+                <column name="LIMITSIMULTANEOUSLOGIN" />
+            </field>
+            <field name="maximunLogins">
+                <column name="MAXIMUNLOGINS" jdbc-type="INTEGER"/>
+            </field>
+            <field name="terminatePreviousSession">
+                <column name="TERMINATEPREVIOUSSESSION"/>
+            </field>
+            <field name="preventNewSession">
+                <column name="PREVENTNEWSESSION" />
+            </field>
+            <field name="allowUserToChangePassword">
+                    <column name="ALLOWUSERTOCHANGEPASSWORD" />
+            </field>
+            <field name="forcePeriodicPasswordChanges">
+                    <column name="FORCEPERIODICPASSWORDCHANGES" />
+            </field>
+            <field name="daysBetweenChanges">
+                <column name="DAYSBETWEENCHANGES" jdbc-type="INTEGER"/>
+            </field>
+            <field name="passwordExpirationDate">
+                <column name="PASSWORDEXPIRATIONDATE" jdbc-type="DATE"/>
+            </field>
+            <field name="notifyPasswordExpiration">
+                <column name="NOTIFYPASSWORDEXPIRATION" />
+            </field>
+            <field name="daysBeforeExpiration">
+                <column name="DAYSBEFOREEXPIRATION" jdbc-type="INTEGER"/>
+            </field>
+            <field name="userPassword">
+                <column name="USERPASSWORD" length="255" jdbc-type="VARCHAR"/>
+            </field>
+            <field name="userCertificate">
+                <column name="USERCERTIFICATE"/>
+            </field>
+            <field name="automaticallyGeneratePassword">
+                <column name="AUTOMATICALLYGENERATEPASSWORD" />
+            </field>
+            <field name="emailNewPasword">
+                <column name="EMAILNEWPASSWORD" />
+            </field>
+            <field name="groups" default-fetch-group="true">
+                <array/>
+                <join column="USER_ID"/>
+                <element column = "ID" primary-key="true" value-strategy="increment"/>
+                <element column="GROUP_ID"/>
+                <order column="GROUP_ORDER_IDX"/>
+                <foreign-key name="USER_GROUPS_FK" delete-action="cascade"/>
+            </field>
+        </class>
+    </package>
+
+
+</jdo>

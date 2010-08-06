@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.response;
 
-import com.atricore.idbus.console.lifecycle.main.domain.Group;
+import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,7 +30,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.Group;
  * Time: 16:26:00
  * To change this template use File | Settings | File Templates.
  */
-public class AddGroupResponse extends AbstractManagementResponse {
+public class AddGroupResponse extends AbstractProvisioningResponse {
 
     private Group group;
 

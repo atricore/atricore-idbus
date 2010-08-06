@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.response;
 
-import com.atricore.idbus.console.lifecycle.main.domain.Group;
+import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,7 @@ import java.util.List;
  * Time: 17:19:21
  * To change this template use File | Settings | File Templates.
  */
-public class SearchGroupResponse extends AbstractManagementResponse {
+public class SearchGroupResponse extends AbstractProvisioningResponse {
 
     private List<Group> groups;
 

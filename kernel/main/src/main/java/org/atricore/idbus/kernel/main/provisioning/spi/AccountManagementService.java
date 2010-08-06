@@ -21,10 +21,10 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi;
 
-import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundException;
-import com.atricore.idbus.console.lifecycle.main.exception.ProvisioningBusinessException;
-import com.atricore.idbus.console.lifecycle.main.spi.request.*;
-import com.atricore.idbus.console.lifecycle.main.spi.response.*;
+import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
+import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 
 
 public interface AccountManagementService {
@@ -32,10 +32,10 @@ public interface AccountManagementService {
     //<---------------Groups -------------------->
 
     RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest)
-            throws ProvisioningBusinessException;
+            throws ProvisioningException;
 
     AddGroupResponse addGroup(AddGroupRequest groupRequest)
-            throws ProvisioningBusinessException;
+            throws ProvisioningException;
 
     FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest)
             throws GroupNotFoundException;
@@ -44,13 +44,13 @@ public interface AccountManagementService {
             throws GroupNotFoundException;
 
     ListGroupResponse getGroups()
-            throws ProvisioningBusinessException;
+            throws ProvisioningException;
 
     SearchGroupResponse searchGroups(SearchGroupRequest groupRequest)
-            throws ProvisioningBusinessException;
+            throws ProvisioningException;
 
     UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest)
-            throws ProvisioningBusinessException;
+            throws ProvisioningException;
 
     //<---------------Users -------------------->
 

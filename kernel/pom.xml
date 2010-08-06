@@ -42,10 +42,15 @@
     </prerequisites>
 
     <properties>
-        
+
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
         <idbus.bundle.ehcache-v2_1_0.version>1.0.0-SNAPSHOT</idbus.bundle.ehcache-v2_1_0.version>
         <idbus.bundle.pax-web-jetty-v0_7_2.version>1.0.0-SNAPSHOT</idbus.bundle.pax-web-jetty-v0_7_2.version>
         <idbus.bundle.wadi-v2_1_2.version>1.0.0-SNAPSHOT</idbus.bundle.wadi-v2_1_2.version>
+        <idbus.bundle.datanucleus-core-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_3.version>
+        <idbus.bundle.datanucleus-rdbms-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_3.version>
+        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.0.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
         
         <activemq.version>5.3.2</activemq.version>
 
@@ -56,6 +61,7 @@
         <!--cglib.nodep.version>2.1_3</cglib.nodep.version-->
         <cxf.version>2.2.2</cxf.version>
 
+        <datanucleus.version>2.0.3</datanucleus.version>
         <ehcache.version>2.1.0</ehcache.version>
         <felix.karaf.version>1.6.0</felix.karaf.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
@@ -70,7 +76,7 @@
         <hibernate.commons.annotations.version>3.1.0.GA</hibernate.commons.annotations.version>
 
         <jbpm.jpdl.version>3.3.1.GA</jbpm.jpdl.version>
-
+        <javax.jdo2.version>2.3-ec</javax.jdo2.version>
         <jaxws.api.version>2.1</jaxws.api.version>
 
         <jetty.version>6.1.22</jetty.version>
@@ -717,7 +723,46 @@
                 </exclusions>
             </dependency>
 
+            <!-- Persistence -->
+            <dependency>
+                <groupId>org.atricore.idbus.bundles</groupId>
+                <artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>
+                <version>${idbus.bundle.datanucleus-core-v2_0_3.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.bundles</groupId>
+                <artifactId>org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3</artifactId>
+                <version>${idbus.bundle.datanucleus-rdbms-v2_0_3.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.bundles</groupId>
+                <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
+                <version>${idbus.bundle.javax-jdo2-v2_3-ec.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.jdo</groupId>
+                <artifactId>jdo2-api</artifactId>
+                <version>${javax.jdo2.version}</version>
+            </dependency>
+            
+
             <!-- Test Dependencies -->
+
+            <dependency>
+                <groupId>org.atricore.idbus.bundles</groupId>
+                <artifactId>org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1</artifactId>
+                <version>${idbus.bundle.apache-derby-network-v10_5_3_0_1.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.bundles</groupId>
+                <artifactId>org.atricore.idbus.bundles.apache-derby-client-v10_5_3_0_1</artifactId>
+                <version>${idbus.bundle.apache-derby-client-v10_5_3_0_1.version}</version>
+            </dependency>
+
 
             <!-- JAXB -->
             <dependency>

@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.response;
 
-import com.atricore.idbus.console.lifecycle.main.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 
 /**
  * User: eugenia
@@ -30,7 +30,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.User;
  * email: erocha@atricore.org
  */
 
-public class UpdateUserProfileResponse extends AbstractManagementResponse {
+public class UpdateUserProfileResponse extends AbstractProvisioningResponse {
 
     private User user;
 

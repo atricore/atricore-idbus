@@ -21,7 +21,7 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.response;
 
-import com.atricore.idbus.console.lifecycle.main.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,7 +30,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.User;
  * Time: 16:27:44
  * To change this template use File | Settings | File Templates.
  */
-public class AddUserResponse extends AbstractManagementResponse {
+public class AddUserResponse extends AbstractProvisioningResponse {
 
     private User user;
 

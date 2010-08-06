@@ -28,9 +28,13 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  * Time: 16:24:08
  * To change this template use File | Settings | File Templates.
  */
-public class RemoveUserRequest extends AbstractManagementRequest {
+public class RemoveUserRequest extends AbstractProvisioningRequest {
 
     private long id;
+
+    public RemoveUserRequest(String partitionId) {
+        super(partitionId);
+    }
 
     public long getId() {
         return id;

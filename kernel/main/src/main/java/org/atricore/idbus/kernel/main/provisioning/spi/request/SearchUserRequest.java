@@ -28,13 +28,17 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  * Time: 17:19:10
  * To change this template use File | Settings | File Templates.
  */
-public class SearchUserRequest extends AbstractManagementRequest {
+public class SearchUserRequest extends AbstractProvisioningRequest {
 
     private String userName;
     private String firstName;
     private String surename;
     private String commonName;
     private String givenName;
+
+    public SearchUserRequest(String partitionId) {
+        super(partitionId);
+    }
 
     public String getUserName() {
         return userName;

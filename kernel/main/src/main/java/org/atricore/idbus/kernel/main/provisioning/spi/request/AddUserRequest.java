@@ -21,8 +21,7 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.request;
 
-import com.atricore.idbus.console.lifecycle.main.domain.Group;
-import com.atricore.idbus.console.lifecycle.main.spi.response.AbstractManagementResponse;
+import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 
 import java.util.Date;
 
@@ -33,7 +32,7 @@ import java.util.Date;
  * Time: 16:23:55
  * To change this template use File | Settings | File Templates.
  */
-public class AddUserRequest extends AbstractManagementResponse {
+public class AddUserRequest extends AbstractProvisioningRequest {
 
     private long id;
     
@@ -90,6 +89,10 @@ public class AddUserRequest extends AbstractManagementResponse {
     private byte[] userCertificate;
     private Boolean automaticallyGeneratePassword;
     private Boolean emailNewPasword;
+
+    public AddUserRequest(String partitionId) {
+        super(partitionId);
+    }
 
     public long getId() {
         return id;

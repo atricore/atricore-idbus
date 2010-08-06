@@ -21,13 +21,13 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.response;
 
-import com.atricore.idbus.console.lifecycle.main.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 
 /**
  * User: gnastov
  * email: gnastov@atricore.org
  */
-public class GetUsersByGroupResponse extends AbstractManagementResponse {
+public class GetUsersByGroupResponse extends AbstractProvisioningResponse {
 
     private User[] users;
 

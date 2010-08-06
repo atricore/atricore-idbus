@@ -27,7 +27,12 @@ package org.atricore.idbus.kernel.main.provisioning.exception;
  * Time: 3:22:23 PM
  * email: cbirge@atricore.org
  */
-public class UserNotFoundException extends ProvisioningBusinessException {
+public class UserNotFoundException extends ProvisioningException {
+
+    public UserNotFoundException(long userId, String username) {
+        super("The user with id "+userId+" username '" + username+ "' couldn't be found");
+    }
+
 
     public UserNotFoundException(long userId) {
         super("The user with id "+userId+" couldn't be found");

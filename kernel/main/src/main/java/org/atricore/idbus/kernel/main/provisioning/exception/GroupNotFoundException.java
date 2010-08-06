@@ -27,7 +27,12 @@ package org.atricore.idbus.kernel.main.provisioning.exception;
  * Time: 3:22:23 PM
  * email: cbirge@atricore.org
  */
-public class GroupNotFoundException extends ProvisioningBusinessException {
+public class GroupNotFoundException extends ProvisioningException {
+
+    public GroupNotFoundException(long groupId, String name) {
+        super("The group with id "+groupId+" and name '"+name+"' couldn't be found");
+    }
+
 
     public GroupNotFoundException(long groupId) {
         super("The group with id "+groupId+" couldn't be found");

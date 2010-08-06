@@ -27,12 +27,16 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  * Time: 10:22:02
  * email: erocha@atricore.org
  */
-public class UpdateUserProfileRequest extends AbstractManagementRequest {
+public class UpdateUserProfileRequest extends AbstractProvisioningRequest {
 
     private String username;
     private String firstName;
     private String lastName;
     private String email;
+
+    public UpdateUserProfileRequest(String partitionId) {
+        super(partitionId);
+    }
 
     public String getUsername() {
         return username;
