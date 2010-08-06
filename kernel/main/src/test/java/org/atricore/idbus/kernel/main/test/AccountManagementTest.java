@@ -12,8 +12,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import javax.jdo.PersistenceManager;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
@@ -43,7 +45,16 @@ public class AccountManagementTest extends AbstractDBServerTest {
     public void testIdentityVaultCRUD() throws Exception {
 
         IdentityVaultDAO vaultDao = new IdentityVaultDAOImpl(pm);
+        IdentityPartitionDAO partitionDao = new IdentityPartitionDAOImpl(pm);
 
+        String p1Name = "p1";
+        String p1Description = "Partition One";
+
+        IdentityPartition partition = new IdentityPartition();
+        partition.setName(p1Name);
+        partition.setDescription(p1Description);
+        List<IdentityPartition> parts = new ArrayList<IdentityPartition>();
+        parts.add(partition);
 
         String name = "v1";
         String description = "Vault One";
@@ -59,12 +70,20 @@ public class AccountManagementTest extends AbstractDBServerTest {
         vault.setPort(port);
         vault.setUsername(usr);
         vault.setPassword(pwd);
+        vault.setPartitions(parts);
 
         vault = vaultDao.createObject(vault);
 
         assert vault != null;
         assert vault.getId() > 0;
         assert vault.getName().equals(name);
+        assert vault.getPartitions() != null;
+        assert vault.getPartitions().size() == 1;
+
+        for (IdentityPartition p : vault.getPartitions()) {
+            assert p.getVault() != null;
+            assert p.getVault().getId() == vault.getId();
+        }
 
         log.info("Created Vault : " + vault.getId());
 
@@ -87,8 +106,6 @@ public class AccountManagementTest extends AbstractDBServerTest {
         
         vault = vaultDao.findObjectById(id);
 
-
-
         log.info("Updated Vault : " + vault.getId() + ":" + vault.getName());
 
         vaultDao.deleteObject(vault);
@@ -101,7 +118,6 @@ public class AccountManagementTest extends AbstractDBServerTest {
         }
 
         log.info("Deleted Vault : " + vault.getId() + ":" + vault.getName());
-
 
         IdentityVault vault2 = new IdentityVault();
         vault2.setName(name + ".2");
@@ -148,8 +164,6 @@ public class AccountManagementTest extends AbstractDBServerTest {
         String v2Usr = "user2";
         String v2Pwd = "user2pwd";
 
-
-
         IdentityVault vault2 = new IdentityVault();
         vault2.setName(v2Name + ".2");
         vault2.setDescription(v2Description);
@@ -185,6 +199,7 @@ public class AccountManagementTest extends AbstractDBServerTest {
         partition.setName(name);
         partition.setDescription(description);
         partition.setVault(vault2);
+        vault2.getPartitions().add(partition);
 
         partition = partitionDao.createObject(partition);
 
@@ -203,16 +218,21 @@ public class AccountManagementTest extends AbstractDBServerTest {
         assert partition != null;
         assert partition.getId() == id;
         assert partition.getName().equals(name);
+        assert partition.getVault() != null;
+        assert partition.getVault().getId() == vault2.getId();
 
         log.info("Retrieved Partition : " + partition.getId() + ":" + partition.getName());
 
         partition.setName(name + ".1");
+        partition.setVault(vault3);
         partition = partitionDao.updateObject(partition);
 
         assert partition != null;
         assert partition.getId() == id;
         assert partition.getName().equals(name + ".1");
-        
+        assert partition.getVault() != null;
+        assert partition.getVault().getId() == vault3.getId();
+
         partition = partitionDao.findObjectById(id);
 
         log.info("Updated Partition : " + partition.getId() + ":" + partition.getName());

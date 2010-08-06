@@ -32,6 +32,10 @@
             <field name="name"/>
             <field name="description"/>
 
+            <field name="partitions" default-fetch-group="true">
+                <collection dependent-element="true" />
+            </field>
+
         </class>
 
         <class name="IdentityPartition">
@@ -45,9 +49,8 @@
             </field>
 
             <field name="vault" default-fetch-group="true">
-                <join delete-action="cascade"/>
+                <join delete-action="none"/>
             </field>
-
 
         </class>
 

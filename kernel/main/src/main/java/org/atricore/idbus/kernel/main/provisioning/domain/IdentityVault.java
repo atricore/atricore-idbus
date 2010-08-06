@@ -1,5 +1,8 @@
 package org.atricore.idbus.kernel.main.provisioning.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
@@ -20,6 +23,8 @@ public class IdentityVault {
     private String username;
 
     private String password;
+
+    private List<IdentityPartition> partitions = new ArrayList<IdentityPartition>();
 
     public long getId() {
         return id;
@@ -75,5 +80,13 @@ public class IdentityVault {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<IdentityPartition> getPartitions() {
+        return partitions;
+    }
+
+    public void setPartitions(List<IdentityPartition> partitions) {
+        this.partitions = partitions;
     }
 }

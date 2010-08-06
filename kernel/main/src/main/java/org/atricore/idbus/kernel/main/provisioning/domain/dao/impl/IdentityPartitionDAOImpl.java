@@ -21,4 +21,5 @@ public class IdentityPartitionDAOImpl extends GenericDAOImpl<IdentityPartition> 
     public IdentityPartitionDAOImpl(PersistenceManager pm) {
         super(pm);
     }
+
 }
