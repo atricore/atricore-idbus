@@ -19,12 +19,15 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package org.atricore.idbus.kernel.main.mediation;
+package org.atricore.idbus.kernel.main.test;
 
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.spring.ActiveMQConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.mediation.ActiveMQMessageQueueManager;
+import org.atricore.idbus.kernel.main.mediation.Artifact;
+import org.atricore.idbus.kernel.main.mediation.ArtifactGeneratorImpl;
 import org.junit.Before;
 import org.junit.Test;
 
