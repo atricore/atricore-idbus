@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.domain.dao.UserDAO;
 
-import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.PersistenceManager;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
@@ -18,7 +18,7 @@ public class UserDAOImpl extends GenericDAOImpl<User> implements UserDAO {
         super();
     }
 
-    public UserDAOImpl(PersistenceManagerFactory pmf) {
-        super(pmf);
+    public UserDAOImpl(PersistenceManager pm) {
+        super(pm);
     }
 }

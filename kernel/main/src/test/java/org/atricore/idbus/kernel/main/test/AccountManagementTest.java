@@ -2,8 +2,11 @@ package org.atricore.idbus.kernel.main.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.provisioning.domain.IdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.domain.IdentityVault;
+import org.atricore.idbus.kernel.main.provisioning.domain.dao.IdentityPartitionDAO;
 import org.atricore.idbus.kernel.main.provisioning.domain.dao.IdentityVaultDAO;
+import org.atricore.idbus.kernel.main.provisioning.domain.dao.impl.IdentityPartitionDAOImpl;
 import org.atricore.idbus.kernel.main.provisioning.domain.dao.impl.IdentityVaultDAOImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,15 +22,28 @@ public class AccountManagementTest extends AbstractDBServerTest {
 
     private static final Log log = LogFactory.getLog(AccountManagementTest.class);
 
-
     @Before
     public void setup() {
+        super.setup();
+        IdentityVaultDAO vaultDao = new IdentityVaultDAOImpl(pm);
+        IdentityPartitionDAO partitionDao = new IdentityPartitionDAOImpl(pm);
+
+        for (IdentityVault vault : vaultDao.findAll()) {
+            vaultDao.deleteObject(vault);
+        }
+
+        for (IdentityPartition partition : partitionDao.findAll()) {
+            partitionDao.deleteObject(partition);
+        }
+
+
     }
 
     @Test
     public void testIdentityVaultCRUD() throws Exception {
 
-        IdentityVaultDAO vaultDao = new IdentityVaultDAOImpl(pmf);
+        IdentityVaultDAO vaultDao = new IdentityVaultDAOImpl(pm);
+
 
         String name = "v1";
         String description = "Vault One";
@@ -116,6 +132,124 @@ public class AccountManagementTest extends AbstractDBServerTest {
             assert v.getId() == vault3.getId() || v.getId() == vault2.getId(); 
         }
 
+    }
+    
+    @Test
+    public void testIdentityPartitionCRUD() throws Exception {
+
+        IdentityVaultDAO vaultDao = new IdentityVaultDAOImpl(pm);
+
+        IdentityPartitionDAO partitionDao = new IdentityPartitionDAOImpl(pm);
+
+        String v2Name = "v2";
+        String v2Description = "Vault Two";
+        String v2Host = "localhost-2";
+        int v2Port = 2222;
+        String v2Usr = "user2";
+        String v2Pwd = "user2pwd";
+
+
+
+        IdentityVault vault2 = new IdentityVault();
+        vault2.setName(v2Name + ".2");
+        vault2.setDescription(v2Description);
+        vault2.setHost(v2Host);
+        vault2.setPort(v2Port);
+        vault2.setUsername(v2Usr);
+        vault2.setPassword(v2Pwd);
+
+        vaultDao.createObject(vault2);
+
+        String v3Name = "v3";
+        String v3Description = "Vault Three";
+        String v3Host = "localhost-3";
+        int v3Port = 3333;
+        String v3Usr = "user3";
+        String v3Pwd = "user3pwd";
+
+
+        IdentityVault vault3 = new IdentityVault();
+        vault3.setName(v3Name);
+        vault3.setDescription(v3Description);
+        vault3.setHost(v3Host);
+        vault3.setPort(v3Port);
+        vault3.setUsername(v3Usr);
+        vault3.setPassword(v3Pwd);
+
+        vaultDao.createObject(vault3);
+
+        String name = "v1";
+        String description = "Partition One";
+
+        IdentityPartition partition = new IdentityPartition();
+        partition.setName(name);
+        partition.setDescription(description);
+        partition.setVault(vault2);
+
+        partition = partitionDao.createObject(partition);
+
+        assert partition != null;
+        assert partition.getId() > 0;
+        assert partition.getName().equals(name);
+        assert partition.getVault() != null;
+        assert partition.getVault().getId() == vault2.getId();
+
+        log.info("Created Partition : " + partition.getId());
+
+        long id = partition.getId();
+
+        partition = partitionDao.findObjectById(id);
+
+        assert partition != null;
+        assert partition.getId() == id;
+        assert partition.getName().equals(name);
+
+        log.info("Retrieved Partition : " + partition.getId() + ":" + partition.getName());
+
+        partition.setName(name + ".1");
+        partition = partitionDao.updateObject(partition);
+
+        assert partition != null;
+        assert partition.getId() == id;
+        assert partition.getName().equals(name + ".1");
+        
+        partition = partitionDao.findObjectById(id);
+
+        log.info("Updated Partition : " + partition.getId() + ":" + partition.getName());
+
+        partitionDao.deleteObject(partition);
+
+        try {
+            partition = partitionDao.findObjectById(id);
+            assert false : "Vaul was not deleted";
+        } catch (javax.jdo.JDOObjectNotFoundException e) {
+            // OK
+        }
+
+        log.info("Deleted Partition : " + partition.getId() + ":" + partition.getName());
+
+        IdentityPartition partition2 = new IdentityPartition();
+        partition2.setName(name + ".2");
+        partition2.setDescription(description);
+
+        partitionDao.createObject(partition2);
+
+        IdentityPartition partition3 = new IdentityPartition();
+        partition3.setName(name + ".3");
+        partition3.setDescription(description);
+
+        partitionDao.createObject(partition3);
+
+        Collection<IdentityPartition> partitions = partitionDao.findAll();
+
+        assert partitions != null;
+        assert partitions.size() == 2 : "Found " + partitions.size();
+
+        for (IdentityPartition v : partitions) {
+            assert v.getId() == partition3.getId() || v.getId() == partition2.getId(); 
+        }
+
         
     }
+    
 }

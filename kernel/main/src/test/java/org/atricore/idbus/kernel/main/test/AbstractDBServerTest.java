@@ -3,7 +3,9 @@ package org.atricore.idbus.kernel.main.test;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.derby.drda.NetworkServerControl;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 
 import javax.jdo.JDOHelper;
@@ -23,6 +25,8 @@ public class AbstractDBServerTest {
 
     protected static PersistenceManagerFactory pmf;
 
+    protected PersistenceManager pm;
+
     protected static NetworkServerControl derbyServer;
 
     @BeforeClass
@@ -38,14 +42,29 @@ public class AbstractDBServerTest {
                 "ádmin");
 
         derbyServer.start(new PrintWriter(System.out));
-
         pmf = JDOHelper.getPersistenceManagerFactory("datanucleus-tests.properties");
 
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception{
+        if (pmf != null)
+            try { pmf.close(); } catch (Exception e) { /**/ }
+
         derbyServer.shutdown();
     }
+
+    @Before
+    public void setup() {
+        pm  = pmf.getPersistenceManager();
+    }
+
+    @After
+    public void teardonw() {
+        if (pm != null)
+            try { pm.close(); } catch (Exception e) { /**/}
+    }
+
+
 
 }

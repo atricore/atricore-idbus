@@ -44,14 +44,16 @@ public class IdentityPartitionManagerImpl {
         // TODO : Configure connection properties ...
         
         pmf = jdoPmf;
+
+        pm = jdoPmf.getPersistenceManager();
         
         // Create DAOs ...
         UserDAOImpl userDao = new UserDAOImpl();
-        userDao.setPmf(pmf);
+        userDao.setPm(pm);
         this.userDao = userDao;
         
         GroupDAOImpl groupDao = new GroupDAOImpl();
-        groupDao.setPmf(pmf);
+        groupDao.setPm(pm);
         this.groupDao = groupDao;
     }
     

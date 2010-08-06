@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.provisioning.domain.IdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.domain.dao.IdentityPartitionDAO;
 
-import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.PersistenceManager;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
@@ -18,7 +18,7 @@ public class IdentityPartitionDAOImpl extends GenericDAOImpl<IdentityPartition> 
         super();
     }
 
-    public IdentityPartitionDAOImpl(PersistenceManagerFactory pmf) {
-        super(pmf);
+    public IdentityPartitionDAOImpl(PersistenceManager pm) {
+        super(pm);
     }
 }

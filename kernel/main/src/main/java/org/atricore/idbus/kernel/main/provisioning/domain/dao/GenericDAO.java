@@ -8,16 +8,16 @@ import java.util.Collection;
  */
 public interface GenericDAO<T> {
 
-    public T createObject(T object);
+    T createObject(T object);
 
-    public void deleteObject(T object);
+    void deleteObject(T object);
 
-    public T findObjectById(Serializable id);
+    T findObjectById(Serializable id);
 
-    public T updateObject(T object);
+    T updateObject(T object);
 
-    public Collection<T> findAll();
+    Collection<T> findAll();
 
-    public void flush();
+    void flush();
 
 }

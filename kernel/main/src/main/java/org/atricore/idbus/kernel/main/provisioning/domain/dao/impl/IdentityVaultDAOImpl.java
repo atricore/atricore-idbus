@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.provisioning.domain.IdentityVault;
 import org.atricore.idbus.kernel.main.provisioning.domain.dao.IdentityVaultDAO;
 
-import javax.jdo.PersistenceManagerFactory;
+import javax.jdo.PersistenceManager;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
@@ -18,7 +18,7 @@ public class IdentityVaultDAOImpl extends GenericDAOImpl<IdentityVault> implemen
         super();
     }
 
-    public IdentityVaultDAOImpl(PersistenceManagerFactory pmf) {
-        super(pmf);
+    public IdentityVaultDAOImpl(PersistenceManager pm) {
+        super(pm);
     }
 }

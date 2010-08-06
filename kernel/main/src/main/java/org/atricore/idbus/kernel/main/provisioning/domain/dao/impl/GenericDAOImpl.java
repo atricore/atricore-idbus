@@ -3,7 +3,6 @@ package org.atricore.idbus.kernel.main.provisioning.domain.dao.impl;
 import org.atricore.idbus.kernel.main.provisioning.domain.dao.GenericDAO;
 
 import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
@@ -13,25 +12,23 @@ import java.util.Collection;
  */
 public class GenericDAOImpl<T> implements GenericDAO<T> {
 
-    protected PersistenceManagerFactory pmf;
     protected PersistenceManager pm;
 
     public GenericDAOImpl() {
         persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
-    public GenericDAOImpl(PersistenceManagerFactory pmf) {
+    public GenericDAOImpl(PersistenceManager pm) {
         this();
-        this.pmf = pmf;
-        this.pm = pmf.getPersistenceManager();
+        this.pm = pm;
     }
 
     public PersistenceManager getPersistenceManager() {
         return pm;
     }
 
-    public void setPmf(PersistenceManagerFactory pmf) {
-        this.pmf = pmf;
+    public void setPm(PersistenceManager pm) {
+        this.pm = pm;
     }
 
     private Class<T> persistentClass;
