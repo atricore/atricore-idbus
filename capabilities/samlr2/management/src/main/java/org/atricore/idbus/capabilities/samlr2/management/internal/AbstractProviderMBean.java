@@ -3,7 +3,7 @@ package org.atricore.idbus.capabilities.samlr2.management.internal;
 import org.atricore.idbus.capabilities.samlr2.management.ProviderMBean;
 import org.atricore.idbus.capabilities.samlr2.management.codec.JmxProviderState;
 import org.atricore.idbus.capabilities.samlr2.management.codec.JmxProviderStateEntry;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
@@ -56,6 +56,6 @@ public abstract class AbstractProviderMBean implements ProviderMBean, Applicatio
         return JmxProviderStateEntry.tableFrom(entries);
     }
 
-    protected abstract LocalProvider getProvider() ;
+    protected abstract FederatedLocalProvider getProvider() ;
 
 }

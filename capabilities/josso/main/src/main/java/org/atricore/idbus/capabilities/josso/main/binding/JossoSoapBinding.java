@@ -33,7 +33,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 
@@ -68,7 +68,7 @@ public class JossoSoapBinding extends AbstractMediationSoapBinding {
             MessageContentsList mclIn = (MessageContentsList) in.getBody() ;
             logger.debug("Using CXF Message Content : " + mclIn.get(0));
 
-            LocalProvider p = null;
+            FederatedLocalProvider p = null;
             if (getChannel() instanceof FederationChannel) {
                 p = ((FederationChannel) getChannel()).getProvider();
             } else if (getChannel() instanceof BindingChannel) {

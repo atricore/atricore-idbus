@@ -50,6 +50,7 @@ import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
@@ -96,7 +97,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
         // TODO : Validate request!
         MediationState mediationState = in.getMessage().getState();
-        String varName = channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX";
+        String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
 
         performSlo(exchange, secCtx, null);
@@ -122,7 +123,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
         // TODO : Validate request!
         MediationState mediationState = in.getMessage().getState();
-        String varName = channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX";
+        String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
 
         performSlo(exchange, secCtx, sloRequest);
@@ -236,7 +237,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
                 CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
                 // Remove the SSO Session var
-                in.getMessage().getState().removeLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+                in.getMessage().getState().removeLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
                 in.getMessage().getState().getLocalState().removeAlternativeId(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY);
 
                 // Invalidate SSO Session

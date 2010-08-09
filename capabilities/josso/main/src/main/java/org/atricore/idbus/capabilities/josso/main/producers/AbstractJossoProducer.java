@@ -35,6 +35,9 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDes
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
+import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProvider;
 
@@ -85,6 +88,19 @@ public abstract class AbstractJossoProducer extends AbstractCamelProducer<CamelM
         return ssoRoles;
     }
 
+
+    protected FederatedLocalProvider getProvider() {
+        if (channel instanceof FederationChannel) {
+            return ((FederationChannel) channel).getProvider();
+        } else if (channel instanceof BindingChannel) {
+            return ((BindingChannel) channel).getProvider();
+        } else if (channel instanceof ClaimChannel) {
+            return ((ClaimChannel) channel).getProvider();
+        } else {
+            throw new IllegalStateException("Configured channel does not support Federated Provider : " + channel);
+        }
+    }
+
     protected BindingChannel resolveSpBindingChannel(BindingChannel bChannel, String appId) {
 
         PartnerAppMapping mapping = resolveAppMapping(bChannel, appId);
@@ -95,7 +111,7 @@ public abstract class AbstractJossoProducer extends AbstractCamelProducer<CamelM
 
         String spAlias = mapping.getSpAlias();
 
-        CircleOfTrust cot = ((BindingChannel)channel).getProvider().getCircleOfTrust();
+        CircleOfTrust cot = getProvider().getCircleOfTrust();
 
         for (Provider p : cot.getProviders()) {
 

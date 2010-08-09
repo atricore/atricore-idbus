@@ -55,7 +55,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
@@ -114,9 +115,9 @@ public class SingleLogoutProducer extends SamlR2Producer {
         
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         SPSecurityContext secCtx =
-                (SPSecurityContext) in.getMessage().getState().getLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+                (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
-        CircleOfTrustMemberDescriptor idp = channel.getProvider().getCotManager().loolkupMemberByAlias(sloRequest.getIssuer().getValue());
+        CircleOfTrustMemberDescriptor idp = getProvider().getCotManager().loolkupMemberByAlias(sloRequest.getIssuer().getValue());
         if (secCtx == null || !idp.getAlias().equals(secCtx.getIdpAlias())) {
             // We're gettingn an SLO from an IDP that is not the one that created the current session, reject the request.
             logger.warn("Unexpected SLO Request received from IDP " + sloRequest.getIssuer().getValue());
@@ -130,7 +131,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
                 logger.debug("Session already invalidated " + secCtx.getSessionIndex());
             }
             secCtx.clear();
-            in.getMessage().getState().removeLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+            in.getMessage().getState().removeLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
         }
 
         EndpointDescriptor destination = resolveIdPSloEndpoint(idp.getAlias(),
@@ -201,8 +202,8 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
         // Security Context
         SPSecurityContext secCtx =
-                (SPSecurityContext) in.getMessage().getState().getLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
-        in.getMessage().getState().removeLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+                (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+        in.getMessage().getState().removeLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
         // TODO : Validate SLO Response
         // validateResponse(samlResponse);
@@ -468,7 +469,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
         try {
             ssoSessionManager.invalidate(secCtx.getSessionIndex());
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-            in.getMessage().getState().removeRemoteVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+            in.getMessage().getState().removeRemoteVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
         } catch (NoSuchSessionException e) {
             logger.debug("SSO Session already invalidated " + secCtx.getSessionIndex());
         } catch (Exception e) {
@@ -482,12 +483,12 @@ public class SingleLogoutProducer extends SamlR2Producer {
      */
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
         // Resolve IdP channel, then look for the ACS endpoint
-        LocalProvider sp = channel.getProvider();
+        FederatedLocalProvider sp = getProvider();
 
         FederationChannel idpChannel = sp.getChannel();
         for (FederationChannel fChannel : sp.getChannels()) {
 
-            Provider idp = fChannel.getTargetProvider();
+            FederatedProvider idp = fChannel.getTargetProvider();
             for (CircleOfTrustMemberDescriptor member : idp.getMembers()) {
                 if (member.getAlias().equals(idpDescriptor.getAlias())) {
 

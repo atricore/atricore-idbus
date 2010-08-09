@@ -39,6 +39,7 @@
     <name>Atricore IDBus :: IDOJO : Memory Identity Store</name>
 
     <properties>
+        <commons.logging.version>1.1.1</commons.logging.version>
         <xbean.version>3.4.3</xbean.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.16</log4j.version>
@@ -104,13 +105,14 @@
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
             <version>${pom.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>${commons.logging.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -126,24 +128,28 @@
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
+        
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
+        
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-core</artifactId>
@@ -151,13 +157,21 @@
             <scope>provided</scope>
         </dependency>
         
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
             <version>${spring.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
 
     </dependencies>
 </project>

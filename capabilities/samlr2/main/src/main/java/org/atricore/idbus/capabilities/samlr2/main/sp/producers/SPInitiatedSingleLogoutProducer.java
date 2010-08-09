@@ -26,8 +26,6 @@ import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
-import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
-import oasis.names.tc.saml._2_0.wsdl.SAMLRequestPortType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
@@ -52,7 +50,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
@@ -60,7 +59,6 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -84,7 +82,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
             SPSecurityContext secCtx =
-                    (SPSecurityContext) in.getMessage().getState().getLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+                    (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
             if (secCtx == null || secCtx.getSessionIndex() == null) {
                 logger.error("No SSO Session found SLO Request");
@@ -233,12 +231,12 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
         // Resolve IdP channel, then look for the ACS endpoint
         BindingChannel bChannel = (BindingChannel) channel;
-        LocalProvider sp = bChannel.getProvider();
+        FederatedLocalProvider sp = bChannel.getProvider();
 
         FederationChannel idpChannel = sp.getChannel();
         for (FederationChannel fChannel : sp.getChannels()) {
 
-            Provider idp = fChannel.getTargetProvider();
+            FederatedProvider idp = fChannel.getTargetProvider();
             for (CircleOfTrustMemberDescriptor member : idp.getMembers()) {
                 if (member.getAlias().equals(idpDescriptor.getAlias())) {
 
@@ -325,7 +323,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
         try {
             ssoSessionManager.invalidate(secCtx.getSessionIndex());
             CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
-            in.getMessage().getState().removeRemoteVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+            in.getMessage().getState().removeRemoteVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
         } catch (NoSuchSessionException e) {
             logger.debug("SSO Session already invalidated " + secCtx.getSessionIndex());
         } catch (Exception e) {

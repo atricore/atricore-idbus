@@ -41,9 +41,9 @@ import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
-import org.atricore.idbus.kernel.main.mediation.provider.RemoteProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedRemoteProvider;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
@@ -271,8 +271,8 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
             Provider sp = spChannel.getTargetProvider();
             // The provider might have 'several' member descritos, look for the one that we want to use.
 
-            if (sp instanceof RemoteProvider) {
-                RemoteProvider spr = (RemoteProvider) sp;
+            if (sp instanceof FederatedRemoteProvider) {
+                FederatedRemoteProvider spr = (FederatedRemoteProvider) sp;
 
                 if (spr.getMembers().size() > 0) {
 
@@ -284,7 +284,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
                     logger.error("No Circle of Trust Member descriptor found for remote SP Definition " + spr.getName());
                 }
             } else {
-                LocalProvider spl = (LocalProvider) sp;
+                FederatedLocalProvider spl = (FederatedLocalProvider) sp;
 
                 if (spl.getChannels() != null) {
                     for (Channel c : spl.getChannels()) {

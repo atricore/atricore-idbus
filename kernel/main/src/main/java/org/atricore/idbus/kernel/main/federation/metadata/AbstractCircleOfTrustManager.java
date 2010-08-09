@@ -70,7 +70,7 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
 
             try {
 
-                for (Provider provider : cot.getProviders()) {
+                for (FederatedProvider provider : cot.getProviders()) {
 
 
                     for (CircleOfTrustMemberDescriptor member : provider.getMembers()) {
@@ -81,11 +81,11 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
                         registerMember(member);
                     }
 
-                    if (provider instanceof AbstractLocalProvider) {
-                        AbstractLocalProvider localProvider = (AbstractLocalProvider) provider;
+                    if (provider instanceof AbstractFederatedProvider) {
+                        AbstractFederatedProvider localProvider = (AbstractFederatedProvider) provider;
                         localProvider.setCircleOfTrust(cot);
-                    } else if (provider instanceof RemoteProviderImpl) {
-                        RemoteProviderImpl remoteProvider = (RemoteProviderImpl) provider;
+                    } else if (provider instanceof FederatedRemoteProviderImpl) {
+                        FederatedRemoteProviderImpl remoteProvider = (FederatedRemoteProviderImpl) provider;
                         remoteProvider.setCircleOfTrust(cot);
                     } else {
                         logger.debug("Unknown provider type " + provider + ", cannot inject COT");
@@ -150,7 +150,7 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
 
     public Collection<CircleOfTrustMemberDescriptor> getMembers() {
         List<CircleOfTrustMemberDescriptor> members = new ArrayList<CircleOfTrustMemberDescriptor>();
-        for (Provider p : cot.getProviders()) {
+        for (FederatedProvider p : cot.getProviders()) {
             members.addAll(p.getMembers());
         }
         return members;
@@ -198,10 +198,10 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
 
         CircleOfTrustMemberDescriptor targetingMember = null;
 
-        if (destProvider instanceof LocalProvider) {
-            LocalProvider localDestProvider = (LocalProvider) destProvider;
+        if (destProvider instanceof FederatedLocalProvider) {
+            FederatedLocalProvider federatedDestProvider = (FederatedLocalProvider) destProvider;
 
-            for (FederationChannel channel : localDestProvider.getChannels()) {
+            for (FederationChannel channel : federatedDestProvider.getChannels()) {
                 if (channel.getTargetProvider().equals(srcProvider)) {
                     targetingMember = channel.getMember();
                     if (logger.isDebugEnabled())
@@ -232,12 +232,12 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
                 if (logger.isDebugEnabled())
                     logger.debug("Provider " + destProvider .getName() + " has role " + role);
 
-                if (destProvider instanceof LocalProvider) {
-                    LocalProvider localDestProvider = (LocalProvider) destProvider;
+                if (destProvider instanceof FederatedLocalProvider) {
+                    FederatedLocalProvider federatedDestProvider = (FederatedLocalProvider) destProvider;
 
-                    members.add(localDestProvider.getChannel().getMember());
+                    members.add(federatedDestProvider.getChannel().getMember());
 
-                    for (FederationChannel channel : localDestProvider.getChannels()) {
+                    for (FederationChannel channel : federatedDestProvider.getChannels()) {
 
                         if (channel.getTargetProvider().equals(provider)) {
                             members.add(channel.getMember());
@@ -249,7 +249,7 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
 
                     }
                 } else {
-                    RemoteProvider destRemoteProvider = (RemoteProvider) destProvider;
+                    FederatedRemoteProvider destRemoteProvider = (FederatedRemoteProvider) destProvider;
                     for(CircleOfTrustMemberDescriptor m : destRemoteProvider.getMembers()) {
                         if (logger.isDebugEnabled())
                             logger.debug("Selected member : " + m.getAlias());
@@ -268,7 +268,7 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
 
     public CircleOfTrustMemberDescriptor loolkupMemberByAlias(String alias) {
 
-        for (Provider provider : cot.getProviders()) {
+        for (FederatedProvider provider : cot.getProviders()) {
 
             for (CircleOfTrustMemberDescriptor member : provider.getMembers()) {
                 if (member.getAlias().equals(alias)) {

@@ -43,6 +43,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
+import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.planning.IdentityPlan;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchange;
 import org.atricore.idbus.kernel.planning.IdentityPlanExecutionExchangeImpl;
@@ -67,6 +69,18 @@ public class SamlR2Producer extends AbstractCamelProducer<CamelMediationExchange
     @Override
     protected void doProcess(CamelMediationExchange e) throws Exception {
         // DO Nothing!
+    }
+
+    protected FederatedLocalProvider getProvider() {
+        if (channel instanceof FederationChannel) {
+            return ((FederationChannel) channel).getProvider();
+        } else if (channel instanceof BindingChannel) {
+            return ((BindingChannel) channel).getProvider();
+        } else if (channel instanceof ClaimChannel) {
+            return ((ClaimChannel) channel).getProvider();
+        } else {
+            throw new IllegalStateException("Configured channel does not support Federated Provider : " + channel);
+        }
     }
 
     protected IdentityPlan findIdentityPlanOfType(Class planClass) throws SamlR2Exception {
@@ -167,7 +181,7 @@ public class SamlR2Producer extends AbstractCamelProducer<CamelMediationExchange
 
         try {
 
-            CircleOfTrustManager cotMgr = channel.getProvider().getCotManager();
+            CircleOfTrustManager cotMgr = getProvider().getCotManager();
 
             MetadataEntry md = cotMgr.findEntityRoleMetadata(spAlias,
                     "urn:oasis:names:tc:SAML:2.0:metadata:SPSSODescriptor");
@@ -213,7 +227,7 @@ public class SamlR2Producer extends AbstractCamelProducer<CamelMediationExchange
 
         try {
 
-            CircleOfTrustManager cotMgr = channel.getProvider().getCotManager();
+            CircleOfTrustManager cotMgr = getProvider().getCotManager();
 
             MetadataEntry md = cotMgr.findEntityRoleMetadata(idpAlias,
                     "urn:oasis:names:tc:SAML:2.0:metadata:IDPSSODescriptor");

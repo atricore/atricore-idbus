@@ -39,6 +39,8 @@
 
     <properties>
         <idbus.kernel.version>1.0.0-SNAPSHOT</idbus.kernel.version>
+
+        <ehcache.version>2.1.0</ehcache.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <jetty.version>6.1.22</jetty.version>
         <osgi.version>4.0.1</osgi.version>
@@ -108,6 +110,15 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
+
+
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-core</artifactId>
+            <version>${ehcache.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
 
         <!-- Provided dependencies (not transitive) -->
 

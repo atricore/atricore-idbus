@@ -2,7 +2,7 @@ package org.atricore.idbus.capabilities.samlr2.management.internal;
 
 import org.atricore.idbus.capabilities.samlr2.management.BindingProviderMBean;
 import org.atricore.idbus.kernel.main.mediation.provider.BindingProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -13,7 +13,7 @@ public class BindingProviderMBeanImpl extends AbstractProviderMBean implements B
     private BindingProvider bindingProvider;
 
     @Override
-    protected LocalProvider getProvider() {
+    protected FederatedLocalProvider getProvider() {
         return bindingProvider;
     }
 

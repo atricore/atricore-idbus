@@ -27,17 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.message.MessageContentsList;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
-import org.atricore.idbus.kernel.main.mediation.MediationState;
-import org.atricore.idbus.kernel.main.mediation.MediationStateImpl;
-import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
-import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
-import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
-import org.atricore.idbus.kernel.main.mediation.state.LocalState;
-import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
-
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

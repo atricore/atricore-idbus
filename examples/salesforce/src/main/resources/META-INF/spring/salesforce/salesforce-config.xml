@@ -13,7 +13,7 @@
     <!--  Salesforce (SP) Definition                                        -->
     <!--                                                                    -->
     <!-- ================================================================== -->
-    <bean name="salesforce" class="org.atricore.idbus.kernel.main.mediation.provider.RemoteProviderImpl">
+    <bean name="salesforce" class="org.atricore.idbus.kernel.main.mediation.provider.FederatedRemoteProviderImpl">
         <property name="name" value="salesforce"/>
         <property name="role" value="{urn:oasis:names:tc:SAML:2.0:metadata}IDPSSODescriptor"/>
         <property name="description" value="Salesforce Service Provider (Remote)"/>

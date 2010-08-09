@@ -23,6 +23,7 @@ package org.atricore.idbus.kernel.main.federation.metadata;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 
 import java.util.HashSet;
@@ -40,7 +41,7 @@ public class CircleOfTrustImpl implements CircleOfTrust {
 
     private static final Log logger = LogFactory.getLog(CircleOfTrustImpl.class);
 
-    private Set<Provider> providers = new HashSet<Provider>();
+    private Set<FederatedProvider> providers = new HashSet<FederatedProvider>();
 
     private String name;
 
@@ -52,11 +53,11 @@ public class CircleOfTrustImpl implements CircleOfTrust {
         this.name = name;
     }
 
-    public Set<Provider> getProviders() {
+    public Set<FederatedProvider> getProviders() {
         return providers;
     }
 
-    public void setProviders(Set<Provider> providers) {
+    public void setProviders(Set<FederatedProvider> providers) {
         this.providers = providers;
     }
 

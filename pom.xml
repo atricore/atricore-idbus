@@ -50,6 +50,7 @@
         <module>bundles/pax-web-jetty-v0_7_2</module>
         <module>bundles/wadi-v2_1_2</module>
 
+        <module>capabilities/spmlr2</module>
         <module>capabilities/samlr2</module>
         <module>capabilities/josso</module>
         <module>capabilities/sts</module>
@@ -73,6 +74,10 @@
     <prerequisites>
         <maven>2.0.9</maven>
     </prerequisites>
+
+    <properties>
+        <compiler.fork>true</compiler.fork>
+    </properties>
 
 
     <scm>

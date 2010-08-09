@@ -34,7 +34,7 @@ import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.MediationStateImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 import org.w3._1999.xhtml.*;
@@ -47,7 +47,6 @@ import javax.xml.namespace.QName;
 import java.io.*;
 import java.lang.Object;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -150,7 +149,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
 
         // Loca Variables are supported by Provider State Manage or HTTP Session
 
-        LocalProvider p = null;
+        FederatedLocalProvider p = null;
         if (channel instanceof FederationChannel) {
             FederationChannel fc = (FederationChannel) channel;
             p = fc.getProvider();
@@ -212,7 +211,7 @@ public abstract class AbstractMediationHttpBinding extends AbstractMediationBind
         if (logger.isDebugEnabled())
             logger.debug("Creating Mediation State from Exchange " + exchange.getExchangeId());
 
-        LocalProvider p = getProvider();
+        FederatedLocalProvider p = getProvider();
         MediationStateImpl state = null;
         if (p != null) {
 

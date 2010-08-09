@@ -29,7 +29,8 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDes
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
 import org.atricore.idbus.kernel.main.mediation.AbstractChannel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitContainer;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 
 /**
@@ -42,8 +43,8 @@ public abstract class AbstractFederationChannel extends AbstractChannel implemen
     private CircleOfTrust cot;
     private CircleOfTrustMemberDescriptor member;
     private MetadataEntry metadata;
-    private transient LocalProvider provider;
-    private transient Provider targetProvider;
+    private transient FederatedLocalProvider provider;
+    private transient FederatedProvider targetProvider;
 
     private transient AccountLinkLifecycle accountLinkLifecycle;
     private transient AccountLinkEmitter accountLinkEmitter;
@@ -78,19 +79,19 @@ public abstract class AbstractFederationChannel extends AbstractChannel implemen
         return provider.getRole();
     }
 
-    public Provider getTargetProvider() {
+    public FederatedProvider getTargetProvider() {
         return targetProvider;
     }
 
-    public void setTargetProvider(Provider targetProvider) {
+    public void setTargetProvider(FederatedProvider targetProvider) {
         this.targetProvider = targetProvider;
     }
 
-    public LocalProvider getProvider() {
+    public FederatedLocalProvider getProvider() {
         return provider;
     }
 
-    public void setProvider(LocalProvider provider) {
+    public void setProvider(FederatedLocalProvider provider) {
         this.provider = provider;
     }
 

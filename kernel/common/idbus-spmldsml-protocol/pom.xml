@@ -91,6 +91,42 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${felix.plugin.version}</version>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>
+                            oasis.names.tc.spml._2._0;version=${pom.version},
+                            oasis.names.tc.spml._2._0.async;version=${pom.version},
+                            oasis.names.tc.spml._2._0.batch;version=${pom.version},
+                            oasis.names.tc.spml._2._0.bulk;version=${pom.version},
+                            oasis.names.tc.spml._2._0.dsml;version=${pom.version},
+                            oasis.names.tc.spml._2._0.password;version=${pom.version},
+                            oasis.names.tc.spml._2._0.reference;version=${pom.version},
+                            oasis.names.tc.spml._2._0.search;version=${pom.version},
+                            oasis.names.tc.spml._2._0.suspend;version=${pom.version},
+                            oasis.names.tc.spml._2._0.updates;version=${pom.version},
+                            oasis.names.tc.spml._2._0.wsdl;version=${pom.version},
+                            oasis.names.tc.dsml._2._0.core;version=${pom.version}
+                        </Export-Package>
+                        <Import-Package>
+                            javax.xml.bind,
+                            javax.jws,
+                            javax.jws.soap,
+                            javax.xml.bind.annotation,
+                            javax.xml.namespace,
+                            javax.xml.ws,
+                            !javax.xml.bind.annotation.adapters,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+            
         </plugins>
     </build>
 </project>

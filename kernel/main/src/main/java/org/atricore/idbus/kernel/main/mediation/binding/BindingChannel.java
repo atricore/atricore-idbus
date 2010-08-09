@@ -22,9 +22,7 @@
 package org.atricore.idbus.kernel.main.mediation.binding;
 
 import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
-
-import java.util.Set;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 
 
 /**
@@ -33,5 +31,7 @@ import java.util.Set;
  * @version $Id: BindingChannel.java 1331 2009-06-23 22:04:18Z sgonzalez $
  */
 public interface BindingChannel extends Channel {
+
+    FederatedLocalProvider getProvider();
 
 }

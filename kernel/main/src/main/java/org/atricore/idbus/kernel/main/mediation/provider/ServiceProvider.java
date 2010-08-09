@@ -28,7 +28,7 @@ package org.atricore.idbus.kernel.main.mediation.provider;
  * @version $Id$
  */
 
-public interface ServiceProvider extends LocalProvider {
+public interface ServiceProvider extends FederatedLocalProvider {
 
 
 }

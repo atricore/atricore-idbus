@@ -23,7 +23,8 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
@@ -65,7 +66,7 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
 
         // Recover local session information
         SPSecurityContext secCtx =
-                (SPSecurityContext) in.getMessage().getState().getLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+                (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
         SPSessionHeartBeatResponseType response = new SPSessionHeartBeatResponseType();
         response.setID(uuidGenerator.generateId());
@@ -75,7 +76,7 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
         if (secCtx == null || secCtx.getSessionIndex() == null) {
 
             if (logger.isDebugEnabled())
-                logger.debug("No Security Context found for " + channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX: " + secCtx);
+                logger.debug("No Security Context found for " + getProvider().getName().toUpperCase() + "_SECURITY_CTX: " + secCtx);
             // No SSO Session available, send response.
             response.setValid(false);
 
@@ -188,12 +189,12 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
         // Resolve IdP channel, then look for the ACS endpoint
         BindingChannel bChannel = (BindingChannel) channel;
-        LocalProvider sp = bChannel.getProvider();
+        FederatedLocalProvider sp = bChannel.getProvider();
 
         FederationChannel idpChannel = sp.getChannel();
         for (FederationChannel fChannel : sp.getChannels()) {
 
-            Provider idp = fChannel.getTargetProvider();
+            FederatedProvider idp = fChannel.getTargetProvider();
             for (CircleOfTrustMemberDescriptor member : idp.getMembers()) {
                 if (member.getAlias().equals(idpDescriptor.getAlias())) {
 
@@ -213,7 +214,7 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
 
     protected SPChannel resolveSpChannel(CircleOfTrustMemberDescriptor idp) throws SamlR2Exception {
         // The channel might be a binding or federation channel, get the main channel from the provider.
-        CircleOfTrust cot = channel.getProvider().getChannel().getCircleOfTrust();
+        CircleOfTrust cot = getProvider().getChannel().getCircleOfTrust();
 
         // The channel we need to send messages to
         SPChannel spChannel = null;
@@ -222,9 +223,9 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
             // Because we send heartbeat events using SSO Protocol, we look for local providers ...
             // TODO : Support MD for SSO Protocol to use remote providers
 
-            if (p instanceof LocalProvider) {
+            if (p instanceof FederatedLocalProvider) {
 
-                LocalProvider lp = (LocalProvider) p;
+                FederatedLocalProvider lp = (FederatedLocalProvider) p;
 
                 // Provider is probably a binding provider.
                 if (lp.getChannel() == null || lp.getChannel().getMember() == null)
@@ -306,7 +307,7 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
             logger.debug("Updating SP Security Context for " + secCtx.getSessionIndex());
 
         // Use the main SSO Session manager, this should the same for all channels !
-        IdPChannel idPChannel = (IdPChannel) channel.getProvider().getChannel();
+        IdPChannel idPChannel = (IdPChannel) getProvider().getChannel();
         SSOSessionManager ssoSessionManager = idPChannel.getSessionManager();
         ssoSessionManager.accessSession(secCtx.getSessionIndex());
 

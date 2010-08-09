@@ -7,7 +7,6 @@ import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
-import oasis.names.tc.saml._2_0.wsdl.SAMLRequestPortType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
@@ -38,7 +37,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.SSOSessionException;
@@ -50,7 +50,6 @@ import org.w3c.dom.Element;
 import javax.security.auth.Subject;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
 import java.util.List;
 import java.util.Set;
 
@@ -373,12 +372,12 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
         // Resolve IdP channel, then look for the ACS endpoint
         BindingChannel bChannel = (BindingChannel) channel;
-        LocalProvider sp = bChannel.getProvider();
+        FederatedLocalProvider sp = bChannel.getProvider();
 
         FederationChannel idpChannel = sp.getChannel();
         for (FederationChannel fChannel : sp.getChannels()) {
 
-            Provider idp = fChannel.getTargetProvider();
+            FederatedProvider idp = fChannel.getTargetProvider();
             for (CircleOfTrustMemberDescriptor member : idp.getMembers()) {
                 if (member.getAlias().equals(idpDescriptor.getAlias())) {
 
@@ -545,7 +544,7 @@ public class AssertIdentityWithSimpleAuthenticationProducer extends SamlR2Produc
             if (logger.isDebugEnabled())
                 logger.debug("Created SP security context " + secCtx);
 
-            in.getMessage().getState().setLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
+            in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
             in.getMessage().getState().getLocalState().addAlternativeId("ssoSessionId", secCtx.getSessionIndex());
             in.getMessage().getState().getLocalState().addAlternativeId("idpSsoSessionId", idpSsoSessionId);
 

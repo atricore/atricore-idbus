@@ -1,6 +1,6 @@
 package org.atricore.idbus.kernel.main.mediation.state;
 
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 
 import java.util.Collection;
 
@@ -10,11 +10,11 @@ import java.util.Collection;
  */
 public class ProviderStateContext {
 
-    private LocalProvider provider;
+    private FederatedLocalProvider provider;
 
     private ClassLoader cl;
 
-    public ProviderStateContext(LocalProvider provider, ClassLoader cl) {
+    public ProviderStateContext(FederatedLocalProvider provider, ClassLoader cl) {
         this.provider = provider;
         this.cl = cl;
     }
@@ -23,7 +23,7 @@ public class ProviderStateContext {
         return provider.getStateManager();
     }
 
-    public LocalProvider getProvider() {
+    public FederatedLocalProvider getProvider() {
         return provider;
     }
 

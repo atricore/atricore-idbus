@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.management.ServiceProviderMBean;
 import org.atricore.idbus.capabilities.samlr2.management.codec.JmxSSOSession;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
 import org.atricore.idbus.kernel.main.session.SSOSession;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
@@ -34,7 +34,7 @@ public class ServiceProviderMBeanImpl extends AbstractProviderMBean implements S
     }
 
     @Override
-    protected LocalProvider getProvider() {
+    protected FederatedLocalProvider getProvider() {
         return serviceProvider;
     }
 

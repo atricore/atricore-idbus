@@ -42,9 +42,9 @@ import java.util.Set;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public abstract class AbstractLocalProvider implements LocalProvider, BundleContextAware {
+public abstract class AbstractFederatedProvider implements FederatedLocalProvider, BundleContextAware {
 
-    private static final Log logger = LogFactory.getLog(AbstractLocalProvider.class);
+    private static final Log logger = LogFactory.getLog(AbstractFederatedProvider.class);
 
     private String name;
 

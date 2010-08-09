@@ -32,9 +32,9 @@ import java.util.*;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class RemoteProviderImpl implements RemoteProvider {
+public class FederatedRemoteProviderImpl implements FederatedRemoteProvider {
 
-    private static final Log logger = LogFactory.getLog(RemoteProviderImpl.class);
+    private static final Log logger = LogFactory.getLog(FederatedRemoteProviderImpl.class);
 
     private String name;
 

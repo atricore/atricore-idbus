@@ -50,7 +50,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
@@ -85,7 +86,7 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
             String relayState = in.getMessage().getRelayState();
 
             SPSecurityContext secCtx =
-                    (SPSecurityContext) in.getMessage().getState().getLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+                    (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
             if (secCtx != null && secCtx.getSessionIndex() != null) {
 
@@ -290,12 +291,12 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
         // Resolve IdP channel, then look for the ACS endpoint
         BindingChannel bChannel = (BindingChannel) channel;
-        LocalProvider sp = bChannel.getProvider();
+        FederatedLocalProvider sp = bChannel.getProvider();
 
         FederationChannel idpChannel = sp.getChannel();
         for (FederationChannel fChannel : sp.getChannels()) {
 
-            Provider idp = fChannel.getTargetProvider();
+            FederatedProvider idp = fChannel.getTargetProvider();
             for (CircleOfTrustMemberDescriptor member : idp.getMembers()) {
                 if (member.getAlias().equals(idpDescriptor.getAlias())) {
 

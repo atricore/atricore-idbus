@@ -17,9 +17,9 @@ import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 import org.atricore.idbus.kernel.main.session.SSOSession;
@@ -50,7 +50,7 @@ public class IdentityProviderMBeanImpl extends AbstractProviderMBean
     }
 
     @Override
-    protected LocalProvider getProvider() {
+    protected FederatedLocalProvider getProvider() {
         return identityProvider;
     }
 

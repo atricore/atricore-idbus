@@ -22,6 +22,7 @@
 package org.atricore.idbus.kernel.main.mediation.claim;
 
 import org.atricore.idbus.kernel.main.mediation.Channel;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 
 /**
  *
@@ -29,5 +30,7 @@ import org.atricore.idbus.kernel.main.mediation.Channel;
  * @version $Id: ClaimChannel.java 1040 2009-03-05 00:56:52Z gbrigand $
  */
 public interface ClaimChannel extends Channel {
+
+    FederatedLocalProvider getProvider();
 
 }

@@ -39,6 +39,7 @@
     <name>Atricore IDBus :: IDOJO : Serialized Session Store</name>
 
     <properties>
+        <commons.logging.version>1.1.1</commons.logging.version>
         <spring.version>2.5.6.SEC01</spring.version>
         <xbean.version>3.4.3</xbean.version>
         <junit.version>4.4</junit.version>
@@ -90,16 +91,28 @@
 
 
     <dependencies>
+
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.memorysessionstore</artifactId>
             <version>${pom.version}</version>
+            <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
             <version>${pom.version}</version>
+            <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>${commons.logging.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>junit</groupId>

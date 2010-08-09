@@ -16,6 +16,7 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
@@ -61,7 +62,7 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
 
         // Recover local session information
         IdPSecurityContext secCtx =
-                (IdPSecurityContext) in.getMessage().getState().getLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+                (IdPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
         IDPSessionHeartBeatResponseType response = new IDPSessionHeartBeatResponseType();
         response.setID(uuidGenerator.generateId());
@@ -71,7 +72,7 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
         if (secCtx == null || secCtx.getSessionIndex() == null) {
 
             if (logger.isDebugEnabled())
-                logger.debug("No Security Context found for " + channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX: " + secCtx);
+                logger.debug("No Security Context found for " + getProvider().getName().toUpperCase() + "_SECURITY_CTX: " + secCtx);
             // No SSO Session available, send response.
             response.setValid(false);
 

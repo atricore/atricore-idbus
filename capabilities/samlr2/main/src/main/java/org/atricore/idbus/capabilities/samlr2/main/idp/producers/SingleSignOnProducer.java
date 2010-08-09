@@ -63,7 +63,8 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
@@ -227,7 +228,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
         MediationState mediationState = in.getMessage().getState();
 
-        String varName = channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX";
+        String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
         String responseMode = mediationState.getTransientVariable("ResponseMode");
         String responseFormat = mediationState.getTransientVariable("ResponseFormat");
@@ -545,7 +546,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             ResponseType response = buildSamlResponse(exchange,  authnState, assertion, sp, ed);
 
             // Set the SSO Session var
-            in.getMessage().getState().setLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
+            in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
             in.getMessage().getState().getLocalState().addAlternativeId(IdentityProviderConstants.SEC_CTX_SSOSESSION_KEY, secCtx.getSessionIndex());
 
             // --------------------------------------------------------------------
@@ -1084,12 +1085,12 @@ public class SingleSignOnProducer extends SamlR2Producer {
     protected FederationChannel resolveIdpChannel(CircleOfTrustMemberDescriptor idpDescriptor) {
         // Resolve IdP channel, then look for the ACS endpoint
         SPChannel spChannel = (SPChannel) channel;
-        LocalProvider sp = spChannel.getProvider();
+        FederatedLocalProvider sp = spChannel.getProvider();
 
         FederationChannel idpChannel = sp.getChannel();
         for (FederationChannel fChannel : sp.getChannels()) {
 
-            Provider idp = fChannel.getTargetProvider();
+            FederatedProvider idp = fChannel.getTargetProvider();
             for (CircleOfTrustMemberDescriptor member : idp.getMembers()) {
                 if (member.getAlias().equals(idpDescriptor.getAlias())) {
 

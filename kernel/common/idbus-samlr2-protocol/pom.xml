@@ -34,7 +34,7 @@
 
     <groupId>org.atricore.idbus.kernel.common</groupId>
     <artifactId>org.atricore.idbus.kernel.common.samlr2</artifactId>
-    <name>Atricore IDBus :: Kernel : SAML R2 Protocol Binding</name>
+    <name>Atricore IDBus :: Kernel : SAML R 2.0 Protocol Binding</name>
     <description>SAML R2 Protocol Binding</description>
     <packaging>bundle</packaging>
 
@@ -103,8 +103,6 @@
                 <version>${felix.plugin.version}</version>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>Atricore IDBus :: Kernel : SamlR 2.0 Protocol Binding</Bundle-Name>
-                        <Bundle-Description>SamlR2 Protocol Binding</Bundle-Description>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             oasis.names.tc.saml._2_0.assertion;version=${pom.version},

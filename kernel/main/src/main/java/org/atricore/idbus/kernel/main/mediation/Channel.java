@@ -22,7 +22,6 @@
 package org.atricore.idbus.kernel.main.mediation;
 
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
 import org.atricore.idbus.kernel.planning.IdentityPlan;
 
 import java.io.Serializable;
@@ -49,5 +48,4 @@ public interface Channel extends Serializable {
 
     Collection<IdentityPlan> getIdentityPlans();
 
-    LocalProvider getProvider();
 }

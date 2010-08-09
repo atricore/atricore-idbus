@@ -28,7 +28,8 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
 import org.atricore.idbus.kernel.main.mediation.Channel;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 
 /**
@@ -52,7 +53,9 @@ public interface FederationChannel extends Channel {
 
     IdentityMapper getIdentityMapper();
 
-    Provider getTargetProvider();
+    FederatedProvider getTargetProvider();
+
+    FederatedLocalProvider getProvider();
 
 
 

@@ -54,17 +54,5 @@ public interface Provider extends java.io.Serializable {
      */
     String getRole();
 
-    /**
-     * Returns the COT definition
-     * @return
-     */
-    CircleOfTrust getCircleOfTrust();
-
-    /**
-     * Returns all the COT members associated with this provider.
-     * @return
-     */
-    List<CircleOfTrustMemberDescriptor> getMembers();
-
 
 }

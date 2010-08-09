@@ -1158,7 +1158,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
         // Remove previous security context if any
 
         SPSecurityContext secCtx =
-                (SPSecurityContext) in.getMessage().getState().getLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+                (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
         if (secCtx != null) {
 
@@ -1243,12 +1243,12 @@ public class AssertionConsumerProducer extends SamlR2Producer {
             if (logger.isDebugEnabled())
                 logger.debug("Created SP security context " + secCtx);
 
-            in.getMessage().getState().setLocalVariable(channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
+            in.getMessage().getState().setLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX", secCtx);
             in.getMessage().getState().getLocalState().addAlternativeId("ssoSessionId", secCtx.getSessionIndex());
             in.getMessage().getState().getLocalState().addAlternativeId("idpSsoSessionId", idpSsoSessionId);
 
             if (logger.isTraceEnabled())
-                logger.trace("Stored SP Security Context in " + channel.getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+                logger.trace("Stored SP Security Context in " + getProvider().getName().toUpperCase() + "_SECURITY_CTX");
             
             return secCtx;
         } catch (SSOSessionException e) {

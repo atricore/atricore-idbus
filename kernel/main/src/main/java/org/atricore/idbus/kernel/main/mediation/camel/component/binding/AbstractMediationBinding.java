@@ -28,8 +28,7 @@ import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
-import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-import org.atricore.idbus.kernel.main.mediation.provider.LocalProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 
@@ -72,9 +71,9 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
                 stateManagerClassloader != null ? stateManagerClassloader : getClass().getClassLoader());
     }
 
-    protected LocalProvider getProvider() {
+    protected FederatedLocalProvider getProvider() {
 
-        LocalProvider p = null;
+        FederatedLocalProvider p = null;
         if (channel instanceof FederationChannel) {
             FederationChannel fc = (FederationChannel) channel;
             p = fc.getProvider();
@@ -111,7 +110,7 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
             return;
         }
 
-        LocalProvider p = null;
+        FederatedLocalProvider p = null;
         if (channel instanceof FederationChannel) {
             FederationChannel fc = (FederationChannel) channel;
             p = fc.getProvider();
@@ -168,7 +167,7 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
         if (logger.isDebugEnabled())
             logger.debug("Creating Mediation State from Exchange " + exchange.getExchangeId());
 
-        LocalProvider p = null;
+        FederatedLocalProvider p = null;
         if (channel instanceof FederationChannel) {
             FederationChannel fc = (FederationChannel) channel;
             p = fc.getProvider();
