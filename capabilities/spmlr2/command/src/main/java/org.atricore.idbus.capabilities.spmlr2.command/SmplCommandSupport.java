@@ -2,17 +2,27 @@ package org.atricore.idbus.capabilities.spmlr2.command;
 
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.karaf.shell.console.OsgiCommandSupport;
+import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Service;
+import org.atricore.idbus.capabilities.spmlr2.main.binding.SpmlR2Binding;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
+import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.osgi.framework.ServiceReference;
+
+import javax.xml.namespace.QName;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
 public abstract class SmplCommandSupport extends OsgiCommandSupport {
+
+    protected UUIDGenerator idGen = new UUIDGenerator();
 
     @Argument(index = 0, name = "idauId", description = "The id if the identity appliance", required = true, multiValued = false)
     String idauId;
@@ -83,6 +93,30 @@ public abstract class SmplCommandSupport extends OsgiCommandSupport {
 
     public void setPspId(String pspId) {
         this.pspId = pspId;
+    }
+
+    protected EndpointDescriptor resolvePsPEndpoint(PsPChannel pspChannel, SpmlR2Binding binding) {
+
+        String b = binding.getValue();
+
+        QName qName = SpmlR2Service.PSPService.getQname();
+
+        for (IdentityMediationEndpoint endpoint : pspChannel.getEndpoints()) {
+            if (endpoint.getBinding().equals(b)) {
+                if (endpoint.getType().equals("{"+qName.getNamespaceURI()+"}" + qName.getLocalPart())) {
+
+                    String location = endpoint.getLocation();
+                    if (location.startsWith("/"))
+                        location = pspChannel.getLocation() + location;
+
+                    return new EndpointDescriptorImpl(endpoint.getName(),
+                            endpoint.getType(), endpoint.getBinding(), location, null);
+                }
+
+            }
+        }
+
+        return null;
     }
 
     protected abstract Object doExecute(ProvisioningServiceProvider psp, PsPChannel pspChannel) throws Exception;
