@@ -32,27 +32,27 @@
 
     <properties>
 
-        <atricore.idbus.version>1.0.0-m2</atricore.idbus.version>
-        <idbus.kernel.version>1.0.0-m2</idbus.kernel.version>
-        <idbus.cap.saml2.version>1.0.0-m2</idbus.cap.saml2.version>
-        <idbus.cap.josso.version>1.0.0-m2</idbus.cap.josso.version>
-        <idbus.cap.sts.version>1.0.0-m2</idbus.cap.sts.version>
+        <atricore.idbus.version>1.0.0-SNAPSHOT</atricore.idbus.version>
+        <idbus.kernel.version>1.0.0-SNAPSHOT</idbus.kernel.version>
+        <idbus.cap.saml2.version>1.0.0-SNAPSHOT</idbus.cap.saml2.version>
+        <idbus.cap.josso.version>1.0.0-SNAPSHOT</idbus.cap.josso.version>
+        <idbus.cap.sts.version>1.0.0-SNAPSHOT</idbus.cap.sts.version>
 
-        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.0.0-m2</idbus.bundle.javax-jdo2-v2_3-ec.version>
-        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0-m2</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
-        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.0-m2</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.datanucleus-core-v2_0_3.version>1.0.0-m2</idbus.bundle.datanucleus-core-v2_0_3.version>
-        <idbus.bundle.datanucleus-rdbms-v2_0_3.version>1.0.0-m2</idbus.bundle.datanucleus-rdbms-v2_0_3.version>
-        <idbus.bundle.apache-maven-v3_0.version>1.0.0-m2</idbus.bundle.apache-maven-v3_0.version>
-        <idbus.bundle.josso-ws-v1_2.version>1.0.0-m2</idbus.bundle.josso-ws-v1_2.version>
+        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.0.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
+        <idbus.bundle.datanucleus-core-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_3.version>
+        <idbus.bundle.datanucleus-rdbms-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_3.version>
+        <idbus.bundle.apache-maven-v3_0.version>1.0.0-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
+        <idbus.bundle.josso-ws-v1_2.version>1.0.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
 
-        <idbus.idojo.dbidentitystore.version>1.0.0-m2</idbus.idojo.dbidentitystore.version>
-        <idbus.idojo.ldapidentitystore.version>1.0.0-m2</idbus.idojo.ldapidentitystore.version>
-        <idbus.idojo.memoryidentitystore.version>1.0.0-m2</idbus.idojo.memoryidentitystore.version>
-        <idbus.idojo.memorysessionstore.version>1.0.0-m2</idbus.idojo.memorysessionstore.version>
-        <idbus.idojo.serializedsessionstore.version>1.0.0-m2</idbus.idojo.serializedsessionstore.version>
-        <idbus.idojo.ehcachesessionstore.version>1.0.0-m2</idbus.idojo.ehcachesessionstore.version>
-        <idbus.idojo.strongauthscheme.version>1.0.0-m2</idbus.idojo.strongauthscheme.version>
+        <idbus.idojo.dbidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.dbidentitystore.version>
+        <idbus.idojo.ldapidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
+        <idbus.idojo.memoryidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.memoryidentitystore.version>
+        <idbus.idojo.memorysessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.memorysessionstore.version>
+        <idbus.idojo.serializedsessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
+        <idbus.idojo.ehcachesessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.ehcachesessionstore.version>
+        <idbus.idojo.strongauthscheme.version>1.0.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
 
         <apache.derby.version>10.5.3.0_1</apache.derby.version>
         <apache.tiles.version>2.0.6</apache.tiles.version>
@@ -63,9 +63,7 @@
         <commons-fileupload.version>1.2.1</commons-fileupload.version>
         <datanucleus.version>2.0.3</datanucleus.version>
         <dozer.version>5.2.2</dozer.version>
-        <felix.karaf.version>1.6.0</felix.karaf.version>
-        <felix.plugin.version>2.1.0</felix.plugin.version>
-        <felix.osgi.version>1.4.0</felix.osgi.version>
+        
         <!--
         <flex.framework.version>3.2.0.3958</flex.framework.version>
         -->
@@ -88,7 +86,9 @@
         <javax.servlet.version>2.5</javax.servlet.version>
         <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
         <junit.version>4.4</junit.version>
-        <karaf.version>1.4.0</karaf.version>
+        <felix.karaf.version>1.6.0</felix.karaf.version>
+        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <felix.osgi.version>1.4.0</felix.osgi.version>
         <log4j.version>1.2.14</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
         <ravis.version>1.0.0.RC2-20100628</ravis.version>

@@ -46,7 +46,7 @@
         <dependency>
             <groupId>org.apache.felix.karaf.features</groupId>
             <artifactId>org.apache.felix.karaf.features.core</artifactId>
-            <version>${karaf.version}</version>
+            <version>${felix.karaf.version}</version>
             <scope>provided</scope>
         </dependency>
 
