@@ -34,10 +34,6 @@ public class UpdateUserPasswordRequest extends AbstractProvisioningRequest {
     private String originalPassword;
     private String newPassword;
 
-    public UpdateUserPasswordRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public String getUsername() {
         return username;
     }

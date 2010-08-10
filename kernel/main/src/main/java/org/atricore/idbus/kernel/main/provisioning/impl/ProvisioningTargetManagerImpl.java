@@ -1,65 +1,115 @@
 package org.atricore.idbus.kernel.main.provisioning.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.provisioning.domain.IdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.domain.IdentityVault;
-import org.atricore.idbus.kernel.main.provisioning.domain.dao.impl.IdentityPartitionDAOImpl;
-import org.atricore.idbus.kernel.main.provisioning.domain.dao.impl.IdentityVaultDAOImpl;
+import org.atricore.idbus.kernel.main.provisioning.domain.dao.GroupDAO;
+import org.atricore.idbus.kernel.main.provisioning.domain.dao.UserDAO;
+import org.atricore.idbus.kernel.main.provisioning.domain.dao.impl.GroupDAOImpl;
+import org.atricore.idbus.kernel.main.provisioning.domain.dao.impl.UserDAOImpl;
 import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
-import org.atricore.idbus.kernel.main.provisioning.spi.AccountManagementService;
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTargetManager;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
+import org.datanucleus.jdo.JDOPersistenceManagerFactory;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import javax.jdo.PersistenceManager;
+import javax.jdo.PersistenceManagerFactory;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public class AccountManagementServiceImpl implements AccountManagementService, InitializingBean, DisposableBean {
+public class ProvisioningTargetManagerImpl implements ProvisioningTargetManager {
+    
+    private IdentityVault identityVault;
+    
+    private IdentityPartition identityPartition;
+    
+    private UserDAO userDao;
+    
+    private GroupDAO groupDao;
+    
+    private PersistenceManagerFactory pmf;
+    
+    private PersistenceManager pm;
 
-    private static Log logger = LogFactory.getLog(AccountManagementServiceImpl.class.getName() );
 
-    private static String AND = "AND";
-
-    IdentityPartitionDAOImpl identityPartitionDao;
-
-    IdentityVaultDAOImpl identityVaultDao;
-
-    private Map<String, IdentityPartitionManagerImpl> partitionManagers = new HashMap<String, IdentityPartitionManagerImpl>();
-
-    public AccountManagementServiceImpl() {
+    public ProvisioningTargetManagerImpl(IdentityVault identityVault, IdentityPartition identityPartition) {
+        this.identityVault = identityVault;
+        this.identityPartition = identityPartition;
     }
 
-    public void destroy() throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        init();
+    public ProvisioningTargetManagerImpl() {
     }
 
     public void init() {
-        Collection<IdentityPartition> partitions = identityPartitionDao.findAll();
-        for (IdentityPartition partition : partitions) {
 
-            IdentityVault vault = partition.getVault();
-
-            // TODO Initialize Derby server for vault, if not already done.
-
-            // TODO Initialize PMF
-
-            // TODO Partition Manager
-        }
-
-
+        pm = pmf.getPersistenceManager();
+        
+        // Create DAOs ...
+        UserDAOImpl userDao = new UserDAOImpl();
+        userDao.setPm(pm);
+        this.userDao = userDao;
+        
+        GroupDAOImpl groupDao = new GroupDAOImpl();
+        groupDao.setPm(pm);
+        this.groupDao = groupDao;
+    }
+    
+    public void shutdown() {
+        
+        if (pm  != null)
+            try { pm.close(); } catch (Exception e) { /**/ }
+        
     }
 
+    public IdentityVault getIdentityVault() {
+        return identityVault;
+    }
+
+    public void setIdentityVault(IdentityVault identityVault) {
+        this.identityVault = identityVault;
+    }
+
+    public IdentityPartition getIdentityPartition() {
+        return identityPartition;
+    }
+
+    public void setIdentityPartition(IdentityPartition identityPartition) {
+        this.identityPartition = identityPartition;
+    }
+
+    public UserDAO getUserDao() {
+        return userDao;
+    }
+
+    public void setUserDao(UserDAO userDao) {
+        this.userDao = userDao;
+    }
+
+    public GroupDAO getGroupDao() {
+        return groupDao;
+    }
+
+    public void setGroupDao(GroupDAO groupDao) {
+        this.groupDao = groupDao;
+    }
+
+    public PersistenceManagerFactory getPmf() {
+        return pmf;
+    }
+
+    public void setPmf(PersistenceManagerFactory pmf) {
+        this.pmf = pmf;
+    }
+
+    public PersistenceManager getPm() {
+        return pm;
+    }
+
+    public void setPm(PersistenceManager pm) {
+        this.pm = pm;
+    }
 
     public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws ProvisioningException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.

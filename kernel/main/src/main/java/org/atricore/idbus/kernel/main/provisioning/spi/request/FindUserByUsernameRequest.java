@@ -32,10 +32,6 @@ public class FindUserByUsernameRequest extends AbstractProvisioningRequest {
 
     private String username;
 
-    public FindUserByUsernameRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public String getUsername() {
         return username;
     }

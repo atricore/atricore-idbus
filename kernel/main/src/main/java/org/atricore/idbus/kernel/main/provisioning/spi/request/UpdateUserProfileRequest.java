@@ -34,10 +34,6 @@ public class UpdateUserProfileRequest extends AbstractProvisioningRequest {
     private String lastName;
     private String email;
 
-    public UpdateUserProfileRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public String getUsername() {
         return username;
     }

@@ -33,6 +33,7 @@ import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.MediationLogger;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannel;
+import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
@@ -88,6 +89,8 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
             setupBindingEndpoints((BindingChannel)channel);
         } else if (channel instanceof ClaimChannel) {
             setupClaimEndpoints((ClaimChannel)channel);
+        } else if (channel instanceof PsPChannel) {
+            setupProvisioningServiceProviderEndpoints((PsPChannel)channel);
         } else {
             throw new IdentityMediationException(
                     "Cannot setup endpoints for channel type " + channel.getClass().getName());
@@ -111,7 +114,7 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
             IdentityMediationException {
         try {
 
-            logger.info("Setting up Identity Provider endpoints for channel : " + SPChannel.getName());
+            logger.info("Setting up IdP endpoints for channel : " + SPChannel.getName());
 
             RouteBuilder idpRoutes = createIdPRoutes(SPChannel);
             context.addRoutes(idpRoutes);
@@ -130,7 +133,7 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
             IdentityMediationException {
 
         try {
-            logger.info("Setting up Service Provider endpoints for channel : " + idPChannel.getName());
+            logger.info("Setting up SP endpoints for channel : " + idPChannel.getName());
 
             RouteBuilder spRoutes = createSPRoutes(idPChannel);
             context.addRoutes(spRoutes);
@@ -180,6 +183,24 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
             throw new IdentityMediationException(
                     "Error setting up Claim endpoints for channel [" + claimChannel.getName() + "]", e);
         }
+    }
+
+    public void setupProvisioningServiceProviderEndpoints(PsPChannel pspChannel) throws IdentityMediationException {
+        try {
+
+            logger.info("Setting up PSP endpoints for channel : " + pspChannel.getName());
+
+            RouteBuilder pspRoutes = createPsPRoutes(pspChannel);
+            context.addRoutes(pspRoutes);
+            /*
+            CamelMediationEndpoint endpoint;
+            endpoint = new CamelMediationEndpoint(claimChannel, claimRoutes);
+            return endpoint; */
+        } catch (Exception e) {
+            throw new IdentityMediationException(
+                    "Error setting up PSP endpoints for channel [" + pspChannel.getName() + "]", e);
+        }
+
     }
 
     public void start() throws IdentityMediationException {
@@ -234,6 +255,15 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
              }
          };
     }
+
+    protected RouteBuilder createPsPRoutes(PsPChannel pspChannel) throws Exception  {
+        return new RouteBuilder() {
+            public void configure() {
+                // no sp link routes added by default
+            }
+        };
+    }
+
 
     public boolean isLogMessages() {
         return logMessages;

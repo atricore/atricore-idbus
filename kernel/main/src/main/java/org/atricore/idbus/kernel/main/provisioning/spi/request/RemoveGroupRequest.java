@@ -33,10 +33,6 @@ public class RemoveGroupRequest extends AbstractProvisioningRequest {
     private long id;
     private String name;
 
-    public RemoveGroupRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public long getId() {
         return id;
     }

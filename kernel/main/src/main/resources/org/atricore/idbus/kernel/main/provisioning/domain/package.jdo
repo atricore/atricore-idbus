@@ -25,35 +25,6 @@
 
     <package name="org.atricore.idbus.kernel.main.provisioning.domain">
 
-        <class name="IdentityVault">
-            <inheritance strategy="new-table"/>
-
-            <field name="id" primary-key="true" value-strategy="native"/>
-            <field name="name"/>
-            <field name="description"/>
-
-            <field name="partitions" default-fetch-group="true">
-                <collection dependent-element="true" />
-            </field>
-
-        </class>
-
-        <class name="IdentityPartition">
-            <inheritance strategy="new-table"/>
-            <field name="id" primary-key="true" value-strategy="native"/>
-            <field name="name">
-                <column name="NAME"  length="255" jdbc-type="VARCHAR"/>
-            </field>
-            <field name="description">
-                <column name="DESCRIPTION" length="255" jdbc-type="VARCHAR"/>
-            </field>
-
-            <field name="vault" default-fetch-group="true">
-                <join delete-action="none"/>
-            </field>
-
-        </class>
-
         <class name="Group">
             <inheritance strategy="new-table"/>
             <field name="id" primary-key="true" value-strategy="native"/>

@@ -32,10 +32,6 @@ public class RemoveUserRequest extends AbstractProvisioningRequest {
 
     private long id;
 
-    public RemoveUserRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public long getId() {
         return id;
     }

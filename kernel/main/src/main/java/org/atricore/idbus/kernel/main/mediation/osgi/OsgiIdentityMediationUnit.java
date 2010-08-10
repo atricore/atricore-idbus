@@ -58,16 +58,16 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
                 throw new IdentityMediationException("Multiple Circle of Trust managers not supported!");
 
             // The mediation process can use COTs ...
+
             CircleOfTrustManager cotMgr = null;
             if (cots.values().size() < 1) {
-                logger.warn("No Circle of Trust manager found");
-                return;
+                logger.debug("No Circle of Trust manager found");
+            } else {
+                cotMgr = cots.values().iterator().next();
+                if (logger.isDebugEnabled())
+                    logger.debug("Initializing Mediation infrastructure using COT manager " + cotMgr);
+                cotMgr.init();
             }
-
-            cotMgr = cots.values().iterator().next();
-            if (logger.isDebugEnabled())
-                logger.debug("Initializing Mediation infrastructure using COT manager " + cotMgr);
-            cotMgr.init();
 
             Set<String> channelNames = new HashSet<String>();
             Set<String> endpointNames = new HashSet<String>();
@@ -100,6 +100,12 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
                 if (channel instanceof FederationChannel) {
 
                     logger.info("Registering Federation channel " + channel);
+
+                    if (cotMgr == null) {
+                        logger.error("No circle of trust defined. Federation features cannot be configured for channel " + channel.getName() + " !!!");
+                        continue;
+                    }
+
 
                     AbstractFederationChannel fedChannel = (AbstractFederationChannel) channel;
                     MetadataEntry md = cotMgr.findEntityRoleMetadata(fedChannel.getMember().getAlias(),

@@ -66,6 +66,7 @@
 
         <module>applications/idbus-server</module>
         <module>examples/simple-federation</module>
+        <module>examples/simple-provisioning</module>
         <module>examples/salesforce</module>
 
         <module>distributions</module>

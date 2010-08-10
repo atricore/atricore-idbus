@@ -30,7 +30,4 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  */
 public class ListGroupRequest extends AbstractProvisioningRequest {
 
-    public ListGroupRequest(String partitionId) {
-        super(partitionId);
-    }
 }

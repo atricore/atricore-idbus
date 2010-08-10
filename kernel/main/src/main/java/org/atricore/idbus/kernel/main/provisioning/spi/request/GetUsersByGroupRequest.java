@@ -29,10 +29,6 @@ public class GetUsersByGroupRequest extends AbstractProvisioningRequest {
 
     private String group;
 
-    public GetUsersByGroupRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public String getGroup() {
         return group;
     }

@@ -57,7 +57,7 @@ import java.util.List;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: SamlR2Producer.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-public class SamlR2Producer extends AbstractCamelProducer<CamelMediationExchange>
+public abstract class SamlR2Producer extends AbstractCamelProducer<CamelMediationExchange>
         implements SAMLR2Constants, SAMLR2MessagingConstants, SamlR2PlanningConstants {
 
     private static final Log logger = LogFactory.getLog(SamlR2Producer.class);

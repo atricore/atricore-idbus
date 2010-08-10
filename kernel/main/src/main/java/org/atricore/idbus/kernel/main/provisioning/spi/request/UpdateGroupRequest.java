@@ -34,10 +34,6 @@ public class UpdateGroupRequest extends AbstractProvisioningRequest {
     String name;
     String description;
 
-    public UpdateGroupRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public long getId() {
         return id;
     }

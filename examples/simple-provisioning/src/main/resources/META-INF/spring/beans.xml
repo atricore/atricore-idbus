@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<s:beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:osgi="http://www.springframework.org/schema/osgi"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
+        >
+
+    <bean name="idau2-mediation-unit" class="org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit"
+          depends-on="bpms-manager,cxf">
+
+        <property name="name" value="idau2-mediation-unit1"/>
+        <property name="container" ref="idau2-container"/>
+
+        <property name="channels">
+            <list>
+                <!-- =================================== -->
+                <!-- PsP1 Channels                       -->
+                <!-- =================================== -->
+                <ref bean="psp1-default-channel"/>
+
+            </list>
+        </property>
+    </bean>
+
+    <bean name="idau2-container"
+          class="org.atricore.idbus.kernel.main.mediation.camel.OsgiCamelIdentityMediationUnitContainerImpl">
+        <property name="name" value="idau2-engine" />
+        <property name="cxfBus" ref="cxf"/>
+    </bean>
+
+
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- Identity Mediators Registry                                        -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+
+    <import resource="psp1/psp1-config.xml"/>
+
+    <s:bean name="mBeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean" scope="singleton">
+        <s:property name="locateExistingServerIfPossible" value="true"/>
+    </s:bean>
+
+    <!-- ====================================================================== -->
+    <!-- Configuration beans                                                    -->
+    <!-- ====================================================================== -->
+
+    <bean name="idau2-bundle-config" class="org.atricore.idbus.kernel.main.util.ConfigurationContextImpl">
+        <constructor-arg ref="idau2-properties"/>
+    </bean>
+
+    <bean name="idau2-config" class="org.atricore.idbus.kernel.main.util.ComposedConfigurationContext">
+        <constructor-arg>
+            <list>
+                <ref bean="idau2-bundle-config"/>
+                <ref bean="idbus-config"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+</s:beans>

@@ -174,26 +174,5 @@
 
         </class>
 
-        <class name="IdentityVault" table="IDB_IDENTITY_VAULT">
-            <field name="name" >
-                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
-            </field>
-
-            <field name="description">
-                <column length="255" jdbc-type="VARCHAR"/>
-            </field>
-        </class>
-
-        <class name="IdentityPartition" table="IDB_IDENTITY_PARTITION">
-            <field name="name" >
-                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
-            </field>
-
-            <field name="description">
-                <column length="255" jdbc-type="VARCHAR"/>
-            </field>
-        </class>
-        
-
     </package>
 </orm>

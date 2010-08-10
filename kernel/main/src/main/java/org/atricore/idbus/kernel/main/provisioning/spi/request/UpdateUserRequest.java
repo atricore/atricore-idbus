@@ -90,10 +90,6 @@ public class UpdateUserRequest extends AbstractProvisioningRequest {
     private Boolean automaticallyGeneratePassword;
     private Boolean emailNewPasword;
 
-    public UpdateUserRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public long getId()
     {
         return id;

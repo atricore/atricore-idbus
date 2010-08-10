@@ -244,8 +244,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>Atricore IDBus :: Example : Simple Federation Identity Appliance Unit</Bundle-Name>
-                        <Bundle-Description>Identity Bus Simple Federation Example Identity Appliance Unit</Bundle-Description>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Private-Package>!*</Private-Package>
                         <Export-Package>

@@ -6,7 +6,10 @@ package org.atricore.idbus.capabilities.spmlr2.main.binding;
 public enum SpmlR2Binding {
 
     /** Non-normative, only useful between local providers, for perfomrance issues */
-    SPMLR2_LOCAL("urn:oasis:names:tc:SPML:2.0:bindings:LOCAL", false)
+    SPMLR2_SOAP("urn:oasis:names:tc:SPML:2:0:bindings:SOAP", false),
+
+    /** Non-normative, only useful between local providers, for perfomrance issues */
+    SPMLR2_LOCAL("urn:oasis:names:tc:SPML:2:0:bindings:LOCAL", false)
     
     ;
 

@@ -31,10 +31,6 @@ public class FetchGroupMembershipRequest extends AbstractProvisioningRequest {
 
     private String username;
 
-    public FetchGroupMembershipRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public String getUsername() {
         return username;
     }

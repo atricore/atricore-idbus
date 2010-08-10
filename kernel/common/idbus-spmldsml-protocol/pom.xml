@@ -34,9 +34,9 @@
 
     <groupId>org.atricore.idbus.kernel.common</groupId>
     <artifactId>org.atricore.idbus.kernel.common.spml</artifactId>
-    <name>Atricore IDBus :: Kernel : SPML w/DSML Profile Binding</name>
+    <name>Atricore IDBus :: Kernel : SPML 2 w/DSML Profile Binding</name>
     <description>Spml Binding</description>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
 
    <dependencies>
 

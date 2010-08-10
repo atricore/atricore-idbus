@@ -36,10 +36,6 @@ public class SearchUserRequest extends AbstractProvisioningRequest {
     private String commonName;
     private String givenName;
 
-    public SearchUserRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public String getUserName() {
         return userName;
     }

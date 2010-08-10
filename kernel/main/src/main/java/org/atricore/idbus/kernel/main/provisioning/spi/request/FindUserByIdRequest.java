@@ -32,10 +32,6 @@ public class FindUserByIdRequest extends AbstractProvisioningRequest {
 
     private long id;
 
-    public FindUserByIdRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public long getId() {
         return id;
     }

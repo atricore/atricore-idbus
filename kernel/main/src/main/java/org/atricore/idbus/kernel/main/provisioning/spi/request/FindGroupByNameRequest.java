@@ -32,10 +32,6 @@ public class FindGroupByNameRequest extends AbstractProvisioningRequest {
 
     private String name;
 
-    public FindGroupByNameRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public String getName() {
         return name;
     }

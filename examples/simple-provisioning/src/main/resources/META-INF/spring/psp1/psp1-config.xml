@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<s:beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:osgi="http://www.springframework.org/schema/osgi"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
+        >
+
+    <bean name="psp1" class="org.atricore.idbus.kernel.main.mediation.provider.ProvisioningProviderImpl">
+        <property name="name" value="psp1"/>
+        <property name="description" value="Provisioning Service Provider One"/>
+        <property name="role" value="PSP"/>
+        <property name="channel" ref="psp1-default-channel"/>
+    </bean>
+
+    <bean name="psp1-default-channel" class="org.atricore.idbus.kernel.main.mediation.channel.PspChannelImpl">
+        <property name="name" value="psp1-default-channel"/>
+        <property name="description" value="PSP One default channel"/>
+        <property name="identityMediator" ref="psp1-spml2-mediator"/>
+        <property name="unitContainer" ref="idau2-container"/>
+        <property name="location" value="http://localhost:8081/IDBUS/PSP-1/SPML2"/>
+        <property name="endpoints">
+            <list>
+                <bean name="psp1-ls-targets-endpoint" class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl">
+                    <property name="name" value="psp1-ls-targets-endpoint"/>
+                    <property name="type" value="{urn:oasis:names:tc:SPML:2:0}PSPService" />
+                    <property name="binding" value="urn:oasis:names:tc:SPML:2:0:bindings:LOCAL"/>
+                    <property name="location" value="local:/PSP-1/SPML2/LOCAL"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="psp1-spml2-mediator" class="org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator">
+        <property name="bindingFactory">
+            <bean class="org.atricore.idbus.capabilities.spmlr2.main.binding.SpmlR2BindingFactory"/>
+        </property>
+    </bean>
+
+    <!-- Identity Vault / Partition -->
+
+    <bean name="psp1-pst1" class="org.atricore.idbus.kernel.main.provisioning.impl.ProvisioningTargetManagerImpl">
+        <property name="identityVault" ref="idvault-1"/>
+        <property name="identityPartition" ref="idpart-1"/>
+
+    </bean>
+
+    <bean name="idvault-1" class="org.atricore.idbus.kernel.main.provisioning.domain.IdentityVault">
+        
+    </bean>
+
+    <bean name="idpart-1" class="org.atricore.idbus.kernel.main.provisioning.domain.IdentityPartition">
+    </bean>
+
+
+
+
+</s:beans>

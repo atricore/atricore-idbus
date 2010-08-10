@@ -32,10 +32,6 @@ public class FindGroupByIdRequest extends AbstractProvisioningRequest {
 
     private long id;
 
-    public FindGroupByIdRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public long getId() {
         return id;
     }

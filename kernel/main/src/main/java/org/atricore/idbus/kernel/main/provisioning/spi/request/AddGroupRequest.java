@@ -30,10 +30,6 @@ public class AddGroupRequest extends AbstractProvisioningRequest {
     private String name;
     private String description;
 
-    public AddGroupRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public String getName() {
         return name;
     }

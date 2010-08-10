@@ -59,10 +59,14 @@ public class ProcessActionLifecycleListener implements BundleContextAware {
                     bundleSymbolicName + ":" + bundleVersion);
 
         boolean found = false;
+
         for (Bundle b : bundleContext.getBundles()) {
 
-            if (b.getSymbolicName().equals(bundleSymbolicName) &&
-                    b.getVersion().toString().equals(bundleVersion)) {
+            if (logger.isTraceEnabled())
+                logger.trace("Checking bundle " + b.getSymbolicName() + "/" + b.getVersion());
+
+            if (bundleSymbolicName.equals(b.getSymbolicName()) &&
+                bundleVersion.equals(b.getVersion().toString())) {
 
                 // Add this bundle to the registry!
                 found = true;

@@ -33,10 +33,6 @@ public class SearchGroupRequest extends AbstractProvisioningRequest {
     private String name;
     private String description;
 
-    public SearchGroupRequest(String partitionId) {
-        super(partitionId);
-    }
-
     public String getName() {
         return name;
     }
