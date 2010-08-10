@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <tx:annotation-driven/>
+    
+    <!-- The main advantage of this proxy is that it allows DAOs to work with a plain JDO PersistenceManagerFactory reference,
+         while still participating in Spring's (or a J2EE server's) resource and transaction management.
+         DAOs will only rely on the JDO API in such a scenario, without any Spring dependencies. -->
+    <bean id="pmfProxy" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
+        <property name="targetPersistenceManagerFactory" ref="idbusProvisioningPmf"/>
+        <!--property name="allowCreate" value="false"/-->
+    </bean>
+
+    <bean id="accountLinkagePolicyDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.AccountLinkagePolicyDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="authenticationContractDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.AuthenticationContractDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="authenticationMechanismDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.AuthenticationMechanismDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="attributeProfileDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.AttributeProfileDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="authenticationAssertionEmissionPolicyDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.AuthenticationAssertionEmissionPolicyDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="bindingChannelDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.BindingChannelDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="bindingProviderDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.BindingProviderDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="channelDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.ChannelDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="dbIdentityVaultDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.DbIdentityVaultDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="identityApplianceDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityApplianceDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="identityApplianceDefinitionDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityApplianceDefinitionDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="identityApplianceDeploymentDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityApplianceDeploymentDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="identityApplianceUnitDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityApplianceUnitDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="identityProviderDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityProviderDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="identityProviderChannelDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityProviderChannelDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="identityServerDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityServerDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="identityVaultDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityVaultDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="jossoBPConfigDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.JossoBPConfigDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="keystoreDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.KeystoreDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="ldapIdentityVaultDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.LdapIdentityVaultDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="localProviderDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.LocalProviderDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="locationDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.LocationDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="organizationDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.OrganizationDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="providerDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.ProviderDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="remoteProviderDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.RemoteProviderDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="resourceDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.ResourceDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+    
+    <bean id="samlR2IDPConfigDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.SamlR2IDPConfigDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="samlR2ProviderConfigDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.SamlR2ProviderConfigDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="samlR2SPConfigDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.SamlR2SPConfigDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="serviceProviderDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.ServiceProviderDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="serviceProviderChannelDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.ServiceProviderChannelDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="userInformationLookupDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.UserInformationLookupDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+</beans>

@@ -172,10 +172,6 @@ public class IdentityApplianceManagementServiceHashImpl
         return null;
     }
 
-    public LookupIdentityApplianceDefinitionResponse lookupIdentityApplianceDefinition(LookupIdentityApplianceDefinitionRequest request) throws IdentityServerException {
-        return null;
-    }
-
     public ListIdentityApplianceDefinitionsResponse listIdentityApplianceDefinitions(ListIdentityApplianceDefinitionsRequest req) throws IdentityServerException {
         return null;
     }

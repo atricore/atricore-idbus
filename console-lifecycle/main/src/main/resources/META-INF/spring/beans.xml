@@ -80,7 +80,7 @@
         <property name="passwordHashUtil" ref="passwordHashUtil"/>
     </bean>
 
-    <bean id="idbusProvisioningTransactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
+    <bean id="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
         <property name="persistenceManagerFactory">
             <ref local="idbusProvisioningPmf"/>
         </property>
@@ -126,11 +126,19 @@
 
     <!-- TODO : switch to production implementation -->
 	<bean id="idApplianceManagementService" class="com.atricore.idbus.console.lifecycle.main.impl.IdentityApplianceManagementServiceImpl">
-        <property name="pmf">
-            <ref local="idbusProvisioningPmf"/>
-        </property>
         <property name="builder" ref="applianceBuilder"/>
         <property name="deployer" ref="applianceDeployer"/>
+        <!-- DAO's -->
+        <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
+        <property name="identityApplianceDefinitionDAO" ref="identityApplianceDefinitionDAO"/>
+        <property name="identityVaultDAO" ref="identityVaultDAO"/>
+        <property name="userInformationLookupDAO" ref="userInformationLookupDAO"/>
+        <property name="accountLinkagePolicyDAO" ref="accountLinkagePolicyDAO"/>
+        <property name="authenticationContractDAO" ref="authenticationContractDAO"/>
+        <property name="authenticationMechanismDAO" ref="authenticationMechanismDAO"/>
+        <property name="attributeProfileDAO" ref="attributeProfileDAO"/>
+        <property name="authenticationAssertionEmissionPolicyDAO" ref="authenticationAssertionEmissionPolicyDAO"/>
+        <property name="resourceDAO" ref="resourceDAO"/>
     </bean>
 
     <bean id="applianceDeployer" class="com.atricore.idbus.console.lifecycle.main.impl.FeaturesBasedApplianceDeployer">

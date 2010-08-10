@@ -21,28 +21,26 @@
 
 package com.atricore.idbus.console.lifecycle.main.impl;
 
+import com.atricore.idbus.console.lifecycle.main.domain.dao.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
-import com.atricore.idbus.console.lifecycle.main.exception.IdentityApplianceMetadataManagementException;
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
 import com.atricore.idbus.console.lifecycle.main.spi.*;
 import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.*;
 
 import java.util.*;
 
-public class IdentityApplianceManagementServiceImpl implements
-        IdentityApplianceManagementService, DisposableBean, InitializingBean {
+public class IdentityApplianceManagementServiceImpl implements IdentityApplianceManagementService{
 
 	private static final Log logger = LogFactory.getLog(IdentityApplianceManagementServiceImpl.class);
 
@@ -52,68 +50,56 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private IdentityApplianceDeployer deployer;
 
-    private PersistenceManagerFactory pmf;
+    private IdentityApplianceDAO identityApplianceDAO;
 
-    private PersistenceManager pm;
+    private IdentityApplianceDefinitionDAO identityApplianceDefinitionDAO;
 
-//    private DozerBeanMapper dozerMapper;
+    private IdentityVaultDAO identityVaultDAO;
 
-    public void destroy() throws Exception {
-        try {
-            pm.close();
-        } catch (Exception e) {
-            logger.error("Closing Persistence Manager : " + e.getMessage(), e);
-        }
-    }
+    private UserInformationLookupDAO userInformationLookupDAO;
 
-    public void afterPropertiesSet() throws Exception {
-        pm = pmf.getPersistenceManager();
-    }
+    private AccountLinkagePolicyDAO accountLinkagePolicyDAO;
 
+    private AuthenticationContractDAO authenticationContractDAO;
+
+    private AuthenticationMechanismDAO authenticationMechanismDAO;
+
+    private AttributeProfileDAO attributeProfileDAO;
+
+    private AuthenticationAssertionEmissionPolicyDAO authenticationAssertionEmissionPolicyDAO;
+
+    private ResourceDAO resourceDAO;
+    
+    @Transactional
     public BuildIdentityApplianceResponse buildIdentityAppliance(BuildIdentityApplianceRequest request) throws IdentityServerException {
-
-        Transaction tx = pm.currentTransaction();
         try {
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(FetchPlan.FETCH_SIZE_GREEDY);
-            IdentityAppliance appliance = lookupById(Long.parseLong(request.getApplianceId()));
+            IdentityAppliance appliance = identityApplianceDAO.getObjectById(Long.parseLong(request.getApplianceId()));
             appliance = buildAppliance(appliance, request.isDeploy());
-            tx.commit();
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new BuildIdentityApplianceResponse(appliance);
 	    } catch (Exception e){
 	        logger.error("Error building identity appliance", e);
 	        throw new IdentityServerException(e);
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
-	    }
+        }
     }
 
     /**
      * Deploys an already existing Identity Appliance.  
      * The appliance was previously created or imported and can by found in the list of appliances.
      */
+    @Transactional
     public DeployIdentityApplianceResponse deployIdentityAppliance(DeployIdentityApplianceRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         try {
-            tx.begin();
-            IdentityAppliance appliance = lookupById(Long.parseLong(req.getApplianceId()));
+            IdentityAppliance appliance = identityApplianceDAO.getObjectById(Long.parseLong(req.getApplianceId()));
             appliance = deployAppliance(appliance);
             if (req.getStartAppliance()) {
                 appliance = startAppliance(appliance);
             }
-            tx.commit();
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new DeployIdentityApplianceResponse(appliance, true);
 	    } catch (Exception e){
 	        logger.error("Error deploying identity appliance", e);
 	        throw new IdentityServerException(e);
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
 	    }
     }
 
@@ -121,54 +107,42 @@ public class IdentityApplianceManagementServiceImpl implements
      * Undeploys an Identity Appliance.
      * The appliance was previously deployed, if the appliance is running this will first attempt to stop it.
      */
+    @Transactional
     public UndeployIdentityApplianceResponse undeployIdentityAppliance(UndeployIdentityApplianceRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         try {
-            IdentityAppliance appliance = lookupById(Long.parseLong(req.getApplianceId()));
+            IdentityAppliance appliance = identityApplianceDAO.getObjectById(Long.parseLong(req.getApplianceId()));
             appliance = undeployAppliance(appliance);
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new UndeployIdentityApplianceResponse (appliance);
 	    } catch (Exception e){
 	        logger.error("Error undeploying identity appliance", e);
 	        throw new IdentityServerException(e);
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
 	    }
     }
 
+    @Transactional
     public StartIdentityApplianceResponse startIdentityAppliance(StartIdentityApplianceRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         try {
-            IdentityAppliance appliance = lookupById(Long.parseLong(req.getId()));
+            IdentityAppliance appliance = identityApplianceDAO.getObjectById(Long.parseLong(req.getId()));
             appliance = startAppliance(appliance);
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new StartIdentityApplianceResponse (appliance);
 	    } catch (Exception e){
 	        logger.error("Error starting identity appliance", e);
 	        throw new IdentityServerException(e);
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
 	    }
     }
 
+    @Transactional
     public StopIdentityApplianceResponse stopIdentityAppliance(StopIdentityApplianceRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         try {
-            IdentityAppliance appliance = lookupById(Long.parseLong(req.getId()));
+            IdentityAppliance appliance = identityApplianceDAO.getObjectById(Long.parseLong(req.getId()));
             appliance = stopAppliance(appliance);
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new StopIdentityApplianceResponse (appliance);
 	    } catch (Exception e){
 	        logger.error("Error stopping identity appliance", e);
 	        throw new IdentityServerException(e);
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
 	    }
     }
 
@@ -180,9 +154,9 @@ public class IdentityApplianceManagementServiceImpl implements
         throw new UnsupportedOperationException("Not Supported!");
     }
 
+    @Transactional
     public ImportApplianceDefinitionResponse importApplianceDefinition(ImportApplianceDefinitionRequest request) throws IdentityServerException {
 
-        Transaction tx = pm.currentTransaction();
         try {
 
             if (logger.isTraceEnabled())
@@ -222,7 +196,7 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance.setIdApplianceDefinition(applianceDef);
             appliance.setState(IdentityApplianceState.PROJECTED.toString());
 
-            appliance = addAppliance(appliance);
+            appliance = identityApplianceDAO.save(appliance);
 
             if (logger.isTraceEnabled())
                 logger.trace("Created Identity Appliance " + appliance.getId());
@@ -236,25 +210,16 @@ public class IdentityApplianceManagementServiceImpl implements
         } catch (Exception e) {
 	        logger.error("Error importing identity appliance", e);
 	        throw new IdentityServerException(e);
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
 	    }
     }
 
+    @Transactional
     public ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException {
-
-        Transaction tx = pm.currentTransaction();
         try {
             String appId = req.getApplianceId();
             Long id = Long.parseLong(appId);
 
-            pm.getFetchPlan().setMaxFetchDepth(FetchPlan.FETCH_SIZE_GREEDY);
-            IdentityAppliance appliance = lookupById(id);
-
-            tx.begin();
+            IdentityAppliance appliance = identityApplianceDAO.getObjectById(id);
 
             switch (req.getAction()) {
                 case START:
@@ -273,27 +238,21 @@ public class IdentityApplianceManagementServiceImpl implements
                     throw new UnsupportedOperationException("Appliance lifecycle management action not supported: " + req.getAction());
             }
 
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             ManageIdentityApplianceLifeCycleResponse response = new ManageIdentityApplianceLifeCycleResponse(req.getAction(), appliance);
             response.setStatusCode(StatusCode.STS_OK);
-            tx.commit();
             return response;
         } catch (Exception e){
 	        logger.error("Error processing identity appliance lifecycle action", e);
 	        throw new IdentityServerException(e);
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
 	    }
-
     }
 
+    @Transactional
     public AddIdentityApplianceResponse addIdentityAppliance(AddIdentityApplianceRequest req) throws IdentityServerException {
         AddIdentityApplianceResponse res = null;
-        Transaction tx = pm.currentTransaction();
         try {
-            IdentityAppliance appliance = this.addAppliance(req.getIdentityAppliance());
+            IdentityAppliance appliance = identityApplianceDAO.save(req.getIdentityAppliance());
 
             if (appliance.getIdApplianceDefinition() == null)
                 throw new IdentityServerException("Appliances must contain an appliance definition!");
@@ -301,128 +260,87 @@ public class IdentityApplianceManagementServiceImpl implements
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
             applianceDef.setRevision(1);
             applianceDef.setLastModification(new Date());
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(6);
-            appliance = pm.detachCopy(addAppliance(appliance));
 
+            appliance = identityApplianceDAO.save(appliance);
+            appliance = identityApplianceDAO.detachCopy(appliance, 6);
             res = new AddIdentityApplianceResponse();
             res.setAppliance(appliance);
-
-            tx.commit();
-
         } catch (Exception e){
 	        logger.error("Error adding identity appliance", e);
 	        throw new IdentityServerException(e);
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
 	    }
         return res;
     }
 
+    @Transactional
     public UpdateIdentityApplianceResponse updateIdentityAppliance(UpdateIdentityApplianceRequest request) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         UpdateIdentityApplianceResponse res = null;
         try {
-            IdentityAppliance appliance = null;
-//            tx.begin();
-//            appliance = pm.detachCopy(pm.getObjectById(IdentityAppliance.class, request.getAppliance().getId()));
-//            tx.commit();
-            appliance = request.getAppliance();
+            IdentityAppliance appliance = request.getAppliance();
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
 
             applianceDef.setLastModification(new Date());
             applianceDef.setRevision(applianceDef.getRevision() + 1);
 
-            tx.begin();
-            this.updateAppliance(appliance);
-            tx.commit();
+            identityApplianceDAO.save(appliance);
+            appliance = identityApplianceDAO.detachCopy(appliance, 6);
             res = new UpdateIdentityApplianceResponse(appliance);
         } catch (Exception e){
 	        logger.error("Error updating identity appliance", e);
 	        throw new IdentityServerException(e);
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
 	    }
         return res;
     }
 
+    @Transactional
     public LookupIdentityApplianceByIdResponse lookupIdentityApplianceById(LookupIdentityApplianceByIdRequest request) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         LookupIdentityApplianceByIdResponse res = null;
         try {
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(6);
-            IdentityAppliance appliance = lookupById(Long.parseLong(request.getIdentityApplianceId()));
+            IdentityAppliance appliance = identityApplianceDAO.getObjectById(Long.parseLong(request.getIdentityApplianceId()));
+            appliance = identityApplianceDAO.detachCopy(appliance, 6);
             res = new LookupIdentityApplianceByIdResponse();
             res.setIdentityAppliance(appliance);
-
-            tx.commit();
-
         } catch (Exception e){
 	        logger.error("Error looking for identity appliance", e);
 	        throw new IdentityServerException(e);
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
 	    }
         return res;
     }
 
+    @Transactional
     public RemoveIdentityApplianceResponse removeIdentityAppliance(RemoveIdentityApplianceRequest req) throws IdentityServerException{
-        Transaction tx = pm.currentTransaction();
         try {
-            tx.begin();
             //First remove deployment data to prevent reference error when deleting providers
-            req.getIdentityAppliance().setIdApplianceDeployment(null);
-            this.updateAppliance(req.getIdentityAppliance());
+            IdentityAppliance appliance = req.getIdentityAppliance();
+            appliance.setIdApplianceDeployment(null);
+            appliance = identityApplianceDAO.save(appliance);
             
             //Next, remove providers (and channels with them) to prevent reference error when performing cascade-delete on vaults (while deleting appliance)
-            req.getIdentityAppliance().getIdApplianceDefinition().setProviders(null);
-            this.updateAppliance(req.getIdentityAppliance());
+            appliance.getIdApplianceDefinition().setProviders(null);
+            appliance = identityApplianceDAO.save(appliance);
 
             //After that remove the appliance
-            this.remove(req.getIdentityAppliance());
+            this.remove(appliance);
             RemoveIdentityApplianceResponse res = new RemoveIdentityApplianceResponse();
-            tx.commit();
             return res;
         } catch (Exception e){
 	        logger.error("Error removing identity appliance", e);
 	        throw new IdentityServerException(e);
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
 	    }
     }
 
+    @Transactional
     public ListIdentityAppliancesResponse listIdentityAppliances(ListIdentityAppliancesRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         ListIdentityAppliancesResponse res = null;
         try {
-            tx.begin();
-            Collection<IdentityAppliance> appliances = this.list(req.isStartedOnly(), 6);
+            Collection<IdentityAppliance> appliances = identityApplianceDAO.list(req.isStartedOnly());
+            appliances = identityApplianceDAO.detachCopyAll(appliances, 6);
 
-            res = new ListIdentityAppliancesResponse ();
+            res = new ListIdentityAppliancesResponse();
             res.setIdentityAppliances(appliances);
-
-            tx.commit();
         } catch (Exception e){
 	        logger.error("Error listing identity appliances", e);
 	        throw new IdentityServerException(e);
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
 	    }
         return res;
     }
@@ -431,10 +349,10 @@ public class IdentityApplianceManagementServiceImpl implements
         throw new UnsupportedOperationException("Not Supported!");
     }
 
+    @Transactional
     public AddIdentityApplianceDefinitionResponse addIdentityApplianceDefinition(AddIdentityApplianceDefinitionRequest req)
             throws IdentityServerException {
 
-        Transaction tx = pm.currentTransaction();
         AddIdentityApplianceDefinitionResponse res = null;
         try {
 
@@ -448,118 +366,43 @@ public class IdentityApplianceManagementServiceImpl implements
 
             logger.debug("Persisting identity appliance definition with name: " + req.getIdentityApplianceDefinition().getName());
 
-            tx.begin();
-
             //TODO : Check if the idApplianceDefinition (and entire tree) is correct
-            pm.makePersistent(req.getIdentityApplianceDefinition());
-
-            tx.commit();
-
+            identityApplianceDefinitionDAO.save(req.getIdentityApplianceDefinition());
 	    } catch (Exception e){
 	        logger.error("Error adding identity appliance definition", e);
 	        throw new IdentityServerException(e);
 
-	    } finally {
-
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
-
 	    }
 		return res;
     }
 
+    @Transactional
     public LookupIdentityApplianceDefinitionByIdResponse lookupIdentityApplianceDefinitionById(LookupIdentityApplianceDefinitionByIdRequest request) throws IdentityServerException {
-
-        Transaction tx = pm.currentTransaction();
         LookupIdentityApplianceDefinitionByIdResponse res = null;
         try {
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(3); //fetching providers and channels as well
             logger.debug("Finding identity appliance definition by ID : "+ request.getIdentityApplianceDefinitionId());
-
-            IdentityApplianceDefinition iad = pm.getObjectById(IdentityApplianceDefinition.class, new Long(request.getIdentityApplianceDefinitionId()));
+            IdentityApplianceDefinition iad = identityApplianceDefinitionDAO.getObjectById(Long.parseLong(request.getIdentityApplianceDefinitionId()));
+            iad = identityApplianceDefinitionDAO.detachCopy(iad, 3);  //fetching providers and channels as well
             res = new LookupIdentityApplianceDefinitionByIdResponse();
-            res.setIdentityApplianceDefinition(pm.detachCopy(iad));
-
-            tx.commit();
+            res.setIdentityApplianceDefinition(iad);
 	    } catch (Exception e){
 	        logger.error("Error retrieving identity appliance definition with id : " + request.getIdentityApplianceDefinitionId(), e);
 	        throw new IdentityServerException(e);
-	    } finally {
-
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
-
 	    }
 		return res;
     }
 
-    public LookupIdentityApplianceDefinitionResponse lookupIdentityApplianceDefinition(LookupIdentityApplianceDefinitionRequest request) throws IdentityServerException {
-
-        Transaction tx = pm.currentTransaction();
-        LookupIdentityApplianceDefinitionResponse res = null;
-        try {
-            tx.begin();
-
-            pm.getFetchPlan().setMaxFetchDepth(3); //fetching providers and channels as well
-            logger.debug("Finding identity appliance definition by id : "+ request.getId());
-
-            Query query = pm.newQuery(IdentityApplianceDefinition.class, "id==:id");
-            Collection result = (Collection) query.execute(request.getId());
-            res = new LookupIdentityApplianceDefinitionResponse();
-
-
-            if (result.isEmpty()){
-                throw new IdentityApplianceMetadataManagementException("Identity Appliance Definition with id: " +  request.getId() + "  not found");
-            }
-            Iterator iter = result.iterator();
-            IdentityApplianceDefinition iad = (IdentityApplianceDefinition)iter.next();
-            res.setIdentityAppliance(pm.detachCopy(iad));
-
-            tx.commit();
-	    } catch (Exception e){
-	        logger.error("Error retrieving Identity Appliance Definitions", e);
-	        throw new IdentityServerException(e);
-	    } finally {
-
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
-
-	    }
-
-
-		return res;
-    }
-
+    @Transactional
     public ListIdentityApplianceDefinitionsResponse listIdentityApplianceDefinitions(ListIdentityApplianceDefinitionsRequest req) throws IdentityServerException {
-
-        Transaction tx = pm.currentTransaction();
         ListIdentityApplianceDefinitionsResponse res = new ListIdentityApplianceDefinitionsResponse();
         try {
-            tx.begin();
             logger.debug("Listing all identity appliance definitions");
-            pm.getFetchPlan().setMaxFetchDepth(3); //fetching providers and channels as well
-            Extent e = pm.getExtent(IdentityApplianceDefinition.class,false);
-            Query  q = pm.newQuery(e);
-            Collection result = (Collection)q.execute();
-
-            if(!result.isEmpty()){
-                res.getIdentityApplianceDefinitions().addAll(pm.detachCopyAll(result));
-            }
-            tx.commit();
-        } finally {
-
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-
-        }
+            Collection result = identityApplianceDefinitionDAO.findAll();
+            res.getIdentityApplianceDefinitions().addAll(identityApplianceDefinitionDAO.detachCopyAll(result, 3));  //fetching providers and channels as well
+        } catch (Exception e){
+	        logger.error("Error retrieving identity appliance definitions!!!", e);
+	        throw new IdentityServerException(e);
+	    }
         return res;
     }
 
@@ -567,171 +410,101 @@ public class IdentityApplianceManagementServiceImpl implements
      * List methods
      ***************************************************************/
 
+    @Transactional
     public ListIdentityVaultsResponse listIdentityVaults(ListIdentityVaultsRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         ListIdentityVaultsResponse res = new ListIdentityVaultsResponse();
         try {
-            tx.begin();
             logger.debug("Listing all identity vaults");
-            pm.getFetchPlan().setMaxFetchDepth(2); //fetching user lookup information as well
-            Extent e = pm.getExtent(IdentityVault.class, true);
-            Query  q = pm.newQuery(e);
-            Collection result = (Collection)q.execute();
-
-            if(!result.isEmpty()){
-                res.getIdentityVaults().addAll(pm.detachCopyAll(result));
-            }
-            tx.commit();
-        } finally {
-
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-        }
+            Collection result = identityVaultDAO.findAll();
+            res.getIdentityVaults().addAll(identityVaultDAO.detachCopyAll(result, 2));  //fetching user lookup information as well
+        } catch (Exception e){
+	        logger.error("Error retrieving identity vaults!!!", e);
+	        throw new IdentityServerException(e);
+	    }
         return res;
     }
 
+    @Transactional
     public ListUserInformationLookupsResponse listUserInformationLookups(ListUserInformationLookupsRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         ListUserInformationLookupsResponse res = new ListUserInformationLookupsResponse();
         try {
-            tx.begin();
             logger.debug("Listing all user information lookups");
-            pm.getFetchPlan().setMaxFetchDepth(1); 
-            Extent e = pm.getExtent(UserInformationLookup.class, false);
-            Query  q = pm.newQuery(e);
-            Collection result = (Collection)q.execute();
-
-            if(!result.isEmpty()){
-                res.getUserInfoLookups().addAll(pm.detachCopyAll(result));
-            }
-            tx.commit();
-        } finally {
-
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-        }
+            Collection result = userInformationLookupDAO.findAll();
+            res.getUserInfoLookups().addAll(userInformationLookupDAO.detachCopyAll(result, 1));
+        } catch (Exception e){
+	        logger.error("Error retrieving user information lookups!!!", e);
+	        throw new IdentityServerException(e);
+	    }
         return res;
     }
 
+    @Transactional
     public ListAccountLinkagePoliciesResponse listAccountLinkagePolicies(ListAccountLinkagePoliciesRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         ListAccountLinkagePoliciesResponse res = new ListAccountLinkagePoliciesResponse();
         try {
-            tx.begin();
             logger.debug("Listing all account linkage policies");
-            pm.getFetchPlan().setMaxFetchDepth(1);
-            Extent e = pm.getExtent(AccountLinkagePolicy.class, false);
-            Query  q = pm.newQuery(e);
-            Collection result = (Collection)q.execute();
-
-            if(!result.isEmpty()){
-                res.getAccountLinkagePolicies().addAll(pm.detachCopyAll(result));
-            }
-            tx.commit();
-        } finally {
-
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-        }
+            Collection result = accountLinkagePolicyDAO.findAll();
+            res.getAccountLinkagePolicies().addAll(accountLinkagePolicyDAO.detachCopyAll(result, 1));
+        } catch (Exception e){
+	        logger.error("Error retrieving account linkage policies!!!", e);
+	        throw new IdentityServerException(e);
+	    }
         return res;
     }
 
+    @Transactional
     public ListAuthenticationContractsResponse listAuthenticationContracts(ListAuthenticationContractsRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         ListAuthenticationContractsResponse res = new ListAuthenticationContractsResponse();
         try {
-            tx.begin();
             logger.debug("Listing all authentication contracts");
-            pm.getFetchPlan().setMaxFetchDepth(1);
-            Extent e = pm.getExtent(AuthenticationContract.class, false);
-            Query  q = pm.newQuery(e);
-            Collection result = (Collection)q.execute();
-
-            if(!result.isEmpty()){
-                res.getAuthContracts().addAll(pm.detachCopyAll(result));
-            }
-            tx.commit();
-        } finally {
-
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-        }
+            Collection result = authenticationContractDAO.findAll();
+            res.getAuthContracts().addAll(authenticationContractDAO.detachCopyAll(result, 1));
+        } catch (Exception e){
+	        logger.error("Error retrieving authentication contracts!!!", e);
+	        throw new IdentityServerException(e);
+	    }
         return res;
     }
 
+    @Transactional
     public ListAuthenticationMechanismsResponse listAuthenticationMechanisms(ListAuthenticationMechanismsRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         ListAuthenticationMechanismsResponse res = new ListAuthenticationMechanismsResponse();
         try {
-            tx.begin();
             logger.debug("Listing all authentication mechanisms");
-            pm.getFetchPlan().setMaxFetchDepth(1);
-            Extent e = pm.getExtent(AuthenticationMechanism.class, false);
-            Query  q = pm.newQuery(e);
-            Collection result = (Collection)q.execute();
-
-            if(!result.isEmpty()){
-                res.getAuthMechanisms().addAll(pm.detachCopyAll(result));
-            }
-            tx.commit();
-        } finally {
-
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-        }
+            Collection result = authenticationMechanismDAO.findAll();
+            res.getAuthMechanisms().addAll(authenticationMechanismDAO.detachCopyAll(result, 1));
+        } catch (Exception e){
+	        logger.error("Error retrieving authentication mechanisms!!!", e);
+	        throw new IdentityServerException(e);
+	    }
         return res;
     }
 
+    @Transactional
     public ListAttributeProfilesResponse listAttributeProfiles(ListAttributeProfilesRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         ListAttributeProfilesResponse res = new ListAttributeProfilesResponse();
         try {
-            tx.begin();
             logger.debug("Listing all attribute profiles");
-            pm.getFetchPlan().setMaxFetchDepth(1);
-            Extent e = pm.getExtent(AttributeProfile.class, false);
-            Query  q = pm.newQuery(e);
-            Collection result = (Collection)q.execute();
-
-            if(!result.isEmpty()){
-                res.getAttributeProfiles().addAll(pm.detachCopyAll(result));
-            }
-            tx.commit();
-        } finally {
-
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-        }
+            Collection result = attributeProfileDAO.findAll();
+            res.getAttributeProfiles().addAll(attributeProfileDAO.detachCopyAll(result, 1));
+        } catch (Exception e){
+	        logger.error("Error retrieving attribute profiles!!!", e);
+	        throw new IdentityServerException(e);
+	    }
         return res;
     }
 
+    @Transactional
     public ListAuthAssertionEmissionPoliciesResponse listAuthAssertionEmissionPolicies(ListAuthAssertionEmissionPoliciesRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         ListAuthAssertionEmissionPoliciesResponse res = new ListAuthAssertionEmissionPoliciesResponse();
         try {
-            tx.begin();
             logger.debug("Listing all authentication assertion emission policies");
-            pm.getFetchPlan().setMaxFetchDepth(1);
-            Extent e = pm.getExtent(AuthenticationAssertionEmissionPolicy.class, false);
-            Query  q = pm.newQuery(e);
-            Collection result = (Collection)q.execute();
-
-            if(!result.isEmpty()){
-                res.getAuthEmissionPolicies().addAll(pm.detachCopyAll(result));
-            }
-            tx.commit();
-        } finally {
-
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-        }
+            Collection result = authenticationAssertionEmissionPolicyDAO.findAll();
+            res.getAuthEmissionPolicies().addAll(authenticationAssertionEmissionPolicyDAO.detachCopyAll(result, 1));
+        } catch (Exception e){
+	        logger.error("Error retrieving authentication assertion emission policies!!!", e);
+	        throw new IdentityServerException(e);
+	    }
         return res;
     }
 
@@ -739,257 +512,143 @@ public class IdentityApplianceManagementServiceImpl implements
      * Lookup methods
      ***************************************************************/
 
+    @Transactional
     public LookupIdentityVaultByIdResponse lookupIdentityVaultById(LookupIdentityVaultByIdRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         LookupIdentityVaultByIdResponse res = null;
         try {
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(2);
             logger.debug("Finding identity vault by ID : "+ req.getIdentityVaultId());
-
-            IdentityVault identityVault = pm.getObjectById(IdentityVault.class, new Long(req.getIdentityVaultId()));
+            IdentityVault identityVault = identityVaultDAO.getObjectById(req.getIdentityVaultId());
             res = new LookupIdentityVaultByIdResponse();
-            res.setIdentityVault(pm.detachCopy(identityVault));
-
-            tx.commit();
+            res.setIdentityVault(identityVaultDAO.detachCopy(identityVault, 2));
 	    } catch (Exception e){
 	        logger.error("Error retrieving identity vault with id : " + req.getIdentityVaultId(), e);
 	        throw new IdentityServerException(e);
-	    } finally {
-
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
-
 	    }
 		return res;
     }
 
+    @Transactional
     public LookupUserInformationLookupByIdResponse lookupUserInformationLookupById(LookupUserInformationLookupByIdRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         LookupUserInformationLookupByIdResponse res = null;
         try {
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(1);
             logger.debug("Finding user information lookup by ID : "+ req.getUserInformationLookupId());
-
-            UserInformationLookup userInformationLookup = pm.getObjectById(UserInformationLookup.class, new Long(req.getUserInformationLookupId()));
+            UserInformationLookup userInformationLookup = userInformationLookupDAO.getObjectById(req.getUserInformationLookupId());
             res = new LookupUserInformationLookupByIdResponse();
-            res.setUserInfoLookup(pm.detachCopy(userInformationLookup));
-
-            tx.commit();
+            res.setUserInfoLookup(userInformationLookupDAO.detachCopy(userInformationLookup, 1));
 	    } catch (Exception e){
 	        logger.error("Error retrieving user information lookup with id : " + req.getUserInformationLookupId(), e);
 	        throw new IdentityServerException(e);
-	    } finally {
-
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
-
 	    }
 		return res;
     }
 
+    @Transactional
     public LookupAccountLinkagePolicyByIdResponse lookupAccountLinkagePolicyById(LookupAccountLinkagePolicyByIdRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         LookupAccountLinkagePolicyByIdResponse res = null;
         try {
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(1);
             logger.debug("Finding account linkage policy by ID : "+ req.getAccountLinkagePolicyId());
-
-            AccountLinkagePolicy policy = pm.getObjectById(AccountLinkagePolicy.class, new Long(req.getAccountLinkagePolicyId()));
+            AccountLinkagePolicy policy = accountLinkagePolicyDAO.getObjectById(req.getAccountLinkagePolicyId());
             res = new LookupAccountLinkagePolicyByIdResponse();
-            res.setAccountLinkagePolicy(pm.detachCopy(policy));
-
-            tx.commit();
+            res.setAccountLinkagePolicy(accountLinkagePolicyDAO.detachCopy(policy, 1));
 	    } catch (Exception e){
 	        logger.error("Error retrieving account linkage policy with id : " + req.getAccountLinkagePolicyId(), e);
 	        throw new IdentityServerException(e);
-	    } finally {
-
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
-
 	    }
 		return res;
     }
 
+    @Transactional
     public LookupAuthenticationContractByIdResponse lookupAuthenticationContractById(LookupAuthenticationContractByIdRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         LookupAuthenticationContractByIdResponse res = null;
         try {
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(1);
             logger.debug("Finding authentication contract by ID : "+ req.getAuthenticationContactId());
-
-            AuthenticationContract authenticationContract = pm.getObjectById(AuthenticationContract.class, new Long(req.getAuthenticationContactId()));
+            AuthenticationContract authenticationContract = authenticationContractDAO.getObjectById(req.getAuthenticationContactId());
             res = new LookupAuthenticationContractByIdResponse();
-            res.setAuthenticationContract(pm.detachCopy(authenticationContract));
-
-            tx.commit();
+            res.setAuthenticationContract(authenticationContractDAO.detachCopy(authenticationContract, 1));
 	    } catch (Exception e){
 	        logger.error("Error retrieving authentication contract with id : " + req.getAuthenticationContactId(), e);
 	        throw new IdentityServerException(e);
-	    } finally {
-
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
-
 	    }
 		return res;
     }
 
+    @Transactional
     public LookupAuthenticationMechanismByIdResponse lookupAuthenticationMechanismById(LookupAuthenticationMechanismByIdRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         LookupAuthenticationMechanismByIdResponse res = null;
         try {
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(1);
             logger.debug("Finding authentication mechanism by ID : "+ req.getAuthMechanismId());
-
-            AuthenticationMechanism authenticationMechanism = pm.getObjectById(AuthenticationMechanism.class, new Long(req.getAuthMechanismId()));
+            AuthenticationMechanism authenticationMechanism = authenticationMechanismDAO.getObjectById(req.getAuthMechanismId());
             res = new LookupAuthenticationMechanismByIdResponse();
-            res.setAuthenticationMechanism(pm.detachCopy(authenticationMechanism));
-
-            tx.commit();
+            res.setAuthenticationMechanism(authenticationMechanismDAO.detachCopy(authenticationMechanism, 1));
 	    } catch (Exception e){
 	        logger.error("Error retrieving authentication mechanism with id : " + req.getAuthMechanismId(), e);
 	        throw new IdentityServerException(e);
-	    } finally {
-
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
-
 	    }
 		return res;
     }
 
+    @Transactional
     public LookupAttributeProfileByIdResponse lookupAttributeProfileById(LookupAttributeProfileByIdRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         LookupAttributeProfileByIdResponse res = null;
         try {
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(1);
             logger.debug("Finding attribute profile by ID : "+ req.getAttributeProfileId());
-
-            AttributeProfile attributeProfile = pm.getObjectById(AttributeProfile.class, new Long(req.getAttributeProfileId()));
+            AttributeProfile attributeProfile = attributeProfileDAO.getObjectById(req.getAttributeProfileId());
             res = new LookupAttributeProfileByIdResponse();
-            res.setAttributeProfile(pm.detachCopy(attributeProfile));
-
-            tx.commit();
+            res.setAttributeProfile(attributeProfileDAO.detachCopy(attributeProfile, 1));
 	    } catch (Exception e){
 	        logger.error("Error retrieving attribute profile with id : " + req.getAttributeProfileId(), e);
 	        throw new IdentityServerException(e);
-	    } finally {
-
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
-
 	    }
 		return res;
     }
 
+    @Transactional
     public LookupAuthAssertionEmissionPolicyByIdResponse lookupAuthAssertionEmissionPolicyById(LookupAuthAssertionEmissionPolicyByIdRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         LookupAuthAssertionEmissionPolicyByIdResponse res = null;
         try {
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(1);
             logger.debug("Finding authentication assertion emission policy by ID : "+ req.getAuthAssertionEmissionPolicyId());
-
-            AuthenticationAssertionEmissionPolicy policy = pm.getObjectById(AuthenticationAssertionEmissionPolicy.class, new Long(req.getAuthAssertionEmissionPolicyId()));
+            AuthenticationAssertionEmissionPolicy policy = authenticationAssertionEmissionPolicyDAO.getObjectById(req.getAuthAssertionEmissionPolicyId());
             res = new LookupAuthAssertionEmissionPolicyByIdResponse();
-            res.setPolicy(pm.detachCopy(policy));
-
-            tx.commit();
+            res.setPolicy(authenticationAssertionEmissionPolicyDAO.detachCopy(policy, 1));
 	    } catch (Exception e){
 	        logger.error("Error retrieving authentication assertion emission policy with id : " + req.getAuthAssertionEmissionPolicyId(), e);
 	        throw new IdentityServerException(e);
-	    } finally {
-
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
-
 	    }
 		return res;
     }
 
+    @Transactional
     public AddResourceResponse addResource(AddResourceRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         AddResourceResponse res = null;
         try {
-
             logger.debug("Persisting resource with name: " + req.getResource().getName());
-
-            tx.begin();
-            
-            Resource resource = pm.makePersistent(req.getResource());
-
+            Resource resource = resourceDAO.save(req.getResource());
             res = new AddResourceResponse();
-            res.setResource(resource);
-            
-            tx.commit();
-
+            res.setResource(resourceDAO.detachCopy(resource, FetchPlan.FETCH_SIZE_GREEDY));
 	    } catch (Exception e){
 	        logger.error("Error adding resource", e);
 	        throw new IdentityServerException(e);
-
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
-
 	    }
 		return res;
     }
 
+    @Transactional
     public LookupResourceByIdResponse lookupResourceById(LookupResourceByIdRequest req) throws IdentityServerException {
-        Transaction tx = pm.currentTransaction();
         LookupResourceByIdResponse res = null;
         try {
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(FetchPlan.FETCH_SIZE_GREEDY);
-
             Long id = Long.parseLong(req.getResourceId());
-            Resource resource = pm.getObjectById(Resource.class, id);
-            resource = pm.detachCopy(resource);
-
+            Resource resource = resourceDAO.getObjectById(id);
+            resource = resourceDAO.detachCopy(resource, FetchPlan.FETCH_SIZE_GREEDY);
             res = new LookupResourceByIdResponse();
             res.setResource(resource);
-
-            tx.commit();
         } catch (Exception e){
 	        logger.error("Error looking for resource", e);
 	        throw new IdentityServerException(e);
-	    } finally {
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-            }
 	    }
         return res;
     }
 
 // -------------------------------------------------< Properties >
-
-    public void setPmf(PersistenceManagerFactory pmf) {
-        this.pmf = pmf;
-    }
 
     public IdentityApplianceBuilder getBuilder() {
         return builder;
@@ -1015,61 +674,47 @@ public class IdentityApplianceManagementServiceImpl implements
         this.deployer = deployer;
     }
 
+    public void setIdentityApplianceDAO(IdentityApplianceDAO identityApplianceDAO) {
+        this.identityApplianceDAO = identityApplianceDAO;
+    }
 
+    public void setIdentityApplianceDefinitionDAO(IdentityApplianceDefinitionDAO identityApplianceDefinitionDAO) {
+        this.identityApplianceDefinitionDAO = identityApplianceDefinitionDAO;
+    }
+
+    public void setIdentityVaultDAO(IdentityVaultDAO identityVaultDAO) {
+        this.identityVaultDAO = identityVaultDAO;
+    }
+
+    public void setUserInformationLookupDAO(UserInformationLookupDAO userInformationLookupDAO) {
+        this.userInformationLookupDAO = userInformationLookupDAO;
+    }
+
+    public void setAccountLinkagePolicyDAO(AccountLinkagePolicyDAO accountLinkagePolicyDAO) {
+        this.accountLinkagePolicyDAO = accountLinkagePolicyDAO;
+    }
+
+    public void setAuthenticationContractDAO(AuthenticationContractDAO authenticationContractDAO) {
+        this.authenticationContractDAO = authenticationContractDAO;
+    }
+
+    public void setAuthenticationMechanismDAO(AuthenticationMechanismDAO authenticationMechanismDAO) {
+        this.authenticationMechanismDAO = authenticationMechanismDAO;
+    }
+
+    public void setAttributeProfileDAO(AttributeProfileDAO attributeProfileDAO) {
+        this.attributeProfileDAO = attributeProfileDAO;
+    }
+
+    public void setAuthenticationAssertionEmissionPolicyDAO(AuthenticationAssertionEmissionPolicyDAO authenticationAssertionEmissionPolicyDAO) {
+        this.authenticationAssertionEmissionPolicyDAO = authenticationAssertionEmissionPolicyDAO;
+    }
+
+    public void setResourceDAO(ResourceDAO resourceDAO) {
+        this.resourceDAO = resourceDAO;
+    }
     // -------------------------------------------------< Protected Utils , they need transactional context !>
-
-    // Maybe we can move this to a DAO?
     
-    protected IdentityAppliance lookupById(long id) throws IdentityServerException {
-
-        IdentityAppliance identityAppliance = pm.getObjectById(IdentityAppliance.class, id);
-        identityAppliance = pm.detachCopy(identityAppliance);
-        return identityAppliance;
-
-    }
-    
-    protected Collection<IdentityAppliance> list(boolean deployedOnly, int fetchDepth) {
-
-        logger.debug("Listing all identity appliances");
-        pm.getFetchPlan().setMaxFetchDepth(fetchDepth);
-        Collection result = null;
-
-        if(deployedOnly){
-            // TODO : Deployed
-            Query query = pm.newQuery("SELECT FROM com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance" +
-                    //" WHERE this.idApplianceDeployment != null");
-                    " WHERE this.state == '" + IdentityApplianceState.STARTED + "'");
-            result = (Collection)query.execute();
-        } else {
-            //TODO for now returning all appliances for list of projected
-            Extent e = pm.getExtent(IdentityAppliance.class,false);
-            Query  query = pm.newQuery(e);
-            result = (Collection)query.execute();
-        }
-
-
-        if(!result.isEmpty()){
-            return pm.detachCopyAll(result);
-        } else {
-            return result;
-        }
-            
-    }
-    
-    protected IdentityAppliance addAppliance(IdentityAppliance appliance) throws IdentityServerException {
-        if (logger.isDebugEnabled())
-            logger.debug("Adding Identity Appliance " + appliance.getId());
-
-        return pm.makePersistent(appliance);
-    }
-
-    protected IdentityAppliance updateAppliance(IdentityAppliance appliance) throws IdentityServerException {
-        if (logger.isDebugEnabled())
-            logger.debug("Updating Identity Appliance " + appliance.getId());
-
-        return pm.makePersistent(appliance);
-    }
-
     protected IdentityAppliance startAppliance(IdentityAppliance appliance) throws IdentityServerException {
         if (logger.isDebugEnabled())
             logger.debug("Starting Identity Appliance " + appliance.getId());
@@ -1078,7 +723,7 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = buildAppliance(appliance, true);
 
         appliance = deployer.start(appliance);
-        appliance = updateAppliance(appliance);
+        appliance = identityApplianceDAO.save(appliance);
 
         return appliance;
     }
@@ -1088,7 +733,7 @@ public class IdentityApplianceManagementServiceImpl implements
             logger.debug("Stopping Identity Appliance " + appliance.getId());
 
         appliance = deployer.stop(appliance);
-        appliance = updateAppliance(appliance);
+        appliance = identityApplianceDAO.save(appliance);
 
         return appliance;
     }
@@ -1116,32 +761,18 @@ public class IdentityApplianceManagementServiceImpl implements
         appliance = deployer.undeploy(appliance);
 
         // Store it
-        appliance = this.updateAppliance(appliance);
+        appliance = identityApplianceDAO.save(appliance);
         return appliance;
 
     }
 
     protected void remove(IdentityAppliance appliance) throws IdentityServerException {
-
-//        Transaction tx=pm.currentTransaction();
         try {
         	logger.debug("Deleting identity appliance with id: " + appliance.getId());
-//            tx.begin();
-            IdentityAppliance identityAppliance = pm.getObjectById(IdentityAppliance.class, appliance.getId());
-
-            pm.deletePersistent(identityAppliance);
-
-//            tx.commit();
-
+            identityApplianceDAO.remove(appliance.getId());
         } catch (Exception e){
             logger.error("Error removing a Identity Appliance",e);
             throw new IdentityServerException(e);
-
-        } finally {
-//            if (tx.isActive()) {
-//                tx.rollback();
-//            }
-//            pm.close();
         }
     }
 
@@ -1163,7 +794,7 @@ public class IdentityApplianceManagementServiceImpl implements
         appliance = deployer.deploy(appliance);
 
         // Store it
-        appliance = this.updateAppliance(appliance);
+        appliance = identityApplianceDAO.save(appliance);
         return appliance;
     }
 
@@ -1213,7 +844,7 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = deployAppliance(appliance);
 
         // Store it
-        appliance = updateAppliance(appliance);
+        appliance = identityApplianceDAO.save(appliance);
         return appliance;
     }
 

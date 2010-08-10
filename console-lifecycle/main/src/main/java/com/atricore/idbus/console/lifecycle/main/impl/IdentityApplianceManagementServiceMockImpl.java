@@ -47,7 +47,7 @@ public class IdentityApplianceManagementServiceMockImpl implements
     private PersistenceManagerFactory pmf;
 
 	private List<IdentityAppliance> identityAppliances;
-	
+    
 	public IdentityApplianceManagementServiceMockImpl() {
 		identityAppliances = new ArrayList<IdentityAppliance>();
 		
@@ -378,51 +378,6 @@ public class IdentityApplianceManagementServiceMockImpl implements
 
 		return res;
     }
-
-    public LookupIdentityApplianceDefinitionResponse lookupIdentityApplianceDefinition(LookupIdentityApplianceDefinitionRequest request) throws IdentityServerException {
-                PersistenceManager pm = pmf.getPersistenceManager();
-        Transaction tx = pm.currentTransaction();
-        LookupIdentityApplianceDefinitionResponse res = null;
-        try {
-            tx.begin();
-
-            pm.getFetchPlan().setMaxFetchDepth(3); //fetching providers and channels as well
-            logger.debug("Finding identity appliance definition by id : "+ request.getId());
-
-            Query query = pm.newQuery(IdentityApplianceDefinition.class, "id==:id");
-            Collection result = (Collection) query.execute(request.getId());
-            res = new LookupIdentityApplianceDefinitionResponse();
-
-
-            if (result.isEmpty()){
-                throw new IdentityServerException("Identity Appliance Definition with id: " +  request.getId() + "  not found");
-            }
-            Iterator iter = result.iterator();
-            IdentityApplianceDefinition iad = (IdentityApplianceDefinition)iter.next();
-            res.setIdentityAppliance(pm.detachCopy(iad));
-
-            tx.commit();
-	    } catch (Exception e){
-	        logger.error("Error retrieving Identity Appliance Definitions", e);
-	        throw new IdentityServerException(e);
-	    } finally {
-
-	        if (tx != null && tx.isActive()) {
-                logger.error("Transaction is still active. Performing rollback !!! ");
-                tx.rollback();
-
-//                res = new LookupIdentityApplianceDefinitionResponse();
-//                res.setStatusCode(StatusCode.STS_ERROR);
-//                res.setErrorMsg("Transaction is still active. Performing rollback !!!");
-            }
-
-	        // TODO : Do we have to close this ? pm.close();
-	    }
-
-
-		return res;
-    }
-
 
     public ListIdentityApplianceDefinitionsResponse listIdentityApplianceDefinitions(ListIdentityApplianceDefinitionsRequest req) throws IdentityServerException {
 //		return samlr2CapabilityMgr.listIdentityBuses(req);

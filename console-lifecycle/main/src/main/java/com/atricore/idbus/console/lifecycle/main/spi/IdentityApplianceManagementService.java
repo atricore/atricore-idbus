@@ -57,12 +57,6 @@ public interface IdentityApplianceManagementService {
      * Look up an identity bus instance based on its id.
      */
     LookupIdentityApplianceDefinitionByIdResponse lookupIdentityApplianceDefinitionById(LookupIdentityApplianceDefinitionByIdRequest request) throws IdentityServerException;
-
-    /**
-     * Look up an identity bus instance based on its id.
-     */
-    LookupIdentityApplianceDefinitionResponse lookupIdentityApplianceDefinition(LookupIdentityApplianceDefinitionRequest request) throws IdentityServerException;
-
     ListIdentityApplianceDefinitionsResponse listIdentityApplianceDefinitions(ListIdentityApplianceDefinitionsRequest req) throws IdentityServerException;
 
     /****************************
