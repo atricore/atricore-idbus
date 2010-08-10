@@ -1,5 +1,7 @@
 package org.atricore.idbus.kernel.main.provisioning.spi;
 
+import org.atricore.idbus.kernel.main.provisioning.domain.IdentityPartition;
+import org.atricore.idbus.kernel.main.provisioning.domain.IdentityVault;
 import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
@@ -10,6 +12,9 @@ import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
  */
 public interface ProvisioningTargetManager {
 
+    IdentityVault getIdentityVault();
+
+    IdentityPartition getIdentityPartition();
 
     //<--------------- Groups -------------------->
 

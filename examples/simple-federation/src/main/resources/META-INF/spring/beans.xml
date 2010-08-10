@@ -29,10 +29,10 @@
         http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
         >
 
-    <bean name="idau1-mediation-unit" class="org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit"
+    <bean name="idau1" class="org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit"
           depends-on="idau1-cot,idau1-samlr2-cot-mgr,bpms-manager,cxf">
 
-        <property name="name" value="idau1-mediation-unit1"/>
+        <property name="name" value="idau1"/>
         <property name="container" ref="idau1-container"/>
 
         <property name="channels">

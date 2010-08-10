@@ -907,6 +907,11 @@
             <version>${idbus.cap.spml2.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.spmlr2.command</artifactId>
+            <version>${idbus.cap.spml2.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.dbidentitystore</artifactId>
             <version>${idbus.idojo.dbidentitystore.version}</version>

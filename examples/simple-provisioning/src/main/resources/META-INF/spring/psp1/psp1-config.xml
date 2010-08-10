@@ -29,7 +29,7 @@
         http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
         >
 
-    <bean name="psp1" class="org.atricore.idbus.kernel.main.mediation.provider.ProvisioningProviderImpl">
+    <bean name="psp1" class="org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProviderImpl">
         <property name="name" value="psp1"/>
         <property name="description" value="Provisioning Service Provider One"/>
         <property name="role" value="PSP"/>
@@ -42,6 +42,8 @@
         <property name="identityMediator" ref="psp1-spml2-mediator"/>
         <property name="unitContainer" ref="idau2-container"/>
         <property name="location" value="http://localhost:8081/IDBUS/PSP-1/SPML2"/>
+        <property name="provider" ref="psp1"/>
+
         <property name="endpoints">
             <list>
                 <bean name="psp1-ls-targets-endpoint" class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl">
@@ -58,24 +60,28 @@
         <property name="bindingFactory">
             <bean class="org.atricore.idbus.capabilities.spmlr2.main.binding.SpmlR2BindingFactory"/>
         </property>
+        <property name="provisioningTargets">
+            <list>
+                <ref bean="psp1-pst1"/>
+            </list>
+        </property>
     </bean>
 
     <!-- Identity Vault / Partition -->
 
     <bean name="psp1-pst1" class="org.atricore.idbus.kernel.main.provisioning.impl.ProvisioningTargetManagerImpl">
-        <property name="identityVault" ref="idvault-1"/>
-        <property name="identityPartition" ref="idpart-1"/>
-
+        <property name="identityVault" ref="idvault1"/>
+        <property name="identityPartition" ref="idpart1"/>
     </bean>
 
-    <bean name="idvault-1" class="org.atricore.idbus.kernel.main.provisioning.domain.IdentityVault">
-        
+    <bean name="idvault1" class="org.atricore.idbus.kernel.main.provisioning.domain.IdentityVault">
+        <property name="name" value="idvault1"/>
+        <property name="description" value="Identity Vault ONE"/>
     </bean>
 
-    <bean name="idpart-1" class="org.atricore.idbus.kernel.main.provisioning.domain.IdentityPartition">
+    <bean name="idpart1" class="org.atricore.idbus.kernel.main.provisioning.domain.IdentityPartition">
+        <property name="name" value="idpart1"/>
+        <property name="description" value="Identity Partition ONE"/>
     </bean>
-
-
-
 
 </s:beans>

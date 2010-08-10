@@ -34,7 +34,7 @@
         >
 
     <!-- OSGi services export -->
-    <osgi:service id="idau1-mediation-unit-exporter" ref="idau1-mediation-unit"
+    <osgi:service id="idau1-exporter" ref="idau1"
                   interface="org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit" />
 
     <!-- OSGi services import -->

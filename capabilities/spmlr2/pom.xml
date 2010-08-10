@@ -169,6 +169,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.apache.felix.karaf.shell</groupId>
+                <artifactId>org.apache.felix.karaf.shell.console</artifactId>
+                <version>${felix.karaf.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
                 <version>${commons-logging.version}</version>
@@ -226,5 +232,6 @@
 
     <modules>
         <module>main</module>
+        <module>command</module>
     </modules>
 </project>

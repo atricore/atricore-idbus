@@ -84,6 +84,7 @@
 
     <feature name="atricore-spml2" version="${version}">
         <bundle>mvn:org.atricore.idbus.capabilities.spmlr2/org.atricore.idbus.capabilities.spmlr2.main/${idbus.cap.spml2.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.capabilities.spmlr2/org.atricore.idbus.capabilities.spmlr2.command/${idbus.cap.spml2.version}</bundle>
     </feature>
 
 
@@ -107,6 +108,11 @@
     </feature>
 
     <feature name="atricore-examples" version="${version}">
+        <feature version="${version}">atricore-federation-examples</feature>
+        <feature version="${version}">atricore-provisioning-examples</feature>
+    </feature>
+
+    <feature name="atricore-federation-examples" version="${version}">
         <bundle>mvn:org.atricore.idbus.examples/org.atricore.idbus.examples.simplefederation.idau/${idbus.examples.version}</bundle>
     </feature>
 

@@ -7,7 +7,7 @@ import org.osgi.framework.BundleContext;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public interface ProvisioningProvider extends Provider {
+public interface ProvisioningServiceProvider extends Provider {
 
     ProvisioningChannel getChannel();
 

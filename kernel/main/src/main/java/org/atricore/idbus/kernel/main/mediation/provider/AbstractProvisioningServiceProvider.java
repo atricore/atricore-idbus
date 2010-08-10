@@ -8,7 +8,7 @@ import org.springframework.osgi.context.BundleContextAware;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public class AbstractProvisioningProvider implements ProvisioningProvider, BundleContextAware {
+public class AbstractProvisioningServiceProvider implements ProvisioningServiceProvider, BundleContextAware {
 
     private String name;
 
