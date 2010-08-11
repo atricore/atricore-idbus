@@ -78,10 +78,19 @@
                         <diagram:DiagramView id="diagram" width="60%" height="99%"/>
                         <palette:PaletteView id="palette" width="20%" height="99%"/>
                     </s:HGroup>
-                    <s:HGroup height="30%" width="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
-                             <!--borderStyle="solid">-->
-                        <propertysheet:PropertySheetView id="propertysheet" height="100%" width="100%"/>
+                    <s:HGroup height="30%" width="100%">
+                        <propertysheet:PropertySheetView id="propertysheet" height="100%" width="99%"/>
                     </s:HGroup>
+                    <!--s:Group>
+                        <s:Rect width="100%" height="100%">
+                            <s:stroke>
+                                <s:SolidColorStroke color="red" />
+                            </s:stroke>
+                        </s:Rect>
+                        <s:HGroup height="30%" width="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+                            <propertysheet:PropertySheetView id="propertysheet" height="100%" width="100%"/>
+                        </s:HGroup>
+                    </s:Group-->
                 </s:VGroup>
             </s:Group>
     </s:HGroup>

@@ -14,7 +14,7 @@ package com.adobe.components {
 
 import flash.display.DisplayObject;
 
-import mx.core.Application;
+import mx.core.FlexGlobals;
 import mx.core.IFlexDisplayObject;
 import mx.managers.PopUpManager;
 
@@ -51,14 +51,14 @@ public class WindowManager extends PopUpManager {
       win.y = WindowManager.windowList.length * 50;
 
       // cycle back around
-      if ((win.x + win.width) > Application.application.width) win.x = 50;
-      if ((win.y + win.height) > Application.application.height) win.y = 50;
+      if ((win.x + win.width) > FlexGlobals.topLevelApplication.width) win.x = 50;
+      if ((win.y + win.height) > FlexGlobals.topLevelApplication.height) win.y = 50;
    }
 
    // set a min. width/height
    public static function resize(win:IFlexDisplayObject):void {
-      var w:int = Application.application.width * .6;
-      var h:int = Application.application.height * .6;
+      var w:int = FlexGlobals.topLevelApplication.width * .6;
+      var h:int = FlexGlobals.topLevelApplication.height * .6;
       if (w > win.width)
          win.width = w;
       if (h > win.height)
@@ -68,8 +68,8 @@ public class WindowManager extends PopUpManager {
    public static function maximize(win:IFlexDisplayObject):void {
       win.x = 10;
       win.y = 40;
-      win.width = Application.application.width - 20;
-      win.height = Application.application.height - 60;
+      win.width = FlexGlobals.topLevelApplication.width - 20;
+      win.height = FlexGlobals.topLevelApplication.height - 60;
    }
 }
 }

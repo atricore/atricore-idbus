@@ -20,11 +20,11 @@
  */
 
 package com.atricore.idbus.console.modeling.palette.model {
-import mx.controls.Image;
+import spark.primitives.BitmapImage;
 
 public class PaletteRoot extends PaletteContainer {
 
-    public function PaletteRoot(label:String, icon:Image, description:String) {
+    public function PaletteRoot(label:String, icon:BitmapImage, description:String) {
         super(label, icon, description);
     }
 

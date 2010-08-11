@@ -20,19 +20,19 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:HGroup xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
          paddingRight="5" paddingTop="5" paddingBottom="5">
 
-        <mx:Array id="authMechanismArray">
+    <fx:Declarations>
+        <mx:ArrayCollection id="authMechanismColl">
             <utils:ListItemValueObject label="Form-Based Basic" isSelected="false" />
             <utils:ListItemValueObject label="Strong (Digital Sertificate)" isSelected="false" />
             <utils:ListItemValueObject label="Windows (NTLM)" isSelected="false" />
             <utils:ListItemValueObject label="Remember Me" isSelected="false" />
-        </mx:Array>
-
-        <mx:ArrayCollection id="authMechanismColl"
-                source="{authMechanismArray}" />
+        </mx:ArrayCollection>
 
         <mx:StringValidator id="nameValidator" source="{identityProvChannelName}" required="true" property="text"/>
         <mx:NumberValidator id="portValidator" source="{idpChannelLocationPort}" required="false" property="text"
@@ -40,6 +40,7 @@
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{idpChannelLocationDomain}" required="true" property="text"/>
         <utils:URLPartValidator id="pathValidator" source="{idpChannelLocationPath}" required="false" property="text"/>
+    </fx:Declarations>
 
     <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.endpoint')}" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
                            paddingBottom="5">    
@@ -48,27 +49,29 @@
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.name')}:"
                          required="true">
-                <mx:TextInput id="identityProvChannelName"/>
+                <s:TextInput id="identityProvChannelName"/>
             </mx:FormItem>
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.description')}:">
-                <mx:TextInput id="identityProvChannelDescription"/>
+                <s:TextInput id="identityProvChannelDescription"/>
             </mx:FormItem>
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.location')}:" required="true"
                     direction="horizontal">
-                <mx:ComboBox id="idpChannelLocationProtocol">
-                    <mx:ArrayCollection>
-                        <mx:Object label="http" data="http"/>
-                        <mx:Object label="https" data="https"/>
-                    </mx:ArrayCollection>
-                </mx:ComboBox>
-                <mx:Label text="://" width="15"/>
-                <mx:TextInput id="idpChannelLocationDomain" width="150"/>
-                <mx:Label text=":" width="10"/>
-                <mx:TextInput id="idpChannelLocationPort" width="40"/>
-                <mx:Label id="idpChannelLocationContext" text="/idbus/" width="45"/>
-                <mx:TextInput id="idpChannelLocationPath" width="180"/>
+                <s:DropDownList id="idpChannelLocationProtocol" width="70" selectedIndex="0">
+                    <s:dataProvider>
+                        <mx:ArrayCollection>
+                            <fx:Object label="http" data="http"/>
+                            <fx:Object label="https" data="https"/>
+                        </mx:ArrayCollection>
+                    </s:dataProvider>
+                </s:DropDownList>
+                <s:Label text="://" width="15"/>
+                <s:TextInput id="idpChannelLocationDomain" width="150"/>
+                <s:Label text=":" width="10"/>
+                <s:TextInput id="idpChannelLocationPort" width="40"/>
+                <s:Label id="idpChannelLocationContext" text="/idbus/" width="45"/>
+                <s:TextInput id="idpChannelLocationPath" width="180"/>
             </mx:FormItem>
         </mx:Form>
     </utils:TitledBorderBox>
@@ -78,49 +81,38 @@
         <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
                  verticalGap="8" labelWidth="150">
               <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.user.information.lookup')}:">
-                    <mx:ComboBox id="userInfoLookupCombo" labelField="name" selectedIndex="0"/>
+                    <s:DropDownList id="userInfoLookupCombo" labelField="name" width="180" selectedIndex="0"/>
                 </mx:FormItem>
 
-            <mx:HBox width="100%">
+            <s:HGroup width="100%">
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.auth.mechanism')}:">
-                    <mx:List id="authMechanismCombo"
+                    <s:List id="authMechanismCombo"
                                    dataProvider="{authMechanismColl}"
+                                   itemRenderer="com.atricore.idbus.console.components.CheckBoxItemRenderer"
                                    alternatingItemColors="[#EEEEEE, white]"
-                                    width="200"
-                                   rowCount="4">
-                           <mx:itemRenderer>
-                               <mx:Component>
-                                   <mx:CheckBox selectedField="isSelected"
-                                            change="onChange(event);">
-                                       <mx:Script>
-                                           <![CDATA[
-                                               private function onChange(evt:Event):void {
-                                                   data.isSelected = !data.isSelected;
-                                               }
-                                           ]]>
-                                       </mx:Script>
-                                   </mx:CheckBox>
-                               </mx:Component>
-                           </mx:itemRenderer>
-                    </mx:List>
+                                   width="200">
+                       <s:layout>
+                           <s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedRowCount="4" />
+                       </s:layout>
+                    </s:List>
                 </mx:FormItem>
-                <mx:Button id="configureAuthMechanism"
+                <s:Button id="configureAuthMechanism"
                    label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.configure')}"/>
-            </mx:HBox>
+            </s:HGroup>
 
-            <mx:HBox width="100%">
+            <s:HGroup width="100%">
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.account.linkage.policy')}:">
-                    <mx:ComboBox id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0"/>
+                    <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0"/>
                 </mx:FormItem>
-                <mx:Button id="configureAccLinkagePolicy"
+                <s:Button id="configureAccLinkagePolicy"
                    label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.configure')}"/>
-            </mx:HBox>
+            </s:HGroup>
 
-            <mx:HBox width="100%">
+            <s:HGroup width="100%">
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.auth.contract')}:">
-                    <mx:ComboBox id="authContractCombo" width="200" labelField="name" selectedIndex="0"/>
+                    <s:DropDownList id="authContractCombo" width="200" labelField="name" selectedIndex="0"/>
                 </mx:FormItem>
-            </mx:HBox>
+            </s:HGroup>
         </mx:Form>
     </utils:TitledBorderBox>
-</mx:HBox>
+</s:HGroup>

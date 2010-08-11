@@ -2,6 +2,10 @@
     Copyright (c) 2007 Yahoo! Inc.  All rights reserved. 
     The copyrights embodied in the content of this file are licensed under the BSD (revised) open source license
 */
+
+@namespace "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
 /*
 //------------------------------
 //  global
@@ -77,13 +81,13 @@ ButtonBar {
 //  DividedBox
 //------------------------------
 */
-DividedBox {
+mx|DividedBox {
     dividerSkin: Embed(source = "yflexskin.swf", symbol = "DividedBox_dividerSkin");
     horizontalCursor: Embed(source = "yflexskin.swf", symbol = "DividedBox_horizontalCursor");
     verticalCursor: Embed(source = "yflexskin.swf", symbol = "DividedBox_verticalCursor");
 }
 
-ToggleButtonBar {
+mx|ToggleButtonBar {
     buttonStyleName: "buttonBarButton";
     firstButtonStyleName: "firstButtonBarButton";
     lastButtonStyleName: "lastButtonBarButton";
@@ -149,7 +153,7 @@ CheckBox {
 //  ColorPicker
 //------------------------------
 */
-ColorPicker {
+mx|ColorPicker {
     disabledSkin: Embed(source = "yflexskin.swf", symbol = "ColorPicker_disabledSkin");
     downSkin: Embed(source = "yflexskin.swf", symbol = "ColorPicker_downSkin");
     overSkin: Embed(source = "yflexskin.swf", symbol = "ColorPicker_overSkin");
@@ -173,6 +177,18 @@ ComboBox {
     dropDownStyleName: "myComboBoxDropDowns";
 }
 
+DropDownList {
+    disabledSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_disabledSkin");
+    downSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_downSkin");
+    editableDisabledSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_editableDisabledSkin");
+    editableDownSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_editableDownSkin");
+    editableOverSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_editableOverSkin");
+    editableUpSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_editableUpSkin");
+    overSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_overSkin");
+    upSkin: Embed(source = "yflexskin.swf", symbol = "ComboBoxArrow_upSkin");
+    dropDownStyleName: "myComboBoxDropDowns";
+}
+
 .myComboBoxDropDowns {
     cornerRadius: 4;
 }
@@ -182,7 +198,7 @@ ComboBox {
 //  CursorManager
 //------------------------------
 */
-CursorManager {
+mx|CursorManager {
     busyCursor: Embed(source = "yflexskin.swf", symbol = "BusyCursor");
     busyCursorBackground: Embed(source = "yflexskin.swf", symbol = "BusyCursor");
 }
@@ -192,7 +208,7 @@ CursorManager {
 //  DateChooser
 //------------------------------
 */
-DateChooser {
+mx|DateChooser {
     nextMonthDisabledSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_nextMonthDisabledSkin");
     nextMonthDownSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_nextMonthDownSkin");
     nextMonthOverSkin: Embed(source = "yflexskin.swf", symbol = "DateChooser_nextMonthOverSkin");
@@ -223,7 +239,7 @@ DateChooser {
 //  DateField
 //------------------------------
 */
-DateField {
+mx|DateField {
     disabledSkin: Embed(source = "yflexskin.swf", symbol = "DateField_disabledSkin");
     downSkin: Embed(source = "yflexskin.swf", symbol = "DateField_downSkin");
     overSkin: Embed(source = "yflexskin.swf", symbol = "DateField_overSkin");
@@ -235,7 +251,7 @@ DateField {
 //  DragManager
 //------------------------------
 */
-DragManager {
+mx|DragManager {
     copyCursor: Embed(source = "yflexskin.swf", symbol = "DragManager_copyCursor");
 
     defaultDragImageSkin: Embed(source = "yflexskin.swf", symbol = "DragManager_defaultDragImageSkin");
@@ -250,7 +266,7 @@ DragManager {
 //  FormItem
 //------------------------------
 */
-FormItem {
+mx|FormItem {
     indicatorSkin: Embed(source = "yflexskin.swf", symbol = "FormItem_indicatorSkin");
 }
 
@@ -259,7 +275,7 @@ FormItem {
 //  Image
 //------------------------------
 */
-Image {
+mx|Image {
 
     brokenImageSkin: Embed(source = "yflexskin.swf", symbol = "Loader_brokenImageSkin");
 
@@ -270,7 +286,7 @@ Image {
 //  LinkButton
 //------------------------------
 */
-LinkButton {
+mx|LinkButton {
     disabledSkin: Embed(source = "yflexskin.swf", symbol = "LinkButton_disabledSkin");
     downSkin: Embed(source = "yflexskin.swf", symbol = "LinkButton_downSkin");
     overSkin: Embed(source = "yflexskin.swf", symbol = "LinkButton_overSkin");
@@ -282,7 +298,7 @@ LinkButton {
 //  Loader
 //------------------------------
 */
-Loader {
+mx|Loader {
     brokenImageSkin: Embed(source = "yflexskin.swf", symbol = "Loader_brokenImageSkin");
 
 }
@@ -292,7 +308,11 @@ Loader {
 //  Panel ControlBar
 //------------------------------
 */
-ControlBar {
+mx|ControlBar {
+    borderSkin: Embed(source = "yflexskin.swf", symbol = "Panel_controlBarBackgroundSkin");
+}
+
+#controlBarPanel {
     borderSkin: Embed(source = "yflexskin.swf", symbol = "Panel_controlBarBackgroundSkin");
 }
 

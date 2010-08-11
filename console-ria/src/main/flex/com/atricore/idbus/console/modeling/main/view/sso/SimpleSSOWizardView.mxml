@@ -22,7 +22,9 @@
         
 <Wizard
         xmlns="com.atricore.idbus.console.components.wizard.*"
-        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
         xmlns:ssowizardsteps="com.atricore.idbus.console.modeling.main.view.sso.*"
         title="New Simple SSO Identity Appliance"
         showSummaryStep="true">

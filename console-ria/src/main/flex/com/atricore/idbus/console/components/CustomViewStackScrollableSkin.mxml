@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Skin xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark">
+
+    <fx:Metadata>
+        <![CDATA[
+        [HostComponent("spark.components.BorderContainer")]
+        ]]>
+    </fx:Metadata>
+
+    <s:states>
+        <s:State name="normal" />
+        <s:State name="disabled" />
+    </s:states>
+
+    <s:Rect width="100%" height="100%">
+        <s:stroke>
+            <s:SolidColorStroke color="#000000" alpha=".6" />
+        </s:stroke>
+        <s:fill>
+            <s:SolidColor color="#FFFFFF" />
+        </s:fill>
+    </s:Rect>
+
+    <s:Scroller width="100%" height="100%"
+                left="2" right="2" top="2" bottom="2">
+        <s:Group id="contentGroup"
+                 left="0" right="0" top="0" bottom="0"
+                 minWidth="0" minHeight="0">
+            <s:layout>
+                <s:VerticalLayout horizontalAlign="justify" />
+            </s:layout>
+        </s:Group>
+    </s:Scroller>
+
+</s:Skin>

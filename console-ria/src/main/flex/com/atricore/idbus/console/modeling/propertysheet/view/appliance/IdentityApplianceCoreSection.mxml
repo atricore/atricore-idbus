@@ -20,11 +20,11 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<mx:Form xmlns:mx="library://ns.adobe.com/flex/mx"
+<s:Group xmlns:mx="library://ns.adobe.com/flex/mx"
          xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:utils="com.atricore.idbus.console.components.*"
-         width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8">
+         width="100%" height="100%">
 
     <fx:Declarations>
         <mx:StringValidator id="nameValidator" source="{applianceName}" required="true" property="text"/>
@@ -35,27 +35,31 @@
         <utils:URLPartValidator id="pathValidator" source="{applianceLocationPath}" required="false" property="text"/>
     </fx:Declarations>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.name')}:" required="true">
-        <s:TextInput id="applianceName"/>
-    </mx:FormItem>
+    <mx:Form width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.name')}:" required="true">
+            <s:TextInput id="applianceName"/>
+        </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.description')}:">
-        <s:TextArea id="applianceDescription" height="80"/>
-    </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.description')}:">
+            <s:TextArea id="applianceDescription" height="80"/>
+        </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.applianceLocation')}:"
-                 direction="horizontal" required="true">
-        <s:DropDownList id="applianceLocationProtocol">
-            <mx:ArrayCollection>
-                <fx:Object label="http" data="http"/>
-                <fx:Object label="https" data="https"/>
-            </mx:ArrayCollection>
-        </s:DropDownList>
-        <s:Label text="://" width="9" paddingLeft="-5"/>
-        <s:TextInput id="applianceLocationDomain" width="150"/>
-        <s:Label text=":" width="1" paddingLeft="-5"/>
-        <s:TextInput id="applianceLocationPort" width="40"/>
-        <s:Label text="/" width="2" paddingLeft="-5"/>
-        <s:TextInput id="applianceLocationPath" styleName="locationInput" width="100"/>
-    </mx:FormItem>
-</mx:Form>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.applianceLocation')}:"
+                     direction="horizontal" required="true">
+            <s:DropDownList id="applianceLocationProtocol" width="70" selectedIndex="0">
+                <s:dataProvider>
+                    <mx:ArrayCollection>
+                        <fx:Object label="http" data="http"/>
+                        <fx:Object label="https" data="https"/>
+                    </mx:ArrayCollection>
+                </s:dataProvider>
+            </s:DropDownList>
+            <s:Label text="://" width="9" paddingLeft="-5"/>
+            <s:TextInput id="applianceLocationDomain" width="150"/>
+            <s:Label text=":" width="1" paddingLeft="-5"/>
+            <s:TextInput id="applianceLocationPort" width="40"/>
+            <s:Label text="/" width="2" paddingLeft="-5"/>
+            <s:TextInput id="applianceLocationPath" styleName="locationInput" width="100"/>
+        </mx:FormItem>
+    </mx:Form>
+</s:Group>

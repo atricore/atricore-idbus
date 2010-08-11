@@ -20,20 +20,26 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<s:HGroup xmlns:mx="library://ns.adobe.com/flex/mx"
+<s:BorderContainer xmlns:mx="library://ns.adobe.com/flex/mx"
           xmlns:fx="http://ns.adobe.com/mxml/2009"
           xmlns:s="library://ns.adobe.com/flex/spark"
-          xmlns:comp="com.atricore.idbus.console.components.*">
+          xmlns:comp="com.atricore.idbus.console.components.*"
+          borderStyle="solid">
     <fx:Script><![CDATA[
         import mx.collections.ArrayList;
         ]]>
     </fx:Script>
+    
+    <s:layout>
+        <s:HorizontalLayout paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+    </s:layout>
 
-    <s:TabBar id="tabbedPropertiesTabBar" dataProvider="{new ArrayList(propertySheetsViewStack.content)}" labelField="name">
+    <s:TabBar id="tabbedPropertiesTabBar" dataProvider="{new ArrayList(propertySheetsViewStack.content)}" labelField="name" visible="false">
         <s:layout>
             <s:VerticalLayout/>
         </s:layout>
     </s:TabBar>
-    <comp:CustomViewStack id="propertySheetsViewStack" width="100%" height="100%">
+    <comp:CustomViewStack id="propertySheetsViewStack" width="100%" height="100%" visible="false" borderStyle="solid"
+            skinClass="com.atricore.idbus.console.components.CustomViewStackScrollableSkin">
     </comp:CustomViewStack>
-</s:HGroup>
+</s:BorderContainer>

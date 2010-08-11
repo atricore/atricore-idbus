@@ -52,26 +52,16 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
-
-import spark.components.Group;
-import spark.components.Panel;
-import spark.components.Scroller;
-
-//import mx.containers.Canvas;
-
-import spark.components.TabBar;
-import spark.events.IndexChangeEvent;
-
-//import mx.controls.TabBar;
-
-//import spark.components.TextInput;
-import mx.controls.TextInput;
 import mx.events.FlexEvent;
-
 import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
+
+import spark.components.Group;
+import spark.components.TabBar;
+import spark.components.TextInput;
+import spark.events.IndexChangeEvent;
 
 public class PropertySheetMediator extends IocMediator {
 
@@ -125,7 +115,7 @@ public class PropertySheetMediator extends IocMediator {
         _tabbedPropertiesTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
     }
 
-    private function stackChanged():void {
+    private function stackChanged(event:IndexChangeEvent):void {
         _propertySheetsViewStack.selectedIndex = _tabbedPropertiesTabBar.selectedIndex;
     }
 
@@ -142,6 +132,7 @@ public class PropertySheetMediator extends IocMediator {
                 _dirty = false;
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
+                enablePropertyTabs();
                 if (_projectProxy.currentIdentityApplianceElement is IdentityApplianceDTO) {
                     _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                     enableIdentityAppliancePropertyTabs();
@@ -189,14 +180,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _iaCoreSection = new IdentityApplianceCoreSection();
         corePropertyTab.addElement(_iaCoreSection);
-//        _propertySheetsViewStack.addNewChild(corePropertyTab);
-        var scroller:Scroller = new Scroller();
-        scroller.viewport = corePropertyTab;
-        scroller.name = "Core";
-        scroller.width = _propertySheetsViewStack.width;
-        scroller.height = _propertySheetsViewStack.height;
-        _propertySheetsViewStack.addNewChild(scroller);
-
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
         
         _iaCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleCorePropertyTabCreationComplete);
@@ -273,13 +257,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _ipCoreSection = new IdentityProviderCoreSection();
         corePropertyTab.addElement(_ipCoreSection);
-//        _propertySheetsViewStack.addNewChild(corePropertyTab);
-        var scroller:Scroller = new Scroller();
-        scroller.viewport = corePropertyTab;
-        scroller.name = "Core";
-        scroller.width = _propertySheetsViewStack.width;
-        scroller.height = _propertySheetsViewStack.height;
-        _propertySheetsViewStack.addNewChild(scroller);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
         _ipCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityProviderCorePropertyTabCreationComplete);
@@ -295,14 +273,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _ipContractSection = new IdentityProviderContractSection();
         contractPropertyTab.addElement(_ipContractSection);
-//        _propertySheetsViewStack.addNewChild(contractPropertyTab);
-        var scrollerContract:Scroller = new Scroller();
-        scrollerContract.viewport = contractPropertyTab;
-        scrollerContract.name = "Contract";
-        scrollerContract.width = _propertySheetsViewStack.width;
-        scrollerContract.height = _propertySheetsViewStack.height;
-        _propertySheetsViewStack.addNewChild(scrollerContract);        
-
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
         _ipContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityProviderContractPropertyTabCreationComplete);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityProviderContractPropertyTabRollOut);
     }
@@ -321,13 +292,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _spCoreSection = new ServiceProviderCoreSection();
         corePropertyTab.addElement(_spCoreSection);
-
-        var scroller:Scroller = new Scroller();
-        scroller.viewport = corePropertyTab;
-        scroller.name = "Core";
-        scroller.width = _propertySheetsViewStack.width;
-        scroller.height = _propertySheetsViewStack.height;
-        _propertySheetsViewStack.addNewChild(scroller);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
 
         _spCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleServiceProviderCorePropertyTabRollOut);
@@ -342,13 +307,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _spContractSection = new ServiceProviderContractSection();
         contractPropertyTab.addElement(_spContractSection);
-//        _propertySheetsViewStack.addNewChild(contractPropertyTab);
-        var scrollerContract:Scroller = new Scroller();
-        scrollerContract.viewport = contractPropertyTab;
-        scrollerContract.name = "Contract";
-        scrollerContract.width = _propertySheetsViewStack.width;
-        scrollerContract.height = _propertySheetsViewStack.height;
-        _propertySheetsViewStack.addNewChild(scrollerContract);
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
         _spContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderContractPropertyTabCreationComplete);
@@ -406,7 +365,7 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.name = _ipCoreSection.identityProviderName.text;
             identityProvider.description = _ipCoreSection.identityProvDescription.text;
 
-            identityProvider.location.protocol = _ipCoreSection.idpLocationProtocol.selectedLabel;
+            identityProvider.location.protocol = _ipCoreSection.idpLocationProtocol.labelDisplay.text;
             identityProvider.location.host = _ipCoreSection.idpLocationDomain.text;
             identityProvider.location.port = parseInt(_ipCoreSection.idpLocationPort.text);
             identityProvider.location.context = _ipCoreSection.idpLocationContext.text;
@@ -569,7 +528,7 @@ public class PropertySheetMediator extends IocMediator {
             serviceProvider.name = _spCoreSection.serviceProvName.text;
             serviceProvider.description = _spCoreSection.serviceProvDescription.text;
 
-            serviceProvider.location.protocol = _spCoreSection.spLocationProtocol.selectedLabel;
+            serviceProvider.location.protocol = _spCoreSection.spLocationProtocol.labelDisplay.text;
             serviceProvider.location.host = _spCoreSection.spLocationDomain.text;
             serviceProvider.location.port = parseInt(_spCoreSection.spLocationPort.text);
             serviceProvider.location.context = _spCoreSection.spLocationContext.text;
@@ -694,14 +653,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _idpChannelCoreSection = new IDPChannelCoreSection();
         corePropertyTab.addElement(_idpChannelCoreSection);
-//        _propertySheetsViewStack.addNewChild(corePropertyTab);
-        var scroller:Scroller = new Scroller();
-        scroller.viewport = corePropertyTab;
-        scroller.name = "Core";
-        scroller.width = _propertySheetsViewStack.width;
-        scroller.height = _propertySheetsViewStack.height;
-        _propertySheetsViewStack.addNewChild(scroller);
-
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
         _idpChannelCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdpChannelCorePropertyTabCreationComplete);
@@ -717,14 +669,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _idpChannelContractSection = new IDPChannelContractSection();
         contractPropertyTab.addElement(_idpChannelContractSection);
-//        _propertySheetsViewStack.addNewChild(contractPropertyTab);
-        var scrollerContract:Scroller = new Scroller();
-        scrollerContract.viewport = contractPropertyTab;
-        scrollerContract.name = "Contract";
-        scrollerContract.width = _propertySheetsViewStack.width;
-        scrollerContract.height = _propertySheetsViewStack.height;
-        _propertySheetsViewStack.addNewChild(scrollerContract);
-        
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
         _idpChannelContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdpChannelContractPropertyTabCreationComplete);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdpChannelContractPropertyTabRollOut);
     }
@@ -783,7 +728,7 @@ public class PropertySheetMediator extends IocMediator {
                 idpChannel.location = new LocationDTO();
             }
 
-            idpChannel.location.protocol = _idpChannelCoreSection.idpChannelLocationProtocol.selectedLabel;
+            idpChannel.location.protocol = _idpChannelCoreSection.idpChannelLocationProtocol.labelDisplay.text;
             idpChannel.location.host = _idpChannelCoreSection.idpChannelLocationDomain.text;
             idpChannel.location.port = parseInt(_idpChannelCoreSection.idpChannelLocationPort.text);
             idpChannel.location.context = _idpChannelCoreSection.idpChannelLocationContext.text;
@@ -894,13 +839,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _spChannelCoreSection = new SPChannelCoreSection();
         corePropertyTab.addElement(_spChannelCoreSection);
-//        _propertySheetsViewStack.addNewChild(corePropertyTab);
-        var scroller:Scroller = new Scroller();
-        scroller.viewport = corePropertyTab;
-        scroller.name = "Core";
-        scroller.width = _propertySheetsViewStack.width;
-        scroller.height = _propertySheetsViewStack.height;
-        _propertySheetsViewStack.addNewChild(scroller);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
         _spChannelCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSpChannelCorePropertyTabCreationComplete);
@@ -916,14 +855,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _spChannelContractSection = new SPChannelContractSection();
         contractPropertyTab.addElement(_spChannelContractSection);
-//        _propertySheetsViewStack.addNewChild(contractPropertyTab);
-        var scrollerContract:Scroller = new Scroller();
-        scrollerContract.viewport = contractPropertyTab;
-        scrollerContract.name = "Contract";
-        scrollerContract.width = _propertySheetsViewStack.width;
-        scrollerContract.height = _propertySheetsViewStack.height;
-        _propertySheetsViewStack.addNewChild(scrollerContract);
-        
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
         _spChannelContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSpChannelContractPropertyTabCreationComplete);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleSpChannelContractPropertyTabRollOut);
     }
@@ -982,7 +914,7 @@ public class PropertySheetMediator extends IocMediator {
                 spChannel.location = new LocationDTO();
             }
 
-            spChannel.location.protocol = _spChannelCoreSection.spChannelLocationProtocol.selectedLabel;
+            spChannel.location.protocol = _spChannelCoreSection.spChannelLocationProtocol.labelDisplay.text;
             spChannel.location.host = _spChannelCoreSection.spChannelLocationDomain.text;
             spChannel.location.port = parseInt(_spChannelCoreSection.spChannelLocationPort.text);
             spChannel.location.context = _spChannelCoreSection.spChannelLocationContext.text;
@@ -1087,13 +1019,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _embeddedDbVaultCoreSection = new EmbeddedDBIdentityVaultCoreSection();
         corePropertyTab.addElement(_embeddedDbVaultCoreSection);
-//        _propertySheetsViewStack.addNewChild(corePropertyTab);
-        var scroller:Scroller = new Scroller();
-        scroller.viewport = corePropertyTab;
-        scroller.name = "Core";
-        scroller.width = _propertySheetsViewStack.width;
-        scroller.height = _propertySheetsViewStack.height;
-        _propertySheetsViewStack.addNewChild(scroller);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
         _embeddedDbVaultCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleEmbeddedDbVaultCorePropertyTabCreationComplete);
@@ -1162,13 +1088,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _externalDbVaultCoreSection = new ExternalDBIdentityVaultCoreSection();
         corePropertyTab.addElement(_externalDbVaultCoreSection);
-//        _propertySheetsViewStack.addNewChild(corePropertyTab);
-        var scroller:Scroller = new Scroller();
-        scroller.viewport = corePropertyTab;
-        scroller.name = "Core";
-        scroller.width = _propertySheetsViewStack.width;
-        scroller.height = _propertySheetsViewStack.height;
-        _propertySheetsViewStack.addNewChild(scroller);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
         _externalDbVaultCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalDbVaultCorePropertyTabCreationComplete);
@@ -1184,14 +1104,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _externalDbVaultLookupSection = new ExternalDBIdentityVaultLookupSection();
         contractPropertyTab.addElement(_externalDbVaultLookupSection);
-//        _propertySheetsViewStack.addNewChild(contractPropertyTab);
-        var scrollerContract:Scroller = new Scroller();
-        scrollerContract.viewport = contractPropertyTab;
-        scrollerContract.name = "Contract";
-        scrollerContract.width = _propertySheetsViewStack.width;
-        scrollerContract.height = _propertySheetsViewStack.height;
-        _propertySheetsViewStack.addNewChild(scrollerContract);
-        
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
         _externalDbVaultLookupSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalDbVaulLookupPropertyTabCreationComplete);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalDbVaultLookupPropertyTabRollOut);
     }
@@ -1296,9 +1209,14 @@ public class PropertySheetMediator extends IocMediator {
     protected function clearPropertyTabs():void {
         // Attach appliance editor form to property tabbed view
         _propertySheetsViewStack.removeAllChildren();
-
+        _tabbedPropertiesTabBar.visible = false;
+        _propertySheetsViewStack.visible = false;
     }
 
+    protected function enablePropertyTabs():void {
+        _tabbedPropertiesTabBar.visible = true;
+        _propertySheetsViewStack.visible = true;
+    }
     private function handleSectionChange(event:Event) {
         _dirty = true;
     }

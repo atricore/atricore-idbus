@@ -20,36 +20,39 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:Group xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:utils="com.atricore.idbus.console.components.*"
-         paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%" verticalGap="8">
+         width="100%" height="100%">
 
+    <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%" verticalGap="8">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:"
+                     direction="horizontal">
+            <s:CheckBox id="samlProfileSSOCheck"
+                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}"/>
+            <s:CheckBox id="samlProfileSLOCheck"
+                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}"/>
+        </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:"
-                 direction="horizontal">
-        <mx:CheckBox id="samlProfileSSOCheck"
-                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}"/>
-        <mx:CheckBox id="samlProfileSLOCheck"
-                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}"/>
-    </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:"
+                     direction="horizontal">
+            <s:CheckBox id="samlBindingHttpPostCheck"
+                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}"/>
+            <s:CheckBox id="samlBindingHttpRedirectCheck"
+                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
+            <s:CheckBox id="samlBindingArtifactCheck"
+                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
+            <s:CheckBox id="samlBindingSoapCheck"
+                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
+        </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:"
-                 direction="horizontal">
-        <mx:CheckBox id="samlBindingHttpPostCheck"
-                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}"/>
-        <mx:CheckBox id="samlBindingHttpRedirectCheck"
-                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
-        <mx:CheckBox id="samlBindingArtifactCheck"
-                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
-        <mx:CheckBox id="samlBindingSoapCheck"
-                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
-    </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:">
+            <s:CheckBox id="signAuthAssertionCheck"/>
+        </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:">
-        <mx:CheckBox id="signAuthAssertionCheck"/>
-    </mx:FormItem>
-
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:">
-        <mx:CheckBox id="encryptAuthAssertionCheck"/>
-    </mx:FormItem>
-</mx:Form>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:">
+            <s:CheckBox id="encryptAuthAssertionCheck"/>
+        </mx:FormItem>
+    </mx:Form>
+</s:Group>

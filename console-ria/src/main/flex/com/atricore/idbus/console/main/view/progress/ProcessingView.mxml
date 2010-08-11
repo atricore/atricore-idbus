@@ -19,10 +19,12 @@
   ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:VGroup xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
          left="10" top="10" right="10" bottom="10" paddingLeft="30" paddingTop="40" horizontalAlign="center" verticalAlign="middle">
     <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'processing.request.title')}" />
 
     <mx:ProgressBar id="progressBar" indeterminate="true"  width="75%"
                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'processing.request.label')}"/>
-</mx:VBox>
+</s:VGroup>

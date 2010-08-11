@@ -20,19 +20,19 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml"
+<mx:Form xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:utils="com.atricore.idbus.console.components.*"
          defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
 
-        <mx:Array id="authMechanismArray">
+    <fx:Declarations>
+        <mx:ArrayCollection id="authMechanismColl">
             <utils:ListItemValueObject label="Form-Based Basic" isSelected="false" />
             <utils:ListItemValueObject label="Strong (Digital Sertificate)" isSelected="false" />
             <utils:ListItemValueObject label="Windows (NTLM)" isSelected="false" />
             <utils:ListItemValueObject label="Remember Me" isSelected="false" />
-        </mx:Array>
-
-        <mx:ArrayCollection id="authMechanismColl"
-                source="{authMechanismArray}" />
+        </mx:ArrayCollection>
 
         <mx:StringValidator id="nameValidator" source="{serviceProvName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
@@ -43,106 +43,101 @@
                         trigger="{btnOk}" triggerEvent="click"/>
         <utils:URLPartValidator id="pathValidator" source="{spLocationPath}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
+    </fx:Declarations>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.name')}:" required="true">
-            <mx:TextInput id="serviceProvName" width="300"/>
-        </mx:FormItem>
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.name')}:" required="true">
+        <s:TextInput id="serviceProvName" width="300"/>
+    </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.description')}:">
-            <mx:TextInput id="serviceProvDescription" width="300"/>
-        </mx:FormItem>
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.description')}:">
+        <s:TextInput id="serviceProvDescription" width="300"/>
+    </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.location')}:" required="true"
-                direction="horizontal" labelWidth="75">
-            <mx:ComboBox id="spLocationProtocol">
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.location')}:" required="true"
+            direction="horizontal" labelWidth="75">
+        <s:DropDownList id="spLocationProtocol" width="70" selectedIndex="0">
+            <s:dataProvider>
                 <mx:ArrayCollection>
-                    <mx:Object label="http" data="http"/>
-                    <mx:Object label="https" data="https"/>
+                    <fx:Object label="http" data="http"/>
+                    <fx:Object label="https" data="https"/>
                 </mx:ArrayCollection>
-            </mx:ComboBox>
-            <mx:Label text="://" width="15"/>
-            <mx:TextInput id="spLocationDomain" width="150"/>
-            <mx:Label text=":" width="10"/>
-            <mx:TextInput id="spLocationPort" width="40"/>
-            <mx:Label id="spLocationContext" text="/idbus/" width="45"/>
-            <mx:TextInput id="spLocationPath" width="180"/>
+            </s:dataProvider>
+        </s:DropDownList>
+        <s:Label text="://" width="15"/>
+        <s:TextInput id="spLocationDomain" width="150"/>
+        <s:Label text=":" width="10"/>
+        <s:TextInput id="spLocationPort" width="40"/>
+        <s:Label id="spLocationContext" text="/idbus/" width="45"/>
+        <s:TextInput id="spLocationPath" width="180"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.profiles')}:" direction="horizontal">
+        <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}"/>
+        <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.bindings')}:" direction="horizontal">
+        <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}"/>
+        <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
+        <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
+        <s:CheckBox id="samlBindingSoapCheck"
+                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:">
+        <s:CheckBox id="signAuthRequestCheck"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:">
+        <s:CheckBox id="encryptAuthRequestCheck"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.user.information.lookup')}:">
+        <s:DropDownList id="userInfoLookupCombo" labelField="name" width="180" selectedIndex="0"/>
+    </mx:FormItem>
+
+    <s:HGroup width="100%" horizontalAlign="left">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.mechanism')}:" labelWidth="185">
+            <s:List id="authMechanismCombo"
+                           dataProvider="{authMechanismColl}"
+                           itemRenderer="com.atricore.idbus.console.components.CheckBoxItemRenderer"
+                           alternatingItemColors="[#EEEEEE, white]"
+                           width="200">
+                <s:layout>
+                    <s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedRowCount="4" />
+                </s:layout>
+            </s:List>
         </mx:FormItem>
+        <s:Button id="configureAuthMechanism"
+           label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
+    </s:HGroup>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.profiles')}:" direction="horizontal">
-            <mx:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}"/>
-            <mx:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}"/>
+    <s:HGroup width="100%">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:" labelWidth="185">
+            <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0"/>
         </mx:FormItem>
+        <s:Button id="configureAccLinkagePolicy"
+           label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
+    </s:HGroup>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.bindings')}:" direction="horizontal">
-            <mx:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}"/>
-            <mx:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
-            <mx:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
-            <mx:CheckBox id="samlBindingSoapCheck"
-                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
+    <s:HGroup width="100%">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.contract')}:" labelWidth="185">
+            <s:DropDownList id="authContractCombo" width="200" labelField="name" selectedIndex="0"/>
         </mx:FormItem>
-
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:">
-            <mx:CheckBox id="signAuthRequestCheck"/>            
-        </mx:FormItem>
-
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:">
-            <mx:CheckBox id="encryptAuthRequestCheck"/>            
-        </mx:FormItem>
-
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.user.information.lookup')}:">
-            <mx:ComboBox id="userInfoLookupCombo" labelField="name" selectedIndex="0"/>
-        </mx:FormItem>    
-
-        <mx:HBox width="100%" horizontalAlign="left">
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.mechanism')}:" labelWidth="185">
-                <mx:List id="authMechanismCombo"
-                               dataProvider="{authMechanismColl}"
-                               alternatingItemColors="[#EEEEEE, white]"
-                                width="200"
-                               rowCount="4">
-                       <mx:itemRenderer>
-                           <mx:Component>
-                               <mx:CheckBox selectedField="isSelected"
-                                       change="onChange(event);">
-                                   <mx:Script>
-                                       <![CDATA[
-                                           private function onChange(evt:Event):void {
-                                               data.isSelected = !data.isSelected;
-                                           }
-                                       ]]>
-                                   </mx:Script>
-                               </mx:CheckBox>
-                           </mx:Component>
-                       </mx:itemRenderer>
-                </mx:List>
-            </mx:FormItem>
-            <mx:Button id="configureAuthMechanism"
-               label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
-        </mx:HBox>
-
-        <mx:HBox width="100%">
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:" labelWidth="185">
-                <mx:ComboBox id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0"/>
-            </mx:FormItem>
-            <mx:Button id="configureAccLinkagePolicy"
-               label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
-        </mx:HBox>
-
-        <mx:HBox width="100%">
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.contract')}:" labelWidth="185">
-                <mx:ComboBox id="authContractCombo" width="200" labelField="name" selectedIndex="0"/>
-            </mx:FormItem>
-        </mx:HBox>
+    </s:HGroup>
 
     <!--</utils:ValidatingForm>-->
 
-    <mx:ControlBar horizontalAlign="center" width="100%">
-
-        <mx:Button id="btnCancel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
-
-        <mx:Button id="btnOk"
-                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}" enabled="true"/>
-
-    </mx:ControlBar>
+    <s:Panel id="controlBarPanel" width="100%" height="40" borderVisible="false"
+            horizontalCenter="0" verticalCenter="0" contentBackgroundAlpha="0" dropShadowVisible="false"
+            creationComplete="controlBarPanel.titleDisplay.height=controlBarPanel.titleDisplay.minHeight=0;">
+        <s:controlBarContent>
+            <s:Button id="btnCancel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
+            <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}" enabled="true"/>
+        </s:controlBarContent>
+        <s:controlBarLayout>
+            <s:HorizontalLayout horizontalAlign="center"/>
+        </s:controlBarLayout>
+    </s:Panel>
 </mx:Form>
 <!--</mx:VBox>-->

@@ -1,5 +1,8 @@
 /* CSS file */
 
+@namespace "library://ns.adobe.com/flex/spark";
+@namespace mx "library://ns.adobe.com/flex/mx";
+
 Application {
     paddingTop: 0;
     padding-left: 0;
@@ -218,7 +221,7 @@ ToolTip {
     vertical-gap: 0;
 }
 
-Alert {
+mx|Alert {
     border-color: #3679b0;
     background-color: #ffffff;
     color: #000000;
@@ -332,7 +335,7 @@ TextArea {
     verticalAlign: bottom;
 }
 
-LinkButton.form {
+mx|LinkButton.form {
     color: #3679b0;
     text-decoration: underline;
     font-weight: normal;
@@ -342,7 +345,7 @@ LinkButton.form {
     padding-right: 0;
 }
 
-LinkButton.logout {
+mx|LinkButton.logout {
     color: #ffffff;
     textRollOverColor: #aaaaaa;
     rollOverColor: #404040;
@@ -354,7 +357,7 @@ LinkButton.logout {
     padding-right: 0;
 }
 
-LinkButton.secondNav {
+mx|LinkButton.secondNav {
     color: #404040;
     text-decoration: none;
     font-weight: normal;
@@ -390,7 +393,7 @@ LinkButton.secondNav {
     borderSkin: Embed(source = "/images/panel-bg.png", scaleGridLeft = 44, scaleGridRight = 360, scaleGridTop = 54, scaleGridBottom = 219);
 }
 
-TitleWindow {
+mx|TitleWindow {
     closeButtonSkin: Embed("/images/icons/close.png"); /* Set values from defaults.css to null. */
     closeButtonDisabledSkin: ClassReference(null);
     closeButtonDownSkin: ClassReference(null);
@@ -470,7 +473,7 @@ TitleWindow {
     backgroundColor: #ffffff;
 }
 
-AdvancedDataGrid {
+mx|AdvancedDataGrid {
     alternatingItemColors: #f9f7f3, #ffffff;
 }
 

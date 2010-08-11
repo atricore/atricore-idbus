@@ -22,14 +22,16 @@
 
 <WizardStep
         xmlns="com.atricore.idbus.console.components.wizard.*"
-        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
         stepName="JOSSO Service Provider"
         xmlns:utils="com.atricore.idbus.console.components.*"
         xmlns:components="com.atricore.idbus.console.components.*"
         creationComplete="initForm()"
         show="initResultArray()">
 
-        <mx:Script>
+        <fx:Script>
         <![CDATA[
 
             import com.atricore.idbus.console.services.dto.LocationDTO;
@@ -91,7 +93,7 @@
                 var sp:ServiceProviderDTO = new ServiceProviderDTO();
                 sp.name = jossoSPName.text;
                 var loc:LocationDTO = new LocationDTO();
-                loc.protocol = spLocationProtocol.selectedLabel;
+                loc.protocol = spLocationProtocol.labelDisplay.text;
                 loc.host = spLocationDomain.text;
                 loc.port = parseInt(spLocationPort.text);
                 loc.context = spLocationContext.text;
@@ -104,7 +106,7 @@
 
             private function addSPToReadableArray():void {
                 readableResultArray.push("JOSSO Service Provider's Name: " + jossoSPName.text);
-                readableResultArray.push("JOSSO Service Provider's Platform: " + jossoSPPlatform.selectedLabel);
+                readableResultArray.push("JOSSO Service Provider's Platform: " + jossoSPPlatform.labelDisplay.text);
                 readableResultArray.push("JOSSO Service Provider's Location: " + composeLocation());
             }
 
@@ -144,47 +146,49 @@
 
             private function composeLocation():String {
                 var port:String = ( spLocationPort.text == "" ? "" : ":" + spLocationPort.text );
-                return spLocationProtocol.selectedLabel + '://' + spLocationDomain.text + port + '/' +
+                return spLocationProtocol.labelDisplay.text + '://' + spLocationDomain.text + port + '/' +
                         spLocationContext.text;
             }
         ]]>
-    </mx:Script>
+    </fx:Script>
 
-    <mx:StringValidator id="nameValidator" source="{jossoSPName}" required="true" property="text"/>
-    <!--<mx:StringValidator id="domainValidator" source="{spLocationDomain}" required="true" property="text"/>-->
-    <mx:NumberValidator id="portValidator" source="{spLocationPort}" required="false" property="text"
-        minValue="1" maxValue="65535"
-        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.portValidationError')}"/>
-    <utils:URLPartValidator id="domainValidator" source="{spLocationDomain}" required="true" property="text" />
-    <utils:URLPartValidator id="contextPathValidator" source="{spLocationContext}" required="false" property="text" />
-    <!--utils:URLMultipartValidator id="pathValidator" source="{spLocationPath}" required="false" property="text" /-->
+    <fx:Declarations>
+        <mx:StringValidator id="nameValidator" source="{jossoSPName}" required="true" property="text"/>
+        <!--<mx:StringValidator id="domainValidator" source="{spLocationDomain}" required="true" property="text"/>-->
+        <mx:NumberValidator id="portValidator" source="{spLocationPort}" required="false" property="text"
+            minValue="1" maxValue="65535"
+            invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.portValidationError')}"/>
+        <utils:URLPartValidator id="domainValidator" source="{spLocationDomain}" required="true" property="text" />
+        <utils:URLPartValidator id="contextPathValidator" source="{spLocationContext}" required="false" property="text" />
+        <!--utils:URLMultipartValidator id="pathValidator" source="{spLocationPath}" required="false" property="text" /-->
 
-    <mx:XML id="platforms" source="/com/atricore/idbus/console/modeling/view/platformList.xml" />
-    <mx:XMLListCollection id="platformList" source="{platforms.children()}" />
+        <fx:XML id="platforms" source="/com/atricore/idbus/console/modeling/view/platformList.xml" />
+        <mx:XMLListCollection id="platformList" source="{platforms.children()}" />
 
-    <mx:Fade id="fadeFx" alphaFrom="1" alphaTo="0" duration="2000" startDelay="5000"/>
+        <s:Fade id="fadeFx" alphaFrom="1" alphaTo="0" duration="2000" startDelay="5000"/>
+    </fx:Declarations>
 
-    <mx:VBox width="100%" height="100%">
+    <s:VGroup width="100%" height="100%">
 
         <utils:ValidatingForm id="ssoWizStep3Form" width="100%" height="100%" validators="{validators}" labelWidth="{labelWidth}"
                     paddingLeft="10" paddingTop="10" paddingRight="10" paddingBottom="10">
             <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.jossoServiceProvider')}"
                            width="100%" height="100%" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
-                <mx:HBox>
+                <s:HGroup>
                     <mx:Spacer width="{labelWidth}"/>
-                    <mx:Label id="creationStatusLbl" text="" >
-                        <mx:filters>
-                            <mx:BlurFilter blurX="0" blurY="0" />
-                        </mx:filters>
-                    </mx:Label>
-                </mx:HBox>
+                    <s:Label id="creationStatusLbl" text="" >
+                        <s:filters>
+                            <s:BlurFilter blurX="0" blurY="0" />
+                        </s:filters>
+                    </s:Label>
+                </s:HGroup>
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.jossoSPName')}:"
                              required="true" paddingRight="4">
-                    <mx:TextInput id="jossoSPName" width="422" change="handleFormChange(event);"/>
+                    <s:TextInput id="jossoSPName" width="422" change="handleFormChange(event);"/>
                 </mx:FormItem>
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.applicationPlatform')}:">
-                    <mx:ComboBox id="jossoSPPlatform" width="302"
-                            dataProvider="{platformList}" labelField="@label" />
+                    <s:DropDownList id="jossoSPPlatform" width="302"
+                            dataProvider="{platformList}" labelField="@label" selectedIndex="0"/>
                 </mx:FormItem>
                 <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.applicationLocation')}:" required="true">-->
                     <!--<mx:TextInput id="jossoSPLocation" width="300" change="handleFormChange(event);"/>-->
@@ -192,34 +196,34 @@
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.applicationLocation')}:"
                         direction="horizontal" labelWidth="{labelWidth}" required="true">
-                    <mx:ComboBox id="spLocationProtocol" change="{changeSPLocationLabel(event);}">
+                    <s:DropDownList id="spLocationProtocol" change="{changeSPLocationLabel(event);}" width="70" selectedIndex="0">
                         <mx:ArrayCollection>
-                            <mx:Object label="http" data="http"/>
-                            <mx:Object label="https" data="https"/>
+                            <fx:Object label="http" data="http"/>
+                            <fx:Object label="https" data="https"/>
                         </mx:ArrayCollection>
-                    </mx:ComboBox>
-                    <mx:Label text="://" width="9" paddingLeft="-5"/>
-                    <mx:TextInput id="spLocationDomain" width="150" change="changeSPLocationLabel(event);"/>
+                    </s:DropDownList>
+                    <s:Label text="://" width="9" paddingLeft="-5"/>
+                    <s:TextInput id="spLocationDomain" width="150" change="changeSPLocationLabel(event);"/>
                             <!--focusIn="clearDefaultValue(event);" focusOut="setDefaultValueIfEmpty(event)"/>-->
-                    <mx:Label text=":" width="1" paddingLeft="-5"/>
-                    <mx:TextInput id="spLocationPort" width="40" change="changeSPLocationLabel(event);" />
-                    <mx:Label text="/" width="2" paddingLeft="-5"/>
-                    <mx:TextInput id="spLocationContext" width="70" change="changeSPLocationLabel(event);" />
+                    <s:Label text=":" width="1" paddingLeft="-5"/>
+                    <s:TextInput id="spLocationPort" width="40" change="changeSPLocationLabel(event);" />
+                    <s:Label text="/" width="2" paddingLeft="-5"/>
+                    <s:TextInput id="spLocationContext" width="70" change="changeSPLocationLabel(event);" />
                     <!--mx:Label text="/" width="2" paddingLeft="-5"/>
                     <mx:TextInput id="spLocationPath" width="100" change="changeSPLocationLabel(event);" /-->
                 </mx:FormItem>
 
-                <mx:Label id="spLocationLbl" paddingLeft="130" fontWeight="bold" />
+                <s:Label id="spLocationLbl" paddingLeft="130" fontWeight="bold" />
 
 
                 <mx:Spacer height="20" />
-                <mx:HBox>
+                <s:HGroup>
                     <mx:Spacer width="{labelWidth}"/>
-                    <mx:Button id="newSPProvider" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.addNewSPProvider')}"
+                    <s:Button id="newSPProvider" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.addNewSPProvider')}"
                            click="addNewSPProvider()" enabled="{isValid}"/>
-                </mx:HBox>
+                </s:HGroup>
             </utils:TitledBorderBox>
        </utils:ValidatingForm>
 
-    </mx:VBox>
+    </s:VGroup>
 </WizardStep>
