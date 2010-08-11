@@ -20,23 +20,16 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<<<<<<< HEAD
 <s:Application xmlns:mx="library://ns.adobe.com/flex/mx"
                 xmlns:fx="http://ns.adobe.com/mxml/2009"
-=======
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
->>>>>>> 9764dd67057ea4d8e6b8d0070da6bc5f7403b33f
                 xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:view="com.atricore.idbus.console.modeling.view.*"
                 xmlns:modeler="com.atricore.idbus.console.modeling.main.*"
                 xmlns:comp="com.atricore.idbus.console.components.*"
                 xmlns:login="com.atricore.idbus.console.main.view.login.*"
                 xmlns:lifecycle="com.atricore.idbus.console.lifecycle.*"
-<<<<<<< HEAD
-=======
                 xmlns:account="com.atricore.idbus.console.account.main.*"
-                layout="absolute" horizontalAlign="left" height="100%" width="100%" minWidth="955" minHeight="600"
->>>>>>> 9764dd67057ea4d8e6b8d0070da6bc5f7403b33f
+                height="100%" width="100%" minWidth="955" minHeight="600"
                 creationComplete="onCreationComplete()">
     <s:layout>
         <!--<s:VerticalLayout horizontalAlign="left" />-->
