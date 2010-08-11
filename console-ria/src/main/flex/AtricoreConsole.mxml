@@ -104,7 +104,7 @@
             <!--<s:NavigatorContent label="Modeler">-->
             <modeler:ModelerView id="modelerView" visible="true" name="Modeler"/>
             <!--</s:NavigatorContent>-->
-            <lifecycle:LifecycleView id="lifecycleView" visible="true" label="Lifecycle"/>
+            <lifecycle:LifecycleView id="lifecycleView" visible="true" name="Lifecycle"/>
             <!--<mx:Canvas label="Setup" width="95%" height="95%">-->
             <!--</mx:Canvas>-->
             <s:Group width="95%" height="95%" name="Setup">
