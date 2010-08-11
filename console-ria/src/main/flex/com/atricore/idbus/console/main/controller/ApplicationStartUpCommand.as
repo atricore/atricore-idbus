@@ -73,6 +73,16 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _setupWizardViewMediator:IIocMediator;
     private var _lifecycleViewMediator:IIocMediator;
     private var _simpleSSOWizardViewMediator:IIocMediator;
+    private var _accountManagementMediator:IIocMediator;
+    private var _groupsMediator:IIocMediator;
+    private var _addGroupMediator:IIocMediator;
+    private var _editGroupMediator:IIocMediator;
+    private var _searchGroupsMediator:IIocMediator;
+    private var _usersMediator:IIocMediator;
+    private var _addUserMediator:IIocMediator;
+    private var _editUserMediator:IIocMediator;
+    private var _searchUsersMediator:IIocMediator;
+
 
     /* Commands */
     private var _setupServerCommand:IIocCommand;
@@ -96,6 +106,16 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _identityApplianceListLoadCommand:IIocCommand;
     private var _identityApplianceCreateCommand:IIocCommand;
     private var _createSimpleSSOSetupCommand:IIocCommand;
+    private var _addGroupCommand:IIocCommand;
+    private var _addUserCommand:IIocCommand;
+    private var _deleteGroupCommand:IIocCommand;
+    private var _deleteUserCommand:IIocCommand;
+    private var _editGroupCommand:IIocCommand;
+    private var _editUserCommand:IIocCommand;
+    private var _listGroupsCommand:IIocCommand;
+    private var _listUsersCommand:IIocCommand;
+    private var _searchGroupsCommand:IIocCommand;
+    private var _searchUsersCommand:IIocCommand;
 
 
     public function get applicationMediator():IIocMediator {
@@ -240,6 +260,78 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set simpleSSOWizardViewMediator(value:IIocMediator):void {
         _simpleSSOWizardViewMediator = value;
+    }
+
+    public function get accountManagementMediator():IIocMediator {
+        return _accountManagementMediator;
+    }
+
+    public function set accountManagementMediator(value:IIocMediator):void {
+        _accountManagementMediator = value;
+    }
+
+    public function get groupsMediator():IIocMediator {
+        return _groupsMediator;
+    }
+
+    public function set groupsMediator(value:IIocMediator):void {
+        _groupsMediator = value;
+    }
+
+    public function get usersMediator():IIocMediator {
+        return _usersMediator;
+    }
+
+    public function set usersMediator(value:IIocMediator):void {
+        _usersMediator = value;
+    }
+
+    public function get addGroupMediator():IIocMediator {
+        return _addGroupMediator;
+    }
+
+    public function set addGroupMediator(value:IIocMediator):void {
+        _addGroupMediator = value;
+    }
+
+    public function get editGroupMediator():IIocMediator {
+        return _editGroupMediator;
+    }
+
+    public function set editGroupMediator(value:IIocMediator):void {
+        _editGroupMediator = value;
+    }
+
+    public function get searchGroupsMediator():IIocMediator {
+        return _searchGroupsMediator;
+    }
+
+    public function set searchGroupsMediator(value:IIocMediator):void {
+        _searchGroupsMediator = value;
+    }
+
+    public function get addUserMediator():IIocMediator {
+        return _addUserMediator;
+    }
+
+    public function set addUserMediator(value:IIocMediator):void {
+        _addUserMediator = value;
+    }
+
+    public function get editUserMediator():IIocMediator {
+        return _editUserMediator;
+    }
+
+    public function set editUserMediator(value:IIocMediator):void {
+        _editUserMediator = value;
+    }
+
+    public function get searchUsersMediator():IIocMediator {
+        return _searchUsersMediator;
+    }
+
+    public function set searchUsersMediator(value:IIocMediator):void {
+        _searchUsersMediator = value;
     }
 
     public function get diagramMediator():IIocMediator {
@@ -475,6 +567,87 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _createSimpleSSOSetupCommand = value;
     }
 
+    public function get addGroupCommand():IIocCommand {
+        return _addGroupCommand;
+    }
+
+    public function set addGroupCommand(value:IIocCommand):void {
+        _addGroupCommand = value;
+    }
+
+    public function get addUserCommand():IIocCommand {
+        return _addUserCommand;
+    }
+
+    public function set addUserCommand(value:IIocCommand):void {
+        _addUserCommand = value;
+    }
+
+    public function get deleteGroupCommand():IIocCommand {
+        return _deleteGroupCommand;
+    }
+
+    public function set deleteGroupCommand(value:IIocCommand):void {
+        _deleteGroupCommand = value;
+    }
+
+    public function get deleteUserCommand():IIocCommand {
+        return _deleteUserCommand;
+    }
+
+    public function set deleteUserCommand(value:IIocCommand):void {
+        _deleteUserCommand = value;
+    }
+
+    public function get editGroupCommand():IIocCommand {
+        return _editGroupCommand;
+    }
+
+    public function set editGroupCommand(value:IIocCommand):void {
+        _editGroupCommand = value;
+    }
+
+    public function get editUserCommand():IIocCommand {
+        return _editUserCommand;
+    }
+
+    public function set editUserCommand(value:IIocCommand):void {
+        _editUserCommand = value;
+    }
+
+    public function get listGroupsCommand():IIocCommand {
+        return _listGroupsCommand;
+    }
+
+    public function set listGroupsCommand(value:IIocCommand):void {
+        _listGroupsCommand = value;
+    }
+
+    public function get listUsersCommand():IIocCommand {
+        return _listUsersCommand;
+    }
+
+    public function set listUsersCommand(value:IIocCommand):void {
+        _listUsersCommand = value;
+    }
+
+    public function get searchGroupsCommand():IIocCommand {
+        return _searchGroupsCommand;
+    }
+
+    public function set searchGroupsCommand(value:IIocCommand):void {
+        _searchGroupsCommand = value;
+    }
+
+    public function get searchUsersCommand():IIocCommand {
+        return _searchUsersCommand;
+    }
+
+    public function set searchUsersCommand(value:IIocCommand):void {
+        _searchUsersCommand = value;
+    }
+
+
     override public function execute(note:INotification):void {
         var registry:ServiceRegistry = setupServiceRegistry();
 
@@ -490,6 +663,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         lifecycleViewMediator.setViewComponent(app.lifecycleView);
         iocFacade.registerMediatorByConfigName(lifecycleViewMediator.getConfigName());
 
+        accountManagementMediator.setViewComponent(app.accountManagementView);
+        iocFacade.registerMediatorByConfigName(accountManagementMediator.getConfigName());
 
         // setup for second level modeler mediators
         browserMediator.setViewComponent(app.modelerView.browser);
@@ -503,6 +678,15 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
         propertySheetMediator.setViewComponent(app.modelerView.propertysheet);
         iocFacade.registerMediatorByConfigName(propertySheetMediator.getConfigName());
+
+        iocFacade.registerMediatorByConfigName(groupsMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(addGroupMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(editGroupMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(searchGroupsMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(usersMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(addUserMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(editUserMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(searchUsersMediator.getConfigName());
 
         // register mediators for popup managers - popup managers will wire the corresponding view to it
         iocFacade.registerMediatorByConfigName(setupWizardViewMediator.getConfigName());
@@ -539,6 +723,16 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.START_IDENTITY_APPLIANCE, startIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.STOP_IDENTITY_APPLIANCE, stopIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE, identityApplianceUpdateCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_GROUP, addGroupCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_USER, addUserCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.DELETE_GROUP, deleteGroupCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.DELETE_USER, deleteUserCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.EDIT_GROUP, editGroupCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.EDIT_USER, editUserCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_GROUPS, listGroupsCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_USERS, listUsersCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_GROUPS, searchGroupsCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_USERS, searchUsersCommand.getConfigName());
 
         // IDENTITY_APPLIANCE_LIST_LOAD notification is sent from
         // modelerMediator.setViewComponent() -> modelerMediator.init()
@@ -598,6 +792,5 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         sendNotification(FAILURE);
 
     }
-
 }
 }

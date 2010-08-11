@@ -1,0 +1,52 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+
+<s:VGroup  xmlns:s="library://ns.adobe.com/flex/spark"
+           xmlns:mx="library://ns.adobe.com/flex/mx"
+           xmlns:fx="http://ns.adobe.com/mxml/2009"
+           xmlns:components="com.atricore.idbus.console.components.*"
+           xmlns:browser="com.atricore.idbus.console.modeling.browser.*"
+           xmlns:diagram="com.atricore.idbus.console.modeling.diagram.*"
+           xmlns:palette="com.atricore.idbus.console.modeling.palette.*"
+           xmlns:propertysheet="com.atricore.idbus.console.modeling.propertysheet.*"
+           xmlns:comp="com.atricore.idbus.console.components.*"
+           xmlns:ravis="org.un.cava.birdeye.ravis.graphLayout.visual.*"
+           xmlns:graph-ctrl="com.atricore.idbus.console.modeling.diagram.ui.control.*"
+           xmlns:vc="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
+           xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
+           xmlns:flexlib="http://flexlib.googlecode.com/"
+           width="100%" height="100%"
+        >
+
+    <fx:Metadata>
+        [ResourceBundle("console")]
+    </fx:Metadata>
+
+    <s:HGroup id="bodyHGroup" width="100%" height="100%"
+              paddingLeft="10" paddingRight="10" paddingBottom="10" >
+        <s:Group width="100%" height="100%">
+            <s:Label text="Properties"/>
+        </s:Group>
+    </s:HGroup>
+
+</s:VGroup>

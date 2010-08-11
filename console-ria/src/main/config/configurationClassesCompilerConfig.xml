@@ -34,6 +34,15 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.browser.BrowserMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.palette.PaletteMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.main.AccountManagementMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.groups.GroupsMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.main.view.addgroup.AddGroupMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.main.view.editgroup.EditGroupMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.main.view.searchgroups.SearchGroupsMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.users.UsersMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.main.view.adduser.AddUserMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.main.view.edituser.EditUserMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.main.view.searchusers.SearchUsersMediator</symbol>
 
         <symbol>com.atricore.idbus.console.main.controller.LoginCommand</symbol>
         <symbol>com.atricore.idbus.console.main.controller.UploadCommand</symbol>
@@ -55,6 +64,16 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOSetupCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.AddGroupCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.AddUserCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.DeleteGroupCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.DeleteUserCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.EditGroupCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.EditUserCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.ListGroupsCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.ListUsersCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.SearchGroupsCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.SearchUsersCommand</symbol>
         <symbol>mx.messaging.channels.AMFChannel</symbol>
         <symbol>mx.messaging.ChannelSet</symbol>
         <symbol>mx.rpc.remoting.mxml.RemoteObject</symbol>
@@ -63,8 +82,10 @@
         <symbol>com.atricore.idbus.console.main.model.KeystoreProxy</symbol>
         <symbol>com.atricore.idbus.console.main.model.SecureContextProxy</symbol>
         <symbol>com.atricore.idbus.console.main.model.ProfileProxy</symbol>
+        <symbol>com.atricore.idbus.console.account.main.model.AccountManagementProxy</symbol>
 
         <symbol>com.atricore.idbus.console.modeling.main.view.ModelerPopUpManager</symbol>
+        <symbol>com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager</symbol>
 
     </includes>
 </flex-config>
