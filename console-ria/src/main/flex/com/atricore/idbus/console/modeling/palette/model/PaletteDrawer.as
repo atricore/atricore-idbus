@@ -20,7 +20,7 @@
  */
 
 package com.atricore.idbus.console.modeling.palette.model {
-import mx.controls.Image;
+import spark.primitives.BitmapImage;
 
 public class PaletteDrawer extends PaletteContainer {
 
@@ -31,7 +31,7 @@ public class PaletteDrawer extends PaletteContainer {
     private var _initialState:int;
     private var _showDefaultIcon:Boolean;
 
-    public function PaletteDrawer(label:String, icon:Image, description:String) {
+    public function PaletteDrawer(label:String, icon:BitmapImage, description:String) {
         super(label, icon, description);
     }
 

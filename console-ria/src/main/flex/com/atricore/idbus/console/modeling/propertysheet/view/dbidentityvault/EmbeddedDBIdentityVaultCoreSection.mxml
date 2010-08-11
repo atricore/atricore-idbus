@@ -20,42 +20,46 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:HGroup xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
          xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
          paddingRight="5" paddingTop="5" paddingBottom="5">
 
+    <fx:Declarations>
         <mx:StringValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"/>
         <mx:NumberValidator id="serverPortValidator" source="{serverPort}" minValue="0" maxValue="65535" required="true" property="text"/>
         <mx:StringValidator id="schemaValidator" source="{schema}" required="true" property="text"/>
         <mx:StringValidator id="adminValidator" source="{admin}" required="true" property="text"/>
+    </fx:Declarations>
 
-        <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
-                 verticalGap="8">
+    <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
+             verticalGap="8">
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.userRepositoryName')}:"
-                         required="true">
-                <mx:TextInput id="userRepositoryName"/>
-            </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.userRepositoryName')}:"
+                     required="true">
+            <s:TextInput id="userRepositoryName"/>
+        </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.serverPort')}:" required="true">
-                <mx:TextInput id="serverPort" width="80"/>
-            </mx:FormItem>
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.schema')}:" required="true">
-                <mx:TextInput id="schema" width="200" />
-            </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.serverPort')}:" required="true">
+            <s:TextInput id="serverPort" width="80"/>
+        </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.schema')}:" required="true">
+            <s:TextInput id="schema" width="200" />
+        </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.admin')}:" required="true">
-                <mx:TextInput id="admin" width="200" />
-            </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.admin')}:" required="true">
+            <s:TextInput id="admin" width="200" />
+        </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.adminPass')}:" required="true">
-                <mx:TextInput id="adminPass" width="200" displayAsPassword="true"/>
-            </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.adminPass')}:" required="true">
+            <s:TextInput id="adminPass" width="200" displayAsPassword="true"/>
+        </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.confirmAdminPass')}:" required="true">
-                <mx:TextInput id="confirmAdminPass" width="200" displayAsPassword="true"/>
-            </mx:FormItem>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.confirmAdminPass')}:" required="true">
+            <s:TextInput id="confirmAdminPass" width="200" displayAsPassword="true"/>
+        </mx:FormItem>
 
-        </mx:Form>
+    </mx:Form>
     <!--</utils:TitledBorderBox>-->
-</mx:HBox>
+</s:HGroup>

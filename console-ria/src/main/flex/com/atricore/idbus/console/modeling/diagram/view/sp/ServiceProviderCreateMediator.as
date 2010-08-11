@@ -104,7 +104,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         serviceProvider.description = view.serviceProvDescription.text;
 
         var loc:LocationDTO = new LocationDTO();
-        loc.protocol = view.spLocationProtocol.selectedLabel;
+        loc.protocol = view.spLocationProtocol.labelDisplay.text;
         loc.host = view.spLocationDomain.text;
         loc.port = parseInt(view.spLocationPort.text);
         loc.context = view.spLocationContext.text;
@@ -117,7 +117,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         var idpChannel:IdentityProviderChannelDTO = new IdentityProviderChannelDTO();
         idpChannel.name = serviceProvider.name + " to idp default channel";
         var idpChannelLoc:LocationDTO = new LocationDTO();
-        idpChannelLoc.protocol = view.spLocationProtocol.selectedLabel;
+        idpChannelLoc.protocol = view.spLocationProtocol.labelDisplay.text;
         idpChannelLoc.host = view.spLocationDomain.text;
         idpChannelLoc.port = parseInt(view.spLocationPort.text);
         idpChannelLoc.context = view.spLocationContext.text;

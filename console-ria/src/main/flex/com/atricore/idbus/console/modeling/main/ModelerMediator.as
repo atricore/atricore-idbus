@@ -38,7 +38,6 @@ import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediato
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-
 import com.atricore.idbus.console.services.dto.IdentityApplianceStateDTO;
 
 import flash.events.Event;
@@ -49,6 +48,8 @@ import mx.events.FlexEvent;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
+//import mx.controls.ButtonBar;
+//import mx.controls.buttonBarClasses.ButtonBarButton;
 public class ModelerMediator extends IocMediator {
 
     public static const viewName:String = "ModelerView";

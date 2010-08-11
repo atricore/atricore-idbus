@@ -103,7 +103,7 @@ public class IDPChannelCreateMediator extends IocFormMediator {
         idpChannel.description = view.identityProvChannelDescription.text;
 
         var loc:LocationDTO = new LocationDTO();
-        loc.protocol = view.idpChannelLocationProtocol.selectedLabel;
+        loc.protocol = view.idpChannelLocationProtocol.labelDisplay.text;
         loc.host = view.idpChannelLocationDomain.text;
         loc.port = parseInt(view.idpChannelLocationPort.text);
         loc.context = view.idpChannelLocationContext.text;

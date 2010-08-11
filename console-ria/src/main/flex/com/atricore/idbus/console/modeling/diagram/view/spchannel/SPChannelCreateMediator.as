@@ -99,7 +99,7 @@ public class SPChannelCreateMediator extends IocFormMediator {
         spChannel.description = view.serviceProvChannelDescription.text;
 
         var loc:LocationDTO = new LocationDTO();
-        loc.protocol = view.spChannelLocationProtocol.selectedLabel;
+        loc.protocol = view.spChannelLocationProtocol.labelDisplay.text;
         loc.host = view.spChannelLocationDomain.text;
         loc.port = parseInt(view.spChannelLocationPort.text);
         loc.context = view.spChannelLocationContext.text;

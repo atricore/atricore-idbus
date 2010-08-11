@@ -22,14 +22,16 @@
 
 <WizardStep
         xmlns="com.atricore.idbus.console.components.wizard.*"
-        xmlns:mx="http://www.adobe.com/2006/mxml"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
         stepName="Embedded User Repository"
         xmlns:utils="com.atricore.idbus.console.components.*"
         xmlns:components="com.atricore.idbus.console.components.*"
         creationComplete="initForm()"
         show="initFields()">
 
-        <mx:Script>
+        <fx:Script>
         <![CDATA[
 
             import com.atricore.idbus.console.services.dto.DbIdentityVaultDTO;
@@ -42,7 +44,7 @@
 
             override public function get stepDecision():* {
                 var identityVault:IdentityVaultDTO = null;
-                if (embeddedRepositoryType.selectedLabel == "Database") {
+                if (embeddedRepositoryType.selectedItem.label == "Database") {
                     identityVault = new DbIdentityVaultDTO();
                     identityVault.embedded = true;
                     identityVault.name = userRepositoryName.text;
@@ -59,7 +61,7 @@
             override public function get readableStepDecision():String {
                 readableDecisionArray = new Array();
                 //                readableDecisionArray.push("user repository name: " + userRepositoryName.text);
-                readableDecisionArray.push("user repository type: " + embeddedRepositoryType.selectedLabel);
+                readableDecisionArray.push("user repository type: " + embeddedRepositoryType.selectedItem.label);
                 return readableDecisionArray.join("\n").toString();
             }
 
@@ -110,78 +112,82 @@
             }
 
         ]]>
-    </mx:Script>
+    </fx:Script>
 
-    <mx:StringValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"/>
-    <mx:NumberValidator id="serverPortValidator" source="{serverPort}" minValue="0" maxValue="65535" required="true" property="text"/>
-    <mx:StringValidator id="schemaValidator" source="{schema}" required="true" property="text"/>
-    <mx:StringValidator id="adminValidator" source="{admin}" required="true" property="text"/>
+    <fx:Declarations>
+        <mx:StringValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"/>
+        <mx:NumberValidator id="serverPortValidator" source="{serverPort}" minValue="0" maxValue="65535" required="true" property="text"/>
+        <mx:StringValidator id="schemaValidator" source="{schema}" required="true" property="text"/>
+        <mx:StringValidator id="adminValidator" source="{admin}" required="true" property="text"/>
+    </fx:Declarations>
     <!--<mx:StringValidator id="adminPassValidator" source="{adminPass}" required="true" property="text"/>-->
     <!--<mx:StringValidator id="confirmAdminPassValidator" source="{confirmAdminPass}" required="true" property="text"/>-->
 
     <!--<utils:MatchValidator  id="matchPasswordsValidator" source="{adminPass}" property="text" matchSource="{confirmAdminPass}" matchProperty="text"-->
         <!--noMatchError="Passwords do not match"/>-->
 
-    <mx:VBox width="100%" height="100%">
+    <s:VGroup width="100%" height="100%">
 
         <utils:ValidatingForm id="ssoWizStep2Form" width="100%" height="100%" validators="{validators}" labelWidth="110"
                     paddingLeft="10" paddingTop="10" paddingRight="10" paddingBottom="10">
             <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.embeddedUsersRepository')}"
                            width="100%" height="100%" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
-                <mx:HBox>
+                <s:HGroup>
                     <mx:FormItem labelWidth="50" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.userRepositoryName')}:" required="true">
-                        <mx:TextInput id="userRepositoryName" width="150" editable="false"
+                        <s:TextInput id="userRepositoryName" width="150" editable="false"
                                 text="{(previousStepData as IdentityVaultDTO).name}"/>
                     </mx:FormItem>
                     <mx:FormItem labelWidth="40" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.embeddedRepositoryType')}:">
-                        <mx:ComboBox id="embeddedRepositoryType" width="100" change="handleFormChange(event);">
+                        <s:DropDownList id="embeddedRepositoryType" width="100" change="handleFormChange(event);" selectedIndex="0">
                             <mx:ArrayCollection>
-                                 <mx:Object label="Database" data="database"/>
+                                 <fx:Object label="Database" data="database"/>
                              </mx:ArrayCollection>
-                        </mx:ComboBox>
+                        </s:DropDownList>
                     </mx:FormItem>
-                    <mx:CheckBox id="skipConnTest" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.skipConnTest')}"/>
-                </mx:HBox>
+                    <s:CheckBox id="skipConnTest" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.skipConnTest')}"/>
+                </s:HGroup>
 
                 <mx:TabNavigator borderStyle="solid" width="100%" height="100%">
 
                     <!-- DATABASE DEFINITION TAB -->
-                    <mx:VBox label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.dbDefinitionTab')}">
-                        <mx:HBox>
-                            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.serverPort')}:" required="true">
-                                <mx:TextInput id="serverPort" width="80" change="handleFormChange(event);"/>
+                    <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.dbDefinitionTab')}">
+                        <s:VGroup>
+                            <s:HGroup>
+                                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.serverPort')}:" required="true">
+                                    <s:TextInput id="serverPort" width="80" change="handleFormChange(event);"/>
+                                </mx:FormItem>
+                                <mx:Spacer width="50"/>
+                                <s:CheckBox id="bindToAllInterfaces" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.bindToAllInterfaces')}"/>
+                            </s:HGroup>
+                            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.schema')}:" required="true">
+                                <s:TextInput id="schema" width="200" change="handleFormChange(event);"/>
                             </mx:FormItem>
-                            <mx:Spacer width="50"/>
-                            <mx:CheckBox id="bindToAllInterfaces" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.bindToAllInterfaces')}"/>
-                        </mx:HBox>
-                        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.schema')}:" required="true">
-                            <mx:TextInput id="schema" width="200" change="handleFormChange(event);"/>
-                        </mx:FormItem>
 
-                        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.admin')}:" required="true">
-                            <mx:TextInput id="admin" width="200" change="handleFormChange(event);"/>
-                        </mx:FormItem>
+                            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.admin')}:" required="true">
+                                <s:TextInput id="admin" width="200" change="handleFormChange(event);"/>
+                            </mx:FormItem>
 
-                        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.adminPass')}:" required="true">
-                            <mx:TextInput id="adminPass" width="200"
-                                change="handleFormChange(event);" displayAsPassword="true"/>
-                        </mx:FormItem>
+                            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.adminPass')}:" required="true">
+                                <s:TextInput id="adminPass" width="200"
+                                    change="handleFormChange(event);" displayAsPassword="true"/>
+                            </mx:FormItem>
 
-                        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.confirmAdminPass')}:" required="true">
-                            <mx:TextInput id="confirmAdminPass" width="200" change="handleFormChange(event);"
-                                displayAsPassword="true"/>
-                        </mx:FormItem>
+                            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.confirmAdminPass')}:" required="true">
+                                <s:TextInput id="confirmAdminPass" width="200" change="handleFormChange(event);"
+                                    displayAsPassword="true"/>
+                            </mx:FormItem>
 
-                        <mx:HBox width="100%">
-                            <mx:Spacer width="390"/>
-                            <mx:Button id="testConnBtn" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.testConnection')}"/>
-                        </mx:HBox>
-                        <mx:Spacer width="10"/>
-                    </mx:VBox>
+                            <s:HGroup width="100%">
+                                <mx:Spacer width="390"/>
+                                <s:Button id="testConnBtn" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.testConnection')}"/>
+                            </s:HGroup>
+                            <mx:Spacer width="10"/>
+                        </s:VGroup>
+                    </s:NavigatorContent>
 
                 </mx:TabNavigator>
             </utils:TitledBorderBox>
        </utils:ValidatingForm>
 
-    </mx:VBox>
+    </s:VGroup>
 </WizardStep>

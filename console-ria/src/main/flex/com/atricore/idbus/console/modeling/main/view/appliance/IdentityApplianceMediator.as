@@ -138,15 +138,6 @@ public class IdentityApplianceMediator extends IocFormMediator
     }
 
     override public function bindForm():void {
-//        if (_projectProxy.currentIdentityAppliance != null) {
-//            view.applianceName.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.name;
-//            view.applianceDescription.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.description;
-//            view.applianceLocationDomain.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.location.host;
-//            view.applianceLocationPort.text = new Number(_projectProxy.currentIdentityAppliance.idApplianceDefinition.location.port).toString();
-//            view.applianceLocationProtocol.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.location.protocol;
-//            view.applianceLocationPath.text = _projectProxy.currentIdentityAppliance.idApplianceDefinition.location.context;
-//        }
-
         view.applianceName.text = "";
         view.applianceDescription.text = "";
         view.applianceLocationProtocol.selectedIndex = 0;

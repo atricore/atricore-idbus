@@ -29,7 +29,7 @@ import com.atricore.idbus.console.main.view.progress.ProcessingView;
 import flash.display.DisplayObject;
 import flash.events.Event;
 
-import mx.core.Application;
+import mx.core.FlexGlobals;
 import mx.core.UIComponent;
 import mx.effects.Effect;
 import mx.effects.Iris;
@@ -178,7 +178,7 @@ public class BasePopUpManager {
         }
         else {
             //PopUpManager.addPopUp(_popup, _popupParent, true);
-            PopUpManager.addPopUp(_popup, Application.application as DisplayObject, true);
+            PopUpManager.addPopUp(_popup, FlexGlobals.topLevelApplication as DisplayObject, true);
             PopUpManager.centerPopUp(_popup);
             _popupVisible = true;
             _popUpOpenEffect.end();
@@ -193,7 +193,7 @@ public class BasePopUpManager {
         }
         else {
             //PopUpManager.addPopUp(_progress, _popupParent, true);
-            PopUpManager.addPopUp(_progress, Application.application as DisplayObject, true);
+            PopUpManager.addPopUp(_progress, FlexGlobals.topLevelApplication as DisplayObject, true);
             PopUpManager.centerPopUp(_progress);
             _progressVisible = true;
             _progressOpenEffect.end();
@@ -215,7 +215,7 @@ public class BasePopUpManager {
         _wizard.addEventListener(FlexEvent.CREATION_COMPLETE, onWizardCreationComplete, false, 0);
 
         //PopUpManager.addPopUp(_wizard, _popupParent, true);
-        PopUpManager.addPopUp(_wizard, Application.application as DisplayObject, true);
+        PopUpManager.addPopUp(_wizard, FlexGlobals.topLevelApplication as DisplayObject, true);
         PopUpManager.centerPopUp(_wizard);
         _wizardOpenEffect.end();
         _wizardOpenEffect.play();

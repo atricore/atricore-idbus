@@ -21,31 +21,35 @@
   -->
 
 
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:Panel xmlns:mx="library://ns.adobe.com/flex/mx"
+          xmlns:fx="http://ns.adobe.com/mxml/2009"
+          xmlns:s="library://ns.adobe.com/flex/spark"
           xmlns:components="com.atricore.idbus.console.components.*"
           xmlns:comp="com.atricore.idbus.console.components.*"
           xmlns:ravis="org.un.cava.birdeye.ravis.graphLayout.visual.*"
           xmlns:graph-ctrl="com.atricore.idbus.console.modeling.diagram.ui.control.*"
           xmlns:vc="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
           xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
-          paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"
         >
+    
+    <s:layout>
+        <s:VerticalLayout paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+    </s:layout>
 
-    <mx:Script>
+    <fx:Script>
         <![CDATA[
         import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
     ]]>
-    </mx:Script>
+    </fx:Script>
 
-    <mx:Metadata>
+    <fx:Metadata>
         [ResourceBundle("console")]
-    </mx:Metadata>
+    </fx:Metadata>
 
     <comp:CustomVisualGraph id="identityApplianceDiagram" width="100%" height="100%"
                        left="0" right="0" top="0" bottom="0" alpha="1"
                        resize="identityApplianceDiagram.draw(VisualGraph.DF_RESET_LL)"
                        visibilityLimitActive="true"
             >
-
     </comp:CustomVisualGraph>
-</mx:Panel>
+</s:Panel>
