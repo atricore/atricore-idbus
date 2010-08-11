@@ -48,6 +48,14 @@ Button {
     paddingTop: 2;
 }
 
+mx|Button {
+    disabledSkin: Embed(source = "yflexskin.swf", symbol = "Button_disabledSkin");
+    downSkin: Embed(source = "yflexskin.swf", symbol = "Button_downSkin");
+    overSkin: Embed(source = "yflexskin.swf", symbol = "Button_overSkin");
+    upSkin: Embed(source = "yflexskin.swf", symbol = "Button_upSkin");
+    paddingTop: 2;
+}
+
 /*
 //------------------------------
 //  primaryButton
