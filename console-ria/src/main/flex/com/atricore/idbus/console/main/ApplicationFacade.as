@@ -54,6 +54,17 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const UNDEPLOY_IDENTITY_APPLIANCE:String = "uneployIdentityAppliance";
     public static const START_IDENTITY_APPLIANCE:String = "startIdentityAppliance";
     public static const STOP_IDENTITY_APPLIANCE:String = "stopIdentityAppliance";
+    public static const ADD_GROUP:String = "addGroup";
+    public static const ADD_USER:String = "addUser";
+    public static const DELETE_GROUP:String = "deleteGroup";
+    public static const DELETE_USER:String = "deleteUser";
+    public static const EDIT_GROUP:String = "editGroup";
+    public static const EDIT_USER:String = "editUser";
+    public static const LIST_GROUPS:String = "listGroups";
+    public static const LIST_USERS:String = "listUsers";
+    public static const SEARCH_GROUPS:String = "searchGroups";
+    public static const SEARCH_USERS:String = "searchUsers";
+
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
@@ -84,6 +95,8 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const REMOVE_SERVICE_PROVIDER_ELEMENT:String = "removeServiceProviderElement";
     public static const MANAGE_CERTIFICATE:String = "manageCertificate";
     public static const SHOW_UPLOAD_PROGRESS:String = "uploadProgress";
+    public static const DISPLAY_ADD_NEW_GROUP:String = "displayAddNewGroup";
+    public static const DISPLAY_ADD_NEW_USER:String = "displayAddNewUser";
 
 
     public function ApplicationFacade(p_configuration:* = null) {

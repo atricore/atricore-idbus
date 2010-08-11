@@ -21,11 +21,13 @@
   -->
 
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+                xmlns:s="library://ns.adobe.com/flex/spark"
                 xmlns:view="com.atricore.idbus.console.modeling.view.*"
                 xmlns:modeler="com.atricore.idbus.console.modeling.main.*"
                 xmlns:comp="com.atricore.idbus.console.components.*"
                 xmlns:login="com.atricore.idbus.console.main.view.login.*"
                 xmlns:lifecycle="com.atricore.idbus.console.lifecycle.*"
+                xmlns:account="com.atricore.idbus.console.account.main.*"
                 layout="absolute" horizontalAlign="left" height="100%" width="100%" minWidth="955" minHeight="600"
                 creationComplete="onCreationComplete()">
 
@@ -72,7 +74,7 @@
     <mx:Style source="../resources/style/style.css"/>
 
     <!--<mx:VBox x="71" y="31" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"-->
-    <mx:VBox  paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"    
+    <mx:VBox paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
              borderStyle="solid" width="100%" height="100%" visible="true">
         <mx:HBox paddingTop="2" paddingLeft="10">
             <comp:MessageBox id="messageBox" showEffect="{wipeRight}"/>
@@ -85,6 +87,9 @@
             </mx:Canvas>
             <mx:Canvas label="Deployment" width="95%" height="95%">
             </mx:Canvas>
+            <s:NavigatorContent label="Account Management" creationPolicy="all" visible="true">
+                <account:AccountManagementView id="accountManagementView" visible="true" />
+            </s:NavigatorContent>
         </mx:ViewStack>
     </mx:VBox>
 </mx:Application>

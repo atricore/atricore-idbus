@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<mx:Form xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:utils="com.atricore.idbus.console.components.*"
+         defaultButton="{submitSearchUsersButton}" styleName="unpadded"
+         width="100%" height="100%" verticalGap="8">
+
+    <fx:Declarations>
+        <mx:StringValidator id="usernameUserValidator" source="{userUsername}" required="true" property="text"/>
+        <mx:StringValidator id="firstnameUserValidator" source="{userFirstName}" required="true" property="text"/>
+        <mx:StringValidator id="lastnameUserValidator" source="{userLastName}" required="true" property="text"/>
+
+        <mx:StringValidator id="passwordUserValidator" source="{userPassword}" minLength="8" property="text"/>
+        <mx:StringValidator id="retypePasswordUserValidator" source="{userRetypePassword}" minLength="8" property="text"/>
+
+        <mx:EmailValidator id="userEmailValidator" source="{userEmail}" property="text" required="false"/>
+    </fx:Declarations>
+
+    <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.edit.panel.title')}"/>
+
+    <mx:HRule width="100%"/>
+
+    <mx:FormItem required="true"
+                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.username')}:">
+        <mx:TextInput id="userUsername" width="300" />
+    </mx:FormItem>
+
+    <mx:FormItem required="true"
+                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.password')}:">
+        <mx:TextInput id="userPassword" width="300" />
+    </mx:FormItem>
+
+    <mx:FormItem required="true"
+                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.retype.password')}:">
+        <mx:TextInput id="userRetypePassword" width="300" />
+    </mx:FormItem>
+
+    <mx:FormItem required="true"
+                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.firstname')}:">
+        <mx:TextInput id="userFirstName" width="300" />
+    </mx:FormItem>
+
+    <mx:FormItem required="true"
+                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.lastname')}:">
+        <mx:TextInput id="userLastName" width="300"  />
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.fullname')}:">
+        <mx:TextInput id="userFullName" width="300" editable="false"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.email')}:">
+        <mx:TextInput id="userEmail" width="300" />
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.telephone')}:">
+        <mx:TextInput id="userTelephone" width="300"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.fax')}:">
+        <mx:TextInput id="userFax" width="300"/>
+    </mx:FormItem>
+
+    <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
+        <s:Button id="cancelSearchUsers" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
+
+        <s:Button id="submitSearchUsersButton"
+                  label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.save')}" />
+    </mx:ControlBar>
+</mx:Form>

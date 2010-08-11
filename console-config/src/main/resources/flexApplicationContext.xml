@@ -13,6 +13,7 @@
     <object id="keystoreProxy" class="com.atricore.idbus.console.main.model.KeystoreProxy"/>
     <object id="profileProxy" class="com.atricore.idbus.console.main.model.ProfileProxy"/>
     <object id="secureContextProxy" class="com.atricore.idbus.console.main.model.SecureContextProxy"/>
+    <object id="accountManagementProxy" class="com.atricore.idbus.console.account.main.model.AccountManagementProxy"/>
 
     <!-- Commands -->
     <object id="loginCommand" class="com.atricore.idbus.console.main.controller.LoginCommand">
@@ -104,6 +105,56 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="addGroupCommand"
+            class="com.atricore.idbus.console.account.main.controller.AddGroupCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="addUserCommand"
+            class="com.atricore.idbus.console.account.main.controller.AddUserCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="deleteGroupCommand"
+            class="com.atricore.idbus.console.account.main.controller.DeleteGroupCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="deleteUserCommand"
+            class="com.atricore.idbus.console.account.main.controller.DeleteUserCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="editGroupCommand"
+            class="com.atricore.idbus.console.account.main.controller.EditGroupCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="editUserCommand"
+            class="com.atricore.idbus.console.account.main.controller.EditUserCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="listGroupsCommand"
+            class="com.atricore.idbus.console.account.main.controller.ListGroupsCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="listUsersCommand"
+            class="com.atricore.idbus.console.account.main.controller.ListUsersCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="searchGroupsCommand"
+            class="com.atricore.idbus.console.account.main.controller.SearchGroupsCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="searchUsersCommand"
+            class="com.atricore.idbus.console.account.main.controller.SearchUsersCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
 
     <!-- Mediators -->
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
@@ -174,6 +225,38 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="paletteMediator" class="com.atricore.idbus.console.modeling.palette.PaletteMediator"/>
+    <object id="accountManagementMediator" class="com.atricore.idbus.console.account.main.AccountManagementMediator">
+        <property name="popupManager" ref="accountManagementPopUpManager"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="groupsMediator" ref="groupsMediator"/>
+        <property name="usersMediator" ref="usersMediator"/>
+    </object>
+    <object id="groupsMediator" class="com.atricore.idbus.console.account.groups.GroupsMediator">
+        <property name="popupManager" ref="accountManagementPopUpManager"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="addGroupMediator" class="com.atricore.idbus.console.account.main.view.addgroup.AddGroupMediator">
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="editGroupMediator" class="com.atricore.idbus.console.account.main.view.editgroup.EditGroupMediator">
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="searchGroupsMediator" class="com.atricore.idbus.console.account.main.view.searchgroups.SearchGroupsMediator">
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="usersMediator" class="com.atricore.idbus.console.account.users.UsersMediator">
+        <property name="popupManager" ref="accountManagementPopUpManager"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="addUserMediator" class="com.atricore.idbus.console.account.main.view.adduser.AddUserMediator">
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="editUserMediator" class="com.atricore.idbus.console.account.main.view.edituser.EditUserMediator">
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="searchUsersMediator" class="com.atricore.idbus.console.account.main.view.searchusers.SearchUsersMediator">
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
 
     <!-- support components -->
     <object id="consolePopUpManager" class="com.atricore.idbus.console.main.ConsolePopUpManager">
@@ -196,6 +279,17 @@
         <property name="processingMediator" ref="processingMediator"/>
     </object>
 
+    <object id="accountManagementPopUpManager" class="com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager">
+        <property name="groupsMediator" ref="groupsMediator"/>
+        <property name="addGroupMediator" ref="addGroupMediator"/>
+        <property name="editGroupMediator" ref="editGroupMediator"/>
+        <property name="searchGroupsMediator" ref="searchGroupsMediator"/>
+        <property name="usersMediator" ref="usersMediator"/>
+        <property name="addUserMediator" ref="addUserMediator"/>
+        <property name="editUserMediator" ref="editUserMediator"/>
+        <property name="searchUsersMediator" ref="searchUsersMediator"/>
+        <property name="processingMediator" ref="processingMediator"/>
+    </object>
 
     <object id="startupCommand" class="com.atricore.idbus.console.main.controller.ApplicationStartUpCommand">
         <!-- Proxies wiring -->
@@ -227,6 +321,17 @@
         <property name="createSimpleSSOSetupCommand" ref="createSimpleSSOSetupCommand"/>
         <property name="buildIdentityApplianceCommand" ref="buildIdentityApplianceCommand"/>
         <property name="lookupIdentityApplianceByIdCommand" ref="lookupIdentityApplianceByIdCommand"/>
+        <property name="addGroupCommand" ref="addGroupCommand"/>
+        <property name="addUserCommand" ref="addUserCommand"/>
+        <property name="deleteGroupCommand" ref="deleteGroupCommand"/>
+        <property name="deleteUserCommand" ref="deleteUserCommand"/>
+        <property name="editGroupCommand" ref="editGroupCommand"/>
+        <property name="editUserCommand" ref="editUserCommand"/>
+        <property name="listGroupsCommand" ref="listGroupsCommand"/>
+        <property name="listUsersCommand" ref="listUsersCommand"/>
+        <property name="searchGroupsCommand" ref="searchGroupsCommand"/>
+        <property name="searchUsersCommand" ref="searchUsersCommand"/>
+
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>
@@ -250,6 +355,16 @@
         <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>
         <property name="browserMediator" ref="browserMediator"/>
         <property name="paletteMediator" ref="paletteMediator"/>
+        <property name="accountManagementMediator" ref="accountManagementMediator"/>
+        <property name="groupsMediator" ref="groupsMediator"/>
+        <property name="addGroupMediator" ref="addGroupMediator"/>
+        <property name="editGroupMediator" ref="editGroupMediator"/>
+        <property name="searchGroupsMediator" ref="searchGroupsMediator"/>
+        <property name="usersMediator" ref="usersMediator"/>
+        <property name="addUserMediator" ref="addUserMediator"/>
+        <property name="editUserMediator" ref="editUserMediator"/>
+        <property name="searchUsersMediator" ref="searchUsersMediator"/>
+
     </object>
 
 </objects>

@@ -1,0 +1,80 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+
+<s:Panel xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:components="com.atricore.idbus.console.components.*"
+         xmlns:browser="com.atricore.idbus.console.modeling.browser.*"
+         xmlns:diagram="com.atricore.idbus.console.modeling.diagram.*"
+         xmlns:palette="com.atricore.idbus.console.modeling.palette.*"
+         xmlns:propertysheet="com.atricore.idbus.console.modeling.propertysheet.*"
+         xmlns:comp="com.atricore.idbus.console.components.*"
+         xmlns:ravis="org.un.cava.birdeye.ravis.graphLayout.visual.*"
+         xmlns:graph-ctrl="com.atricore.idbus.console.modeling.diagram.ui.control.*"
+         xmlns:vc="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
+         xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
+         xmlns:group="com.atricore.idbus.console.account.groups.*"
+         xmlns:user="com.atricore.idbus.console.account.users.*"
+         width="100%" height="100%"
+        >
+
+    <fx:Metadata>
+        [ResourceBundle("console")]
+    </fx:Metadata>
+
+    <s:VGroup width="100%" height="100%"
+              paddingLeft="5" paddingRight="5"
+              paddingTop="5" paddingBottom="5">
+
+        <s:HGroup width="100%" height="5%"
+                  paddingLeft="5" paddingRight="5"
+                  paddingTop="5" paddingBottom="5">
+
+            <s:Button id="btnHome" label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.home.panel.label')}" />
+            <s:Button id="btnGroups" label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.groups.list.panel.label')}"/>
+            <s:Button id="btnUsers" label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.list.panel.label')}" />
+
+        </s:HGroup>
+
+        <mx:ViewStack id="vsAccountMng" width="100%" height="100%">
+            <s:NavigatorContent id="homeNav" visible="true">
+                <s:HGroup id="homeGroup" width="100%" height="94%">
+                    <mx:Canvas id="homePanel" width="100%" height="100%">
+                        <mx:Text paddingLeft="50" paddingTop="100">
+                            <mx:htmlText>
+                                <![CDATA[Now with <a href="http://www.josso.org">Josso</a> <b>Provisioning Module</b> you can administrate all your groups and users easy and fast!]]>
+                            </mx:htmlText>
+                        </mx:Text>
+                    </mx:Canvas>
+                </s:HGroup>
+            </s:NavigatorContent>
+            <s:NavigatorContent id="groupsNav" visible="true" creationPolicy="all">
+                <group:GroupsView id="groups" width="100%" height="94%"/>
+            </s:NavigatorContent>
+            <s:NavigatorContent id="usersNav" visible="true" creationPolicy="all">
+                <user:UsersView id="users" width="100%" height="94%" />
+            </s:NavigatorContent>
+        </mx:ViewStack>
+    </s:VGroup>
+</s:Panel>
