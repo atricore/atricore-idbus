@@ -24,7 +24,10 @@ import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 
+import flash.events.Event;
 import flash.events.MouseEvent;
+
+import mx.events.FlexEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
@@ -86,12 +89,13 @@ public class AccountManagementMediator extends IocMediator {
         }
 
         //(p_viewComponent as AccountManagementView).addEventListener(FlexEvent.INITIALIZE , init);
+        (p_viewComponent as AccountManagementView).addEventListener(FlexEvent.SHOW, init);
 
         super.setViewComponent(p_viewComponent);
-        init();
+        //init();
     }
 
-    public function init():void {                        
+    public function init(event:Event):void {                        
         view.btnHome.addEventListener(MouseEvent.CLICK, handleHomeClick);
         view.btnGroups.addEventListener(MouseEvent.CLICK, handleGroupsClick);
         view.btnUsers.addEventListener(MouseEvent.CLICK, handleUsersClick);

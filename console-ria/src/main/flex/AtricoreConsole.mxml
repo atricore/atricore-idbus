@@ -113,7 +113,7 @@
             <s:Group width="95%" height="95%" name="Deployment">
                 <s:Label text="Deployment"/>
             </s:Group>
-            <account:AccountManagementView id="accountManagementView" visible="true" />
+            <account:AccountManagementView id="accountManagementView" visible="true" name="Account"/>
         </comp:CustomViewStack>
         <!--</mx:ViewStack>-->
     </s:VGroup>
