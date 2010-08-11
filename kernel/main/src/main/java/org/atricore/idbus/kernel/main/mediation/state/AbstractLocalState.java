@@ -1,6 +1,8 @@
 package org.atricore.idbus.kernel.main.mediation.state;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

@@ -22,7 +22,6 @@
 package org.atricore.idbus.kernel.main.federation.metadata;
 
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 
 import java.io.Serializable;
 import java.util.Set;

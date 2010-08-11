@@ -61,7 +61,6 @@
         <!--cglib.nodep.version>2.1_3</cglib.nodep.version-->
         <cxf.version>2.2.2</cxf.version>
 
-        <datanucleus.version>2.0.3</datanucleus.version>
         <ehcache.version>2.1.0</ehcache.version>
         <felix.karaf.version>1.6.0</felix.karaf.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
@@ -722,32 +721,6 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
-            <!-- Persistence -->
-            <dependency>
-                <groupId>org.atricore.idbus.bundles</groupId>
-                <artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>
-                <version>${idbus.bundle.datanucleus-core-v2_0_3.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.bundles</groupId>
-                <artifactId>org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3</artifactId>
-                <version>${idbus.bundle.datanucleus-rdbms-v2_0_3.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.bundles</groupId>
-                <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
-                <version>${idbus.bundle.javax-jdo2-v2_3-ec.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>javax.jdo</groupId>
-                <artifactId>jdo2-api</artifactId>
-                <version>${javax.jdo2.version}</version>
-            </dependency>
-            
 
             <!-- Test Dependencies -->
 

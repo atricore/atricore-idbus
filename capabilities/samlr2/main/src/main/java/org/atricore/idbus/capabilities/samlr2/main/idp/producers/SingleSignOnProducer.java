@@ -187,9 +187,6 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             // Send SAMLR2 Message back
             CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
-
-
-
             out.setMessage(new MediationMessageImpl(uuidGenerator.generateId(),
                     authnRequest,
                     "AuthnRequest",

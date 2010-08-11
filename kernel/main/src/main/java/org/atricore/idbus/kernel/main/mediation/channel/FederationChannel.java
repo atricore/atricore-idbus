@@ -30,7 +30,6 @@ import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 
 /**
  *

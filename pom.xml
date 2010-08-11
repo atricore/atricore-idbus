@@ -43,6 +43,7 @@
         <module>bundles/javax-jstl-v1_2</module>
         <module>bundles/datanucleus-core-v2_0_3</module>
         <module>bundles/datanucleus-rdbms-v2_0_3</module>
+        <module>bundles/datanucleus-v2_0_3</module>
         <module>bundles/apache-derby-network-v10_5_3_0_1</module>
         <module>bundles/apache-derby-client-v10_5_3_0_1</module>
         <module>bundles/apache-maven-v3_0</module>
@@ -63,6 +64,8 @@
         <module>idojos/idbus-serialized-sessionstore</module>
         <module>idojos/idbus-ehcache-sessionstore</module>
         <module>idojos/idbus-strong-authscheme</module>
+
+        <module>connectors/idbus-jdo-identityvault</module>
 
         <module>applications/idbus-server</module>
         <module>examples/simple-federation</module>
@@ -452,6 +455,21 @@
         </pluginRepository>
 
     </pluginRepositories>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>1.5</source>
+                        <target>1.5</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 
     <profiles>

@@ -8,7 +8,7 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTargetManager;
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,13 +18,13 @@ import java.util.List;
  */
 public class SpmlR2PSPMediator extends AbstractSpmlR2Mediator {
 
-    private List<ProvisioningTargetManager> provisioningTargets;
+    private List<ProvisioningTarget> provisioningTargets;
 
-    public List<ProvisioningTargetManager> getProvisioningTargets() {
+    public List<ProvisioningTarget> getProvisioningTargets() {
         return provisioningTargets;
     }
 
-    public void setProvisioningTargets(List<ProvisioningTargetManager> provisioningTargets) {
+    public void setProvisioningTargets(List<ProvisioningTarget> provisioningTargets) {
         this.provisioningTargets = provisioningTargets;
     }
 

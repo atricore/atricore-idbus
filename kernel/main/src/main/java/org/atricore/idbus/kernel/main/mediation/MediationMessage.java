@@ -22,7 +22,6 @@
 package org.atricore.idbus.kernel.main.mediation;
 
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.mediation.MediationState;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

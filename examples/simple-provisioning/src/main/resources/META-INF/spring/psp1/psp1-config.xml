@@ -23,11 +23,15 @@
 <s:beans xmlns="http://www.springframework.org/schema/beans"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns:osgi="http://www.springframework.org/schema/osgi"
+         xmlns:tx="http://www.springframework.org/schema/tx"
          xmlns:s="http://www.springframework.org/schema/beans"
          xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-        http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
+        http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
         >
+
+    <tx:annotation-driven/>
 
     <bean name="psp1" class="org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProviderImpl">
         <property name="name" value="psp1"/>
@@ -67,21 +71,84 @@
         </property>
     </bean>
 
-    <!-- Identity Vault / Partition -->
-
-    <bean name="psp1-pst1" class="org.atricore.idbus.kernel.main.provisioning.impl.ProvisioningTargetManagerImpl">
-        <property name="identityVault" ref="idvault1"/>
+    <!-- ============================================================= -->
+    <!-- Identity Vault / Partition JDO Based -->
+    <!-- ============================================================= -->
+    <bean name="psp1-pst1" class="org.atricore.idbus.kernel.main.provisioning.impl.ProvisioningTargetImpl">
         <property name="identityPartition" ref="idpart1"/>
     </bean>
 
-    <bean name="idvault1" class="org.atricore.idbus.kernel.main.provisioning.domain.IdentityVault">
+    <bean name="idvault1" class="org.atricore.idbus.connectors.jdoidentityvault.JDOIdentityVault">
         <property name="name" value="idvault1"/>
         <property name="description" value="Identity Vault ONE"/>
+        <property name="identityPartitions">
+            <set>
+                <ref bean="idpart1"/>
+            </set>
+        </property>
     </bean>
 
-    <bean name="idpart1" class="org.atricore.idbus.kernel.main.provisioning.domain.IdentityPartition">
+    <bean name="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
+        <property name="persistenceManagerFactory" ref="idpart1-pmf"/>
+    </bean>
+
+    <bean name="idpart1" class="org.atricore.idbus.connectors.jdoidentityvault.JDOIdentityPartition">
         <property name="name" value="idpart1"/>
         <property name="description" value="Identity Partition ONE"/>
+        <property name="identityVault" ref="idvault1"/>
+        
+        <!-- JDO Persistence Manager Factory -->
+        <property name="pmf" ref="idpart1-pmf"/>
     </bean>
+
+    <!-- The main advantage of this proxy is that it allows DAOs to work with a plain JDO PersistenceManagerFactory reference,
+         while still participating in Spring's (or a J2EE server's) resource and transaction management.
+         DAOs will only rely on the JDO API in such a scenario, without any Spring dependencies. -->
+    <bean name="idpart1-pmf" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
+        <property name="targetPersistenceManagerFactory" >
+            <bean name="idvault1-pmf-jdo"
+                class="org.atricore.idbus.bundles.datanucleus.core.OsgiJDOPersistenceManagerFactoryBean" >
+
+                <property name="jdoProperties">
+
+                    <props>
+                        <prop key="javax.jdo.option.Mapping">default</prop>
+                        <prop key="javax.jdo.PersistenceManagerFactoryClass">org.datanucleus.jdo.JDOPersistenceManagerFactory</prop>
+
+                        <!-- Connection Information -->
+                        <!--
+                        <prop key="javax.jdo.option.ConnectionURL">jdbc:derby:idbus-provisioning;create=true</prop>
+                        <prop key="javax.jdo.option.ConnectionUserName">sa</prop>
+                        <prop key="javax.jdo.option.ConnectionPassword"></prop>
+                        -->
+                        <prop key="javax.jdo.option.ConnectionURL">jdbc:derby://localhost:1527/idpart1;create=true</prop>
+                        <prop key="javax.jdo.option.ConnectionUserName">admin</prop>
+                        <prop key="javax.jdo.option.ConnectionPassword">admin</prop>
+                        <prop key="javax.jdo.option.ConnectionDriverName">org.apache.derby.jdbc.ClientDriver</prop>
+
+                        <prop key="datanucleus.storeManagerType">rdbms</prop>
+
+                        <prop key="datanucleus.metadata.validate">false</prop>
+                        <prop key="datanucleus.autoCreateSchema">true</prop>
+                        <prop key="datanucleus.autoCreateColumns">true</prop>
+                        <prop key="datanucleus.validateTables">false</prop>
+                        <prop key="datanucleus.validateConstraints">false</prop>
+
+                        <prop key="datanucleus.classLoaderResolverName">jdo</prop>
+
+                        <prop key="datanucleus.plugin.pluginRegistryClassName">org.atricore.idbus.bundles.datanucleus.core.OsgiPluginRegistry</prop>
+
+                    </props>
+                </property>
+
+            </bean>
+
+        </property>
+        <!--property name="allowCreate" value="false"/-->
+    </bean>
+
+
+
+
 
 </s:beans>

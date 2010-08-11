@@ -30,8 +30,6 @@ import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl
 import org.atricore.idbus.kernel.main.mediation.*;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
-import org.atricore.idbus.kernel.main.mediation.MediationState;
-import org.atricore.idbus.kernel.main.mediation.MediationStateImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
@@ -47,7 +45,8 @@ import javax.xml.namespace.QName;
 import java.io.*;
 import java.lang.Object;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.StringTokenizer;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

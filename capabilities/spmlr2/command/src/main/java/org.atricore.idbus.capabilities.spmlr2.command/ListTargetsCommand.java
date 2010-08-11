@@ -4,16 +4,10 @@ import oasis.names.tc.spml._2._0.*;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 import org.atricore.idbus.capabilities.spmlr2.main.binding.SpmlR2Binding;
-import org.atricore.idbus.capabilities.spmlr2.main.common.AbstractSpmlR2Mediator;
 import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
-import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
-import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
-import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
-import org.atricore.idbus.kernel.main.provisioning.domain.IdentityPartition;
-import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTargetManager;
 
 import java.util.List;
 
@@ -54,7 +48,7 @@ public class ListTargetsCommand extends SmplCommandSupport {
 
         // Build headers line
 
-        sb.append("  ID        Profile           Capabilities       Schemas\n");
+        sb.append("  ID        Profile           Capabilities       \n");
 
         for (TargetType target : targets) {
 
@@ -79,8 +73,10 @@ public class ListTargetsCommand extends SmplCommandSupport {
 
     protected String getIdString(TargetType target) {
         String id = target.getTargetID();
+        if (id == null)
+            id = "--";
 
-        while (id.length() < 4) {
+        while (id.length() < 12) {
             id = " " + id;
         }
 
@@ -113,7 +109,7 @@ public class ListTargetsCommand extends SmplCommandSupport {
         StringBuffer sb = new StringBuffer();
 
         for (CapabilityType capability : capabilities) {
-            sb.append(capability.getLocation());
+            sb.append(capability.getNamespaceURI());
             sb.append(",");
         }
 

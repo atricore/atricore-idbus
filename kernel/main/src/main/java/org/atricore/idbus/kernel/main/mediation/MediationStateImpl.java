@@ -23,7 +23,6 @@ package org.atricore.idbus.kernel.main.mediation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 
 import java.util.*;

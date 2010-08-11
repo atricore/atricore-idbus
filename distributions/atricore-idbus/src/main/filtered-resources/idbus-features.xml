@@ -7,6 +7,7 @@
         <feature version="${version}">atricore-branding</feature>
         <feature version="${felix.karaf.version}">webconsole</feature>
         <feature version="${version}">atricore-idbus</feature>
+        <feature version="${version}">atricore-connectors</feature>
         <feature version="${version}">atricore-idojos</feature>
         <feature version="${version}">atricore-sts</feature>
         <feature version="${version}">atricore-saml2</feature>
@@ -56,6 +57,10 @@
         <bundle>mvn:org.atricore.idbus.kernel/org.atricore.idbus.kernel.web/${idbus.kernel.version}/war</bundle>
     </feature>
 
+    <feature name="atricore-connectors" version="${version}">
+        <bundle>mvn:org.atricore.idbus.connectors/org.atricore.idbus.connectors.jdoidentityvault/${idbus.connectors.jdoidentityvault.version}</bundle>
+    </feature>
+
     <feature name="atricore-idojos" version="${version}">
         <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.dbidentitystore/${idbus.idojo.dbidentitystore.version}</bundle>
         <bundle>mvn:org.atricore.idbus.idojos/org.atricore.idbus.idojos.ldapidentitystore/${idbus.idojo.ldapidentitystore.version}</bundle>
@@ -69,7 +74,6 @@
     <feature name="atricore-sts" version="${version}">
         <bundle>mvn:org.atricore.idbus.capabilities.sts/org.atricore.idbus.capabilities.sts.main/${idbus.cap.sts.version}</bundle>
     </feature>
-
 
     <feature name="atricore-josso" version="${version}">
         <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.josso-ws-v1_2/${idbus.bundle.josso-ws-v1_2.version}</bundle>
@@ -95,16 +99,6 @@
 
     <feature name="atricore-idbus-server-web" version="${version}">
         <bundle>mvn:org.atricore.idbus.applications.server/org.atricore.idbus.applications.server.web/${idbus.app.server.version}/war</bundle>
-    </feature>
-
-    <!-- TODO : Remove from this distribution --> 
-    <feature name="atricore-console" version="${atricore.console.version}">
-        <feature version="${version}">atricore-management</feature>
-        <bundle>mvn:com.atricore.idbus.console.lifecycle/com.atricore.idbus.console.lifecycle.main/${atricore.console.version}</bundle>
-        <bundle>mvn:com.atricore.idbus.console.lifecycle/com.atricore.idbus.console.lifecycle.command/${atricore.console.version}</bundle>
-        <bundle>mvn:com.atricore.idbus.console.activation/com.atricore.idbus.console.activation.main/${atricore.console.version}</bundle>
-        <bundle>mvn:com.atricore.idbus.console.activation/com.atricore.idbus.console.activation.command/${atricore.console.version}</bundle>
-        <bundle>mvn:com.atricore.idbus.console/com.atricore.idbus.console.web/${atricore.console.version}/war</bundle>
     </feature>
 
     <feature name="atricore-examples" version="${version}">
@@ -229,6 +223,7 @@
         <bundle>mvn:commons-dbcp/commons-dbcp/${commons-dbcp.version}</bundle>
         <bundle>mvn:org.hsqldb/com.springsource.org.hsqldb/1.8.0.9</bundle>
         <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1/${idbus.bundle.apache-derby-network-v10_5_3_0_1.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.datanucleus-v2_0_3/${idbus.bundle.datanucleus-v2_0_3.version}</bundle>
     </feature>
 
     <feature name="connector" version="${version}">

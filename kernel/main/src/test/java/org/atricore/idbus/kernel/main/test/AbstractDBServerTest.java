@@ -12,7 +12,6 @@ import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Transaction;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 

@@ -37,7 +37,6 @@ import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-import org.atricore.idbus.kernel.main.mediation.state.ProviderStateManager;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 /**

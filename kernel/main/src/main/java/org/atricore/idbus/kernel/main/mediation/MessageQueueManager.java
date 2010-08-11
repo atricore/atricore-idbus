@@ -21,22 +21,7 @@
 
 package org.atricore.idbus.kernel.main.mediation;
 
-import org.apache.activemq.command.ActiveMQObjectMessage;
-import org.apache.activemq.util.ByteArrayInputStream;
-import org.apache.activemq.util.ByteSequence;
-import org.apache.activemq.util.JMSExceptionSupport;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.common.support.osgi.OsgiBundlespaceClassLoader;
-import org.atricore.idbus.kernel.main.mediation.osgi.ClassLoadingAwareObjectInputStream;
-import org.osgi.framework.BundleContext;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.osgi.context.BundleContextAware;
-
-import javax.jms.*;
-import java.io.*;
-import java.util.Enumeration;
-import java.util.zip.InflaterInputStream;
+import javax.jms.ConnectionFactory;
 
 /**
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>

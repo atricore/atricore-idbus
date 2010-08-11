@@ -2,14 +2,6 @@ package org.atricore.idbus.kernel.main.mediation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManager;
-import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerException;
-import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
-import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
-import org.atricore.idbus.kernel.main.mediation.channel.AbstractFederationChannel;
-import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
-import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -18,9 +10,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

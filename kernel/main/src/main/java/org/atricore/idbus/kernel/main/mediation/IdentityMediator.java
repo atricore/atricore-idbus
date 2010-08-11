@@ -24,7 +24,6 @@ package org.atricore.idbus.kernel.main.mediation;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.MediationLogger;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
-import org.atricore.idbus.kernel.main.mediation.state.ProviderStateManager;
 
 /**
  *

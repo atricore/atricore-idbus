@@ -22,10 +22,8 @@
 package org.atricore.idbus.kernel.main.mediation.camel.component.binding;
 
 import org.apache.camel.Exchange;
-import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationBinding;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
-import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 
 /**
  * @author <a href="mailto:sgonzalez@josso.org">Sebastian Gonzalez Oyuela</a>

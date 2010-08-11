@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.atricore.idbus</groupId>
+        <artifactId>all</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.atricore.idbus.connectors</groupId>
+    <artifactId>org.atricore.idbus.connectors.jdoidentityvault</artifactId>
+    <packaging>bundle</packaging>
+    <name>Atricore IDBus :: Connectors : JDO Identity Vault</name>
+
+    <properties>
+
+        <idbus.bundle.datanucleus-core-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_3.version>
+        <idbus.bundle.datanucleus-rdbms-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_3.version>
+        <idbus.bundle.datanucleus-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-v2_0_3.version>
+        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.0.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
+        
+        <idbus.kernel.version>1.0.0-SNAPSHOT</idbus.kernel.version>
+
+        <commons-codec.version>1.3</commons-codec.version>
+        <datanucleus.version>2.0.3</datanucleus.version>
+        <felix.osgi.version>1.4.0</felix.osgi.version>
+        <felix.plugin.version>2.1.0</felix.plugin.version>
+        <javax.jdo2.version>2.3-ec</javax.jdo2.version>
+        <junit.version>4.4</junit.version>
+        <log4j.version>1.2.16</log4j.version>
+        <spring.osgi.version>1.2.0</spring.osgi.version>
+        <spring.version>2.5.6.SEC01</spring.version>
+        <xbean.version>3.4.3</xbean.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel</groupId>
+            <artifactId>org.atricore.idbus.kernel.main</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+             <groupId>org.atricore.idbus.kernel</groupId>
+             <artifactId>org.atricore.idbus.kernel.planning</artifactId>
+            <version>${idbus.kernel.version}</version>
+             <scope>provided</scope>
+         </dependency>
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>${felix.osgi.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.5.8</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.osgi</groupId>
+            <artifactId>spring-osgi-core</artifactId>
+            <version>${spring.osgi.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-spring</artifactId>
+            <version>${xbean.version}</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Persistence -->
+        <!--
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>
+            <version>${idbus.bundle.datanucleus-core-v2_0_3.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3</artifactId>
+            <version>${idbus.bundle.datanucleus-rdbms-v2_0_3.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.datanucleus-v2_0_3</artifactId>
+            <version>${idbus.bundle.datanucleus-v2_0_3.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
+            <version>${idbus.bundle.javax-jdo2-v2_3-ec.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.jdo</groupId>
+            <artifactId>jdo2-api</artifactId>
+            <version>${javax.jdo2.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Test Dependencies -->
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1</artifactId>
+            <version>${idbus.bundle.apache-derby-network-v10_5_3_0_1.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.apache-derby-client-v10_5_3_0_1</artifactId>
+            <version>${idbus.bundle.apache-derby-client-v10_5_3_0_1.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <scope>test</scope>
+        </dependency-->
+
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${pom.basedir}/src/main/filtered-resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>target/generated</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.datanucleus</groupId>
+                <artifactId>maven-datanucleus-plugin</artifactId>
+                <version>2.0.1</version>
+                <configuration>
+                    <fork>false</fork>
+                    <mappingIncludes>**/*.jdo</mappingIncludes>
+                    <log4jConfiguration>${basedir}/jdo/datanucleus-log4j.properties</log4jConfiguration>
+                    <verbose>true</verbose>
+                    <props>${basedir}/jdo/datanucleus.properties</props>
+                    <outputFile>idbus-kernel-provisioning.ddl</outputFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>enhance</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.datanucleus</groupId>
+                        <artifactId>datanucleus-core</artifactId>
+                        <version>${datanucleus.version}</version>
+                        <scope>runtime</scope>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.datanucleus</groupId>
+                        <artifactId>datanucleus-rdbms</artifactId>
+                        <version>${datanucleus.version}</version>
+                        <scope>runtime</scope>
+                    </dependency>
+
+                    <dependency>
+                        <groupId>org.datanucleus</groupId>
+                        <artifactId>datanucleus-enhancer</artifactId>
+                        <version>[2.0, 2.0.99)</version>
+                        <scope>runtime</scope>
+                    </dependency>
+
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${felix.plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>org.atricore.idbus.connectors.*;version=${pom.version}</Export-Package>
+                        <Import-Package>
+                            org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
+                            org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
+                            org.springframework.beans.factory.config,
+                            org.springframework.jmx; version="${spring.version}",
+                            org.springframework.jmx.access; version="${spring.version}",
+                            org.springframework.jmx.export; version="${spring.version}",
+                            org.springframework.jmx.export.annotation; version="${spring.version}",
+                            org.springframework.jmx.export.assembler; version="${spring.version}",
+                            org.springframework.jmx.export.metadata; version="${spring.version}",
+                            org.springframework.jmx.export.naming; version="${spring.version}",
+                            org.springframework.jmx.export.notification; version="${spring.version}",
+                            org.springframework.jmx.support; version="${spring.version}",
+                            net.sf.ehcache,
+                            net.sf.ehcache.distribution,
+                            org.atricore.idbus.bundles.ehcache,
+                            org.eclipse.osgi.service.resolver;resolution:=optional,
+                            org.eclipse.core.runtime;resolution:=optional,
+                            org.apache.tools.ant;resolution:=optional,
+                            org.apache.tools.ant.types;resolution:=optional,
+                            org.apache.tools.ant.taskdefs;resolution:=optional,
+                            oracle.*;resolution:=optional,
+                            *
+                        </Import-Package>
+
+                        <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
+                    </instructions>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkMode>always</forkMode>
+                    <workingDirectory>${basedir}</workingDirectory>
+                    <includes>
+                        <include>**/*Test.*</include>
+                    </includes>
+                    <excludes>
+                        <!--  exclude abstract tests -->
+                        <exclude>**/Abstract*.*</exclude>
+                        <exclude>**/*$*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+    </build>
+</project>

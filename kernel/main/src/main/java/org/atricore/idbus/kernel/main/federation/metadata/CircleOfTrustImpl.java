@@ -24,7 +24,6 @@ package org.atricore.idbus.kernel.main.federation.metadata;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 
 import java.util.HashSet;
 import java.util.Set;

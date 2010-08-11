@@ -39,7 +39,10 @@ import org.springframework.context.ApplicationContext;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Properties;
 
 /**
  * This is a Apache Camel-based Identity Federation Engine that realizes mediation semantics

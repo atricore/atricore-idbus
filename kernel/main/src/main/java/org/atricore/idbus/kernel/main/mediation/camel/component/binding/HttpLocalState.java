@@ -1,7 +1,6 @@
 package org.atricore.idbus.kernel.main.mediation.camel.component.binding;
 
 import org.atricore.idbus.kernel.main.mediation.state.AbstractLocalState;
-import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;

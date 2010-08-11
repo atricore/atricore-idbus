@@ -3,7 +3,6 @@ package org.atricore.idbus.bundles.datanucleus.core;
 import org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean;
 import org.springframework.osgi.context.BundleContextAware;
 import org.osgi.framework.BundleContext;
-import org.atricore.idbus.kernel.common.support.osgi.OsgiBundlespaceClassLoader;
 import org.atricore.idbus.kernel.common.support.osgi.OsgiBundleClassLoader;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
@@ -27,7 +26,7 @@ public class OsgiJDOPersistenceManagerFactoryBean
     @Override
     protected PersistenceManagerFactory newPersistenceManagerFactory(Map props) {
         if (logger.isDebugEnabled())
-            logger.debug("Creating new PersistenceManagerFActory based on properties");
+            logger.debug("Creating new PersistenceManagerFactory based on properties");
 
         /* DO NOT USE THE ENTIRE BUNDLESPACE, instead embed datanucleus in your own bundle.
         ClassLoader osgiCl = new OsgiBundlespaceClassLoader(bundleContext,

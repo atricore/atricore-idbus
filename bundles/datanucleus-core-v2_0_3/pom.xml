@@ -117,8 +117,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>Atricore IDBus :: Bundle : Datanucleus Core v2.0.3</Bundle-Name>
-                        <Bundle-Description>This bundle simply wraps Datanucleus Core v2.0.3 JARs</Bundle-Description>
                         <!-- Bundle Symbolic name is hard coded in datanucleus code! -->
                         <Bundle-SymbolicName>org.datanucleus</Bundle-SymbolicName>
                         <Export-Package>

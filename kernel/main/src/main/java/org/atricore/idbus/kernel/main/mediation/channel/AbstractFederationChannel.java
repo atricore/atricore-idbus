@@ -31,7 +31,6 @@ import org.atricore.idbus.kernel.main.mediation.AbstractChannel;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitContainer;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 
 /**
  *

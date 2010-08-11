@@ -26,7 +26,10 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

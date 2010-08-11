@@ -2,19 +2,17 @@ package org.atricore.idbus.kernel.main.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.provisioning.domain.IdentityPartition;
-import org.atricore.idbus.kernel.main.provisioning.domain.IdentityVault;
-import org.atricore.idbus.kernel.main.provisioning.domain.dao.IdentityPartitionDAO;
-import org.atricore.idbus.kernel.main.provisioning.domain.dao.IdentityVaultDAO;
-import org.atricore.idbus.kernel.main.provisioning.domain.dao.impl.IdentityPartitionDAOImpl;
-import org.atricore.idbus.kernel.main.provisioning.domain.dao.impl.IdentityVaultDAOImpl;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.IdentityPartitionDAO;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.IdentityVaultDAO;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.IdentityPartitionDAOImpl;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.IdentityVaultDAOImpl;
+import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
+import org.atricore.idbus.kernel.main.provisioning.spi.IdentityVault;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.jdo.PersistenceManager;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**

@@ -21,12 +21,6 @@
 
 package org.atricore.idbus.kernel.main.mediation.provider;
 
-import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
-import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
-
-import java.util.Collection;
-import java.util.List;
-
 /**
  * Represents any provider participating in the circle of trust. For example service providers, identity providers,
  * attribute authorities, etc.
