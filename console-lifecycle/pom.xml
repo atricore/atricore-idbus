@@ -117,14 +117,8 @@
 
             <dependency>
                 <groupId>org.atricore.idbus.bundles</groupId>
-                <artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>
-                <version>${idbus.bundle.datanucleus-core-v2_0_3.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.bundles</groupId>
-                <artifactId>org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3</artifactId>
-                <version>${idbus.bundle.datanucleus-rdbms-v2_0_3.version}</version>
+                <artifactId>org.atricore.idbus.bundles.datanucleus-v2_0_3</artifactId>
+                <version>${idbus.bundle.datanucleus-v2_0_3.version}</version>
             </dependency>
 
             <dependency>

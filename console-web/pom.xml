@@ -297,16 +297,6 @@
             <type>zip</type>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.atricore.idbus.bundles</groupId>-->
-            <!--<artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>-->
-        <!--</dependency>-->
-        <!---->
-        <!--<dependency>-->
-            <!--<groupId>org.atricore.idbus.bundles</groupId>-->
-            <!--<artifactId>org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3</artifactId>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>javax.jdo</groupId>
             <artifactId>jdo2-api</artifactId>
@@ -664,16 +654,6 @@
                     <classifier>resources</classifier>
                     <type>zip</type>
                 </dependency>
-
-                <!--<dependency>-->
-                <!--<groupId>org.atricore.idbus.bundles</groupId>-->
-                <!--<artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>-->
-                <!--</dependency>-->
-                <!---->
-                <!--<dependency>-->
-                <!--<groupId>org.atricore.idbus.bundles</groupId>-->
-                <!--<artifactId>org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3</artifactId>-->
-                <!--</dependency>-->
 
                 <dependency>
                     <groupId>org.springframework</groupId>

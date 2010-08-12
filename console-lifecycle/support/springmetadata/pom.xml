@@ -88,13 +88,7 @@
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3</artifactId>
+            <artifactId>org.atricore.idbus.bundles.datanucleus-v2_0_3</artifactId>
             <scope>provided</scope>
         </dependency>
 
