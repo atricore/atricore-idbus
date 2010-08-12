@@ -48,8 +48,6 @@ import mx.events.FlexEvent;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-//import mx.controls.ButtonBar;
-//import mx.controls.buttonBarClasses.ButtonBarButton;
 public class ModelerMediator extends IocMediator {
 
     public static const viewName:String = "ModelerView";
@@ -100,11 +98,11 @@ public class ModelerMediator extends IocMediator {
             view.btnLifecycle.removeEventListener(MouseEvent.CLICK, handleLifecycleClick);
         }
 
-        (p_viewComponent as ModelerView).addEventListener(FlexEvent.SHOW, init);
+        (p_viewComponent as ModelerView).addEventListener(FlexEvent.CREATION_COMPLETE, init);
 
         super.setViewComponent(p_viewComponent);
 
-        init(null);
+        init(null);  //remove this after adding login box?
     }
 
     public function init(event:Event):void {
@@ -183,8 +181,6 @@ public class ModelerMediator extends IocMediator {
             ApplicationFacade.MANAGE_CERTIFICATE,
             ApplicationFacade.SHOW_UPLOAD_PROGRESS,
             ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
-            ProcessingMediator.START,
-            ProcessingMediator.STOP,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             LookupIdentityApplianceByIdCommand.SUCCESS,
@@ -257,12 +253,6 @@ public class ModelerMediator extends IocMediator {
                 if (projectProxy.currentIdentityAppliance.state == IdentityApplianceStateDTO.PROJECTED.name) {
                     view.btnSave.enabled = true;
                 }
-                break;
-            case ProcessingMediator.START:
-                popupManager.showProcessingWindow(notification);
-                break;
-            case ProcessingMediator.STOP:
-                popupManager.hideProcessingWindow(notification);
                 break;
             case BuildApplianceMediator.RUN:
                 popupManager.showBuildIdentityApplianceWindow(notification);

@@ -25,6 +25,7 @@ import com.atricore.idbus.console.lifecycle.LifecycleViewMediator;
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
 import com.atricore.idbus.console.main.controller.SetupServerCommand;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
+import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
 import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
@@ -85,7 +86,7 @@ public class ApplicationMediator extends IocMediator {
         // Add listeners for other components on the viewStack with delayed instantiation.
         app.lifecycleView.addEventListener(FlexEvent.CREATION_COMPLETE, handleLifecycleViewCreated);
         app.addEventListener(FlexEvent.SHOW, handleShowConsole);
-
+        
     }
 
     public function handleLifecycleViewCreated(event:Event):void {
@@ -108,7 +109,9 @@ public class ApplicationMediator extends IocMediator {
             SimpleSSOWizardViewMediator.RUN,
             IdentityApplianceMediator.CREATE,
             ApplicationFacade.DISPLAY_APPLIANCE_MODELER,
-            ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE
+            ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE,
+            ProcessingMediator.START,
+            ProcessingMediator.STOP
         ];
     }
 
@@ -140,24 +143,20 @@ public class ApplicationMediator extends IocMediator {
                 app.messageBox.clearAndHide();
                 break;
             case ApplicationFacade.DISPLAY_APPLIANCE_MODELER:
-                app.modulesViewStack.selectedChild = app.modelerView;
+                //app.modulesViewStack.selectedChild = app.modelerView;
+                app.modulesViewStack.selectedIndex = 0;
                 break;
             case ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE:
-                app.modulesViewStack.selectedChild = app.lifecycleView;
+                //app.modulesViewStack.selectedChild = app.lifecycleView;
+                app.modulesViewStack.selectedIndex = 1;
+                break;
+            case ProcessingMediator.START:
+                popupManager.showProcessingWindow(notification);
+                break;
+            case ProcessingMediator.STOP:
+                popupManager.hideProcessingWindow(notification);
                 break;
         }
-    }
-
-    // TODO: remove
-    private function handleMenuItemClick(event:MenuEvent):void {
-
-        if (event.index == 1) {
-            sendNotification(IdentityApplianceMediator.CREATE);
-        } else
-        if (event.index == 3) {
-            sendNotification(SimpleSSOWizardViewMediator.RUN)
-        }
-
     }
 
     public function get app():AtricoreConsole {

@@ -83,9 +83,7 @@ public class GroupsMediator extends IocMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [ProcessingMediator.START,
-            ProcessingMediator.STOP,
-            ListGroupsCommand.SUCCESS,
+        return [ListGroupsCommand.SUCCESS,
             ListGroupsCommand.FAILURE,
             ApplicationFacade.DISPLAY_ADD_NEW_GROUP
         ];
@@ -93,13 +91,6 @@ public class GroupsMediator extends IocMediator {
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-
-            case ProcessingMediator.START:
-                popupManager.showProcessingWindow(notification);
-                break;
-            case ProcessingMediator.STOP:
-                popupManager.hideProcessingWindow(notification);
-                break;
             case ListGroupsCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
                 view.groupList.dataProvider = accountManagementProxy.groupsList;

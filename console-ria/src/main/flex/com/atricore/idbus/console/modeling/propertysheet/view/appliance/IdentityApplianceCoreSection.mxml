@@ -41,7 +41,7 @@
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.description')}:">
-            <s:TextArea id="applianceDescription" height="80"/>
+            <s:TextArea id="applianceDescription" height="70"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.applianceLocation')}:"

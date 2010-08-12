@@ -22,7 +22,6 @@
 package com.atricore.idbus.console.account.main {
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
-import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -88,11 +87,9 @@ public class AccountManagementMediator extends IocMediator {
             view.btnUsers.removeEventListener(MouseEvent.CLICK, handleUsersClick);
         }
 
-        //(p_viewComponent as AccountManagementView).addEventListener(FlexEvent.INITIALIZE , init);
-        (p_viewComponent as AccountManagementView).addEventListener(FlexEvent.SHOW, init);
+        (p_viewComponent as AccountManagementView).addEventListener(FlexEvent.CREATION_COMPLETE, init);
 
         super.setViewComponent(p_viewComponent);
-        //init();
     }
 
     public function init(event:Event):void {                        
@@ -124,20 +121,12 @@ public class AccountManagementMediator extends IocMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [ProcessingMediator.START,
-            ProcessingMediator.STOP
-        ];
+        return [];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
 
-            case ProcessingMediator.START:
-                popupManager.showProcessingWindow(notification);
-                break;
-            case ProcessingMediator.STOP:
-                popupManager.hideProcessingWindow(notification);
-                break;
         }
 
     }

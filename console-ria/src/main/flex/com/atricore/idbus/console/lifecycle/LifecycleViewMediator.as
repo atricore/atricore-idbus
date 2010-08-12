@@ -78,8 +78,8 @@ public class LifecycleViewMediator extends IocMediator {
             view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInDeployedAppliance);
         }
         
-        (viewComponent as LifecycleView).addEventListener(FlexEvent.SHOW, init);
-        
+        (viewComponent as LifecycleView).addEventListener(FlexEvent.CREATION_COMPLETE, init);
+
         super.setViewComponent(viewComponent);
     }
 
@@ -120,7 +120,7 @@ public class LifecycleViewMediator extends IocMediator {
         view.grdDisposedAppliances.addEventListener(DragEvent.DRAG_DROP, dropInDeployedAppliance);
         view.grdDisposedAppliances.labelFunction = identityApplianceNameLabel;
         view.colDisposedApplianceName.labelFunction = identityApplianceNameLabel;
-        
+
         initGrids();
     }
 

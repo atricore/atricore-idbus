@@ -32,10 +32,7 @@
                 height="100%" width="100%" minWidth="955" minHeight="600"
                 creationComplete="onCreationComplete()">
     <s:layout>
-        <!--<s:VerticalLayout horizontalAlign="left" />-->
         <s:BasicLayout />
-        <!--layout="absolute" horizontalAlign="left" height="100%" width="100%" -->
-        <!--<s:HorizontalLayout horizontalAlign="left" />-->
     </s:layout>
 
 
@@ -96,25 +93,16 @@
             <comp:MessageBox id="messageBox" showEffect="{wipeRight}"/>
         </s:HGroup>
         <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name" change="stackChanged()"/>
-        <!--<s:ButtonBar dataProvider="{modulesViewStack}"/>-->
-        <!--<mx:ViewStack id="modulesViewStack" width="100%" height="100%" selectedIndex="0">-->
         <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%">
-            <!--<s:NavigatorContent label="Modeler">-->
             <modeler:ModelerView id="modelerView" visible="true" name="Modeler"/>
-            <!--</s:NavigatorContent>-->
             <lifecycle:LifecycleView id="lifecycleView" visible="true" name="Lifecycle"/>
-            <!--<mx:Canvas label="Setup" width="95%" height="95%">-->
-            <!--</mx:Canvas>-->
             <s:Group width="95%" height="95%" name="Setup">
                 <s:Label text="Setup"/>
             </s:Group>
-            <!--<mx:Canvas label="Deployment" width="95%" height="95%">-->
-            <!--</mx:Canvas>-->
             <s:Group width="95%" height="95%" name="Deployment">
                 <s:Label text="Deployment"/>
             </s:Group>
             <account:AccountManagementView id="accountManagementView" visible="true" name="Account"/>
         </comp:CustomViewStack>
-        <!--</mx:ViewStack>-->
     </s:VGroup>
 </s:Application>

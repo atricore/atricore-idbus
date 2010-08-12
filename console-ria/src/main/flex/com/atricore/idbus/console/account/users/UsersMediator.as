@@ -84,9 +84,7 @@ public class UsersMediator extends IocMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [ProcessingMediator.START,
-            ProcessingMediator.STOP,
-            ListUsersCommand.SUCCESS,
+        return [ListUsersCommand.SUCCESS,
             ListUsersCommand.FAILURE,
             ApplicationFacade.DISPLAY_ADD_NEW_USER
         ];
@@ -94,13 +92,6 @@ public class UsersMediator extends IocMediator {
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-
-            case ProcessingMediator.START:
-                popupManager.showProcessingWindow(notification);
-                break;
-            case ProcessingMediator.STOP:
-                popupManager.hideProcessingWindow(notification);
-                break;
             case ListUsersCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
                 view.userList.dataProvider = accountManagementProxy.userList;
