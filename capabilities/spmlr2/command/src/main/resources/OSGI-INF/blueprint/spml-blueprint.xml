@@ -20,10 +20,22 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
     <command-bundle xmlns="http://felix.apache.org/karaf/xmlns/shell/v1.0.0">
-
-        <command name="spml/ls-targets">
+        <command name="spml/targetsls">
             <action class="org.atricore.idbus.capabilities.spmlr2.command.ListTargetsCommand"/>
         </command>
+
+        <command name="spml/useradd">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.UserAddCommand"/>
+        </command>
+
+        <command name="spml/groupadd">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.GroupAddCommand"/>
+        </command>
+
+        <command name="spml/groupls">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.GroupListCommand"/>
+        </command>
+
     </command-bundle>
 
 

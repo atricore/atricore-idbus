@@ -102,6 +102,7 @@
                         <Export-Package>
                             oasis.names.tc.spml._2._0;version=${pom.version},
                             oasis.names.tc.spml._2._0.async;version=${pom.version},
+                            oasis.names.tc.spml._2._0.atricore;version=${pom.version},
                             oasis.names.tc.spml._2._0.batch;version=${pom.version},
                             oasis.names.tc.spml._2._0.bulk;version=${pom.version},
                             oasis.names.tc.spml._2._0.dsml;version=${pom.version},

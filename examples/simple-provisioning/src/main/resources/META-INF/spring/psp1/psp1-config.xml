@@ -78,7 +78,8 @@
         <property name="identityPartition" ref="idpart1"/>
     </bean>
 
-    <bean name="idvault1" class="org.atricore.idbus.connectors.jdoidentityvault.JDOIdentityVault">
+    <bean name="idvault1" class="org.atricore.idbus.connectors.jdoidentityvault.JDOIdentityVault"
+            depends-on="osgi-idvault1-db">
         <property name="name" value="idvault1"/>
         <property name="description" value="Identity Vault ONE"/>
         <property name="identityPartitions">
@@ -104,7 +105,8 @@
     <!-- The main advantage of this proxy is that it allows DAOs to work with a plain JDO PersistenceManagerFactory reference,
          while still participating in Spring's (or a J2EE server's) resource and transaction management.
          DAOs will only rely on the JDO API in such a scenario, without any Spring dependencies. -->
-    <bean name="idpart1-pmf" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
+    <bean name="idpart1-pmf" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy"
+            depends-on="idvault1">
         <property name="targetPersistenceManagerFactory" >
             <bean name="idvault1-pmf-jdo"
                 class="org.atricore.idbus.bundles.datanucleus.core.OsgiJDOPersistenceManagerFactoryBean" >
@@ -121,7 +123,7 @@
                         <prop key="javax.jdo.option.ConnectionUserName">sa</prop>
                         <prop key="javax.jdo.option.ConnectionPassword"></prop>
                         -->
-                        <prop key="javax.jdo.option.ConnectionURL">jdbc:derby://localhost:1527/idpart1;create=true</prop>
+                        <prop key="javax.jdo.option.ConnectionURL">jdbc:derby://localhost:1528/idau2-psp1-idpart1;create=true</prop>
                         <prop key="javax.jdo.option.ConnectionUserName">admin</prop>
                         <prop key="javax.jdo.option.ConnectionPassword">admin</prop>
                         <prop key="javax.jdo.option.ConnectionDriverName">org.apache.derby.jdbc.ClientDriver</prop>
@@ -147,8 +149,17 @@
         <!--property name="allowCreate" value="false"/-->
     </bean>
 
-
-
-
+    <!-- TODO : Do this or define a single instance for all appliances (could be an appliance def. option) Define a DB Server for IDBus Server application -->
+    <bean id="idvault1-db"
+          class="org.atricore.idbus.bundles.apache.derby.NetworkServerDescriptor" >
+        
+        <property name="port" value="1528"/>
+        <property name="username" value="admin"/>
+        <property name="password" value="admin"/>
+    </bean>
+    <!-- Contribute the DB Server Descriptor using Spring DM -->
+    <osgi:service id="osgi-idvault1-db"
+                  ref="idvault1-db"
+            interface="org.atricore.idbus.bundles.apache.derby.NetworkServerDescriptor"/>
 
 </s:beans>

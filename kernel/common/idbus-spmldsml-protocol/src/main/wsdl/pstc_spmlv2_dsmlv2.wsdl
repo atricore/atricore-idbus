@@ -26,6 +26,7 @@
         xmlns:tns="urn:oasis:names:tc:SPML:2:0:wsdl"
         xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
         xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:spmlatc="urn:oasis:names:tc:SPML:2:0:atricore"
         xmlns:spmlasync="urn:oasis:names:tc:SPML:2:0:async"
         xmlns:spmlbatch="urn:oasis:names:tc:SPML:2:0:batch"
         xmlns:spmlbulk="urn:oasis:names:tc:SPML:2:0:bulk"
@@ -46,6 +47,9 @@
                     xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
                     jaxb:extensionBindingPrefixes="xjc"
                     jaxb:version="2.0">
+
+            <xsd:import namespace="urn:oasis:names:tc:SPML:2:0:atricore"
+                        schemaLocation="pstc_spmlv2_atricore.xsd"/>
 
             <xsd:import namespace="urn:oasis:names:tc:SPML:2:0:async"
                         schemaLocation="pstc_spmlv2_async.xsd"/>

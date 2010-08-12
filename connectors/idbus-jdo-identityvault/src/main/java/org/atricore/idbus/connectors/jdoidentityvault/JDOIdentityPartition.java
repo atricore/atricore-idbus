@@ -1,9 +1,11 @@
 package org.atricore.idbus.connectors.jdoidentityvault;
 
+import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroup;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupDAO;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserDAO;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDAOImpl;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl;
+import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.impl.AbstractIdentityPartition;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -58,7 +61,17 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
     }
 
     public AddGroupResponse addGroup(AddGroupRequest groupRequest) throws ProvisioningException {
-        throw new UnsupportedOperationException("Not Implemented yet!");
+        JDOGroup jdoGroup = new JDOGroup();
+        jdoGroup.setName(groupRequest.getName());
+        jdoGroup.setDescription(groupRequest.getDescription());
+        jdoGroup = groupDao.createObject(jdoGroup);
+
+        AddGroupResponse groupResponse = new AddGroupResponse();
+
+        Group group = toGroup(jdoGroup);
+        groupResponse.setGroup(group);
+
+        return groupResponse;
     }
 
     public FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest) throws GroupNotFoundException {
@@ -69,8 +82,13 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
-    public ListGroupResponse getGroups() throws ProvisioningException {
-        throw new UnsupportedOperationException("Not Implemented yet!");
+    public ListGroupsResponse listGroups(ListGroupsRequest groupRequest) throws ProvisioningException {
+        Collection<JDOGroup> jdoGroups = groupDao.findAll();
+
+        ListGroupsResponse groupResponse = new ListGroupsResponse();
+        groupResponse.setGroups(toGroups(jdoGroups));
+
+        return groupResponse;
     }
 
     public SearchGroupResponse searchGroups(SearchGroupRequest groupRequest) throws ProvisioningException {
@@ -119,6 +137,39 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
 
     public Properties getJdoProperties() {
         return jdoProperties;
+    }
+
+    protected JDOGroup toJDOGroup(Group group) {
+        return toJDOGroup(new JDOGroup(), group);
+    }
+
+    protected JDOGroup toJDOGroup(JDOGroup jdoGroup, Group group) {
+        jdoGroup.setName(group.getName());
+        jdoGroup.setDescription(group.getDescription());
+
+        return jdoGroup;
+
+    }
+
+    protected Group[] toGroups(Collection<JDOGroup> jdoGroups) {
+
+        Group[] groups = new Group[jdoGroups.size()];
+        int i = 0;
+        for (JDOGroup jdoGroup : jdoGroups) {
+            groups[i] = toGroup(jdoGroup);
+            i ++;
+        }
+        return groups;
+
+    }
+
+    protected Group toGroup(JDOGroup jdoGroup) {
+        Group group = new Group();
+
+        group.setId(jdoGroup.getId());
+        group.setName(jdoGroup.getName());
+        group.setDescription(jdoGroup.getDescription());
+        return group;
     }
 }
 

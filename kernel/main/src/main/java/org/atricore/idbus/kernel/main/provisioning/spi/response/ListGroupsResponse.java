@@ -30,7 +30,7 @@ import org.atricore.idbus.kernel.main.provisioning.domain.Group;
  * Time: 16:27:29
  * To change this template use File | Settings | File Templates.
  */
-public class ListGroupResponse extends AbstractProvisioningResponse {
+public class ListGroupsResponse extends AbstractProvisioningResponse {
 
     private Group[] groups;
 

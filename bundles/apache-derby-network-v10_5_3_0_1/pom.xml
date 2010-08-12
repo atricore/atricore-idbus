@@ -178,10 +178,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>Atricore IDBus :: Bundle : Apache Derby Server v${derby-version}</Bundle-Name>
-                        <Bundle-Description>This bundle includes Apache Derby Server ${derby-version}
-                        </Bundle-Description>
-                        <!-- Bundle Symbolic name is hard coded in datanucleus code! -->
                         <Bundle-SymbolicName>${artifactId}</Bundle-SymbolicName>
                         <Export-Package>
                             org.apache.derby.*;version=${derby-version},

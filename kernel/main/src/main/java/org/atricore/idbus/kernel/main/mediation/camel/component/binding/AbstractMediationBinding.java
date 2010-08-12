@@ -93,7 +93,7 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
 
     protected void copyBackState(MediationState state, Exchange exchange) {
         if (logger.isDebugEnabled())
-            logger.debug("Copying SOAP Message");
+            logger.debug("Copying Message");
 
         // Local Variables are supported by Provider State Manager
 
@@ -181,7 +181,6 @@ public abstract class AbstractMediationBinding implements CamelMediationBinding 
             p = cc.getProvider();
 
         }
-
 
         MediationStateImpl state = null;
         if (p != null) {

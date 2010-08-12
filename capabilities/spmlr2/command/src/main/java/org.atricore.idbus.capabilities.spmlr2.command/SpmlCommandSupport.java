@@ -20,14 +20,14 @@ import javax.xml.namespace.QName;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public abstract class SmplCommandSupport extends OsgiCommandSupport {
+public abstract class SpmlCommandSupport extends OsgiCommandSupport {
 
     protected UUIDGenerator idGen = new UUIDGenerator();
 
-    @Argument(index = 0, name = "idauId", description = "The id if the identity appliance", required = true, multiValued = false)
+    @Argument(index = 0, name = "idauId", description = "The id if the identity appliance", required = true)
     String idauId;
 
-    @Argument(index = 1, name = "pspId", description = "The id if the Provisioning Service Provider", required = true, multiValued = false)
+    @Argument(index = 1, name = "pspId", description = "The id if the Provisioning Service Provider", required = true)
     String pspId;
 
     @Override
@@ -79,22 +79,6 @@ public abstract class SmplCommandSupport extends OsgiCommandSupport {
 
     }
 
-    public String getIdauId() {
-        return idauId;
-    }
-
-    public void setIdauId(String idauId) {
-        this.idauId = idauId;
-    }
-
-    public String getPspId() {
-        return pspId;
-    }
-
-    public void setPspId(String pspId) {
-        this.pspId = pspId;
-    }
-
     protected EndpointDescriptor resolvePsPEndpoint(PsPChannel pspChannel, SpmlR2Binding binding) {
 
         String b = binding.getValue();
@@ -115,6 +99,8 @@ public abstract class SmplCommandSupport extends OsgiCommandSupport {
 
             }
         }
+
+        System.err.println("No SPML PSP Endpoint found in channel " + pspChannel.getName());
 
         return null;
     }

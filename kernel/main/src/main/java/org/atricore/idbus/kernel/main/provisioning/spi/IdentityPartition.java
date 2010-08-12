@@ -30,7 +30,7 @@ public interface IdentityPartition {
     FindGroupByNameResponse findGroupByName(FindGroupByNameRequest groupRequest)
             throws GroupNotFoundException;
 
-    ListGroupResponse getGroups()
+    ListGroupsResponse listGroups(ListGroupsRequest groupRequest)
             throws ProvisioningException;
 
     SearchGroupResponse searchGroups(SearchGroupRequest groupRequest)

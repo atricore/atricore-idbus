@@ -14,26 +14,18 @@ import java.util.List;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "spml", name = "ls-targets", description = "List Provisioning Targets")
-public class ListTargetsCommand extends SmplCommandSupport {
+@Command(scope = "spml", name = "targetsls", description = "SPML List Provisioning Service Targets operation")
+public class ListTargetsCommand extends SpmlCommandSupport {
 
     @Option(name = "-p", aliases = "--profile", description = "SPML Profile (dsml/xsd) ", required = false, multiValued = false)
     String profile;
 
-    public String getProfile() {
-        return profile;
-    }
-
-    public void setProfile(String profile) {
-        this.profile = profile;
-    }
-
     @Override
     protected Object doExecute(ProvisioningServiceProvider psp, PsPChannel pspChannel) throws Exception {
+
         SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) pspChannel.getIdentityMediator();
 
         ListTargetsRequestType req = new ListTargetsRequestType();
-
         req.setRequestID(idGen.generateId());
         req.setProfile(profile);
 
@@ -44,12 +36,16 @@ public class ListTargetsCommand extends SmplCommandSupport {
         if (targets == null || targets.size() == 0)
             throw new Exception("No targets found in PSP " + psp.getName());
 
+        printTargets(targets);
+
+        return null;
+    }
+
+    protected void printTargets(List<TargetType> targets) {
+
         StringBuilder sb = new StringBuilder();
-
         // Build headers line
-
         sb.append("  ID        Profile           Capabilities       \n");
-
         for (TargetType target : targets) {
 
             // TODO : Build a line, using proper format and information (id, description, state, version, ... ?).
@@ -68,7 +64,6 @@ public class ListTargetsCommand extends SmplCommandSupport {
 
         System.out.println(sb);
 
-        return null;
     }
 
     protected String getIdString(TargetType target) {

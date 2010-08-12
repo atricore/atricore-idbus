@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<schema targetNamespace="urn:oasis:names:tc:SPML:2:0:atricore"
+        xmlns:spml="urn:oasis:names:tc:SPML:2:0"
+        xmlns:spmlatc="urn:oasis:names:tc:SPML:2:0:atricore"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        elementFormDefault="qualified">
+
+    <import namespace="urn:oasis:names:tc:SPML:2:0"
+            schemaLocation="pstc_spmlv2_core.xsd"/>
+    
+    <complexType name="GroupType">
+        <complexContent>
+            <extension base="spml:ExtensibleType">
+                <attribute name="id" type="xsd:long" use="required"/>
+                <attribute name="name" type="xsd:string" use="required"/>
+                <attribute name="description" type="xsd:string" use="required"/>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="UserType">
+        <complexContent>
+            <extension base="spml:ExtensibleType">
+
+                <!-- Groups -->
+                <sequence>
+                    <element ref="spmlatc:group" minOccurs="0" maxOccurs="unbounded"/>
+                </sequence>
+
+                <attribute name="id" type="xsd:long" use="required"/>
+                <attribute name="username" type="xsd:string" use="required"/>
+                
+                <attribute name="firstName" type="xsd:string" use="optional"/>
+                <attribute name="surename" type="xsd:string" use="optional"/>
+                <attribute name="commonName" type="xsd:string" use="optional"/>
+                <attribute name="givenName" type="xsd:string" use="optional"/>
+                <attribute name="initials" type="xsd:string" use="optional"/>
+                <attribute name="generationQualifier" type="xsd:string" use="optional"/>
+                <attribute name="distinguishedName" type="xsd:string" use="optional"/>
+                <attribute name="email" type="xsd:string" use="optional"/>
+                <attribute name="telephoneNumber" type="xsd:string" use="optional"/>
+                <attribute name="facsimilTelephoneNumber" type="xsd:string" use="optional"/>
+                <attribute name="countryName" type="xsd:string" use="optional"/>
+                <attribute name="localityName" type="xsd:string" use="optional"/>
+                <attribute name="stateOrProvinceName" type="xsd:string" use="optional"/>
+                <attribute name="streetAddress" type="xsd:string" use="optional"/>
+                <attribute name="organizationName" type="xsd:string" use="optional"/>
+                <attribute name="organizationUnitName" type="xsd:string" use="optional"/>
+                <attribute name="personalTitle" type="xsd:string" use="optional"/>
+                <attribute name="businessCategory" type="xsd:string" use="optional"/>
+                <attribute name="postalAddress" type="xsd:string" use="optional"/>
+                <attribute name="postalCode" type="xsd:string" use="optional"/>
+                <attribute name="postOfficeBox" type="xsd:string" use="optional"/>
+
+                <attribute name="language" type="xsd:string" use="optional"/>
+                
+                <attribute name="accountDisabled" type="xsd:boolean" use="optional"/>
+                <attribute name="accountExpires" type="xsd:boolean" use="optional"/>
+                <attribute name="accountExpirationDate" type="xsd:dateTime" use="optional"/>
+                <attribute name="limitSimultaneousLogin" type="xsd:boolean" use="optional"/>
+                <attribute name="maximunLogins" type="xsd:int" use="optional"/>
+                <attribute name="terminatePreviousSession" type="xsd:boolean" use="optional"/>
+                <attribute name="preventNewSession" type="xsd:boolean" use="optional"/>
+
+                <attribute name="allowUserToChangePassword" type="xsd:boolean" use="optional"/>
+                <attribute name="forcePeriodicPasswordChanges" type="xsd:boolean" use="optional"/>
+                <attribute name="daysBetweenChanges" type="xsd:int" use="optional"/>
+                <attribute name="passwordExpirationDate" type="xsd:dateTime" use="optional"/>
+                <attribute name="notifyPasswordExpiration" type="xsd:boolean" use="optional"/>
+                <attribute name="daysBeforeExpiration" type="xsd:int" use="optional"/>
+
+                <attribute name="userPassword" type="xsd:string" use="optional"/>
+                <attribute name="userCertificate" type="xsd:base64Binary" use="optional"/>
+                <attribute name="automaticallyGeneratePassword" type="xsd:boolean" use="optional"/>
+                <attribute name="emailNewPasword" type="xsd:boolean" use="optional"/>
+
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <element name="group" type="spmlatc:GroupType"/>
+    <element name="user" type="spmlatc:UserType"/>
+
+</schema>
