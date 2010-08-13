@@ -97,6 +97,9 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const SHOW_UPLOAD_PROGRESS:String = "uploadProgress";
     public static const DISPLAY_ADD_NEW_GROUP:String = "displayAddNewGroup";
     public static const DISPLAY_ADD_NEW_USER:String = "displayAddNewUser";
+    public static const MODELER_VIEW_SELECTED:String = "modelerViewSelected";
+    public static const LIFECYCLE_VIEW_SELECTED:String = "lifecycleViewSelected";
+    public static const ACCOUNT_VIEW_SELECTED:String = "accountViewSelected";
 
 
     public function ApplicationFacade(p_configuration:* = null) {

@@ -35,8 +35,10 @@ import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 public class LifecycleViewMediator extends IocMediator {
 
     public static const viewName:String = "LifecycleView";
-    
+
     private var _projectProxy:ProjectProxy;
+
+    private var _created:Boolean;
 
     public function LifecycleViewMediator(name:String = null, viewComp:LifecycleView = null) {
         super(name, viewComp);
@@ -64,8 +66,7 @@ public class LifecycleViewMediator extends IocMediator {
             view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
             view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
             view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInSavedAppliance);
-            view.grdDeployedAppliances.
-                    (LifecycleGridButtonEvent.CLICK, handleGridButton);
+            view.grdDeployedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
             view.grdDeployedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
             view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
             view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
@@ -78,16 +79,13 @@ public class LifecycleViewMediator extends IocMediator {
             view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInDeployedAppliance);
         }
         
-        (viewComponent as LifecycleView).addEventListener(FlexEvent.CREATION_COMPLETE, init);
+        (viewComponent as LifecycleView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 
         super.setViewComponent(viewComponent);
     }
 
-    private function init(event:Event):void {
-
-        projectProxy.currentView = viewName;
-
-        sendNotification(ApplicationFacade.CLEAR_MSG);
+    private function creationCompleteHandler(event:Event):void {
+        _created = true;
         
         // Saved Appliances Grid
         view.grdSavedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
@@ -123,61 +121,70 @@ public class LifecycleViewMediator extends IocMediator {
 
         initGrids();
     }
+    
+    public function initGrids():void {
+        if (_created) {
+            var savedAppliances:ArrayCollection = new ArrayCollection();
+            var compiledAppliances:ArrayCollection = new ArrayCollection();
+            var deployedAppliances:ArrayCollection = new ArrayCollection();
+            var disposedAppliances:ArrayCollection = new ArrayCollection();
 
-    private function initGrids():void {
-        var savedAppliances:ArrayCollection = new ArrayCollection();
-        var compiledAppliances:ArrayCollection = new ArrayCollection();
-        var deployedAppliances:ArrayCollection = new ArrayCollection();
-        var disposedAppliances:ArrayCollection = new ArrayCollection();
+            var savedAppliancesSelectedIndex:int = -1;
+            var compiledAppliancesSelectedIndex:int = -1;
+            var deployedAppliancesSelectedIndex:int = -1;
+            var disposedAppliancesSelectedIndex:int = -1;
 
-        var savedAppliancesSelectedIndex:int = -1;
-        //var compiledAppliancesSelectedIndex:int = -1;
-        //var deployedAppliancesSelectedIndex:int = -1;
-        //var disposedAppliancesSelectedIndex:int = -1;
+            // reset appliance(s) selection
+            var grid:AdvancedDataGrid = view.grdSavedAppliances;
+            view.grdSavedAppliances.selectedIndex = savedAppliancesSelectedIndex;
+            view.grdCompiledAppliances.selectedIndex = compiledAppliancesSelectedIndex;
+            view.grdDeployedAppliances.selectedIndex = deployedAppliancesSelectedIndex;
+            view.grdDisposedAppliances.selectedIndex = disposedAppliancesSelectedIndex;
 
-        for (var i:int = 0; i < projectProxy.identityApplianceList.length; i++) {
-            var appliance:IdentityApplianceDTO = projectProxy.identityApplianceList[i] as IdentityApplianceDTO;
-            var selected:Boolean = false;
-            if (projectProxy.currentIdentityAppliance != null &&
-                    appliance.id == projectProxy.currentIdentityAppliance.id) {
-                selected = true;
-            }
-            if (appliance.idApplianceDeployment == null) {
-                savedAppliances.addItem(appliance);
-                if (selected) {
-                    savedAppliancesSelectedIndex = savedAppliances.length - 1;
+            for (var i:int = 0; i < projectProxy.identityApplianceList.length; i++) {
+                var appliance:IdentityApplianceDTO = projectProxy.identityApplianceList[i] as IdentityApplianceDTO;
+                var selected:Boolean = false;
+                if (projectProxy.currentIdentityAppliance != null &&
+                        appliance.id == projectProxy.currentIdentityAppliance.id) {
+                    selected = true;
                 }
-            } else if (appliance.state == IdentityApplianceStateDTO.PROJECTED.name) {
-                compiledAppliances.addItem(appliance);
-                //if (selected) {
-                //    //compiledAppliancesSelectedIndex = compiledAppliances.length - 1;
-                //}
-            } else if (appliance.state == IdentityApplianceStateDTO.INSTALLED.name ||
-                    appliance.state == IdentityApplianceStateDTO.STARTED.name) {
-                deployedAppliances.addItem(appliance);
-                //if (selected) {
-                //    deployedAppliancesSelectedIndex = deployedAppliances.length - 1;
-                //}
+                if (appliance.idApplianceDeployment == null) {
+                    savedAppliances.addItem(appliance);
+                    if (selected) {
+                        savedAppliancesSelectedIndex = savedAppliances.length - 1;
+                    }
+                } else if (appliance.state == IdentityApplianceStateDTO.PROJECTED.name) {
+                    compiledAppliances.addItem(appliance);
+                    //if (selected) {
+                    //    //compiledAppliancesSelectedIndex = compiledAppliances.length - 1;
+                    //}
+                } else if (appliance.state == IdentityApplianceStateDTO.INSTALLED.name ||
+                        appliance.state == IdentityApplianceStateDTO.STARTED.name) {
+                    deployedAppliances.addItem(appliance);
+                    //if (selected) {
+                    //    deployedAppliancesSelectedIndex = deployedAppliances.length - 1;
+                    //}
+                }
             }
+
+            view.grdSavedAppliances.dataProvider = new HierarchicalData(savedAppliances);
+            view.grdCompiledAppliances.dataProvider = new HierarchicalData(compiledAppliances);
+            view.grdDeployedAppliances.dataProvider = new HierarchicalData(deployedAppliances);
+            view.grdDisposedAppliances.dataProvider = new HierarchicalData(disposedAppliances);
+
+            // When dataProvider is changed (e.g. after the second lifecycle view openinig),
+            // setting selectedIndex is not working without calling validateNow().
+            // This might be slow for large datasets?
+            // Using callLater() function instead of this is not working as expected.
+            // Another solution would include extending the grid and
+            // overriding set dataProvider function.
+            view.grdSavedAppliances.validateNow();
+
+            view.grdSavedAppliances.selectedIndex = savedAppliancesSelectedIndex;
+            //view.grdCompiledAppliances.selectedIndex = compiledAppliancesSelectedIndex;
+            //view.grdDeployedAppliances.selectedIndex = deployedAppliancesSelectedIndex;
+            //view.grdDisposedAppliances.selectedIndex = disposedAppliancesSelectedIndex;
         }
-
-        view.grdSavedAppliances.dataProvider = new HierarchicalData(savedAppliances);
-        view.grdCompiledAppliances.dataProvider = new HierarchicalData(compiledAppliances);
-        view.grdDeployedAppliances.dataProvider = new HierarchicalData(deployedAppliances);
-        view.grdDisposedAppliances.dataProvider = new HierarchicalData(disposedAppliances);
-
-        // When dataProvider is changed (e.g. after the second lifecycle view openinig),
-        // setting selectedIndex is not working without calling validateNow().
-        // This might be slow for large datasets?
-        // Using callLater() function instead of this is not working as expected.
-        // Another solution would include extending the grid and
-        // overriding set dataProvider function.
-        view.grdSavedAppliances.validateNow();
-        
-        view.grdSavedAppliances.selectedIndex = savedAppliancesSelectedIndex;
-        //view.grdCompiledAppliances.selectedIndex = compiledAppliancesSelectedIndex;
-        //view.grdDeployedAppliances.selectedIndex = deployedAppliancesSelectedIndex;
-        //view.grdDisposedAppliances.selectedIndex = disposedAppliancesSelectedIndex;
     }
 
     private function identityApplianceNameLabel(item:Object, column:AdvancedDataGridColumn):String {
@@ -258,7 +265,8 @@ public class LifecycleViewMediator extends IocMediator {
     }
     
     override public function listNotificationInterests():Array {
-        return [BuildIdentityApplianceCommand.SUCCESS,
+        return [ApplicationFacade.LIFECYCLE_VIEW_SELECTED,
+                BuildIdentityApplianceCommand.SUCCESS,
                 BuildIdentityApplianceCommand.FAILURE,
                 DeployIdentityApplianceCommand.SUCCESS,
                 DeployIdentityApplianceCommand.FAILURE,
@@ -272,6 +280,11 @@ public class LifecycleViewMediator extends IocMediator {
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
+            case ApplicationFacade.LIFECYCLE_VIEW_SELECTED:
+                projectProxy.currentView = viewName;
+                sendNotification(ApplicationFacade.CLEAR_MSG);
+                initGrids();
+                break;
             case BuildIdentityApplianceCommand.SUCCESS:
                 if (projectProxy.currentView == viewName) {
                     updateAppliancesList(false);

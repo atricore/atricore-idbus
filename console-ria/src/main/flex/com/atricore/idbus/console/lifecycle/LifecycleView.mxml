@@ -1,27 +1,6 @@
-<?xml version="1.0" ?>
-<!--
-  ~ Atricore Console
-  ~
-  ~ Copyright 2009-2010, Atricore Inc.
-  ~
-  ~ This is free software; you can redistribute it and/or modify it
-  ~ under the terms of the GNU Lesser General Public License as
-  ~ published by the Free Software Foundation; either version 2.1 of
-  ~ the License, or (at your option) any later version.
-  ~
-  ~ This software is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  ~ Lesser General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU Lesser General Public
-  ~ License along with this software; if not, write to the Free
-  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
-  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
-  -->
-
-
-<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml"
+<s:Panel xmlns:mx="library://ns.adobe.com/flex/mx"
+          xmlns:fx="http://ns.adobe.com/mxml/2009"
+          xmlns:s="library://ns.adobe.com/flex/spark"
           xmlns:components="com.atricore.idbus.console.components.*"
           xmlns:browser="com.atricore.idbus.console.modeling.browser.*"
           xmlns:diagram="com.atricore.idbus.console.modeling.diagram.*"
@@ -35,17 +14,18 @@
           width="100%" height="100%"
         >
 
-    <mx:Metadata>
+    <fx:Metadata>
         [ResourceBundle("console")]
-    </mx:Metadata>
+    </fx:Metadata>
 
     <mx:HDividedBox width="100%" height="100%" paddingRight="0">
-        <mx:VBox width="30%" height="100%" backgroundAlpha="0.7">
-            <mx:HBox width="100%" verticalAlign="bottom">
-                <mx:Label width="200" text="Saved" styleName="h3"/>
+
+        <s:VGroup width="30%" height="100%" alpha="0.7">
+            <s:HGroup width="100%" verticalAlign="bottom">
+                <s:Label width="200" text="Saved" styleName="h3"/>
                 <mx:Spacer width="100%"/>
-                <mx:Button id="btnApplianceCreate" label="Create" enabled="false"/>
-            </mx:HBox>
+                <s:Button id="btnApplianceCreate" label="Create" enabled="false"/>
+            </s:HGroup>
             <mx:AdvancedDataGrid id="grdSavedAppliances" width="100%" height="100%"
                                  dragEnabled="true" allowMultipleSelection="false" sortExpertMode="true"
                                  folderClosedIcon="{null}" folderOpenIcon="{null}"
@@ -58,39 +38,46 @@
                                                showDataTips="true" dataField="name" wordWrap="true"/>
                     <mx:AdvancedDataGridColumn headerText="Actions" width="65">
                         <mx:itemRenderer>
-                            <mx:Component>
-                                <mx:HBox horizontalGap="4" horizontalAlign="center"
-                                         click="event.stopImmediatePropagation()">
-                                    <mx:Script>
-                              <![CDATA[
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-
-
-
-
-                              ]]>
-                              </mx:Script>
-                                    <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
-                                                   toolTip="Edit Saved Identity Appliance"
-                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
-                                    <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
-                                                   toolTip="Remove Saved Identity Appliance"
-                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
-                                </mx:HBox>
-                            </mx:Component>
+                            <fx:Component>
+                                <s:MXAdvancedDataGridItemRenderer>
+                                    <s:states>
+                                        <s:State name="normal" />
+                                        <s:State name="hovered" />
+                                        <s:State name="selected" />
+                                    </s:states>
+                                    <s:HGroup gap="4" horizontalAlign="center" click="event.stopImmediatePropagation()">
+                                        <fx:Script>
+                                            <![CDATA[
+                                                import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                            ]]>
+                                        </fx:Script>
+                                        <components:IconButton iconUp="@Embed('/images/icons/edit.png')"
+                                                               paddingTop="3" paddingLeft="3"
+                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                               toolTip="Edit Saved Identity Appliance"
+                                                               click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
+                                        <components:IconButton iconUp="@Embed('/images/icons/remove.png')"
+                                                               paddingTop="3" paddingLeft="3"
+                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                               toolTip="Remove Saved Identity Appliance"
+                                                               click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
+                                    </s:HGroup>
+                                </s:MXAdvancedDataGridItemRenderer>
+                            </fx:Component>
                         </mx:itemRenderer>
                     </mx:AdvancedDataGridColumn>
                 </mx:columns>
             </mx:AdvancedDataGrid>
-        </mx:VBox>
-        <mx:VBox width="30%" height="100%" backgroundAlpha="0.7">
-            <mx:HBox width="100%" verticalAlign="bottom">
-                <mx:Label width="200" text="Compiled" styleName="h3"/>
+        </s:VGroup>
+
+        <s:VGroup width="30%" height="100%" alpha="0.7">
+            <s:HGroup width="100%" verticalAlign="bottom">
+                <s:Label width="200" text="Compiled" styleName="h3"/>
                 <mx:Spacer width="100%"/>
-                <mx:ComboBox id="cboCompiledIdentityAppliances" prompt="Rebuild All"
+                <s:DropDownList id="cboCompiledIdentityAppliances" prompt="Rebuild All"
                              width="150"
                              labelField="title" enabled="true"/>
-            </mx:HBox>
+            </s:HGroup>
             <mx:AdvancedDataGrid id="grdCompiledAppliances" width="100%" height="100%"
                                  dragEnabled="true" allowMultipleSelection="true" sortExpertMode="true"
                                  folderClosedIcon="{null}" folderOpenIcon="{null}"
@@ -103,39 +90,46 @@
                                                showDataTips="true" dataField="applianceLabel" wordWrap="true"/>
                     <mx:AdvancedDataGridColumn headerText="Actions" width="65">
                         <mx:itemRenderer>
-                            <mx:Component>
-                                <mx:HBox horizontalGap="4" horizontalAlign="center"
-                                         click="event.stopImmediatePropagation()">
-                                    <mx:Script>
-                              <![CDATA[
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-
-
-
-
-                              ]]>
-                              </mx:Script>
-                                    <mx:LinkButton icon="@Embed('/images/icons/edit.png')" width="20"
-                                                   toolTip="Edit Compiled Identity Appliance"
-                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
-                                    <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
-                                                   toolTip="Remove Compiled Identity Appliance"
-                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
-                                </mx:HBox>
-                            </mx:Component>
+                            <fx:Component>
+                                <s:MXAdvancedDataGridItemRenderer>
+                                    <s:states>
+                                        <s:State name="normal" />
+                                        <s:State name="hovered" />
+                                        <s:State name="selected" />
+                                    </s:states>
+                                    <s:HGroup gap="4" horizontalAlign="center" click="event.stopImmediatePropagation()">
+                                        <fx:Script>
+                                            <![CDATA[
+                                                import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                            ]]>
+                                        </fx:Script>
+                                        <components:IconButton iconUp="@Embed('/images/icons/edit.png')"
+                                                               paddingTop="3" paddingLeft="3"
+                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                               toolTip="Edit Compiled Identity Appliance"
+                                                               click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
+                                        <components:IconButton iconUp="@Embed('/images/icons/remove.png')"
+                                                               paddingTop="3" paddingLeft="3"
+                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                               toolTip="Remove Compiled Identity Appliance"
+                                                               click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
+                                    </s:HGroup>
+                                </s:MXAdvancedDataGridItemRenderer>
+                            </fx:Component>
                         </mx:itemRenderer>
                     </mx:AdvancedDataGridColumn>
                 </mx:columns>
             </mx:AdvancedDataGrid>
-        </mx:VBox>
-        <mx:VBox width="30%" height="100%">
-            <mx:HBox width="100%" verticalAlign="bottom">
-                <mx:Label width="200" text="Deployed" styleName="h3"/>
+        </s:VGroup>
+
+        <s:VGroup width="30%" height="100%">
+            <s:HGroup width="100%" verticalAlign="bottom">
+                <s:Label width="200" text="Deployed" styleName="h3"/>
                 <mx:Spacer width="100%"/>
-                <mx:ComboBox id="cboDeployedIdentityAppliances" prompt="Redeploy All"
+                <s:DropDownList id="cboDeployedIdentityAppliances" prompt="Redeploy All"
                              width="150"
                              labelField="title" enabled="true"/>
-            </mx:HBox>
+            </s:HGroup>
 
             <mx:AdvancedDataGrid id="grdDeployedAppliances" width="100%" height="100%"
                                  dragEnabled="true" allowMultipleSelection="true" doubleClickEnabled="true"
@@ -151,46 +145,51 @@
                                                showDataTips="true"/>
                     <mx:AdvancedDataGridColumn headerText="Actions" width="100">
                         <mx:itemRenderer>
-                            <mx:Component>
-                                <mx:HBox horizontalGap="4" horizontalAlign="center"
-                                         click="event.stopImmediatePropagation()">
-                                    <mx:Script>
-                              <![CDATA[
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-
-
-
-
-
-
-
-
-                              ]]>
-                              </mx:Script>
-                                    <mx:LinkButton icon="@Embed('/images/icons/accept.png')" width="20"
-                                                   toolTip="Start Identity Appliance"
-                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_START));"/>
-                                    <mx:LinkButton icon="@Embed('/images/icons/down.png')" width="20"
-                                                   toolTip="Stop Identity Appliance"
-                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_STOP));"/>
-                                    <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
-                                                   toolTip="Remove Identity Appliance"
-                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
-                                </mx:HBox>
-                            </mx:Component>
+                            <fx:Component>
+                                <s:MXAdvancedDataGridItemRenderer>
+                                    <s:states>
+                                        <s:State name="normal" />
+                                        <s:State name="hovered" />
+                                        <s:State name="selected" />
+                                    </s:states>
+                                    <s:HGroup gap="4" horizontalAlign="center" click="event.stopImmediatePropagation()">
+                                        <fx:Script>
+                                            <![CDATA[
+                                                import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                        ]]>
+                                        </fx:Script>
+                                        <components:IconButton iconUp="@Embed('/images/icons/accept.png')"
+                                                               paddingTop="3" paddingLeft="3"
+                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                               toolTip="Start Identity Appliance"
+                                                               click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_START));"/>
+                                        <components:IconButton iconUp="@Embed('/images/icons/down.png')"
+                                                               paddingTop="3" paddingLeft="3"
+                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                               toolTip="Stop Identity Appliance"
+                                                               click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_STOP));"/>
+                                        <components:IconButton iconUp="@Embed('/images/icons/remove.png')"
+                                                               paddingTop="3" paddingLeft="3"
+                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                               toolTip="Remove Identity Appliance"
+                                                               click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
+                                    </s:HGroup>
+                                </s:MXAdvancedDataGridItemRenderer>
+                            </fx:Component>
                         </mx:itemRenderer>
                     </mx:AdvancedDataGridColumn>
                 </mx:columns>
             </mx:AdvancedDataGrid>
-        </mx:VBox>
-        <mx:VBox width="30%" height="100%">
-            <mx:HBox width="100%" verticalAlign="bottom">
-                <mx:Label width="200" text="Disposed" styleName="h3"/>
+        </s:VGroup>
+
+        <s:VGroup width="30%" height="100%">
+            <s:HGroup width="100%" verticalAlign="bottom">
+                <s:Label width="200" text="Disposed" styleName="h3"/>
                 <mx:Spacer width="100%"/>
-                <mx:ComboBox id="cboDisposedIdentityAppliances" prompt="Remove All"
+                <s:DropDownList id="cboDisposedIdentityAppliances" prompt="Remove All"
                              width="150"
                              labelField="title" enabled="true"/>
-            </mx:HBox>
+            </s:HGroup>
 
             <mx:AdvancedDataGrid id="grdDisposedAppliances" width="100%" height="100%"
                                  dragEnabled="true" allowMultipleSelection="true" doubleClickEnabled="true"
@@ -204,27 +203,33 @@
                                                showDataTips="true" wordWrap="true"/>
                     <mx:AdvancedDataGridColumn headerText="Actions" width="65">
                         <mx:itemRenderer>
-                            <mx:Component>
-                                <mx:HBox horizontalGap="4" horizontalAlign="center"
-                                         click="event.stopImmediatePropagation()">
-                                    <mx:Script>
-                              <![CDATA[
-                                        import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-
-
-
-
-                              ]]>
-                              </mx:Script>
-                                    <mx:LinkButton icon="@Embed('/images/icons/remove.png')" width="20"
-                                                   toolTip="Remove Identity Appliance"
-                                                   click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
-                                </mx:HBox>
-                            </mx:Component>
+                            <fx:Component>
+                                <s:MXAdvancedDataGridItemRenderer>
+                                    <s:states>
+                                        <s:State name="normal" />
+                                        <s:State name="hovered" />
+                                        <s:State name="selected" />
+                                    </s:states>
+                                    <s:HGroup gap="4" horizontalAlign="center"
+                                             click="event.stopImmediatePropagation()">
+                                        <fx:Script>
+                                            <![CDATA[
+                                                import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                            ]]>
+                                        </fx:Script>
+                                        <components:IconButton iconUp="@Embed('/images/icons/remove.png')"
+                                                               paddingTop="3" paddingLeft="3"
+                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                               toolTip="Remove Identity Appliance"
+                                                               click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
+                                    </s:HGroup>
+                                </s:MXAdvancedDataGridItemRenderer>
+                            </fx:Component>
                         </mx:itemRenderer>
                     </mx:AdvancedDataGridColumn>
                 </mx:columns>
             </mx:AdvancedDataGrid>
-        </mx:VBox>
+        </s:VGroup>
+        
     </mx:HDividedBox>
-</mx:Panel>
+</s:Panel>

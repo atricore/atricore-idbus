@@ -23,6 +23,8 @@ package com.atricore.idbus.console.account.main {
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
 
+import com.atricore.idbus.console.main.ApplicationFacade;
+
 import flash.events.Event;
 import flash.events.MouseEvent;
 
@@ -42,8 +44,8 @@ public class AccountManagementMediator extends IocMediator {
     private var _groupsMediator:IIocMediator;
     private var _usersMediator:IIocMediator;
 
-    [Bindable]
-
+    private var _created:Boolean;
+    
     public function AccountManagementMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
     }
@@ -87,12 +89,14 @@ public class AccountManagementMediator extends IocMediator {
             view.btnUsers.removeEventListener(MouseEvent.CLICK, handleUsersClick);
         }
 
-        (p_viewComponent as AccountManagementView).addEventListener(FlexEvent.CREATION_COMPLETE, init);
+        (p_viewComponent as AccountManagementView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 
         super.setViewComponent(p_viewComponent);
     }
 
-    public function init(event:Event):void {                        
+    private function creationCompleteHandler(event:Event):void {
+        _created = true;
+
         view.btnHome.addEventListener(MouseEvent.CLICK, handleHomeClick);
         view.btnGroups.addEventListener(MouseEvent.CLICK, handleGroupsClick);
         view.btnUsers.addEventListener(MouseEvent.CLICK, handleUsersClick);
@@ -100,6 +104,11 @@ public class AccountManagementMediator extends IocMediator {
         groupsMediator.setViewComponent(view.groups);
         usersMediator.setViewComponent(view.users);
         popupManager.init(iocFacade, view);
+
+        init();
+    }
+
+    public function init():void {
     }
 
     private function handleHomeClick(event:MouseEvent):void {
@@ -121,12 +130,14 @@ public class AccountManagementMediator extends IocMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [];
+        return [ApplicationFacade.ACCOUNT_VIEW_SELECTED];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-
+            case ApplicationFacade.ACCOUNT_VIEW_SELECTED:
+                init();
+                break;
         }
 
     }

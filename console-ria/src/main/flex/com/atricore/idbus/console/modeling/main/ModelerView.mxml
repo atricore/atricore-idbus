@@ -62,7 +62,7 @@
                          paddingBottom="5">
                     <s:HGroup>
                         <s:Button id="btnNew" label="New"/>
-                        <s:DropDownList id="applianceStyle" labelField="label" selectedIndex="0" width="210" dataProvider="{applianceStyleCollection}" />
+                        <s:DropDownList id="applianceStyle" labelField="label" selectedIndex="0" width="228" dataProvider="{applianceStyleCollection}" />
                         <s:Button id="btnLifecycle" label="Lifecycle" enabled="false"/>
                         <s:Button id="btnOpen" label="Open"/>
                         <s:DropDownList id="appliances" width="250" prompt="Select an appliance to open"/>

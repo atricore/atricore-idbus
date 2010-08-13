@@ -21,7 +21,6 @@
 
 package com.atricore.idbus.console.main
 {
-import com.atricore.idbus.console.lifecycle.LifecycleViewMediator;
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
 import com.atricore.idbus.console.main.controller.SetupServerCommand;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
@@ -33,14 +32,20 @@ import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMedi
 import flash.events.Event;
 
 import mx.events.FlexEvent;
-import mx.events.MenuEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
+import spark.components.ButtonBar;
+import spark.events.IndexChangeEvent;
+
 public class ApplicationMediator extends IocMediator {
     // Canonical name of the Mediator
     public static const REGISTER_HEAD:String = "User Registration";
+
+    public static const MODELER_VIEW_INDEX:int = 0;
+    public static const LIFECYCLE_VIEW_INDEX:int = 1;
+    public static const ACCOUNT_VIEW_INDEX:int = 4;
 
     private var _secureContextProxy:SecureContextProxy;
     private var _popupManager:ConsolePopUpManager;
@@ -70,7 +75,7 @@ public class ApplicationMediator extends IocMediator {
 
     override public function setViewComponent(p_viewComponent:Object):void {
         if (getViewComponent() != null) {
-            app.lifecycleView.removeEventListener(FlexEvent.CREATION_COMPLETE, handleLifecycleViewCreated);
+            app.stackButtonBar.removeEventListener(IndexChangeEvent.CHANGE, handleStackChange);
             app.removeEventListener(FlexEvent.SHOW, handleShowConsole);
         }
 
@@ -80,17 +85,20 @@ public class ApplicationMediator extends IocMediator {
     }
 
     public function init():void {
-
         popupManager.init(iocFacade, app);
-
-        // Add listeners for other components on the viewStack with delayed instantiation.
-        app.lifecycleView.addEventListener(FlexEvent.CREATION_COMPLETE, handleLifecycleViewCreated);
+        app.stackButtonBar.addEventListener(IndexChangeEvent.CHANGE, handleStackChange);
         app.addEventListener(FlexEvent.SHOW, handleShowConsole);
-        
     }
 
-    public function handleLifecycleViewCreated(event:Event):void {
-        //facade.registerMediator(new LifecycleViewMediator(app.lifecycleView));
+    public function handleStackChange(event:IndexChangeEvent):void {
+        var selectedIndex = (event.currentTarget as ButtonBar).selectedIndex;
+        if (selectedIndex == MODELER_VIEW_INDEX) {
+            sendNotification(ApplicationFacade.MODELER_VIEW_SELECTED);
+        } else if (selectedIndex == LIFECYCLE_VIEW_INDEX) {
+            sendNotification(ApplicationFacade.LIFECYCLE_VIEW_SELECTED);
+        } else if (selectedIndex == ACCOUNT_VIEW_INDEX) {
+            sendNotification(ApplicationFacade.ACCOUNT_VIEW_SELECTED);
+        }
     }
 
     public function handleShowConsole(event:Event):void {
@@ -143,12 +151,14 @@ public class ApplicationMediator extends IocMediator {
                 app.messageBox.clearAndHide();
                 break;
             case ApplicationFacade.DISPLAY_APPLIANCE_MODELER:
-                //app.modulesViewStack.selectedChild = app.modelerView;
-                app.modulesViewStack.selectedIndex = 0;
+                app.stackButtonBar.selectedIndex = MODELER_VIEW_INDEX;
+                app.modulesViewStack.selectedIndex = MODELER_VIEW_INDEX;
+                sendNotification(ApplicationFacade.MODELER_VIEW_SELECTED);
                 break;
             case ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE:
-                //app.modulesViewStack.selectedChild = app.lifecycleView;
-                app.modulesViewStack.selectedIndex = 1;
+                app.stackButtonBar.selectedIndex = LIFECYCLE_VIEW_INDEX;
+                app.modulesViewStack.selectedIndex = LIFECYCLE_VIEW_INDEX;
+                sendNotification(ApplicationFacade.LIFECYCLE_VIEW_SELECTED);
                 break;
             case ProcessingMediator.START:
                 popupManager.showProcessingWindow(notification);

@@ -67,7 +67,8 @@ public class ModelerMediator extends IocMediator {
     [Bindable]
     public var _applianceList:Array;
 
-
+    private var _created:Boolean;
+    
     public function ModelerMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
     }
@@ -98,37 +99,44 @@ public class ModelerMediator extends IocMediator {
             view.btnLifecycle.removeEventListener(MouseEvent.CLICK, handleLifecycleClick);
         }
 
-        (p_viewComponent as ModelerView).addEventListener(FlexEvent.CREATION_COMPLETE, init);
-
+        //this is not working for first viewStack child?
+        //(p_viewComponent as ModelerView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+        
         super.setViewComponent(p_viewComponent);
 
-        init(null);  //remove this after adding login box?
+        creationCompleteHandler();
     }
 
-    public function init(event:Event):void {
-
-        projectProxy.currentView = viewName;
-
-        sendNotification(ApplicationFacade.CLEAR_MSG);
-
-        if (projectProxy.currentIdentityAppliance != null) {
-            sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-            enableIdentityApplianceActionButtons();
-        } else {
-            view.btnLifecycle.enabled = false;
-        }
+    public function creationCompleteHandler():void {
+        _created = true;
 
         view.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
         view.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
         view.btnSave.addEventListener(MouseEvent.CLICK, handleSaveClick);
         view.btnLifecycle.addEventListener(MouseEvent.CLICK, handleLifecycleClick);
-        
+
         view.appliances.labelFunction = applianceListLabelFunc;
         view.btnSave.enabled = false;
 
         popupManager.init(iocFacade, view);
 
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+        init();
+    }
+
+    public function init():void {
+        if (_created) {
+            sendNotification(ApplicationFacade.CLEAR_MSG);
+            if (projectProxy.currentIdentityAppliance != null) {
+                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                enableIdentityApplianceActionButtons();
+            } else {
+                view.btnLifecycle.enabled = false;
+            }
+            // TODO: remove IF condition (fetch list every time modeler is opened)?
+            if (projectProxy.identityApplianceList == null) {
+                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+            }
+        }
     }
 
 
@@ -166,7 +174,8 @@ public class ModelerMediator extends IocMediator {
     }
     
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
+        return [ApplicationFacade.MODELER_VIEW_SELECTED,
+            ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
             ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT,
             ApplicationFacade.CREATE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_IDENTITY_PROVIDER_ELEMENT,
@@ -193,6 +202,10 @@ public class ModelerMediator extends IocMediator {
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
+            case ApplicationFacade.MODELER_VIEW_SELECTED:
+                projectProxy.currentView = viewName;
+                init();
+                break;
             case ApplicationFacade.UPDATE_IDENTITY_APPLIANCE:
                 updateIdentityAppliance();
                 enableIdentityApplianceActionButtons();

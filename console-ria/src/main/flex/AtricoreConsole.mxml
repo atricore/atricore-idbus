@@ -94,15 +94,15 @@
         </s:HGroup>
         <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name" change="stackChanged()"/>
         <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%">
-            <modeler:ModelerView id="modelerView" visible="true" name="Modeler"/>
-            <lifecycle:LifecycleView id="lifecycleView" visible="true" name="Lifecycle"/>
+            <modeler:ModelerView id="modelerView" name="Modeler"/>
+            <lifecycle:LifecycleView id="lifecycleView" name="Lifecycle"/>
             <s:Group width="95%" height="95%" name="Setup">
                 <s:Label text="Setup"/>
             </s:Group>
             <s:Group width="95%" height="95%" name="Deployment">
                 <s:Label text="Deployment"/>
             </s:Group>
-            <account:AccountManagementView id="accountManagementView" visible="true" name="Account"/>
+            <account:AccountManagementView id="accountManagementView" name="Account"/>
         </comp:CustomViewStack>
     </s:VGroup>
 </s:Application>

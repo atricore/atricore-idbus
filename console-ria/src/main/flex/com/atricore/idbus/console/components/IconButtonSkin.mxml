@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SparkSkin
+	xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:s="library://ns.adobe.com/flex/spark"
+	currentStateChanging="onCurrentStateChanging(event)"
+	>
+
+    <fx:Metadata>
+		[HostComponent("com.atricore.idbus.console.components.IconButton")]
+	</fx:Metadata>
+
+	<fx:Script>
+		<![CDATA[
+			import mx.events.StateChangeEvent;
+
+			private function onCurrentStateChanging(event:StateChangeEvent):void {
+				switch(event.newState){
+					case "up":
+						setIcon("iconUp");
+						break;
+					case "over":
+						setIcon("iconOver");
+						break;
+					case "down":
+						setIcon("iconDown");
+						break;
+					case "disabled":
+						setIcon("iconDisabled");
+						break;
+				}
+			}
+			private function setIcon(type:String):void {
+				if (hostComponent.getStyle(type) != null) {
+					icon.source = hostComponent.getStyle(type);
+				}
+			}
+
+		]]>
+	</fx:Script>
+    
+	<s:layout>
+		<s:BasicLayout/>
+	</s:layout>
+	<s:states>
+        <s:State name="up"/>
+        <s:State name="over"/>
+        <s:State name="down"/>
+        <s:State name="disabled"/>
+    </s:states>
+
+ 	<s:Group horizontalCenter="0" verticalCenter="0">
+ 		<s:layout>
+ 			<s:HorizontalLayout
+ 				paddingBottom="{ hostComponent.getStyle('paddingBottom')}"
+ 				paddingTop="{ hostComponent.getStyle('paddingTop')}"
+ 				paddingLeft="{ hostComponent.getStyle('paddingLeft')}"
+ 				paddingRight="{ hostComponent.getStyle('paddingRight')}" />
+ 		</s:layout>
+ 		<s:BitmapImage
+	    	id="icon"
+	    	source="{hostComponent.getStyle('iconUp')}"
+	    	verticalCenter="0"
+	    	alpha="{(this.currentState == 'disabled')?.5:1}"
+	    	/>
+ 	</s:Group>
+
+</s:SparkSkin>

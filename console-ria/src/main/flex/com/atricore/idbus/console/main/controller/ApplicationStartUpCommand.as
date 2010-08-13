@@ -653,6 +653,37 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
         var app:AtricoreConsole = note.getBody() as AtricoreConsole;
 
+        // first register commands (some commands are needed for mediator creation/initialization)
+        iocFacade.registerCommandByConfigName(ApplicationFacade.SETUP_SERVER, setupServerCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.REGISTER, registerCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, createSimpleSSOIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, identityApplianceCreateCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_REMOVE, identityApplianceRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_PROVIDER_REMOVE, identityProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.SERVICE_PROVIDER_REMOVE, serviceProviderRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.IDP_CHANNEL_REMOVE, idpChannelRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.SP_CHANNEL_REMOVE, spChannelRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.DB_IDENTITY_VAULT_REMOVE, identityVaultRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, lookupIdentityApplianceByIdCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD, identityApplianceListLoadCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.UPLOAD, uploadCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, buildIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE, deployIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, undeployIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.START_IDENTITY_APPLIANCE, startIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.STOP_IDENTITY_APPLIANCE, stopIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE, identityApplianceUpdateCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_GROUP, addGroupCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_USER, addUserCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.DELETE_GROUP, deleteGroupCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.DELETE_USER, deleteUserCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.EDIT_GROUP, editGroupCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.EDIT_USER, editUserCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_GROUPS, listGroupsCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_USERS, listUsersCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_GROUPS, searchGroupsCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_USERS, searchUsersCommand.getConfigName());
+
         // setup for first level mediators
         applicationMediator.setViewComponent(app);
         iocFacade.registerMediatorByConfigName(applicationMediator.getConfigName());
@@ -703,43 +734,12 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(deployApplianceMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(processingMediator.getConfigName());
 
-        // register commands
-        iocFacade.registerCommandByConfigName(ApplicationFacade.SETUP_SERVER, setupServerCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.REGISTER, registerCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, createSimpleSSOIdentityApplianceCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, identityApplianceCreateCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_REMOVE, identityApplianceRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_PROVIDER_REMOVE, identityProviderRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.SERVICE_PROVIDER_REMOVE, serviceProviderRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.IDP_CHANNEL_REMOVE, idpChannelRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.SP_CHANNEL_REMOVE, spChannelRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.DB_IDENTITY_VAULT_REMOVE, identityVaultRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, lookupIdentityApplianceByIdCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD, identityApplianceListLoadCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.UPLOAD, uploadCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, buildIdentityApplianceCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE, deployIdentityApplianceCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, undeployIdentityApplianceCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.START_IDENTITY_APPLIANCE, startIdentityApplianceCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.STOP_IDENTITY_APPLIANCE, stopIdentityApplianceCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE, identityApplianceUpdateCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_GROUP, addGroupCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_USER, addUserCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.DELETE_GROUP, deleteGroupCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.DELETE_USER, deleteUserCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.EDIT_GROUP, editGroupCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.EDIT_USER, editUserCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_GROUPS, listGroupsCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_USERS, listUsersCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_GROUPS, searchGroupsCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_USERS, searchUsersCommand.getConfigName());
-
         // IDENTITY_APPLIANCE_LIST_LOAD notification is sent from
         // modelerMediator.setViewComponent() -> modelerMediator.init()
         // but the identityApplianceListLoadCommand is registered after that, so we must send it again.
         // Maybe we should first register commands, then mediators (so they can be 100% ready
         // to catch notifications from commands), and then set views components?
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+        //sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
 
         checkFirstRun();
     }
