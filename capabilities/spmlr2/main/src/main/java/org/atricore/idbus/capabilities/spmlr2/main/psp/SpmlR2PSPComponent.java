@@ -39,7 +39,7 @@ public class SpmlR2PSPComponent extends DefaultComponent {
                 endpoint = new PSPEndpoint( uri, this, parameters );
                 break;
             default:
-                throw new IllegalArgumentException( "Unsupported SAMLR 2.0 endpoint " + remaining );
+                throw new IllegalArgumentException( "Unsupported SPML 2.0 endpoint " + remaining );
         }
 
         endpoint.setAction( remaining );

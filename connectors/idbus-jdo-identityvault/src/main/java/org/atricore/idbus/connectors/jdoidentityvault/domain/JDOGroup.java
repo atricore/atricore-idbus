@@ -9,15 +9,15 @@ public class JDOGroup implements Serializable {
 
     private static final long serialVersionUID = 4595183658527599864L;
 
-    private long id;
+    private Long id;
     private String name;
     private String description;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

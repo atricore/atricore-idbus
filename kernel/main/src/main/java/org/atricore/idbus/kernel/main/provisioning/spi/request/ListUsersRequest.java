@@ -28,6 +28,6 @@ package org.atricore.idbus.kernel.main.provisioning.spi.request;
  * Time: 16:24:26
  * To change this template use File | Settings | File Templates.
  */
-public class ListUserRequest extends AbstractProvisioningRequest {
+public class ListUsersRequest extends AbstractProvisioningRequest {
 
 }

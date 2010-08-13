@@ -98,9 +98,19 @@
         <property name="description" value="Identity Partition ONE"/>
         <property name="identityVault" ref="idvault1"/>
         
-        <!-- JDO Persistence Manager Factory -->
-        <property name="pmf" ref="idpart1-pmf"/>
+        <property name="userDao" ref="idpart1-user-dao"/>
+        <property name="groupDao" ref="idpart1-group-dao"/>
+
     </bean>
+
+    <bean name="idpart1-group-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDAOImpl">
+        <property name="persistenceManagerFactory" ref="idpart1-pmf"/>
+    </bean>
+
+    <bean name="idpart1-user-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl">
+        <property name="persistenceManagerFactory" ref="idpart1-pmf"/>
+    </bean>
+
 
     <!-- The main advantage of this proxy is that it allows DAOs to work with a plain JDO PersistenceManagerFactory reference,
          while still participating in Spring's (or a J2EE server's) resource and transaction management.

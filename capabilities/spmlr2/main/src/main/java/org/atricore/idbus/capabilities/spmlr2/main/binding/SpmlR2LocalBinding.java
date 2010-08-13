@@ -107,7 +107,7 @@ public class SpmlR2LocalBinding extends AbstractMediationBinding {
 
     public void copyMessageToExchange(CamelMediationMessage message, Exchange exchange) {
         if (logger.isDebugEnabled())
-            logger.debug("Copying SAML 2.0 LOCAL Message");
+            logger.debug("Copying SPML 2.0 LOCAL Message");
 
         MediationMessage outMsg = message.getMessage();
         copyBackState(outMsg.getState(), exchange);
@@ -124,7 +124,7 @@ public class SpmlR2LocalBinding extends AbstractMediationBinding {
     @Override
     public Object sendMessage(MediationMessage message) throws IdentityMediationException {
         if (logger.isTraceEnabled())
-            logger.trace("Sending new SAML 2.0 message using SSO Local Binding");
+            logger.trace("Sending new SPML 2.0 message using SSO Local Binding");
 
         IdentityMediationUnitContainer uc = channel.getUnitContainer();
 

@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.response;
 
+import org.atricore.idbus.kernel.main.provisioning.domain.Group;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,4 +32,14 @@ package org.atricore.idbus.kernel.main.provisioning.spi.response;
  * To change this template use File | Settings | File Templates.
  */
 public class UpdateGroupResponse extends AbstractProvisioningResponse {
+
+    private Group group;
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
 }

@@ -1,143 +1,215 @@
 package org.atricore.idbus.connectors.jdoidentityvault;
 
 import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroup;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupDAO;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserDAO;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDAOImpl;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
-import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.impl.AbstractIdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.PersistenceManagerFactory;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Properties;
+import java.util.List;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
 public class JDOIdentityPartition extends AbstractIdentityPartition implements InitializingBean, DisposableBean {
 
-    private PersistenceManagerFactory pmf;
-    private PersistenceManager pm;
+    private JDOUserDAOImpl userDao;
+    private JDOGroupDAOImpl groupDao;
 
-    private JDOUserDAO userDao;
-
-    private JDOGroupDAO groupDao;
-
-    private Properties jdoProperties;
-
-    public PersistenceManagerFactory getPmf() {
-        return pmf;
+    public void setUserDao(JDOUserDAOImpl userDao) {
+        this.userDao = userDao;
     }
 
-    public void setPmf(PersistenceManagerFactory pmf) {
-        this.pmf = pmf;
+    public JDOUserDAOImpl getUserDao() {
+        return userDao;
     }
 
-    public void afterPropertiesSet() throws Exception {
+    public void setGroupDao(JDOGroupDAOImpl groupDao) {
+        this.groupDao = groupDao;
+    }
+
+    public JDOGroupDAOImpl getGroupDao() {
+        return groupDao;
+    }
+
+
+    public void afterPropertiesSet() throws ProvisioningException {
         init();
     }
 
-    public void destroy() throws Exception {
-        if (pm != null)
-            try { pm.close(); } catch (Exception e) {/**/}
+    public void destroy() throws ProvisioningException {
+
     }
 
-    public void init() throws Exception {
-        pm = pmf.getPersistenceManager();
-        userDao = new JDOUserDAOImpl(pm);
-        groupDao = new JDOGroupDAOImpl(pm);
+    public void init() throws ProvisioningException {
     }
 
+    @Transactional
     public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws ProvisioningException {
-        throw new UnsupportedOperationException("Not Implemented yet!");
+        try {
+            groupDao.delete(groupRequest.getId());
+            return new RemoveGroupResponse ();
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+
     }
 
+    @Transactional
     public AddGroupResponse addGroup(AddGroupRequest groupRequest) throws ProvisioningException {
-        JDOGroup jdoGroup = new JDOGroup();
-        jdoGroup.setName(groupRequest.getName());
-        jdoGroup.setDescription(groupRequest.getDescription());
-        jdoGroup = groupDao.createObject(jdoGroup);
 
-        AddGroupResponse groupResponse = new AddGroupResponse();
+        try {
+            JDOGroup jdoGroup = new JDOGroup();
+            jdoGroup.setName(groupRequest.getName());
+            jdoGroup.setDescription(groupRequest.getDescription());
+            jdoGroup = groupDao.save(jdoGroup);
 
-        Group group = toGroup(jdoGroup);
-        groupResponse.setGroup(group);
+            AddGroupResponse groupResponse = new AddGroupResponse();
 
-        return groupResponse;
+            Group group = toGroup(jdoGroup);
+            groupResponse.setGroup(group);
+
+            return groupResponse;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
     }
 
-    public FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest) throws GroupNotFoundException {
-        throw new UnsupportedOperationException("Not Implemented yet!");
+    @Transactional
+    public FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest) throws ProvisioningException {
+
+        // TODO : Throw group not found exception
+        try {
+            JDOGroup jdoGroup = groupDao.findById(groupRequest.getId());
+            FindGroupByIdResponse groupResponse = new FindGroupByIdResponse ();
+            groupResponse.setGroup(toGroup(jdoGroup));
+            return groupResponse;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
     }
 
-    public FindGroupByNameResponse findGroupByName(FindGroupByNameRequest groupRequest) throws GroupNotFoundException {
-        throw new UnsupportedOperationException("Not Implemented yet!");
+    @Transactional
+    public FindGroupByNameResponse findGroupByName(FindGroupByNameRequest groupRequest) throws ProvisioningException {
+
+        // TODO : Throw group not found exception
+        try {
+            JDOGroup jdoGroup = groupDao.findByName(groupRequest.getName());
+            FindGroupByNameResponse groupResponse = new FindGroupByNameResponse ();
+            groupResponse.setGroup(toGroup(jdoGroup));
+            return groupResponse;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
     }
 
+    @Transactional
     public ListGroupsResponse listGroups(ListGroupsRequest groupRequest) throws ProvisioningException {
-        Collection<JDOGroup> jdoGroups = groupDao.findAll();
+        try {
+            Collection<JDOGroup> jdoGroups = groupDao.findAll();
 
-        ListGroupsResponse groupResponse = new ListGroupsResponse();
-        groupResponse.setGroups(toGroups(jdoGroups));
+            ListGroupsResponse groupResponse = new ListGroupsResponse();
+            groupResponse.setGroups(toGroups(jdoGroups));
 
-        return groupResponse;
+            return groupResponse;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
     }
 
+    @Transactional
     public SearchGroupResponse searchGroups(SearchGroupRequest groupRequest) throws ProvisioningException {
-        throw new UnsupportedOperationException("Not Implemented yet!");
+        String name = groupRequest.getName();
+        String descr = groupRequest.getDescription();
+        if (descr != null)
+            throw new ProvisioningException("Group search by description not supported");
+
+        if (name == null)
+            throw new ProvisioningException("Name or description must be specified");
+        try {
+
+            JDOGroup jdoGroup = groupDao.findByName(name);
+            List<Group> groups = new ArrayList<Group>();
+            groups.add(toGroup(jdoGroup));
+
+            SearchGroupResponse groupResponse = new SearchGroupResponse();
+            groupResponse.setGroups(groups);
+
+            return groupResponse;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
     }
 
+    @Transactional
     public UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest) throws ProvisioningException {
+        try {
+            JDOGroup jdoGroup = groupDao.findById(groupRequest.getId());
+
+            jdoGroup.setName(groupRequest.getName());
+            jdoGroup.setDescription(groupRequest.getDescription());
+
+            jdoGroup = groupDao.save(jdoGroup);
+
+            UpdateGroupResponse groupResponse = new UpdateGroupResponse();
+            groupResponse.setGroup(toGroup(jdoGroup));
+
+            return groupResponse;
+
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    @Transactional
+    public RemoveUserResponse removeUser(RemoveUserRequest userRequest) throws ProvisioningException {
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
-    public RemoveUserResponse removeUser(RemoveUserRequest userRequest) throws Exception {
+    @Transactional
+    public AddUserResponse addUser(AddUserRequest userRequest) throws ProvisioningException {
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
-    public AddUserResponse addUser(AddUserRequest userRequest) throws Exception {
+    @Transactional
+    public FindUserByIdResponse findUserById(FindUserByIdRequest userRequest) throws ProvisioningException {
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
-    public FindUserByIdResponse findUserById(FindUserByIdRequest userRequest) throws Exception {
+    @Transactional
+    public FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest) throws ProvisioningException {
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
-    public FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest) throws Exception {
+    @Transactional
+    public ListUsersResponse listUsers(ListUsersRequest userRequest) throws ProvisioningException {
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
-    public ListUserResponse getUsers() throws Exception {
+    @Transactional
+    public SearchUserResponse searchUsers(SearchUserRequest userRequest) throws ProvisioningException {
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
-    public SearchUserResponse searchUsers(SearchUserRequest userRequest) throws Exception {
+    @Transactional
+    public UpdateUserResponse updateUser(UpdateUserRequest userRequest) throws ProvisioningException {
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
-    public UpdateUserResponse updateUser(UpdateUserRequest userRequest) throws Exception {
+    @Transactional
+    public GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByGroupRequest) throws ProvisioningException {
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
-    public GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByGroupRequest) throws Exception {
-        throw new UnsupportedOperationException("Not Implemented yet!");
-    }
-
-    public void setJdoProperties(Properties jdoProperties) {
-        this.jdoProperties = jdoProperties;
-    }
-
-    public Properties getJdoProperties() {
-        return jdoProperties;
-    }
+    // -------------------------------------------< Utils >
 
     protected JDOGroup toJDOGroup(Group group) {
         return toJDOGroup(new JDOGroup(), group);
@@ -171,6 +243,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
         group.setDescription(jdoGroup.getDescription());
         return group;
     }
+
 }
 
 

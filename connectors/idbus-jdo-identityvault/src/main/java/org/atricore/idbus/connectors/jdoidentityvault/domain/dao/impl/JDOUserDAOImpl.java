@@ -11,7 +11,7 @@ import javax.jdo.PersistenceManager;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public class JDOUserDAOImpl extends GenericDAOImpl<JDOUser> implements JDOUserDAO {
+public class JDOUserDAOImpl extends GenericDAOImpl<JDOUser, Long> implements JDOUserDAO {
 
     private static final Log logger = LogFactory.getLog(JDOUserDAOImpl.class);
 
@@ -19,7 +19,4 @@ public class JDOUserDAOImpl extends GenericDAOImpl<JDOUser> implements JDOUserDA
         super();
     }
 
-    public JDOUserDAOImpl(PersistenceManager pm) {
-        super(pm);
-    }
 }

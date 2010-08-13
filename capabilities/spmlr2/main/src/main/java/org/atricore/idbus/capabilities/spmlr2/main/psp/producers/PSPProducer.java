@@ -3,12 +3,14 @@ package org.atricore.idbus.capabilities.spmlr2.main.psp.producers;
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
-import oasis.names.tc.spml._2._0.search.ResultsIteratorType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
 import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
+import org.apache.commons.jxpath.JXPathContext;
+import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.common.producers.SpmlR2Producer;
 import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -19,16 +21,14 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
-import org.atricore.idbus.kernel.main.provisioning.spi.request.AddGroupRequest;
-import org.atricore.idbus.kernel.main.provisioning.spi.request.AddUserRequest;
-import org.atricore.idbus.kernel.main.provisioning.spi.request.ListGroupsRequest;
-import org.atricore.idbus.kernel.main.provisioning.spi.response.AddGroupResponse;
-import org.atricore.idbus.kernel.main.provisioning.spi.response.AddUserResponse;
-import org.atricore.idbus.kernel.main.provisioning.spi.response.ListGroupsResponse;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -63,6 +63,12 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse = doProcessAddRequest(exchange, (AddRequestType) content);
         } else if (content instanceof SearchRequestType) {
             spmlResponse = doProcessSearchRequest(exchange, (SearchRequestType) content);
+        } else if (content instanceof LookupRequestType) {
+            spmlResponse = doProcessLookupRequest(exchange, (LookupRequestType) content);
+        } else if (content instanceof ModifyRequestType) {
+            spmlResponse = doProcessModifyRequest(exchange, (ModifyRequestType) content);
+        } else if (content instanceof DeleteRequestType) {
+            spmlResponse = doProcessDeleteRequest(exchange, (DeleteRequestType) content);
         } else {
 
             // TODO : Send status=failure error= in response ! (use super producer or binding to build error
@@ -101,7 +107,7 @@ public class PSPProducer extends SpmlR2Producer {
             TargetType spmlTarget = new TargetType();
 
             // TODO : Check spec
-            spmlTarget.setProfile("dsml");
+            spmlTarget.setProfile("xsd");
             spmlTarget.setTargetID(target.getIdentityPartition().getName());
 
             CapabilitiesListType capabilitiesList = new CapabilitiesListType();
@@ -145,6 +151,9 @@ public class PSPProducer extends SpmlR2Producer {
 
     protected SearchResponseType doProcessSearchRequest(CamelMediationExchange exchane, SearchRequestType spmlRequest) throws Exception {
 
+        SearchResponseType spmlResponse = new SearchResponseType ();
+        spmlResponse.setRequestID(spmlRequest.getRequestID());
+
         SearchQueryType spmlQry = spmlRequest.getQuery();
         ProvisioningTarget target = lookupTarget(spmlQry.getTargetID());
         IdentityPartition partition = target.getIdentityPartition();
@@ -153,36 +162,57 @@ public class PSPProducer extends SpmlR2Producer {
         List<Object> any = spmlQry.getAny();
 
         SelectionType spmlSelect = (SelectionType) any.get(0);
+        String uri = spmlSelect.getNamespaceURI();
         String path = spmlSelect.getPath();
 
-        SearchResponseType spmlResponse = null;
+
+        if (uri == null || !uri.equals("http://www.w3.org/TR/xpath20")) {
+            logger.error("Unsupported query language " + uri);
+            spmlResponse.setRequestID(spmlRequest.getRequestID());
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+            return spmlResponse;
+        }
 
         if (logger.isDebugEnabled())
             logger.debug("Searching with path " + path);
 
-        if (path.startsWith("Group/")) {
+        if (spmlSelect.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
+            // TODO : Improve this
 
-            List<Group> groups = null;
-            String clause = path.substring("Group/".length());
-            if (clause != null && clause.length() > 0) {
-                throw new UnsupportedOperationException("Search criterias not supported for Groups");
+            ListGroupsResponse res = partition.listGroups(new ListGroupsRequest());
+            Group[] groups = res.getGroups();
 
-            } else {
+            if (logger.isTraceEnabled())
+                logger.trace("Searching {"+path+"} among " + groups.length);
 
-                ListGroupsResponse res = partition.listGroups(new ListGroupsRequest());
-                spmlResponse = new SearchResponseType();
-                spmlResponse.setRequestID(spmlRequest.getRequestID());
-
-                for (Group group : res.getGroups()) {
-                    PSOType psoGroup = toSpmlGroup(target, group);
-                    spmlResponse.getPso().add(psoGroup);
-                }
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Found Groups " + spmlResponse.getPso().size());
-
+            JXPathContext jxp = JXPathContext.newContext(new TargetContainer(groups));
+            Iterator it = jxp.iteratePointers(path);
+            while (it.hasNext()) {
+                Pointer groupPointer = (Pointer) it.next();
+                Group group = (Group) groupPointer.getValue();
+                PSOType psoGroup = toSpmlGroup(target, group);
+                spmlResponse.getPso().add(psoGroup);
             }
 
+            if (logger.isTraceEnabled())
+                logger.trace("Found " + spmlResponse.getPso().size() + " groups");
+
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+        } else if (spmlSelect.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
+            // TODO : Improve this
+            ListUsersResponse res = partition.listUsers(new ListUsersRequest());
+            User[] users = res.getUsers();
+
+            JXPathContext jxp = JXPathContext.newContext(null, users);
+            Iterator it = jxp.iterate(path);
+
+            while (it.hasNext()) {
+                User user = (User) it.next();
+                PSOType psoUser = toSpmlUser(target, user);
+                spmlResponse.getPso().add(psoUser);
+            }
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
         } else {
             throw new UnsupportedOperationException("Select path not supported '"+path+"'");
@@ -191,6 +221,111 @@ public class PSPProducer extends SpmlR2Producer {
         return spmlResponse;
 
 
+    }
+
+    protected LookupResponseType doProcessLookupRequest(CamelMediationExchange exchane, LookupRequestType spmlRequest) throws Exception {
+
+        PSOIdentifierType psoId = spmlRequest.getPsoID();
+        ProvisioningTarget target = lookupTarget(psoId.getTargetID());
+
+        LookupResponseType spmlResponse = new LookupResponseType();
+        spmlResponse.setRequestID(spmlRequest.getRequestID());
+
+        if (psoId.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Looking for group using PSO-ID " + psoId.getID());
+
+            // Lookup groups
+            FindGroupByIdRequest req = new FindGroupByIdRequest();
+            req.setId(Long.parseLong(psoId.getID()));
+
+            FindGroupByIdResponse res = target.getIdentityPartition().findGroupById(req);
+
+            spmlResponse.setPso(toSpmlGroup(target, res.getGroup()));
+            spmlResponse.setStatus(StatusCodeType.SUCCESS );
+
+        } else if (psoId.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Looking for group using PSO-ID " + psoId.getID());
+
+            spmlResponse.setStatus(StatusCodeType.SUCCESS );
+        } else {
+            // TODO
+            logger.error("Unknonw/Undefined PSO attribute that specifies entity type (Non-Normative)");
+
+            spmlResponse.setStatus(StatusCodeType.FAILURE );
+        }
+
+        return spmlResponse;
+
+    }
+
+    protected ModifyResponseType doProcessModifyRequest(CamelMediationExchange exchange, ModifyRequestType spmlRequest) {
+
+        if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
+
+            ModifyResponseType spmlResponse = new ModifyResponseType();
+            spmlResponse.setRequestID(spmlRequest.getRequestID());
+
+            ModificationType spmlMod = spmlRequest.getModification().get(0);
+            GroupType spmlGroup = (GroupType) spmlMod.getData();
+
+            UpdateGroupRequest groupRequest = new UpdateGroupRequest ();
+            groupRequest.setId(spmlGroup.getId());
+            groupRequest.setName(spmlGroup.getName());
+            groupRequest.setDescription(spmlGroup.getDescription());
+
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+
+            try {
+                UpdateGroupResponse groupResponse = target.getIdentityPartition().updateGroup(groupRequest);
+
+                groupResponse.getGroup();
+                spmlResponse.setPso(toSpmlGroup(target, groupResponse.getGroup()));
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+            } catch (ProvisioningException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+            }
+
+            return spmlResponse;
+
+        } else {
+            throw new UnsupportedOperationException("Not implemented !");
+        }
+
+
+
+    }
+
+    protected ResponseType doProcessDeleteRequest(CamelMediationExchange exchange, DeleteRequestType spmlRequest) {
+        if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
+            ResponseType spmlResponse = new ResponseType();
+            spmlResponse.setRequestID(spmlRequest.getRequestID());
+
+            RemoveGroupRequest groupRequest = new RemoveGroupRequest ();
+            groupRequest.setId(Long.parseLong(spmlRequest.getPsoID().getID()));
+
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+
+            try {
+                RemoveGroupResponse groupResponse = target.getIdentityPartition().removeGroup(groupRequest);
+
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
+                spmlResponse.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr);
+
+            } catch (ProvisioningException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+            }
+
+            return spmlResponse;
+        } else {
+            throw new UnsupportedOperationException("Not implemented!");
+        }
     }
 
     // ------------------------------< Utilities >
@@ -250,12 +385,14 @@ public class PSPProducer extends SpmlR2Producer {
 
     protected PSOType toSpmlGroup(ProvisioningTarget target, Group group) {
         GroupType spmlGroup = new GroupType();
+        spmlGroup.setId(group.getId());
         spmlGroup.setName(group.getName());
         spmlGroup.setDescription(group.getDescription());
 
         PSOIdentifierType psoGroupId = new PSOIdentifierType ();
         psoGroupId.setTargetID(target.getIdentityPartition().getName());
         psoGroupId.setID(group.getId() + "");
+        psoGroupId.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
         PSOType psoGroup = new PSOType();
         psoGroup.setData(spmlGroup);
@@ -265,5 +402,39 @@ public class PSPProducer extends SpmlR2Producer {
 
     }
 
+    protected PSOType toSpmlUser(ProvisioningTarget target, User user) {
+        UserType spmlUser = new UserType();
+
+        // TODO : User dozer ?
+        spmlUser.setUsername(user.getUserName());
+
+        PSOIdentifierType psoGroupId = new PSOIdentifierType ();
+        psoGroupId.setTargetID(target.getIdentityPartition().getName());
+        psoGroupId.setID(user.getId() + "");
+
+        PSOType psoGroup = new PSOType();
+        psoGroup.setData(spmlUser);
+        psoGroup.setPsoID(psoGroupId);
+
+        return psoGroup;
+
+    }
+
+    public class TargetContainer {
+
+        private Group[] groups;
+
+        public TargetContainer(Group[] groups) {
+            this.groups = groups;
+        }
+
+        public Group[] getGroups() {
+            return groups;
+        }
+
+        public void setGroups(Group[] groups) {
+            this.groups = groups;
+        }
+    }
 
 }

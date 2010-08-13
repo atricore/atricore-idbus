@@ -1,6 +1,5 @@
 package org.atricore.idbus.kernel.main.provisioning.spi;
 
-import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
@@ -25,10 +24,10 @@ public interface IdentityPartition {
             throws ProvisioningException;
 
     FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest)
-            throws GroupNotFoundException;
+            throws ProvisioningException;
 
     FindGroupByNameResponse findGroupByName(FindGroupByNameRequest groupRequest)
-            throws GroupNotFoundException;
+            throws ProvisioningException;
 
     ListGroupsResponse listGroups(ListGroupsRequest groupRequest)
             throws ProvisioningException;
@@ -42,28 +41,28 @@ public interface IdentityPartition {
     //<--------------- Users -------------------->
 
     RemoveUserResponse removeUser(RemoveUserRequest userRequest)
-            throws Exception;
+            throws ProvisioningException;
 
     AddUserResponse addUser(AddUserRequest userRequest)
-            throws Exception;
+            throws ProvisioningException;
 
     FindUserByIdResponse findUserById(FindUserByIdRequest userRequest)
-            throws Exception;
+            throws ProvisioningException;
 
     FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest)
-            throws Exception;
+            throws ProvisioningException;
 
-    ListUserResponse getUsers()
-            throws Exception;
+    ListUsersResponse listUsers(ListUsersRequest userRequest)
+            throws ProvisioningException;
 
     SearchUserResponse searchUsers(SearchUserRequest userRequest)
-            throws Exception;
+            throws ProvisioningException;
 
     UpdateUserResponse updateUser(UpdateUserRequest userRequest)
-            throws Exception;
+            throws ProvisioningException;
 
     GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByGroupRequest)
-    		throws Exception;
+    		throws ProvisioningException;
 
 
 }

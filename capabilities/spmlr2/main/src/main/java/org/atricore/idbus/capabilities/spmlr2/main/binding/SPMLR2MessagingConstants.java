@@ -8,7 +8,7 @@ import javax.xml.namespace.QName;
 public interface SPMLR2MessagingConstants {
 
     // TODO : REMFACTOR!
-    static final String SAMLR2_INBOUND_MSG = "urn:org:atricore:idbus:spmlr2:inbound-msg";
+    static final String SPMLR2_INBOUND_MSG = "urn:org:atricore:idbus:spmlr2:inbound-msg";
 
     static final QName SERVICE_NAME = new QName("urn:oasis:names:tc:SPML:2:0:wsdl", "SPMLService");
 

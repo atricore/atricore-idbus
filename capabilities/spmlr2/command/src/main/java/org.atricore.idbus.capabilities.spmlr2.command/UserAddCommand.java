@@ -21,9 +21,6 @@ import java.util.List;
 @Command(scope = "spml", name = "useradd", description = "SPML Add operation")
 public class UserAddCommand extends SpmlCommandSupport {
 
-    @Argument(index = 3, name = "targetId", description = "Provisionig Service Target id", required = true)
-    String targetId;
-
     @Option(name = "-u", aliases = "--username", description = "Username ", required = true, multiValued = false)
     String username;
 
@@ -37,12 +34,9 @@ public class UserAddCommand extends SpmlCommandSupport {
     List<String> groupName = new ArrayList<String>();
 
     @Override
-    protected Object doExecute(ProvisioningServiceProvider psp, PsPChannel pspChannel) throws Exception {
-
-        SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) pspChannel.getIdentityMediator();
-
+    protected RequestType buildSpmlRequest(ProvisioningServiceProvider psp, PsPChannel pspChannel) {
         AddRequestType req = new AddRequestType();
-        req.setRequestID(idGen.generateId());
+        req.setRequestID(uuidGenerator.generateId());
         req.setTargetID(targetId);
 
         // Use Atricore SPML schema ...
@@ -52,24 +46,18 @@ public class UserAddCommand extends SpmlCommandSupport {
         user.setEmail(email);
 
         // Recover list of Groups
-        List<GroupType> groups = retrieveGroups(psp, pspChannel, mediator);
+        List<GroupType> groups = retrieveGroups(psp, pspChannel);
         user.getGroup().addAll(groups);
 
         // TODO : Fill with user properties
         req.setData(user);
 
-        EndpointDescriptor ed = resolvePsPEndpoint(pspChannel, SpmlR2Binding.SPMLR2_LOCAL);
-        AddResponseType res = (AddResponseType) mediator.sendMessage(req, ed, pspChannel);
-
-        PSOType psoUser = res.getPso();
-        PSOIdentifierType psoUserId = psoUser.getPsoID();
-
-        System.out.println("Created user " + psoUserId.getID());
-
-        return null;
+        return req;
     }
 
-    protected List<GroupType> retrieveGroups(ProvisioningServiceProvider psp, PsPChannel pspChannel, SpmlR2PSPMediator mediator) {
+    protected List<GroupType> retrieveGroups(ProvisioningServiceProvider psp, PsPChannel pspChannel) {
+        SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) pspChannel.getIdentityMediator();
+
         // TODO : Implement me!
         return new ArrayList<GroupType>();
     }

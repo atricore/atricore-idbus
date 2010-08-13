@@ -66,7 +66,7 @@ public class SpmlR2PSPMediator extends AbstractSpmlR2Mediator {
 
                             // FROM cxf TO idbus-bind (through direct component)
                             from("cxf:camel://direct:" + ed.getName() + "-cxf" +
-                                    "?serviceClass=org.atricore.idbus.capabilities.spmlr2.main.binding.services.SamlR2ServiceImpl" +
+                                    "?serviceClass=org.atricore.idbus.capabilities.spmlr2.main.binding.services.SpmlR2ServiceImpl" +
                                     "&serviceName={urn:oasis:names:tc:SPML:2:0:wsdl}SPMLService" +
                                     "&portName={urn:oasis:names:tc:SPML:2:0:wsdl}soap" +
                                     "&dataFormat=POJO").
@@ -100,7 +100,7 @@ public class SpmlR2PSPMediator extends AbstractSpmlR2Mediator {
                                         process(new LoggerProcessor(getLogger())).
                                         to("direct:" + ed.getName() + "-response");
 
-                                // FROM SPMLR2 SamlR2Binding TO SPMLR2-PSP
+                                // FROM SPMLR2 SpmlR2Binding TO SPMLR2-PSP
                                 from("idbus-bind:camel://" + ed.getName() + "-response" +
                                         "?binding=" + ed.getBinding() +
                                         "&channelRef=" + pspChannel.getName()).

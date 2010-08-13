@@ -30,7 +30,7 @@ import org.atricore.idbus.kernel.main.provisioning.domain.User;
  * Time: 16:28:40
  * To change this template use File | Settings | File Templates.
  */
-public class ListUserResponse extends AbstractProvisioningResponse {
+public class ListUsersResponse extends AbstractProvisioningResponse {
 
     private User[] users;
 

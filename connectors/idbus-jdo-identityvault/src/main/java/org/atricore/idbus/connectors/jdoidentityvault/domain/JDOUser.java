@@ -10,7 +10,7 @@ public class JDOUser implements Serializable {
 
     private static final long serialVersionUID = -2547786148798290707L;
 
-    private long id;
+    private Long id;
 
 //<--- General Information ---->
     private String userName;
@@ -66,11 +66,11 @@ public class JDOUser implements Serializable {
     private Boolean automaticallyGeneratePassword;
     private Boolean emailNewPasword;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

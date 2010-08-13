@@ -6,18 +6,21 @@ import java.util.Collection;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public interface GenericDAO<T> {
+public interface GenericDAO<T, PK> {
 
-    T createObject(T object);
+    boolean exists(PK id);
 
-    void deleteObject(T object);
-
-    T findObjectById(Serializable id);
-
-    T updateObject(T object);
+    T findById(PK id);
 
     Collection<T> findAll();
 
-    void flush();
+    T save(T object);
 
+    void delete(PK id);
+
+    T detachCopy(T object, int fetchDepth);
+
+    Collection<T> detachCopyAll(Collection<T> objects, int fetchDepth);
+
+    void flush();
 }

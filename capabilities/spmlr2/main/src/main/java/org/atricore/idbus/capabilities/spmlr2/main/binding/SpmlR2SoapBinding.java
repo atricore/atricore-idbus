@@ -34,13 +34,13 @@ public class SpmlR2SoapBinding extends AbstractMediationSoapBinding {
     
    public MediationMessage createMessage(CamelMediationMessage message) {
 
-        // Get HTTP Exchange from SAML Exchange
+        // Get HTTP Exchange from SPML Exchange
         CamelMediationExchange spmlR2exchange = message.getExchange();
         Exchange exchange = spmlR2exchange.getExchange();
 
         logger.debug("Create Message Body from exchange " + exchange.getClass().getName());
 
-        // Converting from CXF Message to SAMLR2 Message
+        // Converting from CXF Message to SPML Message
         // Is this a CXF message?
         Message in = exchange.getIn();
 
@@ -120,7 +120,7 @@ public class SpmlR2SoapBinding extends AbstractMediationSoapBinding {
     public Object sendMessage(MediationMessage message) throws IdentityMediationException {
 
         if (logger.isTraceEnabled())
-            logger.trace("Sending new SAML 2.0 message using SOAP Binding");
+            logger.trace("Sending new SPML 2.0 message using SOAP Binding");
 
         EndpointDescriptor endpoint = message.getDestination();
 
@@ -143,7 +143,7 @@ public class SpmlR2SoapBinding extends AbstractMediationSoapBinding {
 
 
         String soapMethodName = content.getClass().getSimpleName();
-        soapMethodName = "saml" + soapMethodName.substring(0, soapMethodName.length() - 4); // Remove Type
+        soapMethodName = "spml" + soapMethodName.substring(0, soapMethodName.length() - 4); // Remove Type
 
         if (logger.isTraceEnabled())
             logger.trace("Using soap method ["+soapMethodName+"]");

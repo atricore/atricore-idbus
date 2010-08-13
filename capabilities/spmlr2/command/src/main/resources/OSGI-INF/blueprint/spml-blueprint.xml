@@ -17,26 +17,60 @@
     limitations under the License.
 
 -->
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+        xmlns:bp="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
     <command-bundle xmlns="http://felix.apache.org/karaf/xmlns/shell/v1.0.0">
+
+        <!-- TODO : Implement completers :) -->
+        
         <command name="spml/targetsls">
-            <action class="org.atricore.idbus.capabilities.spmlr2.command.ListTargetsCommand"/>
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.ListTargetsCommand">
+                <property name="cmdPrinter" ref="targetPrinter"/>
+            </action>
         </command>
 
-        <command name="spml/useradd">
-            <action class="org.atricore.idbus.capabilities.spmlr2.command.UserAddCommand"/>
+        <command name="spml/usradd">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.UserAddCommand">
+                <property name="cmdPrinter" ref="groupPrinter"/>
+            </action>
         </command>
 
-        <command name="spml/groupadd">
-            <action class="org.atricore.idbus.capabilities.spmlr2.command.GroupAddCommand"/>
+        <command name="spml/grpadd">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.GroupAddCommand">
+                <property name="cmdPrinter" ref="groupPrinter"/>
+            </action>
         </command>
 
-        <command name="spml/groupls">
-            <action class="org.atricore.idbus.capabilities.spmlr2.command.GroupListCommand"/>
+        <command name="spml/grpmodify">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.GroupModifyCommand">
+                <property name="cmdPrinter" ref="groupPrinter"/>
+            </action>
+        </command>
+
+        <command name="spml/grpdelete">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.GroupDeleteCommand">
+                <property name="cmdPrinter" ref="groupPrinter"/>
+            </action>
+        </command>
+
+        <command name="spml/grplookup">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.GroupLookupCommand">
+                <property name="cmdPrinter" ref="groupPrinter"/>
+            </action>
+        </command>
+
+        <command name="spml/grpsearch">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.GroupSearchCommand">
+                <property name="cmdPrinter" ref="groupPrinter"/>
+            </action>
         </command>
 
     </command-bundle>
+
+    <bean id="targetPrinter" class="org.atricore.idbus.capabilities.spmlr2.command.printer.TargetPrinter"/>
+
+    <bean id="groupPrinter" class="org.atricore.idbus.capabilities.spmlr2.command.printer.GroupPrinter"/>
 
 
 

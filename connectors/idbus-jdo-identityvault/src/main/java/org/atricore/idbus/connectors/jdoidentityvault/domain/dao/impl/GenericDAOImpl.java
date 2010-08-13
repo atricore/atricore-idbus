@@ -1,8 +1,8 @@
 package org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl;
 
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.GenericDAO;
+import org.springframework.orm.jdo.support.JdoDaoSupport;
 
-import javax.jdo.PersistenceManager;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
@@ -10,53 +10,49 @@ import java.util.Collection;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public class GenericDAOImpl<T> implements GenericDAO<T> {
+public abstract class GenericDAOImpl<T, PK extends Serializable>
+        extends JdoDaoSupport implements GenericDAO<T, PK> {
 
-    protected PersistenceManager pm;
+    private Class<T> persistentClass;
 
     public GenericDAOImpl() {
         persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
-    public GenericDAOImpl(PersistenceManager pm) {
-        this();
-        this.pm = pm;
+    public boolean exists(PK id) {
+        T entity = (T) getJdoTemplate().getObjectById(this.persistentClass, id);
+        return entity != null;
     }
 
-    public PersistenceManager getPersistenceManager() {
-        return pm;
-    }
-
-    public void setPm(PersistenceManager pm) {
-        this.pm = pm;
-    }
-
-    private Class<T> persistentClass;
-
-    public T createObject(T object) {
-        return getPersistenceManager().makePersistent(object);
-    }
-
-    public void deleteObject(T object) {
-        getPersistenceManager().deletePersistent(object);
-    }
-
-    public T findObjectById(Serializable id) {
-        return (T) getPersistenceManager().getObjectById(persistentClass, id);
-    }
-
-    public void flush() {
-        getPersistenceManager().flush();
-    }
-
-
-    public T updateObject(T object) {
-        return getPersistenceManager().makePersistent(object);
+    public T findById(PK id) {
+        return (T) getJdoTemplate().getObjectById(this.persistentClass, id);
     }
 
     public Collection<T> findAll() {
-        Collection<T> results = (Collection<T>) getPersistenceManager().newQuery(persistentClass).execute();
-        return results;
-
+        return getJdoTemplate().find(this.persistentClass);
     }
+
+    public T save(T object) {
+        return (T) getJdoTemplate().makePersistent(object);
+    }
+
+    public void delete(PK id) {
+        getJdoTemplate().deletePersistent(this.findById(id));
+    }
+
+    public void flush() {
+        getJdoTemplate().flush();
+    }
+
+    public T detachCopy(T object, int fetchDepth) {
+        getPersistenceManager().getFetchPlan().setMaxFetchDepth(fetchDepth);
+        return (T) getJdoTemplate().detachCopy(object);
+    }
+
+    public Collection<T> detachCopyAll(Collection<T> objects, int fetchDepth) {
+        getPersistenceManager().getFetchPlan().setMaxFetchDepth(fetchDepth);
+        return getJdoTemplate().detachCopyAll(objects);
+    }
+
+
 }
