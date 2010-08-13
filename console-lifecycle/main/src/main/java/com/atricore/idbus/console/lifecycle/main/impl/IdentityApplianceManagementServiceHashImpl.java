@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+@Deprecated
 public class IdentityApplianceManagementServiceHashImpl
     implements IdentityApplianceManagementService
 {
