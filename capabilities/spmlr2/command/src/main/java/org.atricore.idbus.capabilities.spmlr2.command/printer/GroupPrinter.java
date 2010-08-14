@@ -35,7 +35,7 @@ public class GroupPrinter extends AbstractCmdPrinter {
 
         StringBuilder sb = new StringBuilder();
         // Build headers line
-        sb.append("  ID        Name           Description       \n");
+        sb.append("  ID                Name                     Description       \n");
 
         for (PSOType psoGroup : psoGroups) {
             psoGroup.getPsoID();
@@ -77,61 +77,12 @@ public class GroupPrinter extends AbstractCmdPrinter {
 
     }
 
-    protected String getPsoIDString(PSOIdentifierType psoId) {
-        String id = psoId.getID();
-        if (id == null)
-            id = "--";
-
-        while (id.length() < 12) {
-            id = " " + id;
-        }
-
-        return id;
-
-    }
-
     protected String getGroupNameString(GroupType spmlGroup) {
-        String name = spmlGroup.getName();
-        if (name == null)
-            name = "--";
-
-        while (name.length() < 18) {
-            name += " ";
-        }
-
-        return name;
-
+        return getLeftString(spmlGroup.getName(), 12);
     }
 
     protected String getGroupDescriptionString(GroupType spmlGroup) {
-        String description = spmlGroup.getDescription();
-        if (description == null)
-            description = "--";
-
-        while (description.length() < 64) {
-            description += " ";
-        }
-
-        return description;
-
-    }
-
-    protected String getLabelString(String label) {
-        return getLabelString(label, 16);
-    }
-
-
-    protected String getLabelString(String label, int size) {
-        if (label == null)
-            label = "--";
-
-        while (label.length() < size - 1) {
-            label += " ";
-        }
-        label += ": ";
-
-        return label;
-
+        return getLeftString(spmlGroup.getDescription(), 64);
     }
 
 }

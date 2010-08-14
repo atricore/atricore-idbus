@@ -17,7 +17,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProv
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "spml", name = "grplookup", description = "SPML Group Lookup operation")
+@Command(scope = "spml", name = "grplookup", description = "SPML Group LOOKUP operation")
 public class GroupLookupCommand extends SpmlCommandSupport {
 
     @Option(name = "-i", aliases = "--id", description = "Group ID", required = false, multiValued = false)

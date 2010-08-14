@@ -6,6 +6,7 @@ import oasis.names.tc.spml._2._0.atricore.UserType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
 import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.logging.Log;
@@ -23,7 +24,6 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
-import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
@@ -108,7 +108,7 @@ public class PSPProducer extends SpmlR2Producer {
 
             // TODO : Check spec
             spmlTarget.setProfile("xsd");
-            spmlTarget.setTargetID(target.getIdentityPartition().getName());
+            spmlTarget.setTargetID(target.getName());
 
             CapabilitiesListType capabilitiesList = new CapabilitiesListType();
 
@@ -125,25 +125,43 @@ public class PSPProducer extends SpmlR2Producer {
 
     protected AddResponseType doProcessAddRequest(CamelMediationExchange exchane, AddRequestType spmlRequest) throws Exception {
 
+        SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) channel.getIdentityMediator();
+
         // TODO : User planning infrastructure to process requests!
         ProvisioningTarget target = lookupTarget(spmlRequest.getTargetID());
-        IdentityPartition partition = target.getIdentityPartition();
 
-        AddResponseType spmlResponse = null;
+        AddResponseType spmlResponse = new AddResponseType();
+        spmlResponse.setRequestID(spmlRequest.getRequestID());
 
-        if (spmlRequest.getData() instanceof UserType) {
+        if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
 
             if (logger.isDebugEnabled())
                 logger.debug("Processing SMPL Add request for User");
-            AddUserResponse res = partition.addUser(toAddUserRequest(target, spmlRequest));
+
+            UserType spmlUser = (UserType) spmlRequest.getData();
+
+            AddUserRequest req = new AddUserRequest();
+            BeanUtils.copyProperties(req, spmlUser);
+
+            AddUserResponse res = target.addUser(req);
             spmlResponse = (AddResponseType) toSpmlResponse(target, res);
-        } else if (spmlRequest.getData() instanceof GroupType) {
+
+        } if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
 
             if (logger.isDebugEnabled())
                 logger.debug("Processing SMPL Add request for Group");
 
-            AddGroupResponse res = partition.addGroup(toAddGroupRequest(target, spmlRequest));
-            spmlResponse = (AddResponseType) toSpmlResponse(target, spmlRequest, res);
+            GroupType spmlGroup = (GroupType) spmlRequest.getData();
+            AddGroupRequest req = new AddGroupRequest();
+            req.setName(spmlGroup.getName());
+            req.setDescription(spmlGroup.getDescription());
+
+            AddGroupResponse res = target.addGroup(req);
+
+            spmlResponse.setPso(toSpmlGroup(target, res.getGroup()));
+            spmlResponse.setRequestID(spmlRequest.getRequestID());
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
         }
 
         return spmlResponse;
@@ -156,7 +174,6 @@ public class PSPProducer extends SpmlR2Producer {
 
         SearchQueryType spmlQry = spmlRequest.getQuery();
         ProvisioningTarget target = lookupTarget(spmlQry.getTargetID());
-        IdentityPartition partition = target.getIdentityPartition();
 
         // TODO : Query support is limmited
         List<Object> any = spmlQry.getAny();
@@ -164,7 +181,6 @@ public class PSPProducer extends SpmlR2Producer {
         SelectionType spmlSelect = (SelectionType) any.get(0);
         String uri = spmlSelect.getNamespaceURI();
         String path = spmlSelect.getPath();
-
 
         if (uri == null || !uri.equals("http://www.w3.org/TR/xpath20")) {
             logger.error("Unsupported query language " + uri);
@@ -179,7 +195,7 @@ public class PSPProducer extends SpmlR2Producer {
         if (spmlSelect.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
             // TODO : Improve this
 
-            ListGroupsResponse res = partition.listGroups(new ListGroupsRequest());
+            ListGroupsResponse res = target.listGroups(new ListGroupsRequest());
             Group[] groups = res.getGroups();
 
             if (logger.isTraceEnabled())
@@ -201,7 +217,7 @@ public class PSPProducer extends SpmlR2Producer {
 
         } else if (spmlSelect.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
             // TODO : Improve this
-            ListUsersResponse res = partition.listUsers(new ListUsersRequest());
+            ListUsersResponse res = target.listUsers(new ListUsersRequest());
             User[] users = res.getUsers();
 
             JXPathContext jxp = JXPathContext.newContext(null, users);
@@ -240,7 +256,7 @@ public class PSPProducer extends SpmlR2Producer {
             FindGroupByIdRequest req = new FindGroupByIdRequest();
             req.setId(Long.parseLong(psoId.getID()));
 
-            FindGroupByIdResponse res = target.getIdentityPartition().findGroupById(req);
+            FindGroupByIdResponse res = target.findGroupById(req);
 
             spmlResponse.setPso(toSpmlGroup(target, res.getGroup()));
             spmlResponse.setStatus(StatusCodeType.SUCCESS );
@@ -280,7 +296,7 @@ public class PSPProducer extends SpmlR2Producer {
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
             try {
-                UpdateGroupResponse groupResponse = target.getIdentityPartition().updateGroup(groupRequest);
+                UpdateGroupResponse groupResponse = target.updateGroup(groupRequest);
 
                 groupResponse.getGroup();
                 spmlResponse.setPso(toSpmlGroup(target, groupResponse.getGroup()));
@@ -312,7 +328,7 @@ public class PSPProducer extends SpmlR2Producer {
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
             try {
-                RemoveGroupResponse groupResponse = target.getIdentityPartition().removeGroup(groupRequest);
+                RemoveGroupResponse groupResponse = target.removeGroup(groupRequest);
 
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
                 spmlResponse.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr);
@@ -328,105 +344,24 @@ public class PSPProducer extends SpmlR2Producer {
         }
     }
 
-    // ------------------------------< Utilities >
-
-    protected ProvisioningTarget lookupTarget(String targetId) {
-        SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) channel.getIdentityMediator();
-
-        for (ProvisioningTarget target : mediator.getProvisioningTargets()) {
-            if (target.getIdentityPartition().getName().equals(targetId)) {
-                return target;
-            }
-        }
-        return null;
-    }
-
-    protected AddUserRequest toAddUserRequest(ProvisioningTarget target, AddRequestType spmlRequest) {
-
-        UserType user = (UserType) spmlRequest.getData();
-
-        AddUserRequest req = new AddUserRequest();
-        // TODO : Use dozer ?!
-
-        return req;
-    }
-
-    protected ResponseType toSpmlResponse(ProvisioningTarget target, AddUserResponse response) {
-        
-        AddResponseType spmlResponse = null;
-        return spmlResponse;
-    }
-
-    protected AddGroupRequest toAddGroupRequest(ProvisioningTarget target, AddRequestType spmlRequest) {
-
-        GroupType group = (GroupType) spmlRequest.getData();
-
-        AddGroupRequest req = new AddGroupRequest();
-        req.setName(group.getName());
-        req.setDescription(group.getDescription());
-
-        return req;
-    }
-
-    protected ResponseType toSpmlResponse(ProvisioningTarget target,
-                                          AddRequestType spmlRequest,
-                                          AddGroupResponse response) {
-
-        Group group = response.getGroup();
-
-
-        AddResponseType spmlResponse = new AddResponseType();
-        spmlResponse.setPso(toSpmlGroup(target, group));
-        spmlResponse.setRequestID(spmlRequest.getRequestID());
-        spmlResponse.setStatus(StatusCodeType.SUCCESS);
-
-        return spmlResponse;
-    }
-
-    protected PSOType toSpmlGroup(ProvisioningTarget target, Group group) {
-        GroupType spmlGroup = new GroupType();
-        spmlGroup.setId(group.getId());
-        spmlGroup.setName(group.getName());
-        spmlGroup.setDescription(group.getDescription());
-
-        PSOIdentifierType psoGroupId = new PSOIdentifierType ();
-        psoGroupId.setTargetID(target.getIdentityPartition().getName());
-        psoGroupId.setID(group.getId() + "");
-        psoGroupId.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
-
-        PSOType psoGroup = new PSOType();
-        psoGroup.setData(spmlGroup);
-        psoGroup.setPsoID(psoGroupId);
-
-        return psoGroup;
-
-    }
-
-    protected PSOType toSpmlUser(ProvisioningTarget target, User user) {
-        UserType spmlUser = new UserType();
-
-        // TODO : User dozer ?
-        spmlUser.setUsername(user.getUserName());
-
-        PSOIdentifierType psoGroupId = new PSOIdentifierType ();
-        psoGroupId.setTargetID(target.getIdentityPartition().getName());
-        psoGroupId.setID(user.getId() + "");
-
-        PSOType psoGroup = new PSOType();
-        psoGroup.setData(spmlUser);
-        psoGroup.setPsoID(psoGroupId);
-
-        return psoGroup;
-
-    }
-
     public class TargetContainer {
-
-        private Group[] groups;
 
         public TargetContainer(Group[] groups) {
             this.groups = groups;
         }
+
+        public TargetContainer(User[] users) {
+            this.users = users;
+        }
+
+        public TargetContainer(Group[] groups, User[] users) {
+            this.groups = groups;
+            this.users = users;
+        }
+
+        private Group[] groups = new Group[0];
+
+        private User[] users = new User[0];
 
         public Group[] getGroups() {
             return groups;
@@ -434,6 +369,14 @@ public class PSPProducer extends SpmlR2Producer {
 
         public void setGroups(Group[] groups) {
             this.groups = groups;
+        }
+
+        public User[] getUsers() {
+            return users;
+        }
+
+        public void setUsers(User[] users) {
+            this.users = users;
         }
     }
 

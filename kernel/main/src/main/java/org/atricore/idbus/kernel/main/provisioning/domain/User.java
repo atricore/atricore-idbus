@@ -12,7 +12,7 @@ public class User implements Serializable {
 
     private long id;
 
-//<--- General Information ---->
+    //<--- General Information ---->
     private String userName;
     private String firstName;
     private String surename;

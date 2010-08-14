@@ -17,13 +17,13 @@ import java.util.List;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "spml", name = "grpadd", description = "SPML Group Add operation")
+@Command(scope = "spml", name = "grpadd", description = "SPML Group ADD operation")
 public class GroupAddCommand extends SpmlCommandSupport {
 
-    @Option(name = "-n", aliases = "--name", description = "Group Name", required = true, multiValued = false)
+    @Option(name = "-n", aliases = "--name", description = "Group name", required = true, multiValued = false)
     String name;
 
-    @Option(name = "-d", aliases = "--description", description = "Group Description", required = true, multiValued = false)
+    @Option(name = "-d", aliases = "--description", description = "Group description", required = true, multiValued = false)
     String description;
 
     protected List<GroupType> retrieveGroups(ProvisioningServiceProvider psp, PsPChannel pspChannel, SpmlR2PSPMediator mediator) {

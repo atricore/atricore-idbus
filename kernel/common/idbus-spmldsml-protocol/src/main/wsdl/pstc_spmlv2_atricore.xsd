@@ -50,7 +50,7 @@
                 </sequence>
 
                 <attribute name="id" type="xsd:long" use="required"/>
-                <attribute name="username" type="xsd:string" use="required"/>
+                <attribute name="userName" type="xsd:string" use="required"/>
                 
                 <attribute name="firstName" type="xsd:string" use="optional"/>
                 <attribute name="surename" type="xsd:string" use="optional"/>

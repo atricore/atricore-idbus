@@ -1,8 +1,13 @@
 package org.atricore.idbus.kernel.main.provisioning.spi;
 
+import org.atricore.idbus.kernel.main.provisioning.domain.Group;
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
@@ -15,54 +20,29 @@ public interface IdentityPartition {
 
     IdentityVault getIdentityVault();
 
-    //<--------------- Groups -------------------->
+    Group findGroupById(long id) throws ProvisioningException;
 
-    RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest)
-            throws ProvisioningException;
+    Group findGroupByName(String name) throws ProvisioningException;
 
-    AddGroupResponse addGroup(AddGroupRequest groupRequest)
-            throws ProvisioningException;
+    Collection<Group> findAllGroups() throws ProvisioningException;
 
-    FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest)
-            throws ProvisioningException;
+    Group addGroup(Group group) throws ProvisioningException;
 
-    FindGroupByNameResponse findGroupByName(FindGroupByNameRequest groupRequest)
-            throws ProvisioningException;
+    Group updateGroup(Group group) throws ProvisioningException;
 
-    ListGroupsResponse listGroups(ListGroupsRequest groupRequest)
-            throws ProvisioningException;
+    void deleteGroup(long id) throws ProvisioningException;
 
-    SearchGroupResponse searchGroups(SearchGroupRequest groupRequest)
-            throws ProvisioningException;
+    User addUser(User user) throws ProvisioningException;
 
-    UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest)
-            throws ProvisioningException;
+    void deleteUser(long id) throws ProvisioningException;
 
-    //<--------------- Users -------------------->
+    User findUserById(long id) throws ProvisioningException;
 
-    RemoveUserResponse removeUser(RemoveUserRequest userRequest)
-            throws ProvisioningException;
+    User findUserByUserName(String username) throws ProvisioningException;
 
-    AddUserResponse addUser(AddUserRequest userRequest)
-            throws ProvisioningException;
+    Collection<User> findAllUsers() throws ProvisioningException;
 
-    FindUserByIdResponse findUserById(FindUserByIdRequest userRequest)
-            throws ProvisioningException;
+    User updateUser(User user) throws ProvisioningException;
 
-    FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest)
-            throws ProvisioningException;
-
-    ListUsersResponse listUsers(ListUsersRequest userRequest)
-            throws ProvisioningException;
-
-    SearchUserResponse searchUsers(SearchUserRequest userRequest)
-            throws ProvisioningException;
-
-    UpdateUserResponse updateUser(UpdateUserRequest userRequest)
-            throws ProvisioningException;
-
-    GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByGroupRequest)
-    		throws ProvisioningException;
-
-
+    Collection<User> getUsersByGroup(Group group) throws ProvisioningException;
 }

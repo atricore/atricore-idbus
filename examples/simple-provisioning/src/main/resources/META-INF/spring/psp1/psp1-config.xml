@@ -75,6 +75,7 @@
     <!-- Identity Vault / Partition JDO Based -->
     <!-- ============================================================= -->
     <bean name="psp1-pst1" class="org.atricore.idbus.kernel.main.provisioning.impl.ProvisioningTargetImpl">
+        <property name="name" value="pst1"/> 
         <property name="identityPartition" ref="idpart1"/>
     </bean>
 

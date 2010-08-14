@@ -16,16 +16,16 @@ import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProv
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "spml", name = "grpmodify", description = "SPML Group Modify operation")
+@Command(scope = "spml", name = "grpmodify", description = "SPML Group MODIFY operation")
 public class GroupModifyCommand extends SpmlCommandSupport {
 
     @Option(name = "-i", aliases = "--id", description = "Group ID", required = true, multiValued = false)
     Long id;
 
-    @Option(name = "-n", aliases = "--name", description = "Group Name", required = false, multiValued = false)
+    @Option(name = "-n", aliases = "--name", description = "Group name", required = false, multiValued = false)
     String name;
 
-    @Option(name = "-d", aliases = "--description", description = "Group Description", required = false, multiValued = false)
+    @Option(name = "-d", aliases = "--description", description = "Group description", required = false, multiValued = false)
     String description;
 
     @Override

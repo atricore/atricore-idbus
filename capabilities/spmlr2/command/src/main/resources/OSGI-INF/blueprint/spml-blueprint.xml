@@ -23,6 +23,8 @@
     <command-bundle xmlns="http://felix.apache.org/karaf/xmlns/shell/v1.0.0">
 
         <!-- TODO : Implement completers :) -->
+
+        <!-- Target commands -->
         
         <command name="spml/targetsls">
             <action class="org.atricore.idbus.capabilities.spmlr2.command.ListTargetsCommand">
@@ -30,11 +32,28 @@
             </action>
         </command>
 
+        <!-- User commands -->
+
         <command name="spml/usradd">
             <action class="org.atricore.idbus.capabilities.spmlr2.command.UserAddCommand">
-                <property name="cmdPrinter" ref="groupPrinter"/>
+                <property name="cmdPrinter" ref="userPrinter"/>
             </action>
         </command>
+
+        <command name="spml/usrlookup">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.UserLookupCommand">
+                <property name="cmdPrinter" ref="userPrinter"/>
+            </action>
+        </command>
+
+        <command name="spml/usrsearch">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.UserSearchCommand">
+                <property name="cmdPrinter" ref="userPrinter"/>
+            </action>
+        </command>
+
+
+        <!-- Group commands -->
 
         <command name="spml/grpadd">
             <action class="org.atricore.idbus.capabilities.spmlr2.command.GroupAddCommand">
@@ -71,6 +90,8 @@
     <bean id="targetPrinter" class="org.atricore.idbus.capabilities.spmlr2.command.printer.TargetPrinter"/>
 
     <bean id="groupPrinter" class="org.atricore.idbus.capabilities.spmlr2.command.printer.GroupPrinter"/>
+
+    <bean id="userPrinter" class="org.atricore.idbus.capabilities.spmlr2.command.printer.UserPrinter"/>
 
 
 

@@ -19,10 +19,10 @@ import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProv
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "spml", name = "grpsearch", description = "SPML Group Lookup operation")
+@Command(scope = "spml", name = "grpsearch", description = "SPML Group SEARCH operation")
 public class GroupSearchCommand extends SpmlCommandSupport {
 
-    @Option(name = "-q", aliases = "--query", description = "SPML Group query", required = false, multiValued = false)
+    @Option(name = "-q", aliases = "--query", description = "SPML Group search query", required = false, multiValued = false)
     String qry;
 
     @Option(name = "-n", aliases = "--name", description = "SPML Group name", required = false, multiValued = false)

@@ -15,7 +15,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProv
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "spml", name = "grpdelete", description = "SPML Group Delete operation")
+@Command(scope = "spml", name = "grpdelete", description = "SPML Group DELETE operation")
 public class GroupDeleteCommand extends SpmlCommandSupport {
 
     @Option(name = "-i", aliases = "--id", description = "Group ID", required = true, multiValued = false)

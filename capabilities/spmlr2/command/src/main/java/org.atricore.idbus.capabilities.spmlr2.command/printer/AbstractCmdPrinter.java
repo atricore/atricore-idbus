@@ -1,5 +1,6 @@
 package org.atricore.idbus.capabilities.spmlr2.command.printer;
 
+import oasis.names.tc.spml._2._0.PSOIdentifierType;
 import oasis.names.tc.spml._2._0.RequestType;
 import oasis.names.tc.spml._2._0.ResponseType;
 import oasis.names.tc.spml._2._0.StatusCodeType;
@@ -65,6 +66,50 @@ public abstract class AbstractCmdPrinter implements CmdPrinter {
     protected void printErrMsg(StringBuilder sb) {
         printErrMsg(sb.toString());
     }
+
+    protected String getPsoIDString(PSOIdentifierType psoId) {
+        return getRightString(psoId.getID(), 12);
+    }
+
+    protected String getLabelString(String label) {
+        return getLabelString(label, 16);
+    }
+
+
+    protected String getLabelString(String label, int size) {
+        label = getLeftString(label, size);
+        label += ": ";
+        return label;
+    }
+
+    protected String getLeftString(String str, int padding) {
+        String text = str;
+        if (text == null)
+            text = "--";
+
+        while (text.length() < padding - 1) {
+            text += " ";
+        }
+
+        return text;
+
+    }
+
+    protected String getRightString(String str, int padding) {
+        String text = str;
+        if (text == null)
+            text = "--";
+
+        while (text.length() < padding - 1) {
+            text = " " + text;
+        }
+
+        return text;
+
+    }
+
+
+
 
 }
 

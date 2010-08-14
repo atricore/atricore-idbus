@@ -43,7 +43,6 @@ public class AbstractSpmlR2Mediator extends AbstractCamelMediator {
             String location;
             String responseLocation;
 
-
             SpmlR2Binding binding = null;
 
             logger.debug("Creating Endpoint Descriptor for : " + endpoint.getName());

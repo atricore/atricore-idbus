@@ -41,7 +41,7 @@
     <properties>
         <apache.tiles.version>2.0.6</apache.tiles.version>
         <commons-digester.version>1.8.1</commons-digester.version>
-        <commons-beanutils.version>1.7.0</commons-beanutils.version>
+        <commons-beanutils.version>1.8.0</commons-beanutils.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
     </properties>
 

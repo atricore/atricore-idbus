@@ -37,4 +37,6 @@ public abstract class AbstractIdentityPartition implements IdentityPartition {
     public void setIdentityVault(IdentityVault identityVault) {
         this.identityVault = identityVault;
     }
+
+
 }
