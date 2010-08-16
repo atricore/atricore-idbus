@@ -70,7 +70,9 @@ public class EditGroupMediator extends IocFormMediator
     private function init():void {
         view.cancelEditGroup.addEventListener(MouseEvent.CLICK, handleCancel);
         view.submitEditGroupButton.addEventListener(MouseEvent.CLICK, onSubmitEditGroup);
+
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+        bindForm();
     }
 
     override public function registerValidators():void {
@@ -95,8 +97,8 @@ public class EditGroupMediator extends IocFormMediator
     }
 
     override public function bindForm():void {
-        view.groupName.text = "";
-        view.groupDescription.text = "";
+        view.groupName.text = _accountManagementProxy.currentGroup.name;
+        view.groupDescription.text = _accountManagementProxy.currentGroup.description;
 
         FormUtility.clearValidationErrors(_validators);
     }

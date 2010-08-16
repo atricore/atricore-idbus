@@ -31,7 +31,10 @@ import com.atricore.idbus.console.services.dto.UserDTO;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.collections.ArrayCollection;
+import mx.collections.ArrayList;
 import mx.events.CloseEvent;
+import mx.events.FlexEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
@@ -58,6 +61,13 @@ public class AddUserMediator extends IocFormMediator
         if (getViewComponent() != null) {
             view.cancelAddUser.removeEventListener(MouseEvent.CLICK, handleCancel);
             view.submitAddUserButton.removeEventListener(MouseEvent.CLICK, onSubmitAddUser);
+
+            view.generalSection.removeEventListener(FlexEvent.SHOW, initGeneralSection);
+            view.preferencesSection.removeEventListener(FlexEvent.SHOW, initPreferencesSection);
+            view.groupsSection.removeEventListener(FlexEvent.SHOW, initGroupsSection);
+            view.securitySection.removeEventListener(FlexEvent.SHOW, initSecuritySection);
+            view.passwordSection.removeEventListener(FlexEvent.SHOW, initPasswordSection);
+
             if (view.parent != null) {
                 view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
             }
@@ -70,6 +80,13 @@ public class AddUserMediator extends IocFormMediator
     private function init():void {
         view.cancelAddUser.addEventListener(MouseEvent.CLICK, handleCancel);
         view.submitAddUserButton.addEventListener(MouseEvent.CLICK, onSubmitAddUser);
+
+        view.generalSection.addEventListener(FlexEvent.SHOW, initGeneralSection);
+        view.preferencesSection.addEventListener(FlexEvent.SHOW, initPreferencesSection);
+        view.groupsSection.addEventListener(FlexEvent.SHOW, initGroupsSection);
+        view.securitySection.addEventListener(FlexEvent.SHOW, initSecuritySection);
+        view.passwordSection.addEventListener(FlexEvent.SHOW, initPasswordSection);
+
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
     }
 
@@ -96,34 +113,6 @@ public class AddUserMediator extends IocFormMediator
                 handleAddUserFailure();
                 break;
         }
-    }
-
-    override public function bindForm():void {
-        view.userUsername.text = "";
-        view.userPassword.text = "";
-        view.userRetypePassword.text = "";
-        view.userFirstName.text = "";
-        view.userLastName.text = "";
-        view.userFullName.text = "";
-        view.userEmail.text = "";
-        view.userTelephone.text = "";
-
-
-        FormUtility.clearValidationErrors(_validators);
-    }
-
-    override public function bindModel():void {
-        var newUserDef:UserDTO = new UserDTO();
-        newUserDef.userName = view.userUsername.text;
-        newUserDef.userPassword = view.userPassword.text ;
-        newUserDef.firstName = view.userFirstName.text;
-        newUserDef.surename = view.userLastName.text;
-        newUserDef.commonName = view.userFirstName.text +" " +view.userLastName.text; 
-        newUserDef.email = view.userEmail.text;
-        newUserDef.telephoneNumber = view.userTelephone.text;
-        newUserDef.facsimilTelephoneNumber = view.userFax.text;
-
-        _newUser = newUserDef;
     }
 
     private function onSubmitAddUser(event:MouseEvent):void {
@@ -155,11 +144,101 @@ public class AddUserMediator extends IocFormMediator
         closeWindow();
     }
 
+    private function initGeneralSection(event:FlexEvent):void {
+        view.focusManager.setFocus(view.userUsername);
+    }
+
+    private function initPreferencesSection(event:FlexEvent):void {
+        view.focusManager.setFocus(view.userLanguage);
+    }
+
+    private function initGroupsSection(event:FlexEvent):void {
+        sendNotification(ApplicationFacade.LIST_GROUPS);
+        if (view.groupsSelectedList.dataProvider == null) {
+            view.groupsSelectedList.dataProvider = new ArrayCollection();
+        }
+        view.groupsAvailablesList.dataProvider = new ArrayList(_accountManagementProxy.groupsList);
+    }
+
+    private function initSecuritySection(event:FlexEvent):void {
+        view.focusManager.setFocus(view.accountDisabledCheck);
+    }
+
+    private function initPasswordSection(event:FlexEvent):void {
+        view.focusManager.setFocus(view.userPassword);
+    }
+
     private function closeWindow():void {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
     private function handleClose(event:Event):void {
+    }
+
+    override public function bindForm():void {
+        view.userUsername.text = "";
+        view.userPassword.text = "";
+        view.userRetypePassword.text = "";
+        view.userFirstName.text = "";
+        view.userLastName.text = "";
+        view.userFullName.text = "";
+        view.userEmail.text = "";
+        view.userTelephone.text = "";
+
+        FormUtility.clearValidationErrors(_validators);
+    }
+
+    override public function bindModel():void {
+        var newUserDef:UserDTO = new UserDTO();
+        newUserDef.userName = view.userUsername.text;
+        newUserDef.firstName = view.userFirstName.text;
+        newUserDef.surename = view.userLastName.text;
+        newUserDef.commonName = view.userFirstName.text +" " +view.userLastName.text;
+        newUserDef.email = view.userEmail.text;
+        newUserDef.telephoneNumber = view.userTelephone.text;
+        newUserDef.facsimilTelephoneNumber = view.userFax.text;
+
+        _newUser = newUserDef;
+
+        // Preference data
+        if (view.userLanguage != null)
+            _newUser.language = view.userLanguage.selectedItem as String;
+        // Groups data
+        if (view.groupsSelectedList != null) {
+            if (view.groupsSelectedList.dataProvider as ArrayCollection != null)
+                _newUser.groups = (view.groupsSelectedList.dataProvider as ArrayCollection).toArray();
+        }
+        // Security
+        if (view.accountDisabledCheck != null) { // Security Tab Loaded
+            _newUser.accountDisabled = view.accountDisabledCheck.selected;
+            _newUser.accountExpires = view.accountDisabledCheck.selected;
+            if (view.accountExpiresCheck.selected)
+                _newUser.accountExpirationDate = view.accountExpiresDate.selectedDate;
+
+            _newUser.limitSimultaneousLogin = view.accountLimitLoginCheck.selected;
+            if (view.accountLimitLoginCheck.selected) {
+                _newUser.maximunLogins = view.accountMaxLimitLogin.value;
+                _newUser.terminatePreviousSession = view.terminatePrevSession.selected;
+                _newUser.preventNewSession = view.preventNewSession.selected;
+            }
+        }
+        // Password
+        if (view.allowPasswordChangeCheck != null) { //Password Tab Loaded
+            _newUser.allowUserToChangePassword = view.allowPasswordChangeCheck.selected;
+            _newUser.forcePeriodicPasswordChanges = view.forcePasswordChangeCheck.selected;
+            if (view.forcePasswordChangeCheck.selected) {
+                _newUser.daysBetweenChanges = view.forcePasswordChangeDays.value;
+                _newUser.passwordExpirationDate = view.expirationPasswordDate.selectedDate;
+            }
+            _newUser.notifyPasswordExpiration = view.notifyPasswordExpirationCheck.selected;
+            if (view.notifyPasswordExpirationCheck.selected) {
+                _newUser.daysBeforeExpiration = view.notifyPasswordExpirationDay.value;
+            }
+            _newUser.userPassword = view.userPassword.text;
+            _newUser.automaticallyGeneratePassword = view.generatePasswordCheck.selected;
+            _newUser.emailNewPasword = view.emailNewPasswordCheck.selected;
+        }
+
     }
 
     protected function get view():AddUserForm

@@ -31,14 +31,18 @@ import com.atricore.idbus.console.services.dto.GroupDTO;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.collections.ArrayCollection;
+import mx.controls.Alert;
 import mx.events.CloseEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
 
 public class SearchGroupsMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
-    private var _newGroup:GroupDTO;
+    private var _searchGroup:GroupDTO;
 
     private var _processingStarted:Boolean;
 
@@ -106,7 +110,7 @@ public class SearchGroupsMediator extends IocFormMediator
         newGroupDef.name = view.groupName.text;
         newGroupDef.description = view.groupDescription.text;
 
-        _newGroup = newGroupDef;
+        _searchGroup = newGroupDef;
     }
 
     private function onSubmitSearchGroup(event:MouseEvent):void {
@@ -114,8 +118,8 @@ public class SearchGroupsMediator extends IocFormMediator
         if (validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
-            _accountManagementProxy.currentGroup = _newGroup;
-            sendNotification(ApplicationFacade.SEARCH_GROUPS, _newGroup);
+            _accountManagementProxy.currentGroup = _searchGroup;
+            sendNotification(ApplicationFacade.SEARCH_GROUPS, _searchGroup);
             closeWindow();
         }
         else {
@@ -125,12 +129,19 @@ public class SearchGroupsMediator extends IocFormMediator
 
     public function handleSearchGroupSuccess():void {
         sendNotification(ProcessingMediator.STOP);
-        //sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The the group was successfully updated.");
+        var resMan:IResourceManager = ResourceManager.getInstance();
+        var srchResult:ArrayCollection = _accountManagementProxy.searchedGroups;
+
+        if (srchResult.length == 0)
+            Alert.show(resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.group.empty.query'));
+        else {
+            sendNotification(ApplicationFacade.DISPLAY_SEARCH_RESULTS_GROUPS, srchResult);
+        }
     }
 
     public function handleSearchGroupFailure():void {
         sendNotification(ProcessingMediator.STOP);
-        //sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error updating group.");
+        sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error searching groups.");
     }
     private function handleCancel(event:MouseEvent):void {
         closeWindow();

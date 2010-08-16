@@ -31,14 +31,18 @@ import com.atricore.idbus.console.services.dto.UserDTO;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.collections.ArrayCollection;
+import mx.controls.Alert;
 import mx.events.CloseEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
 
 public class SearchUsersMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
-    private var _newUser:UserDTO;
+    private var _searchUser:UserDTO;
 
     private var _processingStarted:Boolean;
 
@@ -75,11 +79,8 @@ public class SearchUsersMediator extends IocFormMediator
 
     override public function registerValidators():void {
         _validators.push(view.usernameUserValidator);
-        _validators.push(view.passwordUserValidator);
-        _validators.push(view.retypePasswordUserValidator);
         _validators.push(view.firstnameUserValidator);
         _validators.push(view.lastnameUserValidator);
-        _validators.push(view.userEmailValidator);
     }
 
     override public function listNotificationInterests():Array {
@@ -90,40 +91,31 @@ public class SearchUsersMediator extends IocFormMediator
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case SearchUsersCommand.SUCCESS :
-                handleAddUserSuccess();
+                handleSearchUserSuccess();
                 break;
             case SearchUsersCommand.FAILURE :
-                handleAddUserFailure();
+                handleSearcUserFailure();
                 break;
         }
     }
 
     override public function bindForm():void {
         view.userUsername.text = "";
-        view.userPassword.text = "";
-        view.userRetypePassword.text = "";
         view.userFirstName.text = "";
-        view.userLastName.text = "";
-        view.userFullName.text = "";
-        view.userEmail.text = "";
-        view.userTelephone.text = "";
-
+        view.userLastname.text = "";
+        view.userFullname.text = "";
 
         FormUtility.clearValidationErrors(_validators);
     }
 
     override public function bindModel():void {
-        var newUserDef:UserDTO = new UserDTO();
-        newUserDef.userName = view.userUsername.text;
-        newUserDef.userPassword = view.userPassword.text ;
-        newUserDef.firstName = view.userFirstName.text;
-        newUserDef.surename = view.userLastName.text;
-        newUserDef.commonName = view.userFullName.text;
-        newUserDef.email = view.userEmail.text;
-        newUserDef.telephoneNumber = view.userTelephone.text;
-        newUserDef.facsimilTelephoneNumber = view.userFax.text;
+        var searchUserDef:UserDTO = new UserDTO();
+        searchUserDef.userName = view.userUsername.text;
+        searchUserDef.firstName = view.userFirstName.text;
+        searchUserDef.surename = view.userLastname.text;
+        searchUserDef.commonName = view.userFullname.text;
 
-        _newUser = newUserDef;
+        _searchUser = searchUserDef;
     }
 
     private function onSubmitEditUser(event:MouseEvent):void {
@@ -132,7 +124,7 @@ public class SearchUsersMediator extends IocFormMediator
         if (validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
-            sendNotification(ApplicationFacade.SEARCH_USERS, _newUser);
+            sendNotification(ApplicationFacade.SEARCH_USERS, _searchUser);
             closeWindow();
         }
         else {
@@ -140,14 +132,21 @@ public class SearchUsersMediator extends IocFormMediator
         }
     }
 
-    public function handleAddUserSuccess():void {
+    public function handleSearchUserSuccess():void {
         sendNotification(ProcessingMediator.STOP);
-        //sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The user was successfully updated.");
+        var resMan:IResourceManager = ResourceManager.getInstance();
+        var srchResult:ArrayCollection = _accountManagementProxy.searchedUsers
+
+        if (srchResult.length == 0)
+            Alert.show(resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.user.empty.query'));
+        else {
+            sendNotification(ApplicationFacade.DISPLAY_SEARCH_RESULTS_USERS, srchResult);
+        }
     }
 
-    public function handleAddUserFailure():void {
+    public function handleSearcUserFailure():void {
         sendNotification(ProcessingMediator.STOP);
-        //sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error updating user.");
+        sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error searching user.");
     }
     private function handleCancel(event:MouseEvent):void {
         closeWindow();
