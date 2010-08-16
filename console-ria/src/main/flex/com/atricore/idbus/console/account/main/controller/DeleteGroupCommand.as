@@ -63,7 +63,7 @@ public class DeleteGroupCommand extends IocSimpleCommand implements IResponder {
     override public function execute(notification:INotification):void {
         var group:GroupDTO = notification.getBody() as GroupDTO;
         var req:RemoveGroupRequest = new RemoveGroupRequest();
-        req.name = group.name;
+        req.id = group.id;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
         var call:Object = service.removeGroup(req);

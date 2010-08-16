@@ -65,7 +65,6 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const SEARCH_GROUPS:String = "searchGroups";
     public static const SEARCH_USERS:String = "searchUsers";
 
-
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
     public static const SHOW_SUCCESS_MSG:String = "showSuccessMsg";
@@ -95,8 +94,15 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const REMOVE_SERVICE_PROVIDER_ELEMENT:String = "removeServiceProviderElement";
     public static const MANAGE_CERTIFICATE:String = "manageCertificate";
     public static const SHOW_UPLOAD_PROGRESS:String = "uploadProgress";
+    public static const DISPLAY_ACCOUNT_MNGMT_HOME:String = "displayAccountManagementHome";
     public static const DISPLAY_ADD_NEW_GROUP:String = "displayAddNewGroup";
     public static const DISPLAY_ADD_NEW_USER:String = "displayAddNewUser";
+    public static const DISPLAY_EDIT_GROUP:String = "displayEditGroup";
+    public static const DISPLAY_EDIT_USER:String = "displayEditUser";
+    public static const DISPLAY_SEARCH_GROUPS:String = "displaySearchGroup";
+    public static const DISPLAY_SEARCH_USERS:String = "displaySearchUser";
+    public static const DISPLAY_SEARCH_RESULTS_USERS = "displaySearchResultUsers";
+    public static const DISPLAY_SEARCH_RESULTS_GROUPS = "displaySearchResultGroups";
     public static const MODELER_VIEW_SELECTED:String = "modelerViewSelected";
     public static const LIFECYCLE_VIEW_SELECTED:String = "lifecycleViewSelected";
     public static const ACCOUNT_VIEW_SELECTED:String = "accountViewSelected";

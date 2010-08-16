@@ -44,16 +44,34 @@
         [ResourceBundle("console")]
     </fx:Metadata>
 
-
-
-
     <s:HGroup id="buttonBar" width="100%" height="5%"
               paddingLeft="5" paddingBottom="5">
-        <s:Button id="btnNewUser" label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.add.panel.label')}"/>
-        <s:Button id="btnEditUser" label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.edit.panel.label')}"/>
-        <s:Button id="btnDeleteUser" label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.delete.panel.label')}"/>
-        <s:Button id="btnSearchUser" label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.search.panel.label')}"/>
-        <s:Button id="btnBack" label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'action.goback')}"/>
+        <components:IconButton id="btnNewUser"
+                               iconUp="@Embed('/assets/icons/ui/user-group-new.png')"
+                               paddingTop="3" paddingLeft="3" isLinkButton="false"
+                               skinClass="com.atricore.idbus.console.components.IconButtonSkin"
+                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.add.panel.label')}"/>
+        <components:IconButton id="btnEditUser" enabled="false"
+                               iconUp="@Embed('/assets/icons/ui/user-properties.png')"
+                               paddingTop="3" paddingLeft="3" isLinkButton="false"
+                               skinClass="com.atricore.idbus.console.components.IconButtonSkin"
+                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.edit.panel.label')}"/>
+        <components:IconButton id="btnDeleteUser" enabled="false"
+                               iconUp="@Embed('/assets/icons/ui/user-group-delete.png')"
+                               paddingTop="3" paddingLeft="3" isLinkButton="false"
+                               skinClass="com.atricore.idbus.console.components.IconButtonSkin"
+                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.delete.panel.label')}"/>
+        <components:IconButton id="btnSearchUser"
+                               iconUp="@Embed('/assets/icons/ui/edit-find.png')"
+                               paddingTop="3" paddingLeft="3" isLinkButton="false"
+                               skinClass="com.atricore.idbus.console.components.IconButtonSkin"
+                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.search.panel.label')}"/>
+        <components:IconButton id="btnBack"
+                               iconUp="@Embed('/assets/icons/ui/back.jpg')"
+                               paddingTop="3" paddingLeft="3" isLinkButton="false"
+                               skinClass="com.atricore.idbus.console.components.IconButtonSkin"
+                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'action.goback')}"/>
+
     </s:HGroup>
 
     <s:HGroup id="bodyHBox" width="100%" height="95%" paddingLeft="15" paddingRight="15">
@@ -65,11 +83,38 @@
                 <mx:DataGridColumn dataField="firstName" headerText="First Name"/>
                 <mx:DataGridColumn dataField="surename" headerText="Last Name"/>
                 <mx:DataGridColumn dataField="commonName" headerText="Full Name"/>
+                <mx:DataGridColumn dataField="groups" headerText="Groups">
+                    <mx:itemRenderer>
+                        <fx:Component>
+                            <s:MXDataGridItemRenderer>
+                                <s:states>
+                                    <s:State name="normal" />
+                                    <s:State name="hovered" />
+                                    <s:State name="selected" />
+                                </s:states>
+                                <fx:Script>
+                                <![CDATA[
+                                    import com.atricore.idbus.console.services.dto.GroupDTO;
+
+                                    public function concateGroups(groups:Array):String {
+                                        var userGroups:String = "";
+                                        for each (var group:GroupDTO in groups) {
+                                            if (userGroups != "")
+                                                userGroups = userGroups.concat(", ");
+                                            userGroups = userGroups.concat(group.name);
+                                        }
+                                        return userGroups;
+                                    }
+                                ]]>
+                                </fx:Script>
+                                <s:Label text="{concateGroups(data.groups)}" paddingBottom="2" paddingLeft="7"/>
+                            </s:MXDataGridItemRenderer>
+                        </fx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
             </mx:columns>
         </mx:DataGrid>
 
         <properties:PropertiesView id="properties" width="24%" height="99%" visible="false"/>
     </s:HGroup>
-
-
 </s:VGroup>

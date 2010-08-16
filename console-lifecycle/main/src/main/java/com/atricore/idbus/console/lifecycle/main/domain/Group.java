@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.lifecycle.main.domain;
 
 import java.io.Serializable;
+import javax.jdo.annotations.IdGeneratorStrategy;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
@@ -36,7 +37,7 @@ public class Group implements Serializable {
 
     private static final long serialVersionUID = 4595183658527599864L;
 
-    @Persistent(primaryKey="true")
+    @Persistent(primaryKey="true", valueStrategy = IdGeneratorStrategy.NATIVE)
     private long id;
     private String name;
     private String description;

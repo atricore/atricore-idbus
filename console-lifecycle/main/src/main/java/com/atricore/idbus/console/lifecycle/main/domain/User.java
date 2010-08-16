@@ -23,8 +23,7 @@ package com.atricore.idbus.console.lifecycle.main.domain;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
+import javax.jdo.annotations.*;
 
 @PersistenceCapable
 public class User
@@ -32,7 +31,7 @@ public class User
 {
     private static final long serialVersionUID = -2547786148798290707L;
 
-    @Persistent(primaryKey="true")
+    @Persistent(primaryKey="true", valueStrategy = IdGeneratorStrategy.INCREMENT)
      private long id;
 
 //<--- General Information ---->
@@ -64,6 +63,11 @@ public class User
     private String language;
 
 //<--- Groups Membership ---->
+    @Persistent(table = "USERGROUPS", defaultFetchGroup = "true")
+    @Join(column = "ID")
+    @Element(column = "GROUP_ID")
+    @Order(column="GROUP_ORDER_IDX")
+    @ForeignKey(name = "USER_GROUPS_FK", deleteAction = ForeignKeyAction.CASCADE)
     private Group[] groups;
 
 //<--- Security Account---->

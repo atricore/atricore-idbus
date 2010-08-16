@@ -67,6 +67,7 @@ public class SearchUsersCommand extends IocSimpleCommand implements IResponder {
         req.firstName = user.firstName;
         req.surename = user.surename;
         req.commonName = user.commonName;
+        req.givenName = user.givenName;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
         var call:Object = service.searchUsers(req);

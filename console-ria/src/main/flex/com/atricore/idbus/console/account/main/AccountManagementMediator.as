@@ -22,7 +22,6 @@
 package com.atricore.idbus.console.account.main {
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
-
 import com.atricore.idbus.console.main.ApplicationFacade;
 
 import flash.events.Event;
@@ -130,7 +129,8 @@ public class AccountManagementMediator extends IocMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.ACCOUNT_VIEW_SELECTED];
+        return [ApplicationFacade.ACCOUNT_VIEW_SELECTED,
+                ApplicationFacade.DISPLAY_ACCOUNT_MNGMT_HOME];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -138,8 +138,10 @@ public class AccountManagementMediator extends IocMediator {
             case ApplicationFacade.ACCOUNT_VIEW_SELECTED:
                 init();
                 break;
+            case ApplicationFacade.DISPLAY_ACCOUNT_MNGMT_HOME:
+                view.vsAccountMng.selectedIndex = 0;
+                break;
         }
-
     }
 
     protected function get view():AccountManagementView

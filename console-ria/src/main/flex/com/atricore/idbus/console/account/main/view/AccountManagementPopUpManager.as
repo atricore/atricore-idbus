@@ -38,11 +38,15 @@ import com.atricore.idbus.console.main.BasePopUpManager;
 
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.IFacade;
 import org.puremvc.as3.interfaces.INotification;
 
 public class AccountManagementPopUpManager extends BasePopUpManager {
+
+    var resMan:IResourceManager = ResourceManager.getInstance();
 
     // mediators
     private var _groupsMediator:GroupsMediator;
@@ -131,15 +135,15 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     public function set searchUsersMediator(value:SearchUsersMediator):void {
         _searchUsersMediator = value;
     }
-
+    // Add Group Popup
     public function showAddGroupWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         if (!_addGroupForm) {
             createAddGroupForm();
         }
-        _popup.title = "Create Group";
-        _popup.width = 690;
-        _popup.height = 510;
+        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.add.form.heading');
+        _popup.width = 400;
+        _popup.height =200;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_addGroupForm);
@@ -155,15 +159,15 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         addGroupMediator.setViewComponent(_addGroupForm);
         addGroupMediator.handleNotification(_lastWindowNotification);
     }
-
+    // Add User Popup
     public function showAddUserWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         if (!_addUserForm) {
             createAddUserForm();
         }
-        _popup.title = "Create User";
-        _popup.width = 690;
-        _popup.height = 510;
+        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.add.form.heading');
+        _popup.width = 520;
+        _popup.height = 590;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_addUserForm);
@@ -177,6 +181,99 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     private function handleAddUserFormCreated(event:FlexEvent):void {
         addUserMediator.setViewComponent(_addUserForm);
         addUserMediator.handleNotification(_lastWindowNotification);
+    }
+    // Edit Group Popup
+    public function showEditGroupWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_editGroupForm) {
+            createEditGroupForm();
+        }
+        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.edit.form.heading');
+        _popup.width = 400;
+        _popup.height =200;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_editGroupForm);
+    }
+
+    private function createEditGroupForm():void {
+        _editGroupForm = new EditGroupForm();
+        _editGroupForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleEditGroupFormCreated);
+    }
+
+    private function handleEditGroupFormCreated(event:FlexEvent):void {
+        editGroupMediator.setViewComponent(_editGroupForm);
+        editGroupMediator.handleNotification(_lastWindowNotification);
+    }
+    // Edit User Popup
+    public function showEditUserWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_editUserForm) {
+            createEditUserForm();
+        }
+        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.edit.form.heading');
+        _popup.width = 520;
+        _popup.height = 590;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_editUserForm);
+    }
+
+    private function createEditUserForm():void {
+        _editUserForm = new EditUserForm();
+        _editUserForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleEditUserFormCreated);
+    }
+
+    private function handleEditUserFormCreated(event:FlexEvent):void {
+        editUserMediator.setViewComponent(_editUserForm);
+        editUserMediator.handleNotification(_lastWindowNotification);
+    }
+
+    // Search Groups Popup
+    public function showSearchGroupsWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_searchGroupsForm) {
+            createSearchGroupsForm();
+        }
+        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.search.form.heading');
+        _popup.width = 400;
+        _popup.height =200;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_searchGroupsForm);
+    }
+
+    private function createSearchGroupsForm():void {
+        _searchGroupsForm = new SearchGroupsForm();
+        _searchGroupsForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleSearchGroupsFormCreated);
+    }
+
+    private function handleSearchGroupsFormCreated(event:FlexEvent):void {
+        searchGroupsMediator.setViewComponent(_searchGroupsForm);
+        searchGroupsMediator.handleNotification(_lastWindowNotification);
+    }
+    // Search Users Popup
+    public function showSearchUsersWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_searchUsersForm) {
+            createSearchUserForm();
+        }
+        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.search.form.heading');
+        _popup.width = 300;
+        _popup.height = 300;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_searchUsersForm);
+    }
+
+    private function createSearchUserForm():void {
+        _searchUsersForm = new SearchUsersForm();
+        _searchUsersForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleSearchUsersFormCreated);
+    }
+
+    private function handleSearchUsersFormCreated(event:FlexEvent):void {
+        searchUsersMediator.setViewComponent(_searchUsersForm);
+        searchUsersMediator.handleNotification(_lastWindowNotification);
     }
 }
 }
