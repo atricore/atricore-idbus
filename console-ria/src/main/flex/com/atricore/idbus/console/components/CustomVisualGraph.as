@@ -2,6 +2,7 @@ package com.atricore.idbus.console.components {
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
 
+import flash.display.DisplayObject;
 import flash.events.MouseEvent;
 import flash.geom.Point;
 
@@ -78,10 +79,11 @@ public class CustomVisualGraph extends VisualGraph {
         _moveNodeInDrag = false;
         _moveEdgeInDrag = false;
         _moveGraphInDrag = false;
-        _canvas.parent.addEventListener(MouseEvent.CLICK, mouseClickHandler);
-        _canvas.parent.addEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
-        _canvas.parent.addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
-        _canvas.parent.addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
+        (document as DisplayObject).addEventListener(MouseEvent.CLICK, mouseClickHandler);
+        (document as DisplayObject).addEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
+        (document as DisplayObject).addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
+        (document as DisplayObject).addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
+        (document as DisplayObject).addEventListener(MouseEvent.ROLL_OUT, rollOutHandler);
     }
 
     public function exitConnectionMode():void {
@@ -94,10 +96,11 @@ public class CustomVisualGraph extends VisualGraph {
         _moveNodeInDrag = true;
         _moveEdgeInDrag = true;
         _moveGraphInDrag = true;
-        _canvas.parent.removeEventListener(MouseEvent.CLICK, mouseClickHandler);
-        _canvas.parent.removeEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
-        _canvas.parent.removeEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
-        _canvas.parent.removeEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
+        (document as DisplayObject).removeEventListener(MouseEvent.CLICK, mouseClickHandler);
+        (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
+        (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
+        (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
+        (document as DisplayObject).removeEventListener(MouseEvent.ROLL_OUT, rollOutHandler);
     }
 
     public function resetConnectionModeParameters():void {
@@ -135,6 +138,15 @@ public class CustomVisualGraph extends VisualGraph {
         _dragComponent = null;
         refresh();
         event.updateAfterEvent();
+    }
+
+    private function rollOutHandler(event:MouseEvent):void {
+        if (_connectionMode && _connectionDragInProgress) {
+            exitConnectionMode();
+            refresh();
+            event.updateAfterEvent();
+            CursorManager.removeAllCursors();
+        }
     }
 
     private function nodeLinkExists(node1:INode, node2:INode):Boolean {
