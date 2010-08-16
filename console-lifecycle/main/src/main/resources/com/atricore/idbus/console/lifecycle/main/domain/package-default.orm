@@ -27,16 +27,6 @@
 
     <package name="com.atricore.idbus.console.lifecycle.main.domain">
 
-        <class name="Group" table="IB_GROUP" >
-            <field name="name" >
-                <column allows-null="false"/>
-            </field>
-        </class>
-
-        <class name="User" table="IB_USER">
-            <field name="groups" table="IB_USERGROUPS" />
-        </class>
-
         <class name="IdentityAppliance" table="IB_IDENTITYAPPLIANCE" />
 
 
