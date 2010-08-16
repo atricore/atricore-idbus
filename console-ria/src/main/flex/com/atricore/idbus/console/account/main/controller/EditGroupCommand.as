@@ -63,6 +63,7 @@ public class EditGroupCommand extends IocSimpleCommand implements IResponder {
     override public function execute(notification:INotification):void {
         var group:GroupDTO = notification.getBody() as GroupDTO;
         var req:UpdateGroupRequest = new UpdateGroupRequest();
+        req.id = group.id;
         req.name = group.name;
         req.description = group.description;
 

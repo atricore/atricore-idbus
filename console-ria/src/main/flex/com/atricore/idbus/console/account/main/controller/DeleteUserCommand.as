@@ -63,7 +63,7 @@ public class DeleteUserCommand extends IocSimpleCommand implements IResponder {
     override public function execute(notification:INotification):void {
         var user:UserDTO = notification.getBody() as UserDTO;
         var req:RemoveUserRequest = new RemoveUserRequest();
-        req.userName = user.userName;
+        req.id = user.id;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
         var call:Object = service.removeUser(req);

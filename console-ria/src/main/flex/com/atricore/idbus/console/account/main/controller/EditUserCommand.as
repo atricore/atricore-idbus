@@ -63,6 +63,7 @@ public class EditUserCommand extends IocSimpleCommand implements IResponder {
     override public function execute(notification:INotification):void {
         var user:UserDTO = notification.getBody() as UserDTO;
         var req:UpdateUserRequest = new UpdateUserRequest();
+        req.id = user.id;
         req.userName = user.userName;
         req.userPassword = user.userPassword;
         req.firstName = user.firstName;
