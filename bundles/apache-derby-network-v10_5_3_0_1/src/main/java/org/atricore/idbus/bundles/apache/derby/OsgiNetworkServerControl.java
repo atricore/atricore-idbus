@@ -115,6 +115,7 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
             try {
                 started = true;
                 logger.debug("Startup Derby Network Server..." + descriptor.getHostname() + ":" + descriptor.getPort());
+                // TODO : Send a different OS ?
                 derbyServer.start(new PrintWriter(System.err));
                 logger.debug("Startup Derby Network Server...OK ");
 
@@ -128,6 +129,10 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
                     while (now < expiration) {
 
                         try {
+
+                            try { synchronized (this) { wait(300); } } catch (InterruptedException ierr) {/**/}
+
+                            // This will trigger a connection to the server ...
                             Properties p = derbyServer.getCurrentProperties();
 
                             if (logger.isDebugEnabled()) {
