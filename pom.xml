@@ -1247,7 +1247,6 @@
             <layout>legacy</layout>
         </pluginRepository>
 
-
     </pluginRepositories>
 
 
@@ -1259,6 +1258,7 @@
         <module>console-lib</module>
         <module>console-ria</module>
         <module>console-web</module>
+        <module>console-appliance/console-default-idau</module>
     </modules>
 
 </project>

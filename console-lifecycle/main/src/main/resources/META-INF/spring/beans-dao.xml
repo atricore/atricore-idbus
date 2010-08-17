@@ -13,7 +13,7 @@
          while still participating in Spring's (or a J2EE server's) resource and transaction management.
          DAOs will only rely on the JDO API in such a scenario, without any Spring dependencies. -->
     <bean id="pmfProxy" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy">
-        <property name="targetPersistenceManagerFactory" ref="idbusProvisioningPmf"/>
+        <property name="targetPersistenceManagerFactory" ref="idbusLifecyclePmf"/>
         <!--property name="allowCreate" value="false"/-->
     </bean>
 

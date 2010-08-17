@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:osgi="http://www.springframework.org/schema/osgi"
+xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+xmlns:ctx="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context.xsd
+                    http://www.springframework.org/schema/osgi-compendium
+                    http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
+                    ">
+
+    <bean name="idau-default" class="org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit"
+          depends-on="bpms-manager,cxf">
+        <property name="name" value="idau-default"/>
+        <property name="container" ref="idau-default-container"/>
+
+        <property name="channels">
+            <list>
+                <!-- =================================== -->
+                <!-- psp-default Channels                       -->
+                <!-- =================================== -->
+                <ref bean="psp-default-default-channel"/>
+
+            </list>
+        </property>
+    </bean>
+
+    <bean name="idau-default-container"
+          class="org.atricore.idbus.kernel.main.mediation.camel.OsgiCamelIdentityMediationUnitContainerImpl">
+        <property name="name" value="idau-default-engine" />
+        <property name="cxfBus" ref="cxf"/>
+    </bean>
+
+
+
+    <!-- ================================================================== -->
+    <!--                                                                    -->
+    <!-- Identity Mediators Registry                                        -->
+    <!--                                                                    -->
+    <!-- ================================================================== -->
+
+    <import resource="psp/psp-config.xml"/>
+
+    <bean name="mBeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean" scope="singleton">
+        <property name="locateExistingServerIfPossible" value="true"/>
+    </bean>
+
+    <!-- ====================================================================== -->
+    <!-- Configuration beans                                                    -->
+    <!-- ====================================================================== -->
+
+    <osgix:cm-properties id="idau-default-jdo-properties"
+                         persistent-id="com.atricore.idbus.console.appliance.default.idau.jdo">
+
+        <prop key="javax.jdo.option.Mapping">default</prop>
+        <prop key="javax.jdo.PersistenceManagerFactoryClass">org.datanucleus.jdo.JDOPersistenceManagerFactory</prop>
+
+        <prop key="javax.jdo.option.ConnectionURL">jdbc:derby://localhost:1527/idbus-console;create=true</prop>
+        <prop key="javax.jdo.option.ConnectionUserName">admin</prop>
+        <prop key="javax.jdo.option.ConnectionPassword">admin</prop>
+        <prop key="javax.jdo.option.ConnectionDriverName">org.apache.derby.jdbc.ClientDriver</prop>
+
+        <prop key="datanucleus.storeManagerType">rdbms</prop>
+
+        <prop key="datanucleus.metadata.validate">false</prop>
+        <prop key="datanucleus.autoCreateSchema">true</prop>
+        <prop key="datanucleus.autoCreateColumns">true</prop>
+        <prop key="datanucleus.validateTables">false</prop>
+        <prop key="datanucleus.validateConstraints">false</prop>
+
+        <prop key="datanucleus.classLoaderResolverName">jdo</prop>
+
+        <prop key="datanucleus.plugin.pluginRegistryClassName">org.atricore.idbus.bundles.datanucleus.core.OsgiPluginRegistry</prop>
+
+    </osgix:cm-properties>
+
+    <ctx:property-placeholder properties-ref="idau-default-jdo-properties" />
+
+</beans>
