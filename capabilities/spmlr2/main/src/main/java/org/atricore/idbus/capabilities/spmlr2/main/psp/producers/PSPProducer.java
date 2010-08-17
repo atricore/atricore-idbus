@@ -6,7 +6,6 @@ import oasis.names.tc.spml._2._0.atricore.UserType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
 import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.jxpath.JXPathContext;
 import org.apache.commons.jxpath.Pointer;
 import org.apache.commons.logging.Log;
@@ -73,12 +72,11 @@ public class PSPProducer extends SpmlR2Producer {
 
             // TODO : Send status=failure error= in response ! (use super producer or binding to build error
             // TODO : See SPMPL Section 3.1.2.2 Error (normative)
+            logger.error("Unknown SPML Request type : " + content.getClass().getName());
 
-            throw new IdentityMediationFault("status='failure'",
-                    null,
-                    "error='unsupportedOperation'",
-                    content.getClass().getName(),
-                    null);
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+
+
         }
 
         // Send response back.
@@ -138,13 +136,14 @@ public class PSPProducer extends SpmlR2Producer {
             if (logger.isDebugEnabled())
                 logger.debug("Processing SMPL Add request for User");
 
-            UserType spmlUser = (UserType) spmlRequest.getData();
-
             AddUserRequest req = new AddUserRequest();
-            BeanUtils.copyProperties(req, spmlUser);
+            toAddUserRequest(target, req, spmlRequest);
+
+            // TODO : Groups
 
             AddUserResponse res = target.addUser(req);
-            spmlResponse = (AddResponseType) toSpmlResponse(target, res);
+            spmlResponse.setPso(toSpmlUser(target, res.getUser()));
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
         } if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
 
@@ -159,7 +158,6 @@ public class PSPProducer extends SpmlR2Producer {
             AddGroupResponse res = target.addGroup(req);
 
             spmlResponse.setPso(toSpmlGroup(target, res.getGroup()));
-            spmlResponse.setRequestID(spmlRequest.getRequestID());
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
         }
@@ -220,11 +218,11 @@ public class PSPProducer extends SpmlR2Producer {
             ListUsersResponse res = target.listUsers(new ListUsersRequest());
             User[] users = res.getUsers();
 
-            JXPathContext jxp = JXPathContext.newContext(null, users);
-            Iterator it = jxp.iterate(path);
-
+            JXPathContext jxp = JXPathContext.newContext(new TargetContainer(users));
+            Iterator it = jxp.iteratePointers(path);
             while (it.hasNext()) {
-                User user = (User) it.next();
+                Pointer userPointer = (Pointer) it.next();
+                User user = (User) userPointer.getValue();
                 PSOType psoUser = toSpmlUser(target, user);
                 spmlResponse.getPso().add(psoUser);
             }
@@ -235,7 +233,6 @@ public class PSPProducer extends SpmlR2Producer {
         }
 
         return spmlResponse;
-
 
     }
 
@@ -266,6 +263,12 @@ public class PSPProducer extends SpmlR2Producer {
             if (logger.isTraceEnabled())
                 logger.trace("Looking for group using PSO-ID " + psoId.getID());
 
+            FindUserByIdRequest req = new FindUserByIdRequest();
+            req.setId(Long.parseLong(psoId.getID()));
+
+            FindUserByIdResponse res = target.findUserById(req);
+
+            spmlResponse.setPso(toSpmlUser(target, res.getUser()));
             spmlResponse.setStatus(StatusCodeType.SUCCESS );
         } else {
             // TODO
@@ -309,8 +312,33 @@ public class PSPProducer extends SpmlR2Producer {
 
             return spmlResponse;
 
+        } else if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
+
+            ModifyResponseType spmlResponse = new ModifyResponseType();
+            spmlResponse.setRequestID(spmlRequest.getRequestID());
+
+            UpdateUserRequest userRequest = new UpdateUserRequest ();
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+
+
+            try {
+                toUpdateUserRequest(target, userRequest, spmlRequest); 
+
+                // TODO : Groups
+
+                UpdateUserResponse userResponse = target.updateUser(userRequest);
+
+                spmlResponse.setPso(toSpmlUser(target, userResponse.getUser()));
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+            }
+
+            return spmlResponse;
         } else {
-            throw new UnsupportedOperationException("Not implemented !");
+            throw new UnsupportedOperationException("SPML Request not supported");
         }
 
 
@@ -319,6 +347,7 @@ public class PSPProducer extends SpmlR2Producer {
 
     protected ResponseType doProcessDeleteRequest(CamelMediationExchange exchange, DeleteRequestType spmlRequest) {
         if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
+
             ResponseType spmlResponse = new ResponseType();
             spmlResponse.setRequestID(spmlRequest.getRequestID());
 
@@ -339,8 +368,32 @@ public class PSPProducer extends SpmlR2Producer {
             }
 
             return spmlResponse;
+        } else if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
+
+            ResponseType spmlResponse = new ResponseType();
+            spmlResponse.setRequestID(spmlRequest.getRequestID());
+
+            RemoveUserRequest userRequest = new RemoveUserRequest ();
+            userRequest.setId(Long.parseLong(spmlRequest.getPsoID().getID()));
+
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+
+            try {
+                RemoveUserResponse userResponse = target.removeUser(userRequest);
+
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
+                spmlResponse.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr);
+
+            } catch (ProvisioningException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+            }
+
+            return spmlResponse;
+
+
         } else {
-            throw new UnsupportedOperationException("Not implemented!");
+            throw new UnsupportedOperationException("SPML Request not supported");
         }
     }
 
@@ -379,5 +432,7 @@ public class PSPProducer extends SpmlR2Producer {
             this.users = users;
         }
     }
+
+     
 
 }

@@ -145,7 +145,6 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest) throws ProvisioningException {
         try {
             
-            
             Group group = identityPartition.findGroupById(groupRequest.getId());
 
             group.setName(groupRequest.getName());
@@ -173,7 +172,12 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     }
 
     public RemoveUserResponse removeUser(RemoveUserRequest userRequest) throws ProvisioningException {
-        throw new UnsupportedOperationException("Not Implemented yet!");
+        try {
+            identityPartition.deleteUser(userRequest.getId());
+            return new RemoveUserResponse();
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
     }
 
     public AddUserResponse addUser(AddUserRequest userRequest) throws ProvisioningException {
@@ -223,11 +227,24 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     
     public UpdateUserResponse updateUser(UpdateUserRequest userRequest) throws ProvisioningException {
-        throw new UnsupportedOperationException("Not Implemented yet!");
+        try {
+            
+            User user = userRequest.getUser();
+
+            user = identityPartition.updateUser(user);
+
+            UpdateUserResponse userResponse = new UpdateUserResponse();
+            userResponse.setUser(userResponse.getUser());
+
+            return userResponse;
+
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
     }
 
     
-    public GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByGroupRequest) throws ProvisioningException {
+    public GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByUserRequest) throws ProvisioningException {
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 }

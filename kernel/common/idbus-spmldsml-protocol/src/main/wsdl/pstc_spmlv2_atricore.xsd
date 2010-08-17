@@ -78,7 +78,7 @@
                 
                 <attribute name="accountDisabled" type="xsd:boolean" use="optional"/>
                 <attribute name="accountExpires" type="xsd:boolean" use="optional"/>
-                <attribute name="accountExpirationDate" type="xsd:dateTime" use="optional"/>
+                <!--attribute name="accountExpirationDate" type="xsd:dateTime" use="optional"/-->
                 <attribute name="limitSimultaneousLogin" type="xsd:boolean" use="optional"/>
                 <attribute name="maximunLogins" type="xsd:int" use="optional"/>
                 <attribute name="terminatePreviousSession" type="xsd:boolean" use="optional"/>
@@ -87,7 +87,7 @@
                 <attribute name="allowUserToChangePassword" type="xsd:boolean" use="optional"/>
                 <attribute name="forcePeriodicPasswordChanges" type="xsd:boolean" use="optional"/>
                 <attribute name="daysBetweenChanges" type="xsd:int" use="optional"/>
-                <attribute name="passwordExpirationDate" type="xsd:dateTime" use="optional"/>
+                <!--attribute name="passwordExpirationDate" type="xsd:dateTime" use="optional"/-->
                 <attribute name="notifyPasswordExpiration" type="xsd:boolean" use="optional"/>
                 <attribute name="daysBeforeExpiration" type="xsd:int" use="optional"/>
 

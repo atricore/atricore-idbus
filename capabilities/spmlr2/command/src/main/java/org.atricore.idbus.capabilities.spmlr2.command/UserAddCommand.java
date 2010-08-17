@@ -7,6 +7,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
+import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.binding.SpmlR2Binding;
 import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -113,6 +114,8 @@ public class UserAddCommand extends SpmlCommandSupport {
         spmlUser.getGroup().addAll(spmlGroups);
 
         req.setData(spmlUser);
+        req.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
+
 
         return req;
     }

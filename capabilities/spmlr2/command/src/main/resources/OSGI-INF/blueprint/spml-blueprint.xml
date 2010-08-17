@@ -40,6 +40,18 @@
             </action>
         </command>
 
+        <command name="spml/usrmodify">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.UserModifyCommand">
+                <property name="cmdPrinter" ref="userPrinter"/>
+            </action>
+        </command>
+
+        <command name="spml/usrdelete">
+            <action class="org.atricore.idbus.capabilities.spmlr2.command.UserDeleteCommand">
+                <property name="cmdPrinter" ref="userPrinter"/>
+            </action>
+        </command>
+
         <command name="spml/usrlookup">
             <action class="org.atricore.idbus.capabilities.spmlr2.command.UserLookupCommand">
                 <property name="cmdPrinter" ref="userPrinter"/>

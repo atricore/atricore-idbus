@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.response;
 
+import org.atricore.idbus.kernel.main.provisioning.domain.User;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,4 +32,14 @@ package org.atricore.idbus.kernel.main.provisioning.spi.response;
  * To change this template use File | Settings | File Templates.
  */
 public class UpdateUserResponse extends AbstractProvisioningResponse {
+
+    private User user;
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }

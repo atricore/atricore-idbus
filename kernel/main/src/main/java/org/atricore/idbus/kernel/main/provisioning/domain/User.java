@@ -46,7 +46,7 @@ public class User implements Serializable {
 //<--- Security Account---->
     private Boolean accountDisabled;
     private Boolean accountExpires;
-    private Date accountExpirationDate;
+    // private Date accountExpirationDate;
     private Boolean limitSimultaneousLogin;
     private Integer maximunLogins;
     private Boolean terminatePreviousSession;
@@ -56,7 +56,7 @@ public class User implements Serializable {
     private Boolean allowUserToChangePassword;
     private Boolean forcePeriodicPasswordChanges;
     private Integer daysBetweenChanges;
-    private Date passwordExpirationDate;
+    //private Date passwordExpirationDate;
     private Boolean notifyPasswordExpiration;
     private Integer daysBeforeExpiration;
 
@@ -290,13 +290,13 @@ public class User implements Serializable {
         this.accountExpires = accountExpires;
     }
 
-    public Date getAccountExpirationDate() {
-        return accountExpirationDate;
-    }
+//    public Date getAccountExpirationDate() {
+//        return accountExpirationDate;
+//    }
 
-    public void setAccountExpirationDate(Date accountExpirationDate) {
-        this.accountExpirationDate = accountExpirationDate;
-    }
+//    public void setAccountExpirationDate(Date accountExpirationDate) {
+//        this.accountExpirationDate = accountExpirationDate;
+//    }
 
     public Boolean isLimitSimultaneousLogin() {
         return limitSimultaneousLogin;
@@ -374,13 +374,13 @@ public class User implements Serializable {
         this.daysBetweenChanges = daysBetweenChanges;
     }
 
-    public Date getPasswordExpirationDate() {
-        return passwordExpirationDate;
-    }
+//    public Date getPasswordExpirationDate() {
+//        return passwordExpirationDate;
+//    }
 
-    public void setPasswordExpirationDate(Date passwordExpirationDate) {
-        this.passwordExpirationDate = passwordExpirationDate;
-    }
+//    public void setPasswordExpirationDate(Date passwordExpirationDate) {
+//        this.passwordExpirationDate = passwordExpirationDate;
+//    }
 
     public Boolean isNotifyPasswordExpiration() {
         return notifyPasswordExpiration;

@@ -193,6 +193,27 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
         return spmlResponse.getPso();
 
     }
+    
+    protected PSOType lookupUser(PsPChannel pspChannel, Long id) throws IdentityMediationException {
+
+        SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) pspChannel.getIdentityMediator();
+        EndpointDescriptor ed = resolvePsPEndpoint(pspChannel, SpmlR2Binding.SPMLR2_LOCAL);
+
+        PSOIdentifierType psoUserId = new PSOIdentifierType();
+        psoUserId.setTargetID(targetId);
+        psoUserId.setID(id + "");
+        psoUserId.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
+
+        LookupRequestType spmlRequest = new LookupRequestType();
+        spmlRequest.setRequestID(uuidGenerator.generateId());
+        spmlRequest.setPsoID(psoUserId);
+
+        LookupResponseType spmlResponse = (LookupResponseType) mediator.sendMessage(spmlRequest, ed, pspChannel);
+
+        return spmlResponse.getPso();
+
+    }
+    
 
 
 }
