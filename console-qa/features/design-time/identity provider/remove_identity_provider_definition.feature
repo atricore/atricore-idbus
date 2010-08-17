@@ -1,23 +1,11 @@
-Feature: Bootstrap identity appliance
-  In order to start defining my identity management architecture
+Feature: Remove Identity Provider 
+  In order to be able to disable identity provider-specific behaviour
   As an identity architect
-  I want to create an identity appliance
+  I want to be remove an identity provider element
 
-  Scenario: Boostrap identity appliance from scratch
+  Scenario: Remove Identity provider with no incoming nor outgoing associations
     Given I am on the modeler screen
-    When I select advanced mode
-    And I click on New button
-    Then I should see the identity appliance element in the diagram canvas
-
-  Scenario: Boostrap identity appliance realizing a simple single sign-on setting
-    Given I am on the modeler screen
-    When I select Simple Single Sign-On mode
-    And I click on New button
-    Then I should see the identity appliance wizard
-
-  Scenario: Create an identity appliance with an identity appliance under design
-    Given I am on the modeler screen
-    And I am modeling an identity appliance
-    When I click on New button
-    Then I should not be allowed
-
+    And my diagram contains an identity provider element identified as 'My IdP'
+    And I see the element removal button over the identity provider element I wish to remove
+    When I click on the removal button of the identity provider element
+    Then the identity provider 'My IdP' should be disposed from the diagram

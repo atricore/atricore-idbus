@@ -16,5 +16,5 @@ Feature: New Identity Provider Definition
     And I select the default authentication contract
     And I select the default authentication mechanism
     And I select the default authentication assertion emission policy
-    When I confirm the submission
+    When I confirm the creation submission
     Then I should see the identity provider element in the current diagram labeled as 'Sample IdP'

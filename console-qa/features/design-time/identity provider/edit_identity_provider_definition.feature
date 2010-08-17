@@ -8,7 +8,7 @@ Feature: Edit Identity Provider Definition
     And the name of the identity provider I wish to update is 'Sample IdP'
     And I am seeing the identity provider definition editing form
     When I enter 'Updated Sample IdP' as the identity provider name
-    And I confirm the submission
+    And I confirm the editing submission
     Then I should see the identity provider element in the current diagram labeled as 'Updated Sample IdP'
 
   Scenario: Enable SSO and SLO
