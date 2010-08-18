@@ -1261,5 +1261,13 @@
         <module>console-appliance/console-default-idau</module>
     </modules>
 
+    <profiles>
+        <profile>
+           <id>qa</id>
+           <modules>
+             <module>console-qa</module>
+           </modules>
+       </profile>
+    </profiles>
 </project>
 
