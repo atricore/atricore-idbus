@@ -1259,8 +1259,15 @@
         <module>console-lib</module>
         <module>console-ria</module>
         <module>console-web</module>
-        <module>console-qa</module>
     </modules>
 
+    <profiles>
+        <profile>
+           <id>qa</id>
+           <modules>
+             <module>console-qa</module>
+           </modules>
+       </profile>
+    </profiles>
 </project>
 
