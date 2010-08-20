@@ -35,7 +35,7 @@
           xmlns:vc="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
           xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
           xmlns:flexlib="http://flexlib.googlecode.com/"
-          xmlns:properties="com.atricore.idbus.console.account.properties.*"
+          xmlns:properties="com.atricore.idbus.console.account.userproperties.*"
           width="100%" height="100%"
           paddingLeft="5" paddingTop="5"
         >
@@ -107,7 +107,8 @@
                                     }
                                 ]]>
                                 </fx:Script>
-                                <s:Label text="{concateGroups(data.groups)}" paddingBottom="2" paddingLeft="7"/>
+                                <s:Label text="{concateGroups(data.groups)}"
+                                         top="0" left="0" right="0" bottom="0" paddingTop="2" paddingLeft="7"/>
                             </s:MXDataGridItemRenderer>
                         </fx:Component>
                     </mx:itemRenderer>
@@ -115,6 +116,6 @@
             </mx:columns>
         </mx:DataGrid>
 
-        <properties:PropertiesView id="properties" width="24%" height="99%" visible="false"/>
+        <properties:UserPropertiesView id="properties" width="24%" height="99%" visible="false"/>
     </s:HGroup>
 </s:VGroup>

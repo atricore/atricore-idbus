@@ -1,0 +1,1 @@
+As a system administrator I want to edit a user record so that I can change its details such as specific attributes and entitlements

@@ -76,10 +76,12 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _simpleSSOWizardViewMediator:IIocMediator;
     private var _accountManagementMediator:IIocMediator;
     private var _groupsMediator:IIocMediator;
+    private var _groupPropertiesMediator:IIocMediator;
     private var _addGroupMediator:IIocMediator;
     private var _editGroupMediator:IIocMediator;
     private var _searchGroupsMediator:IIocMediator;
     private var _usersMediator:IIocMediator;
+    private var _userPropertiesMediator:IIocMediator;
     private var _addUserMediator:IIocMediator;
     private var _editUserMediator:IIocMediator;
     private var _searchUsersMediator:IIocMediator;
@@ -287,12 +289,28 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _groupsMediator = value;
     }
 
+    public function get groupPropertiesMediator():IIocMediator {
+        return _groupPropertiesMediator;
+    }
+
+    public function set groupPropertiesMediator(value:IIocMediator):void {
+        _groupPropertiesMediator = value;
+    }
+
     public function get usersMediator():IIocMediator {
         return _usersMediator;
     }
 
     public function set usersMediator(value:IIocMediator):void {
         _usersMediator = value;
+    }
+
+    public function get userPropertiesMediator():IIocMediator {
+        return _userPropertiesMediator;
+    }
+
+    public function set userPropertiesMediator(value:IIocMediator):void {
+        _userPropertiesMediator = value;
     }
 
     public function get addGroupMediator():IIocMediator {
@@ -720,10 +738,12 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(propertySheetMediator.getConfigName());
 
         iocFacade.registerMediatorByConfigName(groupsMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(groupPropertiesMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(addGroupMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(editGroupMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(searchGroupsMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(usersMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(userPropertiesMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(addUserMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(editUserMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(searchUsersMediator.getConfigName());

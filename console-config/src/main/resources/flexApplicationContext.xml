@@ -238,7 +238,9 @@
     <object id="groupsMediator" class="com.atricore.idbus.console.account.groups.GroupsMediator">
         <property name="popupManager" ref="accountManagementPopUpManager"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="groupPropertiesMediator" ref="groupPropertiesMediator"/>
     </object>
+    <object id="groupPropertiesMediator" class="com.atricore.idbus.console.account.groupproperties.GroupPropertiesMediator" />
     <object id="addGroupMediator" class="com.atricore.idbus.console.account.main.view.addgroup.AddGroupMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
@@ -251,7 +253,10 @@
     <object id="usersMediator" class="com.atricore.idbus.console.account.users.UsersMediator">
         <property name="popupManager" ref="accountManagementPopUpManager"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="userPropertiesMediator" ref="userPropertiesMediator"/>
     </object>
+    <object id="userPropertiesMediator" class="com.atricore.idbus.console.account.userproperties.UserPropertiesMediator" />
+
     <object id="addUserMediator" class="com.atricore.idbus.console.account.main.view.adduser.AddUserMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
@@ -363,10 +368,12 @@
         <property name="paletteMediator" ref="paletteMediator"/>
         <property name="accountManagementMediator" ref="accountManagementMediator"/>
         <property name="groupsMediator" ref="groupsMediator"/>
+        <property name="groupPropertiesMediator" ref="groupPropertiesMediator"/>
         <property name="addGroupMediator" ref="addGroupMediator"/>
         <property name="editGroupMediator" ref="editGroupMediator"/>
         <property name="searchGroupsMediator" ref="searchGroupsMediator"/>
         <property name="usersMediator" ref="usersMediator"/>
+        <property name="userPropertiesMediator" ref="userPropertiesMediator"/>
         <property name="addUserMediator" ref="addUserMediator"/>
         <property name="editUserMediator" ref="editUserMediator"/>
         <property name="searchUsersMediator" ref="searchUsersMediator"/>

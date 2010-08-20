@@ -35,14 +35,13 @@
           xmlns:vc="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
           xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
           xmlns:flexlib="http://flexlib.googlecode.com/"
-          xmlns:properties="com.atricore.idbus.console.account.properties.*"
+          xmlns:properties="com.atricore.idbus.console.account.groupproperties.*"
           width="100%" height="100%"
           paddingLeft="5" paddingTop="5"
         >
     <fx:Metadata>
         [ResourceBundle("console")]
     </fx:Metadata>
-
 
 
     <s:HGroup id="buttonBar" width="100%" height="5%"
@@ -79,12 +78,12 @@
         <mx:DataGrid id="groupList" width="70%" rowCount="14"
                      resizeEffect="Resize" verticalAlign="middle">
             <mx:columns>
-                <mx:DataGridColumn dataField="name" headerText="Name" />
-                <mx:DataGridColumn dataField="description" headerText="Description" />
+                <mx:DataGridColumn dataField="name" headerText="Name"/>
+                <mx:DataGridColumn dataField="description" headerText="Description"/>
             </mx:columns>
         </mx:DataGrid>
 
-        <properties:PropertiesView id="properties" width="24%" height="99%" visible="false"/>
+        <properties:GroupPropertiesView id="properties" width="24%" height="99%" visible="false"/>
     </s:HGroup>
 
 </s:VGroup>
