@@ -1,0 +1,214 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+
+<s:VGroup  xmlns:s="library://ns.adobe.com/flex/spark"
+           xmlns:mx="library://ns.adobe.com/flex/mx"
+           xmlns:fx="http://ns.adobe.com/mxml/2009"
+           xmlns:components="com.atricore.idbus.console.components.*"
+           xmlns:browser="com.atricore.idbus.console.modeling.browser.*"
+           xmlns:diagram="com.atricore.idbus.console.modeling.diagram.*"
+           xmlns:palette="com.atricore.idbus.console.modeling.palette.*"
+           xmlns:propertysheet="com.atricore.idbus.console.modeling.propertysheet.*"
+           xmlns:comp="com.atricore.idbus.console.components.*"
+           xmlns:ravis="org.un.cava.birdeye.ravis.graphLayout.visual.*"
+           xmlns:graph-ctrl="com.atricore.idbus.console.modeling.diagram.ui.control.*"
+           xmlns:vc="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
+           xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
+           xmlns:flexlib="http://flexlib.googlecode.com/"
+           width="100%" height="100%"
+        >
+
+    <fx:Metadata>
+        [ResourceBundle("console")]
+    </fx:Metadata>
+
+
+    <mx:Accordion id="userDataAccordion" width="100%" resizeToContent="true" creationPolicy="all">
+
+        <mx:Form id="generalSection" width="100%" height="100%"  paddingLeft="5" paddingRight="5"
+            label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.general')}">
+
+            <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.identification.label')}"/>
+
+            <mx:HRule width="100%"/>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.username')}:" labelWidth="150">
+                <mx:Label id="userUsername" text="---" />
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.firstname')}:" labelWidth="150">
+                <mx:Label id="userFirstName" text="---"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.lastname')}:" labelWidth="150">
+                <mx:Label id="userLastname" text="---"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.fullname')}:" labelWidth="150">
+                <mx:Label id="userFullname" text="---"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.email')}:" labelWidth="150">
+                <mx:Label id="userEmail" text="---"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.telephone')}:" labelWidth="150">
+                <mx:Label id="userTelephone" text="---"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.fax')}:" labelWidth="150">
+                <mx:Label id="userFax" text="---"/>
+            </mx:FormItem>
+
+        </mx:Form>
+
+        <mx:Form id="preferencesSection"
+                  label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.preferences')}"
+                  width="100%" height="100%" paddingLeft="5" paddingRight="5">
+
+            <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.environment.label')}"/>
+
+            <mx:HRule width="100%"/>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.language')}:" labelWidth="100">
+                <mx:Label id="userLanguage" text="---" />
+            </mx:FormItem>
+
+        </mx:Form>
+
+        <mx:Form id="groupsSection"
+                  label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.groups')}"
+                  width="100%" height="100%"  paddingLeft="5" paddingRight="5">
+
+
+            <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.membership.label')}"/>
+
+            <mx:HRule width="100%"/>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.groups.memberOf')}:"
+                         width="100%" labelWidth="100">
+                <mx:List id="groupsSelectedList" labelField="name" allowDragSelection="false" width="100%"/>
+            </mx:FormItem>
+
+        </mx:Form>
+
+        <mx:Form id="securitySection"
+                  label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.security')}"
+                  width="100%" height="100%" paddingLeft="5" paddingRight="5">
+
+            <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.label')}"/>
+
+            <mx:HRule width="100%"/>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.disabled')}:" labelWidth="150">
+                <mx:Label id="accountDisabledCheck" text="---"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.expires')}:" labelWidth="150">
+                <mx:Label id="accountExpiresCheck" text="---"/>
+            </mx:FormItem>
+
+            <mx:FormItem id="accountExpiresDateItem" 
+                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.expires.date')}:" labelWidth="150">
+                <mx:Label id="accountExpiresDate" text="---"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.limit.login')}:" labelWidth="150">
+                <mx:Label id="accountLimitLoginCheck" text="---"/>
+            </mx:FormItem>
+
+            <mx:FormItem id="accountMaxLimitLogiItem" 
+                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.limit.max.login')}:" labelWidth="150">
+                <mx:Label id="accountMaxLimitLogin" text="---" />
+            </mx:FormItem>
+
+            <mx:FormItem id="accountSessionItem" labelWidth="150"
+                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.session.action')}:">
+                <mx:Label id="terminatePrevSession" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.terminte.previous.session')}" />
+                <mx:Label id="preventNewSession" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.prevent.new.session')}" />
+            </mx:FormItem>
+
+        </mx:Form>
+
+        <mx:Form id="passwordSection" width="100%" height="100%" paddingLeft="5" paddingRight="5"
+                  label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.password')}">
+
+            <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.password.label')}"/>
+
+            <mx:HRule width="100%"/>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.password.allow.change')}:"
+                         labelWidth="190">
+                <mx:Label id="allowPasswordChangeCheck" text="---"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.user.password.force.change')}:"
+                         labelWidth="190">
+                <mx:Label id="forcePasswordChangeCheck" text="---"/>
+            </mx:FormItem>
+
+            <mx:Form id="forcePassChangeSection" paddingLeft="10">
+                <mx:FormItem
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.user.password.force.change.days')}:"
+                        labelWidth="175">
+                    <mx:Label id="forcePasswordChangeDays" text="---"/>
+                </mx:FormItem>
+
+                <mx:FormItem
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.user.password.expiration.date')}:"
+                        labelWidth="175">
+                    <mx:Label id="expirationPasswordDate" text="---"/>
+                </mx:FormItem>
+
+            </mx:Form>
+
+            <mx:FormItem labelWidth="190"
+                    label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.user.password.notify.expiration')}:">
+                <mx:Label id="notifyPasswordExpirationCheck" text="---"/>
+
+            </mx:FormItem>
+
+            <mx:FormItem id="notifyPasswordExpirationDayItem"
+                         label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.user.password.notify.expiration.day')}:"
+                         labelWidth="170" >
+                <mx:Label id="notifyPasswordExpirationDay" text="---"/>
+            </mx:FormItem>
+
+            <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.setpassword.label')}"/>
+
+            <mx:HRule width="100%"/>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.user.password.generate')}:"
+                         labelWidth="190">
+                <mx:Label id="generatePasswordCheck" text="---"/>
+            </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.user.password.email')}:"
+                         labelWidth="190">
+                <mx:Label id="emailNewPasswordCheck" text="---"/>
+            </mx:FormItem>
+
+        </mx:Form>
+    </mx:Accordion>
+
+</s:VGroup>

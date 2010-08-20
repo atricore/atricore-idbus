@@ -138,9 +138,8 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     // Add Group Popup
     public function showAddGroupWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_addGroupForm) {
-            createAddGroupForm();
-        }
+        createAddGroupForm();
+        
         _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.add.form.heading');
         _popup.width = 400;
         _popup.height =200;
@@ -162,9 +161,8 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     // Add User Popup
     public function showAddUserWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_addUserForm) {
-            createAddUserForm();
-        }
+        createAddUserForm();
+        
         _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.add.form.heading');
         _popup.width = 520;
         _popup.height = 590;
@@ -185,9 +183,8 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     // Edit Group Popup
     public function showEditGroupWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_editGroupForm) {
-            createEditGroupForm();
-        }
+        createEditGroupForm();
+
         _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.edit.form.heading');
         _popup.width = 400;
         _popup.height =200;
@@ -208,9 +205,8 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     // Edit User Popup
     public function showEditUserWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_editUserForm) {
-            createEditUserForm();
-        }
+        createEditUserForm();
+        
         _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.edit.form.heading');
         _popup.width = 520;
         _popup.height = 590;
@@ -232,9 +228,8 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     // Search Groups Popup
     public function showSearchGroupsWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_searchGroupsForm) {
-            createSearchGroupsForm();
-        }
+        createSearchGroupsForm();
+
         _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.search.form.heading');
         _popup.width = 400;
         _popup.height =200;
@@ -255,9 +250,8 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     // Search Users Popup
     public function showSearchUsersWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_searchUsersForm) {
-            createSearchUserForm();
-        }
+        createSearchUserForm();
+        
         _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.search.form.heading');
         _popup.width = 300;
         _popup.height = 300;

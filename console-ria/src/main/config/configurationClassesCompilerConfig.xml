@@ -36,10 +36,12 @@
         <symbol>com.atricore.idbus.console.modeling.palette.PaletteMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.AccountManagementMediator</symbol>
         <symbol>com.atricore.idbus.console.account.groups.GroupsMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.groupproperties.GroupPropertiesMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.addgroup.AddGroupMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.editgroup.EditGroupMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.searchgroups.SearchGroupsMediator</symbol>
         <symbol>com.atricore.idbus.console.account.users.UsersMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.userproperties.UserPropertiesMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.adduser.AddUserMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.edituser.EditUserMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.searchusers.SearchUsersMediator</symbol>

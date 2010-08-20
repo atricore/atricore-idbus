@@ -40,6 +40,7 @@ import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
+import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class UsersMediator extends IocMediator {
@@ -47,8 +48,8 @@ public class UsersMediator extends IocMediator {
     public static const BUNDLE:String = "console";
 
     private var _popupManager:AccountManagementPopUpManager;
-
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _userPropertiesMediator:IIocMediator;
 
     [Bindable]
 
@@ -71,6 +72,14 @@ public class UsersMediator extends IocMediator {
 
     public function set accountManagementProxy(value:AccountManagementProxy):void {
         _accountManagementProxy = value;
+    }
+
+    public function get userPropertiesMediator():IIocMediator {
+        return _userPropertiesMediator;
+    }
+
+    public function set userPropertiesMediator(value:IIocMediator):void {
+        _userPropertiesMediator = value;
     }
 
     override public function setViewComponent(p_viewComponent:Object):void {
@@ -98,7 +107,12 @@ public class UsersMediator extends IocMediator {
         view.userList.addEventListener(ListEvent.ITEM_CLICK , userListSelectHandler);
 
         sendNotification(ApplicationFacade.LIST_USERS);
+        _userPropertiesMediator.setViewComponent(view.properties);
         popupManager.init(iocFacade, view);
+    }
+
+    private function onShow(event:Event):void {
+        sendNotification(ApplicationFacade.LIST_USERS);
     }
 
     override public function listNotificationInterests():Array {
@@ -109,7 +123,8 @@ public class UsersMediator extends IocMediator {
             ApplicationFacade.DISPLAY_ADD_NEW_USER,
             ApplicationFacade.DISPLAY_EDIT_USER,
             ApplicationFacade.DISPLAY_SEARCH_USERS,
-            ApplicationFacade.DISPLAY_SEARCH_RESULTS_USERS
+            ApplicationFacade.DISPLAY_SEARCH_RESULTS_USERS,
+
         ];
     }
 
@@ -179,14 +194,17 @@ public class UsersMediator extends IocMediator {
     }
 
     public function userListSelectHandler(e:ListEvent):void {
-
-        _accountManagementProxy.currentUser = e.currentTarget.selectedItem as UserDTO;
+        var selectedUser:UserDTO = e.currentTarget.selectedItem as UserDTO;
+        _accountManagementProxy.currentUser = selectedUser;
 
         if (view.btnDeleteUser != null)
             view.btnDeleteUser.enabled = true;
 
         if (view.btnEditUser != null)
             view.btnEditUser.enabled = true;
+
+        view.properties.visible = true;
+        sendNotification(ApplicationFacade.DISPLAY_USER_PROPERTIES, selectedUser);
     }
 
     private function userBasicInfo(user:UserDTO):String {

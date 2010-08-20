@@ -40,6 +40,7 @@ import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
+import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class GroupsMediator extends IocMediator {
@@ -48,6 +49,7 @@ public class GroupsMediator extends IocMediator {
 
     private var _popupManager:AccountManagementPopUpManager;
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _groupPropertiesMediator:IIocMediator;
 
     [Bindable]
 
@@ -72,6 +74,14 @@ public class GroupsMediator extends IocMediator {
         _accountManagementProxy = value;
     }
 
+    public function get groupPropertiesMediator():IIocMediator {
+        return _groupPropertiesMediator;
+    }
+
+    public function set groupPropertiesMediator(value:IIocMediator):void {
+        _groupPropertiesMediator = value;
+    }
+
     override public function setViewComponent(p_viewComponent:Object):void {
         if (getViewComponent() != null) {
             view.btnNewGroup.removeEventListener(MouseEvent.CLICK, handleNewGroupClick);
@@ -80,7 +90,7 @@ public class GroupsMediator extends IocMediator {
             view.btnSearchGroup.removeEventListener(MouseEvent.CLICK, handleSearchGroupsClick);
             view.btnBack.removeEventListener(MouseEvent.CLICK, handleGoBack);
 
-            view.groupList.removeEventListener(ListEvent.ITEM_CLICK , groupListChangeHandler);
+            view.groupList.removeEventListener(ListEvent.ITEM_CLICK , groupListClickHandler);
         }
 
         super.setViewComponent(p_viewComponent);
@@ -94,10 +104,15 @@ public class GroupsMediator extends IocMediator {
         view.btnSearchGroup.addEventListener(MouseEvent.CLICK, handleSearchGroupsClick);
         view.btnBack.addEventListener(MouseEvent.CLICK, handleGoBack);
 
-        view.groupList.addEventListener(ListEvent.ITEM_CLICK , groupListChangeHandler);
+        view.groupList.addEventListener(ListEvent.ITEM_CLICK , groupListClickHandler);
 
         sendNotification(ApplicationFacade.LIST_GROUPS);
+        groupPropertiesMediator.setViewComponent(view.properties);
         popupManager.init(iocFacade, view);
+    }
+
+    private function onShow(event:Event):void {
+        sendNotification(ApplicationFacade.LIST_GROUPS);
     }
 
     override public function listNotificationInterests():Array {
@@ -177,15 +192,18 @@ public class GroupsMediator extends IocMediator {
         sendNotification(ApplicationFacade.DISPLAY_ACCOUNT_MNGMT_HOME);
     }
 
-    public function groupListChangeHandler(e:ListEvent):void {
-
-        _accountManagementProxy.currentGroup = e.currentTarget.selectedItem as GroupDTO;
+    public function groupListClickHandler(e:ListEvent):void {
+        var selectedGroup:GroupDTO = e.currentTarget.selectedItem as GroupDTO;
+        _accountManagementProxy.currentGroup = selectedGroup;
 
         if (view.btnDeleteGroup != null)
             view.btnDeleteGroup.enabled = true;
 
         if (view.btnEditGroup != null)
             view.btnEditGroup.enabled = true;
+
+        view.properties.visible = true;
+        sendNotification(ApplicationFacade.DISPLAY_GROUP_PROPERTIES, selectedGroup);
     }
 
     private function groupBasicInfo(group:GroupDTO):String {
@@ -224,6 +242,5 @@ public class GroupsMediator extends IocMediator {
     {
         return viewComponent as GroupsView;
     }
-
 }
 }

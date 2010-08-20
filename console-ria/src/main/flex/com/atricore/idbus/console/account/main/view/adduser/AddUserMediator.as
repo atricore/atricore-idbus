@@ -23,7 +23,6 @@ package com.atricore.idbus.console.account.main.view.adduser {
 import com.atricore.idbus.console.account.main.controller.AddUserCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.services.dto.UserDTO;
@@ -173,19 +172,6 @@ public class AddUserMediator extends IocFormMediator
     }
 
     private function handleClose(event:Event):void {
-    }
-
-    override public function bindForm():void {
-        view.userUsername.text = "";
-        view.userPassword.text = "";
-        view.userRetypePassword.text = "";
-        view.userFirstName.text = "";
-        view.userLastName.text = "";
-        view.userFullName.text = "";
-        view.userEmail.text = "";
-        view.userTelephone.text = "";
-
-        FormUtility.clearValidationErrors(_validators);
     }
 
     override public function bindModel():void {

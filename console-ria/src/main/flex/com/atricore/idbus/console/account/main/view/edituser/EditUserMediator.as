@@ -26,13 +26,13 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.services.dto.GroupDTO;
 import com.atricore.idbus.console.services.dto.UserDTO;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
-import mx.controls.TextInput;
 import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -40,7 +40,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class EditUserMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
-    private var _currUser:UserDTO;
+    private var _editedUser:UserDTO;
 
     private var _processingStarted:Boolean;
 
@@ -104,16 +104,84 @@ public class EditUserMediator extends IocFormMediator
 
     override public function bindForm():void {
 
+        // General data
         view.userUsername.text = _accountManagementProxy.currentUser.userName;
-        view.userPassword.text = _accountManagementProxy.currentUser.userPassword;
-        view.userRetypePassword.text = _accountManagementProxy.currentUser.userPassword;
         view.userFirstName.text = _accountManagementProxy.currentUser.firstName;
         view.userLastName.text = _accountManagementProxy.currentUser.surename;
         view.userFullName.text = _accountManagementProxy.currentUser.commonName;
         view.userEmail.text = _accountManagementProxy.currentUser.email;
         view.userTelephone.text = _accountManagementProxy.currentUser.telephoneNumber;
-        view.userFax = TextInput(_accountManagementProxy.currentUser.facsimilTelephoneNumber);
+        view.userFax.text = _accountManagementProxy.currentUser.facsimilTelephoneNumber;
 
+        // Preference data
+        for (var i:int = 0; i < view.userLanguage.dataProvider.length; i++) {
+            if (view.userLanguage.dataProvider[i].data == _accountManagementProxy.currentUser.language) {
+                view.userLanguage.selectedIndex = i;
+                break;
+            }
+        }
+
+        // Groups data
+        var groupsAvailable:Array = new Array();
+        var groupsSelected:Array = _accountManagementProxy.currentUser.groups;
+
+        if (groupsSelected != null) {
+            for each (var gAvail:GroupDTO in _accountManagementProxy.groupsList) {
+                var found:Boolean = false;
+                for each (var gSel:GroupDTO in groupsSelected) {
+                    if (gAvail.id == gSel.id) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    groupsAvailable.push(gAvail);
+                }
+            }
+        }
+        else {
+            groupsAvailable = _accountManagementProxy.groupsList;
+        }
+
+        view.groupsAvailablesList.dataProvider = new ArrayCollection(groupsAvailable);
+        view.groupsSelectedList.dataProvider = new ArrayCollection(groupsSelected);
+
+        // Security data
+        view.accountDisabledCheck.selected = _accountManagementProxy.currentUser.accountDisabled;
+        view.accountExpiresCheck.selected = _accountManagementProxy.currentUser.accountExpires;
+        view.accountExpiresDateItem.enabled = _accountManagementProxy.currentUser.accountExpires;
+        if (_accountManagementProxy.currentUser.accountExpires)
+            view.accountExpiresDate.selectedDate = _accountManagementProxy.currentUser.accountExpirationDate;
+
+        view.accountLimitLoginCheck.selected = _accountManagementProxy.currentUser.limitSimultaneousLogin;
+        view.accountLimitLoginSection.enabled = _accountManagementProxy.currentUser.limitSimultaneousLogin;
+
+        if (_accountManagementProxy.currentUser.limitSimultaneousLogin) { // If limit login number is enabled
+            view.accountMaxLimitLogin.value = _accountManagementProxy.currentUser.maximunLogins;
+            view.terminatePrevSession.selected = _accountManagementProxy.currentUser.terminatePreviousSession;
+            view.preventNewSession.selected = _accountManagementProxy.currentUser.preventNewSession;
+        }
+
+        // Password data
+        view.allowPasswordChangeCheck.selected = _accountManagementProxy.currentUser.allowUserToChangePassword;
+        view.forcePasswordChangeCheck.selected = _accountManagementProxy.currentUser.forcePeriodicPasswordChanges;
+
+        view.forcePassChangeSection.enabled = _accountManagementProxy.currentUser.forcePeriodicPasswordChanges;
+        if (_accountManagementProxy.currentUser.forcePeriodicPasswordChanges) { // If Force password change is enabled
+            view.forcePasswordChangeDays.value = _accountManagementProxy.currentUser.daysBetweenChanges;
+            view.expirationPasswordDate.selectedDate = _accountManagementProxy.currentUser.passwordExpirationDate;
+        }
+
+        view.notifyPasswordExpirationCheck.selected = _accountManagementProxy.currentUser.notifyPasswordExpiration;
+        view.notifyPasswordExpirationDayItem.enabled = _accountManagementProxy.currentUser.notifyPasswordExpiration;
+        if (_accountManagementProxy.currentUser.notifyPasswordExpiration)  // If password notication change is enabled
+            view.notifyPasswordExpirationDay.value = _accountManagementProxy.currentUser.daysBeforeExpiration;
+
+        view.userPassword.text = _accountManagementProxy.currentUser.userPassword;
+        view.userRetypePassword.text = _accountManagementProxy.currentUser.userPassword;
+
+        view.generatePasswordCheck.selected = _accountManagementProxy.currentUser.automaticallyGeneratePassword;
+        view.emailNewPasswordCheck.selected = _accountManagementProxy.currentUser.emailNewPasword;
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -124,8 +192,7 @@ public class EditUserMediator extends IocFormMediator
         if (validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
-            _accountManagementProxy.currentUser = _currUser;
-            sendNotification(ApplicationFacade.EDIT_USER, _currUser);
+            sendNotification(ApplicationFacade.EDIT_USER, _editedUser);
             closeWindow();
         }
         else {
@@ -136,6 +203,7 @@ public class EditUserMediator extends IocFormMediator
     public function handleEditUserSuccess():void {
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The user was successfully updated.");
+        sendNotification(ApplicationFacade.LIST_USERS);
     }
 
     public function handleEditUserFailure():void {
@@ -163,48 +231,50 @@ public class EditUserMediator extends IocFormMediator
         newUserDef.telephoneNumber = view.userTelephone.text;
         newUserDef.facsimilTelephoneNumber = view.userFax.text;
 
-        _currUser = newUserDef;
+        newUserDef = newUserDef;
 
         // Preference data
         if (view.userLanguage != null)
-            _currUser.language = view.userLanguage.selectedItem as String;
+            newUserDef.language = view.userLanguage.selectedItem.data;
         // Groups data
         if (view.groupsSelectedList != null) {
             if (view.groupsSelectedList.dataProvider as ArrayCollection != null)
-                _currUser.groups = (view.groupsSelectedList.dataProvider as ArrayCollection).toArray();
+                newUserDef.groups = (view.groupsSelectedList.dataProvider as ArrayCollection).toArray();
         }
         // Security
         if (view.accountDisabledCheck != null) { // Security Tab Loaded
-            _currUser.accountDisabled = view.accountDisabledCheck.selected;
-            _currUser.accountExpires = view.accountDisabledCheck.selected;
+            newUserDef.accountDisabled = view.accountDisabledCheck.selected;
+            newUserDef.accountExpires = view.accountDisabledCheck.selected;
             if (view.accountExpiresCheck.selected)
-                _currUser.accountExpirationDate = view.accountExpiresDate.selectedDate;
+                newUserDef.accountExpirationDate = view.accountExpiresDate.selectedDate;
 
-            _currUser.limitSimultaneousLogin = view.accountLimitLoginCheck.selected;
+            newUserDef.limitSimultaneousLogin = view.accountLimitLoginCheck.selected;
             if (view.accountLimitLoginCheck.selected) {
-                _currUser.maximunLogins = view.accountMaxLimitLogin.value;
-                _currUser.terminatePreviousSession = view.terminatePrevSession.selected;
-                _currUser.preventNewSession = view.preventNewSession.selected;
+                newUserDef.maximunLogins = view.accountMaxLimitLogin.value;
+                newUserDef.terminatePreviousSession = view.terminatePrevSession.selected;
+                newUserDef.preventNewSession = view.preventNewSession.selected;
             }
         }
         // Password
         if (view.allowPasswordChangeCheck != null) { //Password Tab Loaded
-            _currUser.allowUserToChangePassword = view.allowPasswordChangeCheck.selected;
-            _currUser.forcePeriodicPasswordChanges = view.forcePasswordChangeCheck.selected;
+            newUserDef.allowUserToChangePassword = view.allowPasswordChangeCheck.selected;
+            newUserDef.forcePeriodicPasswordChanges = view.forcePasswordChangeCheck.selected;
             if (view.forcePasswordChangeCheck.selected) {
-                _currUser.daysBetweenChanges = view.forcePasswordChangeDays.value;
-                _currUser.passwordExpirationDate = view.expirationPasswordDate.selectedDate;
+                newUserDef.daysBetweenChanges = view.forcePasswordChangeDays.value;
+                newUserDef.passwordExpirationDate = view.expirationPasswordDate.selectedDate;
             }
-            _currUser.notifyPasswordExpiration = view.notifyPasswordExpirationCheck.selected;
+            newUserDef.notifyPasswordExpiration = view.notifyPasswordExpirationCheck.selected;
             if (view.notifyPasswordExpirationCheck.selected) {
-                _currUser.daysBeforeExpiration = view.notifyPasswordExpirationDay.value;
+                newUserDef.daysBeforeExpiration = view.notifyPasswordExpirationDay.value;
             }
-            _currUser.userPassword = view.userPassword.text;
-            _currUser.automaticallyGeneratePassword = view.generatePasswordCheck.selected;
-            _currUser.emailNewPasword = view.emailNewPasswordCheck.selected;
+            newUserDef.userPassword = view.userPassword.text;
+            newUserDef.automaticallyGeneratePassword = view.generatePasswordCheck.selected;
+            newUserDef.emailNewPasword = view.emailNewPasswordCheck.selected;
         }
-    }
 
+        newUserDef.id = _accountManagementProxy.currentUser.id;
+        _editedUser = newUserDef;
+    }
 
     protected function get view():EditUserForm
     {

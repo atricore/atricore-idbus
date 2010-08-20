@@ -40,7 +40,7 @@
     </fx:Declarations>
 
 
-    <mx:TabNavigator id="tabNav" width="500" height="385">
+    <mx:TabNavigator id="tabNav" width="500" height="385" creationPolicy="all">
 
         <s:NavigatorContent id="generalSection"
                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.general')}" >
@@ -93,12 +93,14 @@
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.language')}:">
                     <s:DropDownList id="userLanguage" width="70" selectedIndex="0">
-                        <mx:ArrayCollection>
-                            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.language.english')}"
-                                       data="en" />
-                            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.language.spanish')}"
-                                       data="es" />
-                        </mx:ArrayCollection>
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.language.english')}"
+                                           data="en" />
+                                <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.language.spanish')}"
+                                           data="es" />
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
                     </s:DropDownList>
                 </mx:FormItem>
             </s:VGroup>

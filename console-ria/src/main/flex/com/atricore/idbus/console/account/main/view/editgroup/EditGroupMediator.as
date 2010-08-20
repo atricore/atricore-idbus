@@ -38,7 +38,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class EditGroupMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
-    private var _newGroup:GroupDTO;
+    private var _editedGroup:GroupDTO;
 
     private var _processingStarted:Boolean;
 
@@ -108,7 +108,8 @@ public class EditGroupMediator extends IocFormMediator
         newGroupDef.name = view.groupName.text;
         newGroupDef.description = view.groupDescription.text;
 
-        _newGroup = newGroupDef;
+        _editedGroup = newGroupDef;
+        _editedGroup.id = _accountManagementProxy.currentGroup.id;
     }
 
     private function onSubmitEditGroup(event:MouseEvent):void {
@@ -117,8 +118,7 @@ public class EditGroupMediator extends IocFormMediator
         if (validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
-            _accountManagementProxy.currentGroup = _newGroup;
-            sendNotification(ApplicationFacade.EDIT_GROUP, _newGroup);
+            sendNotification(ApplicationFacade.EDIT_GROUP, _editedGroup);
             closeWindow();
         }
         else {
@@ -129,6 +129,7 @@ public class EditGroupMediator extends IocFormMediator
     public function handleEditGroupSuccess():void {
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The the group was successfully updated.");
+        sendNotification(ApplicationFacade.LIST_GROUPS);
     }
 
     public function handleEditGroupFailure():void {
@@ -140,7 +141,15 @@ public class EditGroupMediator extends IocFormMediator
     }
 
     private function closeWindow():void {
+        resetForm();
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+    }
+
+    private function resetForm():void {
+        view.groupName.text = "";
+        view.groupDescription.text = "";
+
+        FormUtility.clearValidationErrors(_validators);
     }
 
     private function handleClose(event:Event):void {
