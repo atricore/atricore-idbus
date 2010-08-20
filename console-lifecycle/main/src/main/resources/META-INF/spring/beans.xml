@@ -121,7 +121,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <osgi:service id="osgiUserProvisioningServiceManagerBean"
                   ref="userProvisioningServiceManagerBean"
             interface="com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService"/>
-
+                       
     <osgi:service id="osgiIdApplianceManagementService"
                   ref="idApplianceManagementService"
             interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"/>

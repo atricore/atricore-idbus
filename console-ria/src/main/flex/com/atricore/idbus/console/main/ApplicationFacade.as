@@ -91,6 +91,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const REMOVE_SP_CHANNEL_ELEMENT:String = "removeSpChannelElement";
     public static const CREATE_DB_IDENTITY_VAULT_ELEMENT:String = "createIdentityVaultElement";
     public static const REMOVE_DB_IDENTITY_VAULT_ELEMENT:String = "removeIdentityVaultElement";
+    public static const CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:String = "createLdapIdentitySourceElement";
     public static const REMOVE_SERVICE_PROVIDER_ELEMENT:String = "removeServiceProviderElement";
     public static const MANAGE_CERTIFICATE:String = "manageCertificate";
     public static const SHOW_UPLOAD_PROGRESS:String = "uploadProgress";

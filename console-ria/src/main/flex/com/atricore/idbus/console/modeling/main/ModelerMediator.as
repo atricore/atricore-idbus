@@ -187,6 +187,7 @@ public class ModelerMediator extends IocMediator {
             ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT,
             ApplicationFacade.CREATE_DB_IDENTITY_VAULT_ELEMENT,
             ApplicationFacade.REMOVE_DB_IDENTITY_VAULT_ELEMENT,
+            ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.MANAGE_CERTIFICATE,
             ApplicationFacade.SHOW_UPLOAD_PROGRESS,
             ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
@@ -255,6 +256,9 @@ public class ModelerMediator extends IocMediator {
                 var rdbiv:RemoveIdentityVaultElementRequest = RemoveIdentityVaultElementRequest(notification.getBody());
                 //                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.DB_IDENTITY_VAULT_REMOVE, rdbiv.identityVault);
+                break;
+            case ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:
+                popupManager.showCreateLdapIdentitySourceWindow(notification);
                 break;
             case ApplicationFacade.MANAGE_CERTIFICATE:
                 popupManager.showManageCertificateWindow(notification);

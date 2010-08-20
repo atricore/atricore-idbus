@@ -16,6 +16,7 @@ public final class MediatorNames {
     public static const SP_CHANNEL_CREATE_MDR:String = "spChannelCreateMediator";
     public static const BUILD_APPLIANCE_MEDIATOR:String = "buildApplianceMediator";
     public static const DEPLOY_APPLIANCE_MEDIATOR:String = "deployApplianceMediator";
+    public static const LDAP_IDENTITY_SOURCE_CREATE_MEDIATOR:String = "ldapIdentitySourceCreateMediator";
 
     public final function MediatorNames() {
         throw new Error("This class is only constants container. It can't be instantiated.");

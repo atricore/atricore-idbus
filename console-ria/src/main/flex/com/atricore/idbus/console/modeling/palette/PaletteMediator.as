@@ -57,6 +57,7 @@ public class PaletteMediator extends IocMediator {
 
         // bind view to palette model
         var saml2PaletteDrawer:PaletteDrawer = new PaletteDrawer("SAML 2", null, null);
+        
         saml2PaletteDrawer.add(
                     new PaletteEntry("Identity Provider", null, "Identity Provider Entry", DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE)
 
@@ -73,17 +74,36 @@ public class PaletteMediator extends IocMediator {
                     new PaletteEntry("SP Channel", null, "Service Provider Channel Entry", DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE)
 
                 );
-        saml2PaletteDrawer.add(
-                    new PaletteEntry("DB Identity Vault", null, "Database Identity Vault Entry", DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE)
-
-                );
-        saml2PaletteDrawer.add(
-                    new PaletteEntry("Connection", null, "Connection Entry", DiagramElementTypes.CONNECTION_ELEMENT_TYPE)
-                
-                );
 
         var pr:PaletteRoot  = new PaletteRoot("Identity Appliance Modeler Palette", null, null);
         pr.add(saml2PaletteDrawer);
+
+        var identitySourcesPaletteDrawer:PaletteDrawer = new PaletteDrawer("Identity Sources", null, null);
+        identitySourcesPaletteDrawer.add(
+                    new PaletteEntry("DB Identity Vault", null, "Database Identity Vault Entry", DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE)
+
+                );
+        identitySourcesPaletteDrawer.add(
+                    new PaletteEntry("LDAP Identity Source", null, "LDAP Identity Source Entry", DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE)
+
+                );
+
+        pr.add(identitySourcesPaletteDrawer);
+
+        var connectionPaletteDrawer:PaletteDrawer = new PaletteDrawer("Connections", null, null);
+        connectionPaletteDrawer.add(
+                    new PaletteEntry("Federated Connection", null, "Federated Connection Entry", DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE)
+
+                );
+        connectionPaletteDrawer.add(
+                    new PaletteEntry("Activation", null, "Activation Entry", DiagramElementTypes.ACTIVATION_ELEMENT_TYPE)
+
+                );
+        connectionPaletteDrawer.add(
+                    new PaletteEntry("Identity Lookup", null, "Identity Lookup Entry", DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE)
+
+                );
+        pr.add(connectionPaletteDrawer);
 
         view.rptPaletteRoot.dataProvider = pr;
         view.addEventListener(PaletteEvent.CLICK, handlePaletteClick);

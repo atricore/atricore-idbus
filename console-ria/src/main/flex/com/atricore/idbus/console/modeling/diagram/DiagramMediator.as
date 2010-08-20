@@ -34,6 +34,7 @@ import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdpChannelElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
@@ -155,45 +156,49 @@ public class DiagramMediator extends IocMediator {
             case ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM:
                 var elementType:int = notification.getBody() as int;
 
-                if (_applianceId != null && elementType == DiagramElementTypes.CONNECTION_ELEMENT_TYPE) {
+                if (_applianceId != null && elementType == DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE) {
                     _identityApplianceDiagram.enterConnectionMode();
                     break;
                 }
 
-                if (_currentlySelectedNode != null) {
+//                if (_currentlySelectedNode != null) {
 
                     switch (elementType) {
                         case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
                             // assert that source end is an Identity Appliance
-                            if (_currentlySelectedNode.data is IdentityApplianceDTO) {
-                                var ownerIdentityAppliance:IdentityApplianceDTO = _currentlySelectedNode.data as IdentityApplianceDTO;
+//                            if (_currentlySelectedNode.data is IdentityApplianceDTO) {
+//                                var ownerIdentityAppliance:IdentityApplianceDTO = _currentlySelectedNode.data as IdentityApplianceDTO;
+                               var ownerIdentityAppliance:IdentityApplianceDTO = _identityAppliance;
 
                                 var cip:CreateIdentityProviderElementRequest = new CreateIdentityProviderElementRequest(
                                         ownerIdentityAppliance,
-                                        _currentlySelectedNode.stringid
+//                                        _currentlySelectedNode.stringid
+                                        null
                                         );
 
                                 // this notification will be grabbed by the modeler mediator which will open
                                 // the corresponding form
                                 sendNotification(ApplicationFacade.CREATE_IDENTITY_PROVIDER_ELEMENT, cip);
-                            }
+//                            }
 
 
                             break;
                         case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
                             // assert that source end is an Identity Appliance
-                            if (_currentlySelectedNode.data is IdentityApplianceDTO) {
-                                var ownerIdentityAppliance:IdentityApplianceDTO = _currentlySelectedNode.data as IdentityApplianceDTO;
+//                            if (_currentlySelectedNode.data is IdentityApplianceDTO) {
+//                                var ownerIdentityAppliance:IdentityApplianceDTO = _currentlySelectedNode.data as IdentityApplianceDTO;
+                                ownerIdentityAppliance = _identityAppliance;
 
                                 var csp:CreateServiceProviderElementRequest = new CreateServiceProviderElementRequest(
                                         ownerIdentityAppliance,
-                                        _currentlySelectedNode.stringid
+//                                        _currentlySelectedNode.stringid
+                                        null
                                         );
 
                                 // this notification will be grabbed by the modeler mediator which will open
                                 // the corresponding form
                                 sendNotification(ApplicationFacade.CREATE_SERVICE_PROVIDER_ELEMENT, csp);
-                            }
+//                            }
 
 
                             break;
@@ -233,23 +238,42 @@ public class DiagramMediator extends IocMediator {
                             break;
                         case DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE:
                             // assert that source end is an Identity Appliance
-                            if (_currentlySelectedNode.data is IdentityApplianceDTO) {
-                                var ownerIdentityAppliance:IdentityApplianceDTO = _currentlySelectedNode.data as IdentityApplianceDTO;
-
+//                            if (_currentlySelectedNode.data is IdentityApplianceDTO) {
+//                                var ownerIdentityAppliance:IdentityApplianceDTO = _currentlySelectedNode.data as IdentityApplianceDTO;
+                                ownerIdentityAppliance = _identityAppliance;
+                                
                                 var civ:CreateIdentityVaultElementRequest = new CreateIdentityVaultElementRequest(
                                         ownerIdentityAppliance,
-                                        _currentlySelectedNode.stringid
+//                                        _currentlySelectedNode.stringid
+                                        null
                                         );
 
                                 // this notification will be grabbed by the modeler mediator which will open
                                 // the corresponding form
                                 sendNotification(ApplicationFacade.CREATE_DB_IDENTITY_VAULT_ELEMENT, civ);
+//                            }
+
+
+                            break;
+                        case DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE:
+                            if (_currentlySelectedNode.data is IdentityProviderDTO || _currentlySelectedNode.data is ServiceProviderDTO ) {
+                                var ownerObj:Object = _currentlySelectedNode.data;
+
+                                var cliv:CreateLdapIdentitySourceElementRequest = new CreateLdapIdentitySourceElementRequest(
+                                        ownerObj,
+                                        _currentlySelectedNode.stringid
+                                        );
+
+                                // this notification will be grabbed by the modeler mediator which will open
+                                // the corresponding form
+                                sendNotification(ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT, cliv);
                             }
 
 
                             break;
+
                     }
-                }
+//                }
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
                 toggleNodeOnByData(_identityApplianceDiagram, _projectProxy.currentIdentityApplianceElement);

@@ -209,6 +209,10 @@
             class="com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardViewMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="ldapIdentitySourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.ldapidentitysource.LdapIdentitySourceCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="idpChannelCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -277,6 +281,7 @@
         <property name="buildApplianceMediator" ref="buildApplianceMediator"/>
         <property name="deployApplianceMediator" ref="deployApplianceMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
+        <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator" />
     </object>
 
     <object id="accountManagementPopUpManager" class="com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager">
@@ -350,6 +355,7 @@
         <property name="diagramMediator" ref="diagramMediator"/>
         <property name="identityProviderCreateMediator" ref="identityProviderCreateMediator"/>
         <property name="dbIdentityVaultWizardViewMediator" ref="dbIdentityVaultWizardViewMediator"/>
+        <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator" />
         <property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>
         <property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>
         <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>

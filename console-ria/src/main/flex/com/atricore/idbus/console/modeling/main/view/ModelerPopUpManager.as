@@ -31,6 +31,8 @@ import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCrea
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.ldapidentitysource.LdapIdentitySourceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.ldapidentitysource.LdapIdentitySourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateForm;
@@ -57,6 +59,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _idpChannelCreateMediator:IDPChannelCreateMediator;
     private var _spChannelCreateMediator:SPChannelCreateMediator;
     private var _dbIdentityVaultWizardViewMediator:DbIdentityVaultWizardViewMediator;
+    private var _ldapIdentitySourceCreateMediator:LdapIdentitySourceCreateMediator;
     private var _uploadProgressMediator:UploadProgressMediator;
     private var _buildApplianceMediator:BuildApplianceMediator;
     private var _deployApplianceMediator:DeployApplianceMediator;
@@ -67,6 +70,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _idpChannelCreateForm:IDPChannelCreateForm;
     private var _spChannelCreateForm:SPChannelCreateForm;
     private var _dbIdentityVaultWizardView:DbIdentityVaultWizardView;
+    private var _ldapIdentitySourceCreateForm:LdapIdentitySourceCreateForm;
     private var _manageCertificateForm:ManageCertificateView;
     private var _uploadProgress:UploadProgress;
     private var _buildAppliance:BuildApplianceView;
@@ -147,6 +151,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set deployApplianceMediator(value:DeployApplianceMediator):void {
         _deployApplianceMediator = value;
+    }
+
+    public function get ldapIdentitySourceCreateMediator():LdapIdentitySourceCreateMediator {
+        return _ldapIdentitySourceCreateMediator;
+    }
+
+    public function set ldapIdentitySourceCreateMediator(value:LdapIdentitySourceCreateMediator):void {
+        _ldapIdentitySourceCreateMediator = value;
     }
 
     public function showCreateIdentityProviderWindow(notification:INotification):void {
@@ -256,6 +268,29 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleDbIdentityVaultWizardViewCreated(event:FlexEvent):void {
         dbIdentityVaultWizardViewMediator.setViewComponent(_dbIdentityVaultWizardView);
         dbIdentityVaultWizardViewMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateLdapIdentitySourceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_ldapIdentitySourceCreateForm) {
+            createLdapIdentitySourceCreateForm();
+        }
+        _popup.title = "Create LDAP Identity Source";
+        _popup.width = 650;
+        _popup.height = 300;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_ldapIdentitySourceCreateForm);
+    }
+
+    private function createLdapIdentitySourceCreateForm():void {
+        _ldapIdentitySourceCreateForm = new LdapIdentitySourceCreateForm();
+        _ldapIdentitySourceCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleLdapIdentitySourceCreateFormCreated);
+    }
+
+    private function handleLdapIdentitySourceCreateFormCreated(event:FlexEvent):void {
+        ldapIdentitySourceCreateMediator.setViewComponent(_ldapIdentitySourceCreateForm);
+        ldapIdentitySourceCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showManageCertificateWindow(notification:INotification):void {
