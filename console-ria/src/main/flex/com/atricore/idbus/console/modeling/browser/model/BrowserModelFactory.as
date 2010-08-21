@@ -24,12 +24,14 @@ package com.atricore.idbus.console.modeling.browser.model {
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.main.view.util.Constants;
 import com.atricore.idbus.console.services.dto.BindingProviderDTO;
+import com.atricore.idbus.console.services.dto.DbIdentityVaultDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceUnitDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceUnitTypeDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
 import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+import com.atricore.idbus.console.services.dto.LdapIdentityVaultDTO;
 import com.atricore.idbus.console.services.dto.ProviderDTO;
 import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
 
@@ -93,7 +95,14 @@ public class BrowserModelFactory {
             identityVaultNode.id = Number(identityVault.id);
             identityVaultNode.label = identityVault.name;
             identityVaultNode.type = Constants.IDENTITY_VAULT_DEEP;
-            identityVaultNode.icon = EmbeddedIcons.vaultMiniIcon;
+            if(identityVault is DbIdentityVaultDTO){
+                identityVaultNode.icon = EmbeddedIcons.dbIdentitySourceMiniIcon;
+            } else if(identityVault is LdapIdentityVaultDTO){
+                identityVaultNode.icon = EmbeddedIcons.ldapIdentitySourceMiniIcon;
+            } else {
+                identityVaultNode.icon = EmbeddedIcons.vaultMiniIcon;
+            }
+//            identityVaultNode.icon = EmbeddedIcons.vaultMiniIcon;
             identityVaultNode.data = identityVault;
             identityVaultNode.selectable = selectable;
             return identityVaultNode;

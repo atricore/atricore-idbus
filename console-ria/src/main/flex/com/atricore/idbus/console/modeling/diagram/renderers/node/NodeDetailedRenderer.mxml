@@ -39,11 +39,13 @@
         import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
         import com.atricore.idbus.console.services.dto.BindingProviderDTO;
         import com.atricore.idbus.console.services.dto.ChannelDTO;
+        import com.atricore.idbus.console.services.dto.DbIdentityVaultDTO;
         import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnitDTO;
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnitTypeDTO;
         import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
         import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+        import com.atricore.idbus.console.services.dto.LdapIdentityVaultDTO;
         import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
 
         import mx.controls.Alert;
@@ -92,12 +94,12 @@
                     if (obj is ServiceProviderDTO) {
                         var sp:ServiceProviderDTO = obj as ServiceProviderDTO;
                         _linkLabel = sp.name;
-                        //iconImage.source = EmbeddedIcons.spIcon;
+                        _linkIcon = EmbeddedIcons.spIcon;
                     } else {
                         if (obj is BindingProviderDTO) {
                             var bp:BindingProviderDTO = obj as BindingProviderDTO;
                             _linkLabel = bp.name;
-                            //iconImage.source = EmbeddedIcons.bpIcon;
+                            _linkIcon = EmbeddedIcons.bpIcon;
                         } else {
                             if (obj is ChannelDTO) {
                                 _linkLabel = (obj as ChannelDTO).name;
@@ -106,16 +108,22 @@
                                 if (obj is IdentityVaultDTO) {
                                     var identityVault:IdentityVaultDTO = obj as IdentityVaultDTO;
                                     _linkLabel = identityVault.name;
-                                    //iconImage.source = EmbeddedIcons.vaultIcon;
+                                    if(obj is DbIdentityVaultDTO){
+                                        _linkIcon = EmbeddedIcons.dbIdentitySourceIcon;
+                                    } else if(obj is LdapIdentityVaultDTO){
+                                        _linkIcon = EmbeddedIcons.ldapIdentitySourceIcon;
+                                    } else {
+                                        _linkIcon = EmbeddedIcons.vaultIcon;
+                                    }
                                 } else {
                                     if (obj is IdentityApplianceUnitDTO) {
                                         var applianceUnit:IdentityApplianceUnitDTO = obj as IdentityApplianceUnitDTO;
                                         _linkLabel = applianceUnit.name;
                                         var type:IdentityApplianceUnitTypeDTO = applianceUnit.type;
                                         if (type.equals(IdentityApplianceUnitTypeDTO.FEDERATION_UNIT)) {
-                                            //iconImage.source = EmbeddedIcons.spIcon;
+                                            _linkIcon = EmbeddedIcons.spIcon;
                                         } else if (type.equals(IdentityApplianceUnitTypeDTO.PROVISIONING_UNIT)) {
-                                            //iconImage.source = EmbeddedIcons.vaultIcon;
+                                            _linkIcon = EmbeddedIcons.vaultIcon;
                                         }
                                     }
                                 }

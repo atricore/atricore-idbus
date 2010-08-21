@@ -164,60 +164,108 @@ package com.atricore.idbus.console.main {
         static public var usersIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/nodes/48x48/icon_identity_bus.png")]
+        [Embed(source="/assets/icons/notation/48x48/identity_appliance.png")]
         static public var busIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/nodes/48x48/icon_idp.png")]
+        [Embed(source="/assets/icons/notation/48x48/identity_provider.png")]
         public static var idpIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/nodes/48x48/icon_sp.png")]
+        [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
         public static var spIcon:Class;
 
+        //TODO add BP icon
         [Bindable]
-        [Embed(source="/assets/icons/nodes/48x48/icon_bp.png")]
+        [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
         public static var bpIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/nodes/48x48/icon_idp_channel.png")]
+        [Embed(source="/assets/icons/notation/48x48/identity_provider_channel.png")]
         public static var idpChannelIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/nodes/48x48/icon_sp_channel.png")]
+        [Embed(source="/assets/icons/notation/48x48/service_provider_channel.png")]
         public static var spChannelIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/nodes/48x48/icon_identity_vault.png")]
-        public static var vaultIcon:Class;        
+        [Embed(source="/assets/icons/notation/48x48/identity_vault.png")]
+        public static var vaultIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/nodes/22x22/icon_identity_bus.png")]
+        [Embed(source="/assets/icons/notation/48x48/ldap_identity_source.png")]
+        public static var ldapIdentitySourceIcon:Class; 
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/database_identity_source.png")]
+        public static var dbIdentitySourceIcon:Class;
+
+
+        //TODO USE APPROPRIATE ICONS        
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/identity_appliance.png")]
         static public var busMiniIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/nodes/22x22/icon_idp.png")]
+        [Embed(source="/assets/icons/notation/22x22/identity_provider.png")]
         public static var idpMiniIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/nodes/22x22/icon_sp.png")]
+        [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
         public static var spMiniIcon:Class;
 
+        //TODO add BP icon
         [Bindable]
-        [Embed(source="/assets/icons/nodes/22x22/icon_bp.png")]
+        [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
         public static var bpMiniIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/nodes/22x22/icon_idp_channel.png")]
+        [Embed(source="/assets/icons/notation/22x22/identity_provider_channel.png")]
         public static var idpChannelMiniIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/nodes/22x22/icon_sp_channel.png")]
+        [Embed(source="/assets/icons/notation/22x22/service_provider_channel.png")]
         public static var spChannelMiniIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/nodes/22x22/icon_identity_vault.png")]
-        public static var vaultMiniIcon:Class;        
+        [Embed(source="/assets/icons/notation/22x22/identity_vault.png")]
+        public static var vaultMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/ldap_identity_source.png")]
+        public static var ldapIdentitySourceMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/database_identity_source.png")]
+        public static var dbIdentitySourceMiniIcon:Class;
+
+//        [Bindable]
+//        [Embed(source="/assets/icons/notation/22x22/icon_identity_bus.png")]
+//        static public var busMiniIcon:Class;
+//
+//        [Bindable]
+//        [Embed(source="/assets/icons/notation/22x22/icon_idp.png")]
+//        public static var idpMiniIcon:Class;
+//
+//        [Bindable]
+//        [Embed(source="/assets/icons/notation/22x22/icon_sp.png")]
+//        public static var spMiniIcon:Class;
+//
+//        [Bindable]
+//        [Embed(source="/assets/icons/notation/22x22/icon_bp.png")]
+//        public static var bpMiniIcon:Class;
+//
+//        [Bindable]
+//        [Embed(source="/assets/icons/notation/22x22/icon_idp_channel.png")]
+//        public static var idpChannelMiniIcon:Class;
+//
+//        [Bindable]
+//        [Embed(source="/assets/icons/notation/22x22/icon_sp_channel.png")]
+//        public static var spChannelMiniIcon:Class;
+//
+//        [Bindable]
+//        [Embed(source="/assets/icons/notation/22x22/icon_identity_vault.png")]
+//        public static var vaultMiniIcon:Class;
 
         [Bindable]
         [Embed(source="/style/yflexskin.swf",symbol="Tree_folderOpenIcon")]
