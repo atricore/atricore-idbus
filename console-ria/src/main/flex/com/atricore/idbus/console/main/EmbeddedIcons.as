@@ -239,6 +239,11 @@ package com.atricore.idbus.console.main {
         [Embed(source="/assets/icons/notation/22x22/database_identity_source.png")]
         public static var dbIdentitySourceMiniIcon:Class;
 
+        //CONNECTIONS
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/connection.png")]
+        public static var connectionMiniIcon:Class;
+
 //        [Bindable]
 //        [Embed(source="/assets/icons/notation/22x22/icon_identity_bus.png")]
 //        static public var busMiniIcon:Class;

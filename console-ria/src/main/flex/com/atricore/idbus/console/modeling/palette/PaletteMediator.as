@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.modeling.palette {
 import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.modeling.diagram.DiagramElementTypes;
 import com.atricore.idbus.console.modeling.palette.event.PaletteEvent;
 import com.atricore.idbus.console.modeling.palette.model.PaletteDrawer;
@@ -32,6 +33,8 @@ import mx.collections.IList;
 import org.puremvc.as3.interfaces.INotification;
 import org.puremvc.as3.patterns.observer.Notification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
+
+import spark.primitives.BitmapImage;
 
 public class PaletteMediator extends IocMediator {
     private var selectedIndex:int;
@@ -57,21 +60,21 @@ public class PaletteMediator extends IocMediator {
 
         // bind view to palette model
         var saml2PaletteDrawer:PaletteDrawer = new PaletteDrawer("SAML 2", null, null);
-        
+
         saml2PaletteDrawer.add(
-                    new PaletteEntry("Identity Provider", null, "Identity Provider Entry", DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE)
+                    new PaletteEntry("Identity Provider", EmbeddedIcons.idpMiniIcon, "Identity Provider Entry", DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE)
 
                 );
         saml2PaletteDrawer.add(
-                    new PaletteEntry("Service Provider", null, "Service Provider Entry", DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE)
+                    new PaletteEntry("Service Provider", EmbeddedIcons.spMiniIcon, "Service Provider Entry", DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE)
 
                 );
         saml2PaletteDrawer.add(
-                    new PaletteEntry("IDP Channel", null, "Identity Provider Channel Entry", DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE)
+                    new PaletteEntry("IDP Channel", EmbeddedIcons.idpChannelMiniIcon, "Identity Provider Channel Entry", DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE)
 
                 );
         saml2PaletteDrawer.add(
-                    new PaletteEntry("SP Channel", null, "Service Provider Channel Entry", DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE)
+                    new PaletteEntry("SP Channel", EmbeddedIcons.spChannelMiniIcon, "Service Provider Channel Entry", DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE)
 
                 );
 
@@ -80,11 +83,11 @@ public class PaletteMediator extends IocMediator {
 
         var identitySourcesPaletteDrawer:PaletteDrawer = new PaletteDrawer("Identity Sources", null, null);
         identitySourcesPaletteDrawer.add(
-                    new PaletteEntry("DB Identity Vault", null, "Database Identity Vault Entry", DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE)
+                    new PaletteEntry("DB Identity Vault", EmbeddedIcons.dbIdentitySourceMiniIcon, "Database Identity Vault Entry", DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE)
 
                 );
         identitySourcesPaletteDrawer.add(
-                    new PaletteEntry("LDAP Identity Source", null, "LDAP Identity Source Entry", DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE)
+                    new PaletteEntry("LDAP Identity Source", EmbeddedIcons.ldapIdentitySourceMiniIcon, "LDAP Identity Source Entry", DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE)
 
                 );
 
@@ -92,15 +95,15 @@ public class PaletteMediator extends IocMediator {
 
         var connectionPaletteDrawer:PaletteDrawer = new PaletteDrawer("Connections", null, null);
         connectionPaletteDrawer.add(
-                    new PaletteEntry("Federated Connection", null, "Federated Connection Entry", DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE)
+                    new PaletteEntry("Federated Connection", EmbeddedIcons.connectionMiniIcon, "Federated Connection Entry", DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE)
 
                 );
         connectionPaletteDrawer.add(
-                    new PaletteEntry("Activation", null, "Activation Entry", DiagramElementTypes.ACTIVATION_ELEMENT_TYPE)
+                    new PaletteEntry("Activation", EmbeddedIcons.connectionMiniIcon, "Activation Entry", DiagramElementTypes.ACTIVATION_ELEMENT_TYPE)
 
                 );
         connectionPaletteDrawer.add(
-                    new PaletteEntry("Identity Lookup", null, "Identity Lookup Entry", DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE)
+                    new PaletteEntry("Identity Lookup", EmbeddedIcons.connectionMiniIcon, "Identity Lookup Entry", DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE)
 
                 );
         pr.add(connectionPaletteDrawer);

@@ -24,7 +24,7 @@ import spark.primitives.BitmapImage;
 
 public class PaletteRoot extends PaletteContainer {
 
-    public function PaletteRoot(label:String, icon:BitmapImage, description:String) {
+    public function PaletteRoot(label:String, icon:Class, description:String) {
         super(label, icon, description);
     }
 

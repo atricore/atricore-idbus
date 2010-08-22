@@ -27,7 +27,13 @@ import spark.primitives.BitmapImage;
 public class PaletteContainer extends PaletteEntry {
     private var _children:ArrayList;
 
-    public function PaletteContainer(label:String, icon:BitmapImage, description:String) {
+//    public function PaletteContainer(label:String, icon:BitmapImage, description:String) {
+//        super(label, icon, description, -1);
+//
+//        _children = new ArrayList();
+//    }
+
+    public function PaletteContainer(label:String, icon:Class, description:String) {
         super(label, icon, description, -1);
 
         _children = new ArrayList();

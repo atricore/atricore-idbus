@@ -24,11 +24,12 @@ import spark.primitives.BitmapImage;
 
 public class PaletteEntry {
     private var _label:String;
-    private var _icon:BitmapImage;
+//    private var _icon:BitmapImage;
+    private var _icon:Class;
     private var _shortDescription:String;
     private var _elementType:int;
 
-    public function PaletteEntry(label:String, icon:BitmapImage, shortDescription:String, elementType:int) {
+    public function PaletteEntry(label:String, icon:Class, shortDescription:String, elementType:int) {
         _label = label;
         _icon = icon;
         _shortDescription = shortDescription;
@@ -39,7 +40,7 @@ public class PaletteEntry {
         return _label;
     }
 
-    public function get icon() : BitmapImage {
+    public function get icon() : Class {
         return _icon;
     }
 

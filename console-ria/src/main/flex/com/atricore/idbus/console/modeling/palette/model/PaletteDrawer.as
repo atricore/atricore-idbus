@@ -31,7 +31,7 @@ public class PaletteDrawer extends PaletteContainer {
     private var _initialState:int;
     private var _showDefaultIcon:Boolean;
 
-    public function PaletteDrawer(label:String, icon:BitmapImage, description:String) {
+    public function PaletteDrawer(label:String, icon:Class, description:String) {
         super(label, icon, description);
     }
 
