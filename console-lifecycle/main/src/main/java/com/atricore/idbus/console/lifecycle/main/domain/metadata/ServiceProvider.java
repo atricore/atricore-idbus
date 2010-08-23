@@ -26,6 +26,7 @@ public class ServiceProvider extends LocalProvider {
 	private static final long serialVersionUID = 1096573594152761313L;
 
     private Channel bindingChannel;
+    private ExecutionEnvironment executionEnvironment;
 
     @Override
     public ProviderRole getRole() {
@@ -46,5 +47,11 @@ public class ServiceProvider extends LocalProvider {
         this.bindingChannel = bindingChannel;
     }
 
+    public ExecutionEnvironment getExecutionEnvironment() {
+        return executionEnvironment;
+    }
 
+    public void setExecutionEnvironment(ExecutionEnvironment executionEnvironment) {
+        this.executionEnvironment = executionEnvironment;
+    }
 }

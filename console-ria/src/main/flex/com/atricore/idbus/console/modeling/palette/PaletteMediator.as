@@ -81,6 +81,65 @@ public class PaletteMediator extends IocMediator {
         var pr:PaletteRoot  = new PaletteRoot("Identity Appliance Modeler Palette", null, null);
         pr.add(saml2PaletteDrawer);
 
+        var environmentsPaletteDrawer:PaletteDrawer = new PaletteDrawer("Execution Environments", null, null);
+
+        environmentsPaletteDrawer.add(
+                    new PaletteEntry("Alfresco", EmbeddedIcons.alfrescoEnvironmentMiniIcon, "Alfresco Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        environmentsPaletteDrawer.add(
+                    new PaletteEntry("Apache", EmbeddedIcons.apacheEnvironmentMiniIcon, "Apache Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        environmentsPaletteDrawer.add(
+                    new PaletteEntry("Java EE", EmbeddedIcons.javaEnvironmentMiniIcon, "Java EE Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        environmentsPaletteDrawer.add(
+                    new PaletteEntry("JBoss", EmbeddedIcons.jbossEnvironmentMiniIcon, "JBoss Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        environmentsPaletteDrawer.add(
+                    new PaletteEntry("Liferay", EmbeddedIcons.liferayEnvironmentMiniIcon, "Liferay Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        environmentsPaletteDrawer.add(
+                    new PaletteEntry("PhpBB", EmbeddedIcons.phpbbEnvironmentMiniIcon, "PhpBB Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        environmentsPaletteDrawer.add(
+                    new PaletteEntry("Tomcat", EmbeddedIcons.tomcatEnvironmentMiniIcon, "Tomcat Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        environmentsPaletteDrawer.add(
+                    new PaletteEntry("Webserver", EmbeddedIcons.webEnvironmentMiniIcon, "Webserver Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        environmentsPaletteDrawer.add(
+                    new PaletteEntry("Weblogic", EmbeddedIcons.weblogicEnvironmentMiniIcon, "Weblogic Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        environmentsPaletteDrawer.add(
+                    new PaletteEntry("Websphere", EmbeddedIcons.websphereEnvironmentMiniIcon, "Websphere Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        environmentsPaletteDrawer.add(
+                    new PaletteEntry("Windows", EmbeddedIcons.windowsEnvironmentMiniIcon, "Windows Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        pr.add(environmentsPaletteDrawer);
+
         var identitySourcesPaletteDrawer:PaletteDrawer = new PaletteDrawer("Identity Sources", null, null);
         identitySourcesPaletteDrawer.add(
                     new PaletteEntry("DB Identity Vault", EmbeddedIcons.dbIdentitySourceMiniIcon, "Database Identity Vault Entry", DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE)

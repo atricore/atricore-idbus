@@ -31,6 +31,7 @@ import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
 import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdpChannelElementRequest;
@@ -51,10 +52,13 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
 import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+import com.atricore.idbus.console.services.dto.JbossExecutionEnvironmentDTO;
 import com.atricore.idbus.console.services.dto.LocalProviderDTO;
 import com.atricore.idbus.console.services.dto.ProviderDTO;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
 import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+
+import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironmentDTO;
 
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
@@ -271,7 +275,22 @@ public class DiagramMediator extends IocMediator {
 
 
                             break;
+                        case DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                            if (_currentlySelectedNode.data is ServiceProviderDTO ) {
+                                var execEnvironmentSp:ServiceProviderDTO = _currentlySelectedNode.data as ServiceProviderDTO;
 
+                                var ceenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                        execEnvironmentSp,
+                                        _currentlySelectedNode.stringid
+                                        );
+                                _projectProxy.currentIdentityApplianceElementOwner = execEnvironmentSp;
+                                // this notification will be grabbed by the modeler mediator which will open
+                                // the corresponding form
+                                sendNotification(ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT, ceenv);
+                            }
+
+
+                            break;
                     }
 //                }
                 break;
@@ -432,6 +451,12 @@ public class DiagramMediator extends IocMediator {
                                         GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, channelGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
                                     }
                                 }
+                            }
+                        }
+                        if(locProv is ServiceProviderDTO){
+                            var spDTO:ServiceProviderDTO = locProv as ServiceProviderDTO;
+                            if(spDTO.executionEnvironment != null){  //check for execution environment
+                                var execEnvironment:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), spDTO.executionEnvironment, providerGraphNode, true, Constants.CHANNEL_DEEP);
                             }
                         }
                     }

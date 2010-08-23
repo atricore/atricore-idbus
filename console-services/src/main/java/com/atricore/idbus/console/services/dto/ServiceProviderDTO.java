@@ -28,6 +28,8 @@ public class ServiceProviderDTO extends LocalProviderDTO {
 
     private ChannelDTO bindingChannel;
 
+    private ExecutionEnvironmentDTO executionEnvironment;
+
     @Override
     public ProviderRoleDTO getRole() {
         return ProviderRoleDTO.SSOServiceProvider;
@@ -47,5 +49,11 @@ public class ServiceProviderDTO extends LocalProviderDTO {
         this.bindingChannel = bindingChannel;
     }
 
+    public ExecutionEnvironmentDTO getExecutionEnvironment() {
+        return executionEnvironment;
+    }
 
+    public void setExecutionEnvironment(ExecutionEnvironmentDTO executionEnvironment) {
+        this.executionEnvironment = executionEnvironment;
+    }
 }

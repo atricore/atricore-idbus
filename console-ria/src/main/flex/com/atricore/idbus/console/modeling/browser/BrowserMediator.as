@@ -33,6 +33,8 @@ import com.atricore.idbus.console.services.dto.LocalProviderDTO;
 import com.atricore.idbus.console.services.dto.ProviderDTO;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
 
+import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+
 import flash.events.Event;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -152,6 +154,13 @@ public class BrowserMediator extends IocMediator {
                                     var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityVault, true);
                                     providerNode.addChild(identityVaultNode);
                                 }
+                            }
+                        }
+                        if(locProv is ServiceProviderDTO){
+                            var spDTO:ServiceProviderDTO = locProv as ServiceProviderDTO;
+                            if(spDTO.executionEnvironment != null){
+                                var executionNode:BrowserNode = BrowserModelFactory.createExecutionEnvironmentNode(spDTO.executionEnvironment, true);
+                                providerNode.addChild(executionNode);
                             }
                         }
                     }

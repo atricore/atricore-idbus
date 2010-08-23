@@ -188,6 +188,7 @@ public class ModelerMediator extends IocMediator {
             ApplicationFacade.CREATE_DB_IDENTITY_VAULT_ELEMENT,
             ApplicationFacade.REMOVE_DB_IDENTITY_VAULT_ELEMENT,
             ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT,
+            ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.MANAGE_CERTIFICATE,
             ApplicationFacade.SHOW_UPLOAD_PROGRESS,
             ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
@@ -259,6 +260,9 @@ public class ModelerMediator extends IocMediator {
                 break;
             case ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:
                 popupManager.showCreateLdapIdentitySourceWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:
+                popupManager.showCreateJBossExecutionEnvironmentWindow(notification);
                 break;
             case ApplicationFacade.MANAGE_CERTIFICATE:
                 popupManager.showManageCertificateWindow(notification);

@@ -25,15 +25,18 @@ import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.main.view.util.Constants;
 import com.atricore.idbus.console.services.dto.BindingProviderDTO;
 import com.atricore.idbus.console.services.dto.DbIdentityVaultDTO;
+import com.atricore.idbus.console.services.dto.ExecutionEnvironmentDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceUnitDTO;
 import com.atricore.idbus.console.services.dto.IdentityApplianceUnitTypeDTO;
 import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
 import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+import com.atricore.idbus.console.services.dto.JbossExecutionEnvironmentDTO;
 import com.atricore.idbus.console.services.dto.LdapIdentityVaultDTO;
 import com.atricore.idbus.console.services.dto.ProviderDTO;
 import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironmentDTO;
 
 public class BrowserModelFactory {
 
@@ -106,6 +109,21 @@ public class BrowserModelFactory {
             identityVaultNode.data = identityVault;
             identityVaultNode.selectable = selectable;
             return identityVaultNode;
+        }
+
+        public static function createExecutionEnvironmentNode(executionEnvironment:ExecutionEnvironmentDTO, selectable:Boolean):BrowserNode {
+            var execEnvironmentNode:BrowserNode = new BrowserNode();
+            execEnvironmentNode.id = Number(executionEnvironment.id);
+            execEnvironmentNode.label = executionEnvironment.name;
+            execEnvironmentNode.type = Constants.EXEC_ENVIRONMENT_DEEP;
+            if(executionEnvironment is JbossExecutionEnvironmentDTO){
+                execEnvironmentNode.icon = EmbeddedIcons.jbossEnvironmentMiniIcon;
+            } else if(executionEnvironment is WeblogicExecutionEnvironmentDTO){
+                execEnvironmentNode.icon = EmbeddedIcons.weblogicEnvironmentMiniIcon;
+            } else {
+                execEnvironmentNode.icon = EmbeddedIcons.executionEnvironmentMiniIcon;
+            }
+            return execEnvironmentNode;
         }
     }
 }

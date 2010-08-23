@@ -244,6 +244,102 @@ package com.atricore.idbus.console.main {
         [Embed(source="/assets/icons/notation/22x22/connection.png")]
         public static var connectionMiniIcon:Class;
 
+        //Execution environments
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/execution_environment.png")]
+        public static var executionEnvironmentMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/alfresco_execution_environment.png")]
+        public static var alfrescoEnvironmentMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/apache_web_server_execution_environment.png")]
+        public static var apacheEnvironmentMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/java_ee_execution_environment.png")]
+        public static var javaEnvironmentMiniIcon:Class;
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/jboss_as_execution_environment.png")]
+        public static var jbossEnvironmentMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/liferay_execution_environment.png")]
+        public static var liferayEnvironmentMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/phpbb_execution_environment.png")]
+        public static var phpbbEnvironmentMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/tomcat_execution_environment.png")]
+        public static var tomcatEnvironmentMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/web_server_execution_environment.png")]
+        public static var webEnvironmentMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/weblogic_execution_environment.png")]
+        public static var weblogicEnvironmentMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/websphere_execution_environment.png")]
+        public static var websphereEnvironmentMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/windows_execution_environment.png")]
+        public static var windowsEnvironmentMiniIcon:Class;    
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/execution_environment.png")]
+        public static var executionEnvironmentIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/alfresco_execution_environment.png")]
+        public static var alfrescoEnvironmentIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/apache_web_server_execution_environment.png")]
+        public static var apacheEnvironmentIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/java_ee_execution_environment.png")]
+        public static var javaEnvironmentIcon:Class;
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/jboss_as_execution_environment.png")]
+        public static var jbossEnvironmentIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/liferay_execution_environment.png")]
+        public static var liferayEnvironmentIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/phpbb_execution_environment.png")]
+        public static var phpbbEnvironmentIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/tomcat_execution_environment.png")]
+        public static var tomcatEnvironmentIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/web_server_execution_environment.png")]
+        public static var webEnvironmentIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/weblogic_execution_environment.png")]
+        public static var weblogicEnvironmentIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/websphere_execution_environment.png")]
+        public static var websphereEnvironmentIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/windows_execution_environment.png")]
+        public static var windowsEnvironmentIcon:Class;
+
+
 //        [Bindable]
 //        [Embed(source="/assets/icons/notation/22x22/icon_identity_bus.png")]
 //        static public var busMiniIcon:Class;

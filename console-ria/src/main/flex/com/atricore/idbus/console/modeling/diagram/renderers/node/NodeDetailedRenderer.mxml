@@ -40,13 +40,17 @@
         import com.atricore.idbus.console.services.dto.BindingProviderDTO;
         import com.atricore.idbus.console.services.dto.ChannelDTO;
         import com.atricore.idbus.console.services.dto.DbIdentityVaultDTO;
+        import com.atricore.idbus.console.services.dto.ExecutionEnvironmentDTO;
         import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnitDTO;
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnitTypeDTO;
         import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
         import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+        import com.atricore.idbus.console.services.dto.JbossExecutionEnvironmentDTO;
         import com.atricore.idbus.console.services.dto.LdapIdentityVaultDTO;
         import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+
+        import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironmentDTO;
 
         import mx.controls.Alert;
 
@@ -124,6 +128,19 @@
                                             _linkIcon = EmbeddedIcons.spIcon;
                                         } else if (type.equals(IdentityApplianceUnitTypeDTO.PROVISIONING_UNIT)) {
                                             _linkIcon = EmbeddedIcons.vaultIcon;
+                                        }
+                                    } else {
+                                        if(obj is ExecutionEnvironmentDTO){ //check execution environment
+                                            var execEnvirnoment:ExecutionEnvironmentDTO = obj as ExecutionEnvironmentDTO;
+                                            _linkLabel = execEnvirnoment.name;                                            
+                                            if(obj is JbossExecutionEnvironmentDTO){
+                                                _linkIcon = EmbeddedIcons.jbossEnvironmentIcon;
+                                            } else if(obj is WeblogicExecutionEnvironmentDTO){
+                                                _linkIcon = EmbeddedIcons.weblogicEnvironmentIcon;
+                                            } else {
+                                                _linkIcon = EmbeddedIcons.executionEnvironmentIcon;
+                                            }
+                                            //TODO add other envirnoments
                                         }
                                     }
                                 }

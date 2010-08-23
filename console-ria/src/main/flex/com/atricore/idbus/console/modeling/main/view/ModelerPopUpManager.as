@@ -27,6 +27,8 @@ import com.atricore.idbus.console.main.view.upload.UploadProgress;
 import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardView;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardViewMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateForm;
@@ -37,7 +39,6 @@ import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreate
 import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator;
-import com.atricore.idbus.console.modeling.main.ModelerView;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceView;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
@@ -60,6 +61,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _spChannelCreateMediator:SPChannelCreateMediator;
     private var _dbIdentityVaultWizardViewMediator:DbIdentityVaultWizardViewMediator;
     private var _ldapIdentitySourceCreateMediator:LdapIdentitySourceCreateMediator;
+    private var _jbossExecutionEnvironmentCreateMediator:JBossExecutionEnvironmentCreateMediator;
     private var _uploadProgressMediator:UploadProgressMediator;
     private var _buildApplianceMediator:BuildApplianceMediator;
     private var _deployApplianceMediator:DeployApplianceMediator;
@@ -71,6 +73,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _spChannelCreateForm:SPChannelCreateForm;
     private var _dbIdentityVaultWizardView:DbIdentityVaultWizardView;
     private var _ldapIdentitySourceCreateForm:LdapIdentitySourceCreateForm;
+    private var _jbossExecutionEnvironmentCreateForm:JBossExecutionEnvironmentCreateForm;
     private var _manageCertificateForm:ManageCertificateView;
     private var _uploadProgress:UploadProgress;
     private var _buildAppliance:BuildApplianceView;
@@ -159,6 +162,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set ldapIdentitySourceCreateMediator(value:LdapIdentitySourceCreateMediator):void {
         _ldapIdentitySourceCreateMediator = value;
+    }
+
+    public function get jbossExecutionEnvironmentCreateMediator():JBossExecutionEnvironmentCreateMediator {
+        return _jbossExecutionEnvironmentCreateMediator;
+    }
+
+    public function set jbossExecutionEnvironmentCreateMediator(value:JBossExecutionEnvironmentCreateMediator):void {
+        _jbossExecutionEnvironmentCreateMediator = value;
     }
 
     public function showCreateIdentityProviderWindow(notification:INotification):void {
@@ -291,6 +302,29 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleLdapIdentitySourceCreateFormCreated(event:FlexEvent):void {
         ldapIdentitySourceCreateMediator.setViewComponent(_ldapIdentitySourceCreateForm);
         ldapIdentitySourceCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateJBossExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_jbossExecutionEnvironmentCreateForm) {
+            createJBossExecutionEnvironmentCreateForm();
+        }
+        _popup.title = "Create JBoss Execution Environment";
+        _popup.width = 650;
+        _popup.height = 300;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_jbossExecutionEnvironmentCreateForm);
+    }
+
+    private function createJBossExecutionEnvironmentCreateForm():void {
+        _jbossExecutionEnvironmentCreateForm = new JBossExecutionEnvironmentCreateForm();
+        _jbossExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleJBossExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handleJBossExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        jbossExecutionEnvironmentCreateMediator.setViewComponent(_jbossExecutionEnvironmentCreateForm);
+        jbossExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showManageCertificateWindow(notification:INotification):void {

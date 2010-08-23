@@ -66,6 +66,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _spChannelCreateMediator:IIocMediator;
     private var _dbIdentityVaultWizardViewMediator:IIocMediator;
     private var _ldapIdentitySourceCreateMediator:IIocMediator;
+    private var _jbossExecutionEnvironmentCreateMediator:IIocMediator;
     private var _uploadProgressMediator:IIocMediator;
     private var _buildApplianceMediator:IIocMediator;
     private var _deployApplianceMediator:IIocMediator;
@@ -223,6 +224,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set ldapIdentitySourceCreateMediator(value:IIocMediator):void {
         _ldapIdentitySourceCreateMediator = value;
+    }
+
+    public function get jbossExecutionEnvironmentCreateMediator():IIocMediator {
+        return _jbossExecutionEnvironmentCreateMediator;
+    }
+
+    public function set jbossExecutionEnvironmentCreateMediator(value:IIocMediator):void {
+        _jbossExecutionEnvironmentCreateMediator = value;
     }
 
     public function get uploadProgressMediator():IIocMediator {
@@ -759,6 +768,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(spChannelCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(dbIdentityVaultWizardViewMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(ldapIdentitySourceCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(jbossExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(uploadProgressMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(buildApplianceMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(deployApplianceMediator.getConfigName());
