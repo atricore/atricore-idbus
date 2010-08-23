@@ -288,8 +288,20 @@ public class DiagramMediator extends IocMediator {
                                 // the corresponding form
                                 sendNotification(ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT, ceenv);
                             }
+                            break;
+                        case DiagramElementTypes.WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                            if (_currentlySelectedNode.data is ServiceProviderDTO ) {
+                                var execEnvironmentSp:ServiceProviderDTO = _currentlySelectedNode.data as ServiceProviderDTO;
 
-
+                                var ceenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                        execEnvironmentSp,
+                                        _currentlySelectedNode.stringid
+                                        );
+                                _projectProxy.currentIdentityApplianceElementOwner = execEnvironmentSp;
+                                // this notification will be grabbed by the modeler mediator which will open
+                                // the corresponding form
+                                sendNotification(ApplicationFacade.CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT, ceenv);
+                            }
                             break;
                     }
 //                }

@@ -93,7 +93,8 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const REMOVE_DB_IDENTITY_VAULT_ELEMENT:String = "removeIdentityVaultElement";
     public static const CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:String = "createLdapIdentitySourceElement";
     public static const REMOVE_SERVICE_PROVIDER_ELEMENT:String = "removeServiceProviderElement";
-    public static const CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createExecutionEnvironmentElement";
+    public static const CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJbossExecutionEnvironmentElement";
+    public static const CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWeblogicExecutionEnvironmentElement";
     public static const MANAGE_CERTIFICATE:String = "manageCertificate";
     public static const SHOW_UPLOAD_PROGRESS:String = "uploadProgress";
     public static const DISPLAY_ACCOUNT_MNGMT_HOME:String = "displayAccountManagementHome";
