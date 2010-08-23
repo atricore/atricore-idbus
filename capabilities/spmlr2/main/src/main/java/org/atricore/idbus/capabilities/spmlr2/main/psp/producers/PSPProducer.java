@@ -134,7 +134,7 @@ public class PSPProducer extends SpmlR2Producer {
         if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
 
             if (logger.isDebugEnabled())
-                logger.debug("Processing SMPL Add request for User");
+                logger.debug("Processing SPML Add request for User");
 
             AddUserRequest req = new AddUserRequest();
             toAddUserRequest(target, req, spmlRequest);
@@ -148,7 +148,7 @@ public class PSPProducer extends SpmlR2Producer {
         } if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
 
             if (logger.isDebugEnabled())
-                logger.debug("Processing SMPL Add request for Group");
+                logger.debug("Processing SPML Add request for Group");
 
             GroupType spmlGroup = (GroupType) spmlRequest.getData();
             AddGroupRequest req = new AddGroupRequest();
