@@ -18,7 +18,10 @@ public class DiagramUtil {
             if ((node1.data is IdentityProviderDTO && node2.data is ServiceProviderDTO) ||
                 (node1.data is ServiceProviderDTO && node2.data is IdentityProviderDTO) ||
                 (node1.data is IdentityProviderDTO && node2.data is IdentityVaultDTO) ||
-                (node1.data is IdentityVaultDTO && node2.data is IdentityProviderDTO)) {
+                (node1.data is IdentityVaultDTO && node2.data is IdentityProviderDTO) ||
+                (node1.data is ServiceProviderDTO && node2.data is IdentityVaultDTO) ||   //TODO - REMOVE. added as connection workaround
+                (node1.data is IdentityVaultDTO && node2.data is ServiceProviderDTO)) {      //TODO - REMOVE. added as connection workaround
+                    
                 canBeLinked = true;
             }
         }
