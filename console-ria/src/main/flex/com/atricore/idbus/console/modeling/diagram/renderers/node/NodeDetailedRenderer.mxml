@@ -86,13 +86,11 @@
             if (obj is IdentityApplianceDTO) {
                 var bus:IdentityApplianceDTO = obj as IdentityApplianceDTO;
                 _linkLabel = bus.idApplianceDefinition.name;
-                //iconImage.source = EmbeddedIcons.busIcon;
                 _linkIcon = EmbeddedIcons.busIcon;
             } else {
                 if (obj is IdentityProviderDTO) {
                     var idp:IdentityProviderDTO = obj as IdentityProviderDTO;
                     _linkLabel = idp.name;
-                    //iconImage.source = EmbeddedIcons.idpIcon;
                     _linkIcon = EmbeddedIcons.idpIcon;
                 } else {
                     if (obj is ServiceProviderDTO) {
