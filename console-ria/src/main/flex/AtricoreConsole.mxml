@@ -29,6 +29,7 @@
                 xmlns:login="com.atricore.idbus.console.main.view.login.*"
                 xmlns:lifecycle="com.atricore.idbus.console.lifecycle.*"
                 xmlns:account="com.atricore.idbus.console.account.main.*"
+                xmlns:setup="com.atricore.idbus.console.setup.*"
                 height="100%" width="100%" minWidth="955" minHeight="600"
                 creationComplete="onCreationComplete()">
     <s:layout>
@@ -39,6 +40,8 @@
     <fx:Script>
       <![CDATA[
         import com.atricore.idbus.console.main.ApplicationFacade;
+
+        import com.atricore.idbus.console.main.EmbeddedIcons;
 
         import mx.collections.ArrayList;
 
@@ -92,17 +95,18 @@
         <s:HGroup paddingTop="2" paddingLeft="10">
             <comp:MessageBox id="messageBox" showEffect="{wipeRight}"/>
         </s:HGroup>
-        <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name" change="stackChanged()"/>
+        <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name"
+                     change="stackChanged()" skinClass="com.atricore.idbus.console.skin.buttonbar.IconButtonBarSkin" />
         <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%">
             <modeler:ModelerView id="modelerView" name="Modeler"/>
             <lifecycle:LifecycleView id="lifecycleView" name="Lifecycle"/>
-            <s:Group width="95%" height="95%" name="Setup">
-                <s:Label text="Setup"/>
-            </s:Group>
-            <s:Group width="95%" height="95%" name="Deployment">
-                <s:Label text="Deployment"/>
-            </s:Group>
             <account:AccountManagementView id="accountManagementView" name="Account"/>
+            <setup:SetupView id="setupView" name="Setup" />
+            <!--<s:Group width="95%" height="95%" name="Setup">-->
+                <!--<s:Label text="Setup"/>-->
+                <!--<s:BitmapImage id="icon" source="{EmbeddedIcons.setupMiniIcon}" />-->
+            <!--</s:Group>-->
+
         </comp:CustomViewStack>
     </s:VGroup>
 </s:Application>
