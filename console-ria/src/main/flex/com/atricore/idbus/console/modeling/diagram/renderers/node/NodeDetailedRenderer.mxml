@@ -108,8 +108,8 @@
                             } else {
 
                                 if (obj is IdentityVault) {
-                                    var identityVault:IdentityVault = obj as IdentityVault;
-                                    _linkLabel = identityVault.name;
+                                    var identitySource:IdentityVault = obj as IdentityVault;
+                                    _linkLabel = identitySource.name;
                                     if(obj is DbIdentityVault){
                                         _linkIcon = EmbeddedIcons.dbIdentitySourceIcon;
                                     } else if(obj is LdapIdentityVault){

@@ -22,9 +22,9 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 public class IdentityApplianceDefinition implements Serializable {
 
@@ -42,13 +42,13 @@ public class IdentityApplianceDefinition implements Serializable {
 
     private Date lastModification;
 
-    private List<Feature> activeFeatures;
+    private Set<Feature> activeFeatures;
 
-    private List<ProviderRole> supportedRoles;
+    private Set<ProviderRole> supportedRoles;
 
-	private List<Provider> providers;
+	private Set<Provider> providers;
 
-    private List<IdentityVault> identityVaults;
+    private Set<IdentitySource> identitySources;
 
     private Keystore certificate;
 
@@ -84,36 +84,36 @@ public class IdentityApplianceDefinition implements Serializable {
         this.revision = revision;
     }
 
-    public List<ProviderRole> getSupportedRoles() {
+    public Set<ProviderRole> getSupportedRoles() {
         if(supportedRoles == null){
-           supportedRoles = new ArrayList<ProviderRole>();
+           supportedRoles = new HashSet<ProviderRole>();
         }
         return supportedRoles;
     }
 
-    public void setSupportedRoles(List<ProviderRole> supportedRoles) {
+    public void setSupportedRoles(Set<ProviderRole> supportedRoles) {
         this.supportedRoles = supportedRoles;
     }
 
-    public List<Feature> getActiveFeatures() {
+    public Set<Feature> getActiveFeatures() {
         if(activeFeatures == null){
-            activeFeatures = new ArrayList<Feature>();
+            activeFeatures = new HashSet<Feature>();
         }
         return activeFeatures;
     }
 
-    public void setActiveFeatures(List<Feature> activeFeatures) {
+    public void setActiveFeatures(Set<Feature> activeFeatures) {
         this.activeFeatures = activeFeatures;
     }
 
-    public List<Provider> getProviders() {
+    public Set<Provider> getProviders() {
         if(providers == null){
-            providers = new ArrayList<Provider>();
+            providers = new HashSet<Provider>();
         }
         return providers;
     }
 
-    public void setProviders(List<Provider> providers) {
+    public void setProviders(Set<Provider> providers) {
         this.providers = providers;
     }
 
@@ -125,15 +125,15 @@ public class IdentityApplianceDefinition implements Serializable {
         this.description = description;
     }
 
-    public List<IdentityVault> getIdentityVaults() {
-        if(identityVaults == null){
-            identityVaults = new ArrayList<IdentityVault>();
+    public Set<IdentitySource> getIdentityVaults() {
+        if(identitySources == null){
+            identitySources = new HashSet<IdentitySource>();
         }
-        return identityVaults;
+        return identitySources;
     }
 
-    public void setIdentityVaults(List<IdentityVault> identityVaults) {
-        this.identityVaults = identityVaults;
+    public void setIdentityVaults(Set<IdentitySource> identitySources) {
+        this.identitySources = identitySources;
     }
 
     public Date getLastModification() {

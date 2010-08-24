@@ -132,9 +132,9 @@ public class SPTransformer extends AbstractTransformer {
         //this is set from BPTransformer
         //setPropertyValue(spMediator, "spBindingACS", "http://localhost:8081/IDBUS/BP1/SSO/ACS/ARTIFACT");
         //setPropertyValue(spMediator, "spBindingSLO", "http://localhost:8081/IDBUS/BP1/SSO/SLO/ARTIFACT");
-        String bpLocation = resolveLocationUrl(((BindingProvider)provider.getBindingChannel().getTarget()).getBindingChannel().getLocation());
-        setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");
-        setPropertyValue(spMediator, "spBindingSLO", bpLocation + "/SSO/SLO/ARTIFACT");
+        // TODO RETROFIT  : String bpLocation = resolveLocationUrl(((BindingProvider)provider.getBindingChannel().getTarget()).getBindingChannel().getLocation());
+        // TODO RETROFIT  : setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");
+        // TODO RETROFIT  : setPropertyValue(spMediator, "spBindingSLO", bpLocation + "/SSO/SLO/ARTIFACT");
         
         setPropertyValue(spMediator, "logMessages", true);
 
@@ -158,7 +158,7 @@ public class SPTransformer extends AbstractTransformer {
         setPropertyBean(spMediator, "logger", spLogger);
 
         // errorUrl
-        setPropertyValue(spMediator, "errorUrl", resolveLocationBaseUrl(provider.getBindingChannel().getLocation()) + "/idbus-ui/error.do");
+        // TODO RETROFIT  : setPropertyValue(spMediator, "errorUrl", resolveLocationBaseUrl(provider.getBindingChannel().getLocation()) + "/idbus-ui/error.do");
 
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
@@ -237,14 +237,15 @@ public class SPTransformer extends AbstractTransformer {
         
         Bean spMd = newBean(spBeans, sp.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
         setPropertyValue(spMd, "id", spMd.getName());
-        setPropertyValue(spMd, "alias", resolveLocationUrl(provider.getBindingChannel().getLocation()) + "/SAML2/MD");
+        // TODO RETROFIT  : setPropertyValue(spMd, "alias", resolveLocationUrl(provider.getBindingChannel().getLocation()) + "/SAML2/MD");
         setPropertyValue(spMd, "resource", "classpath:" + baseSamlDestPath + sp.getName() + "/" + sp.getName() + "-samlr2-metadata.xml");
         
         // accountLinkLifecycle
         Bean accountLinkLifecycle = newBean(spBeans, sp.getName() + "-account-link-lifecycle", AccountLinkLifecycleImpl.class);
-        if (provider.getDefaultChannel() != null && ((IdentityProviderChannel)provider.getDefaultChannel()).getIdentityVault() != null) {
-            setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");
-        }
+
+        // TODO RETROFIT  : if (provider.getDefaultChannel() != null && ((IdentityProviderChannel)provider.getDefaultChannel()).getIdentityVault() != null) {
+        // TODO RETROFIT  :     setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");
+        // TODO RETROFIT  : }
 
         // accountLinkEmitter
         Bean accountLinkEmitter = newBean(spBeans, sp.getName() + "-account-link-emitter", OneToOneAccountLinkEmitter.class);

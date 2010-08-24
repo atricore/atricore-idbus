@@ -1237,7 +1237,7 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     /**
-     * Used instead of matchValidator because changing the confirmField doesn't remove the error message
+     * Used instead of matchValidator because changing the confirmField doesn't delete the error message
      * from password field (although the next button becomes enabled)
      * @return
      */

@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.domain.dao;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.LdapIdentityVault;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.LdapIdentitySource;
 
-public interface LdapIdentityVaultDAO extends GenericDAO<LdapIdentityVault, Long> {
+public interface LdapIdentityVaultDAO extends GenericDAO<LdapIdentitySource, Long> {
 }

@@ -120,21 +120,21 @@ public class ProvisioningJDOPersistenceTest {
 
         groupRequest = new GroupRequest();
         groupRequest.setId(11);
-        _groupService.remove(groupRequest);
+        _groupService.delete(groupRequest);
 
         try {
             _groupService.findById(groupRequest);
-            assert false: "Failed to remove Group with id 11";
+            assert false: "Failed to delete Group with id 11";
         } catch (GroupNotFoundException e) {
             assert true;
         }
 
         groupRequest.setId(12);
-        _groupService.remove(groupRequest);
+        _groupService.delete(groupRequest);
 
         try {
             _groupService.findById(groupRequest);
-            assert false: "Failed to remove Group with id 12";
+            assert false: "Failed to delete Group with id 12";
         } catch (GroupNotFoundException e) {
             assert true;
         }

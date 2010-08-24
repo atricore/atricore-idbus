@@ -32,6 +32,7 @@ import javax.jdo.annotations.Persistent;
  * Time: 10:30:43
  * email: erocha@atricore.org
  */
+@Deprecated 
 @PersistenceCapable
 public class Group implements Serializable {
 

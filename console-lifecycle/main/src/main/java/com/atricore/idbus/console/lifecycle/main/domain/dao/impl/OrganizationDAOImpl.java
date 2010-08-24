@@ -11,6 +11,6 @@ public class OrganizationDAOImpl extends GenericDAOImpl<Organization, Long>
     private static final Log logger = LogFactory.getLog(OrganizationDAOImpl.class);
 
     public OrganizationDAOImpl() {
-        super(Organization.class);
+        super();
     }
 }

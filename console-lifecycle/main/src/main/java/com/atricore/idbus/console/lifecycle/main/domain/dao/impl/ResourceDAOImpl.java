@@ -10,6 +10,6 @@ public class ResourceDAOImpl extends GenericDAOImpl<Resource, Long> implements R
     private static final Log logger = LogFactory.getLog(ResourceDAOImpl.class);
 
     public ResourceDAOImpl() {
-        super(Resource.class);
+        super();
     }
 }

@@ -645,7 +645,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 //        bpLocation.setHost(sp.getLocation().getHost());
 //        bpLocation.setPort(sp.getLocation().getPort());
 //        bpLocation.setContext(iad.getLocation().getContext());////not sp.getLocation.uri but iad.getLocation.Context
-//        bpLocation.setUri("/" + createUrlSafeString(sp.getName()) + "/SSOP");//remove sp.getLocation.uri
+//        bpLocation.setUri("/" + createUrlSafeString(sp.getName()) + "/SSOP");//delete sp.getLocation.uri
 //        bindingChannel.setLocation(bpLocation);
 
         bindingChannel.getActiveBindings().add(BindingDTO.SSO_ARTIFACT);

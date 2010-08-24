@@ -23,6 +23,7 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
 import java.io.Serializable;
 
+@Deprecated
 public class UserInformationLookup implements Serializable {
 
 	private static final long serialVersionUID = -7735712697008169708L;

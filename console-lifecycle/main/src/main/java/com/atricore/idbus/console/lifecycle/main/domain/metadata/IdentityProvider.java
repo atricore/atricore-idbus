@@ -21,12 +21,33 @@
 
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
+import java.util.Set;
+
 public class IdentityProvider extends LocalProvider {
 
 	private static final long serialVersionUID = 141137856095909986L;
 
     private boolean signAuthenticationAssertions;
+
     private boolean encryptAuthenticationAssertions;
+
+    private Set<FederatedConnection> federatedConnections;
+
+    // RFU
+    private AttributeProfile attributeProfile;
+
+    // RFU
+    private AuthenticationMechanism authenticationMechanism;
+
+    // RFU
+    private AuthenticationContract authenticationContract;
+
+    // RFU
+    private AuthenticationAssertionEmissionPolicy emissionPolicy;
+
+    private IdentityLookup identityLookup;
+    private Set activeBindings;
+    private Set activeProfiles;
 
     @Override
     public ProviderRole getRole() {
@@ -52,5 +73,69 @@ public class IdentityProvider extends LocalProvider {
 
     public void setEncryptAuthenticationAssertions(boolean encryptAuthenticationAssertions) {
         this.encryptAuthenticationAssertions = encryptAuthenticationAssertions;
+    }
+
+    public Set<FederatedConnection> getFederatedConnections() {
+        return federatedConnections;
+    }
+
+    public void setFederatedConnections(Set<FederatedConnection> federatedConnections) {
+        this.federatedConnections = federatedConnections;
+    }
+
+    public AttributeProfile getAttributeProfile() {
+        return attributeProfile;
+    }
+
+    public void setAttributeProfile(AttributeProfile attributeProfile) {
+        this.attributeProfile = attributeProfile;
+    }
+
+    public AuthenticationMechanism getAuthenticationMechanism() {
+        return authenticationMechanism;
+    }
+
+    public void setAuthenticationMechanism(AuthenticationMechanism authenticationMechanism) {
+        this.authenticationMechanism = authenticationMechanism;
+    }
+
+    public AuthenticationContract getAuthenticationContract() {
+        return authenticationContract;
+    }
+
+    public void setAuthenticationContract(AuthenticationContract authenticationContract) {
+        this.authenticationContract = authenticationContract;
+    }
+
+    public AuthenticationAssertionEmissionPolicy getEmissionPolicy() {
+        return emissionPolicy;
+    }
+
+    public void setEmissionPolicy(AuthenticationAssertionEmissionPolicy emissionPolicy) {
+        this.emissionPolicy = emissionPolicy;
+    }
+
+    public IdentityLookup getIdentityLookup() {
+        return identityLookup;
+    }
+
+    public void setIdentityLookup(IdentityLookup identityLookup) {
+        this.identityLookup = identityLookup;
+    }
+
+    public void setActiveBindings(Set activeBindings) {
+        this.activeBindings = activeBindings;
+    }
+
+    public Set getActiveBindings() {
+        return activeBindings;
+    }
+
+    public void setActiveProfiles(Set activeProfiles) {
+        this.activeProfiles = activeProfiles;
+    }
+
+    public Set getActiveProfiles() {
+        return activeProfiles;
     }
 }

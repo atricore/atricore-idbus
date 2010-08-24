@@ -57,8 +57,9 @@ public class IdPChannelTransformer extends AbstractTransformer {
         }
         spBean = b.iterator().next();
 
-        boolean isDefault = idpChannel.getTarget() == null || idpChannel.getTarget().equals(provider);
-        String name = spBean.getName() + (isDefault ? "-default" : "-" + normalizeBeanName(idpChannel.getTarget().getName())) + "-sp-channel";
+        boolean isDefault = false ; // TODO RETROFIT  : idpChannel.getTarget() == null || idpChannel.getTarget().equals(provider);
+        // TODO RETROFIT  : String name = spBean.getName() + (isDefault ? "-default" : "-" + normalizeBeanName(idpChannel.getTarget().getName())) + "-sp-channel";
+        String name  = null;
         
         Bean idpChannelBean = newBean(spBeans, name, IdPChannelImpl.class.getName());
 
@@ -71,22 +72,26 @@ public class IdPChannelTransformer extends AbstractTransformer {
         setPropertyValue(idpChannelBean, "description", idpChannel.getDescription());
 
         // location
-        setPropertyValue(idpChannelBean, "location", resolveLocationUrl(provider.getBindingChannel().getLocation()) + "/SAML2");
+        // TODO RETROFIT  : setPropertyValue(idpChannelBean, "location", resolveLocationUrl(provider.getBindingChannel().getLocation()) + "/SAML2");
 
         // provider
+        // TODO RETROFIT  :
+        /*
         if (idpChannel.getTarget() != null) {
             setPropertyRef(idpChannelBean, "provider", normalizeBeanName(idpChannel.getTarget().getName()));
         } else {
             setPropertyRef(idpChannelBean, "provider", spBean.getName());
         }
+        */
 
         // sessionManager
         setPropertyRef(idpChannelBean, "sessionManager", spBean.getName() + "-session-manager");
 
         // identityManager
-        if (idpChannel.getIdentityVault() != null) {
-            setPropertyRef(idpChannelBean, "identityManager", spBean.getName() + "-identity-manager");
-        }
+        // TODO RETROFIT  :
+//        if (idpChannel.getIdentityVault() != null) {
+//            setPropertyRef(idpChannelBean, "identityManager", spBean.getName() + "-identity-manager");
+//        }
 
         // member
         setPropertyRef(idpChannelBean, "member", spBean.getName() + "-md");

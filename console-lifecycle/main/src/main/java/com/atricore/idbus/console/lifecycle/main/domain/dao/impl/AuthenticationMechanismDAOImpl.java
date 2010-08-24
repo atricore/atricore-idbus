@@ -11,6 +11,6 @@ public class AuthenticationMechanismDAOImpl extends GenericDAOImpl<Authenticatio
     private static final Log logger = LogFactory.getLog(AuthenticationMechanismDAOImpl.class);
 
     public AuthenticationMechanismDAOImpl() {
-        super(AuthenticationMechanism.class);
+        super();
     }
 }

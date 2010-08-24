@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+<!DOCTYPE orm PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Java Data Objects ORM Metadata 2.0//EN"
+        "http://java.sun.com/dtd/orm_2_0.dtd">
+
+<orm>
+    <package name="com.atricore.idbus.console.lifecycle.main.domain.metadata" >
+        
+        <class name="AbstractProviderConfig" table="ATCC_ABSTRACTPROVIDERCONFIG"/>
+        <class name="AccountLinkagePolicy" table="ATCC_ACCOUNTLINKAGEPOLICY" />
+        <class name="Activation" table="ATCC_ACTIVATION" />
+        <class name="AttributeProfile" table="ATCC_ATTRIBUTEPROFILE" />
+        <class name="AuthenticationAssertionEmissionPolicy" table="ATCC_AUTHASSERTIONEMISSIONPOLICY" />
+        <class name="AuthenticationMechanism" table="ATCC_AUTHENTICATIONMECHANISM" />
+        <class name="AuthenticationContract" table="ATCC_AUTHENTICATIONCONTRACT" />
+        <class name="Channel" table="ATCC_CHANNEL">
+            <field name="activeBindings" table="ATCC_CHANNEL_BINDINGS"/>
+            <field name="activeProfiles" table="ATCC_CHANNEL_PROFILES"/>
+        </class>
+        <class name="Connection" table="ATCC_CONNECTION"/>
+        <class name="DbIdentitySource" table="ATCC_DBIDENTITYSOURCE"/>
+        <class name="EmbeddedIdentitySource" table="ATCC_EMBEDDEDIDENTITYSOURCE"/>
+        <class name="ExecutionIdentitySource" table="ATCC_EXECUTION"/>
+        <class name="FederatedConnection" table="ATCC_FEDERATEDCONNECTION"/>
+        <class name="IdentityApplianceDefinition" table="ATCC_IDAPPLIANCEDEFINITION">
+            <field name="name" >
+                <column allows-null="false"/>
+            </field>
+            <field name="providers"/>
+            <field name="identitySources" />
+        </class>
+        <class name="IdentityLookup" table="ATCC_IDENTITYLOOKUP"/>
+        <class name="IdentityProvider" table="ATCC_IDP"/>
+        <class name="IdentityProviderChannel" table="ATCC_IDPCHANNEL"/>
+        <class name="IdentitySource" table="ATCC_IDENTITYSOURCE"/>
+        <class name="JbossExecutionEnvironment" table="ATCC_JBOSSEXECENV"/>
+        <class name="JOSSOActivation" table="ATCC_JOSSOACTIVATION"/>
+        <class name="Keystore" table="ATCC_KEYSTORE" />
+        <class name="LdapIdentitySource" table="ATCC_LDAPIDENTITYSOURCE"/>
+        <class name="LocalProvider" table="ATCC_LOCALPROVIDER">
+            <field name="channels" table="ATCC_PROVIDER_CHANNELS"/>
+        </class>
+        <class name="Location" table="ATCC_LOCATION"/>
+        <class name="Organization" table="ATCC_ORGANIZATION"/>
+        <class name="Provider" table="ATCC_PROVIDER"/>
+        <class name="ProvisioningServiceProvider" table="ATCC_PSP"/>
+        <class name="RemoteProvider" table="ATCC_REMOTEPROVIDER"/>
+        <class name="Resource" table="ATCC_RESOURCE" />
+        <class name="SamlR2IDPConfig" table="ATCC_SAMLR2IDPPROVIDERCONFIG"/>
+        <class name="SamlR2ProviderConfig" table="ATCC_SAMLR2PROVIDERCONFIG" />
+        <class name="SamlR2SPConfig" table="ATCC_SAMLR2SPCONFIG" />
+        <class name="ServiceProvider" table="ATCC_SP"/>
+        <class name="ServiceProviderChannel" table="ATCC_SPCHANNEL"/>
+        <class name="TomcatExecutionEnvironmetn" table="ATCC_TOMCATEXECENV"/>
+        <class name="WeblogicExecutionEnvironmetn" table="ATCC_WEBLOGICEXECENV"/>
+    </package>
+</orm>

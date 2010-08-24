@@ -11,15 +11,6 @@ public class LocalProvider extends Provider {
 
     private ProviderConfig config;
 
-    /**
-     * The default channel where requests from other providers are received
-     */
-    private Channel defaultChannel;
-
-    /**
-     * Channels that override the default channel (optional), they must refer to a target! 
-     */
-    private Set<Channel> channels =  new HashSet<Channel>();
     private static final long serialVersionUID = 2967662484748634148L;
 
     public ProviderConfig getConfig() {
@@ -30,19 +21,4 @@ public class LocalProvider extends Provider {
         this.config = config;
     }
 
-    public Channel getDefaultChannel() {
-        return defaultChannel;
-    }
-
-    public void setDefaultChannel(Channel defaultChannel) {
-        this.defaultChannel = defaultChannel;
-    }
-
-    public Set<Channel> getChannels() {
-        return channels;
-    }
-
-    public void setChannels(Set<Channel> channels) {
-        this.channels = channels;
-    }
 }

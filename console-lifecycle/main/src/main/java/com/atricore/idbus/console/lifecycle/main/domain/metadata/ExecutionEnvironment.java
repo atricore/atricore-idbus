@@ -10,6 +10,8 @@ public class ExecutionEnvironment implements Serializable {
     private long id;
     private String name;
     private String description;
+    private String installUri;
+
     private static final long serialVersionUID = 175340870033867780L;
 
     public long getId() {
@@ -34,5 +36,13 @@ public class ExecutionEnvironment implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getInstallUri() {
+        return installUri;
+    }
+
+    public void setInstallUri(String installUri) {
+        this.installUri = installUri;
     }
 }

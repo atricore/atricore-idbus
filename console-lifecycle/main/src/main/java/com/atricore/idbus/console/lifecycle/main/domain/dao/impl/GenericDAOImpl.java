@@ -4,6 +4,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.dao.GenericDAO;
 import org.springframework.orm.jdo.support.JdoDaoSupport;
 
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 
 public abstract class GenericDAOImpl<T, PK extends Serializable>
@@ -11,8 +12,8 @@ public abstract class GenericDAOImpl<T, PK extends Serializable>
 
     private Class<T> persistentClass;
 
-    public GenericDAOImpl(Class<T> persistentClass) {
-        this.persistentClass = persistentClass;
+    public GenericDAOImpl() {
+        persistentClass = (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
     public boolean exists(PK id) {
@@ -20,20 +21,20 @@ public abstract class GenericDAOImpl<T, PK extends Serializable>
         return entity != null;
     }
 
-    public T getObjectById(PK id) {
+    public T findById(PK id) {
         return (T) getJdoTemplate().getObjectById(this.persistentClass, id);
     }
-    
+
     public Collection<T> findAll() {
         return getJdoTemplate().find(this.persistentClass);
     }
-    
+
     public T save(T object) {
         return (T) getJdoTemplate().makePersistent(object);
     }
-    
-    public void remove(PK id) {
-        getJdoTemplate().deletePersistent(this.getObjectById(id));
+
+    public void delete(PK id) {
+        getJdoTemplate().deletePersistent(this.findById(id));
     }
 
     public void flush() {
@@ -49,4 +50,6 @@ public abstract class GenericDAOImpl<T, PK extends Serializable>
         getPersistenceManager().getFetchPlan().setMaxFetchDepth(fetchDepth);
         return getJdoTemplate().detachCopyAll(objects);
     }
+
+
 }

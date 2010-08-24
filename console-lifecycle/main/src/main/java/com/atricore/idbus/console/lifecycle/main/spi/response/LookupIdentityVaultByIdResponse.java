@@ -1,19 +1,19 @@
 package com.atricore.idbus.console.lifecycle.main.spi.response;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityVault;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentitySource;
 
 /**
  * Author: Dejan Maric
  */
 public class LookupIdentityVaultByIdResponse {
 
-    private IdentityVault identityVault;
+    private IdentitySource identitySource;
 
-    public IdentityVault getIdentityVault() {
-        return identityVault;
+    public IdentitySource getIdentityVault() {
+        return identitySource;
     }
 
-    public void setIdentityVault(IdentityVault identityVault) {
-        this.identityVault = identityVault;
+    public void setIdentityVault(IdentitySource identitySource) {
+        this.identitySource = identitySource;
     }
 }

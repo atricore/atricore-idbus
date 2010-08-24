@@ -58,7 +58,8 @@ public class SamlR2SPTransformer extends AbstractTransformer {
     private EntityDescriptorType generateSPMetadata(ServiceProvider provider) throws TransformException {
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
-        Location location = provider.getBindingChannel().getLocation();
+        // TODO RETROFIT  : Location location = provider.getBindingChannel().getLocation();
+        Location location = null;
         
         EntityDescriptorType entityDescriptor = new EntityDescriptorType();
         entityDescriptor.setID("id9uvH6lD7oa2zwey0JzQcpzJrKXY");

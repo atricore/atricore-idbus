@@ -11,6 +11,6 @@ public class AuthenticationAssertionEmissionPolicyDAOImpl extends GenericDAOImpl
     private static final Log logger = LogFactory.getLog(AuthenticationAssertionEmissionPolicyDAOImpl.class);
 
     public AuthenticationAssertionEmissionPolicyDAOImpl() {
-        super(AuthenticationAssertionEmissionPolicy.class);
+        super();
     }
 }

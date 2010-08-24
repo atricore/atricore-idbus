@@ -42,7 +42,7 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
 
-    //TODO - create LdapIdentitySource domain object. LdapIdentityVault is used just as a workaround
+    //TODO - create LdapIdentitySource domain object. LdapIdentitySource is used just as a workaround
     private var _newLdapIdentitySource:LdapIdentityVault;
 
     public function LdapIdentitySourceCreateMediator(name:String = null, viewComp:LdapIdentitySourceCreateForm = null) {

@@ -43,19 +43,19 @@
             private var readableDecisionArray:Array;
 
             override public function get stepDecision():* {
-                var identityVault:IdentityVault = null;
+                var identitySource:IdentityVault = null;
                 if (embeddedRepositoryType.selectedItem.label == "Database") {
-                    identityVault = new DbIdentityVault();
-                    identityVault.embedded = true;
-                    identityVault.name = userRepositoryName.text;
-                    (identityVault as DbIdentityVault).port = parseInt(serverPort.text);
-                    //                    (identityVault as DbIdentityVault).connectionName
-                    //                    (identityVault as DbIdentityVault).driverName
-                    (identityVault as DbIdentityVault).schema = schema.text;
-                    (identityVault as DbIdentityVault).admin = admin.text;
-                    (identityVault as DbIdentityVault).password = adminPass.text;
+                    identitySource = new DbIdentityVault();
+                    identitySource.embedded = true;
+                    identitySource.name = userRepositoryName.text;
+                    (identitySource as DbIdentityVault).port = parseInt(serverPort.text);
+                    //                    (identitySource as DbIdentityVault).connectionName
+                    //                    (identitySource as DbIdentityVault).driverName
+                    (identitySource as DbIdentityVault).schema = schema.text;
+                    (identitySource as DbIdentityVault).admin = admin.text;
+                    (identitySource as DbIdentityVault).password = adminPass.text;
                 }
-                return identityVault;
+                return identitySource;
             }
 
             override public function get readableStepDecision():String {

@@ -21,13 +21,29 @@
 
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
+import java.util.Set;
+
 public class ServiceProvider extends LocalProvider {
 
 	private static final long serialVersionUID = 1096573594152761313L;
 
-    private Channel bindingChannel;
-    private ExecutionEnvironment executionEnvironment;
+    private Set<FederatedConnection> federatedConnections;
 
+    private Activation activation;
+
+    private IdentityLookup identityLookup;
+    
+    private IdentitySource identitySource;
+
+    private AccountLinkagePolicy accountLinkagePolicy;
+
+    // RFU
+    private AuthenticationContract authenticationContract;
+
+    // RFU
+    private AuthenticationMechanism authenticationMechanism;
+
+    
     @Override
     public ProviderRole getRole() {
         return ProviderRole.SSOServiceProvider;
@@ -38,20 +54,27 @@ public class ServiceProvider extends LocalProvider {
         throw new UnsupportedOperationException("Cannot change provider role");
     }
 
-
-    public Channel getBindingChannel() {
-        return bindingChannel;
+    public Set<FederatedConnection> getFederatedConnections() {
+        return federatedConnections;
     }
 
-    public void setBindingChannel(Channel bindingChannel) {
-        this.bindingChannel = bindingChannel;
+    public void setFederatedConnections(Set<FederatedConnection> federatedConnections) {
+        this.federatedConnections = federatedConnections;
     }
 
-    public ExecutionEnvironment getExecutionEnvironment() {
-        return executionEnvironment;
+    public Activation getActivation() {
+        return activation;
     }
 
-    public void setExecutionEnvironment(ExecutionEnvironment executionEnvironment) {
-        this.executionEnvironment = executionEnvironment;
+    public void setActivation(Activation activation) {
+        this.activation = activation;
+    }
+
+    public IdentityLookup getIdentityLookup() {
+        return identityLookup;
+    }
+
+    public void setIdentityLookup(IdentityLookup identityLookup) {
+        this.identityLookup = identityLookup;
     }
 }

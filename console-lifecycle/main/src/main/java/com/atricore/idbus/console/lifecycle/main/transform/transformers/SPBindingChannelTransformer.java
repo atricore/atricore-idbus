@@ -39,6 +39,9 @@ public class SPBindingChannelTransformer extends AbstractTransformer {
     @Override
     public void before(TransformEvent event) throws TransformException {
 
+        // TODO RETROFIT  :
+        /*
+
         Beans spBeans = (Beans) event.getContext().get("spBeans");
 
         ServiceProvider provider = (ServiceProvider) event.getData();
@@ -181,5 +184,6 @@ public class SPBindingChannelTransformer extends AbstractTransformer {
 
             setPropertyRef(spBean, "bindingChannel", bc.getName());
         }
+        */
     }
 }

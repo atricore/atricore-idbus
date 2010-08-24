@@ -289,21 +289,21 @@ public class UserServiceImplTest {
 
         searchUserRequest = new UserRequest();
         searchUserRequest.setId(1);
-        _userService.remove(searchUserRequest);
+        _userService.delete(searchUserRequest);
 
         try {
             _userService.findById(searchUserRequest);
-            assert false: "Failed to remove User with id 1";
+            assert false: "Failed to delete User with id 1";
         } catch (UserNotFoundException e) {
             assert true;
         }
 
         searchUserRequest.setId(2);
-        _userService.remove(searchUserRequest);
+        _userService.delete(searchUserRequest);
 
         try {
             _userService.findById(userRequest);
-            assert false: "Failed to remove user with id 2";
+            assert false: "Failed to delete user with id 2";
         } catch (UserNotFoundException e) {
             assert true;
         }

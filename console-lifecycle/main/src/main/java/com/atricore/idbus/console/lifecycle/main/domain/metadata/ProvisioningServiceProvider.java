@@ -1,0 +1,19 @@
+package com.atricore.idbus.console.lifecycle.main.domain.metadata;
+
+/**
+ * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ */
+public class ProvisioningServiceProvider extends LocalProvider {
+
+    private static final long serialVersionUID = -1598765235444881900L;
+
+    private long id;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+}

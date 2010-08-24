@@ -11,6 +11,6 @@ public class AccountLinkagePolicyDAOImpl extends GenericDAOImpl<AccountLinkagePo
     private static final Log logger = LogFactory.getLog(AccountLinkagePolicyDAOImpl.class);
 
     public AccountLinkagePolicyDAOImpl() {
-        super(AccountLinkagePolicy.class);
+        super();
     }
 }

@@ -43,25 +43,25 @@
             private var readableDecisionArray:Array;
 
             override public function get stepDecision():* {
-                var identityVault:IdentityVault = new IdentityVault();
+                var identitySource:IdentityVault = new IdentityVault();
                 readableDecisionArray = new Array();
                 if (obfuscatePass.selected) {
                     //TODO
-                    //                  identityVault.obfuscatePassword = obfuscatePass.selected;
+                    //                  identitySource.obfuscatePassword = obfuscatePass.selected;
                     readableDecisionArray.push("Obfuscate Password: " + obfuscatePass.selected);
                 }
-                identityVault.name = userRepositoryName.text;
-                readableDecisionArray.push("Repository Name: " + identityVault.name);
+                identitySource.name = userRepositoryName.text;
+                readableDecisionArray.push("Repository Name: " + identitySource.name);
 
                 if (repositoryType.selectedValue == "embedded") {
-                    identityVault.embedded = true;
+                    identitySource.embedded = true;
                     readableDecisionArray.push("Create Embedded Repository");
                 } else {
-                    identityVault.embedded = false;
+                    identitySource.embedded = false;
                     readableDecisionArray.push("Create External Repository");
                 }
 
-                return identityVault;
+                return identitySource;
             }
 
             override public function get readableStepDecision():String {

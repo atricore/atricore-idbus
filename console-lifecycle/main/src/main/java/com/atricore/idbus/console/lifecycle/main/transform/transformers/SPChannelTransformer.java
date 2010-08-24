@@ -58,8 +58,8 @@ public class SPChannelTransformer extends AbstractTransformer {
         }
         idpBean = b.iterator().next();
 
-        boolean isDefault = spChannel.getTarget() == null || spChannel.getTarget().equals(provider);
-        String name = idpBean.getName() + (isDefault ? "-default" : "-" + normalizeBeanName(spChannel.getTarget().getName())) + "-sp-channel";
+        boolean isDefault = false; // TODO RETROFIT  : spChannel.getTarget() == null || spChannel.getTarget().equals(provider);
+        String name = null; // TODO RETROFIT  : idpBean.getName() + (isDefault ? "-default" : "-" + normalizeBeanName(spChannel.getTarget().getName())) + "-sp-channel";
         
         Bean spChannelBean = newBean(idpBeans, name, SPChannelImpl.class.getName());
 
@@ -75,19 +75,24 @@ public class SPChannelTransformer extends AbstractTransformer {
         setPropertyValue(spChannelBean, "location", resolveLocationUrl(provider));
 
         // provider
+        // TODO RETROFIT  :
+        /*
         if (spChannel.getTarget() != null) {
             setPropertyRef(spChannelBean, "provider", normalizeBeanName(spChannel.getTarget().getName()));
         } else {
             setPropertyRef(spChannelBean, "provider", idpBean.getName());
         }
+        */
 
         // sessionManager
         setPropertyRef(spChannelBean, "sessionManager", idpBean.getName() + "-session-manager");
         
         // identityManager
+        // TODO RETROFIT  :
+        /*
         if (spChannel.getIdentityVault() != null) {
             setPropertyRef(spChannelBean, "identityManager", idpBean.getName() + "-identity-manager");
-        }
+        }  */
 
         // member
         setPropertyRef(spChannelBean, "member", idpBean.getName() + "-md");
@@ -278,9 +283,11 @@ public class SPChannelTransformer extends AbstractTransformer {
         setPropertyRef(authnToSamlPlan, "bpmsManager", "bpms-manager");
 
         Bean stmtToAssertionPlan = newBean(idpBeans, "samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
+        // TODO RETROFIT  :
+        /*
         if (spChannel.getIdentityVault() != null) {
             setPropertyRef(stmtToAssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
-        }
+        } */
         setPropertyRef(stmtToAssertionPlan, "bpmsManager", "bpms-manager");
 
         //Bean authnToSamlResponsePlan = newBean(idpBeans, "samlr2authnreq-to-samlr2response-plan", SamlR2AuthnReqToSamlR2RespPlan.class);

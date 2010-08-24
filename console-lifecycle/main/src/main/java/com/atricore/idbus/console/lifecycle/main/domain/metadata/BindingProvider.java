@@ -4,6 +4,7 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
+@Deprecated
 public class BindingProvider extends LocalProvider {
 
     private Channel bindingChannel;

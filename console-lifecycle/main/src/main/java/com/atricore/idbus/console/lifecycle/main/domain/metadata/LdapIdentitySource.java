@@ -4,7 +4,7 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class LdapIdentityVault extends IdentityVault {
+public class LdapIdentitySource extends IdentitySource {
 
     private static final long serialVersionUID = 6035914548009890586L;
 

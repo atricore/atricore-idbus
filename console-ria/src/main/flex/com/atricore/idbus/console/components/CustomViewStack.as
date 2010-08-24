@@ -98,7 +98,7 @@ import mx.core.IVisualElement;
 			// set new.
 			_selectedIndex = index;
 
-			// remove old element.
+			// delete old element.
 			if( numElements > 0 )
 				removeElementAt( 0 );
 

@@ -11,6 +11,6 @@ public class AuthenticationContractDAOImpl extends GenericDAOImpl<Authentication
     private static final Log logger = LogFactory.getLog(AuthenticationContractDAOImpl.class);
 
     public AuthenticationContractDAOImpl() {
-        super(AuthenticationContract.class);
+        super();
     }
 }

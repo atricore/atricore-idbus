@@ -11,6 +11,6 @@ public class RemoteProviderDAOImpl extends GenericDAOImpl<RemoteProvider, Long>
     private static final Log logger = LogFactory.getLog(RemoteProviderDAOImpl.class);
 
     public RemoteProviderDAOImpl() {
-        super(RemoteProvider.class);
+        super();
     }
 }

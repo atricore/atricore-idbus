@@ -132,7 +132,7 @@ public class ModelerMediator extends IocMediator {
             } else {
                 view.btnLifecycle.enabled = false;
             }
-            // TODO: remove IF condition (fetch list every time modeler is opened)?
+            // TODO: delete IF condition (fetch list every time modeler is opened)?
             if (projectProxy.identityApplianceList == null) {
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
             }

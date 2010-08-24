@@ -6,7 +6,7 @@ import java.io.Serializable;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class IdentityVault implements Serializable {
+public class IdentitySource implements Serializable {
 
     private long id;
 
@@ -18,8 +18,6 @@ public class IdentityVault implements Serializable {
 
     private boolean embedded;
 
-    // Only for non-embedded identity vaults, default lookup values
-    private UserInformationLookup userInformationLookup;
     private static final long serialVersionUID = -1499654004861436370L;
 
     public long getId() {
@@ -62,20 +60,12 @@ public class IdentityVault implements Serializable {
         this.embedded = embedded;
     }
 
-    public UserInformationLookup getUserInformationLookup() {
-        return userInformationLookup;
-    }
-
-    public void setUserInformationLookup(UserInformationLookup userInformationLookup) {
-        this.userInformationLookup = userInformationLookup;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdentityVault)) return false;
+        if (!(o instanceof IdentitySource)) return false;
 
-        IdentityVault that = (IdentityVault) o;
+        IdentitySource that = (IdentitySource) o;
 
         if(id == 0) return false;
 

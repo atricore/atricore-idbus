@@ -11,6 +11,6 @@ public class JossoBPConfigDAOImpl extends GenericDAOImpl<JossoBPConfig, Long>
     private static final Log logger = LogFactory.getLog(JossoBPConfigDAOImpl.class);
 
     public JossoBPConfigDAOImpl() {
-        super(JossoBPConfig.class);
+        super();
     }
 }

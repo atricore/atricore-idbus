@@ -25,32 +25,32 @@ public class IdentityProviderChannel extends Channel {
 
 	private static final long serialVersionUID = 8276649486690667445L;
 
-    private IdentityVault identityVault;
-
-    // Overrides identityVault user information lookup
-    private UserInformationLookup userInformationLookup;
+    private IdentityLookup identityLookup;
 
     private AccountLinkagePolicy accountLinkagePolicy;
 
+    private FederatedConnection connection;
+
+    // RFU
     private AuthenticationContract authenticationContract;
 
+    // RFU
     private AuthenticationMechanism authenticationMechanism;
-    
 
-    public IdentityVault getIdentityVault() {
-        return identityVault;
+    public FederatedConnection getConnection() {
+        return connection;
     }
 
-    public void setIdentityVault(IdentityVault identityVault) {
-        this.identityVault = identityVault;
+    public void setConnection(FederatedConnection connection) {
+        this.connection = connection;
     }
 
-    public UserInformationLookup getUserInformationLookup() {
-        return userInformationLookup;
+    public IdentityLookup getIdentityLookup() {
+        return identityLookup;
     }
 
-    public void setUserInformationLookup(UserInformationLookup userInformationLookup) {
-        this.userInformationLookup = userInformationLookup;
+    public void setIdentityLookup(IdentityLookup identityLookup) {
+        this.identityLookup = identityLookup;
     }
 
     public AccountLinkagePolicy getAccountLinkagePolicy() {

@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.jdo.annotations.*;
 
+@Deprecated 
 @PersistenceCapable
 public class User
     implements Serializable

@@ -11,6 +11,6 @@ public class BindingChannelDAOImpl extends GenericDAOImpl<BindingChannel, Long>
     private static final Log logger = LogFactory.getLog(BindingChannelDAOImpl.class);
 
     public BindingChannelDAOImpl() {
-        super(BindingChannel.class);
+        super();
     }
 }

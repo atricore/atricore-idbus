@@ -44,16 +44,16 @@
             private var readableDecisionArray:Array;
 
             override public function get stepDecision():* {
-                var identityVault:IdentityVault = null;
+                var identitySource:IdentityVault = null;
                 if (externalRepositoryType.labelDisplay.text == "Database") {
-                    identityVault = new DbIdentityVault();
-                    identityVault.embedded = false;
-                    identityVault.name = userRepositoryName.text;
-                    (identityVault as DbIdentityVault).connectionName = connectionName.text;
-                    (identityVault as DbIdentityVault).driverName = driverName.text;
-                    (identityVault as DbIdentityVault).connectionUrl = connectionUrl.text;
-                    (identityVault as DbIdentityVault).admin = dbUsername.text;
-                    (identityVault as DbIdentityVault).password = dbPassword.text;
+                    identitySource = new DbIdentityVault();
+                    identitySource.embedded = false;
+                    identitySource.name = userRepositoryName.text;
+                    (identitySource as DbIdentityVault).connectionName = connectionName.text;
+                    (identitySource as DbIdentityVault).driverName = driverName.text;
+                    (identitySource as DbIdentityVault).connectionUrl = connectionUrl.text;
+                    (identitySource as DbIdentityVault).admin = dbUsername.text;
+                    (identitySource as DbIdentityVault).password = dbPassword.text;
 
                     var userLookup = new UserInformationLookup();
                     userLookup.userQueryString = userQuery.text;
@@ -62,9 +62,9 @@
                     userLookup.userPropertiesQueryString = propertiesQuery.text;
                     userLookup.resetCredentialDml = credentialsUpdate.text;
 
-                    identityVault.userInformationLookup = userLookup;
+                    identitySource.userInformationLookup = userLookup;
                 }
-                return identityVault;
+                return identitySource;
             }
 
             override public function get readableStepDecision():String {

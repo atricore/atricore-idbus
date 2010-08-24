@@ -11,6 +11,6 @@ public class SamlR2SPConfigDAOImpl extends GenericDAOImpl<SamlR2SPConfig, Long>
     private static final Log logger = LogFactory.getLog(SamlR2SPConfigDAOImpl.class);
 
     public SamlR2SPConfigDAOImpl() {
-        super(SamlR2SPConfig.class);
+        super();
     }
 }

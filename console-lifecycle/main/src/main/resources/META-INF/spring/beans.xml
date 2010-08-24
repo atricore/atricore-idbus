@@ -91,7 +91,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <!-- DAO's -->
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
         <property name="identityApplianceDefinitionDAO" ref="identityApplianceDefinitionDAO"/>
-        <property name="identityVaultDAO" ref="identityVaultDAO"/>
+        <property name="identitySourceDAO" ref="identitySourceDAO"/>
         <property name="userInformationLookupDAO" ref="userInformationLookupDAO"/>
         <property name="accountLinkagePolicyDAO" ref="accountLinkagePolicyDAO"/>
         <property name="authenticationContractDAO" ref="authenticationContractDAO"/>

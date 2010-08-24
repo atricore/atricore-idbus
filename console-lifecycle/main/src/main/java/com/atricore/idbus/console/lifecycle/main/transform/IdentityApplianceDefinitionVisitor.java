@@ -275,7 +275,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(IdentityVault node);
+    void arrive(IdentitySource node);
 
     /**
      * This method is called after walking the children of the argument
@@ -291,7 +291,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(IdentityVault node, Object[] results);
+    Object[] leave(IdentitySource node, Object[] results);
 
     /**
      * This method is called before walking each child of the argument
@@ -312,7 +312,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(IdentityVault node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(IdentitySource node, Object resultOfPreviousChild, int indexOfNextChild);
 
 
 }

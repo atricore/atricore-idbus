@@ -65,7 +65,7 @@ public class IdApplianceDeploymentTest {
 
                 LocalProvider lp = (LocalProvider) provider;
 
-                Channel dc = lp.getDefaultChannel();
+                Channel dc = null; // TODO : REFACTOR lp.getDefaultChannel();
                 logger.info("default-channel.name        : " + dc.getName());
                 logger.info("default-channel.description : " + dc.getDescription());
 
@@ -77,6 +77,7 @@ public class IdApplianceDeploymentTest {
                     logger.info("default-channel.profile     : " + p.getName());
                 }
 
+                /* TODO : REFACTOR
                 for (Channel c : ((LocalProvider) provider).getChannels()) {
 
                     logger.info("channel.name        : " + c.getName());
@@ -92,6 +93,7 @@ public class IdApplianceDeploymentTest {
                     }
 
                 }
+                */
 
             }
 

@@ -11,6 +11,6 @@ public class IdentityApplianceDefinitionDAOImpl extends GenericDAOImpl<IdentityA
     private static final Log logger = LogFactory.getLog(IdentityApplianceDefinitionDAOImpl.class);
 
     public IdentityApplianceDefinitionDAOImpl() {
-        super(IdentityApplianceDefinition.class);
+        super();
     }
 }

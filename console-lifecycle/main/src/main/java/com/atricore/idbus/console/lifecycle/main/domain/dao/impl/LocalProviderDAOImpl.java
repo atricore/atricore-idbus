@@ -11,6 +11,6 @@ public class LocalProviderDAOImpl extends GenericDAOImpl<LocalProvider, Long>
     private static final Log logger = LogFactory.getLog(LocalProviderDAOImpl.class);
 
     public LocalProviderDAOImpl() {
-        super(LocalProvider.class);
+        super();
     }
 }

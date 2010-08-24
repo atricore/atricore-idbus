@@ -10,6 +10,6 @@ public class KeystoreDAOImpl extends GenericDAOImpl<Keystore, Long> implements K
     private static final Log logger = LogFactory.getLog(KeystoreDAOImpl.class);
 
     public KeystoreDAOImpl() {
-        super(Keystore.class);
+        super();
     }
 }

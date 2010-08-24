@@ -6,17 +6,17 @@ public interface GenericDAO<T, PK> {
 
     boolean exists(PK id);
 
-    T getObjectById(PK id);
+    T findById(PK id);
 
     Collection<T> findAll();
 
     T save(T object);
 
-    void remove(PK id);
+    void delete(PK id);
 
     T detachCopy(T object, int fetchDepth);
 
     Collection<T> detachCopyAll(Collection<T> objects, int fetchDepth);
-    
+
     void flush();
 }
