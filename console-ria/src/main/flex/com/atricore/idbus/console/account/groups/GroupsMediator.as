@@ -26,7 +26,7 @@ import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-import com.atricore.idbus.console.services.dto.GroupDTO;
+import com.atricore.idbus.console.services.dto.Group;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -161,7 +161,7 @@ public class GroupsMediator extends IocMediator {
             case ApplicationFacade.DISPLAY_SEARCH_RESULTS_GROUPS:
                 view.groupList.dataProvider = notification as ArrayCollection;
                 view.groupList.selectedIndex=0;
-                _accountManagementProxy.currentGroup = view.groupList.selectedItem as GroupDTO;
+                _accountManagementProxy.currentGroup = view.groupList.selectedItem as Group;
                 break;
         }
     }
@@ -193,7 +193,7 @@ public class GroupsMediator extends IocMediator {
     }
 
     public function groupListClickHandler(e:ListEvent):void {
-        var selectedGroup:GroupDTO = e.currentTarget.selectedItem as GroupDTO;
+        var selectedGroup:Group = e.currentTarget.selectedItem as Group;
         _accountManagementProxy.currentGroup = selectedGroup;
 
         if (view.btnDeleteGroup != null)
@@ -206,7 +206,7 @@ public class GroupsMediator extends IocMediator {
         sendNotification(ApplicationFacade.DISPLAY_GROUP_PROPERTIES, selectedGroup);
     }
 
-    private function groupBasicInfo(group:GroupDTO):String {
+    private function groupBasicInfo(group:Group):String {
         var groupInfo:String = "";
         var resMan:IResourceManager = ResourceManager.getInstance();
         groupInfo+=resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.name') + ": " + group.name + "\n";

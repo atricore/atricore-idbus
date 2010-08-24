@@ -24,7 +24,7 @@ package com.atricore.idbus.console.account.main.controller
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.dto.UserDTO;
+import com.atricore.idbus.console.services.dto.User;
 import com.atricore.idbus.console.services.spi.request.SearchUserRequest;
 import com.atricore.idbus.console.services.spi.response.SearchUserResponse;
 
@@ -61,7 +61,7 @@ public class SearchUsersCommand extends IocSimpleCommand implements IResponder {
     }
 
     override public function execute(notification:INotification):void {
-        var user:UserDTO = notification.getBody() as UserDTO;
+        var user:User = notification.getBody() as User;
         var req:SearchUserRequest = new SearchUserRequest();
         req.userName = user.userName;
         req.firstName = user.firstName;

@@ -20,16 +20,16 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.model.request {
-import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
+import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 
 public class RemoveSpChannelElementRequest {
-    private var _spChannel:ServiceProviderChannelDTO;
+    private var _spChannel:ServiceProviderChannel;
 
-    public function RemoveSpChannelElementRequest(spChannel:ServiceProviderChannelDTO) {
+    public function RemoveSpChannelElementRequest(spChannel:ServiceProviderChannel) {
         _spChannel = spChannel;
     }
 
-    public function get spChannel():ServiceProviderChannelDTO {
+    public function get spChannel():ServiceProviderChannel {
         return _spChannel;
     }
 }

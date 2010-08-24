@@ -26,11 +26,11 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
 import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
-import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
-import com.atricore.idbus.console.services.dto.KeystoreDTO;
-import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
+import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
+import com.atricore.idbus.console.services.dto.IdentityVault;
+import com.atricore.idbus.console.services.dto.Keystore;
+import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 import flash.events.DataEvent;
 import flash.events.Event;
@@ -142,14 +142,14 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
     private function onSimpleSSOWizardComplete(event:WizardEvent):void {
         /*
-         var identityAppliance:IdentityApplianceDTO = _wizardDataModel.applianceData;
-         var identityApplianceDefinition:IdentityApplianceDefinitionDTO = identityAppliance.idApplianceDefinition;
+         var identityAppliance:IdentityAppliance = _wizardDataModel.applianceData;
+         var identityApplianceDefinition:IdentityApplianceDefinition = identityAppliance.idApplianceDefinition;
          identityApplianceDefinition.identityVaults = new ArrayCollection();
          identityApplianceDefinition.identityVaults.addItem(createIdentityVault());
 
          identityApplianceDefinition.providers = new ArrayCollection();
          for (var i:int = 0; i < _wizardDataModel.step3Data.length; i++) {
-         var sp:ServiceProviderDTO = _wizardDataModel.step3Data[i] as ServiceProviderDTO;
+         var sp:ServiceProvider = _wizardDataModel.step3Data[i] as ServiceProvider;
          identityApplianceDefinition.providers.addItem(sp);
          }
          */
@@ -159,18 +159,18 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
         sendNotification(ProcessingMediator.START);
 
-        var identityAppliance:IdentityApplianceDTO = _wizardDataModel.applianceData;
-        var identityApplianceDefinition:IdentityApplianceDefinitionDTO = identityAppliance.idApplianceDefinition;
+        var identityAppliance:IdentityAppliance = _wizardDataModel.applianceData;
+        var identityApplianceDefinition:IdentityApplianceDefinition = identityAppliance.idApplianceDefinition;
         identityApplianceDefinition.identityVaults = new ArrayCollection();
         identityApplianceDefinition.identityVaults.addItem(createIdentityVault());
 
         identityApplianceDefinition.providers = new ArrayCollection();
         for (var i:int = 0; i < _wizardDataModel.step3Data.length; i++) {
-            var sp:ServiceProviderDTO = _wizardDataModel.step3Data[i] as ServiceProviderDTO;
+            var sp:ServiceProvider = _wizardDataModel.step3Data[i] as ServiceProvider;
             identityApplianceDefinition.providers.addItem(sp);
         }
 
-        var keystore:KeystoreDTO = _wizardDataModel.certificateData;
+        var keystore:Keystore = _wizardDataModel.certificateData;
         identityApplianceDefinition.certificate = keystore;
 
         sendNotification(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);
@@ -180,11 +180,11 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         //closeWizard();
     }
 
-    private function createIdentityVault():IdentityVaultDTO {
-        if ((_wizardDataModel.step1Data as IdentityVaultDTO).embedded) {
-            return _wizardDataModel.step2EmbeddedData as IdentityVaultDTO;
+    private function createIdentityVault():IdentityVault {
+        if ((_wizardDataModel.step1Data as IdentityVault).embedded) {
+            return _wizardDataModel.step2EmbeddedData as IdentityVault;
         } else {
-            return _wizardDataModel.step2ExternalData as IdentityVaultDTO;
+            return _wizardDataModel.step2ExternalData as IdentityVault;
         }
     }
 

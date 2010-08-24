@@ -25,11 +25,11 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
-import com.atricore.idbus.console.services.dto.BindingDTO;
-import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
-import com.atricore.idbus.console.services.dto.LocationDTO;
-import com.atricore.idbus.console.services.dto.ProfileDTO;
-import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+import com.atricore.idbus.console.services.dto.Binding;
+import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
+import com.atricore.idbus.console.services.dto.Location;
+import com.atricore.idbus.console.services.dto.Profile;
+import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 import flash.events.MouseEvent;
 
@@ -41,7 +41,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class ServiceProviderCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
-    private var _newServiceProvider:ServiceProviderDTO;
+    private var _newServiceProvider:ServiceProvider;
 
     public function ServiceProviderCreateMediator(name : String = null, viewComp:ServiceProviderCreateForm = null) {
         super(name, viewComp);
@@ -98,12 +98,12 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
 
     override public function bindModel():void {
 
-        var serviceProvider:ServiceProviderDTO = new ServiceProviderDTO();
+        var serviceProvider:ServiceProvider = new ServiceProvider();
 
         serviceProvider.name = view.serviceProvName.text;
         serviceProvider.description = view.serviceProvDescription.text;
 
-        var loc:LocationDTO = new LocationDTO();
+        var loc:Location = new Location();
         loc.protocol = view.spLocationProtocol.labelDisplay.text;
         loc.host = view.spLocationDomain.text;
         loc.port = parseInt(view.spLocationPort.text);
@@ -114,9 +114,9 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
 //        serviceProvider.signAuthenticationRequest = view.signAuthRequestCheck.selected;
 //        serviceProvider.encryptAuthenticationRequest = view.encryptAuthRequestCheck.selected;
 
-        var idpChannel:IdentityProviderChannelDTO = new IdentityProviderChannelDTO();
+        var idpChannel:IdentityProviderChannel = new IdentityProviderChannel();
         idpChannel.name = serviceProvider.name + " to idp default channel";
-        var idpChannelLoc:LocationDTO = new LocationDTO();
+        var idpChannelLoc:Location = new Location();
         idpChannelLoc.protocol = view.spLocationProtocol.labelDisplay.text;
         idpChannelLoc.host = view.spLocationDomain.text;
         idpChannelLoc.port = parseInt(view.spLocationPort.text);
@@ -127,24 +127,24 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         
         idpChannel.activeBindings = new ArrayCollection();
         if(view.samlBindingHttpPostCheck.selected){
-            idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_POST);
+            idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
         }
         if(view.samlBindingArtifactCheck.selected){
-            idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_ARTIFACT);
+            idpChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
         }
         if(view.samlBindingHttpRedirectCheck.selected){
-            idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_REDIRECT);
+            idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
         }
         if(view.samlBindingSoapCheck.selected){
-            idpChannel.activeBindings.addItem(BindingDTO.SAMLR2_SOAP);
+            idpChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
         }
 
         idpChannel.activeProfiles = new ArrayCollection();
         if(view.samlProfileSSOCheck.selected){
-            idpChannel.activeProfiles.addItem(ProfileDTO.SSO);
+            idpChannel.activeProfiles.addItem(Profile.SSO);
         }
         if(view.samlProfileSLOCheck.selected){
-            idpChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
+            idpChannel.activeProfiles.addItem(Profile.SSO_SLO);
         }
         
         // TODO save remaining fields to defaultChannel, calling appropriate lookup methods

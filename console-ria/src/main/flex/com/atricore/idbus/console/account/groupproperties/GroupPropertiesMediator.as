@@ -21,7 +21,7 @@
 
 package com.atricore.idbus.console.account.groupproperties {
 import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.services.dto.GroupDTO;
+import com.atricore.idbus.console.services.dto.Group;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
@@ -54,13 +54,13 @@ public class GroupPropertiesMediator extends IocMediator {
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case ApplicationFacade.DISPLAY_GROUP_PROPERTIES:
-                var grp:GroupDTO = notification.getBody() as GroupDTO;;
+                var grp:Group = notification.getBody() as Group;;
                 showPropertiresForGroup(grp);
                 break;
         }
     }
 
-    private function showPropertiresForGroup(group:GroupDTO) {
+    private function showPropertiresForGroup(group:Group) {
         view.groupName.text = formatFieldString(group.name);
         view.groupDescription.text = formatFieldString(group.description);
     }

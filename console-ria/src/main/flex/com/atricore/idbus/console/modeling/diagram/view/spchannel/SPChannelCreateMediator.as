@@ -24,11 +24,11 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
-import com.atricore.idbus.console.services.dto.BindingDTO;
-import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
-import com.atricore.idbus.console.services.dto.LocationDTO;
-import com.atricore.idbus.console.services.dto.ProfileDTO;
-import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
+import com.atricore.idbus.console.services.dto.Binding;
+import com.atricore.idbus.console.services.dto.IdentityProvider;
+import com.atricore.idbus.console.services.dto.Location;
+import com.atricore.idbus.console.services.dto.Profile;
+import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 
 import flash.events.MouseEvent;
 
@@ -40,7 +40,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class SPChannelCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
-    private var _newSpChannel:ServiceProviderChannelDTO;
+    private var _newSpChannel:ServiceProviderChannel;
 
     public function SPChannelCreateMediator(name:String = null, viewComp:SPChannelCreateForm = null) {
         super(name, viewComp);
@@ -93,12 +93,12 @@ public class SPChannelCreateMediator extends IocFormMediator {
 
     override public function bindModel():void {
 
-        var spChannel:ServiceProviderChannelDTO = new ServiceProviderChannelDTO();
+        var spChannel:ServiceProviderChannel = new ServiceProviderChannel();
 
         spChannel.name = view.serviceProvChannelName.text;
         spChannel.description = view.serviceProvChannelDescription.text;
 
-        var loc:LocationDTO = new LocationDTO();
+        var loc:Location = new Location();
         loc.protocol = view.spChannelLocationProtocol.labelDisplay.text;
         loc.host = view.spChannelLocationDomain.text;
         loc.port = parseInt(view.spChannelLocationPort.text);
@@ -111,24 +111,24 @@ public class SPChannelCreateMediator extends IocFormMediator {
 
         spChannel.activeBindings = new ArrayCollection();
         if (view.samlBindingHttpPostCheck.selected) {
-            spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_POST);
+            spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
         }
         if (view.samlBindingArtifactCheck.selected) {
-            spChannel.activeBindings.addItem(BindingDTO.SAMLR2_ARTIFACT);
+            spChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
         }
         if (view.samlBindingHttpRedirectCheck.selected) {
-            spChannel.activeBindings.addItem(BindingDTO.SAMLR2_HTTP_REDIRECT);
+            spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
         }
         if (view.samlBindingSoapCheck.selected) {
-            spChannel.activeBindings.addItem(BindingDTO.SAMLR2_SOAP);
+            spChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
         }
 
         spChannel.activeProfiles = new ArrayCollection();
         if (view.samlProfileSSOCheck.selected) {
-            spChannel.activeProfiles.addItem(ProfileDTO.SSO);
+            spChannel.activeProfiles.addItem(Profile.SSO);
         }
         if (view.samlProfileSLOCheck.selected) {
-            spChannel.activeProfiles.addItem(ProfileDTO.SSO_SLO);
+            spChannel.activeProfiles.addItem(Profile.SSO_SLO);
         }
 
         // TODO save remaining fields, calling appropriate lookup methods
@@ -143,7 +143,7 @@ public class SPChannelCreateMediator extends IocFormMediator {
     private function handleSpChannelSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            var idp:IdentityProviderDTO = _projectProxy.currentIdentityApplianceElementOwner as IdentityProviderDTO;
+            var idp:IdentityProvider = _projectProxy.currentIdentityApplianceElementOwner as IdentityProvider;
             if (idp.channels == null) {
                 idp.channels = new ArrayCollection();
             }

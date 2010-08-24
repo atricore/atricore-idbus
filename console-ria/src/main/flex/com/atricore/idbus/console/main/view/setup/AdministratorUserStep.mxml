@@ -29,7 +29,7 @@
         <mx:Script>
         <![CDATA[
 
-            import com.atricore.idbus.console.services.dto.UserDTO;
+            import com.atricore.idbus.console.services.dto.User;
 
             import mx.utils.StringUtil;
             import mx.validators.Validator;
@@ -37,7 +37,7 @@
             /**
              * This will holds the results
              */
-            private var _user:UserDTO;
+            private var _user:User;
 
             private function trimStr(evt:FocusEvent):void {
                 var ti:TextInput = TextInput(evt.currentTarget);
@@ -67,7 +67,7 @@
              * that holds the results
              */
             override public function get stepDecision():* {
-                _user = new UserDTO();
+                _user = new User();
                 _user.userName = userName.text;
                 _user.commonName = fullName.text;
                 _user.email = email.text;

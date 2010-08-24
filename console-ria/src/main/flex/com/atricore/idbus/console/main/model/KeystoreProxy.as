@@ -21,7 +21,7 @@
 
 package com.atricore.idbus.console.main.model
 {
-import com.atricore.idbus.console.services.dto.KeystoreDTO;
+import com.atricore.idbus.console.services.dto.Keystore;
 
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
@@ -32,18 +32,18 @@ public class KeystoreProxy extends IocProxy
     public static const ACTION_ITEM_EDIT : int = 2;
 
     private var _viewAction:int;
-    private var _currentKeystore:KeystoreDTO;
+    private var _currentKeystore:Keystore;
     
     public function KeystoreProxy()
     {
         super(NAME, null);
     }
     
-    public function get currentKeystore():KeystoreDTO {
+    public function get currentKeystore():Keystore {
         return _currentKeystore;
     }
 
-    public function set currentKeystore(value:KeystoreDTO):void {
+    public function set currentKeystore(value:Keystore):void {
         _currentKeystore = value;
     }
 

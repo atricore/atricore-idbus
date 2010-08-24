@@ -24,12 +24,12 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
-import com.atricore.idbus.console.services.dto.BindingDTO;
-import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
-import com.atricore.idbus.console.services.dto.LdapIdentityVaultDTO;
-import com.atricore.idbus.console.services.dto.LocationDTO;
-import com.atricore.idbus.console.services.dto.ProfileDTO;
-import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
+import com.atricore.idbus.console.services.dto.Binding;
+import com.atricore.idbus.console.services.dto.IdentityProvider;
+import com.atricore.idbus.console.services.dto.LdapIdentityVault;
+import com.atricore.idbus.console.services.dto.Location;
+import com.atricore.idbus.console.services.dto.Profile;
+import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 
 import flash.events.MouseEvent;
 
@@ -42,8 +42,8 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
 
-    //TODO - create LdapIdentitySource domain object. LdapIdentityVaultDTO is used just as a workaround
-    private var _newLdapIdentitySource:LdapIdentityVaultDTO;
+    //TODO - create LdapIdentitySource domain object. LdapIdentityVault is used just as a workaround
+    private var _newLdapIdentitySource:LdapIdentityVault;
 
     public function LdapIdentitySourceCreateMediator(name:String = null, viewComp:LdapIdentitySourceCreateForm = null) {
         super(name, viewComp);
@@ -88,12 +88,12 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
 
     override public function bindModel():void {
 
-        var ldapIdentitySource:LdapIdentityVaultDTO = new LdapIdentityVaultDTO();
+        var ldapIdentitySource:LdapIdentityVault = new LdapIdentityVault();
 
         ldapIdentitySource.name = view.ldapIdentitySourceName.text;
         ldapIdentitySource.description = view.ldapIdentitySourceDescription.text;
 //
-//        var loc:LocationDTO = new LocationDTO();
+//        var loc:Location = new Location();
 //        loc.protocol = view.ldapIdentitySourceProtocol.labelDisplay.text;
 //        loc.host = view.ldapIdentitySourceDomain.text;
 //        loc.port = parseInt(view.ldapIdentitySourcePort.text);

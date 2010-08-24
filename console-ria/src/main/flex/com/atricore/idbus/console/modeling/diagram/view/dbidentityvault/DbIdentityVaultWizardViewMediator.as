@@ -24,8 +24,8 @@ package com.atricore.idbus.console.modeling.diagram.view.dbidentityvault
 import com.atricore.idbus.console.components.wizard.WizardEvent;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.services.dto.DbIdentityVaultDTO;
-import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+import com.atricore.idbus.console.services.dto.DbIdentityVault;
+import com.atricore.idbus.console.services.dto.IdentityVault;
 
 import flash.events.Event;
 
@@ -41,7 +41,7 @@ public class DbIdentityVaultWizardViewMediator extends IocMediator
 
     private var _projectProxy:ProjectProxy;
 
-    private var _newDbIdentityVault:DbIdentityVaultDTO;
+    private var _newDbIdentityVault:DbIdentityVault;
 
     public function DbIdentityVaultWizardViewMediator(name : String = null, viewComp:DbIdentityVaultWizardView = null) {
         super(name, viewComp);
@@ -76,10 +76,10 @@ public class DbIdentityVaultWizardViewMediator extends IocMediator
     }
 
     private function onDbIdentityVaultWizardComplete(event:WizardEvent):void {
-        if ((_wizardDataModel.step1Data as IdentityVaultDTO).embedded) {
-            _newDbIdentityVault = _wizardDataModel.step2EmbeddedData as DbIdentityVaultDTO;
+        if ((_wizardDataModel.step1Data as IdentityVault).embedded) {
+            _newDbIdentityVault = _wizardDataModel.step2EmbeddedData as DbIdentityVault;
         } else {
-            _newDbIdentityVault = _wizardDataModel.step2ExternalData as DbIdentityVaultDTO;
+            _newDbIdentityVault = _wizardDataModel.step2ExternalData as DbIdentityVault;
         }
         _projectProxy.currentIdentityAppliance.idApplianceDefinition.identityVaults.addItem(_newDbIdentityVault);
         _projectProxy.currentIdentityApplianceElement = _newDbIdentityVault;

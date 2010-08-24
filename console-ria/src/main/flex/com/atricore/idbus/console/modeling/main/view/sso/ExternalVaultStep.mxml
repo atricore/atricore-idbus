@@ -34,9 +34,9 @@
         <fx:Script>
         <![CDATA[
 
-            import com.atricore.idbus.console.services.dto.DbIdentityVaultDTO;
-            import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
-            import com.atricore.idbus.console.services.dto.UserInformationLookupDTO;
+            import com.atricore.idbus.console.services.dto.DbIdentityVault;
+            import com.atricore.idbus.console.services.dto.IdentityVault;
+            import com.atricore.idbus.console.services.dto.UserInformationLookup;
 
             [Bindable]
             private var validators:Array;
@@ -44,18 +44,18 @@
             private var readableDecisionArray:Array;
 
             override public function get stepDecision():* {
-                var identityVault:IdentityVaultDTO = null;
+                var identityVault:IdentityVault = null;
                 if (externalRepositoryType.labelDisplay.text == "Database") {
-                    identityVault = new DbIdentityVaultDTO();
+                    identityVault = new DbIdentityVault();
                     identityVault.embedded = false;
                     identityVault.name = userRepositoryName.text;
-                    (identityVault as DbIdentityVaultDTO).connectionName = connectionName.text;
-                    (identityVault as DbIdentityVaultDTO).driverName = driverName.text;
-                    (identityVault as DbIdentityVaultDTO).connectionUrl = connectionUrl.text;
-                    (identityVault as DbIdentityVaultDTO).admin = dbUsername.text;
-                    (identityVault as DbIdentityVaultDTO).password = dbPassword.text;
+                    (identityVault as DbIdentityVault).connectionName = connectionName.text;
+                    (identityVault as DbIdentityVault).driverName = driverName.text;
+                    (identityVault as DbIdentityVault).connectionUrl = connectionUrl.text;
+                    (identityVault as DbIdentityVault).admin = dbUsername.text;
+                    (identityVault as DbIdentityVault).password = dbPassword.text;
 
-                    var userLookup = new UserInformationLookupDTO();
+                    var userLookup = new UserInformationLookup();
                     userLookup.userQueryString = userQuery.text;
                     userLookup.rolesQueryString = rolesQuery.text;
                     userLookup.credentialsQueryString = credentialsQuery.text;
@@ -74,7 +74,7 @@
             }
 
             private function initFields():void {
-                userRepositoryName.text = (previousStepData as IdentityVaultDTO).name;
+                userRepositoryName.text = (previousStepData as IdentityVault).name;
             }
 
             private function initForm():void {

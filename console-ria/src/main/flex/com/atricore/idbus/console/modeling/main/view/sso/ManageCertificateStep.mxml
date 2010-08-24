@@ -32,8 +32,8 @@
         <fx:Script>
         <![CDATA[
 
-            import com.atricore.idbus.console.services.dto.KeystoreDTO;
-            import com.atricore.idbus.console.services.dto.ResourceDTO;
+            import com.atricore.idbus.console.services.dto.Keystore;
+            import com.atricore.idbus.console.services.dto.Resource;
 
             import mx.events.ItemClickEvent;
 
@@ -61,13 +61,13 @@
 
             override public function get stepDecision():* {
                 if (uploadKeystore.selected) {
-                    var keystore:KeystoreDTO = new KeystoreDTO();
+                    var keystore:Keystore = new Keystore();
                     keystore.certificateAlias = certificateAlias.text;
                     keystore.privateKeyName = keyAlias.text;
                     keystore.privateKeyPassword = keyPassword.text;
                     keystore.password = keystorePassword.text;
                     keystore.type = keystoreFormat.selectedItem.data;
-                    var resource:ResourceDTO = new ResourceDTO();
+                    var resource:Resource = new Resource();
                     resource.id = Number(resourceId);
                     keystore.store = resource;
                     return keystore;

@@ -1272,6 +1272,7 @@
 
 
     <modules>
+        <module>console-tooling</module>
         <module>console-lifecycle</module>
         <module>console-activation</module>
         <module>console-config</module>

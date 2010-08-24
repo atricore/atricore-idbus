@@ -32,9 +32,9 @@
         <fx:Script>
         <![CDATA[
 
-            import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-            import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
-            import com.atricore.idbus.console.services.dto.LocationDTO;
+            import com.atricore.idbus.console.services.dto.IdentityAppliance;
+            import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
+            import com.atricore.idbus.console.services.dto.Location;
 
             [Bindable]
             private var validators:Array;
@@ -45,18 +45,18 @@
             private var readableDecisionArray:Array;
 
             override public function get stepDecision():* {
-                var idApplianceDef:IdentityApplianceDefinitionDTO = new IdentityApplianceDefinitionDTO();
+                var idApplianceDef:IdentityApplianceDefinition = new IdentityApplianceDefinition();
                 idApplianceDef.name = applianceName.text;
                 idApplianceDef.description = applianceDescription.text;
 
-                var location:LocationDTO = new LocationDTO();
+                var location:Location = new Location();
                 location.protocol = applianceLocationProtocol.selectedItem.data;
                 location.host = applianceLocationDomain.text;
                 location.port = parseInt(applianceLocationPort.text);
                 location.context = applianceLocationPath.text;
                 idApplianceDef.location = location;
 
-                var identityAppliance:IdentityApplianceDTO = new IdentityApplianceDTO();
+                var identityAppliance:IdentityAppliance = new IdentityAppliance();
                 identityAppliance.idApplianceDefinition = idApplianceDef;
                 return identityAppliance;
             }

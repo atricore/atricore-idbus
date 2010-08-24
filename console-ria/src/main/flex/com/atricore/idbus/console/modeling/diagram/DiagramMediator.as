@@ -46,19 +46,19 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServicePr
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.renderers.edgelabel.BaseEdgeLabelRendered;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
-import com.atricore.idbus.console.services.dto.DbIdentityVaultDTO;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
-import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
-import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
-import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
-import com.atricore.idbus.console.services.dto.JbossExecutionEnvironmentDTO;
-import com.atricore.idbus.console.services.dto.LocalProviderDTO;
-import com.atricore.idbus.console.services.dto.ProviderDTO;
-import com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO;
-import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+import com.atricore.idbus.console.services.dto.DbIdentityVault;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
+import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
+import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
+import com.atricore.idbus.console.services.dto.IdentityProvider;
+import com.atricore.idbus.console.services.dto.IdentityVault;
+import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.LocalProvider;
+import com.atricore.idbus.console.services.dto.Provider;
+import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
+import com.atricore.idbus.console.services.dto.ServiceProvider;
 
-import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironmentDTO;
+import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
@@ -88,7 +88,7 @@ public class DiagramMediator extends IocMediator {
 
     private var _identityApplianceDiagram:CustomVisualGraph;
 
-    private var _identityAppliance:IdentityApplianceDTO;
+    private var _identityAppliance:IdentityAppliance;
 
     private var _applianceId:String;
 
@@ -172,9 +172,9 @@ public class DiagramMediator extends IocMediator {
                     switch (elementType) {
                         case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
                             // assert that source end is an Identity Appliance
-//                            if (_currentlySelectedNode.data is IdentityApplianceDTO) {
-//                                var ownerIdentityAppliance:IdentityApplianceDTO = _currentlySelectedNode.data as IdentityApplianceDTO;
-                               var ownerIdentityAppliance:IdentityApplianceDTO = _identityAppliance;
+//                            if (_currentlySelectedNode.data is IdentityAppliance) {
+//                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
+                               var ownerIdentityAppliance:IdentityAppliance = _identityAppliance;
 
                                 var cip:CreateIdentityProviderElementRequest = new CreateIdentityProviderElementRequest(
                                         ownerIdentityAppliance,
@@ -191,8 +191,8 @@ public class DiagramMediator extends IocMediator {
                             break;
                         case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
                             // assert that source end is an Identity Appliance
-//                            if (_currentlySelectedNode.data is IdentityApplianceDTO) {
-//                                var ownerIdentityAppliance:IdentityApplianceDTO = _currentlySelectedNode.data as IdentityApplianceDTO;
+//                            if (_currentlySelectedNode.data is IdentityAppliance) {
+//                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
                                 ownerIdentityAppliance = _identityAppliance;
 
                                 var csp:CreateServiceProviderElementRequest = new CreateServiceProviderElementRequest(
@@ -210,8 +210,8 @@ public class DiagramMediator extends IocMediator {
                             break;
                         case DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE:
                             // assert that source end is an Identity Appliance
-                            if (_currentlySelectedNode.data is ServiceProviderDTO) {
-                                var ownerServiceProvider:ServiceProviderDTO = _currentlySelectedNode.data as ServiceProviderDTO;
+                            if (_currentlySelectedNode.data is ServiceProvider) {
+                                var ownerServiceProvider:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
 
                                 var cidpc:CreateIdpChannelElementRequest = new CreateIdpChannelElementRequest(
                                         ownerServiceProvider,
@@ -227,8 +227,8 @@ public class DiagramMediator extends IocMediator {
                             break;
                         case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
                             // assert that source end is an Identity Appliance
-                            if (_currentlySelectedNode.data is IdentityProviderDTO) {
-                                var ownerIdentityProvider:IdentityProviderDTO = _currentlySelectedNode.data as IdentityProviderDTO;
+                            if (_currentlySelectedNode.data is IdentityProvider) {
+                                var ownerIdentityProvider:IdentityProvider = _currentlySelectedNode.data as IdentityProvider;
 
                                 var csdpc:CreateSpChannelElementRequest = new CreateSpChannelElementRequest(
                                         ownerIdentityProvider,
@@ -244,8 +244,8 @@ public class DiagramMediator extends IocMediator {
                             break;
                         case DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE:
                             // assert that source end is an Identity Appliance
-//                            if (_currentlySelectedNode.data is IdentityApplianceDTO) {
-//                                var ownerIdentityAppliance:IdentityApplianceDTO = _currentlySelectedNode.data as IdentityApplianceDTO;
+//                            if (_currentlySelectedNode.data is IdentityAppliance) {
+//                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
                                 ownerIdentityAppliance = _identityAppliance;
                                 
                                 var civ:CreateIdentityVaultElementRequest = new CreateIdentityVaultElementRequest(
@@ -262,7 +262,7 @@ public class DiagramMediator extends IocMediator {
 
                             break;
                         case DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE:
-                            if (_currentlySelectedNode.data is IdentityProviderDTO || _currentlySelectedNode.data is ServiceProviderDTO ) {
+                            if (_currentlySelectedNode.data is IdentityProvider || _currentlySelectedNode.data is ServiceProvider ) {
                                 var ownerObj:Object = _currentlySelectedNode.data;
 
                                 var cliv:CreateLdapIdentitySourceElementRequest = new CreateLdapIdentitySourceElementRequest(
@@ -278,8 +278,8 @@ public class DiagramMediator extends IocMediator {
 
                             break;
                         case DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            if (_currentlySelectedNode.data is ServiceProviderDTO ) {
-                                var execEnvironmentSp:ServiceProviderDTO = _currentlySelectedNode.data as ServiceProviderDTO;
+                            if (_currentlySelectedNode.data is ServiceProvider ) {
+                                var execEnvironmentSp:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
 
                                 var ceenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
                                         execEnvironmentSp,
@@ -292,8 +292,8 @@ public class DiagramMediator extends IocMediator {
                             }
                             break;
                         case DiagramElementTypes.WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            if (_currentlySelectedNode.data is ServiceProviderDTO ) {
-                                var execEnvironmentSp:ServiceProviderDTO = _currentlySelectedNode.data as ServiceProviderDTO;
+                            if (_currentlySelectedNode.data is ServiceProvider ) {
+                                var execEnvironmentSp:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
 
                                 var ceenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
                                         execEnvironmentSp,
@@ -321,14 +321,14 @@ public class DiagramMediator extends IocMediator {
 
                     switch (elementType) {
                         case DiagramElementTypes.IDENTITY_APPLIANCE_ELEMENT_TYPE:
-                            var identityAppliance:IdentityApplianceDTO = _currentlySelectedNode.data as IdentityApplianceDTO;
+                            var identityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
                             var ria:RemoveIdentityApplianceElementRequest = new RemoveIdentityApplianceElementRequest(identityAppliance);
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT, ria);
                             break;
                         case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
-                            var identityProvider:IdentityProviderDTO = _currentlySelectedNode.data as IdentityProviderDTO;
+                            var identityProvider:IdentityProvider = _currentlySelectedNode.data as IdentityProvider;
 
                             var rip:RemoveIdentityProviderElementRequest = new RemoveIdentityProviderElementRequest(identityProvider);
 
@@ -337,7 +337,7 @@ public class DiagramMediator extends IocMediator {
                             sendNotification(ApplicationFacade.REMOVE_IDENTITY_PROVIDER_ELEMENT, rip);
                             break;
                         case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
-                            var serviceProvider:ServiceProviderDTO = _currentlySelectedNode.data as ServiceProviderDTO;
+                            var serviceProvider:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
 
                             var rsp:RemoveServiceProviderElementRequest = new RemoveServiceProviderElementRequest(serviceProvider);
 
@@ -346,7 +346,7 @@ public class DiagramMediator extends IocMediator {
                             sendNotification(ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT, rsp);
                             break;
                         case DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE:
-                            var idpChannel:IdentityProviderChannelDTO = _currentlySelectedNode.data as IdentityProviderChannelDTO;
+                            var idpChannel:IdentityProviderChannel = _currentlySelectedNode.data as IdentityProviderChannel;
 
                             var ridpc:RemoveIdpChannelElementRequest = new RemoveIdpChannelElementRequest(idpChannel);
 
@@ -355,7 +355,7 @@ public class DiagramMediator extends IocMediator {
                             sendNotification(ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT, ridpc);
                             break;
                         case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
-                            var spChannel:ServiceProviderChannelDTO = _currentlySelectedNode.data as ServiceProviderChannelDTO;
+                            var spChannel:ServiceProviderChannel = _currentlySelectedNode.data as ServiceProviderChannel;
 
                             var rspc:RemoveSpChannelElementRequest = new RemoveSpChannelElementRequest(spChannel);
 
@@ -364,7 +364,7 @@ public class DiagramMediator extends IocMediator {
                             sendNotification(ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT, rspc);
                             break;
                         case DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE:
-                            var identityVault:DbIdentityVaultDTO = _currentlySelectedNode.data as DbIdentityVaultDTO;
+                            var identityVault:DbIdentityVault = _currentlySelectedNode.data as DbIdentityVault;
 
                             var riv:RemoveIdentityVaultElementRequest = new RemoveIdentityVaultElementRequest(identityVault);
 
@@ -397,7 +397,7 @@ public class DiagramMediator extends IocMediator {
         resetGraph();
 
         if (_identityAppliance != null) {
-            var identityApplianceDefinition:IdentityApplianceDefinitionDTO = _identityAppliance.idApplianceDefinition;
+            var identityApplianceDefinition:IdentityApplianceDefinition = _identityAppliance.idApplianceDefinition;
 
 //            var rootGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), _identityAppliance, null, true, Constants.IDENTITY_BUS_DEEP);
 //            rootGraphNode.isVisible = false;
@@ -413,25 +413,29 @@ public class DiagramMediator extends IocMediator {
 
             if (identityApplianceDefinition.providers != null) {
                 for (var i:int = 0; i < identityApplianceDefinition.providers.length; i++) {
-                    var provider:ProviderDTO = identityApplianceDefinition.providers[i];
+                    var provider:Provider = identityApplianceDefinition.providers[i];
                     var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, true, Constants.PROVIDER_DEEP);
-                    if (provider is LocalProviderDTO) {
-                        var locProv:LocalProviderDTO = provider as LocalProviderDTO;
+                    if (provider is LocalProvider) {
+                        var locProv:LocalProvider = provider as LocalProvider;
+                    var provider:Provider = identityApplianceDefinition.providers[i];
+                    var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, rootGraphNode, true, Constants.PROVIDER_DEEP);
+                    if (provider is LocalProvider) {
+                        var locProv:LocalProvider = provider as LocalProvider;
                         if (locProv.defaultChannel != null) {
                             //do NOT show default channel
 //                            var defChannelGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), locProv.defaultChannel, providerGraphNode, true, Constants.CHANNEL_DEEP);
-                            var identityVault:IdentityVaultDTO = null;
-                            if (locProv.defaultChannel is IdentityProviderChannelDTO) {
-                                identityVault = IdentityProviderChannelDTO(locProv.defaultChannel).identityVault;
-                            } else if (locProv.defaultChannel is ServiceProviderChannelDTO) {
-                                identityVault = ServiceProviderChannelDTO(locProv.defaultChannel).identityVault;
+                            var identityVault:IdentityVault = null;
+                            if (locProv.defaultChannel is IdentityProviderChannel) {
+                                identityVault = IdentityProviderChannel(locProv.defaultChannel).identityVault;
+                            } else if (locProv.defaultChannel is ServiceProviderChannel) {
+                                identityVault = ServiceProviderChannel(locProv.defaultChannel).identityVault;
                             }
                             if (identityVault != null) {
                                 //since we're not displaying default channel, link identityvault from def.channel with provider
 //                                var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, providerGraphNode, true, Constants.IDENTITY_VAULT_DEEP);
                                 var vaultExists:Boolean = false;
                                 for each (var tmpVaultGraphNode:IVisualNode in vaults){
-                                    if(tmpVaultGraphNode.data as IdentityVaultDTO == identityVault){
+                                    if(tmpVaultGraphNode.data as IdentityVault == identityVault){
                                         GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode);
                                         vaultExists = true;
                                     }
@@ -445,11 +449,11 @@ public class DiagramMediator extends IocMediator {
                             for (var j:int = 0; j < locProv.channels.length; j++) {
                                 var channel = locProv.channels[j];
                                 var channelGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), channel, providerGraphNode, true, Constants.CHANNEL_DEEP);
-                                var identityVault:IdentityVaultDTO = null;
-                                if (channel is IdentityProviderChannelDTO) {
-                                    identityVault = IdentityProviderChannelDTO(channel).identityVault;
-                                } else if (channel is ServiceProviderChannelDTO) {
-                                    identityVault = ServiceProviderChannelDTO(channel).identityVault;
+                                var identityVault:IdentityVault = null;
+                                if (channel is IdentityProviderChannel) {
+                                    identityVault = IdentityProviderChannel(channel).identityVault;
+                                } else if (channel is ServiceProviderChannel) {
+                                    identityVault = ServiceProviderChannel(channel).identityVault;
                                 }
                                 if (identityVault != null) {
                                     var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityVault, true);
@@ -457,7 +461,7 @@ public class DiagramMediator extends IocMediator {
 //                                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, channelGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
                                     vaultExists = false;
                                     for each (tmpVaultGraphNode in vaults){
-                                        if(tmpVaultGraphNode.data as IdentityVaultDTO == identityVault){
+                                        if(tmpVaultGraphNode.data as IdentityVault == identityVault){
                                             GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, channelGraphNode);
                                             vaultExists = true;
                                         }
@@ -468,10 +472,10 @@ public class DiagramMediator extends IocMediator {
                                 }
                             }
                         }
-                        if(locProv is ServiceProviderDTO){
-                            var spDTO:ServiceProviderDTO = locProv as ServiceProviderDTO;
-                            if(spDTO.executionEnvironment != null){  //check for execution environment
-                                var execEnvironment:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), spDTO.executionEnvironment, providerGraphNode, true, Constants.CHANNEL_DEEP);
+                        if(locProv is ServiceProvider){
+                            var sp:ServiceProvider = locProv as ServiceProvider;
+                            if(sp.executionEnvironment != null){  //check for execution environment
+                                var execEnvironment:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), sp.executionEnvironment, providerGraphNode, true, Constants.CHANNEL_DEEP);
                             }
                         }
                     }
@@ -540,22 +544,22 @@ public class DiagramMediator extends IocMediator {
             _currentlySelectedNode = node;
             _projectProxy.currentIdentityApplianceElement = node.data;
             //need to add elementType in the notification body for delete func. to work properly
-            if(node.data is IdentityApplianceDTO){
+            if(node.data is IdentityAppliance){
                 elementType = DiagramElementTypes.IDENTITY_APPLIANCE_ELEMENT_TYPE;
             } else
-            if(node.data is IdentityProviderDTO){
+            if(node.data is IdentityProvider){
                 elementType = DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE;
             } else
-            if (node.data is ServiceProviderDTO){
+            if (node.data is ServiceProvider){
                 elementType = DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE;
             } else
-            if(node.data is IdentityProviderChannelDTO){
+            if(node.data is IdentityProviderChannel){
                 elementType = DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE;
             } else
-            if(node.data is ServiceProviderChannelDTO){
+            if(node.data is ServiceProviderChannel){
                 elementType = DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE;
             } else
-            if(node.data is DbIdentityVaultDTO){
+            if(node.data is DbIdentityVault){
                 elementType = DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE;
             }
             //TODO - add other element types
@@ -569,8 +573,8 @@ public class DiagramMediator extends IocMediator {
         var node2:IVisualNode = event.vnode2;
 
         // TODO: link node1.data and node2.data
-        if ((node1.data is IdentityProviderDTO && node2.data is ServiceProviderDTO) ||
-                (node1.data is ServiceProviderDTO && node2.data is IdentityProviderDTO)) {
+        if ((node1.data is IdentityProvider && node2.data is ServiceProvider) ||
+                (node1.data is ServiceProvider && node2.data is IdentityProvider)) {
             // connect IDP and SP
         }
 

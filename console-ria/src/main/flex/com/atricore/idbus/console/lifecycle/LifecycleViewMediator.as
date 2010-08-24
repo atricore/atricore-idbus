@@ -10,9 +10,9 @@ import com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplian
 import com.atricore.idbus.console.modeling.main.controller.StartIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.StopIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.UndeployIdentityApplianceCommand;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
-import com.atricore.idbus.console.services.dto.IdentityApplianceStateDTO;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
+import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
+import com.atricore.idbus.console.services.dto.IdentityApplianceState;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -142,7 +142,7 @@ public class LifecycleViewMediator extends IocMediator {
             view.grdDisposedAppliances.selectedIndex = disposedAppliancesSelectedIndex;
 
             for (var i:int = 0; i < projectProxy.identityApplianceList.length; i++) {
-                var appliance:IdentityApplianceDTO = projectProxy.identityApplianceList[i] as IdentityApplianceDTO;
+                var appliance:IdentityAppliance = projectProxy.identityApplianceList[i] as IdentityAppliance;
                 var selected:Boolean = false;
                 if (projectProxy.currentIdentityAppliance != null &&
                         appliance.id == projectProxy.currentIdentityAppliance.id) {
@@ -153,13 +153,13 @@ public class LifecycleViewMediator extends IocMediator {
                     if (selected) {
                         savedAppliancesSelectedIndex = savedAppliances.length - 1;
                     }
-                } else if (appliance.state == IdentityApplianceStateDTO.PROJECTED.name) {
+                } else if (appliance.state == IdentityApplianceState.PROJECTED.name) {
                     compiledAppliances.addItem(appliance);
                     //if (selected) {
                     //    //compiledAppliancesSelectedIndex = compiledAppliances.length - 1;
                     //}
-                } else if (appliance.state == IdentityApplianceStateDTO.INSTALLED.name ||
-                        appliance.state == IdentityApplianceStateDTO.STARTED.name) {
+                } else if (appliance.state == IdentityApplianceState.INSTALLED.name ||
+                        appliance.state == IdentityApplianceState.STARTED.name) {
                     deployedAppliances.addItem(appliance);
                     //if (selected) {
                     //    deployedAppliancesSelectedIndex = deployedAppliances.length - 1;
@@ -188,7 +188,7 @@ public class LifecycleViewMediator extends IocMediator {
     }
 
     private function identityApplianceNameLabel(item:Object, column:AdvancedDataGridColumn):String {
-        return (item as IdentityApplianceDTO).idApplianceDefinition.name;
+        return (item as IdentityAppliance).idApplianceDefinition.name;
     }
 
     /**
@@ -211,7 +211,7 @@ public class LifecycleViewMediator extends IocMediator {
 
         sendNotification(ProcessingMediator.START, "Building appliance ...");
         for (var i:int = 0; i < items.length; i++) {
-            var appliance:IdentityApplianceDTO = items[i] as IdentityApplianceDTO;
+            var appliance:IdentityAppliance = items[i] as IdentityAppliance;
             sendNotification(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, [appliance.id.toString(), false]);
         }
     }
@@ -224,7 +224,7 @@ public class LifecycleViewMediator extends IocMediator {
 
         sendNotification(ProcessingMediator.START, "Deploying appliance ...");
         for (var i:int = 0; i < items.length; i++) {
-            var appliance:IdentityApplianceDTO = items[i] as IdentityApplianceDTO;
+            var appliance:IdentityAppliance = items[i] as IdentityAppliance;
             sendNotification(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE, [appliance.id.toString(), false]);
         }
     }
@@ -237,7 +237,7 @@ public class LifecycleViewMediator extends IocMediator {
 
         sendNotification(ProcessingMediator.START, "Undeploying appliance ...");
         for (var i:int = 0; i < items.length; i++) {
-            var appliance:IdentityApplianceDTO = items[i] as IdentityApplianceDTO;
+            var appliance:IdentityAppliance = items[i] as IdentityAppliance;
             sendNotification(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, appliance.id.toString());
         }
     }
@@ -257,7 +257,7 @@ public class LifecycleViewMediator extends IocMediator {
 
         if (targetGrid.id == "grdDisposedAppliances") {
             var items:Array = event.dragSource.dataForFormat('treeDataGridItems') as Array;
-            if ((items[0] as IdentityApplianceDTO).state == IdentityApplianceStateDTO.STARTED.name) {
+            if ((items[0] as IdentityAppliance).state == IdentityApplianceState.STARTED.name) {
                 event.preventDefault();
                 DragManager.showFeedback(DragManager.NONE);
             }
@@ -369,7 +369,7 @@ public class LifecycleViewMediator extends IocMediator {
     }
 
 
-    private function getSelectionIndex(list:ArrayCollection, appliance:IdentityApplianceDTO):int {
+    private function getSelectionIndex(list:ArrayCollection, appliance:IdentityAppliance):int {
         for (var index:int = 0; index < list.length; index++) {
             if (list.getItemAt(index).id == appliance.id) {
                 return index;
@@ -381,21 +381,21 @@ public class LifecycleViewMediator extends IocMediator {
     private function handleGridButton(event:LifecycleGridButtonEvent):void {
         switch (event.action) {
             case LifecycleGridButtonEvent.ACTION_EDIT :
-                var appliance:IdentityApplianceDTO = event.data as IdentityApplianceDTO;
+                var appliance:IdentityAppliance = event.data as IdentityAppliance;
                 sendNotification(ProcessingMediator.START, "Opening identity appliance...");
                 sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, appliance.id.toString());
                 break;
             case LifecycleGridButtonEvent.ACTION_REMOVE :
-                var appliance:IdentityApplianceDTO = event.data as IdentityApplianceDTO;
+                var appliance:IdentityAppliance = event.data as IdentityAppliance;
                 Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null, removeConfirmed, null, Alert.YES);
                 break;
             case LifecycleGridButtonEvent.ACTION_START :
-                var appliance:IdentityApplianceDTO = event.data as IdentityApplianceDTO;
+                var appliance:IdentityAppliance = event.data as IdentityAppliance;
                 sendNotification(ProcessingMediator.START, "Starting appliance ...");
                 sendNotification(ApplicationFacade.START_IDENTITY_APPLIANCE, appliance.id.toString());
                 break;
             case LifecycleGridButtonEvent.ACTION_STOP :
-                var appliance:IdentityApplianceDTO = event.data as IdentityApplianceDTO;
+                var appliance:IdentityAppliance = event.data as IdentityAppliance;
                 sendNotification(ProcessingMediator.START, "Stopping appliance ...");
                 sendNotification(ApplicationFacade.STOP_IDENTITY_APPLIANCE, appliance.id.toString());
                 break;
@@ -403,7 +403,7 @@ public class LifecycleViewMediator extends IocMediator {
     }
 
     private function handleGridDoubleClick(event:MouseEvent):void {
-        var item:IdentityApplianceDTO = event.currentTarget.selectedItem as IdentityApplianceDTO;
+        var item:IdentityAppliance = event.currentTarget.selectedItem as IdentityAppliance;
         if (item) {
             // TODO: open in modeler
         }
@@ -417,16 +417,16 @@ public class LifecycleViewMediator extends IocMediator {
 
 
     private function buildToolTip(row:Object):String {
-        var appliance:IdentityApplianceDefinitionDTO = row as IdentityApplianceDefinitionDTO;
+        var appliance:IdentityApplianceDefinition = row as IdentityApplianceDefinition;
         return appliance ? appliance.name : "";
     }
 
     private function updateAppliancesList(error:Boolean):void {
         if (!error) {
-            var modifiedAppliance:IdentityApplianceDTO = projectProxy.commandResultIdentityAppliance;
+            var modifiedAppliance:IdentityAppliance = projectProxy.commandResultIdentityAppliance;
             if (modifiedAppliance != null) {
                 for (var i:int = 0; i < projectProxy.identityApplianceList.length; i++) {
-                    var appliance:IdentityApplianceDTO = projectProxy.identityApplianceList[i] as IdentityApplianceDTO;
+                    var appliance:IdentityAppliance = projectProxy.identityApplianceList[i] as IdentityAppliance;
                     if (modifiedAppliance.id == appliance.id) {
                         projectProxy.identityApplianceList[i] = modifiedAppliance;
                         break;

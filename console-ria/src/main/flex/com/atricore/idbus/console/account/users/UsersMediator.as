@@ -26,7 +26,7 @@ import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-import com.atricore.idbus.console.services.dto.UserDTO;
+import com.atricore.idbus.console.services.dto.User;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -162,7 +162,7 @@ public class UsersMediator extends IocMediator {
             case ApplicationFacade.DISPLAY_SEARCH_RESULTS_USERS:
                 view.userList.dataProvider = notification as ArrayCollection;
                 view.userList.selectedIndex=0;
-                _accountManagementProxy.currentUser = view.userList.selectedItem as UserDTO;
+                _accountManagementProxy.currentUser = view.userList.selectedItem as User;
                 break;
         }
 
@@ -194,7 +194,7 @@ public class UsersMediator extends IocMediator {
     }
 
     public function userListSelectHandler(e:ListEvent):void {
-        var selectedUser:UserDTO = e.currentTarget.selectedItem as UserDTO;
+        var selectedUser:User = e.currentTarget.selectedItem as User;
         _accountManagementProxy.currentUser = selectedUser;
 
         if (view.btnDeleteUser != null)
@@ -207,7 +207,7 @@ public class UsersMediator extends IocMediator {
         sendNotification(ApplicationFacade.DISPLAY_USER_PROPERTIES, selectedUser);
     }
 
-    private function userBasicInfo(user:UserDTO):String {
+    private function userBasicInfo(user:User):String {
         var userInfo:String = "";
         var resMan:IResourceManager = ResourceManager.getInstance();
         userInfo+=resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.username') + ": " + user.userName + "\n";

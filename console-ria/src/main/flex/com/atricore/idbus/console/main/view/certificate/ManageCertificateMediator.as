@@ -26,8 +26,8 @@ import com.atricore.idbus.console.main.model.KeystoreProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
-import com.atricore.idbus.console.services.dto.KeystoreDTO;
-import com.atricore.idbus.console.services.dto.ResourceDTO;
+import com.atricore.idbus.console.services.dto.Keystore;
+import com.atricore.idbus.console.services.dto.Resource;
 
 import flash.events.DataEvent;
 import flash.events.Event;
@@ -47,7 +47,7 @@ public class ManageCertificateMediator extends IocFormMediator
     public static const EDIT:String = "ManageCertificateMediator.EDIT";
 
     private var _keystoreProxy:KeystoreProxy;
-    private var _keystore:KeystoreDTO;
+    private var _keystore:Keystore;
     private var _resourceId:String;
     private var _fileRef:FileReference;
 
@@ -159,13 +159,13 @@ public class ManageCertificateMediator extends IocFormMediator
     }
 
     override public function bindModel():void {
-        _keystore = new KeystoreDTO();
+        _keystore = new Keystore();
         _keystore.certificateAlias = view.certificateAlias.text;
         _keystore.privateKeyName = view.keyAlias.text;
         _keystore.privateKeyPassword = view.keyPassword.text;
         _keystore.password = view.keystorePassword.text;
         _keystore.type = view.keystoreFormat.selectedItem.data;
-        var resource:ResourceDTO = new ResourceDTO();
+        var resource:Resource = new Resource();
         resource.id = Number(_resourceId);
         _keystore.store = resource;
     }

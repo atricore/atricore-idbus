@@ -24,7 +24,7 @@ package com.atricore.idbus.console.modeling.main.controller
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.spi.request.CreateSimpleSsoRequest;
 import com.atricore.idbus.console.services.spi.response.CreateSimpleSsoResponse;
 
@@ -62,7 +62,7 @@ public class CreateSimpleSSOIdentityApplianceCommand extends IocSimpleCommand im
     }
 
     override public function execute(notification:INotification):void {
-        var identityAppliance:IdentityApplianceDTO = notification.getBody() as IdentityApplianceDTO;
+        var identityAppliance:IdentityAppliance = notification.getBody() as IdentityAppliance;
 
         var req:CreateSimpleSsoRequest = new CreateSimpleSsoRequest();
         req.identityApplianceDefinition = identityAppliance.idApplianceDefinition;

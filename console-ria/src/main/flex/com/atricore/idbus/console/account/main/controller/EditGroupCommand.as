@@ -24,7 +24,7 @@ package com.atricore.idbus.console.account.main.controller
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.dto.GroupDTO;
+import com.atricore.idbus.console.services.dto.Group;
 import com.atricore.idbus.console.services.spi.request.UpdateGroupRequest;
 import com.atricore.idbus.console.services.spi.response.UpdateGroupResponse;
 
@@ -61,7 +61,7 @@ public class EditGroupCommand extends IocSimpleCommand implements IResponder {
     }
 
     override public function execute(notification:INotification):void {
-        var group:GroupDTO = notification.getBody() as GroupDTO;
+        var group:Group = notification.getBody() as Group;
         var req:UpdateGroupRequest = new UpdateGroupRequest();
         req.id = group.id;
         req.name = group.name;

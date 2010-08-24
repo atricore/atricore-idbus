@@ -32,7 +32,7 @@
         <fx:Script>
         <![CDATA[           
 
-            import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+            import com.atricore.idbus.console.services.dto.IdentityVault;
 
             [Bindable]
             private var validators:Array;
@@ -43,7 +43,7 @@
             private var readableDecisionArray:Array;
 
             override public function get stepDecision():* {
-                var identityVault:IdentityVaultDTO = new IdentityVaultDTO();
+                var identityVault:IdentityVault = new IdentityVault();
                 readableDecisionArray = new Array();
                 if (obfuscatePass.selected) {
                     //TODO

@@ -21,8 +21,8 @@
 
 package com.atricore.idbus.console.account.main.model
 {
-import com.atricore.idbus.console.services.dto.GroupDTO;
-import com.atricore.idbus.console.services.dto.UserDTO;
+import com.atricore.idbus.console.services.dto.Group;
+import com.atricore.idbus.console.services.dto.User;
 
 import mx.collections.ArrayCollection;
 
@@ -34,8 +34,8 @@ public class AccountManagementProxy extends IocProxy
     private var _groupsList:Array;
     private var _userList:Array;
 
-    private var _currentGroup:GroupDTO;
-    private var _currentUser:UserDTO;
+    private var _currentGroup:Group;
+    private var _currentUser:User;
 
     private var _searchedGroups:ArrayCollection;
     private var _searchedUsers:ArrayCollection;
@@ -61,19 +61,19 @@ public class AccountManagementProxy extends IocProxy
         _userList = value;
     }
 
-    public function get currentGroup():GroupDTO {
+    public function get currentGroup():Group {
         return _currentGroup;
     }
 
-    public function set currentGroup(value:GroupDTO):void {
+    public function set currentGroup(value:Group):void {
         _currentGroup = value;
     }
 
-    public function get currentUser():UserDTO {
+    public function get currentUser():User {
         return _currentUser;
     }
 
-    public function set currentUser(value:UserDTO):void {
+    public function set currentUser(value:User):void {
         _currentUser = value;
     }
 
