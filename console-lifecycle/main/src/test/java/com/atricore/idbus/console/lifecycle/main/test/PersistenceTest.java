@@ -313,6 +313,7 @@ public class PersistenceTest {
                 assertActivationsAreEqual(originalSp.getActivation(), testSp.getActivation(), ignoreIds);
 
                 if (originalSp.getFederatedConnections() != null) {
+
                     for (FederatedConnection originalC : originalSp.getFederatedConnections()) {
 
                         boolean found = false;
@@ -334,18 +335,21 @@ public class PersistenceTest {
                 IdentityProvider testIdp = (IdentityProvider) testL;
 
                 assertIdenityLookupsAreEqual(originalIdp.getIdentityLookup(), testIdp.getIdentityLookup(), ignoreIds);
-                for (FederatedConnection originalC : originalIdp.getFederatedConnections()) {
 
-                    boolean found = false;
-                    for (FederatedConnection testC : testIdp.getFederatedConnections()) {
-                        if (originalC.getId() == testC.getId()) {
-                            found = true;
-                            assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
-                            break;
+                if (originalIdp.getFederatedConnections() != null) {
+                    for (FederatedConnection originalC : originalIdp.getFederatedConnections()) {
+
+                        boolean found = false;
+                        for (FederatedConnection testC : testIdp.getFederatedConnections()) {
+                            if (originalC.getId() == testC.getId()) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
+                            }
                         }
-                    }
 
-                    TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
+                        TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
+                    }
                 }
 
             } else if (originalL instanceof ProvisioningServiceProvider) {
