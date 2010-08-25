@@ -26,52 +26,52 @@
 <orm>
     <package name="com.atricore.idbus.console.lifecycle.main.domain.metadata" >
         
-        <class name="AbstractProviderConfig" table="ATCC_ABSTRACTPROVIDERCONFIG"/>
-        <class name="AccountLinkagePolicy" table="ATCC_ACCOUNTLINKAGEPOLICY" />
-        <class name="Activation" table="ATCC_ACTIVATION" />
-        <class name="AttributeProfile" table="ATCC_ATTRIBUTEPROFILE" />
-        <class name="AuthenticationAssertionEmissionPolicy" table="ATCC_AUTHASSERTIONEMISSIONPOLICY" />
-        <class name="AuthenticationMechanism" table="ATCC_AUTHENTICATIONMECHANISM" />
-        <class name="AuthenticationContract" table="ATCC_AUTHENTICATIONCONTRACT" />
-        <class name="Channel" table="ATCC_CHANNEL">
-            <field name="activeBindings" table="ATCC_CHANNEL_BINDINGS"/>
-            <field name="activeProfiles" table="ATCC_CHANNEL_PROFILES"/>
-        </class>
-        <class name="Connection" table="ATCC_CONNECTION"/>
-        <class name="DbIdentitySource" table="ATCC_DBIDENTITYSOURCE"/>
-        <class name="EmbeddedIdentitySource" table="ATCC_EMBEDDEDIDENTITYSOURCE"/>
-        <class name="ExecutionIdentitySource" table="ATCC_EXECUTION"/>
-        <class name="FederatedConnection" table="ATCC_FEDERATEDCONNECTION"/>
-        <class name="IdentityApplianceDefinition" table="ATCC_IDAPPLIANCEDEFINITION">
+        <!--<class name="AbstractProviderConfig" table="ATC_ABSTRACTPROVIDERCONFIG"/>-->
+        <!--<class name="AccountLinkagePolicy" table="ATC_ACCOUNTLINKAGEPOLICY" />-->
+        <!--<class name="Activation" table="ATC_ACTIVATION" />-->
+        <!--<class name="AttributeProfile" table="ATC_ATTRIBUTEPROFILE" />-->
+        <!--<class name="AuthenticationAssertionEmissionPolicy" table="ATC_AUTHASSERTIONEMISSIONPOLICY" />-->
+        <!--<class name="AuthenticationMechanism" table="ATC_AUTHENTICATIONMECHANISM" />-->
+        <!--<class name="AuthenticationContract" table="ATC_AUTHENTICATIONCONTRACT" />-->
+        <!--<class name="Channel" table="ATC_CHANNEL">-->
+<!--&lt;!&ndash;            <field name="activeBindings" table="ATC_CHANNEL_BINDINGS"/>-->
+            <!--<field name="activeProfiles" table="ATC_CHANNEL_PROFILES"/>&ndash;&gt;-->
+        <!--</class>-->
+        <!--<class name="Connection" table="ATC_CONNECTION"/>-->
+        <class name="DbIdentitySource" table="ATC_DB_IDENTITY_SOURCE"/>
+        <class name="EmbeddedIdentitySource" table="ATC_EMBEDDED_IDENTITY_SOURCE"/>
+        <!--<class name="ExecutionIdentitySource" table="ATC_EXECUTION"/>-->
+        <class name="Feature" table="ATC_FEATURE"/>
+        <!--<class name="FederatedConnection" table="ATC_FEDERATEDCONNECTION"/>-->
+        <class name="IdentityApplianceDefinition" table="ATC_ID_APPLIANCE_DEFINITION">
             <field name="name" >
                 <column allows-null="false"/>
             </field>
-            <field name="providers"/>
-            <field name="identitySources" />
+            <!--<field name="providers"/>-->
+            <!--<field name="identitySources" />-->
         </class>
-        <class name="IdentityLookup" table="ATCC_IDENTITYLOOKUP"/>
-        <class name="IdentityProvider" table="ATCC_IDP"/>
-        <class name="IdentityProviderChannel" table="ATCC_IDPCHANNEL"/>
-        <class name="IdentitySource" table="ATCC_IDENTITYSOURCE"/>
-        <class name="JbossExecutionEnvironment" table="ATCC_JBOSSEXECENV"/>
-        <class name="JOSSOActivation" table="ATCC_JOSSOACTIVATION"/>
-        <class name="Keystore" table="ATCC_KEYSTORE" />
-        <class name="LdapIdentitySource" table="ATCC_LDAPIDENTITYSOURCE"/>
-        <class name="LocalProvider" table="ATCC_LOCALPROVIDER">
-            <field name="channels" table="ATCC_PROVIDER_CHANNELS"/>
-        </class>
-        <class name="Location" table="ATCC_LOCATION"/>
-        <class name="Organization" table="ATCC_ORGANIZATION"/>
-        <class name="Provider" table="ATCC_PROVIDER"/>
-        <class name="ProvisioningServiceProvider" table="ATCC_PSP"/>
-        <class name="RemoteProvider" table="ATCC_REMOTEPROVIDER"/>
-        <class name="Resource" table="ATCC_RESOURCE" />
-        <class name="SamlR2IDPConfig" table="ATCC_SAMLR2IDPPROVIDERCONFIG"/>
-        <class name="SamlR2ProviderConfig" table="ATCC_SAMLR2PROVIDERCONFIG" />
-        <class name="SamlR2SPConfig" table="ATCC_SAMLR2SPCONFIG" />
-        <class name="ServiceProvider" table="ATCC_SP"/>
-        <class name="ServiceProviderChannel" table="ATCC_SPCHANNEL"/>
-        <class name="TomcatExecutionEnvironmetn" table="ATCC_TOMCATEXECENV"/>
-        <class name="WeblogicExecutionEnvironmetn" table="ATCC_WEBLOGICEXECENV"/>
+        <!--<class name="IdentityLookup" table="ATC_IDENTITYLOOKUP"/>-->
+        <!--<class name="IdentityProvider" table="ATC_IDP"/>-->
+        <!--<class name="IdentityProviderChannel" table="ATC_IDPCHANNEL"/>-->
+        <class name="IdentitySource" table="ATC_IDENTITY_SOURCE"/>
+        <!--<class name="JbossExecutionEnvironment" table="ATC_JBOSSEXECENV"/>-->
+        <!--<class name="JOSSOActivation" table="ATC_JOSSOACTIVATION"/>-->
+        <class name="Keystore" table="ATC_KEYSTORE" />
+        <class name="LdapIdentitySource" table="ATC_LDAP_IDENTITY_SOURCE"/>
+        <!--<class name="LocalProvider" table="ATC_LOCALPROVIDER"/>-->
+        <class name="Location" table="ATC_LOCATION"/>
+        <!--<class name="Organization" table="ATC_ORGANIZATION"/>-->
+        <!--<class name="Provider" table="ATC_PROVIDER"/>-->
+        <class name="ProviderRole" table="ATC_PROVIDER_ROLE"/>
+        <!--<class name="ProvisioningServiceProvider" table="ATC_PSP"/>-->
+        <!--<class name="RemoteProvider" table="ATC_REMOTEPROVIDER"/>-->
+        <class name="Resource" table="ATC_RESOURCE" />
+        <!--<class name="SamlR2IDPConfig" table="ATC_SAMLR2IDPPROVIDERCONFIG"/>-->
+        <!--<class name="SamlR2ProviderConfig" table="ATC_SAMLR2PROVIDERCONFIG" />-->
+        <!--<class name="SamlR2SPConfig" table="ATC_SAMLR2SPCONFIG" />-->
+        <!--<class name="ServiceProvider" table="ATC_SP"/>-->
+        <!--<class name="ServiceProviderChannel" table="ATC_SPCHANNEL"/>-->
+        <!--<class name="TomcatExecutionEnvironmetn" table="ATC_TOMCATEXECENV"/>-->
+        <!--<class name="WeblogicExecutionEnvironmetn" table="ATC_WEBLOGICEXECENV"/>-->
     </package>
 </orm>

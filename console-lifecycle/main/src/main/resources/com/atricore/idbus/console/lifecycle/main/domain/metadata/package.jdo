@@ -24,58 +24,60 @@
 
     <package name="com.atricore.idbus.console.lifecycle.main.domain.metadata">
 
-        <class name="AbstractProviderConfig" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="id" value-strategy="native" primary-key="true"/>
-        </class>
+        <!--<class name="AbstractProviderConfig" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+        <!--</class>-->
 
-        <class name="AccountLinkagePolicy" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="id" value-strategy="native" primary-key="true"/>
-        </class>
+        <!--<class name="AccountLinkagePolicy" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+        <!--</class>-->
 
-        <class name="Activation" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="id" value-strategy="native" primary-key="true"/>
-        </class>
+        <!--<class name="Activation" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+        <!--</class>-->
 
-        <class name="AttributeProfile" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="id" value-strategy="native" primary-key="true"/>
-        </class>
+        <!--<class name="AttributeProfile" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+        <!--</class>-->
 
-        <class name="AuthenticationAssertionEmissionPolicy" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="id" value-strategy="native" primary-key="true"/>
-        </class>
+        <!--<class name="AuthenticationAssertionEmissionPolicy" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+        <!--</class>-->
 
-        <class name="AuthenticationContract" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="id" value-strategy="native" primary-key="true"/>
-        </class>
+        <!--<class name="AuthenticationContract" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+        <!--</class>-->
 
-        <class name="AuthenticationMechanism" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="id" value-strategy="native" primary-key="true"/>
-        </class>
+        <!--<class name="AuthenticationMechanism" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+        <!--</class>-->
 
-        <!-- TODO : RETROFIT -->
-        <class name="Channel" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="id" value-strategy="native" primary-key="true"/>
-            <field name="location" default-fetch-group="true" dependent="true"/>
-            <field name="activeBindings" default-fetch-group="true">
-                <join delete-action="cascade"/>
-            </field>
-            <field name="activeProfiles" default-fetch-group="true">
-                <join delete-action="cascade"/>
-            </field>
-        </class>
+        <!--&lt;!&ndash; TODO : RETROFIT &ndash;&gt;-->
+        <!--<class name="Channel" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+            <!--<field name="location" default-fetch-group="true" dependent="true"/>-->
+<!--&lt;!&ndash;-->
+            <!--<field name="activeBindings" default-fetch-group="true">-->
+                <!--<join delete-action="cascade"/>-->
+            <!--</field>-->
+            <!--<field name="activeProfiles" default-fetch-group="true">-->
+                <!--<join delete-action="cascade"/>-->
+            <!--</field>-->
+<!--&ndash;&gt;-->
+        <!--</class>-->
 
-        <class name="Connection" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="id" value-strategy="native" primary-key="true"/>
-        </class>
+        <!--<class name="Connection" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+        <!--</class>-->
 
         <class name="DbIdentitySource" detachable="true">
             <inheritance strategy="new-table"/>
@@ -85,60 +87,63 @@
             <inheritance strategy="new-table"/>
         </class>
 
-        <class name="ExecutionEnvironment" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="id" value-strategy="native" primary-key="true"/>
-        </class>
+        <!--<class name="ExecutionEnvironment" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+        <!--</class>-->
 
-        <class name="FederatedConnection" detachable="true">
-            <inheritance strategy="new-table"/>
-        </class>
+        <class name="Feature"/>
+
+        <!--<class name="FederatedConnection" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+        <!--</class>-->
 
         <class name="IdentityApplianceDefinition" detachable="true">
             <field name="id" value-strategy="native" primary-key="true"/>
+            <!--
             <field name="providers" default-fetch-group="true" persistence-modifier="persistent" mapped-by="identityAppliance">
-                <!--<join delete-action="cascade"/>-->
                 <collection dependent-element="true"/>
             </field>
+            -->
             <field name="identitySources" default-fetch-group="true" persistence-modifier="persistent">
-				<!--<join delete-action="cascade"/>-->
                 <collection dependent-element="true" />
 			</field>
             <field name="location" default-fetch-group="true" dependent="true"/>
-            <field name="supportedRoles" default-fetch-group="true" />
-            <field name="activeFeatures" default-fetch-group="true" />
-            <field name="certificate" default-fetch-group="true" />
+            <field name="keystore" default-fetch-group="true" />
         </class>
-        
-        <class name="IdentityLookup" detachable="true">
-            <field name="id" value-strategy="native" primary-key="true"/>
-            <field name="identitySource" default-fetch-group="true"/>
-            <field name="provider" default-fetch-group="true" />
-        </class>
+        <!---->
+        <!--<class name="IdentityLookup" detachable="true">-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+            <!--<field name="identitySource" default-fetch-group="true"/>-->
+            <!--<field name="provider" default-fetch-group="true" />-->
+        <!--</class>-->
 
-        <class name="IdentityProviderChannel" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="identityLookup" default-fetch-group="true" dependent="true"/>
-            <field name="accountLinkagePolicy" default-fetch-group="true" dependent="true"/>
-            <field name="connection" default-fetch-group="true" dependent="true"/>
-            <field name="authenticationContract" default-fetch-group="true" />
-            <field name="authenticationMechanism" default-fetch-group="true" />
-        </class>
+        <!--<class name="IdentityProvider" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+        <!--</class>-->
+
+        <!--<class name="IdentityProviderChannel" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="identityLookup" default-fetch-group="true" dependent="true"/>-->
+            <!--<field name="accountLinkagePolicy" default-fetch-group="true" dependent="true"/>-->
+            <!--<field name="connection" default-fetch-group="true" dependent="true"/>-->
+            <!--<field name="authenticationContract" default-fetch-group="true" />-->
+            <!--<field name="authenticationMechanism" default-fetch-group="true" />-->
+        <!--</class>-->
 
         <class name="IdentitySource" detachable="true">
             <inheritance strategy="new-table"/>
-
         </class>
 
-        <class name="JbossExecutionEnvironment" detachable="true">
-            <inheritance strategy="new-table"/>
+        <!--<class name="JbossExecutionEnvironment" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
 
-        </class>
+        <!--</class>-->
 
-        <class name="JOSSOActivation" detachable="true">
-            <inheritance strategy="new-table"/>
+        <!--<class name="JOSSOActivation" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
 
-        </class>
+        <!--</class>-->
 
         <class name="Keystore" detachable="true">
             <inheritance strategy="new-table"/>
@@ -150,80 +155,88 @@
             <inheritance strategy="new-table"/>
         </class>
 
-        <class name="LocalProvider" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="config" persistence-modifier="persistent" default-fetch-group="true" dependent="true"/>
-        </class>
+        <!--<class name="LocalProvider" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="config" persistence-modifier="persistent" default-fetch-group="true" dependent="true"/>-->
+<!--&lt;!&ndash;-->
+            <!--<field name="activeBindings" default-fetch-group="true">-->
+                <!--<join delete-action="cascade"/>-->
+            <!--</field>-->
+            <!--<field name="activeProfiles" default-fetch-group="true">-->
+                <!--<join delete-action="cascade"/>-->
+            <!--</field>-->
+<!--&ndash;&gt;-->
+        <!--</class>-->
 
         <class name="Location" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="id" value-strategy="native" primary-key="true"/>
         </class>
 
-        <class name="Organization" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="id" value-strategy="native" primary-key="true"/>
-        </class>
+        <!--<class name="Organization" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+        <!--</class>-->
 
-        <class name="Provider" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="id" value-strategy="native" primary-key="true"/>
-            <field name="identityAppliance" default-fetch-group="true" persistence-modifier="persistent">
-                <column name="IDAPPLIANCEDEFINITION_ID"/>
-            </field>
-            <field name="location" default-fetch-group="true" dependent="true"/>
-        </class>
+        <!--<class name="Provider" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+            <!--<field name="identityAppliance" default-fetch-group="true" persistence-modifier="persistent">-->
+                <!--<column name="IDAPPLIANCEDEFINITION_ID"/>-->
+            <!--</field>-->
+            <!--<field name="location" default-fetch-group="true" dependent="true"/>-->
+        <!--</class>-->
 
-        <class name="ProvisioningServiceProvider" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="id" value-strategy="native" primary-key="true"/>
-        </class>
+        <!--<class name="ProvisioningServiceProvider" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="id" value-strategy="native" primary-key="true"/>-->
+        <!--</class>-->
 
-        <class name="RemoteProvider" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="metadata" default-fetch-group="true" dependent="true"/>
-        </class>
+        <!--<class name="RemoteProvider" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="metadata" default-fetch-group="true" dependent="true"/>-->
+        <!--</class>-->
 
         <class name="Resource" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="id" value-strategy="native" primary-key="true"/>
             <field name="value" default-fetch-group="true">
-                <!--<column name="VALUE" length="1048576" jdbc-type="BLOB"/>-->
+                <!--&lt;!&ndash;<column name="VALUE" length="1048576" jdbc-type="BLOB"/>&ndash;&gt;-->
             </field>
         </class>
 
-        <class name="SamlR2IDPConfig" detachable="true">
-            <inheritance strategy="new-table"/>
-        </class>
+        <!--<class name="SamlR2IDPConfig" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+        <!--</class>-->
 
-        <class name="SamlR2ProviderConfig" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="signer" default-fetch-group="true" dependent="true"/>
-            <field name="encrypter" default-fetch-group="true" dependent="true"/>
-        </class>
+        <!--<class name="SamlR2ProviderConfig" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="signer" default-fetch-group="true" dependent="true"/>-->
+            <!--<field name="encrypter" default-fetch-group="true" dependent="true"/>-->
+        <!--</class>-->
 
-        <class name="SamlR2SPConfig" detachable="true">
-            <inheritance strategy="new-table"/>
-        </class>
+        <!--<class name="SamlR2SPConfig" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+        <!--</class>-->
 
-        <class name="ServiceProvider" detachable="true">
-            <inheritance strategy="new-table"/>
-        </class>
-        
-        <class name="ServiceProviderChannel" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="identityLookup" default-fetch-group="true" dependent="true"/>
+        <!--<class name="ServiceProvider" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+        <!--</class>-->
+        <!---->
+        <!--<class name="ServiceProviderChannel" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+            <!--<field name="identityLookup" default-fetch-group="true" dependent="true"/>-->
 
-            <field name="attributeProfile" default-fetch-group="true" />
-            <field name="authenticationMechanism" default-fetch-group="true" />
-            
-            <field name="authenticationContract" default-fetch-group="true" />
-            <field name="emissionPolicy" default-fetch-group="true" />
-        </class>
+            <!--<field name="attributeProfile" default-fetch-group="true" />-->
+            <!--<field name="authenticationMechanism" default-fetch-group="true" />-->
+            <!---->
+            <!--<field name="authenticationContract" default-fetch-group="true" />-->
+            <!--<field name="emissionPolicy" default-fetch-group="true" />-->
+        <!--</class>-->
 
-        <class name="WeblogicExecutionEnvironment" detachable="true">
-            <inheritance strategy="new-table"/>
-        </class>
+        <!--<class name="WeblogicExecutionEnvironment" detachable="true">-->
+            <!--<inheritance strategy="new-table"/>-->
+        <!--</class>-->
 
     </package>
 

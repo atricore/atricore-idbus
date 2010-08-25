@@ -265,7 +265,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             }
 
             IdentityAppliance foundAppliance = prepareApplianceForUpdate(idAppliance);
-            foundAppliance.getIdApplianceDefinition().getCertificate().setStore(beLookupStoreRes.getResource());
+            foundAppliance.getIdApplianceDefinition().getKeystore().setStore(beLookupStoreRes.getResource());
             UpdateIdentityApplianceResponse updateResponse = this.updateAppliance(foundAppliance);
             idAppliance = updateResponse.getAppliance();
         }

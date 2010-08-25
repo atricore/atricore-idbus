@@ -21,30 +21,36 @@
 
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+// TODO : For now this maps to capabilities
 
 public enum Feature {
 
-    // TODO : For now this maps to capabilities
     SAMLR2 (new ProviderRole[] {
             ProviderRole.SSOIdentityProvider,
             ProviderRole.SSOServiceProvider,
             ProviderRole.AttributeAuthority}),
 
+    SPMLR2 (new ProviderRole[] {
+            ProviderRole.Provisioning }),
+
     JOSSO (new ProviderRole[] {ProviderRole.SSOServiceProvider}),
 
     STS(new ProviderRole[] {ProviderRole.SSOIdentityProvider});
 
-    private ProviderRole[] supportedRoles;
+    private Set<ProviderRole> supportedRoles = new HashSet<ProviderRole>();
 
     Feature(ProviderRole[] supportedRoles) {
-        this.supportedRoles = supportedRoles;
+        this.supportedRoles.addAll(Arrays.asList(supportedRoles));
+
     }
 
-    public ProviderRole[] getSupportedRoles() {
+    public Set<ProviderRole> getSupportedRoles() {
         return supportedRoles;
     }
-
-
 
 
 }

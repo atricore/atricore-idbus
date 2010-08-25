@@ -69,7 +69,7 @@
                     _certificates.push(_certFiles.fileList[i].name);
                 }
                 if (_certificates.length > 0) {
-                    certificate.selectedIndex = 0;
+                    keystore.selectedIndex = 0;
                 }
             }
 
@@ -177,7 +177,7 @@
              * in a readable format
              */
             override public function get readableStepDecision():String {
-                return resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.summary.certificate') + "\n" + _certificates.join("\n").toString();
+                return resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.summary.keystore') + "\n" + _certificates.join("\n").toString();
             }
         ]]>
     </mx:Script>
@@ -186,10 +186,10 @@
         <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.title')}"
                            width="300" height="200" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
 			<mx:HBox>
-            	<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.certificate')}">
-            		<mx:ComboBox id="certificate" dataProvider="{_certificates}" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.certificate.prompt')}" mouseUp="browseFiles()" />
+            	<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.keystore')}">
+            		<mx:ComboBox id="keystore" dataProvider="{_certificates}" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.keystore.prompt')}" mouseUp="browseFiles()" />
             	</mx:FormItem>
-				<!--mx:Button label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.certificate.upload')}" id="btnUpload" click="startUpload(true)" /-->
+				<!--mx:Button label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'setup.wizard.security.keystore.upload')}" id="btnUpload" click="startUpload(true)" /-->
 			</mx:HBox>
         </utils:TitledBorderBox>
     </mx:Form>

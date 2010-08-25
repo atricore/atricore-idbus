@@ -13,6 +13,7 @@ public enum ProviderRole {
     AttributeAuthority("AttributeAuthority"),
     PolicyDecisionPoint("PolicyDecisionPoint"),
     Affiliation("Affiliation"),
+    Provisioning("Provisionig"),
     Binding("Binding");
 
     private String name;

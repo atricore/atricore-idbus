@@ -27,18 +27,17 @@
 
     <package name="com.atricore.idbus.console.lifecycle.main.domain">
 
-        <class name="IdentityAppliance" table="IB_IDENTITYAPPLIANCE" />
+        <class name="IdentityAppliance" table="ATC_IDENTITYAPPLIANCE" />
 
-
-        <class name="IdentityApplianceDeployment" table="IB_IDENTITYAPPLIANCEDEPLOYMENT">
-             <field name="idaus" table="IB_IDAPPLIANCEDEPLOYMENT_UNITS"/>
+        <class name="IdentityApplianceDeployment" table="ATC_IDENTITYAPPLIANCEDEPLOYMENT">
+             <field name="idaus" table="ATC_IDAPPLIANCEDEPLOYMENT_UNITS"/>
         </class>
 
-        <class name="IdentityApplianceUnit" table="IB_IDENTITYAPPLIANCEUNIT">
-            <field name="providers" table="IB_IDAPPLIANCEUNIT_PROVIDERS"/>
+        <class name="IdentityApplianceUnit" table="ATC_IDENTITYAPPLIANCEUNIT">
+            <field name="providers" table="ATC_IDAPPLIANCEUNIT_PROVIDERS"/>
         </class>
 
-        <class name="IdentityServer" detachable="IB_IDENTITYSERVER" />
+        <class name="IdentityServer" detachable="ATC_IDENTITYSERVER" />
 
     </package>
 

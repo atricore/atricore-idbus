@@ -262,7 +262,10 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
             applianceDef.setLastModification(new Date());
 
             appliance = identityApplianceDAO.save(appliance);
-            appliance = identityApplianceDAO.detachCopy(appliance, 6);
+            appliance = identityApplianceDAO.detachCopy(appliance, 99);
+
+            assert appliance.getIdApplianceDefinition().getName() != null;
+
             res = new AddIdentityApplianceResponse();
             res.setAppliance(appliance);
         } catch (Exception e){
@@ -278,12 +281,12 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         try {
             IdentityAppliance appliance = request.getAppliance();
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
-
             applianceDef.setLastModification(new Date());
             applianceDef.setRevision(applianceDef.getRevision() + 1);
 
-            identityApplianceDAO.save(appliance);
+            appliance = identityApplianceDAO.save(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, 6);
+
             res = new UpdateIdentityApplianceResponse(appliance);
         } catch (Exception e){
 	        logger.error("Error updating identity appliance", e);

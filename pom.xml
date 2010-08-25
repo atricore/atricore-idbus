@@ -103,7 +103,7 @@
         <xercesImpl.version>2.9.1</xercesImpl.version>
 
 
-        <compiler.fork>true</compiler.fork>
+        <compiler.fork>false</compiler.fork>
         <bnd.version.policy>[$(version;==;$(@)),$(version;+;$(@)))</bnd.version.policy>
 
     </properties>
@@ -787,7 +787,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.0.2</version>
+                    <version>2.3</version>
                     <configuration>
                         <source>1.5</source>
                         <target>1.5</target>

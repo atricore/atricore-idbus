@@ -30,18 +30,13 @@
         >
 
     <!-- ========================================================================== -->
-    <!-- Import Id Appliance Definition                                             -->
-    <!-- ========================================================================== -->
-    <import resource="idbus-model-tree.xml" />
-
-    <!-- ========================================================================== -->
     <!-- Setup DB and JDO Environment                                               -->
     <!-- ========================================================================== -->
 
     <tx:annotation-driven/>
 
-    <bean name="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
-        <property name="persistenceManagerFactory" ref="idpart1-pmf"/>
+    <bean id="svc" class="com.atricore.idbus.console.lifecycle.main.impl.IdentityApplianceManagementServiceImpl">
+        <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
     </bean>
 
     <bean name="derby-network" class="org.atricore.idbus.bundles.apache.derby.OsgiNetworkServerControl" scope="singleton">
@@ -57,15 +52,21 @@
         </property>
     </bean>
 
-    <bean name="idpart1-pmf" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy"
+    <bean name="pmfProxy" class="org.springframework.orm.jdo.TransactionAwarePersistenceManagerFactoryProxy"
           depends-on="derby-network">
         <property name="targetPersistenceManagerFactory" >
-            <bean name="idvault1-pmf-jdo"
-                class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean" >
+            <bean class="org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean" >
                 <property name="jdoProperties" ref="jdoProperties"/>
             </bean>
-
         </property>
+    </bean>
+
+    <bean name="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="identityApplianceDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityApplianceDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
     </bean>
 
     <bean name="jdoProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">

@@ -46,8 +46,10 @@ public class IdentityProvider extends LocalProvider {
     private AuthenticationAssertionEmissionPolicy emissionPolicy;
 
     private IdentityLookup identityLookup;
-    private Set activeBindings;
-    private Set activeProfiles;
+
+    private Set<Binding> activeBindings;
+
+    private Set<Profile> activeProfiles;
 
     @Override
     public ProviderRole getRole() {
@@ -123,19 +125,4 @@ public class IdentityProvider extends LocalProvider {
         this.identityLookup = identityLookup;
     }
 
-    public void setActiveBindings(Set activeBindings) {
-        this.activeBindings = activeBindings;
-    }
-
-    public Set getActiveBindings() {
-        return activeBindings;
-    }
-
-    public void setActiveProfiles(Set activeProfiles) {
-        this.activeProfiles = activeProfiles;
-    }
-
-    public Set getActiveProfiles() {
-        return activeProfiles;
-    }
 }

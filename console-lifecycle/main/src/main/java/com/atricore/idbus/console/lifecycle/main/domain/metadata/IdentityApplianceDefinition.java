@@ -42,15 +42,17 @@ public class IdentityApplianceDefinition implements Serializable {
 
     private Date lastModification;
 
+    // RFU
     private Set<Feature> activeFeatures;
 
+    // RFU
     private Set<ProviderRole> supportedRoles;
 
 	private Set<Provider> providers;
 
     private Set<IdentitySource> identitySources;
 
-    private Keystore certificate;
+    private Keystore keystore;
 
     public long getId() {
         return id;
@@ -125,14 +127,14 @@ public class IdentityApplianceDefinition implements Serializable {
         this.description = description;
     }
 
-    public Set<IdentitySource> getIdentityVaults() {
+    public Set<IdentitySource> getIdentitySources() {
         if(identitySources == null){
             identitySources = new HashSet<IdentitySource>();
         }
         return identitySources;
     }
 
-    public void setIdentityVaults(Set<IdentitySource> identitySources) {
+    public void setIdentitySources(Set<IdentitySource> identitySources) {
         this.identitySources = identitySources;
     }
 
@@ -144,12 +146,12 @@ public class IdentityApplianceDefinition implements Serializable {
         this.lastModification = lastModification;
     }
 
-    public Keystore getCertificate() {
-        return certificate;
+    public Keystore getKeystore() {
+        return keystore;
     }
 
-    public void setCertificate(Keystore certificate) {
-        this.certificate = certificate;
+    public void setKeystore(Keystore keystore) {
+        this.keystore = keystore;
     }
 
     public static long getSerialVersionUID() {

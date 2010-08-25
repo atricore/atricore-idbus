@@ -23,7 +23,12 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
 
     <!-- This is where the 'tree' of IDBus elements is defined. In a real world scenario, this should be created by Flex console users dynamically -->
-    <import resource="idbus-model-tree.xml"/>
+    <import resource="appliance-model-beans.xml"/>
+
+    <!-- Use DAOs definitions from main sources -->
+    <bean name="idaDao" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityApplianceDAOImpl">
+        <property name="jdoTemplate" ref=""
+    </bean>
 
     <!-- Define Transformers -->
 
@@ -169,10 +174,6 @@
 
 
             </list>
-
-
         </property>
-
-
     </bean>
 </beans>

@@ -224,19 +224,24 @@
                 <version>2.0.1</version>
                 <configuration>
                     <fork>false</fork>
-                    <mappingIncludes>**/*.jdo</mappingIncludes>
+
                     <log4jConfiguration>${basedir}/src/test/resources/log4j.properties</log4jConfiguration>
                     <verbose>true</verbose>
                     <props>${basedir}/datanucleus.properties</props>
                     <outputFile>idbus-server-management.ddl</outputFile>
                 </configuration>
+
                 <executions>
                     <execution>
                         <phase>compile</phase>
                         <goals>
                             <goal>enhance</goal>
                         </goals>
+                        <configuration>
+                            <log4jConfiguration>${basedir}/src/test/resources/log4j.properties</log4jConfiguration>
+                        </configuration>
                     </execution>
+
                 </executions>
 
                 <dependencies>

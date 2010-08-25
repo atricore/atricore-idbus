@@ -82,9 +82,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 		<property name="idauFolder" value="${server.idauFolder}"/>
 	</bean>
 
-	<!--<bean id="idApplianceManagementService" class="com.atricore.idbus.console.lifecycle.main.impl.IdentityApplianceManagementServiceMockImpl" />-->
-
-    <!-- TODO : switch to production implementation -->
 	<bean id="idApplianceManagementService" class="com.atricore.idbus.console.lifecycle.main.impl.IdentityApplianceManagementServiceImpl">
         <property name="builder" ref="applianceBuilder"/>
         <property name="deployer" ref="applianceDeployer"/>
