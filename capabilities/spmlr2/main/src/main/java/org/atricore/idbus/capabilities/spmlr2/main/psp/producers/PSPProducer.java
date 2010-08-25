@@ -27,6 +27,7 @@ import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 
+import javax.xml.bind.JAXBElement;
 import java.util.Iterator;
 import java.util.List;
 
@@ -176,7 +177,16 @@ public class PSPProducer extends SpmlR2Producer {
         // TODO : Query support is limmited
         List<Object> any = spmlQry.getAny();
 
-        SelectionType spmlSelect = (SelectionType) any.get(0);
+        Object o = any.get(0);
+
+        SelectionType spmlSelect = null;
+        if (o instanceof SelectionType ) 
+            spmlSelect = (SelectionType) o;
+        else {
+            JAXBElement e = (JAXBElement) o;
+            spmlSelect = (SelectionType) e.getValue();
+        }
+
         String uri = spmlSelect.getNamespaceURI();
         String path = spmlSelect.getPath();
 
