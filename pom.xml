@@ -44,6 +44,8 @@
         <idbus.bundle.datanucleus-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-v2_0_3.version>
         <idbus.bundle.apache-maven-v3_0.version>1.0.0-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
         <idbus.bundle.josso-ws-v1_2.version>1.0.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
+        <idbus.cap.spml2.version>1.0.0-SNAPSHOT</idbus.cap.spml2.version>
+        <idbus.cap.spml.version>1.0.0-SNAPSHOT</idbus.cap.spml.version>
 
         <idbus.idojo.dbidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.dbidentitystore.version>
         <idbus.idojo.ldapidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
@@ -62,7 +64,8 @@
         <commons-fileupload.version>1.2.1</commons-fileupload.version>
         <datanucleus.version>2.0.3</datanucleus.version>
         <dozer.version>5.2.2</dozer.version>
-        
+        <camel.version>1.6.1</camel.version>
+
         <!--
         <flex.framework.version>3.2.0.3958</flex.framework.version>
         -->
@@ -99,7 +102,7 @@
         <xalan.version>2.7.1</xalan.version>
         <xercesImpl.version>2.9.1</xercesImpl.version>
 
-        
+
         <compiler.fork>true</compiler.fork>
         <bnd.version.policy>[$(version;==;$(@)),$(version;+;$(@)))</bnd.version.policy>
 
@@ -150,6 +153,24 @@
                 <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
                 <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
                 <version>${idbus.cap.saml2.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
+                <artifactId>org.atricore.idbus.capabilities.spmlr2.main</artifactId>
+                <version>${idbus.cap.spml2.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.atricore.idbus.kernel.common</groupId>
+                <artifactId>org.atricore.idbus.kernel.common.spml</artifactId>
+                <version>${idbus.cap.spml.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-cxf</artifactId>
+                <version>${camel.version}</version>
             </dependency>
 
             <dependency>
@@ -208,7 +229,7 @@
                 <artifactId>com.atricore.idbus.console.activation.main</artifactId>
                 <version>${pom.version}</version>
             </dependency>
-            
+
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -355,14 +376,14 @@
                         <groupId>com.adobe.flex.framework</groupId>
                         <artifactId>framework</artifactId>
                     </exclusion>
-                 <exclusion>
-                    <groupId>com.adobe.flex.framework</groupId>
-                    <artifactId>rpc</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.adobe.flex.framework</groupId>
-                    <artifactId>utilities</artifactId>
-                </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>rpc</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>utilities</artifactId>
+                    </exclusion>
 
                 </exclusions>
             </dependency>
@@ -390,14 +411,14 @@
                         <groupId>com.adobe.flex.framework</groupId>
                         <artifactId>framework</artifactId>
                     </exclusion>
-                 <exclusion>
-                    <groupId>com.adobe.flex.framework</groupId>
-                    <artifactId>rpc</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.adobe.flex.framework</groupId>
-                    <artifactId>utilities</artifactId>
-                </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>rpc</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>utilities</artifactId>
+                    </exclusion>
 
                 </exclusions>
             </dependency>
@@ -425,14 +446,14 @@
                         <groupId>com.adobe.flex.framework</groupId>
                         <artifactId>framework</artifactId>
                     </exclusion>
-                 <exclusion>
-                    <groupId>com.adobe.flex.framework</groupId>
-                    <artifactId>rpc</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.adobe.flex.framework</groupId>
-                    <artifactId>utilities</artifactId>
-                </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>rpc</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>utilities</artifactId>
+                    </exclusion>
 
                 </exclusions>
             </dependency>
@@ -464,14 +485,14 @@
                         <groupId>org.as3commons</groupId>
                         <artifactId>as3commons-logging</artifactId>
                     </exclusion>
-                 <exclusion>
-                    <groupId>com.adobe.flex.framework</groupId>
-                    <artifactId>rpc</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.adobe.flex.framework</groupId>
-                    <artifactId>utilities</artifactId>
-                </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>rpc</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.adobe.flex.framework</groupId>
+                        <artifactId>utilities</artifactId>
+                    </exclusion>
 
                 </exclusions>
             </dependency>
@@ -1263,11 +1284,11 @@
 
     <profiles>
         <profile>
-           <id>qa</id>
-           <modules>
-             <module>console-qa</module>
-           </modules>
-       </profile>
+            <id>qa</id>
+            <modules>
+                <module>console-qa</module>
+            </modules>
+        </profile>
     </profiles>
 </project>
 

@@ -143,7 +143,7 @@
             <plugin>
                 <groupId>org.sonatype.flexmojos</groupId>
                 <artifactId>flexmojos-maven-plugin</artifactId>
-                <version>3.2.0</version> 
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -214,10 +214,21 @@
                             javax.sql,
                             javax.servlet.http; version="[2.5.0,3.0.0]",
                             javax.servlet; version="[2.5.0,3.0.0]",
+                            oasis.names.tc.spml._2._0,
+                            oasis.names.tc.spml._2._0.atricore,
+                            oasis.names.tc.spml._2._0.wsdl,
+                            oasis.names.tc.spml._2._0.search,
+                            org.atricore.idbus.kernel.main.util,
+                            org.atricore.idbus.capabilities.spmlr2.main,
+                            org.atricore.idbus.capabilities.spmlr2.main.binding,
+                            org.apache.camel.component.cxf.converter,
+                            javax.xml.namespace,
+                            javax.xml.ws,
+                            org.apache.cxf.jaxws,
                             oasis.names.tc.saml._2_0.metadata,
                             oasis.names.tc.saml._2_0.assertion,
                             oasis.names.tc.saml._2_0.protocol,
-                            oasis.names.tc.saml._2_0.wsdl, 
+                            oasis.names.tc.saml._2_0.wsdl,
                             org.atricore.idbus.bundles.apache.derby,
                             org.atricore.idbus.kernel.common.support.osgi,
                             org.atricore.idbus.kernel.main.authn.util,
@@ -247,7 +258,7 @@
                             *
                         </Import-Package>
                         <Webapp-Context>atricore-console</Webapp-Context>
-                        
+
                     </instructions>
                 </configuration>
             </plugin>
@@ -266,7 +277,7 @@
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1</artifactId>
             <scope>provided</scope>
-        </dependency>     
+        </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -280,14 +291,32 @@
         </dependency>
 
         <!--<dependency>-->
-            <!--<groupId>${project.groupId}</groupId>-->
-            <!--<artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>-->
+        <!--<groupId>${project.groupId}</groupId>-->
+        <!--<artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>-->
         <!--</dependency>-->
 
         <dependency>
             <groupId>com.atricore.idbus.console.lifecycle</groupId>
             <artifactId>com.atricore.idbus.console.lifecycle.main</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.spml</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.spmlr2.main</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel</groupId>
+            <artifactId>org.atricore.idbus.kernel.main</artifactId>
+            <version>${idbus.kernel.version}</version>
         </dependency>
 
         <dependency>
@@ -323,7 +352,7 @@
             <groupId>net.sf.dozer</groupId>
             <artifactId>dozer</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>com.adobe.flex.framework</groupId>
             <artifactId>flex-framework</artifactId>
@@ -359,7 +388,7 @@
             <artifactId>commons-lang</artifactId>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -371,19 +400,25 @@
             <artifactId>spring-webmvc</artifactId>
             <scope>provided</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <scope>provided</scope>
         </dependency>
-            
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>com.springsource.org.apache.commons.fileupload</artifactId>
             <scope>provided</scope>
         </dependency>
-        
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-cxf</artifactId>
+            <scope>provided</scope>            
+        </dependency>
+
     </dependencies>
 
     <profiles>
@@ -502,7 +537,7 @@
                     <plugin>
                         <groupId>org.sonatype.flexmojos</groupId>
                         <artifactId>flexmojos-maven-plugin</artifactId>
-                        <version>3.2.0</version> 
+                        <version>3.2.0</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -511,7 +546,7 @@
                                 </goals>
                             </execution>
                         </executions>
-                    
+
                     </plugin>
                     <plugin>
                         <groupId>org.apache.felix</groupId>
@@ -666,11 +701,11 @@
                 <dependency>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-beans</artifactId>
-                </dependency>                
+                </dependency>
                 <dependency>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-web</artifactId>
-                </dependency>                
+                </dependency>
                 <dependency>
                     <groupId>javax.jdo</groupId>
                     <artifactId>jdo2-api</artifactId>
@@ -686,7 +721,7 @@
                     <artifactId>xmlbeans</artifactId>
                     <version>2.4.0</version>
                 </dependency>
-                
+
                 <!-- FLEX , Embedded-->
                 <dependency>
                     <groupId>com.adobe.blazeds</groupId>
@@ -742,6 +777,6 @@
             </dependencies>
         </profile>
     </profiles>
-    
+
 
 </project>

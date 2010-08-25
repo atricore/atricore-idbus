@@ -21,64 +21,149 @@
 
 package com.atricore.idbus.console.services.impl;
 
-import com.atricore.idbus.console.services.spi.request.*;
-import com.atricore.idbus.console.services.spi.response.*;
 import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundException;
 import com.atricore.idbus.console.lifecycle.main.exception.ProvisioningBusinessException;
 import com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService;
+import com.atricore.idbus.console.services.dto.GroupDTO;
 import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
+import com.atricore.idbus.console.services.spi.request.*;
+import com.atricore.idbus.console.services.spi.response.*;
+import oasis.names.tc.spml._2._0.*;
+import oasis.names.tc.spml._2._0.atricore.GroupType;
+import oasis.names.tc.spml._2._0.search.ScopeType;
+import oasis.names.tc.spml._2._0.search.SearchQueryType;
+import oasis.names.tc.spml._2._0.search.SearchRequestType;
+import oasis.names.tc.spml._2._0.search.SearchResponseType;
+import oasis.names.tc.spml._2._0.wsdl.SPMLRequestPortType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
+import org.atricore.idbus.capabilities.spmlr2.main.binding.SPMLR2MessagingConstants;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.dozer.DozerBeanMapper;
+
+import javax.xml.ws.Service;
 
 /**
  * Author: Dejan Maric
  */
 public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxService {
+    private static Log logger = LogFactory.getLog(UserProvisioningAjaxServiceImpl.class);
 
     UserProvisioningService provisioningService;
+
+    private String targetId;
+    private UUIDGenerator uuidGenerator = new UUIDGenerator();
+    SPMLRequestPortType port;
     private DozerBeanMapper dozerMapper;
 
-    public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws ProvisioningBusinessException {
-        com.atricore.idbus.console.lifecycle.main.spi.request.RemoveGroupRequest beReq =
-                dozerMapper.map(groupRequest, com.atricore.idbus.console.lifecycle.main.spi.request.RemoveGroupRequest.class);
 
-        com.atricore.idbus.console.lifecycle.main.spi.response.RemoveGroupResponse beRes = provisioningService.removeGroup(beReq);
-        return dozerMapper.map(beRes, RemoveGroupResponse.class);
+    public UserProvisioningAjaxServiceImpl(){
+        Service serv = Service.create(SPMLR2MessagingConstants.SERVICE_NAME);
+        serv.addPort(SPMLR2MessagingConstants.PORT_NAME,
+                javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING,
+                "http://localhost:8081/IDBUS/PSP-1/SPML2/SOAP");
+        this.port = serv.getPort(SPMLR2MessagingConstants.PORT_NAME, SPMLRequestPortType.class);
+    }
+
+    public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws ProvisioningBusinessException {
+        DeleteRequestType deleteRequest = new DeleteRequestType ();
+        deleteRequest.setRequestID(uuidGenerator.generateId());
+        deleteRequest.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
+
+        PSOIdentifierType psoId = new PSOIdentifierType ();
+        psoId.setID(groupRequest.getId() + "");
+        psoId.setTargetID(targetId);
+
+        deleteRequest.setPsoID(psoId);
+        ResponseType resp = port.spmlDeleteRequest(deleteRequest);
+
+        RemoveGroupResponse respObj = new RemoveGroupResponse();
+        return respObj;
     }
 
     public AddGroupResponse addGroup(AddGroupRequest groupRequest) throws ProvisioningBusinessException {
-        com.atricore.idbus.console.lifecycle.main.spi.request.AddGroupRequest beReq =
-                dozerMapper.map(groupRequest, com.atricore.idbus.console.lifecycle.main.spi.request.AddGroupRequest.class);
+        AddRequestType addReq = new AddRequestType();
+        addReq.setTargetID(targetId);
+        addReq.setRequestID(uuidGenerator.generateId());
+        addReq.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
+        GroupType group = new GroupType ();
+        group.setName(groupRequest.getName());
+        group.setDescription(groupRequest.getDescription());
+        addReq.setData(group);
 
-        com.atricore.idbus.console.lifecycle.main.spi.response.AddGroupResponse beRes = provisioningService.addGroup(beReq);
-        return dozerMapper.map(beRes, AddGroupResponse.class);
+        AddResponseType resp = port.spmlAddRequest(addReq);
+        GroupType spmlGroup = (GroupType) resp.getPso().getData();
+        AddGroupResponse respObj = new AddGroupResponse();
+        respObj.setGroup(toGroupDTO(spmlGroup));
+
+        return respObj;
     }
 
     public FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest) throws GroupNotFoundException {
         com.atricore.idbus.console.lifecycle.main.spi.request.FindGroupByIdRequest beReq =
                 dozerMapper.map(groupRequest, com.atricore.idbus.console.lifecycle.main.spi.request.FindGroupByIdRequest.class);
 
-        com.atricore.idbus.console.lifecycle.main.spi.response.FindGroupByIdResponse beRes = provisioningService.findGroupById(beReq);
-        return dozerMapper.map(beRes, FindGroupByIdResponse.class);
+        PSOIdentifierType psoGroupId = new PSOIdentifierType();
+        psoGroupId.setTargetID(targetId);
+        psoGroupId.setID(groupRequest.getId() + "");
+        psoGroupId.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
+
+        LookupRequestType lookupRequest = new LookupRequestType();
+        lookupRequest.setRequestID(uuidGenerator.generateId());
+        lookupRequest.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
+        lookupRequest.setPsoID(psoGroupId);
+
+        LookupResponseType resp = port.spmlLookupRequest(lookupRequest);
+
+        GroupType spmlGroup = (GroupType) resp.getPso().getData();
+        FindGroupByIdResponse response = new FindGroupByIdResponse();
+
+        response.setGroup(toGroupDTO(spmlGroup));
+
+        return response;
     }
 
     public FindGroupByNameResponse findGroupByName(FindGroupByNameRequest groupRequest) throws GroupNotFoundException {
-        com.atricore.idbus.console.lifecycle.main.spi.request.FindGroupByNameRequest beReq =
-                dozerMapper.map(groupRequest, com.atricore.idbus.console.lifecycle.main.spi.request.FindGroupByNameRequest.class);
+        SearchRequestType searchRequest = new SearchRequestType();
+        searchRequest.setRequestID(uuidGenerator.generateId());
+        searchRequest.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
-        com.atricore.idbus.console.lifecycle.main.spi.response.FindGroupByNameResponse beRes = provisioningService.findGroupByName(beReq);
-        return dozerMapper.map(beRes, FindGroupByNameResponse.class);
+        SearchQueryType spmlQry  = new SearchQueryType();
+        spmlQry.setScope(ScopeType.ONE_LEVEL);
+        spmlQry.setTargetID(targetId);
+        String qry="";
+
+        searchRequest.setQuery(spmlQry);
+
+        SelectionType spmlSelect = new SelectionType();
+        spmlSelect.setNamespaceURI("http://www.w3.org/TR/xpath20");
+
+        if (groupRequest.getName() != null)
+            qry = "/groups[name='"+groupRequest.getName()+"']";
+
+        spmlSelect.setPath(qry);
+        spmlSelect.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
+
+        spmlQry.getAny().add(spmlSelect);
+
+        SearchResponseType resp  = port.spmlSearchRequest(searchRequest);
+        FindGroupByNameResponse response = new FindGroupByNameResponse();
+
+        return response;
     }
 
     public ListGroupResponse getGroups() throws ProvisioningBusinessException {
-        return dozerMapper.map(provisioningService.getGroups(), ListGroupResponse.class);
+
+        ListGroupResponse lstGroup = new ListGroupResponse();
+
+        return lstGroup;
     }
 
     public SearchGroupResponse searchGroups(SearchGroupRequest groupRequest) throws ProvisioningBusinessException {
-        com.atricore.idbus.console.lifecycle.main.spi.request.SearchGroupRequest beReq =
-                dozerMapper.map(groupRequest, com.atricore.idbus.console.lifecycle.main.spi.request.SearchGroupRequest.class);
+        SearchGroupResponse srchGroup = new SearchGroupResponse();
 
-        com.atricore.idbus.console.lifecycle.main.spi.response.SearchGroupResponse beRes = provisioningService.searchGroups(beReq);
-        return dozerMapper.map(beRes, SearchGroupResponse.class);
+        return srchGroup;
     }
 
     public UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest) throws ProvisioningBusinessException {
@@ -89,7 +174,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         return dozerMapper.map(beRes, UpdateGroupResponse.class);
     }
 
-    public RemoveUserResponse removeUser(RemoveUserRequest userRequest) throws Exception {
+    public RemoveUserResponse removeUser(RemoveUserRequest userRequest) throws java.lang.Exception {
         com.atricore.idbus.console.lifecycle.main.spi.request.RemoveUserRequest beReq =
                 dozerMapper.map(userRequest, com.atricore.idbus.console.lifecycle.main.spi.request.RemoveUserRequest.class);
 
@@ -97,7 +182,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         return dozerMapper.map(beRes, RemoveUserResponse.class);
     }
 
-    public AddUserResponse addUser(AddUserRequest userRequest) throws Exception {
+    public AddUserResponse addUser(AddUserRequest userRequest) throws java.lang.Exception {
         com.atricore.idbus.console.lifecycle.main.spi.request.AddUserRequest beReq =
                 dozerMapper.map(userRequest, com.atricore.idbus.console.lifecycle.main.spi.request.AddUserRequest.class);
 
@@ -105,7 +190,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         return dozerMapper.map(beRes, AddUserResponse.class);
     }
 
-    public FindUserByIdResponse findUserById(FindUserByIdRequest userRequest) throws Exception {
+    public FindUserByIdResponse findUserById(FindUserByIdRequest userRequest) throws java.lang.Exception {
         com.atricore.idbus.console.lifecycle.main.spi.request.FindUserByIdRequest beReq =
                 dozerMapper.map(userRequest, com.atricore.idbus.console.lifecycle.main.spi.request.FindUserByIdRequest.class);
 
@@ -113,7 +198,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         return dozerMapper.map(beRes, FindUserByIdResponse.class);
     }
 
-    public FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest) throws Exception {
+    public FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest) throws java.lang.Exception {
         com.atricore.idbus.console.lifecycle.main.spi.request.FindUserByUsernameRequest beReq =
                 dozerMapper.map(userRequest, com.atricore.idbus.console.lifecycle.main.spi.request.FindUserByUsernameRequest.class);
 
@@ -121,11 +206,11 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         return dozerMapper.map(beRes, FindUserByUsernameResponse.class);
     }
 
-    public ListUserResponse getUsers() throws Exception {
+    public ListUserResponse getUsers() throws java.lang.Exception {
         return dozerMapper.map(provisioningService.getUsers(), ListUserResponse.class);
     }
 
-    public SearchUserResponse searchUsers(SearchUserRequest userRequest) throws Exception {
+    public SearchUserResponse searchUsers(SearchUserRequest userRequest) throws java.lang.Exception {
         com.atricore.idbus.console.lifecycle.main.spi.request.SearchUserRequest beReq =
                 dozerMapper.map(userRequest, com.atricore.idbus.console.lifecycle.main.spi.request.SearchUserRequest.class);
 
@@ -133,7 +218,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         return dozerMapper.map(beRes, SearchUserResponse.class);
     }
 
-    public UpdateUserResponse updateUser(UpdateUserRequest userRequest) throws Exception {
+    public UpdateUserResponse updateUser(UpdateUserRequest userRequest) throws java.lang.Exception {
         com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserRequest beReq =
                 dozerMapper.map(userRequest, com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserRequest.class);
 
@@ -149,8 +234,20 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         return dozerMapper.map(beRes, GetUsersByGroupResponse.class);
     }
 
+    private GroupDTO toGroupDTO(GroupType grp) {
+        GroupDTO g = new GroupDTO();
+        g.setName(grp.getName());
+        g.setDescription(grp.getDescription());
+        g.setId(grp.getId());
+        return g;
+    }
+
     public void setProvisioningService(UserProvisioningService provisioningService) {
         this.provisioningService = provisioningService;
+    }
+
+    public void setTargetId(String targetId) {
+        this.targetId = targetId;
     }
 
     public void setDozerMapper(DozerBeanMapper dozerMapper) {
