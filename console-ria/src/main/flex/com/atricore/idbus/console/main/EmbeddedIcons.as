@@ -339,34 +339,33 @@ package com.atricore.idbus.console.main {
         [Embed(source="/assets/icons/notation/48x48/windows_execution_environment.png")]
         public static var windowsEnvironmentIcon:Class;
 
+        [Bindable]
+        [Embed(source="/assets/icons/main/modeler_22.png")]
+        public static var modelerMiniIcon:Class;
 
-//        [Bindable]
-//        [Embed(source="/assets/icons/notation/22x22/icon_identity_bus.png")]
-//        static public var busMiniIcon:Class;
-//
-//        [Bindable]
-//        [Embed(source="/assets/icons/notation/22x22/icon_idp.png")]
-//        public static var idpMiniIcon:Class;
-//
-//        [Bindable]
-//        [Embed(source="/assets/icons/notation/22x22/icon_sp.png")]
-//        public static var spMiniIcon:Class;
-//
-//        [Bindable]
-//        [Embed(source="/assets/icons/notation/22x22/icon_bp.png")]
-//        public static var bpMiniIcon:Class;
-//
-//        [Bindable]
-//        [Embed(source="/assets/icons/notation/22x22/icon_idp_channel.png")]
-//        public static var idpChannelMiniIcon:Class;
-//
-//        [Bindable]
-//        [Embed(source="/assets/icons/notation/22x22/icon_sp_channel.png")]
-//        public static var spChannelMiniIcon:Class;
-//
-//        [Bindable]
-//        [Embed(source="/assets/icons/notation/22x22/icon_identity_vault.png")]
-//        public static var vaultMiniIcon:Class;
+        [Bindable]
+        [Embed(source="/assets/icons/main/lifecycle_management_22.png")]
+        public static var lifecycleMiniIcon:Class;        
+
+        [Bindable]
+        [Embed(source="/assets/icons/main/account_management_22.png")]
+        public static var accountMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/main/setup_22.png")]
+        public static var setupMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/modeler/new_identity_appliance_22.png")]
+        public static var newApplianceMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/modeler/open_identity_appliance_22.png")]
+        public static var openApplianceMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/modeler/save_identity_appliance_22.png")]
+        public static var saveApplianceMiniIcon:Class;
 
         [Bindable]
         [Embed(source="/style/yflexskin.swf",symbol="Tree_folderOpenIcon")]

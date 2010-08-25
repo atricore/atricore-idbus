@@ -38,7 +38,7 @@
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.userRepositoryName')}:"
                      required="true">
-            <s:TextInput id="userRepositoryName"/>
+            <s:TextInput id="userRepositoryName" width="200"/>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.serverPort')}:" required="true">

@@ -46,27 +46,25 @@
             <fx:Object label="None (Advanced mode)" data="Advanced"/>
             <fx:Object label="Simple SSO" data="SimpleSSO"/>
         </mx:ArrayCollection>
-
-        <!-- TODO remove temp declarations -->
-        <!--<mx:ArrayList>-->
-            <!--<browser:BrowserView id="browser" height="99%" width="20%"/>-->
-            <!--<diagram:DiagramView id="diagram" width="60%" height="99%"/>-->
-            <!--<palette:PaletteView id="palette" width="20%" height="99%"/>-->
-            <!--<propertysheet:PropertySheetView id="propertysheet" height="100%" width="100%"/>-->
-        <!--</mx:ArrayList>-->
     </fx:Declarations>
+
+    <fx:Script>
+        <![CDATA[
+        public var icon:Class = EmbeddedIcons.modelerMiniIcon;
+        ]]>
+    </fx:Script>
 
     <s:HGroup width="100%" height="100%" x="0" y="0" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
             <s:Group width="100%" height="100%">
                 <s:VGroup x="10" y="10" height="100%" width="100%" paddingLeft="5" paddingRight="5" paddingTop="5"
                          paddingBottom="5">
                     <s:HGroup>
-                        <s:Button id="btnNew" label="New"/>
-                        <s:DropDownList id="applianceStyle" labelField="label" selectedIndex="0" width="228" dataProvider="{applianceStyleCollection}" />
-                        <s:Button id="btnLifecycle" label="Lifecycle" enabled="false"/>
-                        <s:Button id="btnOpen" label="Open"/>
-                        <s:DropDownList id="appliances" width="250" prompt="Select an appliance to open"/>
-                        <s:Button id="btnSave" label="Save" enabled="false"/>
+                        <s:Button id="btnNew" label="New" skinClass="com.atricore.idbus.console.skin.button.NewIconButtonSkin"/>
+                        <s:DropDownList id="applianceStyle" labelField="label" selectedIndex="0" width="228" height="24" dataProvider="{applianceStyleCollection}" />
+                        <s:Button id="btnLifecycle" label="Lifecycle" enabled="false" skinClass="com.atricore.idbus.console.skin.button.LifecycleIconButtonSkin"/>
+                        <s:Button id="btnOpen" label="Open" skinClass="com.atricore.idbus.console.skin.button.OpenIconButtonSkin"/>
+                        <s:DropDownList id="appliances" width="250" prompt="Select an appliance to open" height="24"/>
+                        <s:Button id="btnSave" label="Save" enabled="false" skinClass="com.atricore.idbus.console.skin.button.SaveIconButtonSkin"/>
                     </s:HGroup>
                     <s:HGroup width="99%" height="65%">
                         <browser:BrowserView id="browser" height="99%" width="20%"/>
@@ -89,4 +87,7 @@
                 </s:VGroup>
             </s:Group>
     </s:HGroup>
+    <fx:Script><![CDATA[
+        import com.atricore.idbus.console.main.EmbeddedIcons;
+        ]]></fx:Script>
 </s:Panel>
