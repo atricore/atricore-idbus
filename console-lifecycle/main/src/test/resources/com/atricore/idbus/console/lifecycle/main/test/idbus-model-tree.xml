@@ -97,7 +97,7 @@
                         <property name="store">
                             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
                                 <property name="name" value="idp1-keystore"/>
-                                <property name="value" value="/org/atricore/idbus/applications/server/management/test/keystore.jks"/>
+                                <property name="value" value="${baseDir}/src/test/resources/com/atricore/idbus/console/lifecycle/main/test/keystore.jks"/>
                             </bean>
                         </property>
 					</bean>
@@ -112,7 +112,7 @@
                         <property name="store">
                             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
                                 <property name="name" value="idp1-keystore"/>
-                                <property name="value" value="/org/atricore/idbus/applications/server/management/test/keystore.jks"/>
+                                <property name="value" value="${baseDir}/src/test/resources/com/atricore/idbus/console/lifecycle/main/test/keystore.jks"/>
                             </bean>
                         </property>
 					</bean>
@@ -155,7 +155,7 @@
                         <property name="store">
                             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
                                 <property name="name" value="sp1-keystore"/>
-                                <property name="value" value="/org/atricore/idbus/applications/server/management/test/keystore.jks"/>
+                                <property name="value" value="${baseDir}/src/test/resources/com/atricore/idbus/console/lifecycle/main/test/keystore.jks"/>
                             </bean>
                         </property>
 					</bean>
@@ -170,7 +170,7 @@
                         <property name="store">
                             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
                                 <property name="name" value="sp1-keystore"/>
-                                <property name="value" value="/org/atricore/idbus/applications/server/management/test/keystore.jks"/>
+                                <property name="value" value="${baseDir}/src/test/resources/com/atricore/idbus/console/lifecycle/main/test/keystore.jks"/>
                             </bean>
                         </property>
 					</bean>

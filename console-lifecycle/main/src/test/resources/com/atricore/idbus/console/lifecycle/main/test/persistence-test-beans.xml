@@ -77,7 +77,4 @@
         <property name="location" value="classpath:datanucleus-tests.properties" />
     </bean>
 
-
-
-
 </beans>
