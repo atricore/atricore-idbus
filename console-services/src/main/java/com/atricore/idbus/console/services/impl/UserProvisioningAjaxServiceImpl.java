@@ -42,6 +42,8 @@ import org.atricore.idbus.capabilities.spmlr2.main.binding.SPMLR2MessagingConsta
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.dozer.DozerBeanMapper;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 
 /**
@@ -134,7 +136,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlQry.setTargetID(targetId);
         String qry="";
 
-        searchRequest.setQuery(spmlQry);
+
 
         SelectionType spmlSelect = new SelectionType();
         spmlSelect.setNamespaceURI("http://www.w3.org/TR/xpath20");
@@ -145,7 +147,16 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlSelect.setPath(qry);
         spmlSelect.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
-        spmlQry.getAny().add(spmlSelect);
+        JAXBElement jaxbSelect= new JAXBElement(
+                new QName( SPMLR2Constants.SPML_NS, "Selection"),
+                spmlSelect.getClass(),
+                spmlSelect
+        );
+
+
+        spmlQry.getAny().add(jaxbSelect);
+
+        searchRequest.setQuery(spmlQry);
 
         SearchResponseType resp  = port.spmlSearchRequest(searchRequest);
         FindGroupByNameResponse response = new FindGroupByNameResponse();
