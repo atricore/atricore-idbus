@@ -11,6 +11,9 @@ import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
@@ -45,7 +48,14 @@ public class UserSearchCommand extends SpmlCommandSupport {
         spmlSelect.setPath(qry);
         spmlSelect.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
 
-        spmlQry.getAny().add(spmlSelect);
+        JAXBElement jaxbSelect= new JAXBElement(
+                new QName( SPMLR2Constants.SPML_NS, "Selection"),
+                spmlSelect.getClass(),
+                spmlSelect
+        );
+
+
+        spmlQry.getAny().add(jaxbSelect);
 
         return spmlRequest;
     }
