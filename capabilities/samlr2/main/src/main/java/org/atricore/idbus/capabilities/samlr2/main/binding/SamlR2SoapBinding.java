@@ -159,8 +159,6 @@ public class SamlR2SoapBinding extends AbstractMediationSoapBinding {
         service.addPort(SAMLR2MessagingConstants.PORT_NAME, javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING,
                             endpoint.getLocation());
 
-
-
         Object content = message.getContent();
 
         if (!(content instanceof RequestAbstractType )) {

@@ -2,9 +2,7 @@ package org.atricore.idbus.bundles.apache.derby;
 
 import org.apache.derby.drda.NetworkServerControl;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Properties;
+import java.util.*;
 import java.net.InetAddress;
 import java.io.PrintWriter;
 
@@ -18,11 +16,11 @@ import org.springframework.beans.factory.DisposableBean;
  */
 public class OsgiNetworkServerControl implements InitializingBean, DisposableBean {
 
-
-
     private static Log logger = LogFactory.getLog(OsgiNetworkServerControl.class);
 
     private Map<String, NetworkServer> servers = new HashMap<String, NetworkServer>();
+
+    private Set<NetworkServerDescriptor> serverDescriptors = new HashSet<NetworkServerDescriptor>();
 
     private boolean running;
 
@@ -30,9 +28,27 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
         logger.debug("Creating Osgi based Derby Server Control component");
     }
 
-    public void afterPropertiesSet() throws Exception {
-        logger.info("Starting Apache Derby OSGi Network server control");
+    // Spring friendly methods
+    public Set<NetworkServerDescriptor> getServerDescriptors() {
+        return serverDescriptors;
+    }
+
+    // Spring friendly methods
+    public void setServerDescriptors(Set<NetworkServerDescriptor> serverDescriptors) {
+        this.serverDescriptors = serverDescriptors;
+    }
+
+    public synchronized void afterPropertiesSet() throws Exception {
+        logger.info("Starting Apache Derby OSGi Network server control ... ");
         running = true;
+
+        for (NetworkServerDescriptor sd : serverDescriptors) {
+            NetworkServer server = servers.get(sd.getPort() + "");
+            if (server == null) {
+                server = new NetworkServer(sd.getPort() + "", sd);
+                this.servers.put(server.id, server);
+            }
+        }
 
         for (NetworkServer server : servers.values()) {
             if (!server.isStarted()) {
@@ -43,13 +59,13 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
         }
     }
 
-    public void destroy() throws Exception {
-        logger.info("Starting Apache Derby OSGi Network server control");
+    public synchronized void destroy() throws Exception {
+        logger.info("Stopping Apache Derby OSGi Network server control");
         running = false;
         for (NetworkServer server : servers.values()) {
             if (server.isStarted()) {
                 if (logger.isDebugEnabled())
-                    logger.debug("Stoping server " + server.getId());
+                    logger.debug("Stopping server " + server.getId());
                 server.stop();
             }
         }
@@ -64,10 +80,11 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
         if (logger.isDebugEnabled())
             logger.debug("Registering Network Server Descriptor " + serverDescriptor);
 
-        NetworkServer server = new NetworkServer(serverDescriptor.getPort() + "", serverDescriptor);
-        this.servers.put(server.id, server);
+        serverDescriptors.add(serverDescriptor);
 
         if (isRunning()) {
+            NetworkServer server = new NetworkServer(serverDescriptor.getPort() + "", serverDescriptor);
+            this.servers.put(server.id, server);
             if (logger.isDebugEnabled())
                 logger.debug("Starting server " + server.getId());
             server.start();
@@ -78,11 +95,24 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
         if (logger.isDebugEnabled())
             logger.debug("Unregistering Network Server Descriptor " + serverDescriptor);
 
-        NetworkServer server = servers.get(serverDescriptor.getPort() + "");
 
+        NetworkServerDescriptor toRemove = null;
+        for (NetworkServerDescriptor sd : serverDescriptors) {
+            if (sd.getPort() == serverDescriptor.getPort()) {
+                toRemove = sd;
+                break;
+            }
+        }
+
+        if (toRemove != null)
+            serverDescriptors.remove(toRemove);
+
+        NetworkServer server = servers.remove(serverDescriptor.getPort() + "");
         if (logger.isDebugEnabled())
             logger.debug("Stoping server " + server.getId());
         server.stop();
+
+
     }
 
     class NetworkServer {
@@ -153,7 +183,7 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
                             // wait for a second and try again
                             try { synchronized (this) { wait(1000); } } catch (InterruptedException ierr) {/**/}
                         }
-                        // Update time 
+                        // Update time
                         now = System.currentTimeMillis();
 
                     }
