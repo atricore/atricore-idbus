@@ -25,8 +25,6 @@ import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
 import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundException;
 import com.atricore.idbus.console.lifecycle.main.exception.ProvisioningBusinessException;
-//import com.atricore.idbus.console.lifecycle.main.spi.request.*;
-//import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 
 /**
  * Author: Dejan Maric
