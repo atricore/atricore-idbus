@@ -9,6 +9,8 @@ import java.util.Set;
  */
 public class LocalProvider extends Provider {
 
+    private static final long serialVersionUID = 2967386484748634148L;
+
     private ProviderConfig config;
 
     // RFU
@@ -19,7 +21,6 @@ public class LocalProvider extends Provider {
 
     private IdentityLookup identityLookup;
 
-    private static final long serialVersionUID = 2967662484748634148L;
 
     public ProviderConfig getConfig() {
         return config;

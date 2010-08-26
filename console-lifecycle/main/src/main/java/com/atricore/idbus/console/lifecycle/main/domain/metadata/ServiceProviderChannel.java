@@ -37,8 +37,6 @@ public class ServiceProviderChannel extends FederatedChannel {
     // RFU
     private AuthenticationAssertionEmissionPolicy emissionPolicy;
 
-    private IdentityLookup identityLookup;
-
     public AttributeProfile getAttributeProfile() {
         return attributeProfile;
     }
@@ -53,14 +51,6 @@ public class ServiceProviderChannel extends FederatedChannel {
 
     public void setAuthenticationMechanism(AuthenticationMechanism authenticationMechanism) {
         this.authenticationMechanism = authenticationMechanism;
-    }
-
-    public IdentityLookup getIdentityLookup() {
-        return identityLookup;
-    }
-
-    public void setIdentityLookup(IdentityLookup identityLookup) {
-        this.identityLookup = identityLookup;
     }
 
     public AuthenticationContract getAuthenticationContract() {

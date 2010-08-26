@@ -70,6 +70,7 @@
         <class name="LocalProvider" table="ATC_LOCAL_PROVIDER">
             <field name="activeBindings" table="ATC_PROVIDER_BINDINGS"/>
             <field name="activeProfiles" table="ATC_PROVIDER_PROFILES"/>
+            
         </class>
         <class name="Location" table="ATC_LOCATION"/>
         <class name="Organization" table="ATC_ORGANIZATION"/>

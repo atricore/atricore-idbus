@@ -91,6 +91,7 @@ public class PersistenceTest {
 
         ida1 = newApplianceInstance("ida1");
 
+        // Let's check that we get what we sent !
         assertAppliancesAreEqual(ida1, ida1Test, true);
     }
 
@@ -320,11 +321,14 @@ public class PersistenceTest {
 
                         boolean found = false;
                         for (FederatedConnection testC : testSp.getFederatedConnectionsA()) {
-                            if (originalC.getId() == testC.getId()) {
+                            if (!ignoreIds && originalC.getId() == testC.getId()) {
                                 found = true;
                                 assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
                                 break;
-
+                            } else if (originalC.getName().equals(testC.getName())) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
                             }
                         }
 
@@ -340,11 +344,15 @@ public class PersistenceTest {
 
                         boolean found = false;
                         for (FederatedConnection testC : testSp.getFederatedConnectionsB()) {
-                            if (originalC.getId() == testC.getId()) {
+
+                            if (!ignoreIds && originalC.getId() == testC.getId()) {
                                 found = true;
                                 assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
                                 break;
-
+                            } else if (originalC.getName().equals(testC.getName())) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
                             }
                         }
 
@@ -367,7 +375,12 @@ public class PersistenceTest {
 
                         boolean found = false;
                         for (FederatedConnection testC : testIdp.getFederatedConnectionsA()) {
-                            if (originalC.getId() == testC.getId()) {
+
+                            if (!ignoreIds && originalC.getId() == testC.getId()) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
+                            } else if (originalC.getName().equals(testC.getName())) {
                                 found = true;
                                 assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
                                 break;
@@ -386,7 +399,11 @@ public class PersistenceTest {
 
                         boolean found = false;
                         for (FederatedConnection testC : testIdp.getFederatedConnectionsB()) {
-                            if (originalC.getId() == testC.getId()) {
+                            if (!ignoreIds && originalC.getId() == testC.getId()) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
+                            } else if (originalC.getName().equals(testC.getName())) {
                                 found = true;
                                 assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
                                 break;

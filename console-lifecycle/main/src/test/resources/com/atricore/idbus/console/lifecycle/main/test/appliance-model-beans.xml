@@ -97,6 +97,8 @@
             </set>
         </property>
 
+        <property name="identityLookup" ref="idp1-idlookup"/>
+
         <property name="config">
             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig">
                 <property name="name" value="idp1-samlr2-config"/>
@@ -134,7 +136,14 @@
             </bean>
         </property>
     </bean>
-    
+
+    <bean name="idp1-idlookup" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityLookup">
+        <property name="name" value="idp1-idlookup"/>
+        <property name="description" value="IDP 1 Identity Lookup definition"/>
+        <property name="provider" ref="idp1"/>
+        <property name="identitySource" ref="idsource1"/>
+    </bean>
+
     <!-- =========================================== -->
     <!-- SP 1 -->
     <!-- =========================================== -->
@@ -154,6 +163,7 @@
         </property>
 
         <property name="activation" ref="sp1-josso-activation"/>
+        <property name="identityLookup" ref="sp1-idlookup"/>
 
         <property name="config">
             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig">
@@ -242,6 +252,13 @@
         <property name="executionEnv" ref="execEnv1"/>
         <property name="sp" ref="sp1"/>
         
+    </bean>
+
+    <bean name="sp1-idlookup" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityLookup">
+        <property name="name" value="sp1-idlookup"/>
+        <property name="description" value="SP 1 Identity Lookup definition"/>
+        <property name="provider" ref="sp1"/>
+        <property name="identitySource" ref="idsource1"/>
     </bean>
 
     <bean name="execEnv1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.JbossExecutionEnvironment">

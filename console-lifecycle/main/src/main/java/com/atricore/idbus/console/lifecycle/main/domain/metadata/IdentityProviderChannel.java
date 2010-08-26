@@ -25,8 +25,6 @@ public class IdentityProviderChannel extends FederatedChannel {
 
 	private static final long serialVersionUID = 8276649486690667445L;
 
-    private IdentityLookup identityLookup;
-
     private AccountLinkagePolicy accountLinkagePolicy;
 
     // RFU
@@ -34,14 +32,6 @@ public class IdentityProviderChannel extends FederatedChannel {
 
     // RFU
     private AuthenticationMechanism authenticationMechanism;
-
-    public IdentityLookup getIdentityLookup() {
-        return identityLookup;
-    }
-
-    public void setIdentityLookup(IdentityLookup identityLookup) {
-        this.identityLookup = identityLookup;
-    }
 
     public AccountLinkagePolicy getAccountLinkagePolicy() {
         return accountLinkagePolicy;
