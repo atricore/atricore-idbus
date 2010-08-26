@@ -36,6 +36,8 @@
 
         <class name="Activation" detachable="true">
             <inheritance strategy="new-table"/>
+            <field name="sp" mapped-by="activation"/>
+            <field name="executionEnv"/>
         </class>
 
         <class name="AttributeProfile" detachable="true">
@@ -92,22 +94,27 @@
         <class name="Feature"/>
 
         <class name="FederatedChannel" detachable="true">
-            <field name="connectionA" mapped-by="channelA"  dependent="true"/>
-            <field name="connectionB" mapped-by="channelB"  dependent="true"/>
+            <field name="connectionA" mapped-by="channelA" />
+            <field name="connectionB" mapped-by="channelB" />
         </class>
 
         <class name="FederatedConnection" detachable="true">
             <inheritance strategy="new-table"/>
-            <field name="roleA" default-fetch-group="true"  dependent="true"/>
-            <field name="channelA" default-fetch-group="true" />
-            <field name="roleB" default-fetch-group="true"  dependent="true"/>
-            <field name="channelB" default-fetch-group="true" />
+            <field name="roleA" default-fetch-group="true"  />
+            <field name="channelA" default-fetch-group="true" dependent="true" />
+            <field name="roleB" default-fetch-group="true" />
+            <field name="channelB" default-fetch-group="true" dependent="true"/>
         </class>
 
         <class name="FederatedProvider" detachable="true">
             <inheritance strategy="new-table"/>
-            <field name="federatedConnectionsA" persistence-modifier="persistent" mapped-by="roleA"/>
-            <field name="federatedConnectionsB" persistence-modifier="persistent" mapped-by="roleB"/>
+
+            <field name="federatedConnectionsA" default-fetch-group="true" persistence-modifier="persistent" mapped-by="roleA">
+                <collection dependent-element="true"/>
+            </field>
+            <field name="federatedConnectionsB" default-fetch-group="true" persistence-modifier="persistent" mapped-by="roleB">
+                <collection dependent-element="true"/>
+            </field>
         </class>
 
         <class name="IdentityApplianceDefinition" detachable="true">
@@ -121,13 +128,13 @@
                 <collection dependent-element="true" />
 			</field>
             <field name="location" default-fetch-group="true" dependent="true"/>
-            <field name="keystore" default-fetch-group="true" />
+            <field name="keystore" default-fetch-group="true" dependent="true"/>
         </class>
         
         <class name="IdentityLookup" detachable="true">
             <field name="id" value-strategy="native" primary-key="true"/>
             <field name="identitySource" default-fetch-group="true"/>
-            <field name="provider" default-fetch-group="true" />
+            <field name="provider" default-fetch-group="true" mapped-by="identityLookup" />
         </class>
 
         <class name="IdentityProvider" detachable="true">
@@ -153,7 +160,6 @@
 
         <class name="JOSSOActivation" detachable="true">
             <inheritance strategy="new-table"/>
-
         </class>
 
         <class name="Keystore" detachable="true">
@@ -176,6 +182,9 @@
             <field name="activeProfiles" default-fetch-group="true">
                 <join delete-action="cascade"/>
             </field>
+
+            <field name="identityLookup" default-fetch-group="true" dependent="true"/>
+
         </class>
 
         <class name="Location" detachable="true">
@@ -191,9 +200,7 @@
         <class name="Provider" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="id" value-strategy="native" primary-key="true"/>
-            <field name="identityAppliance" default-fetch-group="true" persistence-modifier="persistent">
-                <column name="IDAPPLIANCEDEFINITION_ID"/>
-            </field>
+            <field name="identityAppliance" default-fetch-group="true" persistence-modifier="persistent"/>
             <field name="location" default-fetch-group="true" dependent="true"/>
         </class>
 
@@ -231,6 +238,7 @@
 
         <class name="ServiceProvider" detachable="true">
             <inheritance strategy="new-table"/>
+            <field name="activation" default-fetch-group="true"/>
         </class>
         
         <class name="ServiceProviderChannel" detachable="true">

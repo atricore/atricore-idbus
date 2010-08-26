@@ -201,7 +201,7 @@
     </bean>
     
     <bean name="idp1-sp1-fed" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.FederatedConnection">
-        
+        <property name="name" value="idp1-sp1-fed"/>
         <property name="roleA" ref="idp1"/>
         <property name="channelA">
             
@@ -220,7 +220,7 @@
                 <property name="overrideProviderSetup" value="false"/>
             </bean>
         </property>
-        
+
     </bean>
     
     <bean name="sp1-josso-activation" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation">

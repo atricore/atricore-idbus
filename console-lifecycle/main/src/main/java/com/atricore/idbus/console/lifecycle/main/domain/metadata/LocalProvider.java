@@ -17,6 +17,8 @@ public class LocalProvider extends Provider {
     // RFU
     private Set<Profile> activeProfiles = new HashSet<Profile>();
 
+    private IdentityLookup identityLookup;
+
     private static final long serialVersionUID = 2967662484748634148L;
 
     public ProviderConfig getConfig() {
@@ -49,5 +51,11 @@ public class LocalProvider extends Provider {
         this.activeProfiles = activeProfiles;
     }
 
+    public IdentityLookup getIdentityLookup() {
+        return identityLookup;
+    }
 
+    public void setIdentityLookup(IdentityLookup identityLookup) {
+        this.identityLookup = identityLookup;
+    }
 }

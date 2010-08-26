@@ -34,13 +34,20 @@
         <class name="AuthenticationMechanism" table="ATC_AUTHENTICATION_MECHANISM" />
         <class name="AuthenticationContract" table="ATC_AUTHENTICATION_CONTRACT" />
         <class name="Channel" table="ATC_CHANNEL">
+            <field name="name" >
+                <column allows-null="false"/>
+            </field>
             <field name="activeBindings" table="ATC_CHANNEL_BINDINGS"/>
             <field name="activeProfiles" table="ATC_CHANNEL_PROFILES"/>
         </class>
-        <class name="Connection" table="ATC_CONNECTION"/>
+        <class name="Connection" table="ATC_CONNECTION">
+            <field name="name" >
+                <column allows-null="false"/>
+            </field>
+        </class>
         <class name="DbIdentitySource" table="ATC_DB_ID_SOURCE"/>
         <class name="EmbeddedIdentitySource" table="ATC_EMBEDDED_ID_SOURCE"/>
-        <class name="ExecutionIdentitySource" table="ATC_EXECUTION"/>
+        <class name="ExecutionEnvironment" table="ATC_EXECUTION_ENV"/>
         <class name="Feature" table="ATC_FEATURE"/>
         <class name="FederatedChannel" table="ATC_FEDERATED_CHANNEL"/>
         <class name="FederatedConnection" table="ATC_FEDERATED_CONNECTION"/>
@@ -53,23 +60,35 @@
             <field name="identitySources" />
         </class>
         <class name="IdentityLookup" table="ATC_ID_LOOKUP"/>
-        <class name="IdentityProvider" table="ATC_IDP">
-            <field name="federatedConnections" />
-        </class>
+        <class name="IdentityProvider" table="ATC_IDP"/>
         <class name="IdentityProviderChannel" table="ATC_IDP_CHANNEL"/>
         <class name="IdentitySource" table="ATC_ID_SOURCE"/>
         <class name="JbossExecutionEnvironment" table="ATC_JBOSS_EXECENV"/>
         <class name="JOSSOActivation" table="ATC_JOSSO_ACTIVATION"/>
         <class name="Keystore" table="ATC_KEYSTORE" />
         <class name="LdapIdentitySource" table="ATC_LDAP_ID_SOURCE"/>
-        <class name="LocalProvider" table="ATC_LOCAL_PROVIDER"/>
+        <class name="LocalProvider" table="ATC_LOCAL_PROVIDER">
+            <field name="activeBindings" table="ATC_PROVIDER_BINDINGS"/>
+            <field name="activeProfiles" table="ATC_PROVIDER_PROFILES"/>
+        </class>
         <class name="Location" table="ATC_LOCATION"/>
         <class name="Organization" table="ATC_ORGANIZATION"/>
-        <class name="Provider" table="ATC_PROVIDER"/>
+        <class name="Provider" table="ATC_PROVIDER">
+            <field name="identityAppliance" >
+                <column name="ID_APPLIANCE_DEF_ID"/>
+            </field>
+            <field name="name" >
+                <column allows-null="false"/>
+            </field>
+        </class>
         <class name="ProviderRole" table="ATC_PROVIDER_ROLE"/>
         <class name="ProvisioningServiceProvider" table="ATC_PSP"/>
         <class name="RemoteProvider" table="ATC_REMOTE_PROVIDER"/>
-        <class name="Resource" table="ATC_RESOURCE" />
+        <class name="Resource" table="ATC_RESOURCE" >
+            <field name="name" >
+                <column allows-null="false"/>
+            </field>
+        </class>
         <class name="SamlR2IDPConfig" table="ATC_SAMLR2_IDP_CONFIG"/>
         <class name="SamlR2ProviderConfig" table="ATC_SAMLR2_PROVIDER_CONFIG" />
         <class name="SamlR2SPConfig" table="ATC_SAMLR2_SP_CONFIG" />

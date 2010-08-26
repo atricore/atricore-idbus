@@ -25,13 +25,9 @@ import java.util.Set;
 
 public class ServiceProvider extends FederatedProvider {
 
-	private static final long serialVersionUID = 1096573594152761313L;
+	private static final long serialVersionUID = 1098843994152761313L;
 
     private Activation activation;
-
-    private IdentityLookup identityLookup;
-    
-    private IdentitySource identitySource;
 
     private AccountLinkagePolicy accountLinkagePolicy;
 
@@ -60,11 +56,4 @@ public class ServiceProvider extends FederatedProvider {
         this.activation = activation;
     }
 
-    public IdentityLookup getIdentityLookup() {
-        return identityLookup;
-    }
-
-    public void setIdentityLookup(IdentityLookup identityLookup) {
-        this.identityLookup = identityLookup;
-    }
 }

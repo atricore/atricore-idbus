@@ -43,10 +43,10 @@ public class IdentityProvider extends FederatedProvider {
     // RFU
     private AuthenticationAssertionEmissionPolicy emissionPolicy;
 
-    private IdentityLookup identityLookup;
-
+    // RFU
     private Set<Binding> activeBindings;
 
+    // RFU
     private Set<Profile> activeProfiles;
 
     @Override
@@ -105,14 +105,6 @@ public class IdentityProvider extends FederatedProvider {
 
     public void setEmissionPolicy(AuthenticationAssertionEmissionPolicy emissionPolicy) {
         this.emissionPolicy = emissionPolicy;
-    }
-
-    public IdentityLookup getIdentityLookup() {
-        return identityLookup;
-    }
-
-    public void setIdentityLookup(IdentityLookup identityLookup) {
-        this.identityLookup = identityLookup;
     }
 
 }

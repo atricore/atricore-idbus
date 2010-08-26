@@ -65,6 +65,7 @@ public class PersistenceTest {
             long timeout = Long.parseLong(strTestTimeout);
             synchronized (Thread.currentThread()) {
                 logger.info("Waiting for Test " + timeout + " ms (0 waits for ever  ...)");
+                System.out.println("Waiting for Test " + timeout + " ms (0 waits for ever  ...)");
                 try { Thread.currentThread().wait(timeout); } catch (InterruptedException e) { /**/ }
             }
         }
@@ -313,6 +314,7 @@ public class PersistenceTest {
                 assertActivationsAreEqual(originalSp.getActivation(), testSp.getActivation(), ignoreIds);
 
                 if (originalSp.getFederatedConnectionsA() != null) {
+                    TestCase.assertEquals(originalSp.getFederatedConnectionsA().size(), testSp.getFederatedConnectionsA().size());
 
                     for (FederatedConnection originalC : originalSp.getFederatedConnectionsA()) {
 
@@ -331,6 +333,8 @@ public class PersistenceTest {
                 }
 
                 if (originalSp.getFederatedConnectionsB() != null) {
+
+                    TestCase.assertEquals(originalSp.getFederatedConnectionsB().size(), testSp.getFederatedConnectionsB().size());
 
                     for (FederatedConnection originalC : originalSp.getFederatedConnectionsB()) {
 
@@ -356,6 +360,9 @@ public class PersistenceTest {
                 assertIdenityLookupsAreEqual(originalIdp.getIdentityLookup(), testIdp.getIdentityLookup(), ignoreIds);
 
                 if (originalIdp.getFederatedConnectionsA() != null) {
+
+                    TestCase.assertEquals(originalIdp.getFederatedConnectionsA().size(), testIdp.getFederatedConnectionsA().size());
+
                     for (FederatedConnection originalC : originalIdp.getFederatedConnectionsA()) {
 
                         boolean found = false;
@@ -372,6 +379,9 @@ public class PersistenceTest {
                 }
 
                 if (originalIdp.getFederatedConnectionsB() != null) {
+
+                    TestCase.assertEquals(originalIdp.getFederatedConnectionsB().size(), testIdp.getFederatedConnectionsB().size());
+
                     for (FederatedConnection originalC : originalIdp.getFederatedConnectionsB()) {
 
                         boolean found = false;
@@ -474,7 +484,6 @@ public class PersistenceTest {
     }
 
     protected IdentityAppliance newApplianceInstance(String name) {
-
         ApplicationContext ctx = new ClassPathXmlApplicationContext("/com/atricore/idbus/console/lifecycle/main/test/appliance-model-beans.xml");
         return (IdentityAppliance) ctx.getBean(name);
     }
