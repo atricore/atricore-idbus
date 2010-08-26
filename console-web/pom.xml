@@ -219,6 +219,7 @@
                             oasis.names.tc.spml._2._0.wsdl,
                             oasis.names.tc.spml._2._0.search,
                             org.atricore.idbus.kernel.main.util,
+                            org.atricore.idbus.kernel.main.mediation,
                             org.atricore.idbus.capabilities.spmlr2.main,
                             org.atricore.idbus.capabilities.spmlr2.main.binding,
                             org.apache.camel.component.cxf.converter,
@@ -264,6 +265,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <properties>
+        <javax.jaxws-api.version>2.1-1</javax.jaxws-api.version>
+        <servicemix.specs.version>1.2.0</servicemix.specs.version>
+        <servicemix.jaxb-impl.version>2.1.6_1</servicemix.jaxb-impl.version>
+    </properties>
 
     <dependencies>
 
@@ -416,7 +423,13 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-cxf</artifactId>
-            <scope>provided</scope>            
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
@@ -596,12 +609,15 @@
                                     javax.naming,
                                     javax.naming.spi,
                                     javax.xml.xpath,
+                                    javax.xml.bind,
                                     javax.xml.parsers,
                                     javax.xml.stream,
                                     javax.xml.transform,
                                     javax.xml.transform.dom,
                                     javax.xml.transform.stream,
                                     javax.xml.validation,
+                                    org.apache.servicemix.specs,
+                                    org.apache.servicemix.bundles,
                                     javax.sql,
                                     javax.servlet.http; version="[2.5.0,3.0.0]",
                                     javax.servlet; version="[2.5.0,3.0.0]",

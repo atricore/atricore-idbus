@@ -44,6 +44,8 @@
         <datanucleus-version>2.0.3</datanucleus-version>
         -->
         <idbus.cap.spml2.version>1.0.0-SNAPSHOT</idbus.cap.spml2.version>
+        <servicemix.specs.version>1.2.0</servicemix.specs.version>
+        <servicemix.jaxb-impl.version>2.1.6_1</servicemix.jaxb-impl.version>
     </properties>
 
     <dependencies>
@@ -319,9 +321,15 @@
             <artifactId>blazeds-core</artifactId>
         </dependency>
 
-         <dependency>
+        <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-cxf</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -366,6 +374,7 @@
                             org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
                             javax.jdo; version="[2.3.0,2.3.0]",
                             org.apache.camel.component.cxf.converter,
+                            javax.xml.bind,
                             *
                         </Import-Package>
                     </instructions>

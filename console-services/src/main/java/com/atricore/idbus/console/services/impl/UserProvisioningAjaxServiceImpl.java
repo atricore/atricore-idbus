@@ -39,12 +39,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.binding.SPMLR2MessagingConstants;
+import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.dozer.DozerBeanMapper;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
+import java.util.ArrayList;
 
 /**
  * Author: Dejan Maric
@@ -55,6 +57,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
     UserProvisioningService provisioningService;
 
     private String targetId;
+    private String pspChannel;
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
     SPMLRequestPortType port;
     private DozerBeanMapper dozerMapper;
@@ -136,8 +139,6 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlQry.setTargetID(targetId);
         String qry="";
 
-
-
         SelectionType spmlSelect = new SelectionType();
         spmlSelect.setNamespaceURI("http://www.w3.org/TR/xpath20");
 
@@ -153,36 +154,154 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
                 spmlSelect
         );
 
-
         spmlQry.getAny().add(jaxbSelect);
-
         searchRequest.setQuery(spmlQry);
 
         SearchResponseType resp  = port.spmlSearchRequest(searchRequest);
+
         FindGroupByNameResponse response = new FindGroupByNameResponse();
+
+        if (resp.getPso().size() == 1) {
+            GroupType spmlGroup = (GroupType) resp.getPso().get(0).getData();
+            response.setGroup(toGroupDTO(spmlGroup));
+        }
 
         return response;
     }
 
     public ListGroupResponse getGroups() throws ProvisioningBusinessException {
 
-        ListGroupResponse lstGroup = new ListGroupResponse();
+        SearchRequestType searchRequest = new SearchRequestType();
+        searchRequest.setRequestID(uuidGenerator.generateId());
+        searchRequest.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
-        return lstGroup;
+        SearchQueryType spmlQry  = new SearchQueryType();
+        spmlQry.setScope(ScopeType.ONE_LEVEL);
+        spmlQry.setTargetID(targetId);
+        String qry="";
+
+        SelectionType spmlSelect = new SelectionType();
+        spmlSelect.setNamespaceURI("http://www.w3.org/TR/xpath20");
+
+        qry = "/groups";
+
+        spmlSelect.setPath(qry);
+        spmlSelect.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
+
+        JAXBElement jaxbSelect= new JAXBElement(
+                new QName(SPMLR2Constants.SPML_NS, "Selection"),
+                spmlSelect.getClass(),
+                spmlSelect
+        );
+
+        spmlQry.getAny().add(jaxbSelect);
+        searchRequest.setQuery(spmlQry);
+
+        SearchResponseType resp  = port.spmlSearchRequest(searchRequest);
+
+        ListGroupResponse lstGroupsResponse = new ListGroupResponse();
+        ArrayList<GroupDTO> groups = new ArrayList<GroupDTO>();
+
+        for (PSOType psoGroup : resp.getPso()) {
+            psoGroup.getPsoID();
+            GroupType spmlGroup = (GroupType) psoGroup.getData();
+            groups.add(toGroupDTO(spmlGroup));
+        }
+
+        GroupDTO grps[] = new GroupDTO[resp.getPso().size()];
+        grps = groups.toArray(grps);
+
+        lstGroupsResponse.setGroups(grps);
+
+        return lstGroupsResponse;
     }
 
-    public SearchGroupResponse searchGroups(SearchGroupRequest groupRequest) throws ProvisioningBusinessException {
-        SearchGroupResponse srchGroup = new SearchGroupResponse();
+    public SearchGroupResponse searchGroups(SearchGroupRequest searchGroupsRequest) throws ProvisioningBusinessException {
+        SearchRequestType searchRequest = new SearchRequestType();
+        searchRequest.setRequestID(uuidGenerator.generateId());
+        searchRequest.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
-        return srchGroup;
+        SearchQueryType spmlQry  = new SearchQueryType();
+        spmlQry.setScope(ScopeType.ONE_LEVEL);
+        spmlQry.setTargetID(targetId);
+        String qry="";
+
+        SelectionType spmlSelect = new SelectionType();
+        spmlSelect.setNamespaceURI("http://www.w3.org/TR/xpath20");
+
+        if ( !"".equals(searchGroupsRequest.getName()) &&
+                !"".equals(searchGroupsRequest.getDescription()))
+            qry = "/groups[name='"+searchGroupsRequest.getName()+"' | description='"+searchGroupsRequest.getDescription()+"']";
+        else if (!"".equals(searchGroupsRequest.getName()) &&
+                "".equals(searchGroupsRequest.getDescription())) {
+            qry = "/groups[name='"+searchGroupsRequest.getName()+"']";
+
+        }
+        else if ("".equals(searchGroupsRequest.getName()) &&
+                !"".equals(searchGroupsRequest.getDescription())) {
+            qry = "/groups[description='"+searchGroupsRequest.getDescription()+"']";
+        }
+
+        spmlSelect.setPath(qry);
+        spmlSelect.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
+
+        JAXBElement jaxbSelect= new JAXBElement(
+                new QName(SPMLR2Constants.SPML_NS, "Selection"),
+                spmlSelect.getClass(),
+                spmlSelect
+        );
+
+        spmlQry.getAny().add(jaxbSelect);
+        searchRequest.setQuery(spmlQry);
+
+        SearchResponseType resp  = port.spmlSearchRequest(searchRequest);
+
+        SearchGroupResponse srchGroupResponse = new SearchGroupResponse();
+        ArrayList<GroupDTO> groups = new ArrayList<GroupDTO>();
+
+        for (PSOType psoGroup : resp.getPso()) {
+            psoGroup.getPsoID();
+            GroupType spmlGroup = (GroupType) psoGroup.getData();
+            groups.add(toGroupDTO(spmlGroup));
+        }
+
+        srchGroupResponse.setGroups(groups);
+
+        return srchGroupResponse;
     }
 
     public UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest) throws ProvisioningBusinessException {
-        com.atricore.idbus.console.lifecycle.main.spi.request.UpdateGroupRequest beReq =
-                dozerMapper.map(groupRequest, com.atricore.idbus.console.lifecycle.main.spi.request.UpdateGroupRequest.class);
+        ModifyRequestType modifyGroupRequest = new ModifyRequestType();
+        modifyGroupRequest.setRequestID(uuidGenerator.generateId());
+        modifyGroupRequest.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
-        com.atricore.idbus.console.lifecycle.main.spi.response.UpdateGroupResponse beRes = provisioningService.updateGroup(beReq);
-        return dozerMapper.map(beRes, UpdateGroupResponse.class);
+        PSOType psoGroup = null;
+        try {
+            psoGroup = lookupGroup(groupRequest.getId());
+        } catch (IdentityMediationException e) {
+            e.printStackTrace();  
+        }
+
+        GroupType spmlGroup = (GroupType) psoGroup.getData();
+
+        if (!"".equals(groupRequest.getName()))
+            spmlGroup.setName(groupRequest.getName());
+
+        if (!"".equals(groupRequest.getDescription()))
+            spmlGroup.setDescription(groupRequest.getDescription());
+
+        ModificationType mod = new ModificationType();
+
+        mod.setModificationMode(ModificationModeType.REPLACE);
+        mod.setData(spmlGroup);
+
+        modifyGroupRequest.setPsoID(psoGroup.getPsoID());
+        modifyGroupRequest.getModification().add(mod);
+
+        ModifyResponseType resp = port.spmlModifyRequest(modifyGroupRequest);
+
+        UpdateGroupResponse response = new UpdateGroupResponse();
+        return response;
     }
 
     public RemoveUserResponse removeUser(RemoveUserRequest userRequest) throws java.lang.Exception {
@@ -245,6 +364,41 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         return dozerMapper.map(beRes, GetUsersByGroupResponse.class);
     }
 
+    protected PSOType lookupGroup(Long id) throws IdentityMediationException {
+
+        PSOIdentifierType psoGroupId = new PSOIdentifierType();
+        psoGroupId.setTargetID(targetId);
+        psoGroupId.setID(id + "");
+        psoGroupId.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
+
+        LookupRequestType spmlRequest = new LookupRequestType();
+        spmlRequest.setRequestID(uuidGenerator.generateId());
+        spmlRequest.setPsoID(psoGroupId);
+
+        LookupResponseType resp = port.spmlLookupRequest(spmlRequest);
+
+        return resp.getPso();
+
+    }
+
+    protected PSOType lookupUser(Long id) throws IdentityMediationException {
+
+        PSOIdentifierType psoUserId = new PSOIdentifierType();
+        psoUserId.setTargetID(targetId);
+        psoUserId.setID(id + "");
+        psoUserId.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
+
+        LookupRequestType spmlRequest = new LookupRequestType();
+        spmlRequest.setRequestID(uuidGenerator.generateId());
+        spmlRequest.setPsoID(psoUserId);
+
+        LookupResponseType resp = port.spmlLookupRequest(spmlRequest);
+
+        return resp.getPso();
+
+    }
+
+
     private GroupDTO toGroupDTO(GroupType grp) {
         GroupDTO g = new GroupDTO();
         g.setName(grp.getName());
@@ -264,4 +418,5 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
     public void setDozerMapper(DozerBeanMapper dozerMapper) {
         this.dozerMapper = dozerMapper;
     }
+
 }
