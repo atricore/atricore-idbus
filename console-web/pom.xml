@@ -204,6 +204,7 @@
                             javax.transaction.xa;resolution:=optional,
                             javax.naming,
                             javax.naming.spi,
+                            javax.xml.bind,
                             javax.xml.xpath,
                             javax.xml.parsers,
                             javax.xml.stream,
