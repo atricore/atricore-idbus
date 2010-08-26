@@ -112,7 +112,7 @@
                             oasis.names.tc.spml._2._0.suspend;version=${pom.version},
                             oasis.names.tc.spml._2._0.updates;version=${pom.version},
                             oasis.names.tc.spml._2._0.wsdl;version=${pom.version},
-                            oasis.names.tc.dsml._2._0.core;version=${pom.version}
+                            oasis.names.tc.dsml._2._0.core;version=${pom.version},
                         </Export-Package>
                         <Import-Package>
                             javax.xml.bind,

@@ -210,6 +210,19 @@
                         <Import-Package>
                                org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
                                org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
+                               oasis.names.tc.spml._2._0;version=${idbus.kernel.version},
+                               oasis.names.tc.spml._2._0.async;version=${idbus.kernel.version},
+                               oasis.names.tc.spml._2._0.atricore;version=${idbus.kernel.version},
+                               oasis.names.tc.spml._2._0.batch;version=${idbus.kernel.version},
+                               oasis.names.tc.spml._2._0.bulk;version=${idbus.kernel.version},
+                               oasis.names.tc.spml._2._0.dsml;version=${idbus.kernel.version},
+                               oasis.names.tc.spml._2._0.password;version=${idbus.kernel.version},
+                               oasis.names.tc.spml._2._0.reference;version=${idbus.kernel.version},
+                               oasis.names.tc.spml._2._0.search;version=${idbus.kernel.version},
+                               oasis.names.tc.spml._2._0.suspend;version=${idbus.kernel.version},
+                               oasis.names.tc.spml._2._0.updates;version=${idbus.kernel.version},
+                               oasis.names.tc.spml._2._0.wsdl;version=${idbus.kernel.version},
+                               oasis.names.tc.dsml._2._0.core;version=${idbus.kernel.version},
                                *
                         </Import-Package>
                     </instructions>

@@ -49,11 +49,10 @@ public class UserSearchCommand extends SpmlCommandSupport {
         spmlSelect.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
 
         JAXBElement jaxbSelect= new JAXBElement(
-                new QName( SPMLR2Constants.SPML_NS, "Selection"),
+                new QName( SPMLR2Constants.SPML_NS, "select"),
                 spmlSelect.getClass(),
                 spmlSelect
         );
-
 
         spmlQry.getAny().add(jaxbSelect);
 

@@ -2,10 +2,7 @@ package org.atricore.idbus.capabilities.spmlr2.command;
 
 import oasis.names.tc.spml._2._0.RequestType;
 import oasis.names.tc.spml._2._0.SelectionType;
-import oasis.names.tc.spml._2._0.search.ScopeType;
-import oasis.names.tc.spml._2._0.search.SearchQueryType;
-import oasis.names.tc.spml._2._0.search.SearchRequestType;
-import oasis.names.tc.spml._2._0.search.SearchResponseType;
+import oasis.names.tc.spml._2._0.search.*;
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
@@ -15,6 +12,9 @@ import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
@@ -39,8 +39,6 @@ public class GroupSearchCommand extends SpmlCommandSupport {
         spmlQry.setScope(ScopeType.ONE_LEVEL);
         spmlQry.setTargetID(targetId);
 
-        spmlRequest.setQuery(spmlQry);
-
         SelectionType spmlSelect = new SelectionType();
         spmlSelect.setNamespaceURI("http://www.w3.org/TR/xpath20");
 
@@ -50,8 +48,18 @@ public class GroupSearchCommand extends SpmlCommandSupport {
         spmlSelect.setPath(qry);
         spmlSelect.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
-        spmlQry.getAny().add(spmlSelect);
+        LogicalOperatorType spmlAnd = new LogicalOperatorType();
+        spmlAnd.getAny().add(spmlSelect);
 
+        JAXBElement jaxbSelect= new JAXBElement(
+                new QName( SPMLR2Constants.SPML_NS, "select"),
+                spmlSelect.getClass(),
+                spmlSelect
+        );
+
+        spmlQry.getAny().add(jaxbSelect);
+
+        spmlRequest.setQuery(spmlQry);
         return spmlRequest;
     }
 }

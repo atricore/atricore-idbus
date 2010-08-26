@@ -67,6 +67,10 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
     }
 
     protected ProvisioningTarget lookupTarget(String targetId) {
+
+        if (targetId == null)
+            throw new NullPointerException("Target ID cannot be null");
+
         SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) channel.getIdentityMediator();
 
         for (ProvisioningTarget target : mediator.getProvisioningTargets()) {
@@ -74,7 +78,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
                 return target;
             }
         }
-        return null;
+        throw new IllegalArgumentException("Target ID not found : " + targetId + " in SPML Mediator for " + channel.getName());
     }
     
     // ------------------------------< Utilities >

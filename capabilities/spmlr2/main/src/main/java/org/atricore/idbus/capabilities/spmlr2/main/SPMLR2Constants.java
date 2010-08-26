@@ -63,7 +63,6 @@ public interface SPMLR2Constants {
 
     static final String SPML_WSDL_NS = "urn:oasis:names:tc:SPML:2:0:wsdl";
 
-
     static final String SPML_DSML_CORE_PKG = "oasis.names.tc.dsml._2._0.core";
 
     static final String SPML_DSML_CORE_NS = "urn:oasis:names:tc:dsml:.2:.0:core";

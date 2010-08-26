@@ -6,6 +6,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
+import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -151,8 +152,7 @@ public class XmlUtils {
                 SPMLR2Constants.SPML_REFERENCE_PKG,
                 SPMLR2Constants.SPML_SEARCH_PKG,
                 SPMLR2Constants.SPML_SUSPEND_PKG,
-                SPMLR2Constants.SPML_UPDATES_PKG,
-                SPMLR2Constants.SPML_WSDL_PKG});
+                SPMLR2Constants.SPML_UPDATES_PKG});
     }
 
 
@@ -171,6 +171,15 @@ public class XmlUtils {
         jaxbContext.createMarshaller().marshal( jaxbRequest, writer);
 
         return writer.toString();
+    }
+
+    public static Object unmarshal(Node domMsg) throws Exception {
+        JAXBContext jaxbContext = createSpmlR2JAXBContext();
+        return jaxbContext.createUnmarshaller().unmarshal( domMsg );
+    }
+    public static Object unmarshal( String msg) throws Exception {
+        JAXBContext jaxbContext = createSpmlR2JAXBContext();
+        return jaxbContext.createUnmarshaller().unmarshal( new StringSource( msg ) );
     }
 
 

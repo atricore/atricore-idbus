@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.common.producers.SpmlR2Producer;
 import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
+import org.atricore.idbus.capabilities.spmlr2.main.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
@@ -26,6 +27,8 @@ import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningExcepti
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import javax.xml.bind.JAXBElement;
 import java.util.Iterator;
@@ -76,7 +79,6 @@ public class PSPProducer extends SpmlR2Producer {
             logger.error("Unknown SPML Request type : " + content.getClass().getName());
 
             spmlResponse.setStatus(StatusCodeType.FAILURE);
-
 
         }
 
@@ -179,11 +181,25 @@ public class PSPProducer extends SpmlR2Producer {
 
         Object o = any.get(0);
 
+        if (logger.isTraceEnabled())
+            logger.trace("Received SPML Selection as " + o);
+
         SelectionType spmlSelect = null;
-        if (o instanceof SelectionType ) 
+
+
+        if (o instanceof SelectionType ) {
+            // Already unmarshalled
             spmlSelect = (SelectionType) o;
+
+        } else if (o instanceof Element) {
+            // DOM Element
+            Element e = (Element) o;
+            spmlSelect = (SelectionType) XmlUtils.unmarshal(e);
+        }
         else {
+            // JAXB Element
             JAXBElement e = (JAXBElement) o;
+            logger.debug("SMPL JAXBElement " + e.getName() + "[" + e.getValue() + "]");
             spmlSelect = (SelectionType) e.getValue();
         }
 
@@ -200,7 +216,7 @@ public class PSPProducer extends SpmlR2Producer {
         if (logger.isDebugEnabled())
             logger.debug("Searching with path " + path);
 
-        if (spmlSelect.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
+        if (path.startsWith("/group")) {
             // TODO : Improve this
 
             ListGroupsResponse res = target.listGroups(new ListGroupsRequest());
@@ -223,7 +239,7 @@ public class PSPProducer extends SpmlR2Producer {
 
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
-        } else if (spmlSelect.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
+        } else if (path.startsWith("/user")) {
             // TODO : Improve this
             ListUsersResponse res = target.listUsers(new ListUsersRequest());
             User[] users = res.getUsers();
