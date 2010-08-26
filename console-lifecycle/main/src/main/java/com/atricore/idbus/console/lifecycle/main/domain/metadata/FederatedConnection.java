@@ -15,7 +15,7 @@ public class FederatedConnection extends Connection {
 
     private Channel channelB;
 
-    public Provider getRoleA() {
+    public FederatedProvider getRoleA() {
         return roleA;
     }
 
@@ -31,7 +31,7 @@ public class FederatedConnection extends Connection {
         this.channelA = channelA;
     }
 
-    public Provider getRoleB() {
+    public FederatedProvider getRoleB() {
         return roleB;
     }
 
