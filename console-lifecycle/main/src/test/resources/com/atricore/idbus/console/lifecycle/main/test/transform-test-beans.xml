@@ -25,10 +25,7 @@
     <!-- This is where the 'tree' of IDBus elements is defined. In a real world scenario, this should be created by Flex console users dynamically -->
     <import resource="appliance-model-beans.xml"/>
 
-    <!-- Use DAOs definitions from main sources -->
-    <bean name="idaDao" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityApplianceDAOImpl">
-        <property name="jdoTemplate" ref=""
-    </bean>
+    <!-- Define Transformers -->
 
     <!-- Define Transformers -->
 
@@ -59,6 +56,9 @@
     <bean name="bpTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BPTransformer"/>
 
+    <bean name="bindingChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPBindingChannelTransformer"/>
+
     <bean name="embeddedStoreTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.EmbeddedStoreTransformer"/>
 
@@ -68,8 +68,17 @@
     <bean name="samlr2MetadataTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2MetadataTransformer"/>
 
+    <bean name="samlr2IdPTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPTransformer"/>
+
+    <bean name="samlr2SPTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2SPTransformer"/>
+
     <bean name="idauSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauSerializerTransformer"/>
+
+    <bean name="identityVaultTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityVaultTransformer"/>
 
     <bean name="projectSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ProjectSerializerTransformer">
@@ -86,6 +95,8 @@
                       class="com.atricore.idbus.console.lifecycle.main.transform.serializers.VelocitySerializer"/>
                 <bean name="binarySerializer"
                       class="com.atricore.idbus.console.lifecycle.main.transform.serializers.BinarySerializer"/>
+                <bean name="copySerializer"
+                      class="com.atricore.idbus.console.lifecycle.main.transform.serializers.CopySerializer"/>
             </list>
         </property>
 
@@ -132,7 +143,7 @@
 
                             <bean name="generate"
                                   class="com.atricore.idbus.console.lifecycle.main.transform.Phase">
-                                <property name="name" value="generarte"/>
+                                <property name="name" value="generate"/>
 
                                 <property name="transformers">
                                     <list>
@@ -144,7 +155,12 @@
                                         <ref bean="stsTransformer"/>
                                         <ref bean="spTransformer"/>
                                         <ref bean="idpChannelTransformer"/>
+                                        <ref bean="identityVaultTransformer"/>
                                         <ref bean="bpTransformer"/>
+                                        <ref bean="bindingChannelTransformer"/>
+                                        <!--ref bean="samlr2MetadataTransformer"/-->
+                                        <ref bean="samlr2IdPTransformer"/>
+                                        <ref bean="samlr2SPTransformer"/>
                                     </list>
                                 </property>
 
@@ -166,13 +182,18 @@
                             <bean name="install"
                                   class="com.atricore.idbus.console.lifecycle.main.transform.Phase">
                                 <property name="name" value="install"/>
+                                <!--
+                                <property name="transformers">
+                                    <list>
+                                        <ref bean="applianceInstaller"/>
+                                    </list>
+                                </property>
+                                -->
                             </bean>
 
                         </list>
                     </property>
                 </bean>
-
-
             </list>
         </property>
     </bean>

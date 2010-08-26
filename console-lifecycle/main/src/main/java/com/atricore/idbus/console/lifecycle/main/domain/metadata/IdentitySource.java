@@ -14,10 +14,6 @@ public class IdentitySource implements Serializable {
 
     private String description;
 
-    private String type;
-
-    private boolean embedded;
-
     private static final long serialVersionUID = -1499654004861436370L;
 
     public long getId() {
@@ -42,22 +38,6 @@ public class IdentitySource implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public boolean isEmbedded() {
-        return embedded;
-    }
-
-    public void setEmbedded(boolean embedded) {
-        this.embedded = embedded;
     }
 
     @Override

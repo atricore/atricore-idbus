@@ -505,6 +505,4 @@ public class PersistenceTest {
         return (IdentityAppliance) ctx.getBean(name);
     }
 
-
-
 }
