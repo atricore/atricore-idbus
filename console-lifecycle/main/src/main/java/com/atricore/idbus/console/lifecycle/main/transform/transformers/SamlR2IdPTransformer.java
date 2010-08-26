@@ -42,7 +42,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
         try {
             IdentityProvider provider = (IdentityProvider) event.getData();
             IdProjectModule module = event.getContext().getCurrentModule();
-            String baseDestPath = (String) event.getContext().get("baseSamlDestPath");
+            String baseDestPath = (String) event.getContext().get("baseIdauDestPath");
             String providerBeanName = normalizeBeanName(provider.getName());
 
             // idp1-samlr2-metadata.xml

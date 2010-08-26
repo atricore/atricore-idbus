@@ -25,7 +25,7 @@ public class SamlR2MetadataTransformer extends AbstractTransformer {
     public void before(TransformEvent event) throws TransformException {
         try {
             IdProjectModule module = event.getContext().getCurrentModule();
-            String baseDestPath = (String) event.getContext().get("baseSamlDestPath");
+            String baseDestPath = (String) event.getContext().get("baseIdauDestPath");
 
             // idp1-samlr2-metadata.xml
             IdProjectResource<InputStream> idp1MetadataXml = new IdProjectResource<InputStream>(idGen.generateId(),

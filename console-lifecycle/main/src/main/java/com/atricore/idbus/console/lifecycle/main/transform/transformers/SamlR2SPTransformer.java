@@ -42,7 +42,7 @@ public class SamlR2SPTransformer extends AbstractTransformer {
         try {
             ServiceProvider provider = (ServiceProvider) event.getData();
             IdProjectModule module = event.getContext().getCurrentModule();
-            String baseDestPath = (String) event.getContext().get("baseSamlDestPath");
+            String baseDestPath = (String) event.getContext().get("baseIdauDestPath");
             String providerBeanName = normalizeBeanName(provider.getName());
 
             // sp1-samlr2-metadata.xml

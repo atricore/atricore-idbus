@@ -39,7 +39,7 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPTransformer"/>
 
     <bean name="spChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPChannelTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPFederatedConnectionTransformer"/>
 
     <bean name="claimsChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ClaimsChannelTransformer"/>
@@ -51,7 +51,7 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer"/>
 
     <bean name="idpChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPChannelTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SpFederatedConnectionTransformer"/>
 
     <bean name="bpTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BPTransformer"/>
@@ -83,7 +83,7 @@
     <bean name="projectSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ProjectSerializerTransformer">
 
-        <!-- property name="outputPath" value="/tmp/atricore-idbus"/-->
+        <property name="outputPath" value="${buildDir}/transform/atricore-idbus"/>
 
         <property name="serializers">
             <list>
@@ -197,4 +197,10 @@
             </list>
         </property>
     </bean>
+
+    <bean id="transformTestPropertiesPlaceHolder"
+         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:tests.properties" />
+    </bean>
+
 </beans>

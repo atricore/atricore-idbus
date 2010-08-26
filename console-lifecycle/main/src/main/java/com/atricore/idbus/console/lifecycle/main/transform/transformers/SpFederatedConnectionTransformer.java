@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.FederatedConnection;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProviderChannel;
@@ -29,13 +30,19 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class IdPChannelTransformer extends AbstractTransformer {
+public class SpFederatedConnectionTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(IdPChannelTransformer.class);
+    private static final Log logger = LogFactory.getLog(SpFederatedConnectionTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof IdentityProviderChannel;
+        if (event.getData() instanceof FederatedConnection) {
+            FederatedConnection fc = (FederatedConnection) event.getData();
+            if (fc.getRoleA() instanceof ServiceProvider || fc.getRoleB() instanceof ServiceProvider)
+                return true;
+        }
+
+        return false;
     }
 
     @Override

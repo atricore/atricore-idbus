@@ -76,7 +76,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         // Create IDAU Basic beans:
         String idauName = module.getId();
 
-        event.getContext().put("baseSamlDestPath", "org/atricore/idbus/" + idauName + "/idau/");
+        event.getContext().put("baseIdauDestPath", "org/atricore/idbus/" + idauName + "/idau/");
         
         // -------------------------------------------------------
         // Define Identity Mediation Unit bean

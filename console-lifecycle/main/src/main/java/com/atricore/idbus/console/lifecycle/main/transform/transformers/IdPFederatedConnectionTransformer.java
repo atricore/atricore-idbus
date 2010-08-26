@@ -1,10 +1,10 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
+import com.atricore.idbus.console.lifecycle.main.transform.IdApplianceTransformationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
@@ -31,22 +31,99 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SPChannelTransformer extends AbstractTransformer {
+public class IdPFederatedConnectionTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(SPChannelTransformer.class);
+    private static final Log logger = LogFactory.getLog(IdPFederatedConnectionTransformer.class);
+
+    private boolean roleA;
+
+    public boolean isRoleA() {
+        return roleA;
+    }
+
+    public void setRoleA(boolean roleA) {
+        this.roleA = roleA;
+    }
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof ServiceProviderChannel;
+        if (event.getData() instanceof FederatedConnection) {
+            FederatedConnection fc = (FederatedConnection) event.getData();
+
+            if (roleA) {
+                if (fc.getRoleA() instanceof IdentityProvider) {
+                    ServiceProviderChannel spChannel = (ServiceProviderChannel) fc.getChannelA();
+
+                    // Only accept a connection if channel overrides provider setup.
+                    return spChannel.isOverrideProviderSetup();
+                }
+            } else {
+                if (fc.getRoleB() instanceof IdentityProvider) {
+                    ServiceProviderChannel spChannel = (ServiceProviderChannel) fc.getChannelB();
+
+                    // Only accept a connection if channel overrides provider setup.
+                    return spChannel.isOverrideProviderSetup();
+                }
+
+            }
+
+        }
+
+        return false;
+            
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
 
-        Beans idpBeans = (Beans) event.getContext().get("idpBeans");
+        FederatedConnection federatedConnection = (FederatedConnection) event.getData();
 
-        ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
         IdentityProvider provider = (IdentityProvider) event.getContext().getParentNode();
+        ServiceProviderChannel spChannel = null;
+        IdentityProvider roleProvider = null;
+        FederatedProvider target = null;
+        FederatedChannel targetChannel = null;
+
+        if (roleA) {
+
+            roleProvider = (IdentityProvider) federatedConnection.getRoleA();
+            spChannel = (ServiceProviderChannel) federatedConnection.getChannelA();
+
+            target = federatedConnection.getRoleB();
+            targetChannel = federatedConnection.getChannelB();
+
+            if (!provider.getName().equals(federatedConnection.getRoleA().getName()))
+                throw new IllegalStateException("Context provider " + provider +
+                        " is not roleA provider in Federated Connection " + federatedConnection.getName());
+
+        } else {
+
+            roleProvider = (IdentityProvider) federatedConnection.getRoleB();
+            spChannel = (ServiceProviderChannel) federatedConnection.getChannelB();
+
+            target = federatedConnection.getRoleA();
+            targetChannel = federatedConnection.getChannelA();
+
+            if (!provider.getName().equals(federatedConnection.getRoleB().getName()))
+                throw new IllegalStateException("Context provider " + provider +
+                        " is not roleB provider in Federated Connection " + federatedConnection.getName());
+
+        }
+
+
+        transformProvider(provider, spChannel, federatedConnection, target, targetChannel, event.getContext());
+
+    }
+
+    protected void transformProvider(IdentityProvider provider,
+                                     ServiceProviderChannel spChannel,
+                                     FederatedConnection fc,
+                                     FederatedProvider target,
+                                     FederatedChannel targetChannel,
+                                     IdApplianceTransformationContext ctx) throws TransformException {
+
+        Beans idpBeans = (Beans) ctx.get("idpBeans");
+
 
         if (logger.isTraceEnabled())
             logger.trace("Generating Beans for SP Channel " + spChannel.getName()  + " of IdP " + provider.getName());
@@ -58,12 +135,11 @@ public class SPChannelTransformer extends AbstractTransformer {
         }
         idpBean = b.iterator().next();
 
-        boolean isDefault = false; // TODO RETROFIT  : spChannel.getTarget() == null || spChannel.getTarget().equals(provider);
-        String name = null; // TODO RETROFIT  : idpBean.getName() + (isDefault ? "-default" : "-" + normalizeBeanName(spChannel.getTarget().getName())) + "-sp-channel";
+        String name = idpBean.getName() +  "-" + normalizeBeanName(target.getName()) + "-sp-channel";
         
         Bean spChannelBean = newBean(idpBeans, name, SPChannelImpl.class.getName());
 
-        event.getContext().put("spChannelBean", spChannelBean);
+        ctx.put("spChannelBean", spChannelBean);
 
         // name
         setPropertyValue(spChannelBean, "name", spChannelBean.getName());
@@ -75,24 +151,12 @@ public class SPChannelTransformer extends AbstractTransformer {
         setPropertyValue(spChannelBean, "location", resolveLocationUrl(provider));
 
         // provider
-        // TODO RETROFIT  :
-        /*
-        if (spChannel.getTarget() != null) {
-            setPropertyRef(spChannelBean, "provider", normalizeBeanName(spChannel.getTarget().getName()));
-        } else {
-            setPropertyRef(spChannelBean, "provider", idpBean.getName());
-        }
-        */
+        setPropertyRef(spChannelBean, "provider", normalizeBeanName(target.getName()));
 
         // sessionManager
         setPropertyRef(spChannelBean, "sessionManager", idpBean.getName() + "-session-manager");
         
         // identityManager
-        // TODO RETROFIT  :
-        /*
-        if (spChannel.getIdentityVault() != null) {
-            setPropertyRef(spChannelBean, "identityManager", idpBean.getName() + "-identity-manager");
-        }  */
 
         // member
         setPropertyRef(spChannelBean, "member", idpBean.getName() + "-md");
@@ -283,11 +347,6 @@ public class SPChannelTransformer extends AbstractTransformer {
         setPropertyRef(authnToSamlPlan, "bpmsManager", "bpms-manager");
 
         Bean stmtToAssertionPlan = newBean(idpBeans, "samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
-        // TODO RETROFIT  :
-        /*
-        if (spChannel.getIdentityVault() != null) {
-            setPropertyRef(stmtToAssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
-        } */
         setPropertyRef(stmtToAssertionPlan, "bpmsManager", "bpms-manager");
 
         //Bean authnToSamlResponsePlan = newBean(idpBeans, "samlr2authnreq-to-samlr2response-plan", SamlR2AuthnReqToSamlR2RespPlan.class);

@@ -14,7 +14,7 @@ public class ExternalStoreTransformer extends AbstractTransformer {
     public boolean accept(TransformEvent event) {
         if (event.getData() instanceof IdentitySource) {
             IdentitySource iv = (IdentitySource) event.getData();
-            return !iv.isEmbedded();
+            return false;
         }
         return false;
     }

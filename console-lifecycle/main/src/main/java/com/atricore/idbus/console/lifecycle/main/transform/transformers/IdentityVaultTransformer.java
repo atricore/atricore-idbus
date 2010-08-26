@@ -55,7 +55,7 @@ public class IdentityVaultTransformer extends AbstractTransformer {
         }
 
         if (identitySource != null) {
-            String baseSamlDestPath = (String) event.getContext().get("baseSamlDestPath");
+            String baseIdauDestPath = (String) event.getContext().get("baseIdauDestPath");
 
             if (logger.isTraceEnabled())
                 logger.trace("Generating Beans for Identity Vault " + identitySource.getName()  + " of provider " + provider.getName());
@@ -107,6 +107,7 @@ public class IdentityVaultTransformer extends AbstractTransformer {
                 // DB
                 DbIdentitySource dbIdentityVault = (DbIdentitySource) identitySource;
                 identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.dbidentitystore.JDBCIdentityStore");
+                /* TODO RETROFIT  :
                 if (dbIdentityVault.isEmbedded()) {
                     setPropertyValue(identityStore, "driverName", "org.apache.derby.jdbc.ClientDriver");
                     setPropertyValue(identityStore, "connectionURL", "jdbc:derby://localhost:" + dbIdentityVault.getPort() + "/" + dbIdentityVault.getSchema() + ";create=false");
@@ -123,14 +124,14 @@ public class IdentityVaultTransformer extends AbstractTransformer {
                     setPropertyValue(identityStore, "connectionURL", dbIdentityVault.getConnectionUrl());
                     setPropertyValue(identityStore, "connectionName", dbIdentityVault.getAdmin());
                     setPropertyValue(identityStore, "connectionPassword", dbIdentityVault.getPassword());
-                    /* TODO RETROFIT  :
+
                     setPropertyValue(identityStore, "userQueryString", dbIdentityVault.getUserInformationLookup().getUserQueryString());
                     setPropertyValue(identityStore, "rolesQueryString", dbIdentityVault.getUserInformationLookup().getRolesQueryString());
                     setPropertyValue(identityStore, "credentialsQueryString", dbIdentityVault.getUserInformationLookup().getCredentialsQueryString());
                     setPropertyValue(identityStore, "userPropertiesQueryString", dbIdentityVault.getUserInformationLookup().getUserPropertiesQueryString());
                     setPropertyValue(identityStore, "resetCredentialDml", dbIdentityVault.getUserInformationLookup().getResetCredentialDml());
                     setPropertyValue(identityStore, "relayCredentialQueryString", dbIdentityVault.getUserInformationLookup().getRelayCredentialQueryString());
-                    */
+
                     
                     IdProjectResource<byte[]> driverResource = new IdProjectResource<byte[]>(idGen.generateId(),
                             "lib/", dbIdentityVault.getDriver().getName(),
@@ -139,7 +140,7 @@ public class IdentityVaultTransformer extends AbstractTransformer {
                     event.getContext().getCurrentModule().addResource(driverResource);
                     event.getContext().getCurrentModule().addEmbeddedDependency(
                             driverResource.getNameSpace() + driverResource.getName());
-                }
+                } */
             } else if (identitySource instanceof LdapIdentitySource) {
                 // LDAP
                 LdapIdentitySource ldapIdentityVault = (LdapIdentitySource) identitySource;
@@ -162,8 +163,8 @@ public class IdentityVaultTransformer extends AbstractTransformer {
             } else {
                 // memory store
                 identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.memoryidentitystore.MemoryIdentityStore");
-                setPropertyValue(identityStore, "usersFileName", "classpath:" + baseSamlDestPath + "atricore-users.xml");
-                setPropertyValue(identityStore, "credentialsFileName", "classpath:" + baseSamlDestPath + "atricore-credentials.xml");
+                setPropertyValue(identityStore, "usersFileName", "classpath:" + baseIdauDestPath + "atricore-users.xml");
+                setPropertyValue(identityStore, "credentialsFileName", "classpath:" + baseIdauDestPath + "atricore-credentials.xml");
             }
         }
     }

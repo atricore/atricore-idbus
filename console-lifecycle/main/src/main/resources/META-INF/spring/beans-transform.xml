@@ -33,8 +33,16 @@
     <bean name="idpTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPTransformer"/>
 
-    <bean name="spChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPChannelTransformer"/>
+    <bean name="idpFederatedConnectionATransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPFederatedConnectionTransformer">
+        <property name="roleA" value="true"/>
+    </bean>
+
+    <bean name="idpFederatedConnectionBTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPFederatedConnectionTransformer">
+        <property name="roleA" value="false"/>
+    </bean>
+
 
     <bean name="claimsChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ClaimsChannelTransformer"/>
@@ -45,8 +53,8 @@
     <bean name="spTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer"/>
 
-    <bean name="idpChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPChannelTransformer"/>
+    <bean name="spFederatedConnectionTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SpFederatedConnectionTransformer"/>
 
     <bean name="bpTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BPTransformer"/>
@@ -77,9 +85,6 @@
     
     <bean name="projectSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ProjectSerializerTransformer">
-
-        <!-- property name="outputPath" value="/tmp/atricore-idbus"/-->
-
         <property name="serializers">
             <list>
                 <bean name="springSerializer"
@@ -145,11 +150,14 @@
                                         <ref bean="projectSetupTransformer"/>
                                         <ref bean="idauBaseComponentsTransformer"/>
                                         <ref bean="idpTransformer"/>
-                                        <ref bean="spChannelTransformer"/>
+
+                                        <ref bean="idpFederatedConnectionATransformer"/>
+                                        <ref bean="idpFederatedConnectionBTransformer"/>
+                                        
                                         <ref bean="claimsChannelTransformer"/>
                                         <ref bean="stsTransformer"/>
                                         <ref bean="spTransformer"/>
-                                        <ref bean="idpChannelTransformer"/>
+                                        <ref bean="spFederatedConnectionTransformer"/>
                                         <ref bean="identityVaultTransformer"/>
                                         <ref bean="bpTransformer"/>
                                         <ref bean="bindingChannelTransformer"/>

@@ -25,12 +25,10 @@ public class ProjectSetupTransformer extends AbstractTransformer {
         IdApplianceProject prj = event.getContext().getProject();
         IdentityApplianceDefinition appliance = (IdentityApplianceDefinition) event.getData();
 
-
-        // TODO : Define several IDAU types
-
         // ---------------------------------------------------------------------
         // Identity Appliance Unit module for federation
         // ---------------------------------------------------------------------
+        // TODO : Support several type of IDAUs
         IdProjectModule federationIdau = new IdProjectModule(prj.getId(),
                 "federation", prj.getDefinition().getDescription(), "1.0." + appliance.getRevision() , "Federation");
         IdProjectResource<String> federationIdauPom = new IdProjectResource<String>(idGen.generateId(),
@@ -56,7 +54,7 @@ public class ProjectSetupTransformer extends AbstractTransformer {
         idAppliance.addResource(idApplianceFeatures);
 
         // ---------------------------------------------------------------------
-        // Main project
+        // Main project (root)
         // ---------------------------------------------------------------------
         IdProjectModule projectModule = new IdProjectModule(prj.getId(),
                 "project", prj.getDefinition().getDescription(), "1.0." + appliance.getRevision() , "Project");

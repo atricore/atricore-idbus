@@ -73,7 +73,8 @@ private static final Log logger = LogFactory.getLog(IdentityApplianceDefinitionW
             stack.add(idApplianceElement);
 
             // Look for an "arrive" method in the visitor for the current node
-            Method arrive = visitor.getClass().getMethod("arrive", idApplianceElement.getClass());
+            //Method arrive = visitor.getClass().getMethod("arrive", idApplianceElement.getClass());
+            Method arrive = lookupVisitorMethod(visitor, "arrive", idApplianceElement.getClass(), new Class[0]);
 
             if (logger.isTraceEnabled())
                 logger.trace("arrive        -> " + idApplianceElement.getClass().getSimpleName());
@@ -96,7 +97,9 @@ private static final Log logger = LogFactory.getLog(IdentityApplianceDefinitionW
                     // -------------------------------------------------------------------------
 
                     // Look for an "walkNextChild" method in the visitor for the current node
-                    Method walkNextChild = visitor.getClass().getMethod("walkNextChild", idApplianceElement.getClass(), Object.class, Integer.TYPE);
+                    // Method walkNextChild = visitor.getClass().getMethod("walkNextChild", idApplianceElement.getClass(), Object.class, Integer.TYPE);
+                    Method walkNextChild = lookupVisitorMethod(visitor, "walkNextChild", idApplianceElement.getClass(), new Class[] {Object.class, Integer.TYPE});
+
                     if (logger.isTraceEnabled())
                         logger.trace("walkNextChild -> " + idApplianceElement.getClass().getSimpleName());
 
@@ -114,7 +117,8 @@ private static final Log logger = LogFactory.getLog(IdentityApplianceDefinitionW
                 logger.trace("leave         -> " + idApplianceElement.getClass().getSimpleName());
 
             // Look for an "leave" method in the visitor for the current node
-            Method leave = visitor.getClass().getMethod("leave", idApplianceElement.getClass(), Object[].class);
+            // Method leave = visitor.getClass().getMethod("leave", idApplianceElement.getClass(), Object[].class);
+            Method leave = lookupVisitorMethod(visitor, "leave", idApplianceElement.getClass(), new Class[] {Object[].class});
             return (Object[]) leave.invoke(visitor, new Object[]{idApplianceElement, results});
 
         } catch (InvocationTargetException e) {
@@ -234,6 +238,61 @@ private static final Log logger = LogFactory.getLog(IdentityApplianceDefinitionW
             // TODO !
             throw new RuntimeException(e);
         }
+    }
+
+
+    protected Method lookupVisitorMethod(Object target, String methodName, Class nodeType, Class[] otherArgs) throws NoSuchMethodException {
+
+        Method[] methods = target.getClass().getMethods();
+
+        Class[] allArgs = new Class[otherArgs.length + 1];
+        allArgs[0] = nodeType;
+        for (int i = 0; i < otherArgs.length; i++) {
+            Class otherArg = otherArgs[i];
+            allArgs[i+1] = otherArg;
+        }
+
+        try {
+            return target.getClass().getMethod(methodName, allArgs);
+        } catch (NoSuchMethodException e) {
+            // No luck, look for overloaded methods ....
+        }
+
+        for (Method method : methods) {
+
+            if (!method.getReturnType().getClass().getName().equals("java.lang.Object"))
+                continue;
+
+            if (!method.getName().equals(methodName))
+                continue;
+
+            Class[] params = method.getParameterTypes();
+
+            if (params.length != otherArgs.length + 1)
+                    continue;
+
+            if (!params[0].isAssignableFrom( nodeType))
+                continue;
+
+            boolean valid = true;
+            for (int i = 1; i < params.length; i++) {
+                Class param = params[i];
+                if (param.isAssignableFrom(otherArgs[i-1])) {
+                    valid = false;
+                    break;
+                }
+
+            }
+
+            if (!valid)
+                continue;
+
+            // Gotcha!
+            return method;
+        }
+
+        throw new NoSuchMethodException(methodName);
+
     }
 
 

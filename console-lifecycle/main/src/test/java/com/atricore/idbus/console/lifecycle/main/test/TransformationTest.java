@@ -19,6 +19,9 @@
 
 package com.atricore.idbus.console.lifecycle.main.test;
 
+import com.atricore.idbus.console.lifecycle.main.transform.IdentityApplianceDefinitionVisitor;
+import com.atricore.idbus.console.lifecycle.main.transform.IdentityApplianceDefinitionWalker;
+import com.atricore.idbus.console.lifecycle.main.transform.ReflexiveIdentityApplianceDefinitionWalker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
@@ -83,8 +86,6 @@ public class TransformationTest {
                     IdentitySource ids = idl.getIdentitySource();
 
                     logger.info("provider.identityLookup.identitySourc.name     : " + ids.getName());
-                    logger.info("provider.identityLookup.identitySourc.embedded : " + ids.isEmbedded());
-                    logger.info("provider.identityLookup.identitySourc.type     : " + ids.getType());
                     logger.info("provider.identityLookup.identitySourc.class    : " + ids.getClass().getSimpleName());
 
                 }
@@ -162,8 +163,19 @@ public class TransformationTest {
 
 
     }
+    
+    @Test
+    public void walkerTest() {
+        
+        IdentityAppliance appliance = newApplianceInstance("ida1");
+        IdentityApplianceDefinitionWalker walker = new ReflexiveIdentityApplianceDefinitionWalker();
+        IdentityApplianceDefinitionVisitor visitor = new TestIdentityApplianceDefinitionVisitor() ;
 
-    //@Test
+        walker.walk(appliance.getIdApplianceDefinition(), visitor);
+    }
+    
+
+    // @Test
     public void transformTest() throws Exception {
         IdentityApplianceBuilder builder = (IdentityApplianceBuilder) applicationContext.getBean("applianceBuilder");
         IdentityApplianceDefinition iadef = (IdentityApplianceDefinition) applicationContext.getBean("idApplianceDef1");

@@ -9,11 +9,11 @@ public class FederatedConnection extends Connection {
 
     private FederatedProvider roleA;
 
-    private Channel channelA;
+    private FederatedChannel channelA;
 
     private FederatedProvider roleB;
 
-    private Channel channelB;
+    private FederatedChannel channelB;
 
     public FederatedProvider getRoleA() {
         return roleA;
@@ -23,11 +23,11 @@ public class FederatedConnection extends Connection {
         this.roleA = roleA;
     }
 
-    public Channel getChannelA() {
+    public FederatedChannel getChannelA() {
         return channelA;
     }
 
-    public void setChannelA(Channel channelA) {
+    public void setChannelA(FederatedChannel channelA) {
         this.channelA = channelA;
     }
 
@@ -39,11 +39,11 @@ public class FederatedConnection extends Connection {
         this.roleB = roleB;
     }
 
-    public Channel getChannelB() {
+    public FederatedChannel getChannelB() {
         return channelB;
     }
 
-    public void setChannelB(Channel channelB) {
+    public void setChannelB(FederatedChannel channelB) {
         this.channelB = channelB;
     }
 }
