@@ -42,6 +42,7 @@ import org.atricore.idbus.capabilities.spmlr2.main.binding.SPMLR2MessagingConsta
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.dozer.DozerBeanMapper;
+import org.springframework.beans.factory.InitializingBean;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -51,23 +52,33 @@ import java.util.ArrayList;
 /**
  * Author: Dejan Maric
  */
-public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxService {
+public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxService, InitializingBean {
     private static Log logger = LogFactory.getLog(UserProvisioningAjaxServiceImpl.class);
 
-    UserProvisioningService provisioningService;
-
-    private String targetId;
-    private String pspChannel;
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
-    SPMLRequestPortType port;
+
+    private UserProvisioningService provisioningService;
+
+    private String pspTargetId;
+
+    private String pspEndpoint;
+
+
+    private SPMLRequestPortType port;
+
+
+
+
     private DozerBeanMapper dozerMapper;
 
+    public void afterPropertiesSet() throws Exception {
 
-    public UserProvisioningAjaxServiceImpl(){
+        logger.info("Using PSP/PSP-Target [" + pspEndpoint + "] " + pspTargetId);
+
         Service serv = Service.create(SPMLR2MessagingConstants.SERVICE_NAME);
         serv.addPort(SPMLR2MessagingConstants.PORT_NAME,
                 javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING,
-                "http://localhost:8081/IDBUS/PSP-1/SPML2/SOAP");
+                pspEndpoint);
         this.port = serv.getPort(SPMLR2MessagingConstants.PORT_NAME, SPMLRequestPortType.class);
     }
 
@@ -78,7 +89,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
 
         PSOIdentifierType psoId = new PSOIdentifierType ();
         psoId.setID(groupRequest.getId() + "");
-        psoId.setTargetID(targetId);
+        psoId.setTargetID(pspTargetId);
 
         deleteRequest.setPsoID(psoId);
         ResponseType resp = port.spmlDeleteRequest(deleteRequest);
@@ -89,7 +100,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
 
     public AddGroupResponse addGroup(AddGroupRequest groupRequest) throws ProvisioningBusinessException {
         AddRequestType addReq = new AddRequestType();
-        addReq.setTargetID(targetId);
+        addReq.setTargetID(pspTargetId);
         addReq.setRequestID(uuidGenerator.generateId());
         addReq.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
         GroupType group = new GroupType ();
@@ -110,7 +121,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
                 dozerMapper.map(groupRequest, com.atricore.idbus.console.lifecycle.main.spi.request.FindGroupByIdRequest.class);
 
         PSOIdentifierType psoGroupId = new PSOIdentifierType();
-        psoGroupId.setTargetID(targetId);
+        psoGroupId.setTargetID(pspTargetId);
         psoGroupId.setID(groupRequest.getId() + "");
         psoGroupId.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
@@ -136,7 +147,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
 
         SearchQueryType spmlQry  = new SearchQueryType();
         spmlQry.setScope(ScopeType.ONE_LEVEL);
-        spmlQry.setTargetID(targetId);
+        spmlQry.setTargetID(pspTargetId);
         String qry="";
 
         SelectionType spmlSelect = new SelectionType();
@@ -149,7 +160,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlSelect.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
         JAXBElement jaxbSelect= new JAXBElement(
-                new QName( SPMLR2Constants.SPML_NS, "Selection"),
+                new QName( SPMLR2Constants.SPML_NS, "select"),
                 spmlSelect.getClass(),
                 spmlSelect
         );
@@ -177,7 +188,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
 
         SearchQueryType spmlQry  = new SearchQueryType();
         spmlQry.setScope(ScopeType.ONE_LEVEL);
-        spmlQry.setTargetID(targetId);
+        spmlQry.setTargetID(pspTargetId);
         String qry="";
 
         SelectionType spmlSelect = new SelectionType();
@@ -189,7 +200,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlSelect.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
         JAXBElement jaxbSelect= new JAXBElement(
-                new QName(SPMLR2Constants.SPML_NS, "Selection"),
+                new QName(SPMLR2Constants.SPML_NS, "select"),
                 spmlSelect.getClass(),
                 spmlSelect
         );
@@ -223,7 +234,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
 
         SearchQueryType spmlQry  = new SearchQueryType();
         spmlQry.setScope(ScopeType.ONE_LEVEL);
-        spmlQry.setTargetID(targetId);
+        spmlQry.setTargetID(pspTargetId);
         String qry="";
 
         SelectionType spmlSelect = new SelectionType();
@@ -246,7 +257,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlSelect.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
         JAXBElement jaxbSelect= new JAXBElement(
-                new QName(SPMLR2Constants.SPML_NS, "Selection"),
+                new QName(SPMLR2Constants.SPML_NS, "select"),
                 spmlSelect.getClass(),
                 spmlSelect
         );
@@ -367,7 +378,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
     protected PSOType lookupGroup(Long id) throws IdentityMediationException {
 
         PSOIdentifierType psoGroupId = new PSOIdentifierType();
-        psoGroupId.setTargetID(targetId);
+        psoGroupId.setTargetID(pspTargetId);
         psoGroupId.setID(id + "");
         psoGroupId.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
@@ -384,7 +395,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
     protected PSOType lookupUser(Long id) throws IdentityMediationException {
 
         PSOIdentifierType psoUserId = new PSOIdentifierType();
-        psoUserId.setTargetID(targetId);
+        psoUserId.setTargetID(pspTargetId);
         psoUserId.setID(id + "");
         psoUserId.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
 
@@ -411,12 +422,19 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         this.provisioningService = provisioningService;
     }
 
-    public void setTargetId(String targetId) {
-        this.targetId = targetId;
+    public void setPspTargetId(String pspTargetId) {
+        this.pspTargetId = pspTargetId;
     }
 
     public void setDozerMapper(DozerBeanMapper dozerMapper) {
         this.dozerMapper = dozerMapper;
     }
 
+    public String getPspEndpoint() {
+        return pspEndpoint;
+    }
+
+    public void setPspEndpoint(String pspEndpoint) {
+        this.pspEndpoint = pspEndpoint;
+    }
 }

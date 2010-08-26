@@ -76,7 +76,7 @@
         </property>
         <property name="provisioningTargets">
             <list>
-                <ref bean="psp-default-pst1"/>
+                <ref bean="pst-default"/>
             </list>
         </property>
     </bean>
@@ -84,8 +84,8 @@
     <!-- ============================================================= -->
     <!-- Identity Vault / Partition JDO Based -->
     <!-- ============================================================= -->
-    <bean name="psp-default-pst1" class="org.atricore.idbus.kernel.main.provisioning.impl.ProvisioningTargetImpl">
-        <property name="name" value="pst1"/> 
+    <bean name="pst-default" class="org.atricore.idbus.kernel.main.provisioning.impl.ProvisioningTargetImpl">
+        <property name="name" value="pst-default"/>
         <property name="identityPartition" ref="idpart-default"/>
     </bean>
 

@@ -74,7 +74,10 @@
     <bean id="userProvisioningAjaxServiceBean" class="com.atricore.idbus.console.services.impl.UserProvisioningAjaxServiceImpl">
         <property name="provisioningService" ref="userProvisioningServiceManagerBean"/>
         <property name="dozerMapper" ref="dozerMapper" />
-        <property name="targetId" value="psp-default-pst1" />
+
+        <!-- TODO : Expose through OSGi config support -->
+        <property name="pspTargetId" value="pst-default" />
+        <property name="pspEndpoint" value="http://localhost:8081/IDBUS/PSP-1/SPML2/SOAP"/>
     </bean>
 
     <bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">
