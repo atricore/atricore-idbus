@@ -7,11 +7,11 @@ public class FederatedConnection extends Connection {
 
     private static final long serialVersionUID = 2960169484758674128L;
 
-    private Provider roleA;
+    private FederatedProvider roleA;
 
     private Channel channelA;
 
-    private Provider roleB;
+    private FederatedProvider roleB;
 
     private Channel channelB;
 
@@ -19,7 +19,7 @@ public class FederatedConnection extends Connection {
         return roleA;
     }
 
-    public void setRoleA(Provider roleA) {
+    public void setRoleA(FederatedProvider roleA) {
         this.roleA = roleA;
     }
 
@@ -35,7 +35,7 @@ public class FederatedConnection extends Connection {
         return roleB;
     }
 
-    public void setRoleB(Provider roleB) {
+    public void setRoleB(FederatedProvider roleB) {
         this.roleB = roleB;
     }
 

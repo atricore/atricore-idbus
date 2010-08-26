@@ -23,15 +23,13 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
 import java.util.Set;
 
-public class IdentityProvider extends LocalProvider {
+public class IdentityProvider extends FederatedProvider {
 
 	private static final long serialVersionUID = 141137856095909986L;
 
     private boolean signAuthenticationAssertions;
 
     private boolean encryptAuthenticationAssertions;
-
-    private Set<FederatedConnection> federatedConnections;
 
     // RFU
     private AttributeProfile attributeProfile;
@@ -75,14 +73,6 @@ public class IdentityProvider extends LocalProvider {
 
     public void setEncryptAuthenticationAssertions(boolean encryptAuthenticationAssertions) {
         this.encryptAuthenticationAssertions = encryptAuthenticationAssertions;
-    }
-
-    public Set<FederatedConnection> getFederatedConnections() {
-        return federatedConnections;
-    }
-
-    public void setFederatedConnections(Set<FederatedConnection> federatedConnections) {
-        this.federatedConnections = federatedConnections;
     }
 
     public AttributeProfile getAttributeProfile() {

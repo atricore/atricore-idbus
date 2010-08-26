@@ -21,7 +21,7 @@
 
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
-public class IdentityProviderChannel extends Channel {
+public class IdentityProviderChannel extends FederatedChannel {
 
 	private static final long serialVersionUID = 8276649486690667445L;
 
@@ -29,21 +29,11 @@ public class IdentityProviderChannel extends Channel {
 
     private AccountLinkagePolicy accountLinkagePolicy;
 
-    private FederatedConnection connection;
-
     // RFU
     private AuthenticationContract authenticationContract;
 
     // RFU
     private AuthenticationMechanism authenticationMechanism;
-
-    public FederatedConnection getConnection() {
-        return connection;
-    }
-
-    public void setConnection(FederatedConnection connection) {
-        this.connection = connection;
-    }
 
     public IdentityLookup getIdentityLookup() {
         return identityLookup;

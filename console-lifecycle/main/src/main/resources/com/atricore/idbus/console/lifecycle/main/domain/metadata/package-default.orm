@@ -42,7 +42,9 @@
         <class name="EmbeddedIdentitySource" table="ATC_EMBEDDED_ID_SOURCE"/>
         <class name="ExecutionIdentitySource" table="ATC_EXECUTION"/>
         <class name="Feature" table="ATC_FEATURE"/>
+        <class name="FederatedChannel" table="ATC_FEDERATED_CHANNEL"/>
         <class name="FederatedConnection" table="ATC_FEDERATED_CONNECTION"/>
+        <class name="FederatedProvider" table="ATC_FEDERATED_PROVIDER"/>
         <class name="IdentityApplianceDefinition" table="ATC_ID_APPLIANCE_DEFINITION">
             <field name="name" >
                 <column allows-null="false"/>

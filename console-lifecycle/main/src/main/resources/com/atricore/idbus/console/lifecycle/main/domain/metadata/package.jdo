@@ -91,12 +91,23 @@
 
         <class name="Feature"/>
 
+        <class name="FederatedChannel" detachable="true">
+            <field name="connectionA" mapped-by="channelA"  dependent="true"/>
+            <field name="connectionB" mapped-by="channelB"  dependent="true"/>
+        </class>
+
         <class name="FederatedConnection" detachable="true">
             <inheritance strategy="new-table"/>
-            <field name="roleA" default-fetch-group="true" dependent="true"/>
-            <field name="channelA" default-fetch-group="true" dependent="true"/>
-            <field name="roleB" default-fetch-group="true" dependent="true"/>
-            <field name="channelB" default-fetch-group="true" dependent="true"/>
+            <field name="roleA" default-fetch-group="true"  dependent="true"/>
+            <field name="channelA" default-fetch-group="true" />
+            <field name="roleB" default-fetch-group="true"  dependent="true"/>
+            <field name="channelB" default-fetch-group="true" />
+        </class>
+
+        <class name="FederatedProvider" detachable="true">
+            <inheritance strategy="new-table"/>
+            <field name="federatedConnectionsA" persistence-modifier="persistent" mapped-by="roleA"/>
+            <field name="federatedConnectionsB" persistence-modifier="persistent" mapped-by="roleB"/>
         </class>
 
         <class name="IdentityApplianceDefinition" detachable="true">
@@ -127,7 +138,6 @@
             <inheritance strategy="new-table"/>
             <field name="identityLookup" default-fetch-group="true" dependent="true"/>
             <field name="accountLinkagePolicy" default-fetch-group="true" dependent="true"/>
-            <field name="connection" default-fetch-group="true" dependent="true"/>
             <field name="authenticationContract" default-fetch-group="true" />
             <field name="authenticationMechanism" default-fetch-group="true" />
         </class>

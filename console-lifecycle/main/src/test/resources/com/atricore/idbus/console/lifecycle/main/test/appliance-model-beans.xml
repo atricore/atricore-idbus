@@ -91,7 +91,7 @@
             </bean>
         </property>
         
-        <property name="federatedConnections">
+        <property name="federatedConnectionsA">
             <set>
                 <ref bean="idp1-sp1-fed"/>
             </set>
@@ -191,6 +191,13 @@
                 </property>
             </bean>
         </property>
+
+        <property name="federatedConnectionsB">
+            <set>
+                <ref bean="idp1-sp1-fed"/>
+            </set>
+        </property>
+
     </bean>
     
     <bean name="idp1-sp1-fed" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.FederatedConnection">

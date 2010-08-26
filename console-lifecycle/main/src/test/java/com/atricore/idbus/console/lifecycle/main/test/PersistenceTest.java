@@ -312,12 +312,12 @@ public class PersistenceTest {
                 assertIdenityLookupsAreEqual(originalSp.getIdentityLookup(), testSp.getIdentityLookup(), ignoreIds);
                 assertActivationsAreEqual(originalSp.getActivation(), testSp.getActivation(), ignoreIds);
 
-                if (originalSp.getFederatedConnections() != null) {
+                if (originalSp.getFederatedConnectionsA() != null) {
 
-                    for (FederatedConnection originalC : originalSp.getFederatedConnections()) {
+                    for (FederatedConnection originalC : originalSp.getFederatedConnectionsA()) {
 
                         boolean found = false;
-                        for (FederatedConnection testC : testSp.getFederatedConnections()) {
+                        for (FederatedConnection testC : testSp.getFederatedConnectionsA()) {
                             if (originalC.getId() == testC.getId()) {
                                 found = true;
                                 assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
@@ -329,6 +329,25 @@ public class PersistenceTest {
                         TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
                     }
                 }
+
+                if (originalSp.getFederatedConnectionsB() != null) {
+
+                    for (FederatedConnection originalC : originalSp.getFederatedConnectionsB()) {
+
+                        boolean found = false;
+                        for (FederatedConnection testC : testSp.getFederatedConnectionsB()) {
+                            if (originalC.getId() == testC.getId()) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
+
+                            }
+                        }
+
+                        TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
+                    }
+                }
+
 
             } else if (originalL instanceof IdentityProvider) {
                 IdentityProvider originalIdp = (IdentityProvider) originalL;
@@ -336,11 +355,11 @@ public class PersistenceTest {
 
                 assertIdenityLookupsAreEqual(originalIdp.getIdentityLookup(), testIdp.getIdentityLookup(), ignoreIds);
 
-                if (originalIdp.getFederatedConnections() != null) {
-                    for (FederatedConnection originalC : originalIdp.getFederatedConnections()) {
+                if (originalIdp.getFederatedConnectionsA() != null) {
+                    for (FederatedConnection originalC : originalIdp.getFederatedConnectionsA()) {
 
                         boolean found = false;
-                        for (FederatedConnection testC : testIdp.getFederatedConnections()) {
+                        for (FederatedConnection testC : testIdp.getFederatedConnectionsA()) {
                             if (originalC.getId() == testC.getId()) {
                                 found = true;
                                 assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
@@ -351,6 +370,23 @@ public class PersistenceTest {
                         TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
                     }
                 }
+
+                if (originalIdp.getFederatedConnectionsB() != null) {
+                    for (FederatedConnection originalC : originalIdp.getFederatedConnectionsB()) {
+
+                        boolean found = false;
+                        for (FederatedConnection testC : testIdp.getFederatedConnectionsB()) {
+                            if (originalC.getId() == testC.getId()) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
+                            }
+                        }
+
+                        TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
+                    }
+                }
+
 
             } else if (originalL instanceof ProvisioningServiceProvider) {
                 // TODO :

@@ -23,11 +23,9 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
 import java.util.Set;
 
-public class ServiceProvider extends LocalProvider {
+public class ServiceProvider extends FederatedProvider {
 
 	private static final long serialVersionUID = 1096573594152761313L;
-
-    private Set<FederatedConnection> federatedConnections;
 
     private Activation activation;
 
@@ -52,14 +50,6 @@ public class ServiceProvider extends LocalProvider {
     @Override
     public void setRole(ProviderRole role) {
         throw new UnsupportedOperationException("Cannot change provider role");
-    }
-
-    public Set<FederatedConnection> getFederatedConnections() {
-        return federatedConnections;
-    }
-
-    public void setFederatedConnections(Set<FederatedConnection> federatedConnections) {
-        this.federatedConnections = federatedConnections;
     }
 
     public Activation getActivation() {
