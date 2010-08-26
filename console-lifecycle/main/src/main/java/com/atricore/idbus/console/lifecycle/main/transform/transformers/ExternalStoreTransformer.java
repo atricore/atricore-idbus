@@ -8,6 +8,7 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
+@Deprecated
 public class ExternalStoreTransformer extends AbstractTransformer {
 
     @Override

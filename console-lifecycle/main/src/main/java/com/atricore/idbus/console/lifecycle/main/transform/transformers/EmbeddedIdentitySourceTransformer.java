@@ -5,11 +5,9 @@ import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 
 /**
- * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id$
+ * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-@Deprecated
-public class EmbeddedStoreTransformer extends AbstractTransformer {
+public class EmbeddedIdentitySourceTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
@@ -29,5 +27,4 @@ public class EmbeddedStoreTransformer extends AbstractTransformer {
     public Object after(TransformEvent event) throws TransformException {
         return null;
     }
-
 }
