@@ -44,8 +44,6 @@
         <datanucleus-version>2.0.3</datanucleus-version>
         -->
         <idbus.cap.spml2.version>1.0.0-SNAPSHOT</idbus.cap.spml2.version>
-        <servicemix.specs.version>1.2.0</servicemix.specs.version>
-        <servicemix.jaxb-impl.version>2.1.6_1</servicemix.jaxb-impl.version>
     </properties>
 
     <dependencies>
@@ -119,19 +117,7 @@
             <groupId>com.atricore.idbus.console.activation</groupId>
             <artifactId>com.atricore.idbus.console.activation.main</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.servicemix.specs</groupId>
-            <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
+        
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
