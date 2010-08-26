@@ -7,19 +7,9 @@ public class Activation extends Connection {
                                                                     
     private static final long serialVersionUID = 3889745220384784875L;
 
-    private long id;
-
     private ExecutionEnvironment executionEnv;
 
     private ServiceProvider sp;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public ExecutionEnvironment getExecutionEnv() {
         return executionEnv;

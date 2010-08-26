@@ -252,19 +252,25 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public AddIdentityApplianceResponse addIdentityAppliance(AddIdentityApplianceRequest req) throws IdentityServerException {
         AddIdentityApplianceResponse res = null;
         try {
-            IdentityAppliance appliance = identityApplianceDAO.save(req.getIdentityAppliance());
 
+            IdentityAppliance appliance = req.getIdentityAppliance();
+
+            // TODO : Validate the entire appliance ...
             if (appliance.getIdApplianceDefinition() == null)
                 throw new IdentityServerException("Appliances must contain an appliance definition!");
 
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
+            if (logger.isTraceEnabled())
+                logger.trace("Adding appliance " + applianceDef.getName());
+            
             applianceDef.setRevision(1);
             applianceDef.setLastModification(new Date());
 
             appliance = identityApplianceDAO.save(appliance);
-            appliance = identityApplianceDAO.detachCopy(appliance, 99);
+            if (logger.isTraceEnabled())
+                logger.trace("Added appliance " + appliance.getIdApplianceDefinition().getName() + " with ID:" + appliance.getId());
 
-            assert appliance.getIdApplianceDefinition().getName() != null;
+            appliance = identityApplianceDAO.detachCopy(appliance, 99);
 
             res = new AddIdentityApplianceResponse();
             res.setAppliance(appliance);

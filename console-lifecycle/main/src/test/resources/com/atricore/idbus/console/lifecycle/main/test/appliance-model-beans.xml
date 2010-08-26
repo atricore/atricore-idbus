@@ -265,7 +265,5 @@
          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:tests.properties" />
     </bean>
-
-    
     
 </beans>

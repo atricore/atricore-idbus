@@ -64,7 +64,7 @@ public class PersistenceTest {
         if (strTestTimeout != null) {
             long timeout = Long.parseLong(strTestTimeout);
             synchronized (Thread.currentThread()) {
-                logger.info("Waiting for Test " + timeout + " ms (0 waist for ever  ...)");
+                logger.info("Waiting for Test " + timeout + " ms (0 waits for ever  ...)");
                 try { Thread.currentThread().wait(timeout); } catch (InterruptedException e) { /**/ }
             }
         }

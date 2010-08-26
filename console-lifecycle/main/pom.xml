@@ -225,7 +225,7 @@
                 <configuration>
                     <fork>false</fork>
 
-                    <log4jConfiguration>${basedir}/src/test/resources/log4j.properties</log4jConfiguration>
+                    <log4jConfiguration>${basedir}/src/main/jdo/log4j-datanucleus.properties</log4jConfiguration>
                     <verbose>true</verbose>
                     <props>${basedir}/datanucleus.properties</props>
                     <outputFile>idbus-server-management.ddl</outputFile>
@@ -238,7 +238,7 @@
                             <goal>enhance</goal>
                         </goals>
                         <configuration>
-                            <log4jConfiguration>${basedir}/src/test/resources/log4j.properties</log4jConfiguration>
+                            <log4jConfiguration>${basedir}/src/main/jdo/log4j-datanucleus.properties</log4jConfiguration>
                         </configuration>
                     </execution>
 
