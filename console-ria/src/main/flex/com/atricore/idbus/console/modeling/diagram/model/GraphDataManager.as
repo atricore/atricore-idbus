@@ -45,9 +45,9 @@ public class GraphDataManager {
 
         if (parentNode != null){
             _vgraph.linkNodes(parentNode,vnode);
-            _vgraph.currentRootVNode = rootVNode;
+//            _vgraph.currentRootVNode = rootVNode;
         } else{
-            _vgraph.currentRootVNode = vnode;
+//            _vgraph.currentRootVNode = vnode;
         }
 
         if (deep > 0 && deep > _vgraph.maxVisibleDistance){

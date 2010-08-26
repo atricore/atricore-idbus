@@ -73,6 +73,8 @@ import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 import org.un.cava.birdeye.ravis.graphLayout.data.Graph;
 import org.un.cava.birdeye.ravis.graphLayout.data.INode;
+import org.un.cava.birdeye.ravis.graphLayout.layout.CircularLayouter;
+import org.un.cava.birdeye.ravis.graphLayout.layout.DirectPlacementLayouter;
 import org.un.cava.birdeye.ravis.graphLayout.layout.HierarchicalLayouter;
 import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
 import org.un.cava.birdeye.ravis.graphLayout.visual.edgeRenderers.BaseEdgeRenderer;
@@ -397,13 +399,14 @@ public class DiagramMediator extends IocMediator {
         if (_identityAppliance != null) {
             var identityApplianceDefinition:IdentityApplianceDefinitionDTO = _identityAppliance.idApplianceDefinition;
 
-            var rootGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), _identityAppliance, null, true, Constants.IDENTITY_BUS_DEEP);
+//            var rootGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), _identityAppliance, null, true, Constants.IDENTITY_BUS_DEEP);
+//            rootGraphNode.isVisible = false;
 
             var vaults:ArrayCollection = new ArrayCollection();
             if (identityApplianceDefinition.identityVaults != null) {
                 for(var k:int=0; k < identityApplianceDefinition.identityVaults.length; k++){
                     var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identityVaults[k], true);
-                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.identityVaults[k], rootGraphNode, true, Constants.PROVIDER_DEEP);
+                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.identityVaults[k], null, true, Constants.PROVIDER_DEEP);
                     vaults.addItem(identityVaultGraphNode);
                 }
             }
@@ -411,7 +414,7 @@ public class DiagramMediator extends IocMediator {
             if (identityApplianceDefinition.providers != null) {
                 for (var i:int = 0; i < identityApplianceDefinition.providers.length; i++) {
                     var provider:ProviderDTO = identityApplianceDefinition.providers[i];
-                    var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, rootGraphNode, true, Constants.PROVIDER_DEEP);
+                    var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, true, Constants.PROVIDER_DEEP);
                     if (provider is LocalProviderDTO) {
                         var locProv:LocalProviderDTO = provider as LocalProviderDTO;
                         if (locProv.defaultChannel != null) {
@@ -492,10 +495,14 @@ public class DiagramMediator extends IocMediator {
         _identityApplianceDiagram.newNodesDefaultVisible = true;
 
         _autoFitEnabled = true;
-        _selectedOrientation = HierarchicalLayouter.ORIENT_TOP_DOWN;
-        var layouter:HierarchicalLayouter = new HierarchicalLayouter(_identityApplianceDiagram);
+//        _selectedOrientation = HierarchicalLayouter.ORIENT_TOP_DOWN;
+//        var layouter:HierarchicalLayouter = new HierarchicalLayouter(_identityApplianceDiagram);
+//        layouter.autoFitEnabled = _autoFitEnabled;
+//        layouter.orientation = _selectedOrientation;
+        var layouter:CircularLayouter = new CircularLayouter(_identityApplianceDiagram);
         layouter.autoFitEnabled = _autoFitEnabled;
-        layouter.orientation = _selectedOrientation;
+//        layouter.orientation = _selectedOrientation;
+
         _identityApplianceDiagram.layouter = layouter;
 
         _identityApplianceDiagram.edgeRenderer = new BaseEdgeRenderer(_identityApplianceDiagram.edgeDrawGraphics);
