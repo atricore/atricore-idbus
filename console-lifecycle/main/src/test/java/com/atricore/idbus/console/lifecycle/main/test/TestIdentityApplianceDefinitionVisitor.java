@@ -231,8 +231,8 @@ public class TestIdentityApplianceDefinitionVisitor implements IdentityAppliance
     protected String getPrintableNode(String action, Object node) {
         StringBuffer sb = new StringBuffer();
         rightPad(sb, action, 7);
-        sb.append(" NODE (");
-        leftPad(sb, nodes.size() + "", 4);
+        sb.append("NODE (");
+        leftPad(sb, nodes.size() + "", 3);
         sb.append(")");
 
         // ID
@@ -249,9 +249,9 @@ public class TestIdentityApplianceDefinitionVisitor implements IdentityAppliance
         sb.append("[");
         try {
             String name = org.apache.commons.beanutils.BeanUtils.getProperty(node, "name");
-            rightPad(sb, name, 16);
+            rightPad(sb, name, 21);
         } catch (Exception e) {
-            rightPad(sb, "--", 16);
+            rightPad(sb, "--", 21);
         }
         sb.append("] ");
 

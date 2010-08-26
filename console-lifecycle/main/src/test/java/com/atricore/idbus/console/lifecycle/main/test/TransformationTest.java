@@ -165,8 +165,8 @@ public class TransformationTest {
     }
     
     @Test
-    public void walkerTest() {
-        
+    public void reflexiveWalkerTest() {
+
         IdentityAppliance appliance = newApplianceInstance("ida1");
         IdentityApplianceDefinitionWalker walker = new ReflexiveIdentityApplianceDefinitionWalker();
         IdentityApplianceDefinitionVisitor visitor = new TestIdentityApplianceDefinitionVisitor() ;
