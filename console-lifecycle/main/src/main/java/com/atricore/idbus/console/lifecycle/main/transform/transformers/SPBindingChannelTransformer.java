@@ -27,6 +27,7 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
 /**
  * @version $Id$
  */
+@Deprecated
 public class SPBindingChannelTransformer extends AbstractTransformer {
 
     private static final Log logger = LogFactory.getLog(SPBindingChannelTransformer.class);

@@ -175,7 +175,7 @@ public class TransformationTest {
     }
     
 
-    // @Test
+    @Test
     public void transformTest() throws Exception {
         IdentityApplianceBuilder builder = (IdentityApplianceBuilder) applicationContext.getBean("applianceBuilder");
         IdentityApplianceDefinition iadef = (IdentityApplianceDefinition) applicationContext.getBean("idApplianceDef1");

@@ -27,6 +27,7 @@ package com.atricore.idbus.console.lifecycle.main.spi.request;
  * Time: 10:22:02
  * email: erocha@atricore.org
  */
+@Deprecated
 public class FetchGroupMembershipRequest extends AbstractManagementRequest {
 
     private String username;

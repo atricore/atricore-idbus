@@ -38,6 +38,7 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
+@Deprecated
 public class BPTransformer extends AbstractTransformer {
     private static final Log logger = LogFactory.getLog(IdPTransformer.class);
 

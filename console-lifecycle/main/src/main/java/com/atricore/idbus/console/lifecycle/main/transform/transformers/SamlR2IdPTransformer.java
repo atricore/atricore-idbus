@@ -89,9 +89,13 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
         String authoritySigningCertificate = ""; // TODO
         if (cfg != null && cfg.getSigner() != null) {
             try {
-                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(cfg.getSigner().getType()) ? "PKCS12" : "JKS");
                 byte[] keystore = cfg.getSigner().getStore().getValue();
+                if (logger.isTraceEnabled())
+                    logger.trace("Keystore ["+cfg.getSigner().getStore().getName()+"] length " + keystore.length);
+
+                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(cfg.getSigner().getType()) ? "PKCS12" : "JKS");
                 ks.load(new ByteArrayInputStream(keystore), cfg.getSigner().getPassword().toCharArray());
+
                 Certificate signerCertificate = ks.getCertificate(cfg.getSigner().getCertificateAlias());
                 StringWriter writer = new StringWriter();
                 CipherUtil.writeBase64Encoded(writer, signerCertificate.getEncoded());
@@ -122,9 +126,13 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
         String authorityEncryptionCertificate = ""; // TODO
         if (cfg != null && cfg.getEncrypter() != null) {
             try {
-                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(cfg.getEncrypter().getType()) ? "PKCS12" : "JKS");
                 byte[] keystore = cfg.getEncrypter().getStore().getValue();
+                if (logger.isTraceEnabled())
+                    logger.trace("Keystore ["+cfg.getEncrypter().getStore().getName()+"] length " + keystore.length);
+
+                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(cfg.getEncrypter().getType()) ? "PKCS12" : "JKS");
                 ks.load(new ByteArrayInputStream(keystore), cfg.getEncrypter().getPassword().toCharArray());
+
                 Certificate encrypterCertificate = ks.getCertificate(cfg.getEncrypter().getCertificateAlias());
                 StringWriter writer = new StringWriter();
                 CipherUtil.writeBase64Encoded(writer, encrypterCertificate.getEncoded());

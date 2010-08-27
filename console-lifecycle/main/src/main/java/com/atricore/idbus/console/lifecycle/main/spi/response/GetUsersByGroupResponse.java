@@ -27,6 +27,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.User;
  * User: gnastov
  * email: gnastov@atricore.org
  */
+@Deprecated
 public class GetUsersByGroupResponse extends AbstractManagementResponse {
 
     private User[] users;

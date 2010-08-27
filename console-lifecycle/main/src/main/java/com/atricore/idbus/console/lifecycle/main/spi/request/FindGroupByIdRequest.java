@@ -28,6 +28,7 @@ package com.atricore.idbus.console.lifecycle.main.spi.request;
  * Time: 16:23:29
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 public class FindGroupByIdRequest extends AbstractManagementRequest {
 
     private long id;

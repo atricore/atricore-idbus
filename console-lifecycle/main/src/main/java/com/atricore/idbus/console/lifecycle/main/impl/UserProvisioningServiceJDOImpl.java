@@ -45,6 +45,7 @@ import java.util.Iterator;
  * Time: 10:18:02 AM
  * email: cbirge@atricore.org
  */
+@Deprecated
 public class UserProvisioningServiceJDOImpl implements UserProvisioningService {
 
     private static Log logger = LogFactory.getLog(UserProvisioningServiceJDOImpl.class.getName() );

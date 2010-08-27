@@ -25,6 +25,7 @@ package com.atricore.idbus.console.lifecycle.main.spi.request;
  * User: gnastov
  * email: gnastov@atricore.org
  */
+@Deprecated
 public class GetUsersByGroupRequest extends AbstractManagementRequest {
 
     private String group;

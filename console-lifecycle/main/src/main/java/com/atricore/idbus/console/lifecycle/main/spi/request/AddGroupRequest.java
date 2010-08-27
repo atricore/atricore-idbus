@@ -31,6 +31,7 @@ import com.atricore.idbus.console.lifecycle.main.spi.response.AbstractManagement
  * Time: 16:22:58
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 public class AddGroupRequest extends AbstractManagementResponse {
 
     private long id;

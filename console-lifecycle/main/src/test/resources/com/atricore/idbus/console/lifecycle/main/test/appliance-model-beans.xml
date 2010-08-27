@@ -121,10 +121,10 @@
                 <property name="encrypter">
 					<bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore">
 						<property name="type" value="JKS"/>
-						<property name="password" value="xmlsecurity"/>
-						<property name="privateKeyName" value="rsa-keys"/>
-						<property name="privateKeyPassword" value="rsa-keys-pwd"/>
-						<property name="certificateAlias" value="rsa-keys"/>
+                        <property name="password" value="ATRICORE"/>
+                        <property name="privateKeyName" value="josso-sp1"/>
+                        <property name="privateKeyPassword" value="ATRICORE"/>
+                        <property name="certificateAlias" value="josso-sp1"/>
                         <property name="store">
                             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
                                 <property name="name" value="idp1-keystore"/>
@@ -169,34 +169,42 @@
             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig">
                 <property name="name" value="sp1-samlr2-config"/>
                 <property name="description" value="SamlR2 SP1 Configuraiton"/>
+
                 <property name="signer">
 					<bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore">
 						<property name="type" value="JKS"/>
 						<property name="password" value="ATRICORE"/>
+
 						<property name="privateKeyName" value="josso-sp1"/>
 						<property name="privateKeyPassword" value="ATRICORE"/>
 						<property name="certificateAlias" value="josso-sp1"/>
+
                         <property name="store">
                             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
                                 <property name="name" value="sp1-keystore"/>
                                 <property name="value" value="${baseDir}/src/test/resources/com/atricore/idbus/console/lifecycle/main/test/keystore.jks"/>
                             </bean>
                         </property>
+
+
 					</bean>
                 </property>
                 <property name="encrypter">
 					<bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore">
 						<property name="type" value="JKS"/>
 						<property name="password" value="ATRICORE"/>
+
 						<property name="privateKeyName" value="josso-sp1"/>
 						<property name="privateKeyPassword" value="ATRICORE"/>
 						<property name="certificateAlias" value="josso-sp1"/>
+
                         <property name="store">
                             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
                                 <property name="name" value="sp1-keystore"/>
                                 <property name="value" value="${baseDir}/src/test/resources/com/atricore/idbus/console/lifecycle/main/test/keystore.jks"/>
                             </bean>
                         </property>
+
 					</bean>
                 </property>
             </bean>

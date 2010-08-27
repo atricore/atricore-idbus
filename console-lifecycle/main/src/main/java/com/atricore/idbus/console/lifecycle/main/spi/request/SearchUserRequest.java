@@ -28,6 +28,7 @@ package com.atricore.idbus.console.lifecycle.main.spi.request;
  * Time: 17:19:10
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 public class SearchUserRequest extends AbstractManagementRequest {
 
     private String userName;
