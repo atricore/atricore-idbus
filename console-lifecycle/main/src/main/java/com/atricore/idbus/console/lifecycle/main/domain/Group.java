@@ -32,12 +32,12 @@ import javax.jdo.annotations.Persistent;
  * Time: 10:30:43
  * email: erocha@atricore.org
  */
-@PersistenceCapable
+//@PersistenceCapable
 public class Group implements Serializable {
 
     private static final long serialVersionUID = 4595183658527599864L;
 
-    @Persistent(primaryKey="true", valueStrategy = IdGeneratorStrategy.NATIVE)
+//    @Persistent(primaryKey="true", valueStrategy = IdGeneratorStrategy.NATIVE)
     private long id;
     private String name;
     private String description;

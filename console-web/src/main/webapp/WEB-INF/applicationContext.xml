@@ -12,8 +12,10 @@
     <!-- Idbus Server Management OSGI Services                                -->
     <!-- ==================================================================== -->
 
+    <!--
     <osgi:reference id="userProvisioningServiceManagerBean" cardinality="1..1" timeout="60"
                 interface="com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService"/>
+    -->
 
     <osgi:reference id="idApplianceManagementService" cardinality="1..1" timeout="60"
                 interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"/>
@@ -29,7 +31,7 @@
 
 
     <bean id="applicationServerInitialization" class="com.atricore.idbus.console.services.util.ApplicationServerInitialization">
-        <property name="userProvisioningService" ref="userProvisioningServiceManagerBean"/>        
+        <!--property name="userProvisioningService" ref="userProvisioningServiceManagerBean"/-->
     </bean>
 
     <bean class="com.atricore.idbus.console.services.util.EnumPropertyProxy" factory-method="registerPropertyProxy" />

@@ -44,20 +44,10 @@ public class ApplicationServerInitialization implements InitializingBean {
 
     private static Log logger = LogFactory.getLog(ApplicationServerInitialization.class);
 
-    private UserProvisioningService userProvisioningService;
-
     private String adminUsername = "admin";
     private String adminPassword = "admin";
     private String adminFirstName = "Administrator";
     private String adminGivenName = "Administrator";
-
-    public UserProvisioningService getUserProvisioningService() {
-        return userProvisioningService;
-    }
-
-    public void setUserProvisioningService(UserProvisioningService userProvisioningService) {
-        this.userProvisioningService = userProvisioningService;
-    }
 
     public String getAdminUsername() {
         return adminUsername;
@@ -96,6 +86,7 @@ public class ApplicationServerInitialization implements InitializingBean {
         com.atricore.idbus.console.lifecycle.main.spi.request.FindGroupByNameRequest findGroupByNameRequest = new FindGroupByNameRequest();
         findGroupByNameRequest.setName(SignOnServiceImpl.ADMIN_GROUP);
 
+        /*
         Group adminGroup;
         try {
             FindGroupByNameResponse findGroupByNameResponse = getUserProvisioningService().findGroupByName(findGroupByNameRequest);
@@ -114,6 +105,7 @@ public class ApplicationServerInitialization implements InitializingBean {
                 throw new Exception("The group "+SignOnServiceImpl.ADMIN_GROUP+" couldn't be created. Impossible to continue initialization",e);
             }
         }
+        */
 
         /*
         FindUserByUsernameRequest findUserByUsernameRequest = new FindUserByUsernameRequest();

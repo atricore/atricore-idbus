@@ -30,10 +30,12 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
             <property name="hashEncoding" value="HEX"/>
     </bean>
 
+    <!--
     <bean id="userProvisioningServiceManagerBean" class="com.atricore.idbus.console.lifecycle.main.impl.UserProvisioningServiceJDOImpl">
         <property name="pmf" ref="idbusLifecyclePmf"/>
         <property name="passwordHashUtil" ref="passwordHashUtil"/>
     </bean>
+    -->
 
     <bean id="profileManagementServiceBean" class="com.atricore.idbus.console.lifecycle.main.impl.ProfileManagementServiceImpl">
         <property name="pmf" ref="idbusLifecyclePmf"/>
@@ -48,7 +50,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
     <bean id="signOnServiceBean" class="com.atricore.idbus.console.lifecycle.main.impl.SignOnServiceImpl">
         <property name="sessionTokenGenerator" ref="sessionTokenGeneratorBean"/>
-        <property name="userProvisioningService" ref="userProvisioningServiceManagerBean"/>
+        <!--property name="userProvisioningService" ref="userProvisioningServiceManagerBean"/-->
         <property name="passwordHashUtil" ref="passwordHashUtil"/>
     </bean>
 
@@ -117,10 +119,11 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- IDBus Server Management Services exported as OSGI Services            -->
     <!-- ===================================================================== -->
 
-
+    <!--
     <osgi:service id="osgiUserProvisioningServiceManagerBean"
                   ref="userProvisioningServiceManagerBean"
             interface="com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService"/>
+    -->
                        
     <osgi:service id="osgiIdApplianceManagementService"
                   ref="idApplianceManagementService"
