@@ -27,7 +27,7 @@ import java.io.Serializable;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class IdentityVaultDTO implements Serializable {
+public class IdentitySourceDTO implements Serializable {
 
     private long id;
 
@@ -35,12 +35,6 @@ public class IdentityVaultDTO implements Serializable {
 
     private String description;
 
-    private String type;
-
-    private boolean embedded;
-
-    // Only for non-embedded identity vaults, default lookup values
-    private UserInformationLookupDTO userInformationLookup;
     private static final long serialVersionUID = -1499654004861436370L;
 
     public long getId() {
@@ -67,36 +61,12 @@ public class IdentityVaultDTO implements Serializable {
         this.description = description;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public boolean isEmbedded() {
-        return embedded;
-    }
-
-    public void setEmbedded(boolean embedded) {
-        this.embedded = embedded;
-    }
-
-    public UserInformationLookupDTO getUserInformationLookup() {
-        return userInformationLookup;
-    }
-
-    public void setUserInformationLookup(UserInformationLookupDTO userInformationLookup) {
-        this.userInformationLookup = userInformationLookup;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof IdentityVaultDTO)) return false;
+        if (!(o instanceof IdentitySourceDTO)) return false;
 
-        IdentityVaultDTO vault = (IdentityVaultDTO) o;
+        IdentitySourceDTO vault = (IdentitySourceDTO) o;
 
         if(id == 0) return false;
 

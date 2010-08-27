@@ -1,19 +1,19 @@
 package com.atricore.idbus.console.services.spi.response;
 
-import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+import com.atricore.idbus.console.services.dto.IdentitySourceDTO;
 
 /**
  * Author: Dejan Maric
  */
 public class LookupIdentityVaultByIdResponse {
 
-    private IdentityVaultDTO identityVault;
+    private IdentitySourceDTO identityVault;
 
-    public IdentityVaultDTO getIdentityVault() {
+    public IdentitySourceDTO getIdentityVault() {
         return identityVault;
     }
 
-    public void setIdentityVault(IdentityVaultDTO identityVault) {
+    public void setIdentityVault(IdentitySourceDTO identityVault) {
         this.identityVault = identityVault;
     }
 }

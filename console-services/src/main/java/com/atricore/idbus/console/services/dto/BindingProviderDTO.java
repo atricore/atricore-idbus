@@ -25,6 +25,7 @@ package com.atricore.idbus.console.services.dto;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
+@Deprecated
 public class BindingProviderDTO extends LocalProviderDTO {
 
     private ChannelDTO bindingChannel;

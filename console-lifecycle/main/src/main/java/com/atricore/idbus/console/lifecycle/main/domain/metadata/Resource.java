@@ -20,12 +20,6 @@ public class Resource implements Serializable {
     private byte[] value;
     private static final long serialVersionUID = -7782094315179039690L;
 
-    public Resource(){
-        //dummy code
-        int a = 7;
-        int b = a;
-    }
-
     public long getId() {
         return id;
     }

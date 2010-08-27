@@ -25,7 +25,7 @@ package com.atricore.idbus.console.services.dto;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class DbIdentityVaultDTO extends IdentityVaultDTO {
+public class DbIdentitySourceDTO extends IdentitySourceDTO {
 
     // TODO : JDBCU/Datasource setup
 
@@ -38,6 +38,14 @@ public class DbIdentityVaultDTO extends IdentityVaultDTO {
     protected String connectionName;
     
     protected String driverName;
+
+    private String userQueryString;
+    private String rolesQueryString;
+    private String credentialsQueryString;
+    private String userPropertiesQueryString;
+    private String resetCredentialDml;
+    private String relayCredentialQueryString;
+    
     protected ResourceDTO driver;
     private static final long serialVersionUID = 952431562576391535L;
 
@@ -103,5 +111,53 @@ public class DbIdentityVaultDTO extends IdentityVaultDTO {
 
     public void setConnectionUrl(String connectionUrl) {
         this.connectionUrl = connectionUrl;
+    }
+
+    public String getUserQueryString() {
+        return userQueryString;
+    }
+
+    public void setUserQueryString(String userQueryString) {
+        this.userQueryString = userQueryString;
+    }
+
+    public String getRolesQueryString() {
+        return rolesQueryString;
+    }
+
+    public void setRolesQueryString(String rolesQueryString) {
+        this.rolesQueryString = rolesQueryString;
+    }
+
+    public String getCredentialsQueryString() {
+        return credentialsQueryString;
+    }
+
+    public void setCredentialsQueryString(String credentialsQueryString) {
+        this.credentialsQueryString = credentialsQueryString;
+    }
+
+    public String getUserPropertiesQueryString() {
+        return userPropertiesQueryString;
+    }
+
+    public void setUserPropertiesQueryString(String userPropertiesQueryString) {
+        this.userPropertiesQueryString = userPropertiesQueryString;
+    }
+
+    public String getResetCredentialDml() {
+        return resetCredentialDml;
+    }
+
+    public void setResetCredentialDml(String resetCredentialDml) {
+        this.resetCredentialDml = resetCredentialDml;
+    }
+
+    public String getRelayCredentialQueryString() {
+        return relayCredentialQueryString;
+    }
+
+    public void setRelayCredentialQueryString(String relayCredentialQueryString) {
+        this.relayCredentialQueryString = relayCredentialQueryString;
     }
 }

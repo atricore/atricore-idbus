@@ -25,6 +25,7 @@ package com.atricore.idbus.console.services.dto;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
+@Deprecated
 public class BindingChannelDTO extends ChannelDTO {
     private static final long serialVersionUID = -9167337632658379776L;
 }

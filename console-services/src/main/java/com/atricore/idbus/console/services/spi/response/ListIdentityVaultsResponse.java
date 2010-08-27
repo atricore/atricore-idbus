@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.services.spi.response;
 
-import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+import com.atricore.idbus.console.services.dto.IdentitySourceDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,16 +10,16 @@ import java.util.List;
  */
 public class ListIdentityVaultsResponse {
 
-    private List<IdentityVaultDTO> identityVaults;
+    private List<IdentitySourceDTO> identityVaults;
 
-    public List<IdentityVaultDTO> getIdentityVaults() {
+    public List<IdentitySourceDTO> getIdentityVaults() {
         if(identityVaults == null){
-            identityVaults = new ArrayList<IdentityVaultDTO>();
+            identityVaults = new ArrayList<IdentitySourceDTO>();
         }
         return identityVaults;
     }
 
-    public void setIdentityVaults(List<IdentityVaultDTO> identityVaults) {
+    public void setIdentityVaults(List<IdentitySourceDTO> identityVaults) {
         this.identityVaults = identityVaults;
     }
 }
