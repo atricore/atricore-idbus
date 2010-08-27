@@ -10,6 +10,8 @@ public class AbstractProviderConfig implements ProviderConfig {
 
     private String name;
 
+    private String displayName;
+
     private String description;
 
     public long getId() {
@@ -26,6 +28,14 @@ public class AbstractProviderConfig implements ProviderConfig {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getDescription() {

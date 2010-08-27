@@ -34,6 +34,10 @@ public class IdentityApplianceDefinition implements Serializable {
 
     private String name;
 
+    private String displayName;
+
+    private String namespace;
+
     private Location location;
 
     private String description;
@@ -64,6 +68,22 @@ public class IdentityApplianceDefinition implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public void setName(String name) {

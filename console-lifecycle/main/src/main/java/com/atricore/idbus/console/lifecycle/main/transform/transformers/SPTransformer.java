@@ -73,7 +73,7 @@ public class SPTransformer extends AbstractTransformer {
 
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans beansOsgi = (Beans) event.getContext().get("beansOsgi");
-        String baseIdauDestPath = (String) event.getContext().get("baseIdauDestPath");
+        String idauPath = (String) event.getContext().get("idauPath");
 
         // TODO : Can we asure that there is only one IdP and that it's the prefered one ? This should be part of SP definition
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
@@ -171,7 +171,7 @@ public class SPTransformer extends AbstractTransformer {
                     ("PKCS#12".equalsIgnoreCase(cfg.getSigner().getType()) ? "pkcs12" : "jks");
 
             IdProjectResource<byte[]> signerResource = new IdProjectResource<byte[]>(idGen.generateId(),
-                    baseIdauDestPath + sp.getName() + "/", signerResourceFileName,
+                    idauPath + sp.getName() + "/", signerResourceFileName,
                     "binary", cfg.getSigner().getStore().getValue());
             signerResource.setClassifier("byte");
 
@@ -184,7 +184,7 @@ public class SPTransformer extends AbstractTransformer {
 
             Bean keyResolver = newAnonymousBean(SamlR2KeystoreKeyResolver.class);
             setPropertyValue(keyResolver, "keystoreType", cfg.getSigner().getType());
-            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + baseIdauDestPath + sp.getName() + "/" + signerResourceFileName);
+            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + sp.getName() + "/" + signerResourceFileName);
             setPropertyValue(keyResolver, "keystorePass", cfg.getSigner().getPassword());
             setPropertyValue(keyResolver, "privateKeyAlias", cfg.getSigner().getPrivateKeyName());
             setPropertyValue(keyResolver, "privateKeyPass", cfg.getSigner().getPrivateKeyPassword());
@@ -208,7 +208,7 @@ public class SPTransformer extends AbstractTransformer {
                     ("PKCS#12".equalsIgnoreCase(cfg.getSigner().getType()) ? "pkcs12" : "jks");
 
             IdProjectResource<byte[]> encrypterResource = new IdProjectResource<byte[]>(idGen.generateId(),
-                    baseIdauDestPath + sp.getName() + "/", encrypterResourceFileName,
+                    idauPath + sp.getName() + "/", encrypterResourceFileName,
                     "binary", cfg.getSigner().getStore().getValue());
             encrypterResource.setClassifier("byte");
 
@@ -219,7 +219,7 @@ public class SPTransformer extends AbstractTransformer {
 
             Bean keyResolver = newAnonymousBean(SamlR2KeystoreKeyResolver.class);
             setPropertyValue(keyResolver, "keystoreType", cfg.getEncrypter().getType());
-            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + baseIdauDestPath + sp.getName() + "/" + encrypterResourceFileName);
+            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + sp.getName() + "/" + encrypterResourceFileName);
             setPropertyValue(keyResolver, "keystorePass", cfg.getEncrypter().getPassword());
             setPropertyValue(keyResolver, "privateKeyAlias", cfg.getEncrypter().getPrivateKeyName());
             setPropertyValue(keyResolver, "privateKeyPass", cfg.getEncrypter().getPrivateKeyPassword());
@@ -238,7 +238,7 @@ public class SPTransformer extends AbstractTransformer {
         Bean spMd = newBean(spBeans, sp.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
         setPropertyValue(spMd, "id", spMd.getName());
         // TODO RETROFIT  : setPropertyValue(spMd, "alias", resolveLocationUrl(provider.getBindingChannel().getLocation()) + "/SAML2/MD");
-        setPropertyValue(spMd, "resource", "classpath:" + baseIdauDestPath + sp.getName() + "/" + sp.getName() + "-samlr2-metadata.xml");
+        setPropertyValue(spMd, "resource", "classpath:" + idauPath + sp.getName() + "/" + sp.getName() + "-samlr2-metadata.xml");
         
         // accountLinkLifecycle
         Bean accountLinkLifecycle = newBean(spBeans, sp.getName() + "-account-link-lifecycle", AccountLinkLifecycleImpl.class);

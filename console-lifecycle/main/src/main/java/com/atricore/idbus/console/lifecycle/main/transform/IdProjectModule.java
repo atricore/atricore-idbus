@@ -44,12 +44,12 @@ public class IdProjectModule {
         embeddedDependencies = new ArrayList<String>();
     }
 
-    public IdProjectModule(String groupId, String id, String description, String version, String type) {
+    public IdProjectModule(String ns, String groupId, String id, String description, String version, String type) {
         this(id);
         this.description = description;
         this.version = version;
         this.type = type;
-        this.group = "org.atricore.idbus.appliance." + groupId;
+        this.group = ns + "." + groupId;
         this.name = group + "." + id;
         modules = new ArrayList<IdProjectModule>();
         resources = new HashMap<String, IdProjectResource>();

@@ -59,7 +59,7 @@ public class IdPTransformer extends AbstractTransformer {
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans beansOsgi = (Beans) event.getContext().get("beansOsgi");
 
-        String baseIdauDestPath = (String) event.getContext().get("baseIdauDestPath");
+        String idauPath = (String) event.getContext().get("idauPath");
 
         // Publish root element so that other transformers can use it.
         event.getContext().put("idpBeans", idpBeans);
@@ -138,7 +138,7 @@ public class IdPTransformer extends AbstractTransformer {
                     ("PKCS#12".equalsIgnoreCase(cfg.getSigner().getType()) ? "pkcs12" : "jks");
 
             IdProjectResource<byte[]> signerResource = new IdProjectResource<byte[]>(idGen.generateId(),
-                    baseIdauDestPath + idp.getName() + "/", signerResourceFileName,
+                    idauPath + idp.getName() + "/", signerResourceFileName,
                     "binary", cfg.getSigner().getStore().getValue());
             signerResource.setClassifier("byte");
 
@@ -151,7 +151,7 @@ public class IdPTransformer extends AbstractTransformer {
 
             Bean keyResolver = newAnonymousBean(SamlR2KeystoreKeyResolver.class);
             setPropertyValue(keyResolver, "keystoreType", cfg.getSigner().getType());
-            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + baseIdauDestPath + idp.getName() + "/" + signerResourceFileName);
+            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + idp.getName() + "/" + signerResourceFileName);
             setPropertyValue(keyResolver, "keystorePass", cfg.getSigner().getPassword());
             setPropertyValue(keyResolver, "privateKeyAlias", cfg.getSigner().getPrivateKeyName());
             setPropertyValue(keyResolver, "privateKeyPass", cfg.getSigner().getPrivateKeyPassword());
@@ -175,7 +175,7 @@ public class IdPTransformer extends AbstractTransformer {
                     ("PKCS#12".equalsIgnoreCase(cfg.getSigner().getType()) ? "pkcs12" : "jks");
 
             IdProjectResource<byte[]> encrypterResource = new IdProjectResource<byte[]>(idGen.generateId(),
-                    baseIdauDestPath + idp.getName() + "/", encrypterResourceFileName,
+                    idauPath + idp.getName() + "/", encrypterResourceFileName,
                     "binary", cfg.getSigner().getStore().getValue());
             encrypterResource.setClassifier("byte");
             
@@ -186,7 +186,7 @@ public class IdPTransformer extends AbstractTransformer {
             
             Bean keyResolver = newAnonymousBean(SamlR2KeystoreKeyResolver.class);
             setPropertyValue(keyResolver, "keystoreType", cfg.getEncrypter().getType());
-            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + baseIdauDestPath + idp.getName() + "/" + encrypterResourceFileName);
+            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + idp.getName() + "/" + encrypterResourceFileName);
             setPropertyValue(keyResolver, "keystorePass", cfg.getEncrypter().getPassword());
             setPropertyValue(keyResolver, "privateKeyAlias", cfg.getEncrypter().getPrivateKeyName());
             setPropertyValue(keyResolver, "privateKeyPass", cfg.getEncrypter().getPrivateKeyPassword());
@@ -204,7 +204,7 @@ public class IdPTransformer extends AbstractTransformer {
         Bean idpMd = newBean(idpBeans, idp.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
         setPropertyValue(idpMd, "id", idpMd.getName());
         setPropertyValue(idpMd, "alias", resolveLocationUrl(provider) + "/SAML2/MD");
-        setPropertyValue(idpMd, "resource", "classpath:" + baseIdauDestPath + idp.getName() + "/" + idp.getName() + "-samlr2-metadata.xml");
+        setPropertyValue(idpMd, "resource", "classpath:" + idauPath + idp.getName() + "/" + idp.getName() + "-samlr2-metadata.xml");
         
         // ----------------------------------------
         // MBean

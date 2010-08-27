@@ -23,6 +23,8 @@ public class SpringSerializer extends VfsIdProjectResourceSerializer {
 
     @Override
     public boolean canHandle(IdProjectResource resource) {
+
+        // We can handle spring beans definitions using JAXB
         return resource.getType().equals("spring-beans") &&
                 resource.getClassifier().equals("jaxb");
     }

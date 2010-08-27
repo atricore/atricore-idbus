@@ -31,6 +31,7 @@ public class Channel implements Serializable {
 
     private long id;
 	private String name;
+    private String displayName;
 	private Location location;
     private String description;
     private boolean overrideProviderSetup;
@@ -57,7 +58,15 @@ public class Channel implements Serializable {
 		this.name = name;
 	}
 
-	public Location getLocation() {
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public Location getLocation() {
 		return location;
 	}
 

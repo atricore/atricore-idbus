@@ -228,7 +228,8 @@
                                 <property name="transformers">
                                     <list>
                                         <ref bean="projectSerializerTransformer"/>
-                                        <ref bean="applianceBuilderTransfomer"/>
+
+                                        <!-- CAN'T BUILD OUTSIDE OSGi container ref bean="applianceBuilderTransfomer"/-->
                                     </list>
                                 </property>
 

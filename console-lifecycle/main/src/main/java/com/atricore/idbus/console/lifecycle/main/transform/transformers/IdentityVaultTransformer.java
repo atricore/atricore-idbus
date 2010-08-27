@@ -56,7 +56,7 @@ public class IdentityVaultTransformer extends AbstractTransformer {
         }
 
         if (identitySource != null) {
-            String baseIdauDestPath = (String) event.getContext().get("baseIdauDestPath");
+            String idauPath = (String) event.getContext().get("idauPath");
 
             if (logger.isTraceEnabled())
                 logger.trace("Generating Beans for Identity Vault " + identitySource.getName()  + " of provider " + provider.getName());
@@ -164,8 +164,8 @@ public class IdentityVaultTransformer extends AbstractTransformer {
             } else {
                 // memory store
                 identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.memoryidentitystore.MemoryIdentityStore");
-                setPropertyValue(identityStore, "usersFileName", "classpath:" + baseIdauDestPath + "atricore-users.xml");
-                setPropertyValue(identityStore, "credentialsFileName", "classpath:" + baseIdauDestPath + "atricore-credentials.xml");
+                setPropertyValue(identityStore, "usersFileName", "classpath:" + idauPath + "atricore-users.xml");
+                setPropertyValue(identityStore, "credentialsFileName", "classpath:" + idauPath + "atricore-credentials.xml");
             }
         }
     }
