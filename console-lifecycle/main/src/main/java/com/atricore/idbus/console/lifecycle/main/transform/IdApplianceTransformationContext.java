@@ -114,4 +114,8 @@ public class IdApplianceTransformationContext {
 
         return null;
     }
+
+    public int nodesSize() {
+        return nodes.size();
+    }
 }

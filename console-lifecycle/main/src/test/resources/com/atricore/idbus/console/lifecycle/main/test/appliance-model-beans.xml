@@ -228,9 +228,11 @@
                 <property name="description" value="IdP1 Default Channel"/>
                 <property name="overrideProviderSetup" value="false"/>
             </bean>
+            
         </property>
         
         <property name="roleB" ref="sp1"/>
+
         <property name="channelB">
             <bean name="idp-default-channel" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProviderChannel">
                 <property name="name" value="sp1-default-channel"/>

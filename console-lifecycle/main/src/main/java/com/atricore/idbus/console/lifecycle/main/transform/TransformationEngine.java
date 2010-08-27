@@ -107,9 +107,7 @@ public class TransformationEngine  {
 
             // Walk the entier tree for each phase.
             // Ideally, the output of a phase should be the input of the next but ... we are not arcsense :) so
-            TransformerVisitor v = new TransformerVisitor();
-            v.setContext(ctx);
-            v.getTransformers().addAll(phase.getTransformers());
+            TransformerVisitor v = doMakeVisitor(ctx, phase);
             walker.walk(identityApplianceDefinition, v);
 
             ctx.setCurrentPhase(null);
@@ -133,6 +131,15 @@ public class TransformationEngine  {
         prj.setIdAppliance(appliance);
 
         return new IdApplianceTransformationContext(prj);
+    }
+
+    protected TransformerVisitor doMakeVisitor(IdApplianceTransformationContext ctx, Phase phase) {
+
+        TransformerVisitor v = new TransformerVisitor();
+        v.setContext(ctx);
+        v.getTransformers().addAll(phase.getTransformers());
+        return v;
+
     }
 
 }

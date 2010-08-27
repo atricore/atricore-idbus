@@ -50,17 +50,17 @@ public class SpFederatedConnectionTransformer extends AbstractTransformer {
 
             if (roleA) {
                 if (fc.getRoleA() instanceof ServiceProvider) {
-                    ServiceProviderChannel spChannel = (ServiceProviderChannel) fc.getChannelA();
+                    IdentityProviderChannel idpChannel = (IdentityProviderChannel) fc.getChannelA();
 
                     // Only accept a connection if channel overrides provider setup.
-                    return spChannel.isOverrideProviderSetup();
+                    return idpChannel.isOverrideProviderSetup();
                 }
             } else {
                 if (fc.getRoleB() instanceof ServiceProvider) {
-                    ServiceProviderChannel spChannel = (ServiceProviderChannel) fc.getChannelB();
+                    IdentityProviderChannel idpChannel = (IdentityProviderChannel) fc.getChannelB();
 
                     // Only accept a connection if channel overrides provider setup.
-                    return spChannel.isOverrideProviderSetup();
+                    return idpChannel.isOverrideProviderSetup();
                 }
 
             }

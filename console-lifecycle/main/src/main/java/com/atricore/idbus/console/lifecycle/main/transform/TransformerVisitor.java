@@ -35,6 +35,8 @@ import java.util.*;
 public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
 
     private static Log logger = LogFactory.getLog(TransformerVisitor.class);
+    
+    private static final String FEDERATED_CONN_ROLE_ATTR = "federatedConnectionRole";
 
     private SpringMetadataManager springMgr = new SpringMetadataManagerImpl();
 
@@ -99,7 +101,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(IdentityApplianceDefinition node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(IdentityApplianceDefinition node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -152,7 +154,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(ServiceProvider node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -206,7 +208,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(BindingProvider node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(BindingProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -259,7 +261,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(IdentityProvider node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -312,7 +314,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(IdentityProviderChannel node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(IdentityProviderChannel node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -365,7 +367,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(ServiceProviderChannel node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(ServiceProviderChannel node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -418,7 +420,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(IdentitySource node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(IdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -471,7 +473,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(IdentityLookup node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(IdentityLookup node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -524,7 +526,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(Activation node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(Activation node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -537,6 +539,19 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param node the node to be walked
      */
     public void arrive(FederatedConnection node) {
+
+        // See also ReflexiveIdentityApplianceDefinitionWalker, it also contains specific logic to handle connections
+
+        IdApplianceTransformationContext ctx = contextHolder.get();
+
+        Object parentNode = ctx.peek();
+        if (node.getRoleA() == parentNode) {
+            ctx.put(FEDERATED_CONN_ROLE_ATTR, "roleA");
+        } else if (node.getRoleB() == parentNode) {
+            ctx.put(FEDERATED_CONN_ROLE_ATTR, "roleB");
+        } else {
+            throw new RuntimeException("Parent node " + parentNode + " does not match connection provider A nor B");
+        }
         arrive(contextHolder.get(), node);
     }
 
@@ -555,7 +570,11 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @return the result of walking the node and it's children
      */
     public Object[] leave(FederatedConnection node, Object[] results) {
-        return leave(contextHolder.get(), node, results);
+        IdApplianceTransformationContext ctx = contextHolder.get();
+        Object[] result = leave(contextHolder.get(), node, results);
+        ctx.put(FEDERATED_CONN_ROLE_ATTR, null);
+
+        return result;
     }
 
     /**
@@ -577,7 +596,26 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(FederatedConnection node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(FederatedConnection node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+
+        IdApplianceTransformationContext ctx = contextHolder.get();
+        String role = (String) ctx.get(FEDERATED_CONN_ROLE_ATTR);
+
+        // Do not treat providers as 'children' of this node.
+        if (child instanceof Provider)
+            return false;
+
+        if (child instanceof Channel) {
+            if (role.equalsIgnoreCase("roleA")) {
+                return child == node.getChannelA();
+            } else if (role.equalsIgnoreCase("roleB")) {
+                return child == node.getChannelB();
+            } else {
+                throw new RuntimeException("No role information found in context for FederatedConnection " + node.getName());
+            }
+        }
+
+        // We should walk all other children
         return true;
     }
 
@@ -630,7 +668,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(ExecutionEnvironment node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(ExecutionEnvironment node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -683,7 +721,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(EmbeddedIdentitySource node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(EmbeddedIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -736,7 +774,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(LdapIdentitySource node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(LdapIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -789,7 +827,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(DbIdentitySource node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(DbIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -842,7 +880,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(Location node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(Location node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -895,7 +933,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    public boolean walkNextChild(JOSSOActivation node, Object resultOfPreviousChild, int indexOfNextChild) {
+    public boolean walkNextChild(JOSSOActivation node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
         return true;
     }
 
@@ -907,9 +945,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
 
     protected void arrive(IdApplianceTransformationContext ctx, Object node) {
         TransformEvent event = new TransformEventImpl(ctx, node, null);
-
         ctx.push(node);
-
         for (Transformer transformer : transformers) {
 
             if (transformer.accept(event)) {

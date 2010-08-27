@@ -38,8 +38,15 @@
     <bean name="idpTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPTransformer"/>
 
-    <bean name="spChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPFederatedConnectionTransformer"/>
+    <bean name="spFederatedConnectionATransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPFederatedConnectionTransformer">
+        <property name="roleA" value="true"/>
+    </bean>
+
+    <bean name="spFederatedConnectionBTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPFederatedConnectionTransformer">
+        <property name="roleA" value="false"/>
+    </bean>
 
     <bean name="claimsChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ClaimsChannelTransformer"/>
@@ -50,14 +57,15 @@
     <bean name="spTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer"/>
 
-    <bean name="idpChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SpFederatedConnectionTransformer"/>
+    <bean name="idpFederatedConnectionATransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SpFederatedConnectionTransformer">
+        <property name="roleA" value="true"/>
+    </bean>
 
-    <bean name="bpTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BPTransformer"/>
-
-    <bean name="bindingChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPBindingChannelTransformer"/>
+    <bean name="idpFederatedConnectionBTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SpFederatedConnectionTransformer">
+        <property name="roleA" value="false"/>
+    </bean>
 
     <bean name="embeddedStoreTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.EmbeddedStoreTransformer"/>
@@ -110,6 +118,44 @@
         <property name="engine" ref="idauTransformingEngine"/>
     </bean>
 
+    <bean name="testApplianceBuilder"
+          class="com.atricore.idbus.console.lifecycle.main.transform.TransformerApplianceBuilderImpl">
+        <property name="engine" ref="testTransformingEngine"/>
+    </bean>
+
+
+    <bean name="testTransformingEngine"
+          class="com.atricore.idbus.console.lifecycle.main.test.util.TestTransformationEngine">
+
+        <property name="walker">
+            <bean name="idbusWalker"
+                  class="com.atricore.idbus.console.lifecycle.main.transform.ReflexiveIdentityApplianceDefinitionWalker"/>
+        </property>
+
+        <property name="cycles">
+            <list>
+                <bean name="create-identity-project"
+                      class="com.atricore.idbus.console.lifecycle.main.transform.Cycle">
+
+                    <property name="name" value="build"/>
+
+                    <property name="phases">
+                        <list>
+
+                            <bean name="test"
+                                  class="com.atricore.idbus.console.lifecycle.main.transform.Phase">
+                                <property name="name" value="test"/>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+
+
+    </bean>
+
+
     <bean name="idauTransformingEngine"
           class="com.atricore.idbus.console.lifecycle.main.transform.TransformationEngine">
 
@@ -147,20 +193,27 @@
 
                                 <property name="transformers">
                                     <list>
+                                        
                                         <ref bean="projectSetupTransformer"/>
                                         <ref bean="idauBaseComponentsTransformer"/>
                                         <ref bean="idpTransformer"/>
-                                        <ref bean="spChannelTransformer"/>
+                                        <ref bean="idpFederatedConnectionATransformer"/>
+                                        <ref bean="idpFederatedConnectionBTransformer"/>
+                                        
                                         <ref bean="claimsChannelTransformer"/>
                                         <ref bean="stsTransformer"/>
+                                        <!--
                                         <ref bean="spTransformer"/>
-                                        <ref bean="idpChannelTransformer"/>
+                                        <ref bean="spFederatedConnectionATransformer"/>
+                                        <ref bean="spFederatedConnectionBTransformer"/>
+                                        -->
+
+                                        <!--
                                         <ref bean="identityVaultTransformer"/>
-                                        <ref bean="bpTransformer"/>
-                                        <ref bean="bindingChannelTransformer"/>
-                                        <!--ref bean="samlr2MetadataTransformer"/-->
+
                                         <ref bean="samlr2IdPTransformer"/>
                                         <ref bean="samlr2SPTransformer"/>
+                                        -->
                                     </list>
                                 </property>
 

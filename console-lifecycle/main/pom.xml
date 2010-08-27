@@ -50,13 +50,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.planning</artifactId>
             <scope>provided</scope>
         </dependency>
-        -->
 
         <dependency>
             <groupId>org.atricore.idbus.capabilities.josso</groupId>

@@ -57,9 +57,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -72,7 +70,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(IdentityApplianceDefinition node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(IdentityApplianceDefinition node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
 
     /**
@@ -105,9 +103,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -120,7 +116,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(ServiceProvider node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(ServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
 
     /**
@@ -153,9 +149,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -168,7 +162,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(IdentityProvider node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(IdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
     
     
     /**
@@ -201,9 +195,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -216,7 +208,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(IdentityProviderChannel node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(IdentityProviderChannel node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
     
     
     /**
@@ -249,9 +241,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -264,7 +254,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(ServiceProviderChannel node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(ServiceProviderChannel node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
     /**
      * This method is called before walking any children of the argument
@@ -296,9 +286,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -311,7 +299,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(IdentitySource node, Object resultOfPreviousChild, int indexOfNextChild);    
+    boolean walkNextChild(IdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild);    
 
     /**
      * This method is called before walking any children of the argument
@@ -343,9 +331,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -358,7 +344,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(EmbeddedIdentitySource node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(EmbeddedIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
     /**
      * This method is called before walking any children of the argument
@@ -390,9 +376,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -405,7 +389,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(LdapIdentitySource node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(LdapIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
     /**
      * This method is called before walking any children of the argument
@@ -437,9 +421,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -452,7 +434,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(DbIdentitySource node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(DbIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
     /**
      * This method is called before walking any children of the argument
@@ -484,9 +466,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -499,7 +479,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(JOSSOActivation node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(JOSSOActivation node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
     /**
      * This method is called before walking any children of the argument
@@ -531,9 +511,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -546,7 +524,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(Location node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(Location node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
     /**
      * This method is called before walking any children of the argument
@@ -578,9 +556,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -593,7 +569,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(FederatedConnection node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(FederatedConnection node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
     
     /**
      * This method is called before walking any children of the argument
@@ -625,9 +601,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -640,7 +614,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(IdentityLookup node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(IdentityLookup node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
     
     /**
      * This method is called before walking any children of the argument
@@ -672,9 +646,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -687,7 +659,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(ExecutionEnvironment node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(ExecutionEnvironment node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
     
     /**
      * This method is called before walking any children of the argument
@@ -719,9 +691,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * This method is called before walking each child of the argument
      * <code>node</code>. The return value of this method determines if
      * the next child of the argument <code>node</code> should be walked.
-     * In case of returning <code>false</code>, none of the remaining
-     * children are walked. Instead, the node's leave method is called
-     * immediately. The argument <code>resultOfPreviousChild</code>
+     *  The argument <code>resultOfPreviousChild</code>
      * holds the result of walking the previous child of the argument
      * <code>node</code>. Usually, it is used to determine the return value
      * of this method. The argument <code>indexOfNextChild</code>
@@ -734,7 +704,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param indexOfNextChild      the index of the next child to be walked
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
-    boolean walkNextChild(Activation node, Object resultOfPreviousChild, int indexOfNextChild);
+    boolean walkNextChild(Activation node, Object child, Object resultOfPreviousChild, int indexOfNextChild);
 
 
 }
