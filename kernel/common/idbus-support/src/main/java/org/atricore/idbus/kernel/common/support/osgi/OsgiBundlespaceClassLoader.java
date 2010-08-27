@@ -40,7 +40,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class OsgiBundlespaceClassLoader extends ClassLoader implements BundleListener {
 
-    private static final Log logger = LogFactory.getLog(OsgiBundlespaceClassLoader.class);
+//    private static final Log logger = LogFactory.getLog(OsgiBundlespaceClassLoader.class);
 
     public OsgiBundlespaceClassLoader(BundleContext bundleContext,
             ClassLoader parent, Class<?>... prioritizedClasses) {
@@ -109,41 +109,41 @@ public class OsgiBundlespaceClassLoader extends ClassLoader implements BundleLis
 	@Override
 	protected URL findResource(String name) {
 
-        if (logger.isDebugEnabled())
-            logger.debug("findResource (by name) " + name);
+//        if (logger.isTraceEnabled())
+//            logger.trace("findResource (by name) " + name);
 
 		Map<Bundle, OsgiBundleClassLoader> bundleClassLoaders = getBundleClassLoaders();
 		for (Bundle bundle : getBundles()) {
 
 			if (canLoadResources(bundle)) {
 
-                if (logger.isDebugEnabled())
-                    logger.debug("findResource (by name) " + name + " in bundle " + bundle.getSymbolicName());
+//                if (logger.isTraceEnabled())
+//                    logger.trace("findResource (by name) " + name + " in bundle " + bundle.getSymbolicName());
 
 				try {
 					URL resource = bundleClassLoaders.get(bundle).getResource(name);
 					if (resource != null) {
 
-                        if (logger.isDebugEnabled())
-                            logger.debug("findResource (by name) " + name + " found in bundle " +
-                                    bundle.getSymbolicName() +
-                                    "(" + bundle.getBundleId() + ")" +
-                                    resource);
+//                        if (logger.isTraceEnabled())
+//                            logger.trace("findResource (by name) " + name + " found in bundle " +
+//                                    bundle.getSymbolicName() +
+//                                    "(" + bundle.getBundleId() + ")" +
+//                                    resource);
 
 						return resource;
 					}
 				} catch (Throwable ex) {
 					/// Catch any other exceptions which could be thrown by a bundle loading a resource.
-                    if (logger.isDebugEnabled())
-                        logger.debug("Error findResource(by name) for resource " + ex.getMessage(), ex);
+//                    if (logger.isTraceEnabled())
+//                        logger.trace("Error findResource(by name) for resource " + ex.getMessage(), ex);
 				}
 			}
 		}
 
 		if (getSupportingClassLoader() != null) {
 
-            if (logger.isDebugEnabled())
-                logger.debug("findResourc (by name) " + name + ", looking in supporting classloaders");
+//            if (logger.isTraceEnabled())
+//                logger.trace("findResourc (by name) " + name + ", looking in supporting classloaders");
 
 			return getSupportingClassLoader().getResource(name);
 		} else {
@@ -159,8 +159,8 @@ public class OsgiBundlespaceClassLoader extends ClassLoader implements BundleLis
 	@Override
 	protected Enumeration<URL> findResources(String name) throws IOException {
 
-        if (logger.isDebugEnabled())
-            logger.debug("findResources (by name) " + name);
+//        if (logger.isTraceEnabled())
+//            logger.trace("findResources (by name) " + name);
 
 		Vector<URL> resources = new Vector<URL>();
 		Map<Bundle, OsgiBundleClassLoader> bundleClassLoaders = getBundleClassLoaders();
@@ -168,8 +168,8 @@ public class OsgiBundlespaceClassLoader extends ClassLoader implements BundleLis
 
 			if (canLoadResources(bundle)) {
 
-                if (logger.isDebugEnabled())
-                    logger.debug("findResources (by name) " + name + " in bundle " + bundle.getSymbolicName());
+//                if (logger.isTraceEnabled())
+//                    logger.trace("findResources (by name) " + name + " in bundle " + bundle.getSymbolicName());
 
 				try {
                     Enumeration<URL> bundleResources = bundleClassLoaders.get(bundle).getResources(name);
@@ -180,11 +180,11 @@ public class OsgiBundlespaceClassLoader extends ClassLoader implements BundleLis
 
                             URL u = bundleResources.nextElement();
 
-                            if (logger.isDebugEnabled())
-                                logger.debug("findResources (by name) " + name + " found in bundle " +
-                                        bundle.getSymbolicName() +
-                                        "(" + bundle.getBundleId() + ")" +
-                                        u);
+//                            if (logger.isTraceEnabled())
+//                                logger.trace("findResources (by name) " + name + " found in bundle " +
+//                                        bundle.getSymbolicName() +
+//                                        "(" + bundle.getBundleId() + ")" +
+//                                        u);
 
 							resources.add(u);
 						}
@@ -200,8 +200,8 @@ public class OsgiBundlespaceClassLoader extends ClassLoader implements BundleLis
 		} else {
 			if (getSupportingClassLoader() != null) {
 
-                if (logger.isDebugEnabled())
-                    logger.debug("findResources (by name) " + name + ", looking in supporting classloaders");
+//                if (logger.isTraceEnabled())
+//                    logger.trace("findResources (by name) " + name + ", looking in supporting classloaders");
 
 				return getSupportingClassLoader().getResources(name);
 			} else {

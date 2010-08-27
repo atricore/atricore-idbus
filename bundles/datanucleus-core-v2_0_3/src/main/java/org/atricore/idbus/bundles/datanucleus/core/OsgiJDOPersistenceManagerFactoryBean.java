@@ -1,5 +1,6 @@
 package org.atricore.idbus.bundles.datanucleus.core;
 
+import org.atricore.idbus.kernel.common.support.osgi.OsgiBundlespaceClassLoader;
 import org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean;
 import org.springframework.osgi.context.BundleContextAware;
 import org.osgi.framework.BundleContext;
@@ -28,13 +29,13 @@ public class OsgiJDOPersistenceManagerFactoryBean
         if (logger.isDebugEnabled())
             logger.debug("Creating new PersistenceManagerFactory based on properties");
 
-        /* DO NOT USE THE ENTIRE BUNDLESPACE, instead embed datanucleus in your own bundle.
+        /* TODO : DO NOT USE THE ENTIRE BUNDLESPACE, try local bundle classloader instead  */
         ClassLoader osgiCl = new OsgiBundlespaceClassLoader(bundleContext,
                 new OsgiBundleClassLoader(bundleContext.getBundle()),
                 bundleContext.getBundle());
-        */
 
-        ClassLoader osgiCl = new OsgiBundleClassLoader(bundleContext.getBundle());
+        // TODO : This does not work well ... check it
+        // ClassLoader osgiCl = new OsgiBundleClassLoader(bundleContext.getBundle());
         if (props.get("datanucleus.primaryClassLoader") == null) {
 
             if (logger.isDebugEnabled())
