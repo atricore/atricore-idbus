@@ -111,11 +111,11 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
         }
 
 
-        transformProvider(provider, spChannel, federatedConnection, target, targetChannel, event.getContext());
+        generateIdPComponents(provider, spChannel, federatedConnection, target, targetChannel, event.getContext());
 
     }
 
-    protected void transformProvider(IdentityProvider provider,
+    protected void generateIdPComponents(IdentityProvider provider,
                                      ServiceProviderChannel spChannel,
                                      FederatedConnection fc,
                                      FederatedProvider target,

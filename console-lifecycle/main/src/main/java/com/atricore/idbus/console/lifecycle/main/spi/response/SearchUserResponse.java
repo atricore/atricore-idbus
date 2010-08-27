@@ -33,6 +33,7 @@ import java.util.List;
  * Time: 17:19:33
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 public class SearchUserResponse extends AbstractManagementResponse {
 
     private List<User> users;

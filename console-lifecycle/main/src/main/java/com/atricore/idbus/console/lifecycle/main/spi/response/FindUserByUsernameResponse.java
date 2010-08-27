@@ -30,6 +30,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.User;
  * Time: 17:27:58
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 public class FindUserByUsernameResponse extends AbstractManagementResponse {
 
     private User user;

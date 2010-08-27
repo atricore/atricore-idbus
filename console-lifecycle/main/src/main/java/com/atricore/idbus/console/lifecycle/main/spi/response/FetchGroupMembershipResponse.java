@@ -29,6 +29,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.Group;
  * Time: 10:22:02
  * email: erocha@atricore.org
  */
+@Deprecated
 public class FetchGroupMembershipResponse extends AbstractManagementResponse {
 
     private Group[] groups;

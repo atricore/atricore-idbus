@@ -33,6 +33,7 @@ import java.util.Date;
  * Time: 16:23:55
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 public class AddUserRequest extends AbstractManagementResponse {
 
     private long id;

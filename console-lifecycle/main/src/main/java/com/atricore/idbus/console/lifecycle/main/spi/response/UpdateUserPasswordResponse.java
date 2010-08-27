@@ -30,6 +30,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.User;
  * email: erocha@atricore.org
  */
 
+@Deprecated
 public class UpdateUserPasswordResponse extends AbstractManagementResponse {
 
     private User user;
