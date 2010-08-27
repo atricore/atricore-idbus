@@ -51,7 +51,7 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
 	private List<ProviderDTO> providers;
 
-    private List<IdentityVaultDTO> identityVaults;
+    private List<IdentitySourceDTO> identitySources;
 
     private KeystoreDTO certificate;
 
@@ -136,15 +136,15 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
         this.providers = providers;
     }
 
-    public List<IdentityVaultDTO> getIdentityVaults() {
-        if(identityVaults == null){
-            identityVaults = new ArrayList<IdentityVaultDTO>();
+    public List<IdentitySourceDTO> getIdentitySources() {
+        if(identitySources == null){
+            identitySources = new ArrayList<IdentitySourceDTO>();
         }
-        return identityVaults;
+        return identitySources;
     }
 
-    public void setIdentityVaults(List<IdentityVaultDTO> identityVaults) {
-        this.identityVaults = identityVaults;
+    public void setIdentitySources(List<IdentitySourceDTO> identitySources) {
+        this.identitySources = identitySources;
     }
 
     public KeystoreDTO getCertificate() {

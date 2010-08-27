@@ -33,6 +33,7 @@ public class ChannelDTO implements Serializable {
 	private String name;
 	private LocationDTO location;
     private String description;
+    private boolean overrideProviderSetup;
 
     private List<BindingDTO> activeBindings = new ArrayList<BindingDTO>();
 
@@ -101,6 +102,14 @@ public class ChannelDTO implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isOverrideProviderSetup() {
+        return overrideProviderSetup;
+    }
+
+    public void setOverrideProviderSetup(boolean overrideProviderSetup) {
+        this.overrideProviderSetup = overrideProviderSetup;
     }
 
     @Override

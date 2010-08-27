@@ -25,32 +25,13 @@ public class IdentityProviderChannelDTO extends ChannelDTO {
 
 	private static final long serialVersionUID = 8276649486690667445L;
 
-    private IdentityVaultDTO identityVault;
-
-    // Overrides identityVault user information lookup
-    private UserInformationLookupDTO userInformationLookup;
-
     private AccountLinkagePolicyDTO accountLinkagePolicy;
 
+    // RFU
     private AuthenticationContractDTO authenticationContract;
 
+    // RFU
     private AuthenticationMechanismDTO authenticationMechanism;
-
-    public IdentityVaultDTO getIdentityVault() {
-        return identityVault;
-    }
-
-    public void setIdentityVault(IdentityVaultDTO identityVault) {
-        this.identityVault = identityVault;
-    }
-
-    public UserInformationLookupDTO getUserInformationLookup() {
-        return userInformationLookup;
-    }
-
-    public void setUserInformationLookup(UserInformationLookupDTO userInformationLookup) {
-        this.userInformationLookup = userInformationLookup;
-    }
 
     public AccountLinkagePolicyDTO getAccountLinkagePolicy() {
         return accountLinkagePolicy;

@@ -1,17 +1,17 @@
 package com.atricore.idbus.console.services.dto;
 
-import java.io.Serializable;
-
 /**
  * Author: Dejan Maric
  */
-public class ExecutionEnvironmentDTO implements Serializable {
+public class ConnectionDTO implements java.io.Serializable {
+
+    private static final long serialVersionUID = -2352240720282695589L;
 
     private long id;
+
     private String name;
+
     private String description;
-    private String installUri;
-    private static final long serialVersionUID = 175340870033867780L;
 
     public long getId() {
         return id;
@@ -37,11 +37,24 @@ public class ExecutionEnvironmentDTO implements Serializable {
         this.description = description;
     }
 
-    public String getInstallUri() {
-        return installUri;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ConnectionDTO)) return false;
+
+        ConnectionDTO that = (ConnectionDTO) o;
+
+        if(id == 0) return false;
+
+        if (id != that.id) return false;
+
+        return true;
     }
 
-    public void setInstallUri(String installUri) {
-        this.installUri = installUri;
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
     }
+
 }
+

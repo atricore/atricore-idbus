@@ -23,6 +23,7 @@ package com.atricore.idbus.console.services.dto;
 
 import java.io.Serializable;
 
+@Deprecated
 public class UserInformationLookupDTO implements Serializable {
 
 	private static final long serialVersionUID = -7735712697008169708L;
@@ -36,6 +37,7 @@ public class UserInformationLookupDTO implements Serializable {
     private String credentialsQueryString;
     private String userPropertiesQueryString;
     private String resetCredentialDml;
+    private String relayCredentialQueryString;
 
     public long getId() {
         return id;
@@ -91,6 +93,14 @@ public class UserInformationLookupDTO implements Serializable {
 
     public void setResetCredentialDml(String resetCredentialDml) {
         this.resetCredentialDml = resetCredentialDml;
+    }
+
+    public String getRelayCredentialQueryString() {
+        return relayCredentialQueryString;
+    }
+
+    public void setRelayCredentialQueryString(String relayCredentialQueryString) {
+        this.relayCredentialQueryString = relayCredentialQueryString;
     }
 
     @Override

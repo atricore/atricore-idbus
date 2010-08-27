@@ -30,6 +30,9 @@ public enum FeatureDTO {
             ProviderRoleDTO.SSOServiceProvider,
             ProviderRoleDTO.AttributeAuthority}),
 
+    SPMLR2 (new ProviderRoleDTO[] {
+            ProviderRoleDTO.Provisioning }),    
+
     JOSSO (new ProviderRoleDTO[] {ProviderRoleDTO.SSOServiceProvider}),
 
     STS(new ProviderRoleDTO[] {ProviderRoleDTO.SSOIdentityProvider});
