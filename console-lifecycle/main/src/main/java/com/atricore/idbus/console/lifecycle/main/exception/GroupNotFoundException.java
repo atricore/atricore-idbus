@@ -27,7 +27,7 @@ package com.atricore.idbus.console.lifecycle.main.exception;
  * Time: 3:22:23 PM
  * email: cbirge@atricore.org
  */
-public class GroupNotFoundException extends ProvisioningBusinessException {
+public class GroupNotFoundException extends UserProvisioningAjaxException {
 
     public GroupNotFoundException(long groupId) {
         super("The group with id "+groupId+" couldn't be found");

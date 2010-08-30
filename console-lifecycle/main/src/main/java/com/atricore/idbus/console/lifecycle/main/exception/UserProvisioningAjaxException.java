@@ -27,20 +27,20 @@ package com.atricore.idbus.console.lifecycle.main.exception;
  * Time: 3:25:11 PM
  * email: cbirge@atricore.org
  */
-public class ProvisioningBusinessException extends Exception{
+public class UserProvisioningAjaxException extends Exception{
 
-    public ProvisioningBusinessException() {
+    public UserProvisioningAjaxException() {
     }
 
-    public ProvisioningBusinessException(String message) {
+    public UserProvisioningAjaxException(String message) {
         super(message);
     }
 
-    public ProvisioningBusinessException(String message, Throwable cause) {
+    public UserProvisioningAjaxException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ProvisioningBusinessException(Throwable cause) {
+    public UserProvisioningAjaxException(Throwable cause) {
         super(cause);
     }
 }

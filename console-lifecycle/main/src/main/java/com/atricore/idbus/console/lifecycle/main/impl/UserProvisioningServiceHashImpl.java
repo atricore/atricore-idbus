@@ -26,7 +26,7 @@ import java.util.*;
 import com.atricore.idbus.console.lifecycle.main.domain.Group;
 import com.atricore.idbus.console.lifecycle.main.domain.User;
 import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundException;
-import com.atricore.idbus.console.lifecycle.main.exception.ProvisioningBusinessException;
+import com.atricore.idbus.console.lifecycle.main.exception.UserProvisioningAjaxException;
 import com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,7 +47,7 @@ public class UserProvisioningServiceHashImpl
     private PasswordHashUtil passwordHashUtil;
     
     public AddGroupResponse addGroup( AddGroupRequest item )
-        throws ProvisioningBusinessException
+        throws UserProvisioningAjaxException
     {
         if ( item.getId() <= 0) {
             item.setId(System.nanoTime());
@@ -67,7 +67,7 @@ public class UserProvisioningServiceHashImpl
     }
 
     public RemoveGroupResponse removeGroup( RemoveGroupRequest item )
-        throws ProvisioningBusinessException
+        throws UserProvisioningAjaxException
     {
         items.remove( item.getId() );
         return new RemoveGroupResponse();
@@ -91,7 +91,7 @@ public class UserProvisioningServiceHashImpl
 
 
     public ListGroupResponse getGroups()
-        throws ProvisioningBusinessException
+        throws UserProvisioningAjaxException
     {
         ListGroupResponse response = new ListGroupResponse();
 
@@ -104,7 +104,7 @@ public class UserProvisioningServiceHashImpl
     }
 
     public UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest)
-          throws ProvisioningBusinessException
+          throws UserProvisioningAjaxException
     {
        FindGroupByIdRequest findGroupRequest = new FindGroupByIdRequest();
        findGroupRequest.setId(groupRequest.getId());
@@ -118,7 +118,7 @@ public class UserProvisioningServiceHashImpl
     }
 
     public SearchGroupResponse searchGroups(SearchGroupRequest query)
-         throws ProvisioningBusinessException
+         throws UserProvisioningAjaxException
     {
         Collection<Group> result = new ArrayList<Group>();
 

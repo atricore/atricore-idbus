@@ -22,7 +22,7 @@
 package com.atricore.idbus.console.lifecycle.main.spi;
 
 import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundException;
-import com.atricore.idbus.console.lifecycle.main.exception.ProvisioningBusinessException;
+import com.atricore.idbus.console.lifecycle.main.exception.UserProvisioningAjaxException;
 import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 
@@ -32,10 +32,10 @@ public interface UserProvisioningService {
     //<---------------Groups -------------------->
 
     RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest)
-            throws ProvisioningBusinessException;
+            throws UserProvisioningAjaxException;
 
     AddGroupResponse addGroup(AddGroupRequest groupRequest)
-            throws ProvisioningBusinessException;
+            throws UserProvisioningAjaxException;
 
     FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest)
             throws GroupNotFoundException;
@@ -44,13 +44,13 @@ public interface UserProvisioningService {
             throws GroupNotFoundException;
 
     ListGroupResponse getGroups()
-            throws ProvisioningBusinessException;
+            throws UserProvisioningAjaxException;
 
     SearchGroupResponse searchGroups(SearchGroupRequest groupRequest)
-            throws ProvisioningBusinessException;
+            throws UserProvisioningAjaxException;
 
     UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest)
-            throws ProvisioningBusinessException;
+            throws UserProvisioningAjaxException;
 
     //<---------------Users -------------------->
 

@@ -21,12 +21,12 @@
 
 package com.atricore.idbus.console.lifecycle.main.impl;
 
+import com.atricore.idbus.console.lifecycle.main.exception.UserProvisioningAjaxException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.domain.Group;
 import com.atricore.idbus.console.lifecycle.main.domain.User;
 import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundException;
-import com.atricore.idbus.console.lifecycle.main.exception.ProvisioningBusinessException;
 import com.atricore.idbus.console.lifecycle.main.exception.UserNotFoundException;
 import com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService;
 import com.atricore.idbus.console.lifecycle.main.spi.request.*;
@@ -70,7 +70,7 @@ public class UserProvisioningServiceJDOImpl implements UserProvisioningService {
         this.passwordHashUtil = passwordHashUtil;
     }
 
-    public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws GroupNotFoundException, ProvisioningBusinessException {
+    public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws GroupNotFoundException, UserProvisioningAjaxException {
         PersistenceManager pm = pmf.getPersistenceManager();
 
         Transaction tx=pm.currentTransaction();
@@ -93,7 +93,7 @@ public class UserProvisioningServiceJDOImpl implements UserProvisioningService {
         } catch (Exception e){
             tx.rollback();
             logger.error("Error removing a Group",e);
-            throw new ProvisioningBusinessException(e);
+            throw new UserProvisioningAjaxException(e);
 
         } finally {
             if (tx.isActive()) {
@@ -104,7 +104,7 @@ public class UserProvisioningServiceJDOImpl implements UserProvisioningService {
 
     }
 
-    public AddGroupResponse addGroup(AddGroupRequest groupRequest) throws ProvisioningBusinessException {
+    public AddGroupResponse addGroup(AddGroupRequest groupRequest) throws UserProvisioningAjaxException {
 
         PersistenceManager pm = pmf.getPersistenceManager();
 
@@ -128,7 +128,7 @@ public class UserProvisioningServiceJDOImpl implements UserProvisioningService {
         } catch (Exception e){
             tx.rollback();
             logger.error("Error persisting a new Group",e);
-            throw new ProvisioningBusinessException("Error persisting a new Group",e);
+            throw new UserProvisioningAjaxException("Error persisting a new Group",e);
 
         } finally {
             if (tx.isActive()) {
@@ -214,7 +214,7 @@ public class UserProvisioningServiceJDOImpl implements UserProvisioningService {
         }
     }
 
-    public ListGroupResponse getGroups() throws ProvisioningBusinessException {
+    public ListGroupResponse getGroups() throws UserProvisioningAjaxException {
         PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx = pm.currentTransaction();
 
@@ -250,7 +250,7 @@ public class UserProvisioningServiceJDOImpl implements UserProvisioningService {
         }
     }
 
-    public SearchGroupResponse searchGroups(SearchGroupRequest groupRequest) throws ProvisioningBusinessException {
+    public SearchGroupResponse searchGroups(SearchGroupRequest groupRequest) throws UserProvisioningAjaxException {
         PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx = pm.currentTransaction();
 
@@ -290,7 +290,7 @@ public class UserProvisioningServiceJDOImpl implements UserProvisioningService {
         }
     }
 
-    public UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest) throws ProvisioningBusinessException {
+    public UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest) throws UserProvisioningAjaxException {
         PersistenceManager pm = pmf.getPersistenceManager();
 
         Transaction tx=pm.currentTransaction();
@@ -317,7 +317,7 @@ public class UserProvisioningServiceJDOImpl implements UserProvisioningService {
         } catch (Exception e){
             tx.rollback();
             logger.error("Error updating a Group",e);
-            throw new ProvisioningBusinessException("Error updating a Group", e);
+            throw new UserProvisioningAjaxException("Error updating a Group", e);
 
         } finally {
             if (tx.isActive()) {
@@ -360,7 +360,7 @@ public class UserProvisioningServiceJDOImpl implements UserProvisioningService {
 
           } catch (Exception e){
               logger.error("Error removing a User with id "+ userRequest.getId(),e);
-              throw new ProvisioningBusinessException(e);
+              throw new UserProvisioningAjaxException(e);
 
           } finally {
               if (tx.isActive()) {
@@ -453,7 +453,7 @@ public class UserProvisioningServiceJDOImpl implements UserProvisioningService {
 
           } catch (Exception e){
               logger.error("Error persisting a new User",e);
-              throw new ProvisioningBusinessException("Error persisting a new User",e);
+              throw new UserProvisioningAjaxException("Error persisting a new User",e);
 
           } finally {
               if (tx.isActive()) {
@@ -705,7 +705,7 @@ public class UserProvisioningServiceJDOImpl implements UserProvisioningService {
 
           } catch (Exception e){
               logger.error("Error updating the User with id "+userRequest.getId(),e);
-              throw new ProvisioningBusinessException("Error updating the User with id "+userRequest.getId(),e);
+              throw new UserProvisioningAjaxException("Error updating the User with id "+userRequest.getId(),e);
 
           } finally {
               if (tx.isActive()) {

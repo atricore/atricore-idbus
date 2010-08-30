@@ -22,15 +22,8 @@
 package com.atricore.idbus.console.services.util;
 
 import com.atricore.idbus.console.lifecycle.main.impl.SignOnServiceImpl;
-import com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService;
-import com.atricore.idbus.console.lifecycle.main.spi.request.AddGroupRequest;
 import com.atricore.idbus.console.lifecycle.main.spi.request.FindGroupByNameRequest;
-import com.atricore.idbus.console.lifecycle.main.spi.response.AddGroupResponse;
-import com.atricore.idbus.console.lifecycle.main.spi.response.FindGroupByNameResponse;
 import org.springframework.beans.factory.InitializingBean;
-import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundException;
-import com.atricore.idbus.console.lifecycle.main.exception.ProvisioningBusinessException;
-import com.atricore.idbus.console.lifecycle.main.domain.Group;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -100,7 +93,7 @@ public class ApplicationServerInitialization implements InitializingBean {
             try {
                 AddGroupResponse addGroupResponse = getUserProvisioningService().addGroup(addGroupRequest);
                 adminGroup = addGroupResponse.getGroup();
-            } catch (ProvisioningBusinessException e1) {
+            } catch (UserProvisioningAjaxException e1) {
                 logger.error("The group "+SignOnServiceImpl.ADMIN_GROUP+" couldn't be created. Impossible to continue initialization",e);
                 throw new Exception("The group "+SignOnServiceImpl.ADMIN_GROUP+" couldn't be created. Impossible to continue initialization",e);
             }
