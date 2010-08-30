@@ -130,6 +130,15 @@
             <field name="identitySources" default-fetch-group="true" persistence-modifier="persistent">
                 <collection dependent-element="true" />
 			</field>
+
+			<field name="activeFeatures" default-fetch-group="true" persistence-modifier="persistent">
+                <collection dependent-element="true"/>
+            </field>
+
+            <field name="supportedRoles" default-fetch-group="true" persistence-modifier="persistent">
+                <collection dependent-element="true"/>
+            </field>
+            
             <field name="location" default-fetch-group="true" dependent="true"/>
             <field name="keystore" default-fetch-group="true" dependent="true"/>
         </class>

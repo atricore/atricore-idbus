@@ -74,7 +74,7 @@
     <bean id="userProvisioningAjaxServiceBean" class="com.atricore.idbus.console.services.impl.UserProvisioningAjaxServiceImpl">
         <property name="provisioningService" ref="userProvisioningServiceManagerBean"/>
         <property name="dozerMapper" ref="dozerMapper" />
-        <property name="targetId" value="psp-default-pst1" />
+        <property name="targetId" value="pst1" />
     </bean>
 
     <bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">

@@ -174,7 +174,7 @@
             <a>activeProfiles</a>
             <b>activeProfiles</b>
         </field>
-        <field>
+        <!--field>
             <a>target</a>
             <b>target</b>
               <a-hint>
@@ -189,7 +189,7 @@
                   com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO,
                   com.atricore.idbus.console.services.dto.RemoteProviderDTO
             </b-hint>
-        </field>
+        </field-->
     </mapping>
 
     <mapping>
@@ -200,7 +200,7 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel</class-a>
         <class-b>com.atricore.idbus.console.services.dto.ServiceProviderChannelDTO</class-b>
-        <field>
+        <!--field>
             <a>identitySource</a>
             <b>identitySource</b>
             <a-hint>
@@ -213,7 +213,7 @@
                 com.atricore.idbus.console.services.dto.LdapIdentitySourceDTO,
                 com.atricore.idbus.console.services.dto.EmbeddedIdentitySourceDTO
             </b-hint>
-        </field>
+        </field-->
     </mapping>
 
     <!--<mapping>-->

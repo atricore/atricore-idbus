@@ -106,7 +106,7 @@
     <bean name="idpart-default" class="org.atricore.idbus.connectors.jdoidentityvault.JDOIdentityPartition">
         <property name="name" value="idpart1"/>
         <property name="description" value="Identity Partition ONE"/>
-        <property name="identitySource" ref="idvault-default"/>
+        <!--property name="identitySource" ref="idvault-default"/-->
         
         <property name="userDao" ref="user-dao"/>
         <property name="groupDao" ref="group-dao"/>
