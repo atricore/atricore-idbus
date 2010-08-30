@@ -35,10 +35,10 @@ import oasis.names.tc.spml._2._0.search.ScopeType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
 import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
-import oasis.names.tc.spml._2._0.wsdl.SPMLRequestPortType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
+import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client;
 import org.atricore.idbus.capabilities.spmlr2.main.binding.SPMLR2MessagingConstants;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
@@ -57,19 +57,13 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
     private static Log logger = LogFactory.getLog(UserProvisioningAjaxServiceImpl.class);
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
+
     private String pspTargetId;
-    private String pspEndpoint;
-    private SPMLRequestPortType port;
+
+    private SpmlR2Client spmlService;
 
     public void afterPropertiesSet() throws Exception {
 
-        logger.info("Using PSP/PSP-Target [" + pspEndpoint + "] " + pspTargetId);
-
-        Service serv = Service.create(SPMLR2MessagingConstants.SERVICE_NAME);
-        serv.addPort(SPMLR2MessagingConstants.PORT_NAME,
-                javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING,
-                pspEndpoint);
-        this.port = serv.getPort(SPMLR2MessagingConstants.PORT_NAME, SPMLRequestPortType.class);
     }
 
     public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws ProvisioningBusinessException {
@@ -82,7 +76,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         psoId.setTargetID(pspTargetId);
 
         deleteRequest.setPsoID(psoId);
-        ResponseType resp = port.spmlDeleteRequest(deleteRequest);
+        ResponseType resp = spmlService.spmlDeleteRequest(deleteRequest);
 
         RemoveGroupResponse respObj = new RemoveGroupResponse();
         return respObj;
@@ -98,7 +92,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         group.setDescription(groupRequest.getDescription());
         addReq.setData(group);
 
-        AddResponseType resp = port.spmlAddRequest(addReq);
+        AddResponseType resp = spmlService.spmlAddRequest(addReq);
         GroupType spmlGroup = (GroupType) resp.getPso().getData();
         AddGroupResponse respObj = new AddGroupResponse();
         respObj.setGroup(toGroupDTO(spmlGroup));
@@ -117,7 +111,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         lookupRequest.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
         lookupRequest.setPsoID(psoGroupId);
 
-        LookupResponseType resp = port.spmlLookupRequest(lookupRequest);
+        LookupResponseType resp = spmlService.spmlLookupRequest(lookupRequest);
 
         GroupType spmlGroup = (GroupType) resp.getPso().getData();
         FindGroupByIdResponse response = new FindGroupByIdResponse();
@@ -155,7 +149,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlQry.getAny().add(jaxbSelect);
         searchRequest.setQuery(spmlQry);
 
-        SearchResponseType resp  = port.spmlSearchRequest(searchRequest);
+        SearchResponseType resp  = spmlService.spmlSearchRequest(searchRequest);
 
         FindGroupByNameResponse response = new FindGroupByNameResponse();
 
@@ -195,7 +189,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlQry.getAny().add(jaxbSelect);
         searchRequest.setQuery(spmlQry);
 
-        SearchResponseType resp  = port.spmlSearchRequest(searchRequest);
+        SearchResponseType resp  = spmlService.spmlSearchRequest(searchRequest);
         GroupDTO grps[] = new GroupDTO[resp.getPso().size()];
 
         for (int i=0; i<grps.length; i++) {
@@ -247,7 +241,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlQry.getAny().add(jaxbSelect);
         searchRequest.setQuery(spmlQry);
 
-        SearchResponseType resp  = port.spmlSearchRequest(searchRequest);
+        SearchResponseType resp  = spmlService.spmlSearchRequest(searchRequest);
 
         SearchGroupResponse srchGroupResponse = new SearchGroupResponse();
         ArrayList<GroupDTO> groups = new ArrayList<GroupDTO>();
@@ -288,7 +282,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         modifyGroupRequest.setPsoID(psoGroup.getPsoID());
         modifyGroupRequest.getModification().add(mod);
 
-        ModifyResponseType resp = port.spmlModifyRequest(modifyGroupRequest);
+        ModifyResponseType resp = spmlService.spmlModifyRequest(modifyGroupRequest);
 
         UpdateGroupResponse response = new UpdateGroupResponse();
         return response;
@@ -304,7 +298,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         psoId.setTargetID(pspTargetId);
 
         userDelRequest.setPsoID(psoId);
-        ResponseType resp = port.spmlDeleteRequest(userDelRequest);
+        ResponseType resp = spmlService.spmlDeleteRequest(userDelRequest);
 
         RemoveUserResponse response = new RemoveUserResponse();
 
@@ -319,7 +313,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         UserType user = toUserType(userRequest);
         addReq.setData(user);
 
-        AddResponseType resp = port.spmlAddRequest(addReq);
+        AddResponseType resp = spmlService.spmlAddRequest(addReq);
         UserType spmlUser = (UserType) resp.getPso().getData();
         AddUserResponse response = new AddUserResponse();
         response.setUser(toUserDTO(spmlUser));
@@ -337,7 +331,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         lookupRequest.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
         lookupRequest.setPsoID(psoUserId);
 
-        LookupResponseType resp = port.spmlLookupRequest(lookupRequest);
+        LookupResponseType resp = spmlService.spmlLookupRequest(lookupRequest);
 
         UserType spmlUser = (UserType) resp.getPso().getData();
         FindUserByIdResponse response = new FindUserByIdResponse();
@@ -374,7 +368,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlQry.getAny().add(jaxbSelect);
         searchRequest.setQuery(spmlQry);
 
-        SearchResponseType resp  = port.spmlSearchRequest(searchRequest);
+        SearchResponseType resp  = spmlService.spmlSearchRequest(searchRequest);
         FindUserByUsernameResponse response = new FindUserByUsernameResponse();
 
         if (resp.getPso().size() == 1) {
@@ -412,7 +406,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlQry.getAny().add(jaxbSelect);
         searchRequest.setQuery(spmlQry);
 
-        SearchResponseType resp  = port.spmlSearchRequest(searchRequest);
+        SearchResponseType resp  = spmlService.spmlSearchRequest(searchRequest);
         UserDTO users[] = new UserDTO[resp.getPso().size()];
 
         for (int i=0; i<users.length; i++) {
@@ -461,7 +455,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlQry.getAny().add(jaxbSelect);
         searchRequest.setQuery(spmlQry);
 
-        SearchResponseType resp  = port.spmlSearchRequest(searchRequest);
+        SearchResponseType resp  = spmlService.spmlSearchRequest(searchRequest);
         ArrayList<UserDTO> users = new ArrayList<UserDTO>();
 
         for (PSOType psoUser : resp.getPso()) {
@@ -497,7 +491,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         modifyUserRequest.setPsoID(psoUser.getPsoID());
         modifyUserRequest.getModification().add(mod);
 
-        ModifyResponseType resp = port.spmlModifyRequest(modifyUserRequest);
+        ModifyResponseType resp = spmlService.spmlModifyRequest(modifyUserRequest);
         UpdateUserResponse response = new UpdateUserResponse();
 
         return response;
@@ -531,7 +525,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlQry.getAny().add(jaxbSelect);
         searchRequest.setQuery(spmlQry);
 
-        SearchResponseType resp  = port.spmlSearchRequest(searchRequest);
+        SearchResponseType resp  = spmlService.spmlSearchRequest(searchRequest);
         GetUsersByGroupResponse response = new GetUsersByGroupResponse();
         UserDTO users[] = new UserDTO[resp.getPso().size()];
 
@@ -554,7 +548,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlRequest.setRequestID(uuidGenerator.generateId());
         spmlRequest.setPsoID(psoGroupId);
 
-        LookupResponseType resp = port.spmlLookupRequest(spmlRequest);
+        LookupResponseType resp = spmlService.spmlLookupRequest(spmlRequest);
 
         return resp.getPso();
 
@@ -571,7 +565,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlRequest.setRequestID(uuidGenerator.generateId());
         spmlRequest.setPsoID(psoUserId);
 
-        LookupResponseType resp = port.spmlLookupRequest(spmlRequest);
+        LookupResponseType resp = spmlService.spmlLookupRequest(spmlRequest);
 
         return resp.getPso();
 
@@ -733,15 +727,19 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         return u;
     }
 
+    public String getPspTargetId() {
+        return pspTargetId;
+    }
+
     public void setPspTargetId(String pspTargetId) {
         this.pspTargetId = pspTargetId;
     }
 
-    public String getPspEndpoint() {
-        return pspEndpoint;
+    public SpmlR2Client getSpmlService() {
+        return spmlService;
     }
 
-    public void setPspEndpoint(String pspEndpoint) {
-        this.pspEndpoint = pspEndpoint;
+    public void setSpmlService(SpmlR2Client spmlService) {
+        this.spmlService = spmlService;
     }
 }

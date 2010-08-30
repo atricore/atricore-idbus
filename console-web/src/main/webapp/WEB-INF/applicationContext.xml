@@ -29,6 +29,19 @@
     <osgi:reference id="activationServiceBean" cardinality="1..1" timeout="60"
                 interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
 
+    <osgi:list id="spmlServiceBeans" interface="org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client"
+               cardinality="0..N" >
+        <osgi:listener ref="spml-service-listener" bind-method="register" unbind-method="unregister"/>
+    </osgi:list>
+
+    <bean name="spml-service-listener" class="com.atricore.idbus.console.services.impl.SpmlR2ServiceListener">
+        <property name="services">
+            <list>
+                <ref bean="userProvisioningAjaxServiceBean"/>
+            </list>
+        </property>
+    </bean>
+
 
     <bean id="applicationServerInitialization" class="com.atricore.idbus.console.services.util.ApplicationServerInitialization">
         <!--property name="userProvisioningService" ref="userProvisioningServiceManagerBean"/-->
@@ -73,10 +86,10 @@
 
     </bean>
 
-    <bean id="userProvisioningAjaxServiceBean" class="com.atricore.idbus.console.services.impl.UserProvisioningAjaxServiceImpl">
+    <bean id="userProvisioningAjaxServiceBean"
+          class="com.atricore.idbus.console.services.impl.UserProvisioningAjaxServiceImpl">
         <!-- TODO : Expose through OSGi config support -->
         <property name="pspTargetId" value="pst-default" />
-        <property name="pspEndpoint" value="http://localhost:8081/IDBUS/PSP-1/SPML2/SOAP"/>
     </bean>
 
     <bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">

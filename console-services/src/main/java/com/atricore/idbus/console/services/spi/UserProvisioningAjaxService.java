@@ -30,6 +30,9 @@ import com.atricore.idbus.console.lifecycle.main.exception.ProvisioningBusinessE
  * Author: Dejan Maric
  */
 public interface UserProvisioningAjaxService {
+
+    String getPspTargetId();
+
     //<---------------Groups -------------------->
 
     RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest)
