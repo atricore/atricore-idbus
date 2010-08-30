@@ -6,14 +6,5 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 public class ProvisioningServiceProvider extends LocalProvider {
 
     private static final long serialVersionUID = -1598765235444881900L;
-
-    private long id;
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
+    
 }

@@ -13,7 +13,7 @@
 
         <symbol>com.atricore.idbus.console.main.ApplicationMediator</symbol>
         <symbol>com.atricore.idbus.console.main.view.form.IocFormMediator</symbol>
-        <symbol>com.atricore.idbus.console.main.view.keystore.ManageCertificateMediator</symbol>
+        <symbol>com.atricore.idbus.console.main.view.certificate.ManageCertificateMediator</symbol>
         <symbol>com.atricore.idbus.console.main.view.upload.UploadProgressMediator</symbol>
         <symbol>com.atricore.idbus.console.main.view.progress.ProcessingMediator</symbol>
         <symbol>com.atricore.idbus.console.main.view.login.LoginMediator</symbol>

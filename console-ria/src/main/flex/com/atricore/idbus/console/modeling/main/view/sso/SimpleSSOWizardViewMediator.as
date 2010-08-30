@@ -26,9 +26,11 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
 import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand;
+import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
-import com.atricore.idbus.console.services.dto.IdentityVault;
+import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.Keystore;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 
@@ -161,8 +163,8 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
         var identityAppliance:IdentityAppliance = _wizardDataModel.applianceData;
         var identityApplianceDefinition:IdentityApplianceDefinition = identityAppliance.idApplianceDefinition;
-        identityApplianceDefinition.identityVaults = new ArrayCollection();
-        identityApplianceDefinition.identityVaults.addItem(createIdentityVault());
+        identityApplianceDefinition.identitySources = new ArrayCollection();
+        identityApplianceDefinition.identitySources.addItem(createIdentityVault());
 
         identityApplianceDefinition.providers = new ArrayCollection();
         for (var i:int = 0; i < _wizardDataModel.step3Data.length; i++) {
@@ -180,12 +182,14 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         //closeWizard();
     }
 
-    private function createIdentityVault():IdentityVault {
-        if ((_wizardDataModel.step1Data as IdentityVault).embedded) {
-            return _wizardDataModel.step2EmbeddedData as IdentityVault;
-        } else {
-            return _wizardDataModel.step2ExternalData as IdentityVault;
+    private function createIdentityVault():IdentitySource {
+        var data:IdentitySource;
+        if (_wizardDataModel.step1Data is EmbeddedIdentitySource) {
+            data = _wizardDataModel.step2EmbeddedData as IdentitySource;
+        } else if (_wizardDataModel.step1Data is DbIdentitySource) {
+            data = _wizardDataModel.step2ExternalData as IdentitySource;
         }
+        return data;
     }
 
     public function handleSSOSetupSuccess():void {

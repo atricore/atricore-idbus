@@ -38,10 +38,13 @@ import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChanne
 import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelCoreSection;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.Channel;
-import com.atricore.idbus.console.services.dto.DbIdentityVault;
+import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
+import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
@@ -153,12 +156,14 @@ public class PropertySheetMediator extends IocMediator {
                     _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                     enableSpChannelPropertyTabs();
                 }
-                if(_projectProxy.currentIdentityApplianceElement is DbIdentityVault) {
+                if(_projectProxy.currentIdentityApplianceElement is IdentitySource) {
                     _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
-                    if((_currentIdentityApplianceElement as DbIdentityVault).embedded){
+                    if(_currentIdentityApplianceElement is EmbeddedIdentitySource){
                         enableEmbeddedDbVaultPropertyTabs();
-                    } else {
+                    } else if(_currentIdentityApplianceElement is DbIdentitySource) {
                         enableExternalDbVaultPropertyTabs();
+                    } else if(_currentIdentityApplianceElement is LdapIdentitySource){
+                        enableLdapSourcePropertyTabs();
                     }
 
                 }
@@ -394,31 +399,28 @@ public class PropertySheetMediator extends IocMediator {
             _ipContractSection.signAuthAssertionCheck.selected = identityProvider.signAuthenticationAssertions;
             _ipContractSection.encryptAuthAssertionCheck.selected = identityProvider.encryptAuthenticationAssertions;
 
-            var defaultChannel:Channel = identityProvider.defaultChannel;
-            if (defaultChannel != null) {
-                for (var j:int = 0; j < defaultChannel.activeBindings.length; j ++) {
-                    var tmpBinding:Binding = defaultChannel.activeBindings.getItemAt(j) as Binding;
-                    if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
-                        _ipContractSection.samlBindingHttpPostCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
-                        _ipContractSection.samlBindingHttpRedirectCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
-                        _ipContractSection.samlBindingArtifactCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
-                        _ipContractSection.samlBindingSoapCheck.selected = true;
-                    }
+            for (var j:int = 0; j < identityProvider.activeBindings.length; j ++) {
+                var tmpBinding:Binding = identityProvider.activeBindings.getItemAt(j) as Binding;
+                if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
+                    _ipContractSection.samlBindingHttpPostCheck.selected = true;
                 }
-                for (j = 0; j < defaultChannel.activeProfiles.length; j++) {
-                    var tmpProfile:Profile = defaultChannel.activeProfiles.getItemAt(j) as Profile;
-                    if (tmpProfile.name == Profile.SSO.name) {
-                        _ipContractSection.samlProfileSSOCheck.selected = true;
-                    }
-                    if (tmpProfile.name == Profile.SSO_SLO.name) {
-                        _ipContractSection.samlProfileSLOCheck.selected = true;
-                    }
+                if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
+                    _ipContractSection.samlBindingHttpRedirectCheck.selected = true;
+                }
+                if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
+                    _ipContractSection.samlBindingArtifactCheck.selected = true;
+                }
+                if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
+                    _ipContractSection.samlBindingSoapCheck.selected = true;
+                }
+            }
+            for (j = 0; j < identityProvider.activeProfiles.length; j++) {
+                var tmpProfile:Profile = identityProvider.activeProfiles.getItemAt(j) as Profile;
+                if (tmpProfile.name == Profile.SSO.name) {
+                    _ipContractSection.samlProfileSSOCheck.selected = true;
+                }
+                if (tmpProfile.name == Profile.SSO_SLO.name) {
+                    _ipContractSection.samlProfileSLOCheck.selected = true;
                 }
             }
 
@@ -439,37 +441,37 @@ public class PropertySheetMediator extends IocMediator {
 
             identityProvider = _currentIdentityApplianceElement as IdentityProvider;
 
-            var spChannel:ServiceProviderChannel = identityProvider.defaultChannel as ServiceProviderChannel;
+//            var spChannel:ServiceProviderChannel = identityProvider.defaultChannel as ServiceProviderChannel;
 
-            if (spChannel.activeBindings == null) {
-                spChannel.activeBindings = new ArrayCollection();
+            if (identityProvider.activeBindings == null) {
+                identityProvider.activeBindings = new ArrayCollection();
             }
-            spChannel.activeBindings.removeAll();
+            identityProvider.activeBindings.removeAll();
             if (_ipContractSection.samlBindingHttpPostCheck.selected) {
-                spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
+                identityProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
             }
             if (_ipContractSection.samlBindingArtifactCheck.selected) {
-                spChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
+                identityProvider.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
             }
             if (_ipContractSection.samlBindingHttpRedirectCheck.selected) {
-                spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
+                identityProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
             }
             if (_ipContractSection.samlBindingSoapCheck.selected) {
-                spChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
+                identityProvider.activeBindings.addItem(Binding.SAMLR2_SOAP);
             }
 
-            if (spChannel.activeProfiles == null) {
-                spChannel.activeProfiles = new ArrayCollection();
+            if (identityProvider.activeProfiles == null) {
+                identityProvider.activeProfiles = new ArrayCollection();
             }
-            spChannel.activeProfiles.removeAll();
+            identityProvider.activeProfiles.removeAll();
             if (_ipContractSection.samlProfileSSOCheck.selected) {
-                spChannel.activeProfiles.addItem(Profile.SSO);
+                identityProvider.activeProfiles.addItem(Profile.SSO);
             }
             if (_ipContractSection.samlProfileSLOCheck.selected) {
-                spChannel.activeProfiles.addItem(Profile.SSO_SLO);
+                identityProvider.activeProfiles.addItem(Profile.SSO_SLO);
             }
 
-            identityProvider.defaultChannel = spChannel; 
+//            identityProvider.defaultChannel = spChannel;
             identityProvider.signAuthenticationAssertions = _ipContractSection.signAuthAssertionCheck.selected;
             identityProvider.encryptAuthenticationAssertions = _ipContractSection.encryptAuthAssertionCheck.selected;
 
@@ -557,31 +559,28 @@ public class PropertySheetMediator extends IocMediator {
             //_spContractSection.signAuthRequestCheck.selected = serviceProvider.signAuthenticationAssertions;
             //_spContractSection.encryptAuthRequestCheck.selected = serviceProvider.encryptAuthenticationAssertions;
     
-            var defaultChannel:Channel = serviceProvider.defaultChannel;
-            if (defaultChannel != null) {
-                for (var j:int = 0; j < defaultChannel.activeBindings.length; j ++) {
-                    var tmpBinding:Binding = defaultChannel.activeBindings.getItemAt(j) as Binding;
-                    if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
-                        _spContractSection.samlBindingHttpPostCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
-                        _spContractSection.samlBindingHttpRedirectCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
-                        _spContractSection.samlBindingArtifactCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
-                        _spContractSection.samlBindingSoapCheck.selected = true;
-                    }
+            for (var j:int = 0; j < serviceProvider.activeBindings.length; j ++) {
+                var tmpBinding:Binding = serviceProvider.activeBindings.getItemAt(j) as Binding;
+                if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
+                    _spContractSection.samlBindingHttpPostCheck.selected = true;
                 }
-                for (j = 0; j < defaultChannel.activeProfiles.length; j++) {
-                    var tmpProfile:Profile = defaultChannel.activeProfiles.getItemAt(j) as Profile;
-                    if (tmpProfile.name == Profile.SSO.name) {
-                        _spContractSection.samlProfileSSOCheck.selected = true;
-                    }
-                    if (tmpProfile.name == Profile.SSO_SLO.name) {
-                        _spContractSection.samlProfileSLOCheck.selected = true;
-                    }
+                if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
+                    _spContractSection.samlBindingHttpRedirectCheck.selected = true;
+                }
+                if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
+                    _spContractSection.samlBindingArtifactCheck.selected = true;
+                }
+                if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
+                    _spContractSection.samlBindingSoapCheck.selected = true;
+                }
+            }
+            for (j = 0; j < serviceProvider.activeProfiles.length; j++) {
+                var tmpProfile:Profile = serviceProvider.activeProfiles.getItemAt(j) as Profile;
+                if (tmpProfile.name == Profile.SSO.name) {
+                    _spContractSection.samlProfileSSOCheck.selected = true;
+                }
+                if (tmpProfile.name == Profile.SSO_SLO.name) {
+                    _spContractSection.samlProfileSLOCheck.selected = true;
                 }
             }
 
@@ -600,40 +599,34 @@ public class PropertySheetMediator extends IocMediator {
 
             serviceProvider = _currentIdentityApplianceElement as ServiceProvider;
 
-            var idpChannel:IdentityProviderChannel = serviceProvider.defaultChannel as IdentityProviderChannel;
-            if(idpChannel == null) {
-                idpChannel = new IdentityProviderChannel();
+            if (serviceProvider.activeBindings == null) {
+                serviceProvider.activeBindings = new ArrayCollection();
             }
-
-            if (idpChannel.activeBindings == null) {
-                idpChannel.activeBindings = new ArrayCollection();
-            }
-            idpChannel.activeBindings.removeAll();
+            serviceProvider.activeBindings.removeAll();
             if (_spContractSection.samlBindingHttpPostCheck.selected) {
-                idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
+                serviceProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
             }
             if (_spContractSection.samlBindingArtifactCheck.selected) {
-                idpChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
+                serviceProvider.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
             }
             if (_spContractSection.samlBindingHttpRedirectCheck.selected) {
-                idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
+                serviceProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
             }
             if (_spContractSection.samlBindingSoapCheck.selected) {
-                idpChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
+                serviceProvider.activeBindings.addItem(Binding.SAMLR2_SOAP);
             }
 
-            if (idpChannel.activeProfiles == null) {
-                idpChannel.activeProfiles = new ArrayCollection();
+            if (serviceProvider.activeProfiles == null) {
+                serviceProvider.activeProfiles = new ArrayCollection();
             }
-            idpChannel.activeProfiles.removeAll();
+            serviceProvider.activeProfiles.removeAll();
             if (_spContractSection.samlProfileSSOCheck.selected) {
-                idpChannel.activeProfiles.addItem(Profile.SSO);
+                serviceProvider.activeProfiles.addItem(Profile.SSO);
             }
             if (_spContractSection.samlProfileSLOCheck.selected) {
-                idpChannel.activeProfiles.addItem(Profile.SSO_SLO);
+                serviceProvider.activeProfiles.addItem(Profile.SSO_SLO);
             }
 
-            serviceProvider.defaultChannel = idpChannel;
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
@@ -1027,9 +1020,9 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function handleEmbeddedDbVaultCorePropertyTabCreationComplete(event:Event):void {
-        var dbIdentityVault:DbIdentityVault;
+        var dbIdentityVault:DbIdentitySource;
 
-        dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVault;
+        dbIdentityVault = _currentIdentityApplianceElement as DbIdentitySource;
 
         // if dbIdentityVault is null that means some other element was selected before completing this
         if (dbIdentityVault != null) {
@@ -1059,9 +1052,9 @@ public class PropertySheetMediator extends IocMediator {
     private function handleEmbeddedDbVaultCorePropertyTabRollOut(e:Event):void {
         if (_dirty && validate(true) && comparePasswords(_embeddedDbVaultCoreSection.adminPass, _embeddedDbVaultCoreSection.confirmAdminPass)) {
             // bind model
-            var dbIdentityVault:DbIdentityVault;
+            var dbIdentityVault:DbIdentitySource;
 
-            dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVault;
+            dbIdentityVault = _currentIdentityApplianceElement as DbIdentitySource;
             dbIdentityVault.name = _embeddedDbVaultCoreSection.userRepositoryName.text;
             dbIdentityVault.port = parseInt(_embeddedDbVaultCoreSection.serverPort.text);
             dbIdentityVault.schema = _embeddedDbVaultCoreSection.schema.text;
@@ -1110,9 +1103,9 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function handleExternalDbVaultCorePropertyTabCreationComplete(event:Event):void {
-        var dbIdentityVault:DbIdentityVault;
+        var dbIdentityVault:DbIdentitySource;
 
-        dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVault;
+        dbIdentityVault = _currentIdentityApplianceElement as DbIdentitySource;
 
         // if dbIdentityVault is null that means some other element was selected before completing this
         if (dbIdentityVault != null) {
@@ -1145,9 +1138,9 @@ public class PropertySheetMediator extends IocMediator {
     private function handleExternalDbVaultCorePropertyTabRollOut(e:Event):void {
         if (_dirty && validate(true)) {
             // bind model
-            var dbIdentityVault:DbIdentityVault;
+            var dbIdentityVault:DbIdentitySource;
 
-            dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVault;
+            dbIdentityVault = _currentIdentityApplianceElement as DbIdentitySource;
             dbIdentityVault.name = _externalDbVaultCoreSection.userRepositoryName.text;
             dbIdentityVault.connectionName = _externalDbVaultCoreSection.connectionName.text;
             dbIdentityVault.driverName = _externalDbVaultCoreSection.driverName.text;
@@ -1162,9 +1155,9 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function handleExternalDbVaulLookupPropertyTabCreationComplete(event:Event):void {
-        var dbIdentityVault:DbIdentityVault;
+        var dbIdentityVault:DbIdentitySource;
 
-        dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVault;
+        dbIdentityVault = _currentIdentityApplianceElement as DbIdentitySource;
 
         // if dbIdentityVault is null that means some other element was selected before completing this
         if (dbIdentityVault != null) {
@@ -1173,10 +1166,10 @@ public class PropertySheetMediator extends IocMediator {
                 //dbIdentityVault.userInformationLookup = new UserInformationLookup();
             //}
 
-            _externalDbVaultLookupSection.userQuery.text = dbIdentityVault.userInformationLookup.userQueryString;
-            _externalDbVaultLookupSection.rolesQuery.text = dbIdentityVault.userInformationLookup.rolesQueryString;
-            _externalDbVaultLookupSection.credentialsQuery.text = dbIdentityVault.userInformationLookup.credentialsQueryString;
-            _externalDbVaultLookupSection.propertiesQuery.text = dbIdentityVault.userInformationLookup.userPropertiesQueryString;
+            _externalDbVaultLookupSection.userQuery.text = dbIdentityVault.userQueryString;
+            _externalDbVaultLookupSection.rolesQuery.text = dbIdentityVault.rolesQueryString;
+            _externalDbVaultLookupSection.credentialsQuery.text = dbIdentityVault.credentialsQueryString;
+            _externalDbVaultLookupSection.propertiesQuery.text = dbIdentityVault.userPropertiesQueryString;
 
             _externalDbVaultLookupSection.userQuery.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultLookupSection.credentialsQuery.addEventListener(Event.CHANGE, handleSectionChange);
@@ -1188,23 +1181,21 @@ public class PropertySheetMediator extends IocMediator {
     private function handleExternalDbVaultLookupPropertyTabRollOut(e:Event):void {
         if (_dirty) {
             // bind model
-            var dbIdentityVault:DbIdentityVault;
-            dbIdentityVault = _currentIdentityApplianceElement as DbIdentityVault;
+            var dbIdentityVault:DbIdentitySource;
+            dbIdentityVault = _currentIdentityApplianceElement as DbIdentitySource;
 
-            if(dbIdentityVault.userInformationLookup == null){
-               dbIdentityVault.userInformationLookup = new UserInformationLookup();
-            }
-
-            dbIdentityVault.userInformationLookup.userQueryString = _externalDbVaultLookupSection.userQuery.text;
-            dbIdentityVault.userInformationLookup.rolesQueryString = _externalDbVaultLookupSection.rolesQuery.text;
-            dbIdentityVault.userInformationLookup.credentialsQueryString =  _externalDbVaultLookupSection.credentialsQuery.text;
-            dbIdentityVault.userInformationLookup.userPropertiesQueryString = _externalDbVaultLookupSection.propertiesQuery.text;
+            dbIdentityVault.userQueryString = _externalDbVaultLookupSection.userQuery.text;
+            dbIdentityVault.rolesQueryString = _externalDbVaultLookupSection.rolesQuery.text;
+            dbIdentityVault.credentialsQueryString =  _externalDbVaultLookupSection.credentialsQuery.text;
+            dbIdentityVault.userPropertiesQueryString = _externalDbVaultLookupSection.propertiesQuery.text;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
     }
+
+    private function enableLdapSourcePropertyTabs():void {}    
 
     protected function clearPropertyTabs():void {
         // Attach appliance editor form to property tabbed view

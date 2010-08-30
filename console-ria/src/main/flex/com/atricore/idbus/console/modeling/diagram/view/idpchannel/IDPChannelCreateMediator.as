@@ -145,13 +145,14 @@ public class IDPChannelCreateMediator extends IocFormMediator {
     }
 
     private function handleIdpChannelSave(event:MouseEvent):void {
+        //TODO 
         if (validate(true)) {
             bindModel();
             var sp:ServiceProvider = _projectProxy.currentIdentityApplianceElementOwner as ServiceProvider;
-            if (sp.channels == null) {
-                sp.channels = new ArrayCollection();
-            }
-            sp.channels.addItem(_newIdpChannel);
+//            if (sp.channels == null) {
+//                sp.channels = new ArrayCollection();
+//            }
+//            sp.channels.addItem(_newIdpChannel);
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
             sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

@@ -109,47 +109,33 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         identityProvider.signAuthenticationAssertions = view.signAuthAssertionCheck.selected;
         identityProvider.encryptAuthenticationAssertions = view.encryptAuthAssertionCheck.selected;
 
-        var spChannel:ServiceProviderChannel = new ServiceProviderChannel();
-
-        spChannel.name = identityProvider.name + " to sp default channel";
-
-        var spChannelLoc:Location = new Location();
-        spChannelLoc.protocol = view.idpLocationProtocol.labelDisplay.text;
-        spChannelLoc.host = view.idpLocationDomain.text;
-        spChannelLoc.port = parseInt(view.idpLocationPort.text);
-        spChannelLoc.context = view.idpLocationContext.text;
-        spChannelLoc.uri = view.idpLocationPath.text + "/SAML2";
-
-        spChannel.location = spChannelLoc;
-
-        spChannel.activeBindings = new ArrayCollection();
+        identityProvider.activeBindings = new ArrayCollection();
         if (view.samlBindingHttpPostCheck.selected) {
-            spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
+            identityProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
         }
         if (view.samlBindingArtifactCheck.selected) {
-            spChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
+            identityProvider.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
         }
         if (view.samlBindingHttpRedirectCheck.selected) {
-            spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
+            identityProvider.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
         }
         if (view.samlBindingSoapCheck.selected) {
-            spChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
+            identityProvider.activeBindings.addItem(Binding.SAMLR2_SOAP);
         }
 
-        spChannel.activeProfiles = new ArrayCollection();
+        identityProvider.activeProfiles = new ArrayCollection();
         if (view.samlProfileSSOCheck.selected) {
-            spChannel.activeProfiles.addItem(Profile.SSO);
+            identityProvider.activeProfiles.addItem(Profile.SSO);
         }
         if (view.samlProfileSLOCheck.selected) {
-            spChannel.activeProfiles.addItem(Profile.SSO_SLO);
+            identityProvider.activeProfiles.addItem(Profile.SSO_SLO);
         }
 
-        // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
+        // TODO save remaining fields
         //userInformationLookup
         //authenticationContract
         //authenticationMechanism
         //authenticationAssertionEmissionPolicy
-        identityProvider.defaultChannel = spChannel;
 
         _newIdentityProvider = identityProvider;
     }

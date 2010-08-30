@@ -20,16 +20,16 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.model.request {
-import com.atricore.idbus.console.services.dto.IdentityVault;
+import com.atricore.idbus.console.services.dto.IdentitySource;
 
 public class RemoveIdentityVaultElementRequest {
-    private var _identityVault:IdentityVault;
+    private var _identityVault:IdentitySource;
 
-    public function RemoveIdentityVaultElementRequest(identityVault:IdentityVault) {
+    public function RemoveIdentityVaultElementRequest(identityVault:IdentitySource) {
         _identityVault = identityVault;
     }
 
-    public function get identityVault():IdentityVault {
+    public function get identityVault():IdentitySource {
         return _identityVault;
     }
 }
