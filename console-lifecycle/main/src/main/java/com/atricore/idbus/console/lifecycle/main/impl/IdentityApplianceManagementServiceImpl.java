@@ -69,7 +69,9 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     private AuthenticationAssertionEmissionPolicyDAO authenticationAssertionEmissionPolicyDAO;
 
     private ResourceDAO resourceDAO;
-    
+
+
+
     @Transactional
     public BuildIdentityApplianceResponse buildIdentityAppliance(BuildIdentityApplianceRequest request) throws IdentityServerException {
         try {
@@ -683,45 +685,86 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         this.deployer = deployer;
     }
 
+    public IdentityApplianceDAO getIdentityApplianceDAO() {
+        return identityApplianceDAO;
+    }
+
     public void setIdentityApplianceDAO(IdentityApplianceDAO identityApplianceDAO) {
         this.identityApplianceDAO = identityApplianceDAO;
+    }
+
+    public IdentityApplianceDefinitionDAO getIdentityApplianceDefinitionDAO() {
+        return identityApplianceDefinitionDAO;
     }
 
     public void setIdentityApplianceDefinitionDAO(IdentityApplianceDefinitionDAO identityApplianceDefinitionDAO) {
         this.identityApplianceDefinitionDAO = identityApplianceDefinitionDAO;
     }
 
-    public void setIdentityVaultDAO(IdentitySourceDAO identitySourceDAO) {
+    public IdentitySourceDAO getIdentitySourceDAO() {
+        return identitySourceDAO;
+    }
+
+    public void setIdentitySourceDAO(IdentitySourceDAO identitySourceDAO) {
         this.identitySourceDAO = identitySourceDAO;
+    }
+
+    public UserInformationLookupDAO getUserInformationLookupDAO() {
+        return userInformationLookupDAO;
     }
 
     public void setUserInformationLookupDAO(UserInformationLookupDAO userInformationLookupDAO) {
         this.userInformationLookupDAO = userInformationLookupDAO;
     }
 
+    public AccountLinkagePolicyDAO getAccountLinkagePolicyDAO() {
+        return accountLinkagePolicyDAO;
+    }
+
     public void setAccountLinkagePolicyDAO(AccountLinkagePolicyDAO accountLinkagePolicyDAO) {
         this.accountLinkagePolicyDAO = accountLinkagePolicyDAO;
+    }
+
+    public AuthenticationContractDAO getAuthenticationContractDAO() {
+        return authenticationContractDAO;
     }
 
     public void setAuthenticationContractDAO(AuthenticationContractDAO authenticationContractDAO) {
         this.authenticationContractDAO = authenticationContractDAO;
     }
 
+    public AuthenticationMechanismDAO getAuthenticationMechanismDAO() {
+        return authenticationMechanismDAO;
+    }
+
     public void setAuthenticationMechanismDAO(AuthenticationMechanismDAO authenticationMechanismDAO) {
         this.authenticationMechanismDAO = authenticationMechanismDAO;
+    }
+
+    public AttributeProfileDAO getAttributeProfileDAO() {
+        return attributeProfileDAO;
     }
 
     public void setAttributeProfileDAO(AttributeProfileDAO attributeProfileDAO) {
         this.attributeProfileDAO = attributeProfileDAO;
     }
 
+    public AuthenticationAssertionEmissionPolicyDAO getAuthenticationAssertionEmissionPolicyDAO() {
+        return authenticationAssertionEmissionPolicyDAO;
+    }
+
     public void setAuthenticationAssertionEmissionPolicyDAO(AuthenticationAssertionEmissionPolicyDAO authenticationAssertionEmissionPolicyDAO) {
         this.authenticationAssertionEmissionPolicyDAO = authenticationAssertionEmissionPolicyDAO;
+    }
+
+    public ResourceDAO getResourceDAO() {
+        return resourceDAO;
     }
 
     public void setResourceDAO(ResourceDAO resourceDAO) {
         this.resourceDAO = resourceDAO;
     }
+
     // -------------------------------------------------< Protected Utils , they need transactional context !>
     
     protected IdentityAppliance startAppliance(IdentityAppliance appliance) throws IdentityServerException {

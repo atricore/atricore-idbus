@@ -105,7 +105,7 @@ public class BPTransformer extends AbstractTransformer {
         setPropertyRef(mBeanExporter, "server", "mBeanServer");
 
         Bean mBeanEntryKeyBean = newBean(bpBeans, mBean.getName() + "-key", String.class);
-        setConstructorArg(mBeanEntryKeyBean, "java.lang.String", "org.atricore.idbus." +
+        setConstructorArg(mBeanEntryKeyBean, 0, "java.lang.String", "org.atricore.idbus." +
                 event.getContext().getCurrentModule().getId() + ":type=BindingProvider,name=" + bp.getName());
 
         Entry mBeanEntry = new Entry();

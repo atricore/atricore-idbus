@@ -235,13 +235,30 @@ public class BeanUtils {
             logger.trace("created new property [" + propertyName + "] with value:" + propertyValue);
     }
 
-    public static void setConstructorArg(Bean bean, String type, String value){
+    public static void setConstructorArgRef(Bean bean, int index, String beanName) {
+
+        Ref refObj = new Ref();
+        refObj.setBean(beanName);
+
+        ConstructorArg cArg = new ConstructorArg();
+        cArg.setRef(refObj);
+        cArg.setIndex(index + "");
+
+        bean.getMetasAndConstructorArgsAndProperties().add(cArg);
+
+        if (logger.isTraceEnabled())
+            logger.trace("created new constructor arg referencing [" + index + "] with reference:" + beanName);
+
+    }
+
+    public static void setConstructorArg(Bean bean, int index, String type, String value){
         ConstructorArg cArg = new ConstructorArg();
         Value valueObj = new Value();
         valueObj.getContent().add(value);
-        
+
         cArg.setType(type);
         cArg.setValue(valueObj);
+        cArg.setIndex(index + "");
 
         bean.getMetasAndConstructorArgsAndProperties().add(cArg);
 

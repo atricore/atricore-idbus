@@ -39,12 +39,12 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPTransformer"/>
 
     <bean name="spFederatedConnectionATransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPFederatedConnectionTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SpChannelTransformer">
         <property name="roleA" value="true"/>
     </bean>
 
     <bean name="spFederatedConnectionBTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPFederatedConnectionTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SpChannelTransformer">
         <property name="roleA" value="false"/>
     </bean>
 

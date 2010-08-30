@@ -31,9 +31,9 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class IdPFederatedConnectionTransformer extends AbstractTransformer {
+public class SpChannelTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(IdPFederatedConnectionTransformer.class);
+    private static final Log logger = LogFactory.getLog(SpChannelTransformer.class);
 
     private boolean roleA;
 
@@ -47,26 +47,11 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        if (event.getData() instanceof FederatedConnection) {
-            FederatedConnection fc = (FederatedConnection) event.getData();
 
-            if (roleA) {
-                if (fc.getRoleA() instanceof IdentityProvider) {
-                    ServiceProviderChannel spChannel = (ServiceProviderChannel) fc.getChannelA();
-
-                    // Only accept a connection if channel overrides provider setup.
-                    return spChannel.isOverrideProviderSetup();
-                }
-            } else {
-                if (fc.getRoleB() instanceof IdentityProvider) {
-                    ServiceProviderChannel spChannel = (ServiceProviderChannel) fc.getChannelB();
-
-                    // Only accept a connection if channel overrides provider setup.
-                    return spChannel.isOverrideProviderSetup();
-                }
-
-            }
-
+        if (event.getData() instanceof ServiceProviderChannel) {
+            ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
+            // Only accept a connection if channel overrides provider setup.
+            return spChannel.isOverrideProviderSetup();
         }
 
         return false;
@@ -76,19 +61,20 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
     @Override
     public void before(TransformEvent event) throws TransformException {
 
-        FederatedConnection federatedConnection = (FederatedConnection) event.getData();
+        ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
+        FederatedConnection federatedConnection = (FederatedConnection) event.getContext().getParentNode();
 
-        IdentityProvider provider = (IdentityProvider) event.getContext().getParentNode();
-        ServiceProviderChannel spChannel = null;
-        IdentityProvider roleProvider = null;
-        FederatedProvider target = null;
-        FederatedChannel targetChannel = null;
+        IdentityProvider provider;
+        FederatedProvider target;
+        FederatedChannel targetChannel;
 
         if (roleA) {
 
-            roleProvider = (IdentityProvider) federatedConnection.getRoleA();
-            spChannel = (ServiceProviderChannel) federatedConnection.getChannelA();
+            assert federatedConnection.getChannelA() == spChannel :
+                    "Federated connection channel A does not match current SP Channel : "
+                            + federatedConnection.getChannelA() + "/" + spChannel;
 
+            provider = (IdentityProvider) federatedConnection.getRoleA();
             target = federatedConnection.getRoleB();
             targetChannel = federatedConnection.getChannelB();
 
@@ -98,9 +84,11 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
 
         } else {
 
-            roleProvider = (IdentityProvider) federatedConnection.getRoleB();
-            spChannel = (ServiceProviderChannel) federatedConnection.getChannelB();
+            assert federatedConnection.getChannelB() == spChannel :
+                    "Federated connection channel B does not match current SP Channel : "
+                            + federatedConnection.getChannelB() + "/" + spChannel;
 
+            provider = (IdentityProvider) federatedConnection.getRoleB();
             target = federatedConnection.getRoleA();
             targetChannel = federatedConnection.getChannelA();
 
@@ -115,6 +103,17 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
 
     }
 
+    /**
+     * Generate IDP Components for a federated connection:
+     *
+     * @param provider IdP definition
+     * @param spChannel SP Channel
+     * @param fc Federated connection
+     * @param target target provider (SP or IdP)
+     * @param targetChannel (Target Channel IdP or SP)
+     * @param ctx
+     * @throws TransformException
+     */
     protected void generateIdPComponents(IdentityProvider provider,
                                      ServiceProviderChannel spChannel,
                                      FederatedConnection fc,
@@ -178,10 +177,10 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(sloHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
         List<Ref> plansList = new ArrayList<Ref>();
         Ref plan = new Ref();
-        plan.setBean("samlr2sloreq-to-samlr2resp-plan");
+        plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2resp-plan");
         plansList.add(plan);
         Ref plan2 = new Ref();
-        plan2.setBean("samlr2sloreq-to-samlr2spsloreq-plan");
+        plan2.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
         plansList.add(plan2);
         setPropertyRefs(sloHttpPost, "identityPlans", plansList);
         endpoints.add(sloHttpPost);
@@ -193,10 +192,10 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(sloHttpRedirect, "binding", SamlR2Binding.SAMLR2_REDIRECT.getValue());
         plansList = new ArrayList<Ref>();
         plan = new Ref();
-        plan.setBean("samlr2sloreq-to-samlr2resp-plan");
+        plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2resp-plan");
         plansList.add(plan);
         plan2 = new Ref();
-        plan2.setBean("samlr2sloreq-to-samlr2spsloreq-plan");
+        plan2.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
         plansList.add(plan2);
         setPropertyRefs(sloHttpRedirect, "identityPlans", plansList);
         endpoints.add(sloHttpRedirect);
@@ -208,10 +207,10 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(sloSoap, "binding", SamlR2Binding.SAMLR2_SOAP.getValue());
         plansList = new ArrayList<Ref>();
         plan = new Ref();
-        plan.setBean("samlr2sloreq-to-samlr2resp-plan");
+        plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2resp-plan");
         plansList.add(plan);
         plan2 = new Ref();
-        plan2.setBean("samlr2sloreq-to-samlr2spsloreq-plan");
+        plan2.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
         plansList.add(plan2);
         setPropertyRefs(sloSoap, "identityPlans", plansList);
         endpoints.add(sloSoap);
@@ -223,10 +222,10 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(sloLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
         plansList = new ArrayList<Ref>();
         plan = new Ref();
-        plan.setBean("samlr2sloreq-to-samlr2resp-plan");
+        plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2resp-plan");
         plansList.add(plan);
         plan2 = new Ref();
-        plan2.setBean("samlr2sloreq-to-samlr2spsloreq-plan");
+        plan2.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
         plansList.add(plan2);
         setPropertyRefs(sloLocal, "identityPlans", plansList);
         endpoints.add(sloLocal);
@@ -238,10 +237,10 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(ssoHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
         plansList = new ArrayList<Ref>();
         plan = new Ref();
-        plan.setBean("samlr2authnreq-to-samlr2resp-plan");
+        plan.setBean(idpBean.getName() + "-samlr2authnreq-to-samlr2resp-plan");
         plansList.add(plan);
         plan2 = new Ref();
-        plan2.setBean("samlr2authnstmt-to-samlr2assertion-plan");
+        plan2.setBean(idpBean.getName() + "-samlr2authnstmt-to-samlr2assertion-plan");
         plansList.add(plan2);
         setPropertyRefs(ssoHttpPost, "identityPlans", plansList);
         endpoints.add(ssoHttpPost);
@@ -253,10 +252,10 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(ssoHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
         plansList = new ArrayList<Ref>();
         plan = new Ref();
-        plan.setBean("samlr2authnreq-to-samlr2resp-plan");
+        plan.setBean(idpBean.getName() + "-samlr2authnreq-to-samlr2resp-plan");
         plansList.add(plan);
         plan2 = new Ref();
-        plan2.setBean("samlr2authnstmt-to-samlr2assertion-plan");
+        plan2.setBean(idpBean.getName() + "-samlr2authnstmt-to-samlr2assertion-plan");
         plansList.add(plan2);
         setPropertyRefs(ssoHttpArtifact, "identityPlans", plansList);
         endpoints.add(ssoHttpArtifact);
@@ -268,10 +267,10 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(ssoHttpRedirect, "binding", SamlR2Binding.SAMLR2_REDIRECT.getValue());
         plansList = new ArrayList<Ref>();
         plan = new Ref();
-        plan.setBean("samlr2authnreq-to-samlr2resp-plan");
+        plan.setBean(idpBean.getName() + "-samlr2authnreq-to-samlr2resp-plan");
         plansList.add(plan);
         plan2 = new Ref();
-        plan2.setBean("samlr2authnstmt-to-samlr2assertion-plan");
+        plan2.setBean(idpBean.getName() + "-samlr2authnstmt-to-samlr2assertion-plan");
         plansList.add(plan2);
         setPropertyRefs(ssoHttpRedirect, "identityPlans", plansList);
         endpoints.add(ssoHttpRedirect);
@@ -300,10 +299,10 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(ssoSsoHttpArtifact, "location", "/SSO/SSO/ARTIFACT");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
-        plan.setBean("samlr2authnreq-to-samlr2resp-plan");
+        plan.setBean(idpBean.getName() + "-samlr2authnreq-to-samlr2resp-plan");
         plansList.add(plan);
         plan2 = new Ref();
-        plan2.setBean("samlr2authnstmt-to-samlr2assertion-plan");
+        plan2.setBean(idpBean.getName() + "-samlr2authnstmt-to-samlr2assertion-plan");
         plansList.add(plan2);
         setPropertyRefs(ssoSsoHttpArtifact, "identityPlans", plansList);
         endpoints.add(ssoSsoHttpArtifact);
@@ -316,7 +315,7 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(ssoSloSoap, "location", "/SSO/SLO/SOAP");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
-        plan.setBean("samlr2sloreq-to-samlr2spsloreq-plan");
+        plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
         plansList.add(plan);
         setPropertyRefs(ssoSloSoap, "identityPlans", plansList);
         endpoints.add(ssoSloSoap);
@@ -329,26 +328,13 @@ public class IdPFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(ssoSloLocal, "location", "local:/" + idpBean.getName().toUpperCase() + "/SSO/SLO/LOCAL");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
-        plan.setBean("samlr2sloreq-to-samlr2spsloreq-plan");
+        plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
         plansList.add(plan);
         setPropertyRefs(ssoSloLocal, "identityPlans", plansList);
         endpoints.add(ssoSloLocal);
         
         setPropertyAsBeans(spChannelBean, "endpoints", endpoints);
         
-        // plans
-        Bean sloToSamlPlan = newBean(idpBeans, "samlr2sloreq-to-samlr2resp-plan", SamlR2SloRequestToSamlR2RespPlan.class);
-        setPropertyRef(sloToSamlPlan, "bpmsManager", "bpms-manager");
-
-        Bean sloToSamlSpSloPlan = newBean(idpBeans, "samlr2sloreq-to-samlr2spsloreq-plan", SamlR2SloRequestToSpSamlR2SloRequestPlan.class);
-        setPropertyRef(sloToSamlSpSloPlan, "bpmsManager", "bpms-manager");
-        
-        Bean authnToSamlPlan = newBean(idpBeans, "samlr2authnreq-to-samlr2resp-plan", SamlR2AuthnRequestToSamlR2ResponsePlan.class);
-        setPropertyRef(authnToSamlPlan, "bpmsManager", "bpms-manager");
-
-        Bean stmtToAssertionPlan = newBean(idpBeans, "samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
-        setPropertyRef(stmtToAssertionPlan, "bpmsManager", "bpms-manager");
-
         //Bean authnToSamlResponsePlan = newBean(idpBeans, "samlr2authnreq-to-samlr2response-plan", SamlR2AuthnReqToSamlR2RespPlan.class);
         //setPropertyRef(authnToSamlResponsePlan, "bpmsManager", "bpms-manager");
     }

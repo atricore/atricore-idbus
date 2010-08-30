@@ -946,6 +946,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
     protected void arrive(IdApplianceTransformationContext ctx, Object node) {
         TransformEvent event = new TransformEventImpl(ctx, node, null);
         ctx.push(node);
+
         for (Transformer transformer : transformers) {
 
             if (transformer.accept(event)) {

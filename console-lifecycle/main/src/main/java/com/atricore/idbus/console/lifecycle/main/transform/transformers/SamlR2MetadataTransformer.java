@@ -12,6 +12,7 @@ import java.io.InputStream;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
+@Deprecated
 public class SamlR2MetadataTransformer extends AbstractTransformer {
 
     private String baseSrcPath = "/org/atricore/idbus/examples/simplefederation/idau/";

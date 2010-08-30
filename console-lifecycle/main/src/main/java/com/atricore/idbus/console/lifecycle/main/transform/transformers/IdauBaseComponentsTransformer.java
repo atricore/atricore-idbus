@@ -100,12 +100,19 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         setPropertyValue(idContainer, "name", idauName + "-engine");
         setPropertyRef(idContainer, "cxfBus", "cxf");
 
+        // ----------------------------------------
+        // Kernel CFG Properties
+        // ----------------------------------------
+        Reference idbusCfg = new Reference();
+        idbusCfg.setId("idbus-config");
+
+        idauBeansOsgi.getImportsAndAliasAndBeen().add(idbusCfg);
+        idbusCfg.setInterface("org.atricore.idbus.kernel.main.util.ConfigurationContext");
 
         // -------------------------------------------------------
         // Define Circle Of Trust bean
         // -------------------------------------------------------
         Bean cot = newBean(idauBeans, idauName + "-cot", CircleOfTrustImpl.class.getName());
-        //cot.setDependsOn("idp1,sp1");  //TODO
 
         // Properties
         setPropertyValue(cot, "name", cot.getName());
@@ -139,10 +146,12 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         // -------------------------------------------------------
         Bean stateManager = newBean(idauBeans, idauName + "-state-manager",
                 "org.atricore.idbus.kernel.main.mediation.state.EHCacheProviderStateManagerImpl");
+
+        setConstructorArgRef(stateManager, 0, idbusCfg.getId());
         setPropertyRef(stateManager, "cacheManager", cacheManager.getName());
         setPropertyValue(stateManager, "cacheName", idauName + "-psm-cache");
         setPropertyValue(stateManager, "forceNonDirtyStorage", false);
-        
+
         // -------------------------------------------------------
         // Define MBean Server Factory bean
         // -------------------------------------------------------
@@ -206,7 +215,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
         cacheManagerFactory.setInterface("org.atricore.idbus.bundles.ehcache.CacheManagerFactory");
 
         idauBeansOsgi.getImportsAndAliasAndBeen().add(cacheManagerFactory);
-        
+
         // ----------------------------------------
         // Store beans as module resources
         // ----------------------------------------

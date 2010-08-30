@@ -14,8 +14,12 @@ import org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SSOLogMessageBuilder;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SamlR2LogMessageBuilder;
+import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.IdPSessionEventListener;
 import org.atricore.idbus.capabilities.samlr2.main.idp.SamlR2IDPMediator;
+import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
+import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSamlR2RespPlan;
+import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
 import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2KeystoreKeyResolver;
 import org.atricore.idbus.capabilities.samlr2.support.core.encryption.XmlSecurityEncrypterImpl;
 import org.atricore.idbus.capabilities.samlr2.support.core.signature.JSR105SamlR2SignerImpl;
@@ -219,7 +223,7 @@ public class IdPTransformer extends AbstractTransformer {
         List<Entry> mBeans = new ArrayList<Entry>();
 
         Bean mBeanKey = newBean(idpBeans, mBean.getName() + "-key", String.class);
-        setConstructorArg(mBeanKey, "java.lang.String", "org.atricore.idbus." +
+        setConstructorArg(mBeanKey, 0, "java.lang.String", "org.atricore.idbus." +
                 event.getContext().getCurrentModule().getId() +
                 ":type=IdentityProvider,name=" + idp.getName());
 
@@ -229,6 +233,23 @@ public class IdPTransformer extends AbstractTransformer {
         mBeans.add(mBeanEntry);
 
         setPropertyAsMapEntries(mBeanExporter, "beans", mBeans);
+
+        // plans
+        Bean sloToSamlPlan = newBean(idpBeans, idp.getName() + "-samlr2sloreq-to-samlr2resp-plan", SamlR2SloRequestToSamlR2RespPlan.class);
+        setPropertyRef(sloToSamlPlan, "bpmsManager", "bpms-manager");
+
+        Bean sloToSamlSpSloPlan = newBean(idpBeans, idp.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan", SamlR2SloRequestToSpSamlR2SloRequestPlan.class);
+        setPropertyRef(sloToSamlSpSloPlan, "bpmsManager", "bpms-manager");
+
+        Bean authnToSamlPlan = newBean(idpBeans, idp.getName() + "-samlr2authnreq-to-samlr2resp-plan", SamlR2AuthnRequestToSamlR2ResponsePlan.class);
+        setPropertyRef(authnToSamlPlan, "bpmsManager", "bpms-manager");
+
+        Bean stmtToAssertionPlan = newBean(idpBeans, idp.getName() + "-samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
+        setPropertyRef(stmtToAssertionPlan, "bpmsManager", "bpms-manager");
+
+        //Bean authnToSamlResponsePlan = newBean(idpBeans, "samlr2authnreq-to-samlr2response-plan", SamlR2AuthnReqToSamlR2RespPlan.class);
+        //setPropertyRef(authnToSamlResponsePlan, "bpmsManager", "bpms-manager");
+
         
         // mbean assembler
         /*Bean mBeanAssembler = newAnonymousBean("org.springframework.jmx.export.assembler.MethodNameBasedMBeanInfoAssembler");

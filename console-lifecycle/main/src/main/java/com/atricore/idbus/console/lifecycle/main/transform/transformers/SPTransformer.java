@@ -273,7 +273,7 @@ public class SPTransformer extends AbstractTransformer {
         List<Entry> mBeans = new ArrayList<Entry>();
         
         Bean mBeanKey = newBean(spBeans, mBean.getName() + "-key", String.class);
-        setConstructorArg(mBeanKey, "java.lang.String", "org.atricore.idbus." +
+        setConstructorArg(mBeanKey, 0, "java.lang.String", "org.atricore.idbus." +
                 event.getContext().getCurrentModule().getId() +
                 ":type=ServiceProvider,name=" + sp.getName());
 
@@ -398,7 +398,7 @@ public class SPTransformer extends AbstractTransformer {
         }
 
         Bean partnerappKeyBean = newBean(bpBeans, spBean.getName() + "-key", String.class);
-        setConstructorArg(partnerappKeyBean, "java.lang.String", provider.getName());
+        setConstructorArg(partnerappKeyBean, 0, "java.lang.String", provider.getName());
 
         Bean partnerappBean = newBean(bpBeans, bpBean.getName() + "-" + spBean.getName() + "-partnerapp-mapping", PartnerAppMapping.class);
         setPropertyValue(partnerappBean, "partnerAppId", provider.getName());
