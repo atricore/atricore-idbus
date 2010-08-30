@@ -38,6 +38,19 @@
         <property name="description" value="Provisioning Service Provider One"/>
         <property name="role" value="PSP"/>
         <property name="channel" ref="psp1-default-channel"/>
+
+        <property name="provisioningTargets">
+            <list>
+                <ref bean="psp1-pst1"/>
+            </list>
+        </property>
+        
+    </bean>
+
+    <bean name="psp1-client" class="org.atricore.idbus.capabilities.spmlr2.main.client.SpmlR2MediationClientImpl">
+        <property name="psp" ref="psp1"/>
+        <property name="serviceType" value="{urn:oasis:names:tc:SPML:2:0}PSPService"/>
+        <property name="binding" value="urn:oasis:names:tc:SPML:2:0:bindings:LOCAL"/>
     </bean>
 
     <bean name="psp1-default-channel" class="org.atricore.idbus.kernel.main.mediation.channel.PspChannelImpl">
@@ -63,11 +76,6 @@
     <bean name="psp1-spml2-mediator" class="org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator">
         <property name="bindingFactory">
             <bean class="org.atricore.idbus.capabilities.spmlr2.main.binding.SpmlR2BindingFactory"/>
-        </property>
-        <property name="provisioningTargets">
-            <list>
-                <ref bean="psp1-pst1"/>
-            </list>
         </property>
     </bean>
 
@@ -172,5 +180,9 @@
     <osgi:service id="osgi-idvault1-db"
                   ref="idvault1-db"
             interface="org.atricore.idbus.bundles.apache.derby.NetworkServerDescriptor"/>
+
+    <osgi:service id="osgi-psp1-client"
+                  ref="psp1-client"
+                  interface="org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client"/>
 
 </s:beans>

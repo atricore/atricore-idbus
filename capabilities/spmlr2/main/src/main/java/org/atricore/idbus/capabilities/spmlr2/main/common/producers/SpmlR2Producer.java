@@ -18,6 +18,7 @@ import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
+import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
@@ -71,9 +72,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
         if (targetId == null)
             throw new NullPointerException("Target ID cannot be null");
 
-        SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) channel.getIdentityMediator();
-
-        for (ProvisioningTarget target : mediator.getProvisioningTargets()) {
+        for (ProvisioningTarget target : ((PsPChannel)channel).getProvider().getProvisioningTargets()) {
             if (target.getName().equals(targetId)) {
                 return target;
             }

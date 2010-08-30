@@ -92,9 +92,9 @@ public class OsgiNetworkServerControl implements InitializingBean, DisposableBea
     }
 
     public void unregister(final NetworkServerDescriptor serverDescriptor, Map<String, ?> properties) throws Exception {
+
         if (logger.isDebugEnabled())
             logger.debug("Unregistering Network Server Descriptor " + serverDescriptor);
-
 
         NetworkServerDescriptor toRemove = null;
         for (NetworkServerDescriptor sd : serverDescriptors) {

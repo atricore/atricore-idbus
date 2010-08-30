@@ -21,6 +21,8 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.atricore.idbus.kernel.main.mediation.channel.ProvisioningChannel;
+import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
@@ -99,9 +101,9 @@ public class PSPProducer extends SpmlR2Producer {
 
     protected ListTargetsResponseType doProcessListTargetsRequest(CamelMediationExchange exchange, ListTargetsRequestType spmlRequest) {
         // TODO : Use planning to convert SPML Request into kernel request
-
-        SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) channel.getIdentityMediator();
-        List<ProvisioningTarget> targets = mediator.getProvisioningTargets();
+        ProvisioningServiceProvider provider = ((ProvisioningChannel)channel).getProvider();
+        
+        List<ProvisioningTarget> targets = provider.getProvisioningTargets();
         ListTargetsResponseType spmlResponse = new ListTargetsResponseType();
 
         for (ProvisioningTarget target : targets) {

@@ -141,6 +141,7 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
     protected Object doExecute(ProvisioningServiceProvider psp, PsPChannel pspChannel) throws Exception {
 
         SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) pspChannel.getIdentityMediator();
+
         EndpointDescriptor ed = resolvePsPEndpoint(pspChannel, SpmlR2Binding.SPMLR2_LOCAL);
 
         RequestType spmlRequest = buildSpmlRequest(psp, pspChannel);

@@ -39,6 +39,9 @@ import org.atricore.idbus.kernel.main.mediation.claim.ClaimChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  *
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
@@ -64,7 +67,6 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
     // TODO : remove it , should be somewhere else!
     private MessageQueueManager artifactQueueManager;
-
 
     public void init(IdentityMediationUnitContainer unitContainer) throws IdentityMediationException {
 
@@ -280,9 +282,7 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
         this.mediationLogger = mediationLogger;
     }
 
-    public EndpointDescriptor resolveEndpoint(Channel channel, IdentityMediationEndpoint endpoint) throws IdentityMediationException {
-        throw new UnsupportedOperationException("Not supported");
-    }
+    public abstract EndpointDescriptor resolveEndpoint(Channel channel, IdentityMediationEndpoint endpoint) throws IdentityMediationException ;
 
     public Object sendMessage(Object content, EndpointDescriptor destination, Channel channel) throws IdentityMediationException {
 

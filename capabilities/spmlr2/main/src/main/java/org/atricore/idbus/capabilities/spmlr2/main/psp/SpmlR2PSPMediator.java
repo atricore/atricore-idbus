@@ -18,16 +18,6 @@ import java.util.List;
  */
 public class SpmlR2PSPMediator extends AbstractSpmlR2Mediator {
 
-    private List<ProvisioningTarget> provisioningTargets;
-
-    public List<ProvisioningTarget> getProvisioningTargets() {
-        return provisioningTargets;
-    }
-
-    public void setProvisioningTargets(List<ProvisioningTarget> provisioningTargets) {
-        this.provisioningTargets = provisioningTargets;
-    }
-
     @Override
     protected RouteBuilder createPsPRoutes(final PsPChannel pspChannel) throws Exception {
         // Create routes based on endpoints!

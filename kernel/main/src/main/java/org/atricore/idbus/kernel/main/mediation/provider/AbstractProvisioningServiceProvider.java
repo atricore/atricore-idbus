@@ -2,8 +2,11 @@ package org.atricore.idbus.kernel.main.mediation.provider;
 
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitContainer;
 import org.atricore.idbus.kernel.main.mediation.channel.ProvisioningChannel;
+import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.context.BundleContextAware;
+
+import java.util.List;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
@@ -17,6 +20,8 @@ public class AbstractProvisioningServiceProvider implements ProvisioningServiceP
     private String role;
 
     private ProvisioningChannel channel;
+
+    private List<ProvisioningTarget> provisioningTargets;
 
     private transient BundleContext bundleContext;
 
@@ -70,5 +75,12 @@ public class AbstractProvisioningServiceProvider implements ProvisioningServiceP
         this.channel = channel;
     }
 
+    public List<ProvisioningTarget> getProvisioningTargets() {
+        return provisioningTargets;
+    }
+
+    public void setProvisioningTargets(List<ProvisioningTarget> provisioningTargets) {
+        this.provisioningTargets = provisioningTargets;
+    }
 
 }
