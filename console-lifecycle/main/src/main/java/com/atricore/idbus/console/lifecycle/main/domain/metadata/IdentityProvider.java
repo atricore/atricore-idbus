@@ -44,10 +44,12 @@ public class IdentityProvider extends FederatedProvider {
     private AuthenticationAssertionEmissionPolicy emissionPolicy;
 
     // RFU
-    private Set<Binding> activeBindings;
+    //TODO check whether LocalProvider will have bindings or IdentityProvider
+//    private Set<Binding> activeBindings;
 
     // RFU
-    private Set<Profile> activeProfiles;
+    //TODO check whether LocalProvider will have profiles or IdentityProvider    
+//    private Set<Profile> activeProfiles;
 
     @Override
     public ProviderRole getRole() {

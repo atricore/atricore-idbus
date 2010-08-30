@@ -24,8 +24,10 @@ package com.atricore.idbus.console.modeling.diagram.view.dbidentityvault
 import com.atricore.idbus.console.components.wizard.WizardEvent;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.services.dto.DbIdentityVault;
-import com.atricore.idbus.console.services.dto.IdentityVault;
+
+import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
+import com.atricore.idbus.console.services.dto.IdentitySource;
 
 import flash.events.Event;
 
@@ -41,7 +43,7 @@ public class DbIdentityVaultWizardViewMediator extends IocMediator
 
     private var _projectProxy:ProjectProxy;
 
-    private var _newDbIdentityVault:DbIdentityVault;
+    private var _newDbIdentityVault:DbIdentitySource;
 
     public function DbIdentityVaultWizardViewMediator(name : String = null, viewComp:DbIdentityVaultWizardView = null) {
         super(name, viewComp);
@@ -76,12 +78,12 @@ public class DbIdentityVaultWizardViewMediator extends IocMediator
     }
 
     private function onDbIdentityVaultWizardComplete(event:WizardEvent):void {
-        if ((_wizardDataModel.step1Data as IdentityVault).embedded) {
-            _newDbIdentityVault = _wizardDataModel.step2EmbeddedData as DbIdentityVault;
-        } else {
-            _newDbIdentityVault = _wizardDataModel.step2ExternalData as DbIdentityVault;
+        if ((_wizardDataModel.step1Data is EmbeddedIdentitySource)) {
+            _newDbIdentityVault = _wizardDataModel.step2EmbeddedData as DbIdentitySource;
+        } else if ((_wizardDataModel.step1Data is DbIdentitySource)) {
+            _newDbIdentityVault = _wizardDataModel.step2ExternalData as DbIdentitySource;
         }
-        _projectProxy.currentIdentityAppliance.idApplianceDefinition.identityVaults.addItem(_newDbIdentityVault);
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.identitySources.addItem(_newDbIdentityVault);
         _projectProxy.currentIdentityApplianceElement = _newDbIdentityVault;
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);

@@ -24,12 +24,8 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
-import com.atricore.idbus.console.services.dto.Binding;
-import com.atricore.idbus.console.services.dto.IdentityProvider;
-import com.atricore.idbus.console.services.dto.LdapIdentityVault;
-import com.atricore.idbus.console.services.dto.Location;
-import com.atricore.idbus.console.services.dto.Profile;
-import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
+
+import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 
 import flash.events.MouseEvent;
 
@@ -43,7 +39,7 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
     private var _projectProxy:ProjectProxy;
 
     //TODO - create LdapIdentitySource domain object. LdapIdentitySource is used just as a workaround
-    private var _newLdapIdentitySource:LdapIdentityVault;
+    private var _newLdapIdentitySource:LdapIdentitySource;
 
     public function LdapIdentitySourceCreateMediator(name:String = null, viewComp:LdapIdentitySourceCreateForm = null) {
         super(name, viewComp);
@@ -88,7 +84,7 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
 
     override public function bindModel():void {
 
-        var ldapIdentitySource:LdapIdentityVault = new LdapIdentityVault();
+        var ldapIdentitySource:LdapIdentitySource = new LdapIdentitySource();
 
         ldapIdentitySource.name = view.ldapIdentitySourceName.text;
         ldapIdentitySource.description = view.ldapIdentitySourceDescription.text;
@@ -109,7 +105,7 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
     private function handleLdapIdentitySourceSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            _projectProxy.currentIdentityAppliance.idApplianceDefinition.identityVaults.addItem(_newLdapIdentitySource);
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.identitySources.addItem(_newLdapIdentitySource);
             _projectProxy.currentIdentityApplianceElement = _newLdapIdentitySource;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
             sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);

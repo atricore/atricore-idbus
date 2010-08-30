@@ -24,16 +24,16 @@ package com.atricore.idbus.console.modeling.browser.model {
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.main.view.util.Constants;
 import com.atricore.idbus.console.services.dto.BindingProvider;
-import com.atricore.idbus.console.services.dto.DbIdentityVault;
+import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentityApplianceUnit;
 import com.atricore.idbus.console.services.dto.IdentityApplianceUnitType;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
-import com.atricore.idbus.console.services.dto.IdentityVault;
+import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
-import com.atricore.idbus.console.services.dto.LdapIdentityVault;
+import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
@@ -93,14 +93,14 @@ public class BrowserModelFactory {
             return providerNode;
         }
 
-        public static function createIdentityVaultNode(identityVault:IdentityVault, selectable:Boolean):BrowserNode {
+        public static function createIdentityVaultNode(identityVault:IdentitySource, selectable:Boolean):BrowserNode {
             var identityVaultNode:BrowserNode = new BrowserNode();
             identityVaultNode.id = Number(identityVault.id);
             identityVaultNode.label = identityVault.name;
             identityVaultNode.type = Constants.IDENTITY_VAULT_DEEP;
-            if(identityVault is DbIdentityVault){
+            if(identityVault is DbIdentitySource){
                 identityVaultNode.icon = EmbeddedIcons.dbIdentitySourceMiniIcon;
-            } else if(identityVault is LdapIdentityVault){
+            } else if(identityVault is LdapIdentitySource){
                 identityVaultNode.icon = EmbeddedIcons.ldapIdentitySourceMiniIcon;
             } else {
                 identityVaultNode.icon = EmbeddedIcons.vaultMiniIcon;

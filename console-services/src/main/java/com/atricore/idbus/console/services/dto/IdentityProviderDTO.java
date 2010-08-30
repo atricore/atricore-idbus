@@ -43,10 +43,12 @@ public class IdentityProviderDTO extends LocalProviderDTO {
     private AuthenticationAssertionEmissionPolicyDTO emissionPolicy;
 
     // RFU
-    private Set<BindingDTO> activeBindings;
+    //TODO check whether LocalProvider will have bindings or IdentityProvider
+//    private Set<BindingDTO> activeBindings;
 
     // RFU
-    private Set<ProfileDTO> activeProfiles;
+    //TODO check whether LocalProvider will have profiles or IdentityProvider
+//    private Set<ProfileDTO> activeProfiles;
 
     @Override
     public ProviderRoleDTO getRole() {

@@ -34,8 +34,8 @@
         <fx:Script>
         <![CDATA[
 
-            import com.atricore.idbus.console.services.dto.DbIdentityVault;
-            import com.atricore.idbus.console.services.dto.IdentityVault;
+            import com.atricore.idbus.console.services.dto.DbIdentitySource;
+            import com.atricore.idbus.console.services.dto.IdentitySource;
 
             [Bindable]
             private var validators:Array;
@@ -43,17 +43,17 @@
             private var readableDecisionArray:Array;
 
             override public function get stepDecision():* {
-                var identitySource:IdentityVault = null;
+                var identitySource:IdentitySource = null;
                 if (embeddedRepositoryType.selectedItem.label == "Database") {
-                    identitySource = new DbIdentityVault();
-                    identitySource.embedded = true;
+                    identitySource = new DbIdentitySource();
+//                    identitySource.embedded = true;
                     identitySource.name = userRepositoryName.text;
-                    (identitySource as DbIdentityVault).port = parseInt(serverPort.text);
-                    //                    (identitySource as DbIdentityVault).connectionName
-                    //                    (identitySource as DbIdentityVault).driverName
-                    (identitySource as DbIdentityVault).schema = schema.text;
-                    (identitySource as DbIdentityVault).admin = admin.text;
-                    (identitySource as DbIdentityVault).password = adminPass.text;
+                    (identitySource as DbIdentitySource).port = parseInt(serverPort.text);
+                    //                    (identitySource as DbIdentitySource).connectionName
+                    //                    (identitySource as DbIdentitySource).driverName
+                    (identitySource as DbIdentitySource).schema = schema.text;
+                    (identitySource as DbIdentitySource).admin = admin.text;
+                    (identitySource as DbIdentitySource).password = adminPass.text;
                 }
                 return identitySource;
             }
@@ -66,7 +66,7 @@
             }
 
             private function initFields():void {
-                userRepositoryName.text = (previousStepData as IdentityVault).name;
+                userRepositoryName.text = (previousStepData as IdentitySource).name;
             }
 
             private function initForm():void {
@@ -135,7 +135,7 @@
                 <s:HGroup>
                     <mx:FormItem labelWidth="50" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.userRepositoryName')}:" required="true">
                         <s:TextInput id="userRepositoryName" width="150" editable="false"
-                                text="{(previousStepData as IdentityVault).name}"/>
+                                text="{(previousStepData as IdentitySource).name}"/>
                     </mx:FormItem>
                     <mx:FormItem labelWidth="40" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.embeddedRepositoryType')}:">
                         <s:DropDownList id="embeddedRepositoryType" width="100" change="handleFormChange(event);" selectedIndex="0">

@@ -46,19 +46,19 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServicePr
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.renderers.edgelabel.BaseEdgeLabelRendered;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
-import com.atricore.idbus.console.services.dto.DbIdentityVault;
+import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
+import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
-import com.atricore.idbus.console.services.dto.IdentityVault;
-import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.LocalProvider;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
-
-import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
@@ -74,8 +74,6 @@ import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 import org.un.cava.birdeye.ravis.graphLayout.data.Graph;
 import org.un.cava.birdeye.ravis.graphLayout.data.INode;
 import org.un.cava.birdeye.ravis.graphLayout.layout.CircularLayouter;
-import org.un.cava.birdeye.ravis.graphLayout.layout.DirectPlacementLayouter;
-import org.un.cava.birdeye.ravis.graphLayout.layout.HierarchicalLayouter;
 import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
 import org.un.cava.birdeye.ravis.graphLayout.visual.edgeRenderers.BaseEdgeRenderer;
 import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;
@@ -364,7 +362,7 @@ public class DiagramMediator extends IocMediator {
                             sendNotification(ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT, rspc);
                             break;
                         case DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE:
-                            var identityVault:DbIdentityVault = _currentlySelectedNode.data as DbIdentityVault;
+                            var identityVault:DbIdentitySource = _currentlySelectedNode.data as DbIdentitySource;
 
                             var riv:RemoveIdentityVaultElementRequest = new RemoveIdentityVaultElementRequest(identityVault);
 
@@ -403,10 +401,10 @@ public class DiagramMediator extends IocMediator {
 //            rootGraphNode.isVisible = false;
 
             var vaults:ArrayCollection = new ArrayCollection();
-            if (identityApplianceDefinition.identityVaults != null) {
-                for(var k:int=0; k < identityApplianceDefinition.identityVaults.length; k++){
-                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identityVaults[k], true);
-                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.identityVaults[k], null, true, Constants.PROVIDER_DEEP);
+            if (identityApplianceDefinition.identitySources != null) {
+                for(var k:int=0; k < identityApplianceDefinition.identitySources.length; k++){
+                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identitySources[k], true);
+                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.identitySources[k], null, true, Constants.PROVIDER_DEEP);
                     vaults.addItem(identityVaultGraphNode);
                 }
             }
@@ -416,78 +414,68 @@ public class DiagramMediator extends IocMediator {
                     var provider:Provider = identityApplianceDefinition.providers[i];
                     var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, true, Constants.PROVIDER_DEEP);
                     if (provider is LocalProvider) {
-                        var locProv:LocalProvider = provider as LocalProvider;
-                    var provider:Provider = identityApplianceDefinition.providers[i];
-                    var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, rootGraphNode, true, Constants.PROVIDER_DEEP);
-                    if (provider is LocalProvider) {
-                        var locProv:LocalProvider = provider as LocalProvider;
-                        if (locProv.defaultChannel != null) {
-                            //do NOT show default channel
-//                            var defChannelGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), locProv.defaultChannel, providerGraphNode, true, Constants.CHANNEL_DEEP);
-                            var identityVault:IdentityVault = null;
-                            if (locProv.defaultChannel is IdentityProviderChannel) {
-                                identityVault = IdentityProviderChannel(locProv.defaultChannel).identityVault;
-                            } else if (locProv.defaultChannel is ServiceProviderChannel) {
-                                identityVault = ServiceProviderChannel(locProv.defaultChannel).identityVault;
-                            }
-                            if (identityVault != null) {
-                                //since we're not displaying default channel, link identityvault from def.channel with provider
-//                                var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, providerGraphNode, true, Constants.IDENTITY_VAULT_DEEP);
-                                var vaultExists:Boolean = false;
-                                for each (var tmpVaultGraphNode:IVisualNode in vaults){
-                                    if(tmpVaultGraphNode.data as IdentityVault == identityVault){
-                                        GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode);
-                                        vaultExists = true;
-                                    }
-                                }
-                                if(!vaultExists){
-                                    GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, providerGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
-                                }
-                            }
-                        }
-                        if (locProv.channels != null) {
-                            for (var j:int = 0; j < locProv.channels.length; j++) {
-                                var channel = locProv.channels[j];
-                                var channelGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), channel, providerGraphNode, true, Constants.CHANNEL_DEEP);
-                                var identityVault:IdentityVault = null;
-                                if (channel is IdentityProviderChannel) {
-                                    identityVault = IdentityProviderChannel(channel).identityVault;
-                                } else if (channel is ServiceProviderChannel) {
-                                    identityVault = ServiceProviderChannel(channel).identityVault;
-                                }
-                                if (identityVault != null) {
-                                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityVault, true);
-                                    //link identity vault with the channel containing it
-//                                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, channelGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
-                                    vaultExists = false;
-                                    for each (tmpVaultGraphNode in vaults){
-                                        if(tmpVaultGraphNode.data as IdentityVault == identityVault){
-                                            GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, channelGraphNode);
+//                        var locProv:LocalProvider = provider as LocalProvider;
+                        var provider:Provider = identityApplianceDefinition.providers[i];
+                        var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, true, Constants.PROVIDER_DEEP);
+                        if (provider is FederatedProvider) {
+                            var locProv:FederatedProvider = provider as FederatedProvider;
+                            if (locProv.federatedConnectionsA != null && locProv.federatedConnectionsA.length != 0) {
+                                if(locProv.identityLookup != null && locProv.identityLookup.identitySource != null){
+                                    var idSource:IdentitySource = locProv.identityLookup.identitySource;
+                                    //TODO add identitySource and connection towards it
+                                    var vaultExists:Boolean = false;
+                                    for each (var tmpVaultGraphNode:IVisualNode in vaults){
+                                        if(tmpVaultGraphNode.data as IdentitySource == idSource){
+                                            GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode);
                                             vaultExists = true;
                                         }
                                     }
                                     if(!vaultExists){
-                                        GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, channelGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
+                                        GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), idSource, providerGraphNode, true, Constants.IDENTITY_VAULT_DEEP);
+                                        //if vault doesn't exist in the vaults array, add it so other providers can find it
+                                        vaults.addItem(idSource);
                                     }
+
                                 }
+                                //TODO ADD CONNECTIONS
                             }
-                        }
-                        if(locProv is ServiceProvider){
-                            var sp:ServiceProvider = locProv as ServiceProvider;
-                            if(sp.executionEnvironment != null){  //check for execution environment
-                                var execEnvironment:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), sp.executionEnvironment, providerGraphNode, true, Constants.CHANNEL_DEEP);
+    //                        if (locProv.channels != null) {
+    //                            for (var j:int = 0; j < locProv.channels.length; j++) {
+    //                                var channel = locProv.channels[j];
+    //                                var channelGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), channel, providerGraphNode, true, Constants.CHANNEL_DEEP);
+    //                                var identityVault:IdentitySource = null;
+    //                                if (channel is IdentityProviderChannel) {
+    //                                    identityVault = IdentityProviderChannel(channel).identityVault;
+    //                                } else if (channel is ServiceProviderChannel) {
+    //                                    identityVault = ServiceProviderChannel(channel).identityVault;
+    //                                }
+    //                                if (identityVault != null) {
+    //                                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityVault, true);
+    //                                    //link identity vault with the channel containing it
+    ////                                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, channelGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
+    //                                    vaultExists = false;
+    //                                    for each (tmpVaultGraphNode in vaults){
+    //                                        if(tmpVaultGraphNode.data as IdentitySource == identityVault){
+    //                                            GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, channelGraphNode);
+    //                                            vaultExists = true;
+    //                                        }
+    //                                    }
+    //                                    if(!vaultExists){
+    //                                        GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, channelGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
+    //                                    }
+    //                                }
+    //                            }
+    //                        }
+                            if(locProv is ServiceProvider){
+                                var sp:ServiceProvider = locProv as ServiceProvider;
+                                if(sp.activation != null && sp.activation.executionEnv != null){  //check for execution environment
+                                    var execEnvironment:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), sp.activation.executionEnv, providerGraphNode, true, Constants.CHANNEL_DEEP);
+                                }
                             }
                         }
                     }
                 }
             }
-
-//            if (identityApplianceDefinition.identityVaults != null) {
-//                for (i = 0; i < identityApplianceDefinition.identityVaults.length; i++) {
-//                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identityVaults[i], true);
-//                }
-//            }
-
         }
 
     }
@@ -559,7 +547,7 @@ public class DiagramMediator extends IocMediator {
             if(node.data is ServiceProviderChannel){
                 elementType = DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE;
             } else
-            if(node.data is DbIdentityVault){
+            if(node.data is DbIdentitySource){
                 elementType = DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE;
             }
             //TODO - add other element types

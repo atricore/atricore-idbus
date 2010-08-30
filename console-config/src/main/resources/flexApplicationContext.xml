@@ -166,7 +166,7 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="manageCertificateMediator"
-            class="com.atricore.idbus.console.main.view.keystore.ManageCertificateMediator">
+            class="com.atricore.idbus.console.main.view.certificate.ManageCertificateMediator">
         <property name="keystoreProxy" ref="keystoreProxy"/>
     </object>
 

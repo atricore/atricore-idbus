@@ -32,7 +32,9 @@
         <fx:Script>
         <![CDATA[           
 
-            import com.atricore.idbus.console.services.dto.IdentityVault;
+            import com.atricore.idbus.console.services.dto.DbIdentitySource;
+            import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
+            import com.atricore.idbus.console.services.dto.IdentitySource;
 
             [Bindable]
             private var validators:Array;
@@ -43,24 +45,24 @@
             private var readableDecisionArray:Array;
 
             override public function get stepDecision():* {
-                var identitySource:IdentityVault = new IdentityVault();
+                var identitySource:IdentitySource;
                 readableDecisionArray = new Array();
                 if (obfuscatePass.selected) {
                     //TODO
                     //                  identitySource.obfuscatePassword = obfuscatePass.selected;
                     readableDecisionArray.push("Obfuscate Password: " + obfuscatePass.selected);
                 }
-                identitySource.name = userRepositoryName.text;
-                readableDecisionArray.push("Repository Name: " + identitySource.name);
 
                 if (repositoryType.selectedValue == "embedded") {
-                    identitySource.embedded = true;
+                    identitySource = new EmbeddedIdentitySource();
                     readableDecisionArray.push("Create Embedded Repository");
                 } else {
-                    identitySource.embedded = false;
+                    identitySource = new DbIdentitySource();
                     readableDecisionArray.push("Create External Repository");
                 }
-
+                identitySource.name = userRepositoryName.text;
+                readableDecisionArray.push("Repository Name: " + identitySource.name);
+                
                 return identitySource;
             }
 

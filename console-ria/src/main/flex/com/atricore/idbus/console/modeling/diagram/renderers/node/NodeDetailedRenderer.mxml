@@ -39,15 +39,15 @@
         import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
         import com.atricore.idbus.console.services.dto.BindingProvider;
         import com.atricore.idbus.console.services.dto.Channel;
-        import com.atricore.idbus.console.services.dto.DbIdentityVault;
+        import com.atricore.idbus.console.services.dto.DbIdentitySource;
         import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.IdentityAppliance;
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnit;
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnitType;
         import com.atricore.idbus.console.services.dto.IdentityProvider;
-        import com.atricore.idbus.console.services.dto.IdentityVault;
+        import com.atricore.idbus.console.services.dto.IdentitySource;
         import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
-        import com.atricore.idbus.console.services.dto.LdapIdentityVault;
+        import com.atricore.idbus.console.services.dto.LdapIdentitySource;
         import com.atricore.idbus.console.services.dto.ServiceProvider;
 
         import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
@@ -107,12 +107,12 @@
                                 _linkLabel = (obj as Channel).name;
                             } else {
 
-                                if (obj is IdentityVault) {
-                                    var identitySource:IdentityVault = obj as IdentityVault;
+                                if (obj is IdentitySource) {
+                                    var identitySource:IdentitySource = obj as IdentitySource;
                                     _linkLabel = identitySource.name;
-                                    if(obj is DbIdentityVault){
+                                    if(obj is DbIdentitySource){
                                         _linkIcon = EmbeddedIcons.dbIdentitySourceIcon;
-                                    } else if(obj is LdapIdentityVault){
+                                    } else if(obj is LdapIdentitySource){
                                         _linkIcon = EmbeddedIcons.ldapIdentitySourceIcon;
                                     } else {
                                         _linkIcon = EmbeddedIcons.vaultIcon;

@@ -34,8 +34,8 @@
         <fx:Script>
         <![CDATA[
 
-            import com.atricore.idbus.console.services.dto.DbIdentityVault;
-            import com.atricore.idbus.console.services.dto.IdentityVault;
+            import com.atricore.idbus.console.services.dto.DbIdentitySource;
+            import com.atricore.idbus.console.services.dto.IdentitySource;
             import com.atricore.idbus.console.services.dto.UserInformationLookup;
 
             [Bindable]
@@ -44,25 +44,25 @@
             private var readableDecisionArray:Array;
 
             override public function get stepDecision():* {
-                var identitySource:IdentityVault = null;
+                var identitySource:IdentitySource = null;
                 if (externalRepositoryType.labelDisplay.text == "Database") {
-                    identitySource = new DbIdentityVault();
-                    identitySource.embedded = false;
+                    identitySource = new DbIdentitySource();
+//                    identitySource.embedded = false;
                     identitySource.name = userRepositoryName.text;
-                    (identitySource as DbIdentityVault).connectionName = connectionName.text;
-                    (identitySource as DbIdentityVault).driverName = driverName.text;
-                    (identitySource as DbIdentityVault).connectionUrl = connectionUrl.text;
-                    (identitySource as DbIdentityVault).admin = dbUsername.text;
-                    (identitySource as DbIdentityVault).password = dbPassword.text;
+                    (identitySource as DbIdentitySource).connectionName = connectionName.text;
+                    (identitySource as DbIdentitySource).driverName = driverName.text;
+                    (identitySource as DbIdentitySource).connectionUrl = connectionUrl.text;
+                    (identitySource as DbIdentitySource).admin = dbUsername.text;
+                    (identitySource as DbIdentitySource).password = dbPassword.text;
 
-                    var userLookup = new UserInformationLookup();
-                    userLookup.userQueryString = userQuery.text;
-                    userLookup.rolesQueryString = rolesQuery.text;
-                    userLookup.credentialsQueryString = credentialsQuery.text;
-                    userLookup.userPropertiesQueryString = propertiesQuery.text;
-                    userLookup.resetCredentialDml = credentialsUpdate.text;
+//                    var userLookup = new UserInformationLookup();
+                    (identitySource as DbIdentitySource).userQueryString = userQuery.text;
+                    (identitySource as DbIdentitySource).rolesQueryString = rolesQuery.text;
+                    (identitySource as DbIdentitySource).credentialsQueryString = credentialsQuery.text;
+                    (identitySource as DbIdentitySource).userPropertiesQueryString = propertiesQuery.text;
+                    (identitySource as DbIdentitySource).resetCredentialDml = credentialsUpdate.text;
 
-                    identitySource.userInformationLookup = userLookup;
+//                    identitySource.userInformationLookup = userLookup;
                 }
                 return identitySource;
             }
@@ -74,7 +74,7 @@
             }
 
             private function initFields():void {
-                userRepositoryName.text = (previousStepData as IdentityVault).name;
+                userRepositoryName.text = (previousStepData as IdentitySource).name;
             }
 
             private function initForm():void {
