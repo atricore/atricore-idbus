@@ -55,6 +55,7 @@ log4j.category.com=INFO
 log4j.category.net=INFO
 log4j.category.sun=INFO
 log4j.category.javax=INFO
+log4j.category.DataNucleus=INFO
 
 log4j.category.org.hibernate=WARN
 log4j.category.javax.management.modelmbean=INFO
@@ -89,6 +90,21 @@ log4j.category.org.ops4j.pax.web.service.jetty=TRACE
 #log4j.category.org.codehaus.wadi=TRACE
 #log4j.category.org.mortbay.jetty.servlet.wadi=TRACE
 #log4j.category.org.apache.catalina.tribes=TRACE
+
+# DataNucleus Categories
+#log4j.category.DataNucleus.JDO=INFO
+#log4j.category.DataNucleus.Cache=DEBUG
+#log4j.category.DataNucleus.MetaData=WARN
+#log4j.category.DataNucleus.General=INFO
+#log4j.category.DataNucleus.Utility=WARN
+#log4j.category.DataNucleus.Transaction=WARN
+#log4j.category.DataNucleus.Datastore=DEBUG
+#log4j.category.DataNucleus.ClassLoading=WARN
+#log4j.category.DataNucleus.Plugin=WARN
+#log4j.category.DataNucleus.ValueGeneration=INFO
+#
+#log4j.category.DataNucleus.Enhancer=INFO
+#log4j.category.DataNucleus.SchemaTool=INFO
 
 
 
