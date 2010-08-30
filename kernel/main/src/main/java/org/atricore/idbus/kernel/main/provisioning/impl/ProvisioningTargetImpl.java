@@ -153,7 +153,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             group = identityPartition.updateGroup(group);
 
             UpdateGroupResponse groupResponse = new UpdateGroupResponse();
-            groupResponse.setGroup(groupResponse.getGroup());
+            groupResponse.setGroup(group);
 
             return groupResponse;
 
@@ -234,7 +234,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             user = identityPartition.updateUser(user);
 
             UpdateUserResponse userResponse = new UpdateUserResponse();
-            userResponse.setUser(userResponse.getUser());
+            userResponse.setUser(user);
 
             return userResponse;
 

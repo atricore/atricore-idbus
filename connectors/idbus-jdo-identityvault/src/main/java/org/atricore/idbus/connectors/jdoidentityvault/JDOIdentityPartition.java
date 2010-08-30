@@ -97,6 +97,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
             JDOGroup jdoGroup = groupDao.findById(group.getId());
             jdoGroup = toJDOGroup(jdoGroup, group);
             jdoGroup = groupDao.save(jdoGroup);
+            jdoGroup = groupDao.detachCopy(jdoGroup, 99);
+
             return toGroup(jdoGroup);
 
         } catch (Exception e) {

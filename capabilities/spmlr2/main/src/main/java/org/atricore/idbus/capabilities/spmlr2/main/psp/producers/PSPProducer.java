@@ -327,10 +327,11 @@ public class PSPProducer extends SpmlR2Producer {
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
             try {
+                
                 UpdateGroupResponse groupResponse = target.updateGroup(groupRequest);
+                Group group = groupResponse.getGroup();
 
-                groupResponse.getGroup();
-                spmlResponse.setPso(toSpmlGroup(target, groupResponse.getGroup()));
+                spmlResponse.setPso(toSpmlGroup(target, group));
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
             } catch (ProvisioningException e) {
