@@ -39,6 +39,8 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
     
     private static final String FEDERATED_CONN_ROLE_ATTR = "federatedConnectionRole";
 
+    private static final String ACTIVATION_CONN_ROLE_ATTR = "activationConnectionRole";
+
     private SpringMetadataManager springMgr = new SpringMetadataManagerImpl();
 
     private java.util.List<Transformer> transformers = new ArrayList<Transformer>();
@@ -475,6 +477,9 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
     public boolean walkNextChild(IdentityLookup node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        if (child instanceof Provider || child instanceof IdentitySource)
+            return false;
+
         return true;
     }
 
@@ -528,6 +533,11 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
     public boolean walkNextChild(Activation node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        // Do not treat sp/exec env as 'children' of this node.
+        if (child == node.getSp() || child == node.getExecutionEnv())
+            return false;
+
+        // We should walk all other children
         return true;
     }
 
@@ -935,6 +945,11 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
     public boolean walkNextChild(JOSSOActivation node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        // Do not treat sp/exec env as 'children' of this node.
+        if (child == node.getSp() || child == node.getExecutionEnv())
+            return false;
+
+        // We should walk all other children
         return true;
     }
 

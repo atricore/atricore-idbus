@@ -93,6 +93,9 @@
         <class name="ExecutionEnvironment" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="id" value-strategy="native" primary-key="true"/>
+            <field name="activations" default-fetch-group="true" persistence-modifier="persistent" mapped-by="executionEnv">
+                <collection dependent-element="true"/>
+            </field>
         </class>
 
         <class name="Feature"/>
@@ -179,7 +182,7 @@
             <field name="id" value-strategy="native" primary-key="true"/>
         </class>
 
-        <class name="JbossExecutionEnvironment" detachable="true">
+        <class name="JBossExecutionEnvironment" detachable="true">
             <inheritance strategy="new-table"/>
 
         </class>

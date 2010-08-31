@@ -32,7 +32,8 @@ public class IdentityLookupTransformer extends AbstractTransformer {
     @Override
     public boolean accept(TransformEvent event) {
         // add methods in TransformerVisitor for IdentitySource?
-        return event.getData() instanceof IdentityLookup;
+        return event.getData() instanceof IdentityLookup &&
+            event.getContext().getParentNode() instanceof Provider;
     }
 
     @Override
@@ -42,6 +43,10 @@ public class IdentityLookupTransformer extends AbstractTransformer {
         IdentityLookup idLookup = (IdentityLookup) event.getData();
         IdentitySource identitySource = idLookup.getIdentitySource();
         Provider provider = idLookup.getProvider();
+
+        if (provider != event.getContext().getParentNode()) {
+            throw new TransformException("Lookkup service provider is not parent node for " + idLookup.getName());
+        }
 
         if (identitySource != null) {
 
@@ -54,11 +59,9 @@ public class IdentityLookupTransformer extends AbstractTransformer {
             Bean providerBean = null;
             Collection<Bean> b = null;
 
-            
             if (provider instanceof ServiceProvider) {
                 providerBeans = (Beans) event.getContext().get("spBeans");
                 b = getBeansOfType(providerBeans, ServiceProviderImpl.class.getName());
-
             } else if (provider instanceof IdentityProvider) {
                 providerBeans = (Beans) event.getContext().get("idpBeans");
                 b = getBeansOfType(providerBeans, IdentityProviderImpl.class.getName());

@@ -64,7 +64,7 @@
         <class name="IdentityProvider" table="ATC_IDP"/>
         <class name="IdentityProviderChannel" table="ATC_IDP_CHANNEL"/>
         <class name="IdentitySource" table="ATC_ID_SOURCE"/>
-        <class name="JbossExecutionEnvironment" table="ATC_JBOSS_EXECENV"/>
+        <class name="JBossExecutionEnvironment" table="ATC_JBOSS_EXECENV"/>
         <class name="JOSSOActivation" table="ATC_JOSSO_ACTIVATION"/>
         <class name="Keystore" table="ATC_KEYSTORE" />
         <class name="LdapIdentitySource" table="ATC_LDAP_ID_SOURCE"/>
