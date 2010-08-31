@@ -5,7 +5,8 @@ Feature: Sign-off from Administration Console
 
   Scenario: Sign-off with an existing session
     Given I have an existing session with the administration console
-    When I click on the sign-off button
+    When I click on a drop down with my full name
+    And I click on the sign-off button
     Then I should be redirected to the splash screen 
     And I should see the login form
 
