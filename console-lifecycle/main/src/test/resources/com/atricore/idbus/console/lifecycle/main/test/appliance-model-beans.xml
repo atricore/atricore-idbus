@@ -68,7 +68,9 @@
     <!-- =========================================== -->
     <bean name="idp1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider">
         <property name="name" value="idp1"/>
-        <property name="description" value="Identity Provider #1"/>
+        <property name="displayName" value="Identity Provider #1"/>
+        <property name="description" value="This is a test Identity Provider #1"/>
+        <property name="identityAppliance" ref="idApplianceDef1"/>
         
         <property name="activeBindings">
             <set>
@@ -152,7 +154,9 @@
 
     <bean name="sp1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider">
         <property name="name" value="sp1"/>
-        <property name="description" value="Service Provider #1"/>
+        <property name="displayName" value="Service Provider #1"/>
+        <property name="description" value="This is a test Service Provider #1"/>
+        <property name="identityAppliance" ref="idApplianceDef1"/>
 
         <property name="location">
             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Location">

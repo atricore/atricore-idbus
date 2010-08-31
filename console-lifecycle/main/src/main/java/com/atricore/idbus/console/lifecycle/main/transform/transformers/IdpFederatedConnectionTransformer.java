@@ -135,12 +135,14 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         if (logger.isDebugEnabled())
             logger.debug("Creating SP Channel definition for " + spChannelName);
 
-        for (Bean spChannelBean : spChannelBeans) {
-            if (getPropertyValue(spChannelBean, "name").equals(spChannelName)) {
-                // Do not re-process a default channel definition
-                if (logger.isTraceEnabled())
-                    logger.trace("Ignoring channel " + spChannel.getName() + ". It was alredy processed");
-                return;
+        if (spChannelBeans != null) {
+            for (Bean spChannelBean : spChannelBeans) {
+                if (getPropertyValue(spChannelBean, "name").equals(spChannelName)) {
+                    // Do not re-process a default channel definition
+                    if (logger.isTraceEnabled())
+                        logger.trace("Ignoring channel " + spChannel.getName() + ". It was alredy processed");
+                    return;
+                }
             }
         }
 
