@@ -108,14 +108,6 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider</class-a>
         <class-b>com.atricore.idbus.console.services.dto.IdentityProviderDTO</class-b>
-        <field relationship-type="non-cumulative" remove-orphans="true">
-            <a>activeBindings</a>
-            <b>activeBindings</b>
-        </field>
-        <field relationship-type="non-cumulative" remove-orphans="true">
-            <a>activeProfiles</a>
-            <b>activeProfiles</b>
-        </field> 
     </mapping>
 
     <mapping>
@@ -233,6 +225,11 @@
             <a>value</a>
             <b>value</b>
         </field>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.AbstractProviderConfig</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.AbstractProviderConfigDTO</class-b>
     </mapping>
 
     <mapping>

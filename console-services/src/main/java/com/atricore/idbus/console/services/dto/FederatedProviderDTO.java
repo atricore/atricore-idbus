@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  * Author: Dejan Maric
  */
-public class FederatedProviderDTO extends LocalProviderDTO {
+public class FederatedProviderDTO extends ProviderDTO {
 
     private static final long serialVersionUID = 1096573395672061313L;
 

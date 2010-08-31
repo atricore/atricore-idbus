@@ -155,6 +155,12 @@
 
         <class name="IdentityProvider" detachable="true">
             <inheritance strategy="new-table"/>
+            <field name="attributeProfile" default-fetch-group="true" />
+            <field name="authenticationContract" default-fetch-group="true" />
+            <field name="emissionPolicy" default-fetch-group="true" />
+            <field name="authenticationMechanisms" default-fetch-group="true" persistence-modifier="persistent">
+                <collection dependent-element="true"/>
+            </field>
         </class>
 
         <class name="IdentityProviderChannel" detachable="true">
@@ -245,6 +251,9 @@
         <class name="ServiceProvider" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="activation" default-fetch-group="true" mapped-by="sp"/>
+            <field name="accountLinkagePolicy" default-fetch-group="true" />
+            <field name="authenticationContract" default-fetch-group="true" />
+            <field name="authenticationMechanism" default-fetch-group="true" />
         </class>
         
         <class name="ServiceProviderChannel" detachable="true">
