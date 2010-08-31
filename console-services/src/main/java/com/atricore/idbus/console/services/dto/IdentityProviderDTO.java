@@ -21,8 +21,6 @@
 
 package com.atricore.idbus.console.services.dto;
 
-import java.util.Set;
-
 public class IdentityProviderDTO extends LocalProviderDTO {
 
 	private static final long serialVersionUID = 141137856095909986L;

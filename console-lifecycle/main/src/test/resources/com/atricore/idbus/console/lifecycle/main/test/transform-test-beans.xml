@@ -202,10 +202,9 @@
                                         
                                         <ref bean="idpFederatedConnectionATransformer"/>
                                         <ref bean="idpFederatedConnectionBTransformer"/>
-                                        <!--
+
                                         <ref bean="claimsChannelTransformer"/>
                                         <ref bean="stsTransformer"/>
-                                        -->
 
                                         <!-- SP Transformers -->
                                         <!--

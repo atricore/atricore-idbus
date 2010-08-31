@@ -25,14 +25,12 @@
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.RemoteProvider
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.BindingProvider
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.ServiceProviderDTO,
-                com.atricore.idbus.console.services.dto.BindingProviderDTO,
-                com.atricore.idbus.console.services.dto.RemoteProviderDTO
+                com.atricore.idbus.console.services.dto.BindingProviderDTO
             </b-hint>
         </field>
     </mapping>
@@ -46,14 +44,12 @@
               <a-hint>
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.RemoteProvider
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider
               </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.RemoteProviderDTO
+                  com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -81,8 +77,8 @@
     </mapping>
 
     <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.LocalProvider</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.LocalProviderDTO</class-b>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.ProviderDTO</class-b>
         <field relationship-type="non-cumulative" remove-orphans="true">
             <a>activeBindings</a>
             <b>activeBindings</b>
@@ -151,14 +147,12 @@
               <a-hint>
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProviderDTO,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.RemoteProvider
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProviderDTO
               </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                   com.atricore.idbus.console.services.dto.ServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO,
-                  com.atricore.idbus.console.services.dto.RemoteProviderDTO
+                  com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO
             </b-hint>
         </field>
     </mapping>
@@ -180,8 +174,7 @@
               <a-hint>
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProviderDTO,
-                  com.atricore.idbus.console.lifecycle.main.domain.metadata.RemoteProvider
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProviderDTO
               </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.IdentityProviderDTO,
@@ -316,14 +309,12 @@
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.RemoteProvider
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.ServiceProviderDTO,
-                com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO,
-                com.atricore.idbus.console.services.dto.RemoteProviderDTO
+                com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO
             </b-hint>
         </field>
         <field>
@@ -332,14 +323,12 @@
             <a-hint>
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.RemoteProvider
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider
             </a-hint>
             <b-hint>
                 com.atricore.idbus.console.services.dto.IdentityProviderDTO,
                 com.atricore.idbus.console.services.dto.ServiceProviderDTO,
-                com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO,
-                com.atricore.idbus.console.services.dto.RemoteProviderDTO
+                com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO
             </b-hint>
         </field>
         <field>
@@ -409,11 +398,6 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ProvisioningServiceProvider</class-a>
         <class-b>com.atricore.idbus.console.services.dto.ProvisioningServiceProviderDTO</class-b>
-    </mapping>
-
-    <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.RemoteProvider</class-a>
-        <class-b>com.atricore.idbus.console.services.dto.RemoteProviderDTO</class-b>
     </mapping>
 
 </mappings>

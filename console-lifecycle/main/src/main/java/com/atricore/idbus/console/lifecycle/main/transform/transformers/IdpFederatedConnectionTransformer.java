@@ -43,8 +43,10 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        if (event.getData() instanceof FederatedConnection) {
-            FederatedConnection fc = (FederatedConnection) event.getData();
+        if (event.getData() instanceof ServiceProviderChannel) {
+
+            ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
+            FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
 
             if (roleA) {
                 return fc.getRoleA() instanceof IdentityProvider;
@@ -60,8 +62,8 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
     @Override
     public void before(TransformEvent event) throws TransformException {
 
-        FederatedConnection federatedConnection = (FederatedConnection) event.getData();
-        ServiceProviderChannel spChannel;
+        FederatedConnection federatedConnection = (FederatedConnection) event.getContext().getParentNode();
+        ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
 
         IdentityProvider idp;
 
@@ -69,6 +71,10 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         FederatedChannel targetChannel;
 
         if (roleA) {
+
+            assert spChannel == federatedConnection.getChannelA() :
+                    "SP Channel " + spChannel.getName() + " should be 'A' channel in federated connection " +
+                            federatedConnection.getName();
 
             idp = (IdentityProvider) federatedConnection.getRoleA();
             spChannel = (ServiceProviderChannel) federatedConnection.getChannelA();
@@ -81,6 +87,11 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
                         " is not roleA provider in Federated Connection " + federatedConnection.getName());
 
         } else {
+
+            assert spChannel == federatedConnection.getChannelB() :
+                    "SP Channel " + spChannel.getName() + " should be 'B' channel in federated connection " +
+                            federatedConnection.getName();
+
 
             idp = (IdentityProvider) federatedConnection.getRoleB();
             spChannel = (ServiceProviderChannel) federatedConnection.getChannelB();
@@ -130,7 +141,7 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
 
         List<Bean> spChannelBeans = getPropertyBeans(idpBean, "channels");
 
-        String spChannelName = idpBean.getName() +  "-" + (spChannel.isOverrideProviderSetup() ? "default" : normalizeBeanName(target.getName())) + "-sp-channel";
+        String spChannelName = idpBean.getName() +  "-" + (!spChannel.isOverrideProviderSetup() ? "default" : normalizeBeanName(target.getName())) + "-sp-channel";
 
         if (logger.isDebugEnabled())
             logger.debug("Creating SP Channel definition for " + spChannelName);
@@ -154,7 +165,12 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(spChannelBean, "name", spChannelBean.getName());
         setPropertyValue(spChannelBean, "description", spChannel.getDescription());
         setPropertyValue(spChannelBean, "location", resolveLocationUrl(idp, spChannel));
-        setPropertyRef(spChannelBean, "provider", normalizeBeanName(target.getName()));
+        setPropertyRef(spChannelBean, "provider", normalizeBeanName(idp.getName()));
+
+        // TODO : Do not set this if target provider is remote (not supported in the model yet!)
+        if (spChannel.isOverrideProviderSetup())
+            setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(target.getName()));
+
         setPropertyRef(spChannelBean, "sessionManager", idpBean.getName() + "-session-manager");
         
         // identityManager
@@ -360,17 +376,22 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
 
         // SP Channel bean
         Bean spChannelBean = (Bean) event.getContext().get("spChannelBean");
+        Bean idpBean = (Bean) event.getContext().get("idpBean");
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
         Beans beans = (Beans) event.getContext().get("beans");
+
+        // TODO : For now, the same Claims provider and STS are used for ALL channels!
         
         // claimsProvider
-        Bean claimsChannel = getBean(idpBeans, spChannelBean.getName() + "-claims-channel");
+        String claimsChannelName = idpBean.getName() + "-claims-channel";
+
+        Bean claimsChannel = getBean(idpBeans, claimsChannelName);
         if (claimsChannel == null)
-            throw new TransformException("No claims channel defined as " + spChannelBean.getName() + "-claim-channel");
+            throw new TransformException("No claims channel defined as " + claimsChannelName);
         setPropertyRef(spChannelBean, "claimsProvider", claimsChannel.getName());
 
         // STS
-        Bean sts = getBean(idpBeans, spChannelBean.getName() + "-sts");
+        Bean sts = getBean(idpBeans, idpBean.getName() + "-sts");
         if (sts == null)
             throw new TransformException("No STS defined as " + spChannelBean.getName() + "-sts");
         setPropertyRef(spChannelBean, "securityTokenService", sts.getName());

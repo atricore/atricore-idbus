@@ -5,7 +5,7 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  * @version $Id$
  */
 @Deprecated
-public class BindingProvider extends LocalProvider {
+public class BindingProvider extends Provider {
 
     private Channel bindingChannel;
     private static final long serialVersionUID = 3973974337910746241L;

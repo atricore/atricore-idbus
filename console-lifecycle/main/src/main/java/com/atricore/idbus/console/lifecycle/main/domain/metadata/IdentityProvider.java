@@ -21,8 +21,6 @@
 
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
-import java.util.Set;
-
 public class IdentityProvider extends FederatedProvider {
 
 	private static final long serialVersionUID = 141137856095909986L;
@@ -108,5 +106,4 @@ public class IdentityProvider extends FederatedProvider {
     public void setEmissionPolicy(AuthenticationAssertionEmissionPolicy emissionPolicy) {
         this.emissionPolicy = emissionPolicy;
     }
-
 }

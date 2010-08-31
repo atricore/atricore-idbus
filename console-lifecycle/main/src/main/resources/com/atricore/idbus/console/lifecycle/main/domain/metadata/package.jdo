@@ -184,18 +184,6 @@
             <inheritance strategy="new-table"/>
         </class>
 
-        <class name="LocalProvider" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="config" persistence-modifier="persistent" default-fetch-group="true" dependent="true"/>
-            <field name="activeBindings" default-fetch-group="true">
-                <join delete-action="cascade"/>
-            </field>
-            <field name="activeProfiles" default-fetch-group="true">
-                <join delete-action="cascade"/>
-            </field>
-            <field name="identityLookup" persistence-modifier="persistent" default-fetch-group="true" dependent="true" mapped-by="provider" />
-        </class>
-
         <class name="Location" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="id" value-strategy="native" primary-key="true"/>
@@ -211,16 +199,21 @@
             <field name="id" value-strategy="native" primary-key="true"/>
             <field name="identityAppliance" default-fetch-group="true" persistence-modifier="persistent"/>
             <field name="location" default-fetch-group="true" dependent="true"/>
+
+            <field name="config" persistence-modifier="persistent" default-fetch-group="true" dependent="true"/>
+            <field name="activeBindings" default-fetch-group="true">
+                <join delete-action="cascade"/>
+            </field>
+            <field name="activeProfiles" default-fetch-group="true">
+                <join delete-action="cascade"/>
+            </field>
+            <field name="identityLookup" persistence-modifier="persistent" default-fetch-group="true" dependent="true" mapped-by="provider" />
+            <field name="metadata" default-fetch-group="true" dependent="true"/>
         </class>
 
         <class name="ProvisioningServiceProvider" detachable="true">
             <inheritance strategy="new-table"/>
             <!--<field name="id" value-strategy="native" primary-key="true"/>-->
-        </class>
-
-        <class name="RemoteProvider" detachable="true">
-            <inheritance strategy="new-table"/>
-            <field name="metadata" default-fetch-group="true" dependent="true"/>
         </class>
 
         <class name="Resource" detachable="true">

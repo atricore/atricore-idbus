@@ -37,7 +37,6 @@ public class ServiceProvider extends FederatedProvider {
     // RFU
     private AuthenticationMechanism authenticationMechanism;
 
-    
     @Override
     public ProviderRole getRole() {
         return ProviderRole.SSOServiceProvider;

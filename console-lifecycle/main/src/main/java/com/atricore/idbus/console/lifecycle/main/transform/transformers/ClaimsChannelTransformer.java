@@ -37,7 +37,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof ServiceProviderChannel;
+        return event.getData() instanceof IdentityProvider;
     }
 
     @Override
@@ -45,13 +45,10 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
 
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
 
-        ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
-        IdentityProvider provider = (IdentityProvider) event.getContext().getParentNode();
+        IdentityProvider provider = (IdentityProvider) event.getData();
 
         if (logger.isTraceEnabled())
-            logger.trace("Generating Claims Channel Beans for SP Channel " + spChannel.getName()  + " of IdP " + provider.getName());
-
-        Bean spChannelBean = (Bean) event.getContext().get("spChannelBean");
+            logger.trace("Generating Claims Channel Beans for IDP Channel " + provider.getName());
 
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans beansOsgi = (Beans) event.getContext().get("beansOsgi");
@@ -67,7 +64,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         // Claims Channel
         // ----------------------------------------
 
-        Bean claimsChannelBean = newBean(idpBeans, spChannelBean.getName() + "-claims-channel", ClaimChannelImpl.class);
+        Bean claimsChannelBean = newBean(idpBeans, idpBean.getName() + "-claims-channel", ClaimChannelImpl.class);
 
         // name
         setPropertyValue(claimsChannelBean, "name", claimsChannelBean.getName());
@@ -80,7 +77,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         List<Bean> ccEndpoints = new ArrayList<Bean>();
 
         Bean ccPwdArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        ccPwdArtifact.setName(spChannelBean.getName() + "-cc-pwd-artifact");
+        ccPwdArtifact.setName(idpBean.getName() + "-cc-pwd-artifact");
         setPropertyValue(ccPwdArtifact, "name", ccPwdArtifact.getName());
         setPropertyValue(ccPwdArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
         setPropertyValue(ccPwdArtifact, "location", "/IDBUS/PWD/ARTIFACT");
@@ -89,7 +86,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         ccEndpoints.add(ccPwdArtifact);
 
         Bean ccPwdPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        ccPwdPost.setName(spChannelBean.getName() + "-cc-pwd-post");
+        ccPwdPost.setName(idpBean.getName() + "-cc-pwd-post");
         setPropertyValue(ccPwdPost, "name", ccPwdPost.getName());
         setPropertyValue(ccPwdPost, "binding", SamlR2Binding.SSO_POST.getValue());
         setPropertyValue(ccPwdPost, "location", "/IDBUS/PWD/POST");
@@ -101,7 +98,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         // ----------------------------------------
         // Claims Mediator
         // ----------------------------------------
-        Bean ccMediator = newBean(idpBeans, spChannelBean.getName() + "-samlr2-claims-mediator", SamlR2ClaimsMediator.class);
+        Bean ccMediator = newBean(idpBeans, idpBean.getName() + "-samlr2-claims-mediator", SamlR2ClaimsMediator.class);
 
         // logMessages
         setPropertyValue(ccMediator, "logMessages", true);
@@ -120,7 +117,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         ccLogBuilders.add(newAnonymousBean(CamelLogMessageBuilder.class));
         ccLogBuilders.add(newAnonymousBean(HttpLogMessageBuilder.class));
 
-        Bean ccLogger = newBean(idpBeans, spChannelBean.getName() + "-cc-mediation-logger", DefaultMediationLogger.class.getName());
+        Bean ccLogger = newBean(idpBeans, idpBean.getName() + "-cc-mediation-logger", DefaultMediationLogger.class.getName());
         setPropertyValue(ccLogger, "category", "org.atricore.idbus.mediation.wire.cc1");
         setPropertyAsBeans(ccLogger, "messageBuilders", ccLogBuilders);
 

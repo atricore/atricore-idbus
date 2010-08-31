@@ -27,7 +27,7 @@ public class STSTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof ServiceProviderChannel;
+        return event.getData() instanceof IdentityProvider;
     }
 
     @Override
@@ -35,12 +35,10 @@ public class STSTransformer extends AbstractTransformer {
 
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
 
-        ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
-        IdentityProvider provider = (IdentityProvider) event.getContext().getParentNode();
-        Bean spChannelBean = (Bean) event.getContext().get("spChannelBean");
+        IdentityProvider provider = (IdentityProvider) event.getData();
 
         if (logger.isTraceEnabled())
-            logger.trace("Generating STS Beans for SP Channel " + spChannel.getName()  + " of IdP " + provider.getName());
+            logger.trace("Generating STS Beans for IdP " + provider.getName());
 
         Bean idpBean = null;
         Collection<Bean> b = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName());
@@ -52,19 +50,19 @@ public class STSTransformer extends AbstractTransformer {
         // ----------------------------------------
         // STS
         // ----------------------------------------
-        Bean sts = newBean(idpBeans, spChannelBean.getName() + "-sts",
+        Bean sts = newBean(idpBeans, idpBean.getName() + "-sts",
                 "org.atricore.idbus.capabilities.sts.main.WSTSecurityTokenService");
 
         // ----------------------------------------
         // Emitters
         // ----------------------------------------
         Bean stsEmitter = newBean(idpBeans,
-                spChannelBean.getName() + "-samlr2-assertion-emitter",
+                idpBean.getName() + "-samlr2-assertion-emitter",
                 "org.atricore.idbus.capabilities.samlr2.main.emitter.SamlR2SecurityTokenEmitter");
         setPropertyValue(stsEmitter, "id", stsEmitter.getName());
 
         Bean stsSecTkn2AssertionPlan = newBean(idpBeans,
-                spChannelBean.getName() + "-samlr2-sectoken-to-authnassertion-plan",
+                idpBean.getName() + "-samlr2-sectoken-to-authnassertion-plan",
                 "org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan");
         // TODO RETROFIT  :
         /*
@@ -76,16 +74,24 @@ public class STSTransformer extends AbstractTransformer {
         // identityPlan
         setPropertyRef(stsEmitter, "identityPlan", stsSecTkn2AssertionPlan.getName());
 
-        String mediatorName = getPropertyRef(spChannelBean, "identityMediator");
-        Bean mediatorBean = getBean(idpBeans, mediatorName);
-        if (mediatorBean == null)
-            throw new TransformException("No mediator found for name " + mediatorName);
 
-        String signerName = getPropertyRef(mediatorBean, "signer");
-        Bean signerBean = getBean(idpBeans, signerName);
+        Collection<Bean> mediators = getBeansOfType(idpBeans, "org.atricore.idbus.capabilities.samlr2.main.idp.SamlR2IDPMediator");
+
+        if (mediators.size() != 1)
+            throw new TransformException("Too many/few mediators defined " + mediators.size());
+
+        Bean mediatorBean = mediators.iterator().next();
+
+        String signerBeanName = getPropertyRef(mediatorBean , "signer");
+        if (signerBeanName == null)
+            throw new TransformException("No 'SIGNER' defined in Mediator " + mediatorBean.getName());
+
+        Bean signerBean = getBean(idpBeans, signerBeanName);
         if (signerBean != null) {
             // signer
             setPropertyRef(stsEmitter, "signer", signerBean.getName());
+        } else {
+            throw new TransformException("No 'SIGNER' defined as " + signerBeanName);
         }
 
         List<Bean> emitters = new ArrayList<Bean>();

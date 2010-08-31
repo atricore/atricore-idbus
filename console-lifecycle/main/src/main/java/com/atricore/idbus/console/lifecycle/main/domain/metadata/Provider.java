@@ -22,18 +22,38 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
-public class Provider implements Serializable {
+public abstract class Provider implements Serializable {
 
     private static final long serialVersionUID = -4672416395444881900L;
 
     private long id;
+
     private String name;
+
     private String displayName;
+
     private Location location;
+
     private String description;
 
+    private boolean isRemote;
+
     private ProviderRole role;
+
+    private ProviderConfig config;
+
+    // RFU
+    private Set<Binding> activeBindings = new HashSet<Binding>();
+
+    // RFU
+    private Set<Profile> activeProfiles = new HashSet<Profile>();
+
+    private IdentityLookup identityLookup;
+
+    private Resource metadata;
 
     private IdentityApplianceDefinition identityAppliance;
 
@@ -91,6 +111,54 @@ public class Provider implements Serializable {
 
     public void setIdentityAppliance(IdentityApplianceDefinition identityAppliance) {
         this.identityAppliance = identityAppliance;
+    }
+
+    public boolean isRemote() {
+        return isRemote;
+    }
+
+    public void setRemote(boolean remote) {
+        isRemote = remote;
+    }
+
+    public ProviderConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(ProviderConfig config) {
+        this.config = config;
+    }
+
+    public Set<Binding> getActiveBindings() {
+        return activeBindings;
+    }
+
+    public void setActiveBindings(Set<Binding> activeBindings) {
+        this.activeBindings = activeBindings;
+    }
+
+    public Set<Profile> getActiveProfiles() {
+        return activeProfiles;
+    }
+
+    public void setActiveProfiles(Set<Profile> activeProfiles) {
+        this.activeProfiles = activeProfiles;
+    }
+
+    public IdentityLookup getIdentityLookup() {
+        return identityLookup;
+    }
+
+    public void setIdentityLookup(IdentityLookup identityLookup) {
+        this.identityLookup = identityLookup;
+    }
+
+    public Resource getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Resource metadata) {
+        this.metadata = metadata;
     }
 
     @Override

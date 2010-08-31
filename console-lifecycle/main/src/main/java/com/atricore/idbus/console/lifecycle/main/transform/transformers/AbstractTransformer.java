@@ -20,8 +20,9 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Channel;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.LocalProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.Transformer;
@@ -47,7 +48,7 @@ public abstract class AbstractTransformer implements Transformer {
         return null;
     }
 
-    protected String resolveLocationUrl(LocalProvider provider, Channel channel) {
+    protected String resolveLocationUrl(Provider provider, Channel channel) {
 
         Location cl = channel.getLocation();
         Location pl = provider.getLocation();
@@ -74,7 +75,7 @@ public abstract class AbstractTransformer implements Transformer {
 
     }
 
-    protected String resolveLocationUrl(LocalProvider provider) {
+    protected String resolveLocationUrl(Provider provider) {
 
         if (provider.getLocation() == null) {
             return "";
@@ -86,7 +87,7 @@ public abstract class AbstractTransformer implements Transformer {
         return resolveLocationUrl(l);
     }
 
-    protected String resolveLocationBaseUrl(LocalProvider provider) {
+    protected String resolveLocationBaseUrl(Provider provider) {
         if (provider.getLocation() == null) {
             return "";
         }

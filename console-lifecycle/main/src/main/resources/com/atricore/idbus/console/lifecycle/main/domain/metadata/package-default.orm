@@ -67,11 +67,6 @@
         <class name="JOSSOActivation" table="ATC_JOSSO_ACTIVATION"/>
         <class name="Keystore" table="ATC_KEYSTORE" />
         <class name="LdapIdentitySource" table="ATC_LDAP_ID_SOURCE"/>
-        <class name="LocalProvider" table="ATC_LOCAL_PROVIDER">
-            <field name="activeBindings" table="ATC_PROVIDER_BINDINGS"/>
-            <field name="activeProfiles" table="ATC_PROVIDER_PROFILES"/>
-            
-        </class>
         <class name="Location" table="ATC_LOCATION"/>
         <class name="Organization" table="ATC_ORGANIZATION"/>
         <class name="Provider" table="ATC_PROVIDER">
@@ -81,10 +76,11 @@
             <field name="name" >
                 <column allows-null="false"/>
             </field>
+            <field name="activeBindings" table="ATC_PROVIDER_BINDINGS"/>
+            <field name="activeProfiles" table="ATC_PROVIDER_PROFILES"/>
         </class>
         <class name="ProviderRole" table="ATC_PROVIDER_ROLE"/>
         <class name="ProvisioningServiceProvider" table="ATC_PSP"/>
-        <class name="RemoteProvider" table="ATC_REMOTE_PROVIDER"/>
         <class name="Resource" table="ATC_RESOURCE" >
             <field name="name" >
                 <column allows-null="false"/>
