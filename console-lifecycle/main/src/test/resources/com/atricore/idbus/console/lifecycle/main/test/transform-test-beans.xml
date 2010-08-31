@@ -27,8 +27,6 @@
 
     <!-- Define Transformers -->
 
-    <!-- Define Transformers -->
-
     <bean name="projectSetupTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ProjectSetupTransformer"/>
 
