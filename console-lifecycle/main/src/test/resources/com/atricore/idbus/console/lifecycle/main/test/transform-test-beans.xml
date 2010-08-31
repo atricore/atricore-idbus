@@ -39,12 +39,12 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPTransformer"/>
 
     <bean name="spFederatedConnectionATransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SpChannelTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
     </bean>
 
     <bean name="spFederatedConnectionBTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SpChannelTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
         <property name="roleA" value="false"/>
     </bean>
 
@@ -58,12 +58,12 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer"/>
 
     <bean name="idpFederatedConnectionATransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SpFederatedConnectionTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
     </bean>
 
     <bean name="idpFederatedConnectionBTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SpFederatedConnectionTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
         <property name="roleA" value="false"/>
     </bean>
 
@@ -196,14 +196,18 @@
                                         
                                         <ref bean="projectSetupTransformer"/>
                                         <ref bean="idauBaseComponentsTransformer"/>
+
+                                        <!-- IDP Transformers -->
                                         <ref bean="idpTransformer"/>
+                                        
                                         <ref bean="idpFederatedConnectionATransformer"/>
                                         <ref bean="idpFederatedConnectionBTransformer"/>
-
                                         <!--
                                         <ref bean="claimsChannelTransformer"/>
                                         <ref bean="stsTransformer"/>
                                         -->
+
+                                        <!-- SP Transformers -->
                                         <!--
                                         <ref bean="spTransformer"/>
                                         <ref bean="spFederatedConnectionATransformer"/>

@@ -9,10 +9,6 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
-import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
-import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
-import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSamlR2RespPlan;
-import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
@@ -31,9 +27,9 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SpChannelTransformer extends AbstractTransformer {
+public class IdpFederatedConnectionTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(SpChannelTransformer.class);
+    private static final Log logger = LogFactory.getLog(IdpFederatedConnectionTransformer.class);
 
     private boolean roleA;
 
@@ -47,66 +43,65 @@ public class SpChannelTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
+        if (event.getData() instanceof FederatedConnection) {
+            FederatedConnection fc = (FederatedConnection) event.getData();
 
-        if (event.getData() instanceof ServiceProviderChannel) {
-            ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
-            // Only accept a connection if channel overrides provider setup.
-            return spChannel.isOverrideProviderSetup();
+            if (roleA) {
+                return fc.getRoleA() instanceof IdentityProvider;
+            } else {
+                return fc.getRoleB() instanceof IdentityProvider;
+            }
+
         }
 
         return false;
-            
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
 
-        ServiceProviderChannel spChannel = (ServiceProviderChannel) event.getData();
-        FederatedConnection federatedConnection = (FederatedConnection) event.getContext().getParentNode();
+        FederatedConnection federatedConnection = (FederatedConnection) event.getData();
+        ServiceProviderChannel spChannel;
 
-        IdentityProvider provider;
+        IdentityProvider idp;
+
         FederatedProvider target;
         FederatedChannel targetChannel;
 
         if (roleA) {
 
-            assert federatedConnection.getChannelA() == spChannel :
-                    "Federated connection channel A does not match current SP Channel : "
-                            + federatedConnection.getChannelA() + "/" + spChannel;
+            idp = (IdentityProvider) federatedConnection.getRoleA();
+            spChannel = (ServiceProviderChannel) federatedConnection.getChannelA();
 
-            provider = (IdentityProvider) federatedConnection.getRoleA();
             target = federatedConnection.getRoleB();
             targetChannel = federatedConnection.getChannelB();
 
-            if (!provider.getName().equals(federatedConnection.getRoleA().getName()))
-                throw new IllegalStateException("Context provider " + provider +
+            if (!idp.getName().equals(federatedConnection.getRoleA().getName()))
+                throw new IllegalStateException("Context provider " + idp +
                         " is not roleA provider in Federated Connection " + federatedConnection.getName());
 
         } else {
 
-            assert federatedConnection.getChannelB() == spChannel :
-                    "Federated connection channel B does not match current SP Channel : "
-                            + federatedConnection.getChannelB() + "/" + spChannel;
+            idp = (IdentityProvider) federatedConnection.getRoleB();
+            spChannel = (ServiceProviderChannel) federatedConnection.getChannelB();
 
-            provider = (IdentityProvider) federatedConnection.getRoleB();
             target = federatedConnection.getRoleA();
             targetChannel = federatedConnection.getChannelA();
 
-            if (!provider.getName().equals(federatedConnection.getRoleB().getName()))
-                throw new IllegalStateException("Context provider " + provider +
+            if (!idp.getName().equals(federatedConnection.getRoleB().getName()))
+                throw new IllegalStateException("Context provider " + idp +
                         " is not roleB provider in Federated Connection " + federatedConnection.getName());
 
         }
 
-
-        generateIdPComponents(provider, spChannel, federatedConnection, target, targetChannel, event.getContext());
+        generateIdPComponents(idp, spChannel, federatedConnection, target, targetChannel, event.getContext());
 
     }
 
     /**
      * Generate IDP Components for a federated connection:
      *
-     * @param provider IdP definition
+     * @param idp IdP definition
      * @param spChannel SP Channel
      * @param fc Federated connection
      * @param target target provider (SP or IdP)
@@ -114,7 +109,7 @@ public class SpChannelTransformer extends AbstractTransformer {
      * @param ctx
      * @throws TransformException
      */
-    protected void generateIdPComponents(IdentityProvider provider,
+    protected void generateIdPComponents(IdentityProvider idp,
                                      ServiceProviderChannel spChannel,
                                      FederatedConnection fc,
                                      FederatedProvider target,
@@ -123,9 +118,8 @@ public class SpChannelTransformer extends AbstractTransformer {
 
         Beans idpBeans = (Beans) ctx.get("idpBeans");
 
-
         if (logger.isTraceEnabled())
-            logger.trace("Generating Beans for SP Channel " + spChannel.getName()  + " of IdP " + provider.getName());
+            logger.trace("Generating Beans for SP Channel " + spChannel.getName()  + " of IdP " + idp.getName());
 
         Bean idpBean = null;
         Collection<Bean> b = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName());
@@ -134,25 +128,31 @@ public class SpChannelTransformer extends AbstractTransformer {
         }
         idpBean = b.iterator().next();
 
-        String name = idpBean.getName() +  "-" + normalizeBeanName(target.getName()) + "-sp-channel";
-        
-        Bean spChannelBean = newBean(idpBeans, name, SPChannelImpl.class.getName());
+        List<Bean> spChannelBeans = getPropertyBeans(idpBean, "channels");
 
+        String spChannelName = idpBean.getName() +  "-" + (spChannel.isOverrideProviderSetup() ? "default" : normalizeBeanName(target.getName())) + "-sp-channel";
+
+        if (logger.isDebugEnabled())
+            logger.debug("Creating SP Channel definition for " + spChannelName);
+
+        for (Bean spChannelBean : spChannelBeans) {
+            if (getPropertyValue(spChannelBean, "name").equals(spChannelName)) {
+                // Do not re-process a default channel definition
+                if (logger.isTraceEnabled())
+                    logger.trace("Ignoring channel " + spChannel.getName() + ". It was alredy processed");
+                return;
+            }
+        }
+
+        // -------------------------------------------------------
+        // SP Channel
+        // -------------------------------------------------------
+        Bean spChannelBean = newBean(idpBeans, spChannelName, SPChannelImpl.class.getName());
         ctx.put("spChannelBean", spChannelBean);
-
-        // name
         setPropertyValue(spChannelBean, "name", spChannelBean.getName());
-
-        // description
         setPropertyValue(spChannelBean, "description", spChannel.getDescription());
-
-        // location
-        setPropertyValue(spChannelBean, "location", resolveLocationUrl(provider));
-
-        // provider
+        setPropertyValue(spChannelBean, "location", resolveLocationUrl(idp, spChannel));
         setPropertyRef(spChannelBean, "provider", normalizeBeanName(target.getName()));
-
-        // sessionManager
         setPropertyRef(spChannelBean, "sessionManager", idpBean.getName() + "-session-manager");
         
         // identityManager
@@ -166,12 +166,15 @@ public class SpChannelTransformer extends AbstractTransformer {
             throw new TransformException("No identity mediator defined for " + idpBean.getName() + "-samlr2-identity-mediator");
 
         setPropertyRef(spChannelBean, "identityMediator", identityMediatorBean.getName());
-        
+
+        // -------------------------------------------------------
         // endpoints
+        // -------------------------------------------------------
         List<Bean> endpoints = new ArrayList<Bean>();
 
+        // SAML2 SLO HTTP POST
         Bean sloHttpPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        sloHttpPost.setName(idpBean.getName() + "-saml2-slo-http-post");
+        sloHttpPost.setName(spChannelBean.getName() + "-saml2-slo-http-post");
         setPropertyValue(sloHttpPost, "name", sloHttpPost.getName());
         setPropertyValue(sloHttpPost, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
         setPropertyValue(sloHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
@@ -185,8 +188,9 @@ public class SpChannelTransformer extends AbstractTransformer {
         setPropertyRefs(sloHttpPost, "identityPlans", plansList);
         endpoints.add(sloHttpPost);
 
+        // SAML2 SLO HTTP REDIRECT
         Bean sloHttpRedirect = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        sloHttpRedirect.setName(idpBean.getName() + "-saml2-slo-http-redirect");
+        sloHttpRedirect.setName(spChannelBean.getName() + "-saml2-slo-http-redirect");
         setPropertyValue(sloHttpRedirect, "name", sloHttpRedirect.getName());
         setPropertyValue(sloHttpRedirect, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
         setPropertyValue(sloHttpRedirect, "binding", SamlR2Binding.SAMLR2_REDIRECT.getValue());
@@ -200,8 +204,9 @@ public class SpChannelTransformer extends AbstractTransformer {
         setPropertyRefs(sloHttpRedirect, "identityPlans", plansList);
         endpoints.add(sloHttpRedirect);
 
+        // SAML2 SLO SOAP
         Bean sloSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        sloSoap.setName(idpBean.getName() + "-saml2-slo-soap");
+        sloSoap.setName(spChannelBean.getName() + "-saml2-slo-soap");
         setPropertyValue(sloSoap, "name", sloSoap.getName());
         setPropertyValue(sloSoap, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
         setPropertyValue(sloSoap, "binding", SamlR2Binding.SAMLR2_SOAP.getValue());
@@ -215,8 +220,9 @@ public class SpChannelTransformer extends AbstractTransformer {
         setPropertyRefs(sloSoap, "identityPlans", plansList);
         endpoints.add(sloSoap);
 
+        // SAML2 SLO LOCAL
         Bean sloLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        sloLocal.setName(idpBean.getName() + "-saml2-slo-local");
+        sloLocal.setName(spChannelBean.getName() + "-saml2-slo-local");
         setPropertyValue(sloLocal, "name", sloLocal.getName());
         setPropertyValue(sloLocal, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
         setPropertyValue(sloLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
@@ -229,9 +235,10 @@ public class SpChannelTransformer extends AbstractTransformer {
         plansList.add(plan2);
         setPropertyRefs(sloLocal, "identityPlans", plansList);
         endpoints.add(sloLocal);
-        
+
+        // SAML2 SSO HTTP POST
         Bean ssoHttpPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        ssoHttpPost.setName(idpBean.getName() + "-saml2-sso-http-post");
+        ssoHttpPost.setName(spChannelBean.getName() + "-saml2-sso-http-post");
         setPropertyValue(ssoHttpPost, "name", ssoHttpPost.getName());
         setPropertyValue(ssoHttpPost, "type", SAMLR2MetadataConstants.SingleSignOnService_QNAME.toString());
         setPropertyValue(ssoHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
@@ -244,9 +251,10 @@ public class SpChannelTransformer extends AbstractTransformer {
         plansList.add(plan2);
         setPropertyRefs(ssoHttpPost, "identityPlans", plansList);
         endpoints.add(ssoHttpPost);
-        
+
+        // SAML2 SSO HTTP ARTIFACT
         Bean ssoHttpArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        ssoHttpArtifact.setName(idpBean.getName() + "-saml2-sso-http-artifact");
+        ssoHttpArtifact.setName(spChannelBean.getName() + "-saml2-sso-http-artifact");
         setPropertyValue(ssoHttpArtifact, "name", ssoHttpArtifact.getName());
         setPropertyValue(ssoHttpArtifact, "type", SAMLR2MetadataConstants.SingleSignOnService_QNAME.toString());
         setPropertyValue(ssoHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
@@ -260,8 +268,9 @@ public class SpChannelTransformer extends AbstractTransformer {
         setPropertyRefs(ssoHttpArtifact, "identityPlans", plansList);
         endpoints.add(ssoHttpArtifact);
 
+        // SAML2 SSO HTTP REDIRECT
         Bean ssoHttpRedirect = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        ssoHttpRedirect.setName(idpBean.getName() + "-saml2-sso-http-redirect");
+        ssoHttpRedirect.setName(spChannelBean.getName() + "-saml2-sso-http-redirect");
         setPropertyValue(ssoHttpRedirect, "name", ssoHttpRedirect.getName());
         setPropertyValue(ssoHttpRedirect, "type", SAMLR2MetadataConstants.SingleSignOnService_QNAME.toString());
         setPropertyValue(ssoHttpRedirect, "binding", SamlR2Binding.SAMLR2_REDIRECT.getValue());
@@ -275,24 +284,27 @@ public class SpChannelTransformer extends AbstractTransformer {
         setPropertyRefs(ssoHttpRedirect, "identityPlans", plansList);
         endpoints.add(ssoHttpRedirect);
 
+        // SSO SHB SOAP
         Bean shbSOAP = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        shbSOAP.setName(idpBean.getName() + "-sso-shb-soap");
+        shbSOAP.setName(spChannelBean.getName() + "-sso-shb-soap");
         setPropertyValue(shbSOAP, "name", shbSOAP.getName());
         setPropertyValue(shbSOAP, "type", SAMLR2MetadataConstants.IDPSessionHeartBeatService_QNAME.toString());
         setPropertyValue(shbSOAP, "binding", SamlR2Binding.SSO_SOAP.getValue());
         setPropertyValue(shbSOAP, "location", "/SSO/SSHB/SOAP");
         endpoints.add(shbSOAP);
 
+        // SSO SHB LOCAL
         Bean shbLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        shbLocal.setName(idpBean.getName() + "-sso-shb-local");
+        shbLocal.setName(spChannelBean.getName() + "-sso-shb-local");
         setPropertyValue(shbLocal, "name", shbLocal.getName());
         setPropertyValue(shbLocal, "type", SAMLR2MetadataConstants.IDPSessionHeartBeatService_QNAME.toString());
         setPropertyValue(shbLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
         setPropertyValue(shbLocal, "location", "local:/" + idpBean.getName().toUpperCase() + "/SSO/SSHB/LOCAL");
         endpoints.add(shbLocal);
-        
+
+        // SSO SSO HTTP ARTIFACT
         Bean ssoSsoHttpArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        ssoSsoHttpArtifact.setName(idpBean.getName() + "-sso-sso-http-artifact");
+        ssoSsoHttpArtifact.setName(spChannelBean.getName() + "-sso-sso-http-artifact");
         setPropertyValue(ssoSsoHttpArtifact, "name", ssoSsoHttpArtifact.getName());
         setPropertyValue(ssoSsoHttpArtifact, "type", SAMLR2MetadataConstants.SingleSignOnService_QNAME.toString());
         setPropertyValue(ssoSsoHttpArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
@@ -306,9 +318,10 @@ public class SpChannelTransformer extends AbstractTransformer {
         plansList.add(plan2);
         setPropertyRefs(ssoSsoHttpArtifact, "identityPlans", plansList);
         endpoints.add(ssoSsoHttpArtifact);
-        
+
+        // SSO SLO SOAP
         Bean ssoSloSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        ssoSloSoap.setName(idpBean.getName() + "-sso-slo-soap");
+        ssoSloSoap.setName(spChannelBean.getName() + "-sso-slo-soap");
         setPropertyValue(ssoSloSoap, "name", ssoSloSoap.getName());
         setPropertyValue(ssoSloSoap, "type", SAMLR2MetadataConstants.IDPInitiatedSingleLogoutService_QNAME.toString());
         setPropertyValue(ssoSloSoap, "binding", SamlR2Binding.SSO_SOAP.getValue());
@@ -320,8 +333,9 @@ public class SpChannelTransformer extends AbstractTransformer {
         setPropertyRefs(ssoSloSoap, "identityPlans", plansList);
         endpoints.add(ssoSloSoap);
 
+        // SSO SLO LOCAL
         Bean ssoSloLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        ssoSloLocal.setName(idpBean.getName() + "-sso-slo-local");
+        ssoSloLocal.setName(spChannelBean.getName() + "-sso-slo-local");
         setPropertyValue(ssoSloLocal, "name", ssoSloLocal.getName());
         setPropertyValue(ssoSloLocal, "type", SAMLR2MetadataConstants.IDPInitiatedSingleLogoutService_QNAME.toString());
         setPropertyValue(ssoSloLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());

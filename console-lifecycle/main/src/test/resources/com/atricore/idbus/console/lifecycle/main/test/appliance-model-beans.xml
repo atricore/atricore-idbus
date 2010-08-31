@@ -51,7 +51,7 @@
         <property name="providers">
             <set>
                 <ref bean="idp1"/>
-                <!--ref bean="sp1"/-->
+                <ref bean="sp1"/>
             </set>
         </property>
 
@@ -93,11 +93,11 @@
             </bean>
         </property>
         
-        <!--property name="federatedConnectionsA">
+        <property name="federatedConnectionsA">
             <set>
                 <ref bean="idp1-sp1-fed"/>
             </set>
-        </property-->
+        </property>
 
         <property name="identityLookup" ref="idp1-idlookup"/>
 
@@ -150,7 +150,7 @@
     <!-- SP 1 -->
     <!-- =========================================== -->
 
-    <!--bean name="sp1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider">
+    <bean name="sp1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider">
         <property name="name" value="sp1"/>
         <property name="description" value="Service Provider #1"/>
 
@@ -219,32 +219,7 @@
         </property>
 
     </bean>
-    
-    <bean name="idp1-sp1-fed" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.FederatedConnection">
-        <property name="name" value="idp1-sp1-fed"/>
-        <property name="roleA" ref="idp1"/>
-        <property name="channelA">
-            
-            <bean name="sp-default-channel" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel">
-                <property name="name" value="idp1-default-channel"/>
-                <property name="description" value="IdP1 Default Channel"/>
-                <property name="overrideProviderSetup" value="false"/>
-            </bean>
-            
-        </property>
-        
-        <property name="roleB" ref="sp1"/>
 
-        <property name="channelB">
-            <bean name="idp-default-channel" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProviderChannel">
-                <property name="name" value="sp1-default-channel"/>
-                <property name="description" value="SP1 Default Channel"/>
-                <property name="overrideProviderSetup" value="false"/>
-            </bean>
-        </property>
-
-    </bean>
-    
     <bean name="sp1-josso-activation" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation">
         <property name="name" value="sp1-josso-activation"/>
         <property name="description" value="SP1 JOSSO Activation"/>
@@ -271,7 +246,35 @@
         <property name="description" value="SP 1 Identity Lookup definition"/>
         <property name="provider" ref="sp1"/>
         <property name="identitySource" ref="idsource1"/>
-    </bean-->
+    </bean>
+
+
+    <bean name="idp1-sp1-fed" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.FederatedConnection">
+        <property name="name" value="idp1-sp1-fed"/>
+        <property name="roleA" ref="idp1"/>
+        <property name="channelA">
+
+            <bean name="sp-default-channel" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel">
+                <property name="name" value="idp1-default-channel"/>
+                <property name="description" value="IdP1 Default Channel"/>
+                <property name="overrideProviderSetup" value="false"/>
+            </bean>
+
+        </property>
+
+        <property name="roleB" ref="sp1"/>
+
+        <property name="channelB">
+            <bean name="idp-default-channel" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProviderChannel">
+                <property name="name" value="sp1-default-channel"/>
+                <property name="description" value="SP1 Default Channel"/>
+                <property name="overrideProviderSetup" value="false"/>
+            </bean>
+        </property>
+
+    </bean>
+
+
 
     <bean name="execEnv1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.JbossExecutionEnvironment">
         <property name="name" value="execEnv1"/>
