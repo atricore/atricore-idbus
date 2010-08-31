@@ -27,7 +27,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
                   ref="idstore-default"
                   interface="org.atricore.idbus.kernel.main.store.AbstractStore"/>
 
-
     <!-- OSGi services import -->
 
     <osgi:reference id="cxf" cardinality="1..1" timeout="60" interface="org.apache.cxf.Bus"/>
