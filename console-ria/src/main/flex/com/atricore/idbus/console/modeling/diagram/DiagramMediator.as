@@ -49,18 +49,15 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServicePr
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
-import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
-import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
+import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentitySource;
-import com.atricore.idbus.console.services.dto.LdapIdentitySource;
-import com.atricore.idbus.console.services.dto.LocalProvider;
 import com.atricore.idbus.console.services.dto.Provider;
-import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
@@ -427,7 +424,7 @@ public class DiagramMediator extends IocMediator {
                 for (var i:int = 0; i < identityApplianceDefinition.providers.length; i++) {
                     var provider:Provider = identityApplianceDefinition.providers[i];
                     var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, true, Constants.PROVIDER_DEEP);
-                    if (provider is LocalProvider) {
+                    //if (provider is LocalProvider) {
 //                        var locProv:LocalProvider = provider as LocalProvider;
                         var provider:Provider = identityApplianceDefinition.providers[i];
                         if (provider is FederatedProvider) {
@@ -486,7 +483,7 @@ public class DiagramMediator extends IocMediator {
                                 }
                             }
                         }
-                    }
+                    //}
                 }
             }
         }

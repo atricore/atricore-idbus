@@ -25,11 +25,13 @@ package com.atricore.idbus.console.services.dto;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public abstract class AbstractProviderConfigDTO implements ProviderConfigDTO {
+public class AbstractProviderConfigDTO implements ProviderConfigDTO {
 
     private long id;
 
     private String name;
+
+    private String displayName;
 
     private String description;
 
@@ -49,6 +51,14 @@ public abstract class AbstractProviderConfigDTO implements ProviderConfigDTO {
         this.name = name;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+    
     public String getDescription() {
         return description;
     }

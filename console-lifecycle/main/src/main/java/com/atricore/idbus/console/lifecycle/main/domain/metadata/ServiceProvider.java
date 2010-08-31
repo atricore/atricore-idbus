@@ -53,4 +53,27 @@ public class ServiceProvider extends FederatedProvider {
         this.activation = activation;
     }
 
+    public AccountLinkagePolicy getAccountLinkagePolicy() {
+        return accountLinkagePolicy;
+    }
+
+    public void setAccountLinkagePolicy(AccountLinkagePolicy accountLinkagePolicy) {
+        this.accountLinkagePolicy = accountLinkagePolicy;
+    }
+
+    public AuthenticationContract getAuthenticationContract() {
+        return authenticationContract;
+    }
+
+    public void setAuthenticationContract(AuthenticationContract authenticationContract) {
+        this.authenticationContract = authenticationContract;
+    }
+
+    public AuthenticationMechanism getAuthenticationMechanism() {
+        return authenticationMechanism;
+    }
+
+    public void setAuthenticationMechanism(AuthenticationMechanism authenticationMechanism) {
+        this.authenticationMechanism = authenticationMechanism;
+    }
 }

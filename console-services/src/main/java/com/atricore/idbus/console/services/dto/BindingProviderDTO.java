@@ -26,7 +26,7 @@ package com.atricore.idbus.console.services.dto;
  * @version $Id$
  */
 @Deprecated
-public class BindingProviderDTO extends LocalProviderDTO {
+public class BindingProviderDTO extends ProviderDTO {
 
     private ChannelDTO bindingChannel;
     private static final long serialVersionUID = 3973974337910746241L;
