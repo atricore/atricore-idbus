@@ -151,6 +151,7 @@
                                 <property name="transformers">
                                     <list>
 
+                                        <!-- Project Transformers -->
                                         <ref bean="projectSetupTransformer"/>
                                         <ref bean="idauBaseComponentsTransformer"/>
 

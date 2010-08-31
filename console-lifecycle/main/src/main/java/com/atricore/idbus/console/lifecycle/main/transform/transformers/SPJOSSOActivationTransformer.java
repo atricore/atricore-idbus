@@ -59,7 +59,7 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
         setPropertyValue(bc, "description", activation.getDisplayName());
 
         setPropertyRef(bc, "provider", spBean.getName());
-        setPropertyValue(bc, "location", resolveLocationUrl(provider) + "/" + activation.getName().toUpperCase());
+        setPropertyValue(bc, "location", resolveLocationUrl(provider) + "/" + activation.getPartnerAppId().toUpperCase());
 
         setPropertyRef(bc, "identityMediator", spBean.getName() + "-samlr2-mediator");
 

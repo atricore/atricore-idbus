@@ -477,6 +477,9 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
     public boolean walkNextChild(IdentityLookup node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        if (child instanceof Provider || child instanceof IdentitySource)
+            return false;
+
         return true;
     }
 

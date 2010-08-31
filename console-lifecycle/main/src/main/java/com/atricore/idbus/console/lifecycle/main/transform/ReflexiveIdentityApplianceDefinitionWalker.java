@@ -274,21 +274,13 @@ private static final Log logger = LogFactory.getLog(ReflexiveIdentityApplianceDe
             if (!method.getName().equals(methodName))
                 continue;
 
-            // It has to return Object
-            if (!method.getReturnType().getClass().getName().equals("java.lang.Object"))
-                continue;
-
             // It has to receive the same number of parameters
             Class[] params = method.getParameterTypes();
             if (params.length != otherArgs.length + 1)
                     continue;
-            // The first parameter can be a superclass/interface extended/implemented by node type
-            if (!params[0].isAssignableFrom( nodeType))
-                continue;
 
             boolean valid = true;
-            for (int i = 1; i < allArgs.length; i++) {
-
+            for (int i = 0; i < allArgs.length; i++) {
                 if (!params[i].isAssignableFrom(allArgs[i])) {
                     valid = false;
                     break;

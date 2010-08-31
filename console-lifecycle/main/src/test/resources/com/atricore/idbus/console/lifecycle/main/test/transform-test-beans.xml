@@ -36,12 +36,12 @@
     <bean name="idpTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer"/>
 
-    <bean name="spFederatedConnectionATransformer"
+    <bean name="idpFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
     </bean>
 
-    <bean name="spFederatedConnectionBTransformer"
+    <bean name="idpFederatedConnectionBTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
         <property name="roleA" value="false"/>
     </bean>
@@ -55,15 +55,24 @@
     <bean name="spTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer"/>
 
-    <bean name="idpFederatedConnectionATransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
+    <bean name="spFederatedConnectionATransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
     </bean>
 
-    <bean name="idpFederatedConnectionBTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
+    <bean name="spFederatedConnectionBTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
         <property name="roleA" value="false"/>
     </bean>
+
+    <bean name="spJOSSOActivationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPJOSSOActivationTransformer"/>
+
+    <bean name="execEnvJOSSOActivationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecEnvJOSSOActivationTransformer"/>
+
+    <bean name="execEnvJOSSOTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecEnvJOSSOTransformer"/>
 
     <bean name="identityLookupTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>
@@ -183,13 +192,14 @@
                                 <property name="transformers">
                                     <list>
                                         
+                                        <!-- Project Transformers -->
                                         <ref bean="projectSetupTransformer"/>
                                         <ref bean="idauBaseComponentsTransformer"/>
 
                                         <!-- IDP Transformers -->
                                         <ref bean="idpTransformer"/>
                                         <ref bean="samlr2IdPTransformer"/>
-                                        
+
                                         <ref bean="idpFederatedConnectionATransformer"/>
                                         <ref bean="idpFederatedConnectionBTransformer"/>
 
@@ -197,19 +207,19 @@
                                         <ref bean="stsTransformer"/>
 
                                         <!-- SP Transformers -->
-                                        <!--
                                         <ref bean="spTransformer"/>
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
-                                        -->
+                                        <ref bean="spJOSSOActivationTransformer"/>
+                                        <ref bean="execEnvJOSSOActivationTransformer"/>
+
+                                        <!-- ref bean="samlr2SPTransformer"/ -->
+
+                                        <!-- PSP Transformers -->
+
+                                        <!-- Other Transformers -->
+                                        <ref bean="execEnvJOSSOTransformer"/>
                                         <ref bean="identityLookupTransformer"/>
-
-                                        <!--
-                                        <ref bean="identityVaultTransformer"/>
-
-
-                                        <ref bean="samlr2SPTransformer"/>
-                                        -->
                                     </list>
                                 </property>
 

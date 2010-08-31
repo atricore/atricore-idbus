@@ -232,7 +232,6 @@ public class ExecEnvJOSSOTransformer extends AbstractTransformer {
     @Override
     public Object after(TransformEvent event) throws TransformException {
 
-        BindingProvider provider = (BindingProvider) event.getData();
         IdProjectModule module = event.getContext().getCurrentModule();
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans bpBeans = (Beans) event.getContext().get("bpBeans");

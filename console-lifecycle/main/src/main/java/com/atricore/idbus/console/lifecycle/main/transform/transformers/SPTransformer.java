@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.ProviderRole;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider;
@@ -79,7 +80,7 @@ public class SPTransformer extends AbstractTransformer {
         String idauPath = (String) event.getContext().get("idauPath");
 
         // TODO : Can we asure that there is only one IdP and that it's the prefered one ? This should be part of SP definition
-        Beans idpBeans = (Beans) event.getContext().get("idpBeans");
+        // Beans idpBeans = (Beans) event.getContext().get("idpBeans");
         
         spBeans.setDescription(descr);
 
@@ -126,18 +127,23 @@ public class SPTransformer extends AbstractTransformer {
         Bean spMediator = newBean(spBeans, sp.getName() + "-samlr2-mediator",
                 SamlR2SPMediator.class.getName());
 
+        /* TODO : How to se preferred IDP
         Collection<Bean> idpMds = getBeansOfType(idpBeans, ResourceCircleOfTrustMemberDescriptorImpl.class.getName());
         Bean idpMd = idpMds.iterator().next();
 
         setPropertyValue(spMediator, "preferredIdpAlias", getPropertyValue(idpMd, "alias"));
+        */
+
         setPropertyValue(spMediator, "preferredIdpSSOBinding", SamlR2Binding.SAMLR2_POST.getValue());
         setPropertyValue(spMediator, "preferredIdpSLOBinding", SamlR2Binding.SAMLR2_POST.getValue());
         //this is set from ExecEnvJOSSOTransformer
         //setPropertyValue(spMediator, "spBindingACS", "http://localhost:8081/IDBUS/BP1/SSO/ACS/ARTIFACT");
         //setPropertyValue(spMediator, "spBindingSLO", "http://localhost:8081/IDBUS/BP1/SSO/SLO/ARTIFACT");
-        // TODO RETROFIT  : String bpLocation = resolveLocationUrl(((BindingProvider)provider.getBindingChannel().getTarget()).getBindingChannel().getLocation());
-        // TODO RETROFIT  : setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");
-        // TODO RETROFIT  : setPropertyValue(spMediator, "spBindingSLO", bpLocation + "/SSO/SLO/ARTIFACT");
+
+
+        String bpLocation = resolveLocationUrl(provider) + "/" + ((JOSSOActivation)provider.getActivation()).getPartnerAppId().toUpperCase();
+        setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");
+        setPropertyValue(spMediator, "spBindingSLO", bpLocation + "/SSO/SLO/ARTIFACT");
         
         setPropertyValue(spMediator, "logMessages", true);
 
@@ -240,11 +246,15 @@ public class SPTransformer extends AbstractTransformer {
         
         Bean spMd = newBean(spBeans, sp.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
         setPropertyValue(spMd, "id", spMd.getName());
-        // TODO RETROFIT  : setPropertyValue(spMd, "alias", resolveLocationUrl(provider.getBindingChannel().getLocation()) + "/SAML2/MD");
+        setPropertyValue(spMd, "alias", resolveLocationUrl(provider) + "/SAML2/MD");
         setPropertyValue(spMd, "resource", "classpath:" + idauPath + sp.getName() + "/" + sp.getName() + "-samlr2-metadata.xml");
         
         // accountLinkLifecycle
         Bean accountLinkLifecycle = newBean(spBeans, sp.getName() + "-account-link-lifecycle", AccountLinkLifecycleImpl.class);
+
+        if (provider.getIdentityLookup() != null) {
+            // TODO : Add identity store to SP
+        }
 
         // TODO RETROFIT  : if (provider.getDefaultChannel() != null && ((IdentityProviderChannel)provider.getDefaultChannel()).getIdentityVault() != null) {
         // TODO RETROFIT  :     setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");

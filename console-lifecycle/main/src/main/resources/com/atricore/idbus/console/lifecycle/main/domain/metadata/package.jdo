@@ -179,7 +179,7 @@
             <field name="id" value-strategy="native" primary-key="true"/>
         </class>
 
-        <class name="JbossExecutionEnvironment" detachable="true">
+        <class name="JBossExecutionEnvironment" detachable="true">
             <inheritance strategy="new-table"/>
 
         </class>
