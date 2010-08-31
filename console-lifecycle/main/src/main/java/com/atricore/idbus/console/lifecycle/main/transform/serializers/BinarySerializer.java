@@ -1,7 +1,7 @@
 package com.atricore.idbus.console.lifecycle.main.transform.serializers;
 
-import org.apache.commons.vfs.FileObject;
 import com.atricore.idbus.console.lifecycle.main.transform.*;
+import org.apache.commons.vfs.FileObject;
 
 import java.io.OutputStream;
 

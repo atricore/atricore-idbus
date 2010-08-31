@@ -91,6 +91,7 @@ public class UsersMediator extends IocMediator {
             view.btnBack.removeEventListener(MouseEvent.CLICK, handleGoBack);
 
             view.userList.removeEventListener(ListEvent.ITEM_CLICK , userListSelectHandler);
+            view.btnClearSearch.removeEventListener(MouseEvent.CLICK, handleClearSearch);
         }
 
         super.setViewComponent(p_viewComponent);
@@ -105,6 +106,7 @@ public class UsersMediator extends IocMediator {
         view.btnBack.addEventListener(MouseEvent.CLICK, handleGoBack);
 
         view.userList.addEventListener(ListEvent.ITEM_CLICK , userListSelectHandler);
+        view.btnClearSearch.addEventListener(MouseEvent.CLICK, handleClearSearch);
 
         sendNotification(ApplicationFacade.LIST_USERS);
         _userPropertiesMediator.setViewComponent(view.properties);
@@ -160,9 +162,10 @@ public class UsersMediator extends IocMediator {
                 break;
 
             case ApplicationFacade.DISPLAY_SEARCH_RESULTS_USERS:
-                view.userList.dataProvider = notification as ArrayCollection;
+                view.userList.dataProvider = notification.getBody() as ArrayCollection;
                 view.userList.selectedIndex=0;
                 _accountManagementProxy.currentUser = view.userList.selectedItem as User;
+                view.btnClearSearch.visible = true;
                 break;
         }
 
@@ -191,6 +194,12 @@ public class UsersMediator extends IocMediator {
     private function handleGoBack(event:MouseEvent):void {
         trace("Go Back Button Click: " + event);
         sendNotification(ApplicationFacade.DISPLAY_ACCOUNT_MNGMT_HOME);
+    }
+
+    private function handleClearSearch(event:MouseEvent):void {
+        trace("Clear Search Button Click: " + event);
+        view.btnClearSearch.visible = false;
+        sendNotification(ApplicationFacade.LIST_GROUPS);
     }
 
     public function userListSelectHandler(e:ListEvent):void {

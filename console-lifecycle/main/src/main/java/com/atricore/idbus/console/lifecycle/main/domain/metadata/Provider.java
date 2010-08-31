@@ -39,18 +39,19 @@ public abstract class Provider implements Serializable {
 
     private String description;
 
-    private boolean isRemote;
+    private boolean isRemote = false;
 
     private ProviderRole role;
 
     private ProviderConfig config;
 
-    // RFU
+    // RFU TODO : Push donw to federated provider, this is SAML specific!
     private Set<Binding> activeBindings = new HashSet<Binding>();
 
-    // RFU
+    // RFU TODO : Push donw to federated provider, this is SAML specific!
     private Set<Profile> activeProfiles = new HashSet<Profile>();
 
+    // TODO : Push donw to federated provider
     private IdentityLookup identityLookup;
 
     private Resource metadata;

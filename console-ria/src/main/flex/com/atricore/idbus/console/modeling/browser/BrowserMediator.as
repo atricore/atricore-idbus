@@ -20,7 +20,6 @@
  */
 
 package com.atricore.idbus.console.modeling.browser {
-import com.atricore.idbus.console.components.AutoSizeTree;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.browser.model.BrowserModelFactory;
@@ -28,12 +27,8 @@ import com.atricore.idbus.console.modeling.browser.model.BrowserNode;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
-import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentitySource;
-import com.atricore.idbus.console.services.dto.LocalProvider;
 import com.atricore.idbus.console.services.dto.Provider;
-import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
-
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 import flash.events.Event;

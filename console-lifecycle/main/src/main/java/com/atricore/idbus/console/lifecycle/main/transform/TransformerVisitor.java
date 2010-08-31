@@ -19,14 +19,15 @@
 
 package com.atricore.idbus.console.lifecycle.main.transform;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.impl.SpringMetadataManagerImpl;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.spi.SpringMetadataManager;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -37,6 +38,8 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
     private static Log logger = LogFactory.getLog(TransformerVisitor.class);
     
     private static final String FEDERATED_CONN_ROLE_ATTR = "federatedConnectionRole";
+
+    private static final String ACTIVATION_CONN_ROLE_ATTR = "activationConnectionRole";
 
     private SpringMetadataManager springMgr = new SpringMetadataManagerImpl();
 
@@ -474,6 +477,9 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
     public boolean walkNextChild(IdentityLookup node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        if (child instanceof Provider || child instanceof IdentitySource)
+            return false;
+
         return true;
     }
 
@@ -527,6 +533,11 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
     public boolean walkNextChild(Activation node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        // Do not treat sp/exec env as 'children' of this node.
+        if (child == node.getSp() || child == node.getExecutionEnv())
+            return false;
+
+        // We should walk all other children
         return true;
     }
 
@@ -934,6 +945,11 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
     public boolean walkNextChild(JOSSOActivation node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        // Do not treat sp/exec env as 'children' of this node.
+        if (child == node.getSp() || child == node.getExecutionEnv())
+            return false;
+
+        // We should walk all other children
         return true;
     }
 

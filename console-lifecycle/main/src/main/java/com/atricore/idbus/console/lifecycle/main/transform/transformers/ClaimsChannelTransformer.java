@@ -1,13 +1,12 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SamlR2LogMessageBuilder;
 import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsMediator;
@@ -25,7 +24,6 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newAnonymousBean;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -37,7 +35,8 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof IdentityProvider;
+        return event.getData() instanceof IdentityProvider &&
+                !((IdentityProvider)event.getData()).isRemote();
     }
 
     @Override
@@ -70,7 +69,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         setPropertyValue(claimsChannelBean, "name", claimsChannelBean.getName());
 
         // location
-        String locationUrl = resolveLocationUrl(provider) + "/" + idpBean.getName().toUpperCase() + "/CC";
+        String locationUrl = resolveLocationUrl(provider) + "/CC";
         setPropertyValue(claimsChannelBean, "location", locationUrl);
 
         // endpoints
@@ -80,8 +79,8 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         ccPwdArtifact.setName(idpBean.getName() + "-cc-pwd-artifact");
         setPropertyValue(ccPwdArtifact, "name", ccPwdArtifact.getName());
         setPropertyValue(ccPwdArtifact, "binding", SamlR2Binding.SSO_ARTIFACT.getValue());
-        setPropertyValue(ccPwdArtifact, "location", "/IDBUS/PWD/ARTIFACT");
-        setPropertyValue(ccPwdArtifact, "responseLocation", "/IDBUS/PWD/POST-RESP");
+        setPropertyValue(ccPwdArtifact, "location", "/PWD/ARTIFACT");
+        setPropertyValue(ccPwdArtifact, "responseLocation", "/PWD/POST-RESP");
         setPropertyValue(ccPwdArtifact, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Password");
         ccEndpoints.add(ccPwdArtifact);
 
@@ -89,7 +88,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         ccPwdPost.setName(idpBean.getName() + "-cc-pwd-post");
         setPropertyValue(ccPwdPost, "name", ccPwdPost.getName());
         setPropertyValue(ccPwdPost, "binding", SamlR2Binding.SSO_POST.getValue());
-        setPropertyValue(ccPwdPost, "location", "/IDBUS/PWD/POST");
+        setPropertyValue(ccPwdPost, "location", "/PWD/POST");
         setPropertyValue(ccPwdPost, "type", "urn:oasis:names:tc:SAML:2.0:ac:classes:Password");
         ccEndpoints.add(ccPwdPost);
 

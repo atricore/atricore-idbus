@@ -1,15 +1,21 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.josso.main.JossoMediator;
-import org.atricore.idbus.capabilities.josso.main.PartnerAppMapping;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ProviderRole;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.*;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Description;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Entry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.josso.main.JossoMediator;
+import org.atricore.idbus.capabilities.josso.main.PartnerAppMapping;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SSOLogMessageBuilder;
@@ -42,8 +48,6 @@ import java.util.Date;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -51,7 +55,7 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  */
 public class SPTransformer extends AbstractTransformer {
     
-    private static final Log logger = LogFactory.getLog(IdPTransformer.class);
+    private static final Log logger = LogFactory.getLog(IdPLocalTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
@@ -76,7 +80,7 @@ public class SPTransformer extends AbstractTransformer {
         String idauPath = (String) event.getContext().get("idauPath");
 
         // TODO : Can we asure that there is only one IdP and that it's the prefered one ? This should be part of SP definition
-        Beans idpBeans = (Beans) event.getContext().get("idpBeans");
+        // Beans idpBeans = (Beans) event.getContext().get("idpBeans");
         
         spBeans.setDescription(descr);
 
@@ -123,18 +127,23 @@ public class SPTransformer extends AbstractTransformer {
         Bean spMediator = newBean(spBeans, sp.getName() + "-samlr2-mediator",
                 SamlR2SPMediator.class.getName());
 
+        /* TODO : How to se preferred IDP
         Collection<Bean> idpMds = getBeansOfType(idpBeans, ResourceCircleOfTrustMemberDescriptorImpl.class.getName());
         Bean idpMd = idpMds.iterator().next();
 
         setPropertyValue(spMediator, "preferredIdpAlias", getPropertyValue(idpMd, "alias"));
+        */
+
         setPropertyValue(spMediator, "preferredIdpSSOBinding", SamlR2Binding.SAMLR2_POST.getValue());
         setPropertyValue(spMediator, "preferredIdpSLOBinding", SamlR2Binding.SAMLR2_POST.getValue());
-        //this is set from BPTransformer
+        //this is set from ExecEnvJOSSOTransformer
         //setPropertyValue(spMediator, "spBindingACS", "http://localhost:8081/IDBUS/BP1/SSO/ACS/ARTIFACT");
         //setPropertyValue(spMediator, "spBindingSLO", "http://localhost:8081/IDBUS/BP1/SSO/SLO/ARTIFACT");
-        // TODO RETROFIT  : String bpLocation = resolveLocationUrl(((BindingProvider)provider.getBindingChannel().getTarget()).getBindingChannel().getLocation());
-        // TODO RETROFIT  : setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");
-        // TODO RETROFIT  : setPropertyValue(spMediator, "spBindingSLO", bpLocation + "/SSO/SLO/ARTIFACT");
+
+
+        String bpLocation = resolveLocationUrl(provider) + "/" + ((JOSSOActivation)provider.getActivation()).getPartnerAppId().toUpperCase();
+        setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");
+        setPropertyValue(spMediator, "spBindingSLO", bpLocation + "/SSO/SLO/ARTIFACT");
         
         setPropertyValue(spMediator, "logMessages", true);
 
@@ -158,7 +167,7 @@ public class SPTransformer extends AbstractTransformer {
         setPropertyBean(spMediator, "logger", spLogger);
 
         // errorUrl
-        // TODO RETROFIT  : setPropertyValue(spMediator, "errorUrl", resolveLocationBaseUrl(provider.getBindingChannel().getLocation()) + "/idbus-ui/error.do");
+        setPropertyValue(spMediator, "errorUrl", resolveLocationBaseUrl(provider.getIdentityAppliance().getLocation()) + "/idbus-ui/error.do");
 
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
@@ -237,11 +246,15 @@ public class SPTransformer extends AbstractTransformer {
         
         Bean spMd = newBean(spBeans, sp.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
         setPropertyValue(spMd, "id", spMd.getName());
-        // TODO RETROFIT  : setPropertyValue(spMd, "alias", resolveLocationUrl(provider.getBindingChannel().getLocation()) + "/SAML2/MD");
+        setPropertyValue(spMd, "alias", resolveLocationUrl(provider) + "/SAML2/MD");
         setPropertyValue(spMd, "resource", "classpath:" + idauPath + sp.getName() + "/" + sp.getName() + "-samlr2-metadata.xml");
         
         // accountLinkLifecycle
         Bean accountLinkLifecycle = newBean(spBeans, sp.getName() + "-account-link-lifecycle", AccountLinkLifecycleImpl.class);
+
+        if (provider.getIdentityLookup() != null) {
+            // TODO : Add identity store to SP
+        }
 
         // TODO RETROFIT  : if (provider.getDefaultChannel() != null && ((IdentityProviderChannel)provider.getDefaultChannel()).getIdentityVault() != null) {
         // TODO RETROFIT  :     setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");
@@ -380,44 +393,6 @@ public class SPTransformer extends AbstractTransformer {
             throw new TransformException("One and only one Identity Mediation Unit is expected, found " + mus.size());
         }
 
-        // BP partnerAppMappings
-        Bean bpBean = null;
-        Collection<Bean> bps = getBeansOfType(bpBeans, BindingProviderImpl.class.getName());
-        if (bps.size() == 1) {
-            bpBean = bps.iterator().next();
-        } else {
-            throw new TransformException("One and only one Binding Provider is expected, found " + bps.size());
-        }
-        
-        Bean bindingMediator = null;
-        Collection<Bean> bindingMediators = getBeansOfType(bpBeans, JossoMediator.class.getName());
-        if (bindingMediators.size() == 1) {
-            bindingMediator = bindingMediators.iterator().next();
-        } else {
-            throw new TransformException("One and only one Josso Mediator is expected, found " + bindingMediators.size());
-        }
-
-        Bean partnerappKeyBean = newBean(bpBeans, spBean.getName() + "-key", String.class);
-        setConstructorArg(partnerappKeyBean, 0, "java.lang.String", provider.getName());
-
-        Bean partnerappBean = newBean(bpBeans, bpBean.getName() + "-" + spBean.getName() + "-partnerapp-mapping", PartnerAppMapping.class);
-        setPropertyValue(partnerappBean, "partnerAppId", provider.getName());
-        Bean memberDescriptorBean = null;
-        Collection<Bean> b = getBeansOfType(spBeans, ResourceCircleOfTrustMemberDescriptorImpl.class.getName());
-        if (b.size() != 1) {
-            throw new TransformException("Invalid resource COT member descriptor count : " + b.size());
-        }
-        memberDescriptorBean = b.iterator().next();
-        setPropertyValue(partnerappBean, "spAlias", getPropertyValue(memberDescriptorBean, "alias"));
-        setPropertyValue(partnerappBean, "partnerAppSLO", resolveLocationUrl(provider));
-        setPropertyValue(partnerappBean, "partnerAppACS", resolveLocationUrl(provider) + "josso_security_check");
-
-        Entry partnerappMapping = new Entry();
-        partnerappMapping.setKeyRef(partnerappKeyBean.getName());
-        partnerappMapping.setValueRef(partnerappBean.getName());
-        
-        addEntryToMap(bindingMediator, "partnerAppMappings", partnerappMapping);
-        
         IdProjectResource<Beans> rBeans =  new IdProjectResource<Beans>(idGen.generateId(), spBean.getName(), spBean.getName(), "spring-beans", spBeans);
         rBeans.setClassifier("jaxb");
         rBeans.setNameSpace(spBean.getName());

@@ -60,6 +60,10 @@
             <field name="id" value-strategy="native" primary-key="true"/>
         </class>
 
+        <class name="BasicAuthentication" detachable="true">
+            <inheritance strategy="new-table"/>
+        </class>
+
         <!-- TODO : RETROFIT -->
         <class name="Channel" detachable="true">
             <inheritance strategy="new-table"/>
@@ -89,6 +93,10 @@
         <class name="ExecutionEnvironment" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="id" value-strategy="native" primary-key="true"/>
+            <field name="activations" default-fetch-group="true"
+                   persistence-modifier="persistent" mapped-by="executionEnv">
+                <collection dependent-element="true"/>
+            </field>
         </class>
 
         <class name="Feature"/>
@@ -131,6 +139,10 @@
                 <collection dependent-element="true" />
 			</field>
 
+            <field name="executionEnvironments" default-fetch-group="true" persistence-modifier="persistent">
+                <collection dependent-element="true" />
+			</field>
+
 			<field name="activeFeatures" default-fetch-group="true" persistence-modifier="persistent">
                 <collection dependent-element="true"/>
             </field>
@@ -151,13 +163,21 @@
 
         <class name="IdentityProvider" detachable="true">
             <inheritance strategy="new-table"/>
+            <field name="attributeProfile" default-fetch-group="true" />
+            <field name="authenticationContract" default-fetch-group="true" />
+            <field name="emissionPolicy" default-fetch-group="true" />
+
+            <field name="authenticationMechanisms" default-fetch-group="true" persistence-modifier="persistent">
+                <join delete-action="cascade"/>
+            </field>
+
         </class>
 
         <class name="IdentityProviderChannel" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="accountLinkagePolicy" default-fetch-group="true" dependent="true"/>
             <field name="authenticationContract" default-fetch-group="true" />
-            <field name="authenticationMechanism" default-fetch-group="true" />
+            <field name="authenticationMechanism" default-fetch-group="true" dependent="true" persistence-modifier="persistent"/>
         </class>
 
         <class name="IdentitySource" detachable="true">
@@ -165,7 +185,7 @@
             <field name="id" value-strategy="native" primary-key="true"/>
         </class>
 
-        <class name="JbossExecutionEnvironment" detachable="true">
+        <class name="JBossExecutionEnvironment" detachable="true">
             <inheritance strategy="new-table"/>
 
         </class>
@@ -241,13 +261,19 @@
         <class name="ServiceProvider" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="activation" default-fetch-group="true" mapped-by="sp"/>
+            <field name="accountLinkagePolicy" default-fetch-group="true" />
+            <field name="authenticationContract" default-fetch-group="true" />
+
+            <field name="authenticationMechanisms" default-fetch-group="true" persistence-modifier="persistent">
+                <join delete-action="cascade"/>
+            </field>
         </class>
         
         <class name="ServiceProviderChannel" detachable="true">
             <inheritance strategy="new-table"/>
 
             <field name="attributeProfile" default-fetch-group="true" />
-            <field name="authenticationMechanism" default-fetch-group="true" />
+            <field name="authenticationMechanism" default-fetch-group="true" dependent="true" persistence-modifier="persistent"/>
             
             <field name="authenticationContract" default-fetch-group="true" />
             <field name="emissionPolicy" default-fetch-group="true" />

@@ -21,9 +21,9 @@
 
 package com.atricore.idbus.console.lifecycle.main.domain;
 
+import javax.jdo.annotations.*;
 import java.io.Serializable;
 import java.util.Date;
-import javax.jdo.annotations.*;
 
 //@PersistenceCapable
 public class User

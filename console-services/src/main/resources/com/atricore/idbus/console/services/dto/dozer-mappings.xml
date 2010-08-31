@@ -108,14 +108,6 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider</class-a>
         <class-b>com.atricore.idbus.console.services.dto.IdentityProviderDTO</class-b>
-        <field relationship-type="non-cumulative" remove-orphans="true">
-            <a>activeBindings</a>
-            <b>activeBindings</b>
-        </field>
-        <field relationship-type="non-cumulative" remove-orphans="true">
-            <a>activeProfiles</a>
-            <b>activeProfiles</b>
-        </field> 
     </mapping>
 
     <mapping>
@@ -236,6 +228,11 @@
     </mapping>
 
     <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.AbstractProviderConfig</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.AbstractProviderConfigDTO</class-b>
+    </mapping>
+
+    <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig</class-a>
         <class-b>com.atricore.idbus.console.services.dto.SamlR2ProviderConfigDTO</class-b>
     </mapping>
@@ -261,7 +258,7 @@
     </mapping>
 
     <mapping>
-        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.JbossExecutionEnvironment</class-a>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossExecutionEnvironment</class-a>
         <class-b>com.atricore.idbus.console.services.dto.JbossExecutionEnvironmentDTO</class-b>
     </mapping>
 

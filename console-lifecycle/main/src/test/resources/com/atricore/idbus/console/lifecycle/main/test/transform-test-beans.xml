@@ -27,8 +27,6 @@
 
     <!-- Define Transformers -->
 
-    <!-- Define Transformers -->
-
     <bean name="projectSetupTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ProjectSetupTransformer"/>
 
@@ -36,14 +34,14 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauBaseComponentsTransformer"/>
 
     <bean name="idpTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer"/>
 
-    <bean name="spFederatedConnectionATransformer"
+    <bean name="idpFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
     </bean>
 
-    <bean name="spFederatedConnectionBTransformer"
+    <bean name="idpFederatedConnectionBTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
         <property name="roleA" value="false"/>
     </bean>
@@ -57,24 +55,27 @@
     <bean name="spTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer"/>
 
-    <bean name="idpFederatedConnectionATransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
+    <bean name="spFederatedConnectionATransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
     </bean>
 
-    <bean name="idpFederatedConnectionBTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
+    <bean name="spFederatedConnectionBTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
         <property name="roleA" value="false"/>
     </bean>
 
-    <bean name="embeddedStoreTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.EmbeddedStoreTransformer"/>
+    <bean name="spJOSSOActivationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPJOSSOActivationTransformer"/>
 
-    <bean name="externalStoreTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExternalStoreTransformer"/>
+    <bean name="execEnvJOSSOActivationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecEnvJOSSOActivationTransformer"/>
 
-    <bean name="samlr2MetadataTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2MetadataTransformer"/>
+    <bean name="execEnvJOSSOTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecEnvJOSSOTransformer"/>
+
+    <bean name="identityLookupTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>
 
     <bean name="samlr2IdPTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPTransformer"/>
@@ -84,9 +85,6 @@
 
     <bean name="idauSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauSerializerTransformer"/>
-
-    <bean name="identityVaultTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityVaultTransformer"/>
 
     <bean name="projectSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ProjectSerializerTransformer">
@@ -194,12 +192,14 @@
                                 <property name="transformers">
                                     <list>
                                         
+                                        <!-- Project Transformers -->
                                         <ref bean="projectSetupTransformer"/>
                                         <ref bean="idauBaseComponentsTransformer"/>
 
                                         <!-- IDP Transformers -->
                                         <ref bean="idpTransformer"/>
-                                        
+                                        <ref bean="samlr2IdPTransformer"/>
+
                                         <ref bean="idpFederatedConnectionATransformer"/>
                                         <ref bean="idpFederatedConnectionBTransformer"/>
 
@@ -207,18 +207,18 @@
                                         <ref bean="stsTransformer"/>
 
                                         <!-- SP Transformers -->
-                                        <!--
                                         <ref bean="spTransformer"/>
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
-                                        -->
-
-                                        <!--
-                                        <ref bean="identityVaultTransformer"/>
-
-                                        <ref bean="samlr2IdPTransformer"/>
+                                        <ref bean="spJOSSOActivationTransformer"/>
+                                        <ref bean="execEnvJOSSOActivationTransformer"/>
                                         <ref bean="samlr2SPTransformer"/>
-                                        -->
+
+                                        <!-- PSP Transformers -->
+
+                                        <!-- Other Transformers -->
+                                        <ref bean="execEnvJOSSOTransformer"/>
+                                        <ref bean="identityLookupTransformer"/>
                                     </list>
                                 </property>
 

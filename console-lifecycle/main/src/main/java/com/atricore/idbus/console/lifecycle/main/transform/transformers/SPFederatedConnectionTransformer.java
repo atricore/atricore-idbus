@@ -1,14 +1,14 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
-import com.atricore.idbus.console.lifecycle.main.transform.IdApplianceTransformationContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
+import com.atricore.idbus.console.lifecycle.main.transform.IdApplianceTransformationContext;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl;
@@ -21,17 +21,15 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyRefs;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SpFederatedConnectionTransformer extends AbstractTransformer {
+public class SPFederatedConnectionTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(SpFederatedConnectionTransformer.class);
+    private static final Log logger = LogFactory.getLog(SPFederatedConnectionTransformer.class);
 
     private boolean roleA;
 
@@ -221,7 +219,7 @@ public class SpFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(sloLocal, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
         setPropertyValue(sloLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
         // NOTE: location doesn't exist in simple-federation example
-        setPropertyValue(sloLocal, "location", "local:/" + spBean.getName() + "/SLO/LOCAL");
+        setPropertyValue(sloLocal, "location", "local://" + spBean.getName() + "/SLO/LOCAL");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
         plan.setBean(spBean.getName() + "-spsso-samlr2sloreq-to-samlr2resp-plan");

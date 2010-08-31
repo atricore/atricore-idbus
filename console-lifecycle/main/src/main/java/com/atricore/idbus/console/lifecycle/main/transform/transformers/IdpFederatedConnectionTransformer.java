@@ -1,14 +1,14 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
-import com.atricore.idbus.console.lifecycle.main.transform.IdApplianceTransformationContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
+import com.atricore.idbus.console.lifecycle.main.transform.IdApplianceTransformationContext;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -49,9 +48,11 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
             FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
 
             if (roleA) {
-                return fc.getRoleA() instanceof IdentityProvider;
+                return fc.getRoleA() instanceof IdentityProvider
+                        && !fc.getRoleA().isRemote();
             } else {
-                return fc.getRoleB() instanceof IdentityProvider;
+                return fc.getRoleB() instanceof IdentityProvider
+                        && !fc.getRoleB().isRemote();
             }
 
         }
@@ -128,11 +129,11 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
                                      IdApplianceTransformationContext ctx) throws TransformException {
 
         Beans idpBeans = (Beans) ctx.get("idpBeans");
-
         if (logger.isTraceEnabled())
             logger.trace("Generating Beans for SP Channel " + spChannel.getName()  + " of IdP " + idp.getName());
 
         Bean idpBean = null;
+
         Collection<Bean> b = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName());
         if (b.size() != 1) {
             throw new TransformException("Invalid IdP definition count : " + b.size());
@@ -167,7 +168,6 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(spChannelBean, "location", resolveLocationUrl(idp, spChannel));
         setPropertyRef(spChannelBean, "provider", normalizeBeanName(idp.getName()));
 
-        // TODO : Do not set this if target provider is remote (not supported in the model yet!)
         if (spChannel.isOverrideProviderSetup())
             setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(target.getName()));
 
@@ -317,7 +317,7 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(shbLocal, "name", shbLocal.getName());
         setPropertyValue(shbLocal, "type", SAMLR2MetadataConstants.IDPSessionHeartBeatService_QNAME.toString());
         setPropertyValue(shbLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
-        setPropertyValue(shbLocal, "location", "local:/" + idpBean.getName().toUpperCase() + "/SSO/SSHB/LOCAL");
+        setPropertyValue(shbLocal, "location", "local://" + idp.getLocation().getUri() + "/SSO/SSHB/LOCAL");
         endpoints.add(shbLocal);
 
         // SSO SSO HTTP ARTIFACT
@@ -357,7 +357,7 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(ssoSloLocal, "name", ssoSloLocal.getName());
         setPropertyValue(ssoSloLocal, "type", SAMLR2MetadataConstants.IDPInitiatedSingleLogoutService_QNAME.toString());
         setPropertyValue(ssoSloLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
-        setPropertyValue(ssoSloLocal, "location", "local:/" + idpBean.getName().toUpperCase() + "/SSO/SLO/LOCAL");
+        setPropertyValue(ssoSloLocal, "location", "local://" + idp.getLocation().getUri() + "/" + idpBean.getName().toUpperCase() + "/SSO/SLO/LOCAL");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
         plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");

@@ -45,6 +45,7 @@
                 <property name="host" value="localhost"/>
                 <property name="port" value="8081"/>
                 <property name="context" value="/IDBUS"/>
+                <property name="uri" value="/IDA1"/>
             </bean>
         </property>
 
@@ -60,6 +61,12 @@
                 <ref bean="idsource1"/>
             </set>
         </property>
+        
+        <property name="executionEnvironments">
+            <set>
+                <ref bean="execEnv1"/>
+            </set>
+        </property>
 
     </bean>
 
@@ -71,6 +78,7 @@
         <property name="displayName" value="Identity Provider #1"/>
         <property name="description" value="This is a test Identity Provider #1"/>
         <property name="identityAppliance" ref="idApplianceDef1"/>
+        <property name="remote" value="false"/>
         
         <property name="activeBindings">
             <set>
@@ -79,9 +87,16 @@
                 <value>SAMLR2_HTTP_REDIRECT</value>
             </set>
         </property>
+
         <property name="activeProfiles">
             <set>
                 <value>SSO</value>
+            </set>
+        </property>
+
+        <property name="authenticationMechanisms">
+            <set>
+                <ref bean="idp1-basic-authn"/>
             </set>
         </property>
         
@@ -91,7 +106,7 @@
                 <property name="host" value="localhost"/>
                 <property name="port" value="8081"/>
                 <property name="context" value="/IDBUS"/>
-                <property name="uri" value="IDP1"/>
+                <property name="uri" value="/IDA1/IDP1"/>
             </bean>
         </property>
         
@@ -141,6 +156,13 @@
         </property>
     </bean>
 
+    <bean name="idp1-basic-authn" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication">
+        <property name="name" value="idp1-basic-authn"/>
+        <property name="hashAlgorithm" value="MD5"/>
+        <property name="hashEncoding" value="HEX"/>
+        <property name="ignoreUsernameCase" value="false"/>
+    </bean>
+
     <bean name="idp1-idlookup" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityLookup">
         <property name="name" value="idp1-idlookup"/>
         <property name="description" value="IDP 1 Identity Lookup definition"/>
@@ -157,6 +179,7 @@
         <property name="displayName" value="Service Provider #1"/>
         <property name="description" value="This is a test Service Provider #1"/>
         <property name="identityAppliance" ref="idApplianceDef1"/>
+        <property name="remote" value="false"/>
 
         <property name="location">
             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Location">
@@ -164,11 +187,11 @@
                 <property name="host" value="localhost"/>
                 <property name="port" value="8081"/>
                 <property name="context" value="/IDBUS"/>
-                <property name="uri" value="SP1"/>
+                <property name="uri" value="/IDA1/SP1"/> 
             </bean>
         </property>
 
-        <property name="activation" ref="sp1-josso-activation"/>
+        <property name="activation" ref="sp1-josso"/>
         <property name="identityLookup" ref="sp1-idlookup"/>
 
         <property name="config">
@@ -224,10 +247,10 @@
 
     </bean>
 
-    <bean name="sp1-josso-activation" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation">
+    <bean name="sp1-josso" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation">
         <property name="name" value="sp1-josso-activation"/>
-        <property name="description" value="SP1 JOSSO Activation"/>
-
+        <property name="displayName" value="SP1 JOSSO Activation"/>
+        <property name="description" value="SP1 activation definition to JOSSO Agent"/>
         <property name="partnerAppId" value="partnerapp1"/>
 
         <property name="partnerAppLocation">
@@ -235,14 +258,14 @@
                 <property name="protocol" value="http"/>
                 <property name="host" value="localhost"/>
                 <property name="port" value="8080"/>
-                <property name="context" value="/partnerapp"/>
+                <property name="context" value="partnerapp"/>
                 <property name="uri" value=""/>
             </bean>
         </property>
         
         <property name="executionEnv" ref="execEnv1"/>
         <property name="sp" ref="sp1"/>
-        
+
     </bean>
 
     <bean name="sp1-idlookup" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityLookup">
@@ -251,7 +274,6 @@
         <property name="provider" ref="sp1"/>
         <property name="identitySource" ref="idsource1"/>
     </bean>
-
 
     <bean name="idp1-sp1-fed" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.FederatedConnection">
         <property name="name" value="idp1-sp1-fed"/>
@@ -278,12 +300,15 @@
 
     </bean>
 
-
-
-    <bean name="execEnv1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.JbossExecutionEnvironment">
+    <bean name="execEnv1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossExecutionEnvironment">
         <property name="name" value="execEnv1"/>
         <property name="description" value="Execution Environment One"/>
         <property name="installUri" value="file://tmp/jboss4.2.3.GA"/>
+        <property name="activations">
+            <set>
+                <ref bean="sp1-josso"/>
+            </set>
+        </property>
     </bean>
 
     <bean name="idsource1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentitySource">

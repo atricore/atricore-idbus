@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.serializers;
 
+import com.atricore.idbus.console.lifecycle.main.transform.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
@@ -7,7 +8,6 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
-import com.atricore.idbus.console.lifecycle.main.transform.*;
 
 import java.io.*;
 

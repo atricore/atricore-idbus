@@ -25,7 +25,7 @@ import java.io.Serializable;
 
 public class AuthenticationMechanism implements Serializable {
 
-	private static final long serialVersionUID = -7288201735131791281L;
+	private static final long serialVersionUID = -7288201235131791281L;
 
     private long id;
 

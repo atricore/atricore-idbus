@@ -20,7 +20,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Channel;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
@@ -109,8 +108,15 @@ public abstract class AbstractTransformer implements Transformer {
             contextString = "/" + contextString;
         }
 
-        String uriString = "/" +
+
+        String uriString = "";
+        if (location.getUri() != null) {
+            uriString = "/" +
             (location.getUri() != null ? location.getUri() : "");
+
+            if (uriString.startsWith("//"))
+                uriString = uriString.substring(1);
+        }
 
         return  resolveLocationBaseUrl(location) + contextString + uriString;
     }

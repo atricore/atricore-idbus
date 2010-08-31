@@ -1,15 +1,18 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel;
-import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.AuthenticationMechanism;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
+import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.authn.scheme.UsernamePasswordAuthScheme;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
+import org.atricore.idbus.kernel.main.store.identity.SimpleIdentityStoreKeyAdapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +30,8 @@ public class STSTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof IdentityProvider;
+        return event.getData() instanceof IdentityProvider &&
+                !((IdentityProvider)event.getData()).isRemote();
     }
 
     @Override
@@ -103,9 +107,38 @@ public class STSTransformer extends AbstractTransformer {
         // ----------------------------------------
         Bean legacyAuthenticator = newAnonymousBean("org.atricore.idbus.kernel.main.authn.AuthenticatorImpl");
         List<Ref> authnSchemes = new ArrayList<Ref>();
-        Ref authnScheme = new Ref();
-        authnScheme.setBean("basic-authentication");
-        authnSchemes.add(authnScheme);
+
+        for (AuthenticationMechanism authn : provider.getAuthenticationMechanisms()) {
+
+            if (authn instanceof BasicAuthentication) {
+
+                BasicAuthentication basicAuthn = (BasicAuthentication) authn;
+                Bean basicAuthnBean = newBean(idpBeans, normalizeBeanName(provider.getName()) + "-basic-authn", UsernamePasswordAuthScheme.class);
+
+                setPropertyValue(basicAuthnBean, "name", basicAuthnBean.getName());
+                setPropertyValue(basicAuthnBean, "hashAlgorithm", basicAuthn.getHashAlgorithm());
+                setPropertyValue(basicAuthnBean, "hashEncoding", basicAuthn.getHashEncoding());
+                setPropertyValue(basicAuthnBean, "ignorePasswordCase", false); // Dangerous
+                setPropertyValue(basicAuthnBean, "ignoreUserCase", basicAuthn.isIgnoreUsernameCase());
+
+                setPropertyRef(basicAuthnBean, "credentialStore", provider.getName() + "-identity-store");
+                setPropertyBean(basicAuthnBean, "credentialStoreKeyAdapter", newAnonymousBean(SimpleIdentityStoreKeyAdapter.class));
+
+                Ref basicAuthnRef = new Ref();
+                basicAuthnRef.setBean(basicAuthnBean.getName());
+
+                authnSchemes.add(basicAuthnRef);
+
+            } else {
+                throw new TransformException("Unsupported Authentication Scheme Type [" + authn.getName() + "] " +
+                        authn.getClass().getSimpleName());
+            }
+
+        }
+
+        if (authnSchemes.size() < 1)
+            throw new TransformException("No Authentication Mechanism defined for " + provider.getName());
+
         setPropertyRefs(legacyAuthenticator, "authenticationSchemes", authnSchemes);
         
         // ----------------------------------------

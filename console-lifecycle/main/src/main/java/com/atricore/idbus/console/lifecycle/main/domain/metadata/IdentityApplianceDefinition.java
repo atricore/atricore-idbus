@@ -22,8 +22,8 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 public class IdentityApplianceDefinition implements Serializable {
@@ -55,6 +55,9 @@ public class IdentityApplianceDefinition implements Serializable {
 	private Set<Provider> providers;
 
     private Set<IdentitySource> identitySources;
+    
+    private Set<ExecutionEnvironment> executionEnvironments;
+
 
     private Keystore keystore;
 
@@ -156,6 +159,14 @@ public class IdentityApplianceDefinition implements Serializable {
 
     public void setIdentitySources(Set<IdentitySource> identitySources) {
         this.identitySources = identitySources;
+    }
+
+    public Set<ExecutionEnvironment> getExecutionEnvironments() {
+        return executionEnvironments;
+    }
+
+    public void setExecutionEnvironments(Set<ExecutionEnvironment> executionEnvironments) {
+        this.executionEnvironments = executionEnvironments;
     }
 
     public Date getLastModification() {

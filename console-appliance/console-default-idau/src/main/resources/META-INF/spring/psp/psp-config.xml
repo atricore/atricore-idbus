@@ -110,6 +110,10 @@
         </property>
     </bean>
 
+    <bean name="idstore-default" class="org.atricore.idbus.connectors.jdoidentityvault.JDOIdentityStore">
+        <property name="idPartition" ref="idpart-default"/>
+    </bean>
+
     <bean name="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
         <property name="persistenceManagerFactory" ref="default-pmf"/>
     </bean>
@@ -117,11 +121,9 @@
     <bean name="idpart-default" class="org.atricore.idbus.connectors.jdoidentityvault.JDOIdentityPartition">
         <property name="name" value="idpart1"/>
         <property name="description" value="Identity Partition ONE"/>
-        <!--property name="identitySource" ref="idvault-default"/-->
-        
+        <property name="identityStore" ref="idstore-default"/>
         <property name="userDao" ref="user-dao"/>
         <property name="groupDao" ref="group-dao"/>
-
     </bean>
 
     <bean name="group-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDAOImpl">
@@ -131,7 +133,6 @@
     <bean name="user-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl">
         <property name="persistenceManagerFactory" ref="default-pmf"/>
     </bean>
-
 
     <!-- The main advantage of this proxy is that it allows DAOs to work with a plain JDO PersistenceManagerFactory reference,
          while still participating in Spring's (or a J2EE server's) resource and transaction management.
@@ -147,9 +148,5 @@
         </property>
         <!--property name="allowCreate" value="false"/-->
     </bean>
-
-    <osgi:service id="osgi-psp-default-client"
-                  ref="psp-default-client"
-                  interface="org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client"/>
 
 </s:beans>

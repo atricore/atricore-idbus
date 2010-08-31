@@ -26,7 +26,6 @@ import java.util.Date;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
 
-@Deprecated
 public class UserDTO
     implements Serializable
 {

@@ -31,7 +31,7 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauBaseComponentsTransformer"/>
 
     <bean name="idpTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer"/>
 
     <bean name="idpFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
@@ -43,7 +43,6 @@
         <property name="roleA" value="false"/>
     </bean>
 
-
     <bean name="claimsChannelTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ClaimsChannelTransformer"/>
 
@@ -53,23 +52,27 @@
     <bean name="spTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer"/>
 
-    <bean name="spFederatedConnectionTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SpFederatedConnectionTransformer"/>
+    <bean name="spFederatedConnectionATransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
+        <property name="roleA" value="true"/>
+    </bean>
 
-    <bean name="bpTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.BPTransformer"/>
+    <bean name="spFederatedConnectionBTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
+        <property name="roleA" value="false"/>
+    </bean>
 
-    <bean name="bindingChannelTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPBindingChannelTransformer"/>
+    <bean name="spJOSSOActivationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPJOSSOActivationTransformer"/>
 
-    <bean name="embeddedStoreTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.EmbeddedStoreTransformer"/>
+    <bean name="exeEnvJOSSOActivationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecEnvJOSSOActivationTransformer"/>
 
-    <bean name="externalStoreTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExternalStoreTransformer"/>
+    <bean name="execEnvJOSSOTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecEnvJOSSOTransformer"/>
 
-    <bean name="samlr2MetadataTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2MetadataTransformer"/>
+    <bean name="identityLookupTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>
 
     <bean name="samlr2IdPTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPTransformer"/>
@@ -80,11 +83,11 @@
     <bean name="idauSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauSerializerTransformer"/>
 
-    <bean name="identityVaultTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityVaultTransformer"/>
-    
     <bean name="projectSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ProjectSerializerTransformer">
+
+        <!--property name="outputPath" value="${buildDir}/transform/atricore-idbus"/-->
+
         <property name="serializers">
             <list>
                 <bean name="springSerializer"
@@ -104,7 +107,7 @@
 
     <bean name="applianceBuilderTransfomer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ApplianceBuilderTransformer"/>
-    
+
     <bean name="applianceBuilder"
           class="com.atricore.idbus.console.lifecycle.main.transform.TransformerApplianceBuilderImpl">
         <property name="engine" ref="idauTransformingEngine"/>
@@ -147,23 +150,35 @@
 
                                 <property name="transformers">
                                     <list>
+
+                                        <!-- Project Transformers -->
                                         <ref bean="projectSetupTransformer"/>
                                         <ref bean="idauBaseComponentsTransformer"/>
+
+                                        <!-- IDP Transformers -->
                                         <ref bean="idpTransformer"/>
+                                        <ref bean="samlr2IdPTransformer"/>
 
                                         <ref bean="idpFederatedConnectionATransformer"/>
                                         <ref bean="idpFederatedConnectionBTransformer"/>
-                                        
+
                                         <ref bean="claimsChannelTransformer"/>
                                         <ref bean="stsTransformer"/>
+
+                                        <!-- SP Transformers -->
                                         <ref bean="spTransformer"/>
-                                        <ref bean="spFederatedConnectionTransformer"/>
-                                        <ref bean="identityVaultTransformer"/>
-                                        <ref bean="bpTransformer"/>
-                                        <ref bean="bindingChannelTransformer"/>
-                                        <!--ref bean="samlr2MetadataTransformer"/-->
-                                        <ref bean="samlr2IdPTransformer"/>
-                                        <ref bean="samlr2SPTransformer"/>
+                                        <ref bean="spFederatedConnectionATransformer"/>
+                                        <ref bean="spFederatedConnectionBTransformer"/>
+                                        <ref bean="spJOSSOActivationTransformer"/>
+                                        <ref bean="execEnvJOSSOTransformer"/>
+                                        <!-- ref bean="samlr2SPTransformer"/ -->
+
+                                        <!-- PSP Transformers -->
+
+                                        <!-- Other Transformers -->
+                                        <ref bean="identityLookupTransformer"/>
+                                        <ref bean="execEnvJOSSOTransformer"/>
+
                                     </list>
                                 </property>
 
@@ -176,7 +191,8 @@
                                 <property name="transformers">
                                     <list>
                                         <ref bean="projectSerializerTransformer"/>
-                                        <ref bean="applianceBuilderTransfomer"/>
+
+                                        <!-- CAN'T BUILD OUTSIDE OSGi container ref bean="applianceBuilderTransfomer"/-->
                                     </list>
                                 </property>
 
@@ -197,13 +213,8 @@
                         </list>
                     </property>
                 </bean>
-
-
             </list>
-
-
         </property>
-
-
     </bean>
+    
 </beans>

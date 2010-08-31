@@ -22,6 +22,8 @@
 package com.atricore.idbus.console.services.dto;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ProviderDTO implements Serializable {
 
@@ -31,6 +33,21 @@ public class ProviderDTO implements Serializable {
     private String name;
     private LocationDTO location;
     private String description;
+    private String displayName;
+
+    private boolean isRemote;
+
+    private ProviderConfigDTO config;
+
+    // RFU
+    private Set<BindingDTO> activeBindings = new HashSet<BindingDTO>();
+
+    // RFU
+    private Set<ProfileDTO> activeProfiles = new HashSet<ProfileDTO>();
+
+    private IdentityLookupDTO identityLookup;
+
+    private ResourceDTO metadata;
 
     private ProviderRoleDTO role;
 
@@ -82,6 +99,62 @@ public class ProviderDTO implements Serializable {
 
     public void setIdentityAppliance(IdentityApplianceDefinitionDTO identityAppliance) {
         this.identityAppliance = identityAppliance;
+    }
+
+    public Set<BindingDTO> getActiveBindings() {
+        return activeBindings;
+    }
+
+    public void setActiveBindings(Set<BindingDTO> activeBindings) {
+        this.activeBindings = activeBindings;
+    }
+
+    public Set<ProfileDTO> getActiveProfiles() {
+        return activeProfiles;
+    }
+
+    public void setActiveProfiles(Set<ProfileDTO> activeProfiles) {
+        this.activeProfiles = activeProfiles;
+    }
+
+    public ProviderConfigDTO getConfig() {
+        return config;
+    }
+
+    public void setConfig(ProviderConfigDTO config) {
+        this.config = config;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public IdentityLookupDTO getIdentityLookup() {
+        return identityLookup;
+    }
+
+    public void setIdentityLookup(IdentityLookupDTO identityLookup) {
+        this.identityLookup = identityLookup;
+    }
+
+    public boolean isRemote() {
+        return isRemote;
+    }
+
+    public void setRemote(boolean remote) {
+        isRemote = remote;
+    }
+
+    public ResourceDTO getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(ResourceDTO metadata) {
+        this.metadata = metadata;
     }
 
     @Override

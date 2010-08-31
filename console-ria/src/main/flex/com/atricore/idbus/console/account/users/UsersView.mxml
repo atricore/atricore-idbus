@@ -75,46 +75,55 @@
     </s:HGroup>
 
     <s:HGroup id="bodyHBox" width="100%" height="95%" paddingLeft="15" paddingRight="15">
-
-        <mx:DataGrid id="userList" width="70%" rowCount="14"
-                     resizeEffect="Resize" verticalAlign="middle">
-            <mx:columns>
-                <mx:DataGridColumn dataField="userName" headerText="Username"/>
-                <mx:DataGridColumn dataField="firstName" headerText="First Name"/>
-                <mx:DataGridColumn dataField="surename" headerText="Last Name"/>
-                <mx:DataGridColumn dataField="commonName" headerText="Full Name"/>
-                <mx:DataGridColumn dataField="groups" headerText="Groups">
-                    <mx:itemRenderer>
-                        <fx:Component>
-                            <s:MXDataGridItemRenderer>
-                                <s:states>
-                                    <s:State name="normal" />
-                                    <s:State name="hovered" />
-                                    <s:State name="selected" />
-                                </s:states>
-                                <fx:Script>
+        <s:VGroup width="100%" height="95%">
+            <mx:DataGrid id="userList" width="70%" rowCount="14"
+                         resizeEffect="Resize" verticalAlign="middle">
+                <mx:columns>
+                    <mx:DataGridColumn dataField="userName" headerText="Username"/>
+                    <mx:DataGridColumn dataField="firstName" headerText="First Name"/>
+                    <mx:DataGridColumn dataField="surename" headerText="Last Name"/>
+                    <mx:DataGridColumn dataField="commonName" headerText="Full Name"/>
+                    <mx:DataGridColumn dataField="groups" headerText="Groups">
+                        <mx:itemRenderer>
+                            <fx:Component>
+                                <s:MXDataGridItemRenderer>
+                                    <s:states>
+                                        <s:State name="normal" />
+                                        <s:State name="hovered" />
+                                        <s:State name="selected" />
+                                    </s:states>
+                                    <fx:Script>
                                 <![CDATA[
-                                    import com.atricore.idbus.console.services.dto.Group;
+                                        import com.atricore.idbus.console.services.dto.Group;
 
-                                    public function concateGroups(groups:Array):String {
-                                        var userGroups:String = "";
-                                        for each (var group:Group in groups) {
-                                            if (userGroups != "")
-                                                userGroups = userGroups.concat(", ");
-                                            userGroups = userGroups.concat(group.name);
+                                        public function concateGroups(groups:Array):String {
+                                            var userGroups:String = "";
+                                            for each (var group:Group in groups) {
+                                                if (userGroups != "")
+                                                    userGroups = userGroups.concat(", ");
+                                                userGroups = userGroups.concat(group.name);
+                                            }
+                                            return userGroups;
                                         }
-                                        return userGroups;
-                                    }
                                 ]]>
                                 </fx:Script>
-                                <s:Label text="{concateGroups(data.groups)}"
-                                         top="0" left="0" right="0" bottom="0" paddingTop="2" paddingLeft="7"/>
-                            </s:MXDataGridItemRenderer>
-                        </fx:Component>
-                    </mx:itemRenderer>
-                </mx:DataGridColumn>
-            </mx:columns>
-        </mx:DataGrid>
+                                    <s:Label text="{concateGroups(data.groups)}"
+                                             top="0" left="0" right="0" bottom="0" paddingTop="2" paddingLeft="7"/>
+                                </s:MXDataGridItemRenderer>
+                            </fx:Component>
+                        </mx:itemRenderer>
+                    </mx:DataGridColumn>
+                </mx:columns>
+            </mx:DataGrid>
+
+            <components:IconButton id="btnClearSearch"
+                                   iconUp="@Embed('/images/icons/close.png')"
+                                   paddingTop="3" paddingLeft="3" isLinkButton="false"
+                                   skinClass="com.atricore.idbus.console.components.IconButtonSkin"
+                                   visible="false"
+                                   toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.search.filters.remove')}"/>
+
+        </s:VGroup>
 
         <properties:UserPropertiesView id="properties" width="24%" height="99%" visible="false"/>
     </s:HGroup>
