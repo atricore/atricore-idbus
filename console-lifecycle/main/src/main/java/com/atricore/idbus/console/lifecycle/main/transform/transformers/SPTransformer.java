@@ -161,7 +161,7 @@ public class SPTransformer extends AbstractTransformer {
         setPropertyBean(spMediator, "logger", spLogger);
 
         // errorUrl
-        setPropertyValue(spMediator, "errorUrl", resolveLocationBaseUrl(provider.getBindingChannel().getLocation()) + "/idbus-ui/error.do");
+        setPropertyValue(spMediator, "errorUrl", resolveLocationBaseUrl(provider.getLocation()) + "/idbus-ui/error.do");
 
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
