@@ -9,6 +9,7 @@ public class ExecutionEnvironment implements Serializable {
 
     private long id;
     private String name;
+    private String displayName;
     private String description;
     private String installUri;
 
@@ -30,6 +31,14 @@ public class ExecutionEnvironment implements Serializable {
         this.name = name;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -45,4 +54,5 @@ public class ExecutionEnvironment implements Serializable {
     public void setInstallUri(String installUri) {
         this.installUri = installUri;
     }
+
 }

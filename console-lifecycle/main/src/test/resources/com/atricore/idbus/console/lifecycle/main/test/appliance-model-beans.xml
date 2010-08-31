@@ -52,7 +52,7 @@
         <property name="providers">
             <set>
                 <ref bean="idp1"/>
-                <!--ref bean="sp1"/-->
+                <ref bean="sp1"/>
             </set>
         </property>
 
@@ -191,7 +191,7 @@
             </bean>
         </property>
 
-        <property name="activation" ref="sp1-josso-activation"/>
+        <property name="activation" ref="sp1-josso"/>
         <property name="identityLookup" ref="sp1-idlookup"/>
 
         <property name="config">
@@ -247,7 +247,7 @@
 
     </bean>
 
-    <bean name="sp1-josso-activation" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation">
+    <bean name="sp1-josso" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation">
         <property name="name" value="sp1-josso-activation"/>
         <property name="description" value="SP1 JOSSO Activation"/>
 

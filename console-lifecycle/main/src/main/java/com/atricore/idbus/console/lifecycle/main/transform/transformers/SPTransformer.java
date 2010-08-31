@@ -132,7 +132,7 @@ public class SPTransformer extends AbstractTransformer {
         setPropertyValue(spMediator, "preferredIdpAlias", getPropertyValue(idpMd, "alias"));
         setPropertyValue(spMediator, "preferredIdpSSOBinding", SamlR2Binding.SAMLR2_POST.getValue());
         setPropertyValue(spMediator, "preferredIdpSLOBinding", SamlR2Binding.SAMLR2_POST.getValue());
-        //this is set from BPTransformer
+        //this is set from ExecEnvJOSSOTransformer
         //setPropertyValue(spMediator, "spBindingACS", "http://localhost:8081/IDBUS/BP1/SSO/ACS/ARTIFACT");
         //setPropertyValue(spMediator, "spBindingSLO", "http://localhost:8081/IDBUS/BP1/SSO/SLO/ARTIFACT");
         // TODO RETROFIT  : String bpLocation = resolveLocationUrl(((BindingProvider)provider.getBindingChannel().getTarget()).getBindingChannel().getLocation());
@@ -161,7 +161,7 @@ public class SPTransformer extends AbstractTransformer {
         setPropertyBean(spMediator, "logger", spLogger);
 
         // errorUrl
-        setPropertyValue(spMediator, "errorUrl", resolveLocationBaseUrl(provider.getBindingChannel().getLocation()) + "/idbus-ui/error.do");
+        setPropertyValue(spMediator, "errorUrl", resolveLocationBaseUrl(provider.getIdentityAppliance().getLocation()) + "/idbus-ui/error.do");
 
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
@@ -383,44 +383,6 @@ public class SPTransformer extends AbstractTransformer {
             throw new TransformException("One and only one Identity Mediation Unit is expected, found " + mus.size());
         }
 
-        // BP partnerAppMappings
-        Bean bpBean = null;
-        Collection<Bean> bps = getBeansOfType(bpBeans, BindingProviderImpl.class.getName());
-        if (bps.size() == 1) {
-            bpBean = bps.iterator().next();
-        } else {
-            throw new TransformException("One and only one Binding Provider is expected, found " + bps.size());
-        }
-        
-        Bean bindingMediator = null;
-        Collection<Bean> bindingMediators = getBeansOfType(bpBeans, JossoMediator.class.getName());
-        if (bindingMediators.size() == 1) {
-            bindingMediator = bindingMediators.iterator().next();
-        } else {
-            throw new TransformException("One and only one Josso Mediator is expected, found " + bindingMediators.size());
-        }
-
-        Bean partnerappKeyBean = newBean(bpBeans, spBean.getName() + "-key", String.class);
-        setConstructorArg(partnerappKeyBean, 0, "java.lang.String", provider.getName());
-
-        Bean partnerappBean = newBean(bpBeans, bpBean.getName() + "-" + spBean.getName() + "-partnerapp-mapping", PartnerAppMapping.class);
-        setPropertyValue(partnerappBean, "partnerAppId", provider.getName());
-        Bean memberDescriptorBean = null;
-        Collection<Bean> b = getBeansOfType(spBeans, ResourceCircleOfTrustMemberDescriptorImpl.class.getName());
-        if (b.size() != 1) {
-            throw new TransformException("Invalid resource COT member descriptor count : " + b.size());
-        }
-        memberDescriptorBean = b.iterator().next();
-        setPropertyValue(partnerappBean, "spAlias", getPropertyValue(memberDescriptorBean, "alias"));
-        setPropertyValue(partnerappBean, "partnerAppSLO", resolveLocationUrl(provider));
-        setPropertyValue(partnerappBean, "partnerAppACS", resolveLocationUrl(provider) + "josso_security_check");
-
-        Entry partnerappMapping = new Entry();
-        partnerappMapping.setKeyRef(partnerappKeyBean.getName());
-        partnerappMapping.setValueRef(partnerappBean.getName());
-        
-        addEntryToMap(bindingMediator, "partnerAppMappings", partnerappMapping);
-        
         IdProjectResource<Beans> rBeans =  new IdProjectResource<Beans>(idGen.generateId(), spBean.getName(), spBean.getName(), "spring-beans", spBeans);
         rBeans.setClassifier("jaxb");
         rBeans.setNameSpace(spBean.getName());

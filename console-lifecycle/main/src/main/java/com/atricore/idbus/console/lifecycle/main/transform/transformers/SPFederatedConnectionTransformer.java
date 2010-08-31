@@ -27,9 +27,9 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SpFederatedConnectionTransformer extends AbstractTransformer {
+public class SPFederatedConnectionTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(SpFederatedConnectionTransformer.class);
+    private static final Log logger = LogFactory.getLog(SPFederatedConnectionTransformer.class);
 
     private boolean roleA;
 
