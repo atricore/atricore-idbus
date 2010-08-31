@@ -91,6 +91,7 @@ public class GroupsMediator extends IocMediator {
             view.btnBack.removeEventListener(MouseEvent.CLICK, handleGoBack);
 
             view.groupList.removeEventListener(ListEvent.ITEM_CLICK , groupListClickHandler);
+            view.btnClearSearch.removeEventListener(MouseEvent.CLICK, handleClearSearch);
         }
 
         super.setViewComponent(p_viewComponent);
@@ -105,6 +106,7 @@ public class GroupsMediator extends IocMediator {
         view.btnBack.addEventListener(MouseEvent.CLICK, handleGoBack);
 
         view.groupList.addEventListener(ListEvent.ITEM_CLICK , groupListClickHandler);
+        view.btnClearSearch.addEventListener(MouseEvent.CLICK, handleClearSearch);
 
         sendNotification(ApplicationFacade.LIST_GROUPS);
         groupPropertiesMediator.setViewComponent(view.properties);
@@ -159,9 +161,10 @@ public class GroupsMediator extends IocMediator {
                 break;
 
             case ApplicationFacade.DISPLAY_SEARCH_RESULTS_GROUPS:
-                view.groupList.dataProvider = notification as ArrayCollection;
+                view.groupList.dataProvider = notification.getBody() as ArrayCollection;
                 view.groupList.selectedIndex=0;
                 _accountManagementProxy.currentGroup = view.groupList.selectedItem as Group;
+                view.btnClearSearch.visible = true;
                 break;
         }
     }
@@ -190,6 +193,12 @@ public class GroupsMediator extends IocMediator {
     private function handleGoBack(event:MouseEvent):void {
         trace("Go Back Button Click: " + event);
         sendNotification(ApplicationFacade.DISPLAY_ACCOUNT_MNGMT_HOME);
+    }
+
+    private function handleClearSearch(event:MouseEvent):void {
+        trace("Clear Search Button Click: " + event);
+        view.btnClearSearch.visible = false;
+        sendNotification(ApplicationFacade.LIST_GROUPS);
     }
 
     public function groupListClickHandler(e:ListEvent):void {

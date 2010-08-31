@@ -75,13 +75,22 @@
     </s:HGroup>
 
     <s:HGroup id="bodyHBox" width="100%" height="95%" paddingLeft="15" paddingRight="15">
-        <mx:DataGrid id="groupList" width="70%" rowCount="14"
-                     resizeEffect="Resize" verticalAlign="middle">
-            <mx:columns>
-                <mx:DataGridColumn dataField="name" headerText="Name"/>
-                <mx:DataGridColumn dataField="description" headerText="Description"/>
-            </mx:columns>
-        </mx:DataGrid>
+        <s:VGroup width="100%" height="95%">
+            <mx:DataGrid id="groupList" width="70%" rowCount="14"
+                         resizeEffect="Resize" verticalAlign="middle">
+                <mx:columns>
+                    <mx:DataGridColumn dataField="name" headerText="Name"/>
+                    <mx:DataGridColumn dataField="description" headerText="Description"/>
+                </mx:columns>
+            </mx:DataGrid>
+            <components:IconButton id="btnClearSearch"
+                                   iconUp="@Embed('/images/icons/close.png')"
+                                   paddingTop="3" paddingLeft="3" isLinkButton="false"
+                                   skinClass="com.atricore.idbus.console.components.IconButtonSkin"
+                                   visible="false"
+                                   toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.search.filters.remove')}"/>
+
+        </s:VGroup>
 
         <properties:GroupPropertiesView id="properties" width="24%" height="99%" visible="false"/>
     </s:HGroup>
