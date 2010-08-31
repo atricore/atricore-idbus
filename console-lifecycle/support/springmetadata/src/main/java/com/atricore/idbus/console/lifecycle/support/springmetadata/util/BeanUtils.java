@@ -100,12 +100,14 @@ public class BeanUtils {
     }
 
     /**
-     * Class name must be an exact match (no interfaces, etc, supported!) 
+     * WARNING : Class name must be an exact match (no interfaces, etc, supported!)
+     *  
      * @param beans
      * @param clazz
      * @return
      */
     public static Collection<Bean> getBeansOfType(Beans beans, String clazz) {
+
         java.util.List<Bean> beansList = new ArrayList<Bean>();
 
         if (logger.isTraceEnabled())

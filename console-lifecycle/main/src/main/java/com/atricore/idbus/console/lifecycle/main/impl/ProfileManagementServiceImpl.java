@@ -25,8 +25,6 @@ import com.atricore.idbus.console.lifecycle.main.domain.User;
 import com.atricore.idbus.console.lifecycle.main.exception.ProfileManagementException;
 import com.atricore.idbus.console.lifecycle.main.exception.UserNotFoundException;
 import com.atricore.idbus.console.lifecycle.main.spi.ProfileManagementService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.spi.StatusCode;
 import com.atricore.idbus.console.lifecycle.main.spi.request.FetchGroupMembershipRequest;
 import com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserPasswordRequest;
@@ -35,6 +33,8 @@ import com.atricore.idbus.console.lifecycle.main.spi.response.FetchGroupMembersh
 import com.atricore.idbus.console.lifecycle.main.spi.response.UpdateUserPasswordResponse;
 import com.atricore.idbus.console.lifecycle.main.spi.response.UpdateUserProfileResponse;
 import com.atricore.idbus.console.lifecycle.main.util.PasswordHashUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;

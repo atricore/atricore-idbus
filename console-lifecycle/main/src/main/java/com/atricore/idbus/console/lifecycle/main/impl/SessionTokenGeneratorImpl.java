@@ -21,13 +21,13 @@
 
 package com.atricore.idbus.console.lifecycle.main.impl;
 
+import com.atricore.idbus.console.lifecycle.main.spi.SessionTokenGenerator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.atricore.idbus.console.lifecycle.main.spi.SessionTokenGenerator;
 
-import java.util.Random;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 
 /**
  * User: cdbirge

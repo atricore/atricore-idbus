@@ -20,9 +20,9 @@
 package com.atricore.idbus.console.lifecycle.main.transform;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Connection;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

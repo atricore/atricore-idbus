@@ -33,6 +33,7 @@
         <class name="AuthenticationAssertionEmissionPolicy" table="ATC_AUTH_ASSERTION_EMISSION_POLICY" />
         <class name="AuthenticationMechanism" table="ATC_AUTHENTICATION_MECHANISM" />
         <class name="AuthenticationContract" table="ATC_AUTHENTICATION_CONTRACT" />
+        <class name="BasicAuthentication" table="ATC_BASIC_AUTHN"/>
         <class name="Channel" table="ATC_CHANNEL">
             <field name="name" >
                 <column allows-null="false"/>

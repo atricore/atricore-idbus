@@ -1,15 +1,20 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.josso.main.JossoMediator;
-import org.atricore.idbus.capabilities.josso.main.PartnerAppMapping;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ProviderRole;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.*;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Description;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Entry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.josso.main.JossoMediator;
+import org.atricore.idbus.capabilities.josso.main.PartnerAppMapping;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SSOLogMessageBuilder;
@@ -42,8 +47,6 @@ import java.util.Date;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -51,7 +54,7 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  */
 public class SPTransformer extends AbstractTransformer {
     
-    private static final Log logger = LogFactory.getLog(IdPTransformer.class);
+    private static final Log logger = LogFactory.getLog(IdPLocalTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {

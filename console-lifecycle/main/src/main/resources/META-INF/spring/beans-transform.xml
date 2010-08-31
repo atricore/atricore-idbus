@@ -31,7 +31,7 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauBaseComponentsTransformer"/>
 
     <bean name="idpTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer"/>
 
     <bean name="idpFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
@@ -80,8 +80,8 @@
     <bean name="idauSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauSerializerTransformer"/>
 
-    <bean name="identityVaultTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityVaultTransformer"/>
+    <bean name="identityLookupTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>
     
     <bean name="projectSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ProjectSerializerTransformer">
@@ -158,7 +158,7 @@
                                         <ref bean="stsTransformer"/>
                                         <ref bean="spTransformer"/>
                                         <ref bean="spFederatedConnectionTransformer"/>
-                                        <ref bean="identityVaultTransformer"/>
+                                        <ref bean="identityLookupTransformer"/>
                                         <ref bean="bpTransformer"/>
                                         <ref bean="bindingChannelTransformer"/>
                                         <!--ref bean="samlr2MetadataTransformer"/-->

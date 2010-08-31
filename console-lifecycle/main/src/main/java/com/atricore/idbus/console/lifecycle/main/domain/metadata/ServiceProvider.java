@@ -21,8 +21,6 @@
 
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
-import java.util.Set;
-
 public class ServiceProvider extends FederatedProvider {
 
 	private static final long serialVersionUID = 1098843994152761313L;

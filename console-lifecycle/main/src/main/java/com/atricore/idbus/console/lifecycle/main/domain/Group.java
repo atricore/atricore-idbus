@@ -22,9 +22,6 @@
 package com.atricore.idbus.console.lifecycle.main.domain;
 
 import java.io.Serializable;
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
 
 /**
  * User: erocha

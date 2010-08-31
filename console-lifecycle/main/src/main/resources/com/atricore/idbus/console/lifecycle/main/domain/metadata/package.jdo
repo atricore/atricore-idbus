@@ -60,6 +60,10 @@
             <field name="id" value-strategy="native" primary-key="true"/>
         </class>
 
+        <class name="BasicAuthentication" detachable="true">
+            <inheritance strategy="new-table"/>
+        </class>
+
         <!-- TODO : RETROFIT -->
         <class name="Channel" detachable="true">
             <inheritance strategy="new-table"/>

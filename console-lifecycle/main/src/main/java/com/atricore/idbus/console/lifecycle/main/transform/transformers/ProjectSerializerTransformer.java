@@ -1,12 +1,12 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
+import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
+import com.atricore.idbus.console.lifecycle.main.transform.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
-import com.atricore.idbus.console.lifecycle.main.transform.*;
-
 import org.apache.commons.vfs.*;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -79,6 +79,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.atricore.idbus.connectors</groupId>
+                <artifactId>org.atricore.idbus.connectors.jdoidentityvault</artifactId>
+                <version>${idbus.connector.jdoidentityvault.version}</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
                 <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
                 <version>${idbus.cap.saml2.version}</version>

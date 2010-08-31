@@ -36,7 +36,7 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauBaseComponentsTransformer"/>
 
     <bean name="idpTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer"/>
 
     <bean name="spFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
@@ -67,11 +67,8 @@
         <property name="roleA" value="false"/>
     </bean>
 
-    <bean name="embeddedStoreTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.EmbeddedStoreTransformer"/>
-
-    <bean name="externalStoreTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExternalStoreTransformer"/>
+    <bean name="identityLookupTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>
 
     <bean name="samlr2MetadataTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2MetadataTransformer"/>
@@ -84,9 +81,6 @@
 
     <bean name="idauSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauSerializerTransformer"/>
-
-    <bean name="identityVaultTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityVaultTransformer"/>
 
     <bean name="projectSerializerTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ProjectSerializerTransformer">
@@ -212,6 +206,7 @@
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
                                         -->
+                                        <ref bean="identityLookupTransformer"/>
 
                                         <!--
                                         <ref bean="identityVaultTransformer"/>

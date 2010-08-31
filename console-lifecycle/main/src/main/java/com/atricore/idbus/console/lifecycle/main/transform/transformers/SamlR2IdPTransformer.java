@@ -1,14 +1,14 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import oasis.names.tc.saml._2_0.metadata.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import oasis.names.tc.saml._2_0.metadata.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
@@ -265,7 +265,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
 
         EndpointType singleLogoutServiceLocal = new EndpointType();
         singleLogoutServiceLocal.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
-        singleLogoutServiceLocal.setLocation("local:/" + provider.getLocation().getUri() + "/SAML2/SLO/LOCAL");
+        singleLogoutServiceLocal.setLocation("local://" + provider.getLocation().getUri() + "/SAML2/SLO/LOCAL");
         idpSSODescriptor.getSingleLogoutService().add(singleLogoutServiceLocal);
         
         EndpointType singleLogoutServiceRedirect = new EndpointType();

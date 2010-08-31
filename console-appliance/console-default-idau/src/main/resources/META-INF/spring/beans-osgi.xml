@@ -19,6 +19,15 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <osgi:service id="idau-default-exporter" ref="idau-default"
                   interface="org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit" />
 
+    <osgi:service id="osgi-psp-default-client"
+                  ref="psp-default-client"
+                  interface="org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client"/>
+
+    <osgi:service id="osgi-idstore-default"
+                  ref="idstore-default"
+                  interface="org.atricore.idbus.kernel.main.store.AbstractStore"/>
+
+
     <!-- OSGi services import -->
 
     <osgi:reference id="cxf" cardinality="1..1" timeout="60" interface="org.apache.cxf.Bus"/>
