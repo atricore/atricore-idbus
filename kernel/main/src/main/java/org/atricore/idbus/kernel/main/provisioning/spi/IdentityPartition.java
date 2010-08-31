@@ -5,6 +5,7 @@ import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
+import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
@@ -20,9 +21,13 @@ public interface IdentityPartition {
 
     IdentityVault getIdentityVault();
 
+    IdentityStore getIdentityStore();
+
     Group findGroupById(long id) throws ProvisioningException;
 
     Group findGroupByName(String name) throws ProvisioningException;
+
+    Collection<Group> findGroupsByUsernName(String name) throws ProvisioningException;
 
     Collection<Group> findAllGroups() throws ProvisioningException;
 

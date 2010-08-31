@@ -31,4 +31,15 @@ public class JDOGroupDAOImpl extends GenericDAOImpl<JDOGroup, Long> implements J
 
         return groups.iterator().next();
     }
+
+    public Collection<JDOGroup> findByUserName(String userName) {
+        PersistenceManager pm = getPersistenceManager();
+
+        Query query = pm.newQuery("SELECT GROUP " +
+                "FROM org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroup GROUP, " +
+                "   org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser USER " +
+                "WHERE GROUP.id == USER.groups.id AND USER.userName == '" + userName + "'");
+
+        return (Collection<JDOGroup>) query.execute();
+    }
 }

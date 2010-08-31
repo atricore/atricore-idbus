@@ -53,6 +53,12 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
     }
 
     public void init() throws ProvisioningException {
+
+        if (getIdentityStore() == null) {
+            JDOIdentityStore store = new JDOIdentityStore();
+            store.setIdPartition(this);
+            setIdentityStore(store);
+        }
     }
 
     // -------------------------------------< Group >
@@ -79,6 +85,18 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
             throw new ProvisioningException(e);
         }
     }
+
+    @Transactional
+    public Collection<Group> findGroupsByUsernName(String userName) throws ProvisioningException {
+        // TODO : Throw group not found exception
+        try {
+            Collection<JDOGroup> jdoGroups = groupDao.findByUserName(userName);
+            return toGroups(jdoGroups);
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
 
     @Transactional
     public Collection<Group> findAllGroups() throws ProvisioningException {
@@ -138,7 +156,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
     @Transactional
     public User findUserById(long id) throws ProvisioningException {
         try {
-            // TODO : Throw group not found exception
+            // TODO : Throw user not found exception
             JDOUser jdoUser = userDao.findById(id);
             return toUser(jdoUser);
         } catch (Exception e) {
@@ -148,7 +166,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
 
     @Transactional
     public User findUserByUserName(String username) throws ProvisioningException {
-        // TODO : Throw group not found exception
+        // TODO : Throw user not found exception
         try {
             JDOUser jdoUser = userDao.findByUserName(username);
             return toUser(jdoUser);
