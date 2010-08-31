@@ -8,6 +8,7 @@ import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
+import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
 import org.atricore.idbus.kernel.main.store.AbstractStore;
 import org.atricore.idbus.kernel.main.store.UserKey;
 import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
@@ -21,14 +22,14 @@ import java.util.Collection;
 public class JDOIdentityStore extends AbstractStore
 {
 
-    private JDOIdentityPartition idPartition;
+    private IdentityPartition idPartition;
 
 
-    public JDOIdentityPartition getIdPartition() {
+    public IdentityPartition getIdPartition() {
         return idPartition;
     }
 
-    public void setIdPartition(JDOIdentityPartition idPartition) {
+    public void setIdPartition(IdentityPartition idPartition) {
         this.idPartition = idPartition;
     }
 
