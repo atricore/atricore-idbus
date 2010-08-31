@@ -20,7 +20,12 @@ import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
 
 public class CustomVisualGraph extends EnhancedVisualGraph {
 
-    private var _connectionMode:Boolean;
+    private static var FEDERATED_CONNECTION_MODE:uint = 1;
+    private static var ACTIVATION_MODE:uint = 2;
+    private static var IDENTITY_LOOKUP_MODE:uint = 3;
+
+    private var _isConnectionMode:Boolean;
+    private var _connectionMode:uint;
     private var _connectionStartPoint:Point;
     private var _connectionSourceNode:IVisualNode;
     private var _connectionTargetNode:IVisualNode;
@@ -39,7 +44,7 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
 
     override protected function dragBegin(event:MouseEvent):void {
         super.dragBegin(event);
-        if (event.currentTarget is NodeDetailedRenderer && _connectionMode) {
+        if (event.currentTarget is NodeDetailedRenderer && _isConnectionMode) {
             _connectionDragInProgress = true;
             _connectionSourceNode = data as IVisualNode;
             _connectionStartPoint = new Point(_canvas.contentMouseX, _canvas.contentMouseY);
@@ -49,11 +54,11 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
 
     override protected function dragEnd(event:MouseEvent):void {
         super.dragEnd(event);
-        if (_connectionMode) {
+        if (_isConnectionMode) {
             connectionTargetNode = data as IVisualNode;
             if (_connectionSourceNode != null && _connectionTargetNode != null) {
-                if (!nodeLinkExists(_connectionSourceNode.node, _connectionTargetNode.node) &&
-                        DiagramUtil.nodesCanBeLinked(_connectionSourceNode, _connectionTargetNode)) {
+                if (!DiagramUtil.nodeLinkExists(_connectionSourceNode.node, _connectionTargetNode.node)
+                        && canConnect(_connectionSourceNode, _connectionTargetNode)){
                     // TODO: move linkNodes() call to DiagramMediator.nodesLinkedEventHandler() ?
                     GraphDataManager.linkVNodes(this, _connectionSourceNode, _connectionTargetNode);
                     dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.VNODES_LINKED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
@@ -66,12 +71,11 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
 
     override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
         super.updateDisplayList(unscaledWidth, unscaledHeight);
-        if (_connectionMode && _connectionDragInProgress) {
+        if (_isConnectionMode && _connectionDragInProgress) {
             var lineColor:uint = uint(0xCCCCCC);  //grey
             var targetNode:IVisualNode = data as IVisualNode;
-            if (targetNode != null) {
-                if (!nodeLinkExists(_connectionSourceNode.node, targetNode.node) &&
-                        DiagramUtil.nodesCanBeLinked(_connectionSourceNode, targetNode)) {
+            if (targetNode != null && targetNode!= _connectionSourceNode) {
+                if (!DiagramUtil.nodeLinkExists(_connectionSourceNode.node, targetNode.node) && canConnect(_connectionSourceNode, targetNode)) {
                     lineColor = uint(0x00CC00);  //green
                 } else {
                     lineColor = uint(0xFF0000);  //red
@@ -87,8 +91,8 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         }
     }
 
-    public function enterConnectionMode():void {
-        _connectionMode = true;
+    private function enterConnectionMode():void {
+        _isConnectionMode = true;
         _moveNodeInDrag = false;
         _moveEdgeInDrag = false;
         _moveGraphInDrag = false;
@@ -100,9 +104,24 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         (document as DisplayObject).addEventListener(MouseEvent.MOUSE_MOVE, handleConnectionDrag);
     }
 
+    public function enterFederatedConnectionMode():void {
+        _connectionMode = FEDERATED_CONNECTION_MODE;
+        enterConnectionMode();
+    }
+
+    public function enterActivationMode():void {
+        _connectionMode = ACTIVATION_MODE;
+        enterConnectionMode();
+    }
+
+    public function enterIdentityLookupMode():void {
+        _connectionMode = IDENTITY_LOOKUP_MODE;
+        enterConnectionMode();
+    }
+
     public function exitConnectionMode():void {
         _connectionDragInProgress = false;
-        _connectionMode = false;
+        _isConnectionMode = false;
         _connectionStartPoint = null;
         _connectionSourceNode = null;
         _connectionTargetNode = null;
@@ -129,14 +148,14 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     }
 
     private function mouseClickHandler(event:MouseEvent):void {
-        if (_connectionMode && !_connectionDragInProgress) {
+        if (_isConnectionMode && !_connectionDragInProgress) {
             exitConnectionMode();
             CursorManager.removeAllCursors();
         }
     }
 
     private function mouseOverHandler(event:MouseEvent):void {
-        if (_connectionMode) {
+        if (_isConnectionMode) {
             CursorManager.setCursor(crossCursorSymbol);
         }
     }
@@ -150,10 +169,11 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         _dragComponent = null;
         refresh();
         event.updateAfterEvent();
+        CursorManager.removeAllCursors();
     }
 
     private function rollOutHandler(event:MouseEvent):void {
-        if (_connectionMode && _connectionDragInProgress) {
+        if (_isConnectionMode && _connectionDragInProgress) {
             exitConnectionMode();
             refresh();
             event.updateAfterEvent();
@@ -162,17 +182,10 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     }
 
     private function handleConnectionDrag(event:MouseEvent):void {
-        if (_connectionMode) {
+        if (_isConnectionMode) {
             refresh();
 			event.updateAfterEvent();
         }
-    }
-
-    private function nodeLinkExists(node1:INode, node2:INode):Boolean {
-        if (node1 != null && node2 != null && node1.successors.indexOf(node2) != -1) {
-            return true;
-        }
-        return false;
     }
 
     public function createVisualNode(node:INode):IVisualNode {
@@ -248,14 +261,25 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         refresh();
     }
 
+    private function canConnect(sourceNode:IVisualNode, targetNode:IVisualNode):Boolean {
+        var canConnect:Boolean = false;
+        if(_connectionMode == FEDERATED_CONNECTION_MODE && DiagramUtil.nodesCanBeLinkedWithFederatedConnection(sourceNode, targetNode)) {
+            canConnect = true;
+        } else if (_connectionMode == ACTIVATION_MODE && DiagramUtil.nodesCanBeLinkedWithActivation(sourceNode, targetNode)){
+            canConnect = true;
+        } else if (_connectionMode == IDENTITY_LOOKUP_MODE && DiagramUtil.nodesCanBeLinkedWithIdentityLookup(sourceNode, targetNode)){
+            canConnect = true;
+        }
+        return canConnect;
+    }
     // Getters and Setters
 
     public function get connectionMode():Boolean {
-        return _connectionMode;
+        return _isConnectionMode;
     }
 
     public function set connectionMode(value:Boolean):void {
-        _connectionMode = value;
+        _isConnectionMode = value;
     }
 
     public function get connectionStartPoint():Point {
