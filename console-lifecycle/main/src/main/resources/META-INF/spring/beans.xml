@@ -84,16 +84,13 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 		<property name="idauFolder" value="${server.idauFolder}"/>
 	</bean>
 
-	<!--<bean id="idApplianceManagementService" class="com.atricore.idbus.console.lifecycle.main.impl.IdentityApplianceManagementServiceMockImpl" />-->
-
-    <!-- TODO : switch to production implementation -->
 	<bean id="idApplianceManagementService" class="com.atricore.idbus.console.lifecycle.main.impl.IdentityApplianceManagementServiceImpl">
         <property name="builder" ref="applianceBuilder"/>
         <property name="deployer" ref="applianceDeployer"/>
         <!-- DAO's -->
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
         <property name="identityApplianceDefinitionDAO" ref="identityApplianceDefinitionDAO"/>
-        <property name="identityVaultDAO" ref="identityVaultDAO"/>
+        <property name="identitySourceDAO" ref="identitySourceDAO"/>
         <property name="userInformationLookupDAO" ref="userInformationLookupDAO"/>
         <property name="accountLinkagePolicyDAO" ref="accountLinkagePolicyDAO"/>
         <property name="authenticationContractDAO" ref="authenticationContractDAO"/>

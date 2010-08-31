@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityVault;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentitySource;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 
@@ -8,13 +8,14 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
+@Deprecated
 public class EmbeddedStoreTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        if (event.getData() instanceof IdentityVault) {
-            IdentityVault iv = (IdentityVault) event.getData();
-            return iv.isEmbedded();
+        if (event.getData() instanceof IdentitySource) {
+            IdentitySource iv = (IdentitySource) event.getData();
+            return false;
         }
         return false;
     }

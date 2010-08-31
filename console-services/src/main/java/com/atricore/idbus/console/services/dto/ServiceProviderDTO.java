@@ -26,9 +26,16 @@ public class ServiceProviderDTO extends LocalProviderDTO {
 
 	private static final long serialVersionUID = 1096573594152761313L;
 
-    private ChannelDTO bindingChannel;
+    private ActivationDTO activation;
 
-    private ExecutionEnvironmentDTO executionEnvironment;
+    private AccountLinkagePolicyDTO accountLinkagePolicy;
+
+    // RFU
+    private AuthenticationContractDTO authenticationContract;
+
+    // RFU
+    private AuthenticationMechanismDTO authenticationMechanism;
+
 
     @Override
     public ProviderRoleDTO getRole() {
@@ -40,20 +47,35 @@ public class ServiceProviderDTO extends LocalProviderDTO {
 //        throw new UnsupportedOperationException("Cannot change provider role");
     }
 
-
-    public ChannelDTO getBindingChannel() {
-        return bindingChannel;
+    public ActivationDTO getActivation() {
+        return activation;
     }
 
-    public void setBindingChannel(ChannelDTO bindingChannel) {
-        this.bindingChannel = bindingChannel;
+    public void setActivation(ActivationDTO activation) {
+        this.activation = activation;
     }
 
-    public ExecutionEnvironmentDTO getExecutionEnvironment() {
-        return executionEnvironment;
+    public AccountLinkagePolicyDTO getAccountLinkagePolicy() {
+        return accountLinkagePolicy;
     }
 
-    public void setExecutionEnvironment(ExecutionEnvironmentDTO executionEnvironment) {
-        this.executionEnvironment = executionEnvironment;
+    public void setAccountLinkagePolicy(AccountLinkagePolicyDTO accountLinkagePolicy) {
+        this.accountLinkagePolicy = accountLinkagePolicy;
+    }
+
+    public AuthenticationContractDTO getAuthenticationContract() {
+        return authenticationContract;
+    }
+
+    public void setAuthenticationContract(AuthenticationContractDTO authenticationContract) {
+        this.authenticationContract = authenticationContract;
+    }
+
+    public AuthenticationMechanismDTO getAuthenticationMechanism() {
+        return authenticationMechanism;
+    }
+
+    public void setAuthenticationMechanism(AuthenticationMechanismDTO authenticationMechanism) {
+        this.authenticationMechanism = authenticationMechanism;
     }
 }

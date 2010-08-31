@@ -22,8 +22,8 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Channel implements Serializable {
 
@@ -31,14 +31,16 @@ public class Channel implements Serializable {
 
     private long id;
 	private String name;
+    private String displayName;
 	private Location location;
     private String description;
+    private boolean overrideProviderSetup;
 
-    private List<Binding> activeBindings = new ArrayList<Binding>();
+    // RFU
+    private Set<Binding> activeBindings = new HashSet<Binding>();
 
-    private List<Profile> activeProfiles = new ArrayList<Profile>();
-
-    private Provider target;
+    // RFU
+    private Set<Profile> activeProfiles = new HashSet<Profile>();
 
     public long getId() {
         return id;
@@ -56,7 +58,15 @@ public class Channel implements Serializable {
 		this.name = name;
 	}
 
-	public Location getLocation() {
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public Location getLocation() {
 		return location;
 	}
 
@@ -64,34 +74,25 @@ public class Channel implements Serializable {
 		this.location = location;
 	}
 
-    public Provider getTarget() {
-        return target;
-    }
-
-    public void setTarget(Provider target) {
-        this.target = target;
-    }
-
-    
-	public List<Binding> getActiveBindings() {
+    public Set<Binding> getActiveBindings() {
 		if(activeBindings == null){
-			activeBindings = new ArrayList<Binding>();
+			activeBindings = new HashSet<Binding>();
 		}
 		return activeBindings;
 	}
 
-    public void setActiveBindings(List<Binding> activeBindings) {
+    public void setActiveBindings(Set<Binding> activeBindings) {
         this.activeBindings = activeBindings;
     }
 
-    public List<Profile> getActiveProfiles() {
+    public Set<Profile> getActiveProfiles() {
 		if(activeProfiles == null){
-			activeProfiles = new ArrayList<Profile>();
+			activeProfiles = new HashSet<Profile>();
 		}
 		return activeProfiles;
 	}
 
-    public void setActiveProfiles(List<Profile> activeProfiles) {
+    public void setActiveProfiles(Set<Profile> activeProfiles) {
         this.activeProfiles = activeProfiles;
     }
 
@@ -101,6 +102,14 @@ public class Channel implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isOverrideProviderSetup() {
+        return overrideProviderSetup;
+    }
+
+    public void setOverrideProviderSetup(boolean overrideProviderSetup) {
+        this.overrideProviderSetup = overrideProviderSetup;
     }
 
     @Override

@@ -265,7 +265,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             }
 
             IdentityAppliance foundAppliance = prepareApplianceForUpdate(idAppliance);
-            foundAppliance.getIdApplianceDefinition().getCertificate().setStore(beLookupStoreRes.getResource());
+            foundAppliance.getIdApplianceDefinition().getKeystore().setStore(beLookupStoreRes.getResource());
             UpdateIdentityApplianceResponse updateResponse = this.updateAppliance(foundAppliance);
             idAppliance = updateResponse.getAppliance();
         }
@@ -645,7 +645,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 //        bpLocation.setHost(sp.getLocation().getHost());
 //        bpLocation.setPort(sp.getLocation().getPort());
 //        bpLocation.setContext(iad.getLocation().getContext());////not sp.getLocation.uri but iad.getLocation.Context
-//        bpLocation.setUri("/" + createUrlSafeString(sp.getName()) + "/SSOP");//remove sp.getLocation.uri
+//        bpLocation.setUri("/" + createUrlSafeString(sp.getName()) + "/SSOP");//delete sp.getLocation.uri
 //        bindingChannel.setLocation(bpLocation);
 
         bindingChannel.getActiveBindings().add(BindingDTO.SSO_ARTIFACT);
@@ -654,7 +654,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         bindingChannel.getActiveProfiles().add(ProfileDTO.SSO);
         bindingChannel.getActiveProfiles().add(ProfileDTO.SSO_SLO);
 
-        sp.setBindingChannel(bindingChannel);
+//        sp.setBindingChannel(bindingChannel);
 
         IdentityProviderChannelDTO idpChannel = new IdentityProviderChannelDTO();
         idpChannel.setName(sp.getName() + " to idp default channel");
@@ -674,7 +674,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idpChannel.getActiveProfiles().add(ProfileDTO.SSO);
         idpChannel.getActiveProfiles().add(ProfileDTO.SSO_SLO);
 
-        sp.setDefaultChannel(idpChannel);
+//        sp.setDefaultChannel(idpChannel);
 
         SamlR2ProviderConfigDTO spSamlConfig = new SamlR2ProviderConfigDTO();
         spSamlConfig.setName(sp.getName() + " samlr2 config");
@@ -756,9 +756,9 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         spChannel.setLocation(spChannelLocation);
 
         //simple sso wizard creates only one vault
-        spChannel.setIdentityVault(iad.getIdentityVaults().get(0));
+//        spChannel.setIdentityVault(iad.getIdentityVaults().get(0));
 
-        idp.setDefaultChannel(spChannel);
+//        idp.setDefaultChannel(spChannel);
 
         SamlR2ProviderConfigDTO idpSamlConfig = new SamlR2ProviderConfigDTO();
         idpSamlConfig.setName(idp.getName() + " samlr2 config");

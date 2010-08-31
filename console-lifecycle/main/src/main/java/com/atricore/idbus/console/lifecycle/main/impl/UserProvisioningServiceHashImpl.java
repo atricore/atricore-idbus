@@ -34,7 +34,7 @@ import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 import com.atricore.idbus.console.lifecycle.main.util.PasswordHashUtil;
 
-
+@Deprecated
 public class UserProvisioningServiceHashImpl
     implements UserProvisioningService
 {

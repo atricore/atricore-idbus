@@ -25,9 +25,10 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 
-import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+import com.atricore.idbus.console.services.dto.Activation;
+import com.atricore.idbus.console.services.dto.ServiceProvider;
 
-import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironmentDTO;
+import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
 import flash.events.MouseEvent;
 
@@ -39,7 +40,7 @@ public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator 
 
     private var _projectProxy:ProjectProxy;
 
-    private var _newExecutionEnvironment:WeblogicExecutionEnvironmentDTO;
+    private var _newExecutionEnvironment:WeblogicExecutionEnvironment;
 
     public function WeblogicExecutionEnvironmentCreateMediator(name:String = null, viewComp:WeblogicExecutionEnvironmentCreateForm = null) {
         super(name, viewComp);
@@ -78,7 +79,7 @@ public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator 
 
     override public function bindModel():void {
 
-        var weblogicExecutionEnvironment:WeblogicExecutionEnvironmentDTO = new WeblogicExecutionEnvironmentDTO();
+        var weblogicExecutionEnvironment:WeblogicExecutionEnvironment = new WeblogicExecutionEnvironment();
 
         weblogicExecutionEnvironment.name = view.executionEnvironmentName.text;
         weblogicExecutionEnvironment.description = view.executionEnvironmentDescription.text;
@@ -89,7 +90,14 @@ public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator 
     private function handleWeblogicExecutionEnvironmentSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            (_projectProxy.currentIdentityApplianceElementOwner as ServiceProviderDTO).executionEnvironment = _newExecutionEnvironment;
+            var sp:ServiceProvider = _projectProxy.currentIdentityApplianceElementOwner as ServiceProvider;
+            if(sp.activation == null){
+                var activation:Activation = new Activation();
+                activation.sp = sp;
+                activation.name = sp.name + " to " + _newExecutionEnvironment.name;
+                sp.activation = activation;
+            }
+            sp.activation.executionEnv = _newExecutionEnvironment;
             _projectProxy.currentIdentityApplianceElement = _newExecutionEnvironment;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
             sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);

@@ -27,6 +27,7 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
 /**
  * @version $Id$
  */
+@Deprecated
 public class SPBindingChannelTransformer extends AbstractTransformer {
 
     private static final Log logger = LogFactory.getLog(SPBindingChannelTransformer.class);
@@ -38,6 +39,9 @@ public class SPBindingChannelTransformer extends AbstractTransformer {
 
     @Override
     public void before(TransformEvent event) throws TransformException {
+
+        // TODO RETROFIT  :
+        /*
 
         Beans spBeans = (Beans) event.getContext().get("spBeans");
 
@@ -181,5 +185,6 @@ public class SPBindingChannelTransformer extends AbstractTransformer {
 
             setPropertyRef(spBean, "bindingChannel", bc.getName());
         }
+        */
     }
 }

@@ -26,7 +26,7 @@ import com.atricore.idbus.console.lifecycle.main.exception.UserProvisioningAjaxE
 import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 
-
+@Deprecated
 public interface UserProvisioningService {
 
     //<---------------Groups -------------------->

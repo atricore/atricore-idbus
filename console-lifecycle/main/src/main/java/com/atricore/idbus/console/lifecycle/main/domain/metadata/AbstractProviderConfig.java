@@ -4,11 +4,13 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public abstract class AbstractProviderConfig implements ProviderConfig {
+public class AbstractProviderConfig implements ProviderConfig {
 
     private long id;
 
     private String name;
+
+    private String displayName;
 
     private String description;
 
@@ -26,6 +28,14 @@ public abstract class AbstractProviderConfig implements ProviderConfig {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public String getDescription() {

@@ -26,7 +26,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-import com.atricore.idbus.console.services.dto.UserDTO;
+import com.atricore.idbus.console.services.dto.User;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -42,7 +42,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class SearchUsersMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
-    private var _searchUser:UserDTO;
+    private var _searchUser:User;
 
     private var _processingStarted:Boolean;
 
@@ -109,7 +109,7 @@ public class SearchUsersMediator extends IocFormMediator
     }
 
     override public function bindModel():void {
-        var searchUserDef:UserDTO = new UserDTO();
+        var searchUserDef:User = new User();
         searchUserDef.userName = view.userUsername.text;
         searchUserDef.firstName = view.userFirstName.text;
         searchUserDef.surename = view.userLastname.text;

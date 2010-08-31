@@ -9,18 +9,18 @@ import java.util.Set;
  */
 public class LocalProvider extends Provider {
 
+    private static final long serialVersionUID = 2967386484748634148L;
+
     private ProviderConfig config;
 
-    /**
-     * The default channel where requests from other providers are received
-     */
-    private Channel defaultChannel;
+    // RFU
+    private Set<Binding> activeBindings = new HashSet<Binding>();
 
-    /**
-     * Channels that override the default channel (optional), they must refer to a target! 
-     */
-    private Set<Channel> channels =  new HashSet<Channel>();
-    private static final long serialVersionUID = 2967662484748634148L;
+    // RFU
+    private Set<Profile> activeProfiles = new HashSet<Profile>();
+
+    private IdentityLookup identityLookup;
+
 
     public ProviderConfig getConfig() {
         return config;
@@ -30,19 +30,33 @@ public class LocalProvider extends Provider {
         this.config = config;
     }
 
-    public Channel getDefaultChannel() {
-        return defaultChannel;
+    public Set<Binding> getActiveBindings() {
+		if(activeBindings == null){
+			activeBindings = new HashSet<Binding>();
+		}
+		return activeBindings;
+	}
+
+    public void setActiveBindings(Set<Binding> activeBindings) {
+        this.activeBindings = activeBindings;
     }
 
-    public void setDefaultChannel(Channel defaultChannel) {
-        this.defaultChannel = defaultChannel;
+    public Set<Profile> getActiveProfiles() {
+		if(activeProfiles == null){
+			activeProfiles = new HashSet<Profile>();
+		}
+		return activeProfiles;
+	}
+
+    public void setActiveProfiles(Set<Profile> activeProfiles) {
+        this.activeProfiles = activeProfiles;
     }
 
-    public Set<Channel> getChannels() {
-        return channels;
+    public IdentityLookup getIdentityLookup() {
+        return identityLookup;
     }
 
-    public void setChannels(Set<Channel> channels) {
-        this.channels = channels;
+    public void setIdentityLookup(IdentityLookup identityLookup) {
+        this.identityLookup = identityLookup;
     }
 }

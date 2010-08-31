@@ -66,9 +66,11 @@ public class STSTransformer extends AbstractTransformer {
         Bean stsSecTkn2AssertionPlan = newBean(idpBeans,
                 spChannelBean.getName() + "-samlr2-sectoken-to-authnassertion-plan",
                 "org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan");
+        // TODO RETROFIT  :
+        /*
         if (spChannel.getIdentityVault() != null) {
             setPropertyRef(stsSecTkn2AssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
-        }
+        } */
         setPropertyRef(stsSecTkn2AssertionPlan, "bpmsManager", "bpms-manager");
 
         // identityPlan

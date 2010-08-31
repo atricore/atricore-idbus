@@ -23,24 +23,24 @@ package com.atricore.idbus.console.modeling.browser.model {
 
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.main.view.util.Constants;
-import com.atricore.idbus.console.services.dto.BindingProviderDTO;
-import com.atricore.idbus.console.services.dto.DbIdentityVaultDTO;
-import com.atricore.idbus.console.services.dto.ExecutionEnvironmentDTO;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
-import com.atricore.idbus.console.services.dto.IdentityApplianceUnitDTO;
-import com.atricore.idbus.console.services.dto.IdentityApplianceUnitTypeDTO;
-import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
-import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
-import com.atricore.idbus.console.services.dto.JbossExecutionEnvironmentDTO;
-import com.atricore.idbus.console.services.dto.LdapIdentityVaultDTO;
-import com.atricore.idbus.console.services.dto.ProviderDTO;
-import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
-import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironmentDTO;
+import com.atricore.idbus.console.services.dto.BindingProvider;
+import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
+import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
+import com.atricore.idbus.console.services.dto.IdentityApplianceUnit;
+import com.atricore.idbus.console.services.dto.IdentityApplianceUnitType;
+import com.atricore.idbus.console.services.dto.IdentityProvider;
+import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.LdapIdentitySource;
+import com.atricore.idbus.console.services.dto.Provider;
+import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
 public class BrowserModelFactory {
 
-        public static function createIdentityApplianceNode(identityAppliance:IdentityApplianceDTO, selectable:Boolean):BrowserNode {
+        public static function createIdentityApplianceNode(identityAppliance:IdentityAppliance, selectable:Boolean):BrowserNode {
             var applianceNode:BrowserNode = new BrowserNode();
             applianceNode.id = identityAppliance.id;
             applianceNode.label = identityAppliance.idApplianceDefinition.name;
@@ -50,7 +50,7 @@ public class BrowserModelFactory {
             return applianceNode;
         }
 
-        public static function createIdentityApplianceDefinitionNode(identityApplianceDefinition:IdentityApplianceDefinitionDTO, selectable:Boolean):BrowserNode {
+        public static function createIdentityApplianceDefinitionNode(identityApplianceDefinition:IdentityApplianceDefinition, selectable:Boolean):BrowserNode {
             var applianceDefinitionNode:BrowserNode = new BrowserNode();
             applianceDefinitionNode.id = identityApplianceDefinition.id;
             applianceDefinitionNode.label = identityApplianceDefinition.name;
@@ -60,47 +60,47 @@ public class BrowserModelFactory {
             return applianceDefinitionNode;
         }
 
-        public static function createIdentityApplianceUnitNode(identityApplianceUnit:IdentityApplianceUnitDTO, selectable:Boolean):BrowserNode {
+        public static function createIdentityApplianceUnitNode(identityApplianceUnit:IdentityApplianceUnit, selectable:Boolean):BrowserNode {
             var applianceUnitNode:BrowserNode = new BrowserNode();
             applianceUnitNode.id = identityApplianceUnit.id;
             applianceUnitNode.label = identityApplianceUnit.name;
             applianceUnitNode.type = Constants.IDENTITY_BUS_UNIT_DEEP;
             applianceUnitNode.data = identityApplianceUnit;
             applianceUnitNode.selectable = selectable;
-            var type:IdentityApplianceUnitTypeDTO = identityApplianceUnit.type;
-            if (type.equals(IdentityApplianceUnitTypeDTO.FEDERATION_UNIT)) {
+            var type:IdentityApplianceUnitType = identityApplianceUnit.type;
+            if (type.equals(IdentityApplianceUnitType.FEDERATION_UNIT)) {
                 applianceUnitNode.icon = EmbeddedIcons.worldIcon;
-            } else if (type.equals(IdentityApplianceUnitTypeDTO.PROVISIONING_UNIT)) {
+            } else if (type.equals(IdentityApplianceUnitType.PROVISIONING_UNIT)) {
                 applianceUnitNode.icon = EmbeddedIcons.usersIcon;
             }
             return applianceUnitNode;
         }
 
-        public static function createProviderNode(provider:ProviderDTO, selectable:Boolean):BrowserNode {
+        public static function createProviderNode(provider:Provider, selectable:Boolean):BrowserNode {
             var providerNode:BrowserNode = new BrowserNode();
             providerNode.id = provider.id;
             providerNode.label = provider.name;
             providerNode.type = Constants.PROVIDER_DEEP;
             providerNode.data = provider;
             providerNode.selectable = selectable;
-            if (provider is ServiceProviderDTO) {
+            if (provider is ServiceProvider) {
                 providerNode.icon = EmbeddedIcons.spMiniIcon;
-            } else if (provider is IdentityProviderDTO) {
+            } else if (provider is IdentityProvider) {
                 providerNode.icon = EmbeddedIcons.idpMiniIcon;
-            } else if (provider is BindingProviderDTO) {
+            } else if (provider is BindingProvider) {
                 providerNode.icon = EmbeddedIcons.bpMiniIcon;
             }
             return providerNode;
         }
 
-        public static function createIdentityVaultNode(identityVault:IdentityVaultDTO, selectable:Boolean):BrowserNode {
+        public static function createIdentityVaultNode(identityVault:IdentitySource, selectable:Boolean):BrowserNode {
             var identityVaultNode:BrowserNode = new BrowserNode();
             identityVaultNode.id = Number(identityVault.id);
             identityVaultNode.label = identityVault.name;
             identityVaultNode.type = Constants.IDENTITY_VAULT_DEEP;
-            if(identityVault is DbIdentityVaultDTO){
+            if(identityVault is DbIdentitySource){
                 identityVaultNode.icon = EmbeddedIcons.dbIdentitySourceMiniIcon;
-            } else if(identityVault is LdapIdentityVaultDTO){
+            } else if(identityVault is LdapIdentitySource){
                 identityVaultNode.icon = EmbeddedIcons.ldapIdentitySourceMiniIcon;
             } else {
                 identityVaultNode.icon = EmbeddedIcons.vaultMiniIcon;
@@ -111,14 +111,14 @@ public class BrowserModelFactory {
             return identityVaultNode;
         }
 
-        public static function createExecutionEnvironmentNode(executionEnvironment:ExecutionEnvironmentDTO, selectable:Boolean):BrowserNode {
+        public static function createExecutionEnvironmentNode(executionEnvironment:ExecutionEnvironment, selectable:Boolean):BrowserNode {
             var execEnvironmentNode:BrowserNode = new BrowserNode();
             execEnvironmentNode.id = Number(executionEnvironment.id);
             execEnvironmentNode.label = executionEnvironment.name;
             execEnvironmentNode.type = Constants.EXEC_ENVIRONMENT_DEEP;
-            if(executionEnvironment is JbossExecutionEnvironmentDTO){
+            if(executionEnvironment is JbossExecutionEnvironment){
                 execEnvironmentNode.icon = EmbeddedIcons.jbossEnvironmentMiniIcon;
-            } else if(executionEnvironment is WeblogicExecutionEnvironmentDTO){
+            } else if(executionEnvironment is WeblogicExecutionEnvironment){
                 execEnvironmentNode.icon = EmbeddedIcons.weblogicEnvironmentMiniIcon;
             } else {
                 execEnvironmentNode.icon = EmbeddedIcons.executionEnvironmentMiniIcon;

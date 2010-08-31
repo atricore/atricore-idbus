@@ -30,5 +30,11 @@ public class RemoteProviderDTO extends ProviderDTO {
     private ResourceDTO metadata;
     private static final long serialVersionUID = 6912416225120023937L;
 
+    public ResourceDTO getMetadata() {
+        return metadata;
+    }
 
+    public void setMetadata(ResourceDTO metadata) {
+        this.metadata = metadata;
+    }
 }

@@ -29,6 +29,7 @@ public class Provider implements Serializable {
 
     private long id;
     private String name;
+    private String displayName;
     private Location location;
     private String description;
 
@@ -50,6 +51,14 @@ public class Provider implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public Location getLocation() {

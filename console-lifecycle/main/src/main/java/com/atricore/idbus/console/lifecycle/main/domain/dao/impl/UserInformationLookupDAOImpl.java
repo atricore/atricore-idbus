@@ -11,6 +11,6 @@ public class UserInformationLookupDAOImpl extends GenericDAOImpl<UserInformation
     private static final Log logger = LogFactory.getLog(UserInformationLookupDAOImpl.class);
 
     public UserInformationLookupDAOImpl() {
-        super(UserInformationLookup.class);
+        super();
     }
 }

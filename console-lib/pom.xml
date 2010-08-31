@@ -50,6 +50,7 @@
             <plugin><!-- Flex (SWC and SWF) compilation -->
                 <groupId>org.sonatype.flexmojos</groupId>
                 <artifactId>flexmojos-maven-plugin</artifactId>
+                
                 <executions>
                     <execution>
                         <id>myId</id>
@@ -99,9 +100,22 @@
                                 <bean-template>${basedir}/src/main/template/bean.gsp</bean-template>
                             </templates>
 
+                            <extraOptions>
+                                <as3typefactory>com.atricore.idbus.console.tooling.grainte.ATCConsoleAs3TypeFactory</as3typefactory>
+                            </extraOptions>
+
                         </configuration>
                     </execution>
                 </executions>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>com.atricore.idbus.console</groupId>
+                        <artifactId>console-tooling</artifactId>
+                        <version>${version}</version>
+                    </dependency>
+                </dependencies>
+                
             </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>

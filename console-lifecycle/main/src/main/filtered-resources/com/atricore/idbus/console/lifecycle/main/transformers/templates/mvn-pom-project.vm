@@ -23,9 +23,10 @@
         <idbus.kernel.version>${idbus.kernel.version}</idbus.kernel.version>
 
         <!-- Atricore Capabilities -->
-        <idbus.capability.josso.version>${idbus.cap.josso.version}</idbus.capability.josso.version>
-        <idbus.capability.samlr2.version>${idbus.cap.josso.version}</idbus.capability.samlr2.version>
+        <idbus.cap.josso.version>${idbus.cap.josso.version}</idbus.cap.josso.version>
+        <idbus.cap.saml2.version>${idbus.cap.josso.version}</idbus.cap.saml2.version>
         <idbus.cap.sts.version>${idbus.cap.sts.version}</idbus.cap.sts.version>
+        <idbus.cap.spml2.version>${idbus.cap.spml2.version}</idbus.cap.spml2.version>
 
         <!-- Atricore IDOJOs -->
         <idbus.idojo.dbidentitystore.version>${idbus.idojo.dbidentitystore.version}</idbus.idojo.dbidentitystore.version>
@@ -35,6 +36,8 @@
         <idbus.idojo.memorysessionstore.version>${idbus.idojo.memorysessionstore.version}</idbus.idojo.memorysessionstore.version>
         <idbus.idojo.serializedsessionstore.version>${idbus.idojo.serializedsessionstore.version}</idbus.idojo.serializedsessionstore.version>
         <idbus.idojo.strongauthscheme.version>${idbus.idojo.strongauthscheme.version}</idbus.idojo.strongauthscheme.version>
+
+        <idbus.connector.jdoidentityvault.version>${idbus.connector.jdoidentityvault.version}</idbus.connector.jdoidentityvault.version>
 
         <!-- Atricore Bundles -->
         <idbus.bundle.josso-ws-v1_2.version>${idbus.bundle.josso-ws-v1_2.version}</idbus.bundle.josso-ws-v1_2.version>

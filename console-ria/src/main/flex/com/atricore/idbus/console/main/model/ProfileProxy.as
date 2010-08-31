@@ -21,13 +21,13 @@
 
 package com.atricore.idbus.console.main.model
 {
-import com.atricore.idbus.console.services.dto.UserDTO;
+import com.atricore.idbus.console.services.dto.User;
 
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 public class ProfileProxy extends IocProxy
 {
-   public var user : UserDTO;
+   public var user : User;
 
    public function ProfileProxy(name:String = null)
    {

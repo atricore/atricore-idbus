@@ -26,7 +26,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-import com.atricore.idbus.console.services.dto.GroupDTO;
+import com.atricore.idbus.console.services.dto.Group;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -42,7 +42,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class SearchGroupsMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
-    private var _searchGroup:GroupDTO;
+    private var _searchGroup:Group;
 
     private var _processingStarted:Boolean;
 
@@ -106,7 +106,7 @@ public class SearchGroupsMediator extends IocFormMediator
     }
 
     override public function bindModel():void {
-        var newGroupDef:GroupDTO = new GroupDTO();
+        var newGroupDef:Group = new Group();
         newGroupDef.name = view.groupName.text;
         newGroupDef.description = view.groupDescription.text;
 

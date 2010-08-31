@@ -12,6 +12,7 @@ import java.io.InputStream;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
+@Deprecated
 public class SamlR2MetadataTransformer extends AbstractTransformer {
 
     private String baseSrcPath = "/org/atricore/idbus/examples/simplefederation/idau/";
@@ -25,7 +26,7 @@ public class SamlR2MetadataTransformer extends AbstractTransformer {
     public void before(TransformEvent event) throws TransformException {
         try {
             IdProjectModule module = event.getContext().getCurrentModule();
-            String baseDestPath = (String) event.getContext().get("baseSamlDestPath");
+            String baseDestPath = (String) event.getContext().get("idauPath");
 
             // idp1-samlr2-metadata.xml
             IdProjectResource<InputStream> idp1MetadataXml = new IdProjectResource<InputStream>(idGen.generateId(),

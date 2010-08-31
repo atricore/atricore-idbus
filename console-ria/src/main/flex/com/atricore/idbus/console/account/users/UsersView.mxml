@@ -94,11 +94,11 @@
                                 </s:states>
                                 <fx:Script>
                                 <![CDATA[
-                                    import com.atricore.idbus.console.services.dto.GroupDTO;
+                                    import com.atricore.idbus.console.services.dto.Group;
 
                                     public function concateGroups(groups:Array):String {
                                         var userGroups:String = "";
-                                        for each (var group:GroupDTO in groups) {
+                                        for each (var group:Group in groups) {
                                             if (userGroups != "")
                                                 userGroups = userGroups.concat(", ");
                                             userGroups = userGroups.concat(group.name);

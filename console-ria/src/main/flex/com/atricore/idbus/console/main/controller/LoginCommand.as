@@ -24,7 +24,7 @@ package com.atricore.idbus.console.main.controller
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.request.LoginRequest;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.dto.SignOnStatusCodeDTO;
+import com.atricore.idbus.console.services.dto.SignOnStatusCode;
 import com.atricore.idbus.console.services.spi.request.SignOnRequest;
 import com.atricore.idbus.console.services.spi.request.UserLoggedRequest;
 import com.atricore.idbus.console.services.spi.response.SignOnResponse;
@@ -74,18 +74,18 @@ public class LoginCommand extends IocSimpleCommand implements IResponder
     public function result(data:Object):void {
         var signOnResponse:SignOnResponse = data.result as SignOnResponse;
         trace("SingOn Status Code: " + signOnResponse.signOnStatusCode);
-        if (signOnResponse.signOnStatusCode == SignOnStatusCodeDTO.SUCCESS.name) {
+        if (signOnResponse.signOnStatusCode == SignOnStatusCode.SUCCESS.name) {
             var assertion:String = signOnResponse.assertion;
             // get user by assertion (signOnService.userLogged())
             var userLoggedRequest:UserLoggedRequest = new UserLoggedRequest();
             userLoggedRequest.assertion = assertion;
             // TODO: finish login (create new Command for retrieving user by assertion?)
             sendNotification(SUCCESS);
-        } else if (signOnResponse.signOnStatusCode == SignOnStatusCodeDTO.UNKNOWN_PRINCIPAL.name) {
+        } else if (signOnResponse.signOnStatusCode == SignOnStatusCode.UNKNOWN_PRINCIPAL.name) {
             sendNotification(UNKNOWN_PRINCIPAL);
-        } else if (signOnResponse.signOnStatusCode == SignOnStatusCodeDTO.AUTH_FAILED.name) {
+        } else if (signOnResponse.signOnStatusCode == SignOnStatusCode.AUTH_FAILED.name) {
             sendNotification(AUTH_FAILED);
-        } else if (signOnResponse.signOnStatusCode == SignOnStatusCodeDTO.REQUEST_DENIED.name) {
+        } else if (signOnResponse.signOnStatusCode == SignOnStatusCode.REQUEST_DENIED.name) {
             sendNotification(REQUEST_DENIED);
         }
 

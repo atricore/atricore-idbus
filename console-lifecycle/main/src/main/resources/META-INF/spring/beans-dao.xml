@@ -49,7 +49,7 @@
         <property name="persistenceManagerFactory" ref="pmfProxy"/>
     </bean>
 
-    <bean id="dbIdentityVaultDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.DbIdentityVaultDAOImpl">
+    <bean id="dbIdentityVaultDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.DbIdentitySourceDAOImpl">
         <property name="persistenceManagerFactory" ref="pmfProxy"/>
     </bean>
 
@@ -81,7 +81,7 @@
         <property name="persistenceManagerFactory" ref="pmfProxy"/>
     </bean>
 
-    <bean id="identityVaultDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityVaultDAOImpl">
+    <bean id="identitySourceDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentitySourceDAOImpl">
         <property name="persistenceManagerFactory" ref="pmfProxy"/>
     </bean>
 

@@ -21,12 +21,34 @@
 
 package com.atricore.idbus.console.services.dto;
 
+import java.util.Set;
+
 public class IdentityProviderDTO extends LocalProviderDTO {
 
 	private static final long serialVersionUID = 141137856095909986L;
 
     private boolean signAuthenticationAssertions;
     private boolean encryptAuthenticationAssertions;
+
+    // RFU
+    private AttributeProfileDTO attributeProfile;
+
+    // RFU
+    private AuthenticationMechanismDTO authenticationMechanism;
+
+    // RFU
+    private AuthenticationContractDTO authenticationContract;
+
+    // RFU
+    private AuthenticationAssertionEmissionPolicyDTO emissionPolicy;
+
+    // RFU
+    //TODO check whether LocalProvider will have bindings or IdentityProvider
+//    private Set<BindingDTO> activeBindings;
+
+    // RFU
+    //TODO check whether LocalProvider will have profiles or IdentityProvider
+//    private Set<ProfileDTO> activeProfiles;
 
     @Override
     public ProviderRoleDTO getRole() {

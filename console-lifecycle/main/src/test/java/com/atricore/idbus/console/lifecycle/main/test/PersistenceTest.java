@@ -21,79 +21,87 @@
 
 package com.atricore.idbus.console.lifecycle.main.test;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.Map;
 
+import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
+import com.atricore.idbus.console.lifecycle.main.spi.request.AddIdentityApplianceRequest;
+import com.atricore.idbus.console.lifecycle.main.spi.response.AddIdentityApplianceResponse;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import javax.jdo.*;
-
 public class PersistenceTest {
 
-	private static final String EMISSION_POLICY_NAME = "emissionPolicy1_1";
-	private static final String INFO_LOOKUP_NAME = "infoLookup1_1";
-	private static final String AUTH_CONTRACT_NAME = "authContract1_1";
-	private static final String AUTH_MECHANISM_NAME = "authMechanism1_1";
-	private static final String IDP_CHANNEL_NAME = "idpChannel1_1";
-	private static final String IDP_NAME = "idp1_1";
-	private static final String IDBUS_NAME = "idbus1_1";
+    private static final Log logger = LogFactory.getLog( PersistenceTest.class );
 
-	private static final Log logger = LogFactory.getLog( PersistenceTest.class );
+    private static ApplicationContext applicationContext;
 
-    private PersistenceManagerFactory pmf;
+    private IdentityApplianceManagementService svc;
 
-    private ApplicationContext appCtx;
+    @BeforeClass
+    public static void setupTestSuite() {
+        applicationContext =
+                new ClassPathXmlApplicationContext("/com/atricore/idbus/console/lifecycle/main/test/persistence-test-beans.xml");
+    }
 
     @Before
-    public void setUp() {
-        pmf = JDOHelper.getPersistenceManagerFactory("datanucleus-tests.properties");
-        appCtx = new ClassPathXmlApplicationContext("com/atricore/idbus/console/lifecycle/main/test/persistence-test-beans.xml");
+    public void setupTest() {
+        Map<String, IdentityApplianceManagementService> svcs = applicationContext.getBeansOfType(IdentityApplianceManagementService.class);
+        assert svcs != null && svcs.size() == 1 : "Too many/few IdentityApplianceManagementService definitions found : " + svcs;
+        svc = svcs.values().iterator().next();
     }
 
-	
-    @Test
-    public void testPersistDomain() throws Exception{
+    @AfterClass
+    public static void tearDownTestSuite() {
 
-        PersistenceManager pm = pmf.getPersistenceManager();
-        Transaction tx=pm.currentTransaction();
-        try
-        {
-            tx.begin();
-            
-            IdentityApplianceDefinition idbus = (IdentityApplianceDefinition) appCtx.getBean("idbus1");
-            IdentityAppliance idAppliance = new IdentityAppliance();
-            idAppliance.setIdApplianceDefinition(idbus);
-            
-            pm.makePersistent(idAppliance);
-            
-            tx.commit();
-        }catch (Exception e){
-            logger.error("Error persisting Identity Bus", e);
-            throw e;
-        }finally {
-            if (tx.isActive()){
-                tx.rollback();
+        String strTestTimeout= System.getProperty("com.atricore.test.waitFor");
+        if (strTestTimeout != null) {
+            long timeout = Long.parseLong(strTestTimeout);
+            synchronized (Thread.currentThread()) {
+                logger.info("Waiting for Test " + timeout + " ms (0 waits for ever  ...)");
+                System.out.println("Waiting for Test " + timeout + " ms (0 waits for ever  ...)");
+                try { Thread.currentThread().wait(timeout); } catch (InterruptedException e) { /**/ }
             }
-            pm.close();
         }
+
+        logger.info("Shutting down test suite");
+        applicationContext = null;
     }
-    
+
+    @After
+    public void tearDownTest() {
+    }
+
     @Test
-    public void testReadDomain() throws Exception{
+    public void testPersistApliance() throws Exception{
+
+        IdentityAppliance ida1 = newApplianceInstance("ida1");
+
+        AddIdentityApplianceRequest req = new AddIdentityApplianceRequest();
+        req.setIdentityAppliance(ida1);
+
+        AddIdentityApplianceResponse res =  svc.addIdentityAppliance(req);
+        IdentityAppliance ida1Test = res.getAppliance();
+
+        ida1 = newApplianceInstance("ida1");
+
+        // Let's check that we get what we sent !
+        assertAppliancesAreEqual(ida1, ida1Test, true);
+    }
+
+    /*
+    @Test
+    public void testRetrieveAppliance() throws Exception{
 
         PersistenceManager pm = pmf.getPersistenceManager();
         Transaction tx=pm.currentTransaction();
-        IdentityApplianceDefinition idbus = null;
-        IdentityAppliance ia = null;
+        IdentityAppliance ida = null;
         try {
             tx.begin();
             pm.getFetchPlan().setMaxFetchDepth(5);
@@ -123,20 +131,22 @@ public class PersistenceTest {
             pm.close();
         }
         if(ia.getIdApplianceDefinition() != null){
-            idbus = ia.getIdApplianceDefinition();
+            test = ia.getIdApplianceDefinition();
         } else {
             assert false: "Identity Appliance Definition not read!";
         }
 
         //we want to test detached objects, not the one in transaction
-        IdentityApplianceDefinition idbusOriginal = (IdentityApplianceDefinition) appCtx.getBean("idbus1");
+        IdentityApplianceDefinition original  = (IdentityApplianceDefinition) appCtx.getBean("idbus1");
 
-        assertIDBusesAreEqual(idbusOriginal, idbus);
+        assertApplianceDefinitionsAreEqual(original, test);
     }
+
+    // TODO : Test also Identity Appliance
 
     @Test
     public void testFetchingStartedAppliances(){
-        //TODO
+        // TODO
     }
 
 //    @Test
@@ -213,102 +223,286 @@ public class PersistenceTest {
         }     	
     }
 
-    protected void assertIDBusesAreEqual(IdentityApplianceDefinition original, IdentityApplianceDefinition test) {
+    */
+
+    protected void assertAppliancesAreEqual(IdentityAppliance original, IdentityAppliance test, boolean ignoreIds) {
+        TestCase.assertNotNull("Original is Null", original);
+        TestCase.assertNotNull("Test is Null", test);
+
+        if (!ignoreIds)
+            TestCase.assertEquals(original.getId(), test.getId());
+
+        TestCase.assertEquals(original.getState(), test.getState());
+
+        assertApplianceDefinitionsAreEqual(original.getIdApplianceDefinition(), test.getIdApplianceDefinition(), ignoreIds);
+        assertAppliaceDeploymentsAreEqual(original.getIdApplianceDeployment(), test.getIdApplianceDeployment(), ignoreIds);
+
+        logger.info("Appliances are equivalent");
+
+    }
+
+    protected void assertAppliaceDeploymentsAreEqual(IdentityApplianceDeployment original, IdentityApplianceDeployment test, boolean ignoreIds) {
+        TestCase.assertTrue((original == null && test == null) || (original != null && test != null));
+        if (original == null)
+            return;
+
+        if (!ignoreIds)
+            TestCase.assertEquals(original.getId(), test.getId());
+
+        TestCase.assertEquals(original.getId(), test.getId());
+        TestCase.assertEquals(original.getDeployedRevision(), test.getDeployedRevision());
+        TestCase.assertEquals(original.getDeploymentTime(), test.getDeploymentTime());
+        TestCase.assertEquals(original.getDescription(), test.getDescription());
+        TestCase.assertEquals(original.getFeatureName(), test.getFeatureName());
+        TestCase.assertEquals(original.getFeatureUri(), test.getFeatureUri());
+        TestCase.assertEquals(original.getState(), test.getState());
+
+        // TODO IDAUs
+
+    }
+
+    protected void assertApplianceDefinitionsAreEqual(IdentityApplianceDefinition original, IdentityApplianceDefinition test, boolean ignoreIds) {
+
+        logger.debug("Original:" + (original == null ? "<NULL>" : original.toString()));
+        logger.debug("Test    :" + (test == null ? "<NULL>" : test.toString()));
+        
+        TestCase.assertTrue((original == null && test == null) || (original != null && test != null));
+        if (original == null || original == test)
+            return;
+
+        if (!ignoreIds)
+            TestCase.assertEquals(original.getId(), test.getId());
+
         TestCase.assertEquals( original.getName(), test.getName()) ;
         TestCase.assertEquals( original.getLocation().getLocationAsString(), test.getLocation().getLocationAsString()) ;
-
         TestCase.assertEquals( original.getProviders().size() , test.getProviders().size());
 
         for (Provider originalProvider : original.getProviders()) {
             boolean found = false;
             for (Provider testProvider : test.getProviders()) {
                 if (originalProvider.getName().equals(testProvider.getName())) {
-                    assertProvidersAreEqual(originalProvider, testProvider);
+                    assertProvidersAreEqual(originalProvider, testProvider, ignoreIds);
                     found = true;
                 }
             }
-            assert found : "Provider not found";
+            assert found : "Provider " + originalProvider.getName() + " not found";
         }
 
     }
 
 
-    protected void assertProvidersAreEqual(Provider original, Provider test) {
+    protected void assertProvidersAreEqual(Provider original, Provider test, boolean ignoreIds) {
+
+        if (!ignoreIds)
+            TestCase.assertEquals(original.getId(), test.getId());
+
         TestCase.assertEquals(original.getName(), test.getName());
         TestCase.assertEquals(original.getDescription(), test.getDescription());
-//        TestCase.assertEquals(original.getLocation().getLocationAsString(), test.getLocation().getLocationAsString());
+        TestCase.assertEquals(original.getLocation().getLocationAsString(), test.getLocation().getLocationAsString());
         TestCase.assertEquals(original.getClass().getName(), test.getClass().getName());
-
-
-
-//        TestCase.assertEquals(original.getActiveBindings().size(), test.getActiveBindings().size());
-//        for(Binding originalB : original.getActiveBindings()) {
-//            assert test.getActiveBindings().contains(originalB);
-//        }
 
         if (original instanceof LocalProvider) {
             LocalProvider originalL = (LocalProvider) original;
             LocalProvider testL = (LocalProvider) test;
+            assertConfigsAreEqual(originalL.getConfig(), testL.getConfig(), ignoreIds);
 
-            TestCase.assertEquals(originalL.getChannels().size() ,testL.getChannels().size());
+            if (originalL instanceof ServiceProvider) {
 
-            assertChannelsAreEqual(originalL.getDefaultChannel(), testL.getDefaultChannel());
-            assertConfigsAreEqual(originalL.getConfig(), testL.getConfig());
+                ServiceProvider originalSp = (ServiceProvider) originalL;
+                ServiceProvider testSp = (ServiceProvider) testL;
 
-            for (Channel originalC : originalL.getChannels()) {
-                boolean found = false;
-                for (Channel testC : testL.getChannels()) {
-                    if (originalC.getName().equals(testC.getName())) {
-                        found = true;
-                        assertChannelsAreEqual(originalC, testC);
+                assertIdenityLookupsAreEqual(originalSp.getIdentityLookup(), testSp.getIdentityLookup(), ignoreIds);
+                assertActivationsAreEqual(originalSp.getActivation(), testSp.getActivation(), ignoreIds);
+
+                if (originalSp.getFederatedConnectionsA() != null) {
+                    TestCase.assertEquals(originalSp.getFederatedConnectionsA().size(), testSp.getFederatedConnectionsA().size());
+
+                    for (FederatedConnection originalC : originalSp.getFederatedConnectionsA()) {
+
+                        boolean found = false;
+                        for (FederatedConnection testC : testSp.getFederatedConnectionsA()) {
+                            if (!ignoreIds && originalC.getId() == testC.getId()) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
+                            } else if (originalC.getName().equals(testC.getName())) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
+                            }
+                        }
+
+                        TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
                     }
                 }
-                assert found : "Channel not found";
+
+                if (originalSp.getFederatedConnectionsB() != null) {
+
+                    TestCase.assertEquals(originalSp.getFederatedConnectionsB().size(), testSp.getFederatedConnectionsB().size());
+
+                    for (FederatedConnection originalC : originalSp.getFederatedConnectionsB()) {
+
+                        boolean found = false;
+                        for (FederatedConnection testC : testSp.getFederatedConnectionsB()) {
+
+                            if (!ignoreIds && originalC.getId() == testC.getId()) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
+                            } else if (originalC.getName().equals(testC.getName())) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
+                            }
+                        }
+
+                        TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
+                    }
+                }
+
+
+            } else if (originalL instanceof IdentityProvider) {
+                IdentityProvider originalIdp = (IdentityProvider) originalL;
+                IdentityProvider testIdp = (IdentityProvider) testL;
+
+                assertIdenityLookupsAreEqual(originalIdp.getIdentityLookup(), testIdp.getIdentityLookup(), ignoreIds);
+
+                if (originalIdp.getFederatedConnectionsA() != null) {
+
+                    TestCase.assertEquals(originalIdp.getFederatedConnectionsA().size(), testIdp.getFederatedConnectionsA().size());
+
+                    for (FederatedConnection originalC : originalIdp.getFederatedConnectionsA()) {
+
+                        boolean found = false;
+                        for (FederatedConnection testC : testIdp.getFederatedConnectionsA()) {
+
+                            if (!ignoreIds && originalC.getId() == testC.getId()) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
+                            } else if (originalC.getName().equals(testC.getName())) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
+                            }
+                        }
+
+                        TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
+                    }
+                }
+
+                if (originalIdp.getFederatedConnectionsB() != null) {
+
+                    TestCase.assertEquals(originalIdp.getFederatedConnectionsB().size(), testIdp.getFederatedConnectionsB().size());
+
+                    for (FederatedConnection originalC : originalIdp.getFederatedConnectionsB()) {
+
+                        boolean found = false;
+                        for (FederatedConnection testC : testIdp.getFederatedConnectionsB()) {
+                            if (!ignoreIds && originalC.getId() == testC.getId()) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
+                            } else if (originalC.getName().equals(testC.getName())) {
+                                found = true;
+                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                                break;
+                            }
+                        }
+
+                        TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
+                    }
+                }
+
+
+            } else if (originalL instanceof ProvisioningServiceProvider) {
+                // TODO :
             }
 
-        }
 
+        } else if (original instanceof RemoteProvider) {
+            RemoteProvider originalR = (RemoteProvider) original;
+            RemoteProvider testR = (RemoteProvider) test;
+
+            assertResourcesAreEqual(originalR.getMetadata(), testR.getMetadata(), ignoreIds);
+        }
+    }
+
+    protected void assertIdenityLookupsAreEqual(IdentityLookup original, IdentityLookup test, boolean ignoreIds) {
+        // TODO :
+
+        if (!ignoreIds)
+            TestCase.assertEquals(original.getId(), test.getId());
 
     }
 
-    protected void assertChannelsAreEqual(Channel original, Channel test) {
+    protected void assertActivationsAreEqual(Activation original, Activation test, boolean ignoreIds) {
+        // TODO :
+        if (!ignoreIds)
+            TestCase.assertEquals(original.getId(), test.getId());
+
+    }
+
+    protected void assertFederatedConnectionsAreEqual(FederatedConnection original, FederatedConnection test, boolean ignoreIds) {
+        // TODO :
+        if (!ignoreIds)
+            TestCase.assertEquals(original.getId(), test.getId());
+
+    }
+
+
+    protected void assertChannelsAreEqual(Channel original, Channel test, boolean ignoreIds) {
+
         TestCase.assertEquals( original.getName(), test.getName());
         TestCase.assertEquals( original.getLocation().getLocationAsString(), test.getLocation().getLocationAsString());
         TestCase.assertEquals( original.getClass().getName(), test.getClass().getName());
-        if (original.getTarget() != null) {
-            TestCase.assertNotNull(test.getTarget());
-            TestCase.assertEquals(original.getTarget().getName(), test.getTarget().getName());
-        } else {
-            TestCase.assertNull( test.getTarget() );
-        }
+        TestCase.assertEquals( original.isOverrideProviderSetup(), test.isOverrideProviderSetup());
 
-        if (original instanceof BindingChannel) {
-            BindingChannel originalB = (BindingChannel) original;
-            BindingChannel testB = (BindingChannel) test;
+        if (!ignoreIds)
+            TestCase.assertEquals(original.getId(), test.getId());
 
-        } else if (original instanceof IdentityProviderChannel) {
+        if (original instanceof IdentityProviderChannel) {
             IdentityProviderChannel originalIdP = (IdentityProviderChannel) original;
             originalIdP.getAccountLinkagePolicy(); // TODO
-            assertIdentityVaultsAreEqual(originalIdP.getIdentityVault(), ((IdentityProviderChannel)test).getIdentityVault());
+            // TODO : assertIdentityVaultsAreEqual(originalIdP.getIdentityVault(), ((IdentityProviderChannel)test).getIdentityVault(), ignoreIds);
         } else if (original instanceof ServiceProviderChannel) {
             ServiceProviderChannel originalSP = (ServiceProviderChannel) original;
             originalSP.getEmissionPolicy(); // TODO
         }
 
-
-
     }
 
-    private void assertIdentityVaultsAreEqual(IdentityVault original, IdentityVault test) {
-        DbIdentityVault dbOriginal = (DbIdentityVault) original;
-        DbIdentityVault dbTest = (DbIdentityVault) test;
+    private void assertIdentityVaultsAreEqual(IdentitySource original, IdentitySource test, boolean ignoreIds) {
+        if (!ignoreIds)
+            TestCase.assertEquals(original.getId(), test.getId());
+
+
+        DbIdentitySource dbOriginal = (DbIdentitySource) original;
+        DbIdentitySource dbTest = (DbIdentitySource) test;
+
         TestCase.assertEquals(dbOriginal.getName(), dbTest.getName());
         TestCase.assertEquals(dbOriginal.getAdmin(), dbTest.getAdmin());
         TestCase.assertEquals(dbOriginal.getPassword(), dbTest.getPassword());
         TestCase.assertEquals(dbOriginal.getPort(), dbTest.getPort());
     }
 
-    protected void assertConfigsAreEqual(ProviderConfig original, ProviderConfig test) {
+    protected void assertConfigsAreEqual(ProviderConfig original, ProviderConfig test, boolean ignoreIds) {
+        // TODO :
+        if (!ignoreIds)
+            TestCase.assertEquals(original.getId(), test.getId());
 
     }
+
+    protected void assertResourcesAreEqual(Resource original, Resource test, boolean ignoreIds) {
+        // TODO :
+        if (!ignoreIds)
+            TestCase.assertEquals(original.getId(), test.getId());
+
+    }
+
+    protected IdentityAppliance newApplianceInstance(String name) {
+        ApplicationContext ctx = new ClassPathXmlApplicationContext("/com/atricore/idbus/console/lifecycle/main/test/appliance-model-beans.xml");
+        return (IdentityAppliance) ctx.getBean(name);
+    }
+
 }

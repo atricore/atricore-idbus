@@ -11,6 +11,6 @@ public class BindingProviderDAOImpl extends GenericDAOImpl<BindingProvider, Long
     private static final Log logger = LogFactory.getLog(BindingProviderDAOImpl.class);
 
     public BindingProviderDAOImpl() {
-        super(BindingProvider.class);
+        super();
     }
 }

@@ -34,8 +34,8 @@
         <fx:Script>
         <![CDATA[
 
-            import com.atricore.idbus.console.services.dto.LocationDTO;
-            import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+            import com.atricore.idbus.console.services.dto.Location;
+            import com.atricore.idbus.console.services.dto.ServiceProvider;
 
             [Bindable]
             private var validators:Array;
@@ -90,9 +90,9 @@
             }
 
             private function addSPToArray():void {
-                var sp:ServiceProviderDTO = new ServiceProviderDTO();
+                var sp:ServiceProvider = new ServiceProvider();
                 sp.name = jossoSPName.text;
-                var loc:LocationDTO = new LocationDTO();
+                var loc:Location = new Location();
                 loc.protocol = spLocationProtocol.labelDisplay.text;
                 loc.host = spLocationDomain.text;
                 loc.port = parseInt(spLocationPort.text);

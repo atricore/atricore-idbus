@@ -22,7 +22,8 @@
 
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 	xmlns:primitive="org.un.cava.birdeye.ravis.assets.icons.primitives.*"
-	creationComplete="onCreationComplete()" autoLayout="true" rollOver="handleNodeRollOver(event)" rollOut="handleNodeRollOut(event)">
+	creationComplete="onCreationComplete()" autoLayout="true" rollOver="handleNodeRollOver(event)" rollOut="handleNodeRollOut(event)"
+    verticalGap="0" horizontalAlign="center">
 
     <mx:Zoom id="zoomAll" zoomWidthTo="1.2" zoomHeightTo="1.2" zoomWidthFrom="1" zoomHeightFrom="1"/>
 
@@ -37,20 +38,20 @@
         import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
         import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
         import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
-        import com.atricore.idbus.console.services.dto.BindingProviderDTO;
-        import com.atricore.idbus.console.services.dto.ChannelDTO;
-        import com.atricore.idbus.console.services.dto.DbIdentityVaultDTO;
-        import com.atricore.idbus.console.services.dto.ExecutionEnvironmentDTO;
-        import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-        import com.atricore.idbus.console.services.dto.IdentityApplianceUnitDTO;
-        import com.atricore.idbus.console.services.dto.IdentityApplianceUnitTypeDTO;
-        import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
-        import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
-        import com.atricore.idbus.console.services.dto.JbossExecutionEnvironmentDTO;
-        import com.atricore.idbus.console.services.dto.LdapIdentityVaultDTO;
-        import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+        import com.atricore.idbus.console.services.dto.BindingProvider;
+        import com.atricore.idbus.console.services.dto.Channel;
+        import com.atricore.idbus.console.services.dto.DbIdentitySource;
+        import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.IdentityAppliance;
+        import com.atricore.idbus.console.services.dto.IdentityApplianceUnit;
+        import com.atricore.idbus.console.services.dto.IdentityApplianceUnitType;
+        import com.atricore.idbus.console.services.dto.IdentityProvider;
+        import com.atricore.idbus.console.services.dto.IdentitySource;
+        import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.LdapIdentitySource;
+        import com.atricore.idbus.console.services.dto.ServiceProvider;
 
-        import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironmentDTO;
+        import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
         import mx.controls.Alert;
 
@@ -83,57 +84,57 @@
         }
 
         protected function loadData(obj:Object):void {
-            if (obj is IdentityApplianceDTO) {
-                var bus:IdentityApplianceDTO = obj as IdentityApplianceDTO;
+            if (obj is IdentityAppliance) {
+                var bus:IdentityAppliance = obj as IdentityAppliance;
                 _linkLabel = bus.idApplianceDefinition.name;
                 _linkIcon = EmbeddedIcons.busIcon;
             } else {
-                if (obj is IdentityProviderDTO) {
-                    var idp:IdentityProviderDTO = obj as IdentityProviderDTO;
+                if (obj is IdentityProvider) {
+                    var idp:IdentityProvider = obj as IdentityProvider;
                     _linkLabel = idp.name;
                     _linkIcon = EmbeddedIcons.idpIcon;
                 } else {
-                    if (obj is ServiceProviderDTO) {
-                        var sp:ServiceProviderDTO = obj as ServiceProviderDTO;
+                    if (obj is ServiceProvider) {
+                        var sp:ServiceProvider = obj as ServiceProvider;
                         _linkLabel = sp.name;
                         _linkIcon = EmbeddedIcons.spIcon;
                     } else {
-                        if (obj is BindingProviderDTO) {
-                            var bp:BindingProviderDTO = obj as BindingProviderDTO;
+                        if (obj is BindingProvider) {
+                            var bp:BindingProvider = obj as BindingProvider;
                             _linkLabel = bp.name;
                             _linkIcon = EmbeddedIcons.bpIcon;
                         } else {
-                            if (obj is ChannelDTO) {
-                                _linkLabel = (obj as ChannelDTO).name;
+                            if (obj is Channel) {
+                                _linkLabel = (obj as Channel).name;
                             } else {
 
-                                if (obj is IdentityVaultDTO) {
-                                    var identityVault:IdentityVaultDTO = obj as IdentityVaultDTO;
-                                    _linkLabel = identityVault.name;
-                                    if(obj is DbIdentityVaultDTO){
+                                if (obj is IdentitySource) {
+                                    var identitySource:IdentitySource = obj as IdentitySource;
+                                    _linkLabel = identitySource.name;
+                                    if(obj is DbIdentitySource){
                                         _linkIcon = EmbeddedIcons.dbIdentitySourceIcon;
-                                    } else if(obj is LdapIdentityVaultDTO){
+                                    } else if(obj is LdapIdentitySource){
                                         _linkIcon = EmbeddedIcons.ldapIdentitySourceIcon;
                                     } else {
                                         _linkIcon = EmbeddedIcons.vaultIcon;
                                     }
                                 } else {
-                                    if (obj is IdentityApplianceUnitDTO) {
-                                        var applianceUnit:IdentityApplianceUnitDTO = obj as IdentityApplianceUnitDTO;
+                                    if (obj is IdentityApplianceUnit) {
+                                        var applianceUnit:IdentityApplianceUnit = obj as IdentityApplianceUnit;
                                         _linkLabel = applianceUnit.name;
-                                        var type:IdentityApplianceUnitTypeDTO = applianceUnit.type;
-                                        if (type.equals(IdentityApplianceUnitTypeDTO.FEDERATION_UNIT)) {
+                                        var type:IdentityApplianceUnitType = applianceUnit.type;
+                                        if (type.equals(IdentityApplianceUnitType.FEDERATION_UNIT)) {
                                             _linkIcon = EmbeddedIcons.spIcon;
-                                        } else if (type.equals(IdentityApplianceUnitTypeDTO.PROVISIONING_UNIT)) {
+                                        } else if (type.equals(IdentityApplianceUnitType.PROVISIONING_UNIT)) {
                                             _linkIcon = EmbeddedIcons.vaultIcon;
                                         }
                                     } else {
-                                        if(obj is ExecutionEnvironmentDTO){ //check execution environment
-                                            var execEnvirnoment:ExecutionEnvironmentDTO = obj as ExecutionEnvironmentDTO;
+                                        if(obj is ExecutionEnvironment){ //check execution environment
+                                            var execEnvirnoment:ExecutionEnvironment = obj as ExecutionEnvironment;
                                             _linkLabel = execEnvirnoment.name;                                            
-                                            if(obj is JbossExecutionEnvironmentDTO){
+                                            if(obj is JbossExecutionEnvironment){
                                                 _linkIcon = EmbeddedIcons.jbossEnvironmentIcon;
-                                            } else if(obj is WeblogicExecutionEnvironmentDTO){
+                                            } else if(obj is WeblogicExecutionEnvironment){
                                                 _linkIcon = EmbeddedIcons.weblogicEnvironmentIcon;
                                             } else {
                                                 _linkIcon = EmbeddedIcons.executionEnvironmentIcon;

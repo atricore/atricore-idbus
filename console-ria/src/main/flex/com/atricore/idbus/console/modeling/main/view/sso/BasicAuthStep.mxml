@@ -32,7 +32,9 @@
         <fx:Script>
         <![CDATA[           
 
-            import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+            import com.atricore.idbus.console.services.dto.DbIdentitySource;
+            import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
+            import com.atricore.idbus.console.services.dto.IdentitySource;
 
             [Bindable]
             private var validators:Array;
@@ -43,25 +45,25 @@
             private var readableDecisionArray:Array;
 
             override public function get stepDecision():* {
-                var identityVault:IdentityVaultDTO = new IdentityVaultDTO();
+                var identitySource:IdentitySource;
                 readableDecisionArray = new Array();
                 if (obfuscatePass.selected) {
                     //TODO
-                    //                  identityVault.obfuscatePassword = obfuscatePass.selected;
+                    //                  identitySource.obfuscatePassword = obfuscatePass.selected;
                     readableDecisionArray.push("Obfuscate Password: " + obfuscatePass.selected);
                 }
-                identityVault.name = userRepositoryName.text;
-                readableDecisionArray.push("Repository Name: " + identityVault.name);
 
                 if (repositoryType.selectedValue == "embedded") {
-                    identityVault.embedded = true;
+                    identitySource = new EmbeddedIdentitySource();
                     readableDecisionArray.push("Create Embedded Repository");
                 } else {
-                    identityVault.embedded = false;
+                    identitySource = new DbIdentitySource();
                     readableDecisionArray.push("Create External Repository");
                 }
-
-                return identityVault;
+                identitySource.name = userRepositoryName.text;
+                readableDecisionArray.push("Repository Name: " + identitySource.name);
+                
+                return identitySource;
             }
 
             override public function get readableStepDecision():String {

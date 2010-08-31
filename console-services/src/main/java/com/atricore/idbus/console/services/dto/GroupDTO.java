@@ -23,7 +23,7 @@ package com.atricore.idbus.console.services.dto;
 
 import java.io.Serializable;
 
-
+@Deprecated
 public class GroupDTO implements Serializable {
 
     private static final long serialVersionUID = 4595183658527599864L;

@@ -24,7 +24,7 @@ package com.atricore.idbus.console.modeling.main.controller
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.spi.request.UpdateIdentityApplianceRequest;
 import com.atricore.idbus.console.services.spi.response.UpdateIdentityApplianceResponse;
 
@@ -62,7 +62,7 @@ public class IdentityApplianceUpdateCommand extends IocSimpleCommand implements 
     }
 
     override public function execute(notification:INotification):void {
-        var identityAppliance:IdentityApplianceDTO = projectProxy.currentIdentityAppliance;
+        var identityAppliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
         
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
 

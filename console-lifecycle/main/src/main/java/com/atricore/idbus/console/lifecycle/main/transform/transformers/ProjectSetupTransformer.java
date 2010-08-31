@@ -25,14 +25,19 @@ public class ProjectSetupTransformer extends AbstractTransformer {
         IdApplianceProject prj = event.getContext().getProject();
         IdentityApplianceDefinition appliance = (IdentityApplianceDefinition) event.getData();
 
+        String namespace = appliance.getNamespace() != null ?
+                appliance.getNamespace() : "org.atricore.idbus.appliance";
 
-        // TODO : Define several IDAU types
+        event.getContext().put("idaNS", namespace);
+        event.getContext().put("idaBasePath", toFolderName(namespace));
+        event.getContext().put("idaBasePackage", toPackageName(namespace));
 
         // ---------------------------------------------------------------------
         // Identity Appliance Unit module for federation
         // ---------------------------------------------------------------------
-        IdProjectModule federationIdau = new IdProjectModule(prj.getId(),
-                "federation", prj.getDefinition().getDescription(), "1.0." + appliance.getRevision() , "Federation");
+        // TODO : Support several type of IDAUs
+        IdProjectModule federationIdau = new IdProjectModule(namespace, prj.getId(),
+                "idau", prj.getDefinition().getDescription(), "1.0." + appliance.getRevision() , "ApplianceUnit");
         IdProjectResource<String> federationIdauPom = new IdProjectResource<String>(idGen.generateId(),
                 "pom", "mvn-pom", "federation-idau");
         federationIdauPom.setClassifier("velocity");
@@ -42,7 +47,7 @@ public class ProjectSetupTransformer extends AbstractTransformer {
         // ---------------------------------------------------------------------
         // Identity Appliance module for features
         // ---------------------------------------------------------------------
-        IdProjectModule idAppliance = new IdProjectModule(prj.getId(),
+        IdProjectModule idAppliance = new IdProjectModule(namespace, prj.getId(),
                 "features", prj.getDefinition().getDescription(), "1.0." + appliance.getRevision() , "Appliance");
         IdProjectResource<String> idAppliancePom = new IdProjectResource<String>(idGen.generateId(),
                 "pom", "mvn-pom", "appliance");
@@ -56,9 +61,9 @@ public class ProjectSetupTransformer extends AbstractTransformer {
         idAppliance.addResource(idApplianceFeatures);
 
         // ---------------------------------------------------------------------
-        // Main project
+        // Main project (root)
         // ---------------------------------------------------------------------
-        IdProjectModule projectModule = new IdProjectModule(prj.getId(),
+        IdProjectModule projectModule = new IdProjectModule(namespace, prj.getId(),
                 "project", prj.getDefinition().getDescription(), "1.0." + appliance.getRevision() , "Project");
 
         IdProjectResource<String> projectPom = new IdProjectResource<String>(idGen.generateId(),
@@ -72,8 +77,7 @@ public class ProjectSetupTransformer extends AbstractTransformer {
         projectSettings.setScope(IdProjectResource.Scope.PROJECT);
 
         projectModule.addResource(projectPom);
-        projectModule.addResource(projectSettings);       
-
+        projectModule.addResource(projectSettings);
 
         // Wire submodules
         projectModule.getModules().add(idAppliance);
@@ -96,5 +100,18 @@ public class ProjectSetupTransformer extends AbstractTransformer {
 
         return event.getContext().getProject();
     }
+
+    protected String toPackageName(String namespace) {
+        namespace = namespace.replace(':', '.');
+        namespace = namespace.replace('/', '.');
+        return namespace;
+    }
+
+    protected String toFolderName(String namespace) {
+        namespace = namespace.replace(':', '/');
+        namespace = namespace.replace('.', '/');
+        return namespace;
+    }
+
 }
 

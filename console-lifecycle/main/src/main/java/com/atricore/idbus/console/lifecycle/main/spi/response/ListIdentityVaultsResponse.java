@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.spi.response;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityVault;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentitySource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,16 +10,16 @@ import java.util.List;
  */
 public class ListIdentityVaultsResponse {
 
-    private List<IdentityVault> identityVaults;
+    private List<IdentitySource> identitySources;
 
-    public List<IdentityVault> getIdentityVaults() {
-        if(identityVaults == null){
-            identityVaults = new ArrayList<IdentityVault>();
+    public List<IdentitySource> getIdentityVaults() {
+        if(identitySources == null){
+            identitySources = new ArrayList<IdentitySource>();
         }
-        return identityVaults;
+        return identitySources;
     }
 
-    public void setIdentityVaults(List<IdentityVault> identityVaults) {
-        this.identityVaults = identityVaults;
+    public void setIdentityVaults(List<IdentitySource> identitySources) {
+        this.identitySources = identitySources;
     }
 }

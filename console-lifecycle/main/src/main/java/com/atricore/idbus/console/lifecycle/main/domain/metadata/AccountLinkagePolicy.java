@@ -31,6 +31,12 @@ public class AccountLinkagePolicy implements Serializable {
 	
 	private String name;
 
+    private IdentityMappingType mappingType;
+
+    private boolean useLocalId;
+
+    private String customMapper;
+
     public long getId() {
         return id;
     }
@@ -46,6 +52,30 @@ public class AccountLinkagePolicy implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
+
+    public IdentityMappingType getMappingType() {
+        return mappingType;
+    }
+
+    public void setMappingType(IdentityMappingType mappingType) {
+        this.mappingType = mappingType;
+    }
+
+    public boolean isUseLocalId() {
+        return useLocalId;
+    }
+
+    public void setUseLocalId(boolean useLocalId) {
+        this.useLocalId = useLocalId;
+    }
+
+    public String getCustomMapper() {
+        return customMapper;
+    }
+
+    public void setCustomMapper(String customMapper) {
+        this.customMapper = customMapper;
+    }
 
     @Override
     public boolean equals(Object o) {

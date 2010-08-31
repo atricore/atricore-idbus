@@ -11,6 +11,6 @@ public class IdentityProviderChannelDAOImpl extends GenericDAOImpl<IdentityProvi
     private static final Log logger = LogFactory.getLog(IdentityProviderChannelDAOImpl.class);
 
     public IdentityProviderChannelDAOImpl() {
-        super(IdentityProviderChannel.class);
+        super();
     }
 }

@@ -23,8 +23,8 @@ package com.atricore.idbus.console.modeling.main.controller
 {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
+import com.atricore.idbus.console.services.dto.IdentityProvider;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
@@ -44,9 +44,9 @@ public class IdentityProviderRemoveCommand extends IocSimpleCommand {
     }
 
     override public function execute(notification:INotification):void {
-        var identityProvider:IdentityProviderDTO = notification.getBody() as IdentityProviderDTO;
+        var identityProvider:IdentityProvider = notification.getBody() as IdentityProvider;
 
-        var identityAppliance:IdentityApplianceDTO = projectProxy.currentIdentityAppliance;
+        var identityAppliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
 
         for (var i:int=identityAppliance.idApplianceDefinition.providers.length-1; i>=0; i--) {
             if (identityAppliance.idApplianceDefinition.providers[i] == identityProvider) {

@@ -23,15 +23,16 @@ package com.atricore.idbus.console.modeling.main.controller
 {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
+
+import com.atricore.idbus.console.services.dto.IdentitySource;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
 public class IdentityVaultRemoveCommand extends IocSimpleCommand {
 
-    public static const SUCCESS : String = "IdentityVaultRemoveCommand.SUCCESS";
+    public static const SUCCESS : String = "IdentitySourceRemoveCommand.SUCCESS";
 
     private var _projectProxy:ProjectProxy;
 
@@ -45,13 +46,13 @@ public class IdentityVaultRemoveCommand extends IocSimpleCommand {
     }
 
     override public function execute(notification:INotification):void {
-        var identityVault:IdentityVaultDTO = notification.getBody() as IdentityVaultDTO;
+        var identityVault:IdentitySource = notification.getBody() as IdentitySource;
 
-        var identityAppliance:IdentityApplianceDTO = projectProxy.currentIdentityAppliance;
+        var identityAppliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
 
-        for (var i:int=identityAppliance.idApplianceDefinition.identityVaults.length-1; i>=0; i--) {
-            if (identityAppliance.idApplianceDefinition.identityVaults[i] == identityVault) {
-                identityAppliance.idApplianceDefinition.identityVaults.removeItemAt(i);
+        for (var i:int=identityAppliance.idApplianceDefinition.identitySources.length-1; i>=0; i--) {
+            if (identityAppliance.idApplianceDefinition.identitySources[i] == identityVault) {
+                identityAppliance.idApplianceDefinition.identitySources.removeItemAt(i);
             }
         }
 

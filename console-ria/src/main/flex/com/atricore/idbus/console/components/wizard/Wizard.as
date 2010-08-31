@@ -362,7 +362,7 @@ use namespace mx_internal;
 		/**
 		 * Sets the previous button state according to the current step index.
 		 * In plain words, if we don't have anywhere to go backwards, simply
-		 * remove the previous button.
+		 * delete the previous button.
 		 */		
 		private function validatePrevStep():void {
 			if (_previousButton) {

@@ -10,6 +10,6 @@ public class ProviderDAOImpl extends GenericDAOImpl<Provider, Long> implements P
     private static final Log logger = LogFactory.getLog(ProviderDAOImpl.class);
 
     public ProviderDAOImpl() {
-        super(Provider.class);
+        super();
     }
 }

@@ -28,9 +28,9 @@ import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
-import com.atricore.idbus.console.services.dto.LocationDTO;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
+import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
+import com.atricore.idbus.console.services.dto.Location;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -46,7 +46,7 @@ public class IdentityApplianceMediator extends IocFormMediator
 
     private var _projectProxy:ProjectProxy;
     private var _keystoreProxy:KeystoreProxy;
-    private var _newIdentityAppliance:IdentityApplianceDTO;
+    private var _newIdentityAppliance:IdentityAppliance;
 
     private var _processingStarted:Boolean;
 
@@ -151,10 +151,10 @@ public class IdentityApplianceMediator extends IocFormMediator
 
     override public function bindModel():void {
 
-        var idApplianceDef:IdentityApplianceDefinitionDTO = new IdentityApplianceDefinitionDTO();
+        var idApplianceDef:IdentityApplianceDefinition = new IdentityApplianceDefinition();
         idApplianceDef.name = view.applianceName.text;
         idApplianceDef.description = view.applianceDescription.text;
-        var location:LocationDTO = new LocationDTO();
+        var location:Location = new Location();
         location.protocol = view.applianceLocationProtocol.selectedItem.data;
         location.host = view.applianceLocationDomain.text;
         location.port = parseInt(view.applianceLocationPort.text);
@@ -162,7 +162,7 @@ public class IdentityApplianceMediator extends IocFormMediator
         idApplianceDef.location = location;
         idApplianceDef.certificate = _keystoreProxy.currentKeystore;
 
-        _newIdentityAppliance = new IdentityApplianceDTO();
+        _newIdentityAppliance = new IdentityAppliance();
         _newIdentityAppliance.idApplianceDefinition = idApplianceDef;
 
     }

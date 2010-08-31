@@ -25,14 +25,15 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
+@Deprecated
 public class IdentityVaultTransformer extends AbstractTransformer {
 
     private static final Log logger = LogFactory.getLog(IdentityVaultTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
-        // add methods in TransformerVisitor for IdentityVault?
-        //return (event.getData() instanceof IdentityVault &&
+        // add methods in TransformerVisitor for IdentitySource?
+        //return (event.getData() instanceof IdentitySource &&
         //        event.getContext().getParentNode() instanceof Channel);
 
         return (event.getData() instanceof ServiceProviderChannel ||
@@ -43,22 +44,22 @@ public class IdentityVaultTransformer extends AbstractTransformer {
     public void before(TransformEvent event) throws TransformException {
 
         Channel channel = (Channel) event.getData();
-        //IdentityVault identityVault = (IdentityVault) event.getData();
+        //IdentitySource identitySource = (IdentitySource) event.getData();
         //Channel channel = (Channel) event.getContext().getParentNode();
-        Provider provider = channel.getTarget();
+        Provider provider = null; // TODO RETROFIT : channel.getTarget();
 
-        IdentityVault identityVault = null;
+        IdentitySource identitySource = null;
         if (channel instanceof IdentityProviderChannel) {
-            identityVault = ((IdentityProviderChannel) channel).getIdentityVault();
+            // TODO RETROFIT : identitySource = ((IdentityProviderChannel) channel).getIdentityLookup();
         } else if (channel instanceof ServiceProviderChannel) {
-            identityVault = ((ServiceProviderChannel) channel).getIdentityVault();
+            // TODO RETROFIT : identitySource = ((ServiceProviderChannel) channel).getIdentityLookup();
         }
 
-        if (identityVault != null) {
-            String baseSamlDestPath = (String) event.getContext().get("baseSamlDestPath");
+        if (identitySource != null) {
+            String idauPath = (String) event.getContext().get("idauPath");
 
             if (logger.isTraceEnabled())
-                logger.trace("Generating Beans for Identity Vault " + identityVault.getName()  + " of provider " + provider.getName());
+                logger.trace("Generating Beans for Identity Vault " + identitySource.getName()  + " of provider " + provider.getName());
 
             Beans providerBeans = null;
             Bean providerBean = null;
@@ -78,7 +79,7 @@ public class IdentityVaultTransformer extends AbstractTransformer {
             // auth scheme
             if (channel instanceof ServiceProviderChannel) {
                 // bind auth scheme
-                if (identityVault instanceof LdapIdentityVault) {
+                if (identitySource instanceof LdapIdentitySource) {
                     Bean basicAuthn = newBean(providerBeans, "basic-authentication", BindUsernamePasswordAuthScheme.class);
                     setPropertyValue(basicAuthn, "name", basicAuthn.getName());
                     setPropertyRef(basicAuthn, "credentialStore", providerBean.getName() + "-identity-store");
@@ -103,10 +104,11 @@ public class IdentityVaultTransformer extends AbstractTransformer {
             // identity store
             Bean identityStore = null;
 
-            if (identityVault instanceof DbIdentityVault) {
+            if (identitySource instanceof DbIdentitySource) {
                 // DB
-                DbIdentityVault dbIdentityVault = (DbIdentityVault) identityVault;
+                DbIdentitySource dbIdentityVault = (DbIdentitySource) identitySource;
                 identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.dbidentitystore.JDBCIdentityStore");
+                /* TODO RETROFIT  :
                 if (dbIdentityVault.isEmbedded()) {
                     setPropertyValue(identityStore, "driverName", "org.apache.derby.jdbc.ClientDriver");
                     setPropertyValue(identityStore, "connectionURL", "jdbc:derby://localhost:" + dbIdentityVault.getPort() + "/" + dbIdentityVault.getSchema() + ";create=false");
@@ -123,12 +125,14 @@ public class IdentityVaultTransformer extends AbstractTransformer {
                     setPropertyValue(identityStore, "connectionURL", dbIdentityVault.getConnectionUrl());
                     setPropertyValue(identityStore, "connectionName", dbIdentityVault.getAdmin());
                     setPropertyValue(identityStore, "connectionPassword", dbIdentityVault.getPassword());
+
                     setPropertyValue(identityStore, "userQueryString", dbIdentityVault.getUserInformationLookup().getUserQueryString());
                     setPropertyValue(identityStore, "rolesQueryString", dbIdentityVault.getUserInformationLookup().getRolesQueryString());
                     setPropertyValue(identityStore, "credentialsQueryString", dbIdentityVault.getUserInformationLookup().getCredentialsQueryString());
                     setPropertyValue(identityStore, "userPropertiesQueryString", dbIdentityVault.getUserInformationLookup().getUserPropertiesQueryString());
                     setPropertyValue(identityStore, "resetCredentialDml", dbIdentityVault.getUserInformationLookup().getResetCredentialDml());
                     setPropertyValue(identityStore, "relayCredentialQueryString", dbIdentityVault.getUserInformationLookup().getRelayCredentialQueryString());
+
                     
                     IdProjectResource<byte[]> driverResource = new IdProjectResource<byte[]>(idGen.generateId(),
                             "lib/", dbIdentityVault.getDriver().getName(),
@@ -137,10 +141,10 @@ public class IdentityVaultTransformer extends AbstractTransformer {
                     event.getContext().getCurrentModule().addResource(driverResource);
                     event.getContext().getCurrentModule().addEmbeddedDependency(
                             driverResource.getNameSpace() + driverResource.getName());
-                }
-            } else if (identityVault instanceof LdapIdentityVault) {
+                } */
+            } else if (identitySource instanceof LdapIdentitySource) {
                 // LDAP
-                LdapIdentityVault ldapIdentityVault = (LdapIdentityVault) identityVault;
+                LdapIdentitySource ldapIdentityVault = (LdapIdentitySource) identitySource;
                 identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.ldapidentitystore.LDAPBindIdentityStore");
                 setPropertyValue(identityStore, "initialContextFactory", ldapIdentityVault.getInitialContextFactory());
                 setPropertyValue(identityStore, "providerUrl", ldapIdentityVault.getProviderUrl());
@@ -160,8 +164,8 @@ public class IdentityVaultTransformer extends AbstractTransformer {
             } else {
                 // memory store
                 identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.memoryidentitystore.MemoryIdentityStore");
-                setPropertyValue(identityStore, "usersFileName", "classpath:" + baseSamlDestPath + "atricore-users.xml");
-                setPropertyValue(identityStore, "credentialsFileName", "classpath:" + baseSamlDestPath + "atricore-credentials.xml");
+                setPropertyValue(identityStore, "usersFileName", "classpath:" + idauPath + "atricore-users.xml");
+                setPropertyValue(identityStore, "credentialsFileName", "classpath:" + idauPath + "atricore-credentials.xml");
             }
         }
     }

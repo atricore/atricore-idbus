@@ -20,16 +20,16 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.model.request {
-import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 public class RemoveServiceProviderElementRequest {
-    private var _serviceProvider:ServiceProviderDTO;
+    private var _serviceProvider:ServiceProvider;
 
-    public function RemoveServiceProviderElementRequest(identityProvider:ServiceProviderDTO) {
+    public function RemoveServiceProviderElementRequest(identityProvider:ServiceProvider) {
         _serviceProvider = identityProvider;
     }
 
-    public function get serviceProvider():ServiceProviderDTO {
+    public function get serviceProvider():ServiceProvider {
         return _serviceProvider;
     }
 }

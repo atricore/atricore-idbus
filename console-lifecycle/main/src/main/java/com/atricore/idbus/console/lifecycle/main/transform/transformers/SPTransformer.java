@@ -73,7 +73,7 @@ public class SPTransformer extends AbstractTransformer {
 
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans beansOsgi = (Beans) event.getContext().get("beansOsgi");
-        String baseSamlDestPath = (String) event.getContext().get("baseSamlDestPath");
+        String idauPath = (String) event.getContext().get("idauPath");
 
         // TODO : Can we asure that there is only one IdP and that it's the prefered one ? This should be part of SP definition
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
@@ -132,9 +132,9 @@ public class SPTransformer extends AbstractTransformer {
         //this is set from BPTransformer
         //setPropertyValue(spMediator, "spBindingACS", "http://localhost:8081/IDBUS/BP1/SSO/ACS/ARTIFACT");
         //setPropertyValue(spMediator, "spBindingSLO", "http://localhost:8081/IDBUS/BP1/SSO/SLO/ARTIFACT");
-        String bpLocation = resolveLocationUrl(((BindingProvider)provider.getBindingChannel().getTarget()).getBindingChannel().getLocation());
-        setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");
-        setPropertyValue(spMediator, "spBindingSLO", bpLocation + "/SSO/SLO/ARTIFACT");
+        // TODO RETROFIT  : String bpLocation = resolveLocationUrl(((BindingProvider)provider.getBindingChannel().getTarget()).getBindingChannel().getLocation());
+        // TODO RETROFIT  : setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");
+        // TODO RETROFIT  : setPropertyValue(spMediator, "spBindingSLO", bpLocation + "/SSO/SLO/ARTIFACT");
         
         setPropertyValue(spMediator, "logMessages", true);
 
@@ -158,7 +158,7 @@ public class SPTransformer extends AbstractTransformer {
         setPropertyBean(spMediator, "logger", spLogger);
 
         // errorUrl
-        setPropertyValue(spMediator, "errorUrl", resolveLocationBaseUrl(provider.getBindingChannel().getLocation()) + "/idbus-ui/error.do");
+        // TODO RETROFIT  : setPropertyValue(spMediator, "errorUrl", resolveLocationBaseUrl(provider.getBindingChannel().getLocation()) + "/idbus-ui/error.do");
 
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
@@ -171,7 +171,7 @@ public class SPTransformer extends AbstractTransformer {
                     ("PKCS#12".equalsIgnoreCase(cfg.getSigner().getType()) ? "pkcs12" : "jks");
 
             IdProjectResource<byte[]> signerResource = new IdProjectResource<byte[]>(idGen.generateId(),
-                    baseSamlDestPath + sp.getName() + "/", signerResourceFileName,
+                    idauPath + sp.getName() + "/", signerResourceFileName,
                     "binary", cfg.getSigner().getStore().getValue());
             signerResource.setClassifier("byte");
 
@@ -184,7 +184,7 @@ public class SPTransformer extends AbstractTransformer {
 
             Bean keyResolver = newAnonymousBean(SamlR2KeystoreKeyResolver.class);
             setPropertyValue(keyResolver, "keystoreType", cfg.getSigner().getType());
-            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + baseSamlDestPath + sp.getName() + "/" + signerResourceFileName);
+            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + sp.getName() + "/" + signerResourceFileName);
             setPropertyValue(keyResolver, "keystorePass", cfg.getSigner().getPassword());
             setPropertyValue(keyResolver, "privateKeyAlias", cfg.getSigner().getPrivateKeyName());
             setPropertyValue(keyResolver, "privateKeyPass", cfg.getSigner().getPrivateKeyPassword());
@@ -208,7 +208,7 @@ public class SPTransformer extends AbstractTransformer {
                     ("PKCS#12".equalsIgnoreCase(cfg.getSigner().getType()) ? "pkcs12" : "jks");
 
             IdProjectResource<byte[]> encrypterResource = new IdProjectResource<byte[]>(idGen.generateId(),
-                    baseSamlDestPath + sp.getName() + "/", encrypterResourceFileName,
+                    idauPath + sp.getName() + "/", encrypterResourceFileName,
                     "binary", cfg.getSigner().getStore().getValue());
             encrypterResource.setClassifier("byte");
 
@@ -219,7 +219,7 @@ public class SPTransformer extends AbstractTransformer {
 
             Bean keyResolver = newAnonymousBean(SamlR2KeystoreKeyResolver.class);
             setPropertyValue(keyResolver, "keystoreType", cfg.getEncrypter().getType());
-            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + baseSamlDestPath + sp.getName() + "/" + encrypterResourceFileName);
+            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + sp.getName() + "/" + encrypterResourceFileName);
             setPropertyValue(keyResolver, "keystorePass", cfg.getEncrypter().getPassword());
             setPropertyValue(keyResolver, "privateKeyAlias", cfg.getEncrypter().getPrivateKeyName());
             setPropertyValue(keyResolver, "privateKeyPass", cfg.getEncrypter().getPrivateKeyPassword());
@@ -237,14 +237,15 @@ public class SPTransformer extends AbstractTransformer {
         
         Bean spMd = newBean(spBeans, sp.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
         setPropertyValue(spMd, "id", spMd.getName());
-        setPropertyValue(spMd, "alias", resolveLocationUrl(provider.getBindingChannel().getLocation()) + "/SAML2/MD");
-        setPropertyValue(spMd, "resource", "classpath:" + baseSamlDestPath + sp.getName() + "/" + sp.getName() + "-samlr2-metadata.xml");
+        // TODO RETROFIT  : setPropertyValue(spMd, "alias", resolveLocationUrl(provider.getBindingChannel().getLocation()) + "/SAML2/MD");
+        setPropertyValue(spMd, "resource", "classpath:" + idauPath + sp.getName() + "/" + sp.getName() + "-samlr2-metadata.xml");
         
         // accountLinkLifecycle
         Bean accountLinkLifecycle = newBean(spBeans, sp.getName() + "-account-link-lifecycle", AccountLinkLifecycleImpl.class);
-        if (provider.getDefaultChannel() != null && ((IdentityProviderChannel)provider.getDefaultChannel()).getIdentityVault() != null) {
-            setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");
-        }
+
+        // TODO RETROFIT  : if (provider.getDefaultChannel() != null && ((IdentityProviderChannel)provider.getDefaultChannel()).getIdentityVault() != null) {
+        // TODO RETROFIT  :     setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");
+        // TODO RETROFIT  : }
 
         // accountLinkEmitter
         Bean accountLinkEmitter = newBean(spBeans, sp.getName() + "-account-link-emitter", OneToOneAccountLinkEmitter.class);
@@ -272,7 +273,7 @@ public class SPTransformer extends AbstractTransformer {
         List<Entry> mBeans = new ArrayList<Entry>();
         
         Bean mBeanKey = newBean(spBeans, mBean.getName() + "-key", String.class);
-        setConstructorArg(mBeanKey, "java.lang.String", "org.atricore.idbus." +
+        setConstructorArg(mBeanKey, 0, "java.lang.String", "org.atricore.idbus." +
                 event.getContext().getCurrentModule().getId() +
                 ":type=ServiceProvider,name=" + sp.getName());
 
@@ -397,7 +398,7 @@ public class SPTransformer extends AbstractTransformer {
         }
 
         Bean partnerappKeyBean = newBean(bpBeans, spBean.getName() + "-key", String.class);
-        setConstructorArg(partnerappKeyBean, "java.lang.String", provider.getName());
+        setConstructorArg(partnerappKeyBean, 0, "java.lang.String", provider.getName());
 
         Bean partnerappBean = newBean(bpBeans, bpBean.getName() + "-" + spBean.getName() + "-partnerapp-mapping", PartnerAppMapping.class);
         setPropertyValue(partnerappBean, "partnerAppId", provider.getName());

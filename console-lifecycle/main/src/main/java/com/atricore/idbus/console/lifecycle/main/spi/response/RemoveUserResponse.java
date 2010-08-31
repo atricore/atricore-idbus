@@ -29,5 +29,6 @@ package com.atricore.idbus.console.lifecycle.main.spi.response;
  * Time: 16:28:18
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 public class RemoveUserResponse extends AbstractManagementResponse {
 }

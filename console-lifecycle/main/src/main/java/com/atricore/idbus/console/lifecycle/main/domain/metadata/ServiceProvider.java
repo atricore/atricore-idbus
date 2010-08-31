@@ -21,13 +21,23 @@
 
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
-public class ServiceProvider extends LocalProvider {
+import java.util.Set;
 
-	private static final long serialVersionUID = 1096573594152761313L;
+public class ServiceProvider extends FederatedProvider {
 
-    private Channel bindingChannel;
-    private ExecutionEnvironment executionEnvironment;
+	private static final long serialVersionUID = 1098843994152761313L;
 
+    private Activation activation;
+
+    private AccountLinkagePolicy accountLinkagePolicy;
+
+    // RFU
+    private AuthenticationContract authenticationContract;
+
+    // RFU
+    private AuthenticationMechanism authenticationMechanism;
+
+    
     @Override
     public ProviderRole getRole() {
         return ProviderRole.SSOServiceProvider;
@@ -38,20 +48,12 @@ public class ServiceProvider extends LocalProvider {
         throw new UnsupportedOperationException("Cannot change provider role");
     }
 
-
-    public Channel getBindingChannel() {
-        return bindingChannel;
+    public Activation getActivation() {
+        return activation;
     }
 
-    public void setBindingChannel(Channel bindingChannel) {
-        this.bindingChannel = bindingChannel;
+    public void setActivation(Activation activation) {
+        this.activation = activation;
     }
 
-    public ExecutionEnvironment getExecutionEnvironment() {
-        return executionEnvironment;
-    }
-
-    public void setExecutionEnvironment(ExecutionEnvironment executionEnvironment) {
-        this.executionEnvironment = executionEnvironment;
-    }
 }

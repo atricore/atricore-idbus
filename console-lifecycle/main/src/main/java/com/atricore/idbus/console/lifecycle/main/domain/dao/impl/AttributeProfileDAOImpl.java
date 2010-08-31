@@ -11,6 +11,6 @@ public class AttributeProfileDAOImpl extends GenericDAOImpl<AttributeProfile, Lo
     private static final Log logger = LogFactory.getLog(AttributeProfileDAOImpl.class);
 
     public AttributeProfileDAOImpl() {
-        super(AttributeProfile.class);
+        super();
     }
 }

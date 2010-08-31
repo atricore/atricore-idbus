@@ -26,8 +26,8 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-import com.atricore.idbus.console.services.dto.GroupDTO;
-import com.atricore.idbus.console.services.dto.UserDTO;
+import com.atricore.idbus.console.services.dto.Group;
+import com.atricore.idbus.console.services.dto.User;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -40,7 +40,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class EditUserMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
-    private var _editedUser:UserDTO;
+    private var _editedUser:User;
 
     private var _processingStarted:Boolean;
 
@@ -126,9 +126,9 @@ public class EditUserMediator extends IocFormMediator
         var groupsSelected:Array = _accountManagementProxy.currentUser.groups;
 
         if (groupsSelected != null) {
-            for each (var gAvail:GroupDTO in _accountManagementProxy.groupsList) {
+            for each (var gAvail:Group in _accountManagementProxy.groupsList) {
                 var found:Boolean = false;
-                for each (var gSel:GroupDTO in groupsSelected) {
+                for each (var gSel:Group in groupsSelected) {
                     if (gAvail.id == gSel.id) {
                         found = true;
                         break;
@@ -222,7 +222,7 @@ public class EditUserMediator extends IocFormMediator
     }
 
     override public function bindModel():void {
-        var newUserDef:UserDTO = new UserDTO();
+        var newUserDef:User = new User();
         newUserDef.userName = view.userUsername.text;
         newUserDef.firstName = view.userFirstName.text;
         newUserDef.surename = view.userLastName.text;

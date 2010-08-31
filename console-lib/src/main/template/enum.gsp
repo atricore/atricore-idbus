@@ -35,7 +35,7 @@ package ${jClass.as3Type.packageName} {
 <%
 
         for (jEnumValue in jClass.enumValues) {%>
-        public static const ${jEnumValue.name}:${jClass.name} = new ${jClass.name}("${jEnumValue.name}", _);<%
+        public static const ${jEnumValue.name}:${jClass.as3Type.name} = new ${jClass.as3Type.name}("${jEnumValue.name}", _);<%
         }%>
 
         function ${jClass.as3Type.name}(value:String = null, restrictor:* = null) {

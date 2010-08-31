@@ -11,6 +11,6 @@ public class ServiceProviderChannelDAOImpl extends GenericDAOImpl<ServiceProvide
     private static final Log logger = LogFactory.getLog(ServiceProviderChannelDAOImpl.class);
 
     public ServiceProviderChannelDAOImpl() {
-        super(ServiceProviderChannel.class);
+        super();
     }
 }

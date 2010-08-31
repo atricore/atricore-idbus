@@ -30,6 +30,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.Group;
  * Time: 16:27:29
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 public class ListGroupResponse extends AbstractManagementResponse {
 
     private Group[] groups;

@@ -10,6 +10,6 @@ public class LocationDAOImpl extends GenericDAOImpl<Location, Long> implements L
     private static final Log logger = LogFactory.getLog(LocationDAOImpl.class);
 
     public LocationDAOImpl() {
-        super(Location.class);
+        super();
     }
 }

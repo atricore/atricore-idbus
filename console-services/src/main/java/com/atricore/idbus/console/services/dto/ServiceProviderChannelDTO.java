@@ -26,17 +26,17 @@ public class ServiceProviderChannelDTO extends ChannelDTO {
 	
 	private static final long serialVersionUID = 6144244229951343612L;
 
+    // RFU
     private AttributeProfileDTO attributeProfile;
 
+    // RFU
     private AuthenticationMechanismDTO authenticationMechanism;
 
-    private IdentityVaultDTO identityVault;
-
-    private UserInformationLookupDTO userInformationLookup;
-
+    // RFU
     private AuthenticationContractDTO authenticationContract;
 
-	private AuthenticationAssertionEmissionPolicyDTO emissionPolicy;
+    // RFU
+    private AuthenticationAssertionEmissionPolicyDTO emissionPolicy;
 
     public AttributeProfileDTO getAttributeProfile() {
         return attributeProfile;
@@ -54,22 +54,6 @@ public class ServiceProviderChannelDTO extends ChannelDTO {
         this.authenticationMechanism = authenticationMechanism;
     }
 
-    public IdentityVaultDTO getIdentityVault() {
-        return identityVault;
-    }
-
-    public void setIdentityVault(IdentityVaultDTO identityVault) {
-        this.identityVault = identityVault;
-    }
-
-    public UserInformationLookupDTO getUserInformationLookup() {
-        return userInformationLookup;
-    }
-
-    public void setUserInformationLookup(UserInformationLookupDTO userInformationLookup) {
-        this.userInformationLookup = userInformationLookup;
-    }
-
     public AuthenticationContractDTO getAuthenticationContract() {
         return authenticationContract;
     }
@@ -85,4 +69,5 @@ public class ServiceProviderChannelDTO extends ChannelDTO {
     public void setEmissionPolicy(AuthenticationAssertionEmissionPolicyDTO emissionPolicy) {
         this.emissionPolicy = emissionPolicy;
     }
+
 }

@@ -10,6 +10,6 @@ public class ChannelDAOImpl extends GenericDAOImpl<Channel, Long> implements Cha
     private static final Log logger = LogFactory.getLog(ChannelDAOImpl.class);
 
     public ChannelDAOImpl() {
-        super(Channel.class);
+        super();
     }
 }

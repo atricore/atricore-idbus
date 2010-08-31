@@ -35,8 +35,11 @@
         <atricore.idbus.version>1.0.0-SNAPSHOT</atricore.idbus.version>
         <idbus.kernel.version>1.0.0-SNAPSHOT</idbus.kernel.version>
         <idbus.cap.saml2.version>1.0.0-SNAPSHOT</idbus.cap.saml2.version>
+        <idbus.cap.spml2.version>1.0.0-SNAPSHOT</idbus.cap.spml2.version>
         <idbus.cap.josso.version>1.0.0-SNAPSHOT</idbus.cap.josso.version>
         <idbus.cap.sts.version>1.0.0-SNAPSHOT</idbus.cap.sts.version>
+
+        <idbus.connector.jdoidentityvault.version>1.0.0-SNAPSHOT</idbus.connector.jdoidentityvault.version>
 
         <idbus.bundle.javax-jdo2-v2_3-ec.version>1.0.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
         <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
@@ -44,15 +47,17 @@
         <idbus.bundle.datanucleus-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-v2_0_3.version>
         <idbus.bundle.apache-maven-v3_0.version>1.0.0-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
         <idbus.bundle.josso-ws-v1_2.version>1.0.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
-        <idbus.cap.spml2.version>1.0.0-SNAPSHOT</idbus.cap.spml2.version>
-        <idbus.cap.spml.version>1.0.0-SNAPSHOT</idbus.cap.spml.version>
 
         <idbus.idojo.dbidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.dbidentitystore.version>
+
         <idbus.idojo.ldapidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
         <idbus.idojo.memoryidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.memoryidentitystore.version>
+
         <idbus.idojo.memorysessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.memorysessionstore.version>
+        <idbus.idojo.dbsessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.dbsessionstore.version>
         <idbus.idojo.serializedsessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
         <idbus.idojo.ehcachesessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.ehcachesessionstore.version>
+        
         <idbus.idojo.strongauthscheme.version>1.0.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
 
         <apache.derby.version>10.5.3.0_1</apache.derby.version>
@@ -103,7 +108,7 @@
         <xercesImpl.version>2.9.1</xercesImpl.version>
 
 
-        <compiler.fork>true</compiler.fork>
+        <compiler.fork>false</compiler.fork>
         <bnd.version.policy>[$(version;==;$(@)),$(version;+;$(@)))</bnd.version.policy>
 
     </properties>
@@ -164,13 +169,13 @@
             <dependency>
                 <groupId>org.atricore.idbus.kernel.common</groupId>
                 <artifactId>org.atricore.idbus.kernel.common.spml</artifactId>
-                <version>${idbus.cap.spml.version}</version>
+                <version>${idbus.cap.spml2.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-cxf</artifactId>
-                <version>${camel.version}</version>
+                <groupId>org.atricore.idbus.connectors</groupId>
+                <artifactId>org.atricore.idbus.connectors.jdoidentityvault</artifactId>
+                <version>${idbus.connector.jdoidentityvault.version}</version>
             </dependency>
 
             <dependency>
@@ -771,6 +776,12 @@
                 <version>${velocity.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-cxf</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -782,7 +793,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.0.2</version>
+                    <version>2.3</version>
                     <configuration>
                         <source>1.5</source>
                         <target>1.5</target>
@@ -808,6 +819,21 @@
                                 <name>log4j.configuration</name>
                                 <value>log4j-tests.properties</value>
                             </property>
+                            <property>
+                                <name>derby.system.home</name>
+                                <value>${build.directory}/derby</value>
+                            </property>
+
+                            <property>
+                                <name>buildDir</name>
+                                <value>${build.directory}</value>
+                            </property>
+
+                            <property>
+                                <name>baseDir</name>
+                                <value>${basedir}</value>
+                            </property>
+
                         </systemProperties>
                     </configuration>
                 </plugin>
@@ -1267,6 +1293,7 @@
 
 
     <modules>
+        <module>console-tooling</module>
         <module>console-lifecycle</module>
         <module>console-activation</module>
         <module>console-config</module>

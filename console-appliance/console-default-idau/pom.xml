@@ -52,8 +52,7 @@
         <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
         <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
         <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.0.0-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
-        <idbus.bundle.datanucleus-core-v2_0_3-m2.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_3-m2.version>
-        <idbus.bundle.datanucleus-rdbms-v2_0_3-m2.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_3-m2.version>
+        <idbus.bundle.datanucleus-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-v2_0_3.version>
         <idbus.bundle.javax-jdo2-v2_3_ec.version>1.0.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3_ec.version>
         <idbus.bundle.javax-jstl-v1_2.version>1.0.0-SNAPSHOT</idbus.bundle.javax-jstl-v1_2.version>
         <idbus.bundle.josso-ws-v1_2.version>1.0.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
@@ -247,7 +246,7 @@
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>
-            <version>${idbus.bundle.datanucleus-core-v2_0_3-m2.version}</version>
+            <version>${idbus.bundle.datanucleus-v2_0_3.version}</version>
             <scope>provided</scope>
         </dependency>
 

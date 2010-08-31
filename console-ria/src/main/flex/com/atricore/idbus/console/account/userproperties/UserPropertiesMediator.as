@@ -21,7 +21,7 @@
 
 package com.atricore.idbus.console.account.userproperties {
 import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.services.dto.UserDTO;
+import com.atricore.idbus.console.services.dto.User;
 
 import mx.formatters.DateFormatter;
 import mx.resources.IResourceManager;
@@ -58,13 +58,13 @@ public class UserPropertiesMediator extends IocMediator {
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case ApplicationFacade.DISPLAY_USER_PROPERTIES:
-                var usr:UserDTO = notification.getBody() as UserDTO;
+                var usr:User = notification.getBody() as User;
                 showPropertiresForUser(usr);
                 break;
         }
     }
 
-    private function showPropertiresForUser(user:UserDTO) {
+    private function showPropertiresForUser(user:User) {
         view.userUsername.text = formatFieldString(user.userName);
         view.userFirstName.text = formatFieldString(user.firstName);
         view.userLastname.text = formatFieldString(user.surename);

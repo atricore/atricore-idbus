@@ -6,10 +6,10 @@
 #foreach ($module in $module.getParent().getModules())
 #if ($module.getType().equals("Appliance"))
     <!-- $module.getId() : $module.getDescription() Identity Appliance Unit -->
-    <feature name="$applianceDef.getName()-$module.getId()-idau" version="1.0.$applianceDef.getRevision()">
+    <feature name="$applianceDef.getName()" version="1.0.$applianceDef.getRevision()">
         <feature version="${atricore.idbus.version}">atricore</feature>
 #foreach ($module1 in $module.getParent().getModules())
-#if ($module1.getType().equals("Federation"))
+#if ($module1.getType().equals("ApplianceUnit"))
         <bundle>mvn:$module1.getGroup()/$module1.getName()/$module1.getVersion()</bundle>
 #end
 #end

@@ -51,7 +51,6 @@ import mx.events.FlexEvent;
 
 import org.puremvc.as3.interfaces.IFacade;
 import org.puremvc.as3.interfaces.INotification;
-import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
 
 public class ModelerPopUpManager extends BasePopUpManager {
 

@@ -20,7 +20,7 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.model.request {
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
 
 public class CreateLdapIdentitySourceElementRequest {
     private var _owner:Object;

@@ -1,8 +1,8 @@
 package com.atricore.idbus.console.modeling.diagram.view.util {
-import com.atricore.idbus.console.services.dto.IdentityProviderDTO;
+import com.atricore.idbus.console.services.dto.IdentityProvider;
 
-import com.atricore.idbus.console.services.dto.IdentityVaultDTO;
-import com.atricore.idbus.console.services.dto.ServiceProviderDTO;
+import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
 
@@ -15,12 +15,12 @@ public class DiagramUtil {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
             // TODO: finish this
-            if ((node1.data is IdentityProviderDTO && node2.data is ServiceProviderDTO) ||
-                (node1.data is ServiceProviderDTO && node2.data is IdentityProviderDTO) ||
-                (node1.data is IdentityProviderDTO && node2.data is IdentityVaultDTO) ||
-                (node1.data is IdentityVaultDTO && node2.data is IdentityProviderDTO) ||
-                (node1.data is ServiceProviderDTO && node2.data is IdentityVaultDTO) ||   //TODO - REMOVE. added as connection workaround
-                (node1.data is IdentityVaultDTO && node2.data is ServiceProviderDTO)) {      //TODO - REMOVE. added as connection workaround
+            if ((node1.data is IdentityProvider && node2.data is ServiceProvider) ||
+                (node1.data is ServiceProvider && node2.data is IdentityProvider) ||
+                (node1.data is IdentityProvider && node2.data is IdentitySource) ||
+                (node1.data is IdentitySource && node2.data is IdentityProvider) ||
+                (node1.data is ServiceProvider && node2.data is IdentitySource) ||   //TODO - REMOVE. added as connection workaround
+                (node1.data is IdentitySource && node2.data is ServiceProvider)) {      //TODO - REMOVE. added as connection workaround
                     
                 canBeLinked = true;
             }

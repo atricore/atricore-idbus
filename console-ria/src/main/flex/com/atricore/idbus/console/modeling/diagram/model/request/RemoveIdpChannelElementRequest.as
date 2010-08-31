@@ -20,17 +20,17 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.model.request {
-import com.atricore.idbus.console.services.dto.IdentityProviderChannelDTO;
+import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 
 public class RemoveIdpChannelElementRequest {
-    private var _idpChannel:IdentityProviderChannelDTO;
+    private var _idpChannel:IdentityProviderChannel;
 
-    public function RemoveIdpChannelElementRequest(idpChannel:IdentityProviderChannelDTO) {
+    public function RemoveIdpChannelElementRequest(idpChannel:IdentityProviderChannel) {
         _idpChannel = idpChannel;
     }
 
 
-    public function get idpChannel():IdentityProviderChannelDTO {
+    public function get idpChannel():IdentityProviderChannel {
         return _idpChannel;
     }
 }

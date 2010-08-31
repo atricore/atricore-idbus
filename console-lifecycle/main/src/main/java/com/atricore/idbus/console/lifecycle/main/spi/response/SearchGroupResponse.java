@@ -33,6 +33,7 @@ import java.util.List;
  * Time: 17:19:21
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 public class SearchGroupResponse extends AbstractManagementResponse {
 
     private List<Group> groups;

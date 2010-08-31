@@ -38,6 +38,7 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
+@Deprecated
 public class BPTransformer extends AbstractTransformer {
     private static final Log logger = LogFactory.getLog(IdPTransformer.class);
 
@@ -104,7 +105,7 @@ public class BPTransformer extends AbstractTransformer {
         setPropertyRef(mBeanExporter, "server", "mBeanServer");
 
         Bean mBeanEntryKeyBean = newBean(bpBeans, mBean.getName() + "-key", String.class);
-        setConstructorArg(mBeanEntryKeyBean, "java.lang.String", "org.atricore.idbus." +
+        setConstructorArg(mBeanEntryKeyBean, 0, "java.lang.String", "org.atricore.idbus." +
                 event.getContext().getCurrentModule().getId() + ":type=BindingProvider,name=" + bp.getName());
 
         Entry mBeanEntry = new Entry();

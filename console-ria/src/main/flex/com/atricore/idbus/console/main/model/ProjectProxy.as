@@ -21,7 +21,7 @@
 
 package com.atricore.idbus.console.main.model
 {
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
 
 import mx.collections.ArrayCollection;
 
@@ -35,11 +35,11 @@ public class ProjectProxy extends IocProxy
 
     private var _identityApplianceList:ArrayCollection;
     private var _viewAction:int;
-    private var _currentIdentityAppliance:IdentityApplianceDTO;
+    private var _currentIdentityAppliance:IdentityAppliance;
     private var _currentIdentityApplianceElement:Object;
     private var _currentIdentityApplianceElementOwner:Object;
     private var _currentView:String;
-    private var _commandResultIdentityAppliance:IdentityApplianceDTO;
+    private var _commandResultIdentityAppliance:IdentityAppliance;
 
     public function ProjectProxy()
     {
@@ -54,11 +54,11 @@ public class ProjectProxy extends IocProxy
         _identityApplianceList = identityApplianceList;
     }
 
-    public function get currentIdentityAppliance():IdentityApplianceDTO {
+    public function get currentIdentityAppliance():IdentityAppliance {
        return _currentIdentityAppliance;
     }
 
-    public function set currentIdentityAppliance(currentIdentityApplianceDefinition:IdentityApplianceDTO):void {
+    public function set currentIdentityAppliance(currentIdentityApplianceDefinition:IdentityAppliance):void {
         _currentIdentityAppliance = currentIdentityApplianceDefinition;
     }
 
@@ -94,11 +94,11 @@ public class ProjectProxy extends IocProxy
         _currentView = currentView;
     }
 
-    public function get commandResultIdentityAppliance():IdentityApplianceDTO {
+    public function get commandResultIdentityAppliance():IdentityAppliance {
        return _commandResultIdentityAppliance;
     }
 
-    public function set commandResultIdentityAppliance(commandResultIdentityAppliance:IdentityApplianceDTO):void {
+    public function set commandResultIdentityAppliance(commandResultIdentityAppliance:IdentityAppliance):void {
         _commandResultIdentityAppliance = commandResultIdentityAppliance;
     }
 }

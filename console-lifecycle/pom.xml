@@ -397,19 +397,16 @@
                 <version>1.3.2_1</version>
             </dependency>
 
-            <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
-                <scope>test</scope>
             </dependency>
 
             <dependency>
                 <groupId>org.springframework.security</groupId>
                 <artifactId>spring-security-core</artifactId>
                 <version>${spring.security.version}</version>
-                <scope>test</scope>
             </dependency>
 
             <dependency>

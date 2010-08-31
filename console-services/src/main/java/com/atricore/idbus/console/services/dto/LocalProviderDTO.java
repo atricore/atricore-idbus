@@ -33,16 +33,13 @@ public class LocalProviderDTO extends ProviderDTO {
 
     private ProviderConfigDTO config;
 
-    /**
-     * The default channel where requests from other providers are received
-     */
-    private ChannelDTO defaultChannel;
+    // RFU
+    private Set<BindingDTO> activeBindings = new HashSet<BindingDTO>();
 
-    /**
-     * Channels that override the default channel (optional), they must refer to a target! 
-     */
-    private Set<ChannelDTO> channels =  new HashSet<ChannelDTO>();
-    private static final long serialVersionUID = 2967662484748634148L;
+    // RFU
+    private Set<ProfileDTO> activeProfiles = new HashSet<ProfileDTO>();
+
+    private IdentityLookupDTO identityLookup;
 
     public ProviderConfigDTO getConfig() {
         return config;
@@ -52,19 +49,33 @@ public class LocalProviderDTO extends ProviderDTO {
         this.config = config;
     }
 
-    public ChannelDTO getDefaultChannel() {
-        return defaultChannel;
+    public Set<BindingDTO> getActiveBindings() {
+		if(activeBindings == null){
+			activeBindings = new HashSet<BindingDTO>();
+		}
+        return activeBindings;
     }
 
-    public void setDefaultChannel(ChannelDTO defaultChannel) {
-        this.defaultChannel = defaultChannel;
+    public void setActiveBindings(Set<BindingDTO> activeBindings) {
+        this.activeBindings = activeBindings;
     }
 
-    public Set<ChannelDTO> getChannels() {
-        return channels;
+    public Set<ProfileDTO> getActiveProfiles() {
+		if(activeProfiles == null){
+			activeProfiles = new HashSet<ProfileDTO>();
+		}
+		return activeProfiles;
     }
 
-    public void setChannels(Set<ChannelDTO> channels) {
-        this.channels = channels;
+    public void setActiveProfiles(Set<ProfileDTO> activeProfiles) {
+        this.activeProfiles = activeProfiles;
+    }
+
+    public IdentityLookupDTO getIdentityLookup() {
+        return identityLookup;
+    }
+
+    public void setIdentityLookup(IdentityLookupDTO identityLookup) {
+        this.identityLookup = identityLookup;
     }
 }

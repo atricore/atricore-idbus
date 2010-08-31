@@ -37,8 +37,8 @@ import com.atricore.idbus.console.modeling.main.view.appliance.IdentityAppliance
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-import com.atricore.idbus.console.services.dto.IdentityApplianceStateDTO;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
+import com.atricore.idbus.console.services.dto.IdentityApplianceState;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -58,7 +58,7 @@ public class ModelerMediator extends IocMediator {
 
     private var _projectProxy:ProjectProxy;
 
-    private var _identityAppliance:IdentityApplianceDTO;
+    private var _identityAppliance:IdentityAppliance;
 
     private var _emptyNotationModel:XML;
 
@@ -132,7 +132,7 @@ public class ModelerMediator extends IocMediator {
             } else {
                 view.btnLifecycle.enabled = false;
             }
-            // TODO: remove IF condition (fetch list every time modeler is opened)?
+            // TODO: delete IF condition (fetch list every time modeler is opened)?
             if (projectProxy.identityApplianceList == null) {
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
             }
@@ -152,7 +152,7 @@ public class ModelerMediator extends IocMediator {
     private function handleOpenClick(event:MouseEvent):void {
         trace("Open Button Click: " + event);
         if (view.appliances.selectedItem != null) {
-            var applianceId:String = (view.appliances.selectedItem as IdentityApplianceDTO).id.toString();
+            var applianceId:String = (view.appliances.selectedItem as IdentityAppliance).id.toString();
             sendNotification(ProcessingMediator.START, "Opening identity appliance...");
             sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, applianceId);
         }
@@ -275,7 +275,7 @@ public class ModelerMediator extends IocMediator {
                 popupManager.showUploadProgressWindow(notification);
                 break;
             case ApplicationFacade.IDENTITY_APPLIANCE_CHANGED:
-                if (projectProxy.currentIdentityAppliance.state == IdentityApplianceStateDTO.PROJECTED.name) {
+                if (projectProxy.currentIdentityAppliance.state == IdentityApplianceState.PROJECTED.name) {
                     view.btnSave.enabled = true;
                 }
                 break;
@@ -330,14 +330,14 @@ public class ModelerMediator extends IocMediator {
     }
 
     private function enableIdentityApplianceActionButtons():void {
-        var appliance:IdentityApplianceDTO = projectProxy.currentIdentityAppliance;
+        var appliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
         if (appliance != null && appliance.idApplianceDeployment == null) {
             view.btnLifecycle.enabled = true;
         }
     }
 
     private function applianceListLabelFunc(item:Object):String {
-        return (item as IdentityApplianceDTO).idApplianceDefinition.name;
+        return (item as IdentityAppliance).idApplianceDefinition.name;
     }
 
     protected function get view():ModelerView

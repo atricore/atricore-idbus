@@ -20,16 +20,16 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.model.request {
-import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
 
 public class RemoveIdentityApplianceElementRequest {
-    private var _identityAppliance:IdentityApplianceDTO;
+    private var _identityAppliance:IdentityAppliance;
 
-    public function RemoveIdentityApplianceElementRequest(identityAppliance:IdentityApplianceDTO) {
+    public function RemoveIdentityApplianceElementRequest(identityAppliance:IdentityAppliance) {
         _identityAppliance = identityAppliance;
     }
 
-    public function get identityAppliance():IdentityApplianceDTO {
+    public function get identityAppliance():IdentityAppliance {
         return _identityAppliance;
     }
 }
