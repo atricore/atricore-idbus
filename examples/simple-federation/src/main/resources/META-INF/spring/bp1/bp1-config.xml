@@ -92,7 +92,6 @@
         <property name="endpoints">
             <list>
 
-
                 <!-- SSOP Binding SLO Endpoint (receives requests from agent and SP) -->
                 <bean name="bp1-binding-ssop-slo-artifact"
                       class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl">
