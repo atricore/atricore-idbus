@@ -2,12 +2,13 @@ package com.atricore.idbus.console.lifecycle.main.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
-import org.atricore.idbus.kernel.main.authn.util.Crypt;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+
+import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
+import org.atricore.idbus.kernel.main.authn.util.Crypt;
 
 /**
  * Password hashing utility.
@@ -130,3 +131,4 @@ public class PasswordHashUtil {
         this._saltLength = _saltLength;
     }
 }
+
