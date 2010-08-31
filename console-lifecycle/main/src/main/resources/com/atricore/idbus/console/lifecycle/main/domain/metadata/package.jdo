@@ -93,7 +93,8 @@
         <class name="ExecutionEnvironment" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="id" value-strategy="native" primary-key="true"/>
-            <field name="activations" default-fetch-group="true" persistence-modifier="persistent" mapped-by="executionEnv">
+            <field name="activations" default-fetch-group="true"
+                   persistence-modifier="persistent" mapped-by="executionEnv">
                 <collection dependent-element="true"/>
             </field>
         </class>
@@ -165,16 +166,18 @@
             <field name="attributeProfile" default-fetch-group="true" />
             <field name="authenticationContract" default-fetch-group="true" />
             <field name="emissionPolicy" default-fetch-group="true" />
+
             <field name="authenticationMechanisms" default-fetch-group="true" persistence-modifier="persistent">
-                <collection dependent-element="true"/>
+                <join delete-action="cascade"/>
             </field>
+
         </class>
 
         <class name="IdentityProviderChannel" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="accountLinkagePolicy" default-fetch-group="true" dependent="true"/>
             <field name="authenticationContract" default-fetch-group="true" />
-            <field name="authenticationMechanism" default-fetch-group="true" />
+            <field name="authenticationMechanism" default-fetch-group="true" dependent="true" persistence-modifier="persistent"/>
         </class>
 
         <class name="IdentitySource" detachable="true">
@@ -260,14 +263,17 @@
             <field name="activation" default-fetch-group="true" mapped-by="sp"/>
             <field name="accountLinkagePolicy" default-fetch-group="true" />
             <field name="authenticationContract" default-fetch-group="true" />
-            <field name="authenticationMechanism" default-fetch-group="true" />
+
+            <field name="authenticationMechanisms" default-fetch-group="true" persistence-modifier="persistent">
+                <join delete-action="cascade"/>
+            </field>
         </class>
         
         <class name="ServiceProviderChannel" detachable="true">
             <inheritance strategy="new-table"/>
 
             <field name="attributeProfile" default-fetch-group="true" />
-            <field name="authenticationMechanism" default-fetch-group="true" />
+            <field name="authenticationMechanism" default-fetch-group="true" dependent="true" persistence-modifier="persistent"/>
             
             <field name="authenticationContract" default-fetch-group="true" />
             <field name="emissionPolicy" default-fetch-group="true" />

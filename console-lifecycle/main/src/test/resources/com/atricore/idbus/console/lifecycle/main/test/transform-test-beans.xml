@@ -212,8 +212,7 @@
                                         <ref bean="spFederatedConnectionBTransformer"/>
                                         <ref bean="spJOSSOActivationTransformer"/>
                                         <ref bean="execEnvJOSSOActivationTransformer"/>
-
-                                        <!-- ref bean="samlr2SPTransformer"/ -->
+                                        <ref bean="samlr2SPTransformer"/>
 
                                         <!-- PSP Transformers -->
 

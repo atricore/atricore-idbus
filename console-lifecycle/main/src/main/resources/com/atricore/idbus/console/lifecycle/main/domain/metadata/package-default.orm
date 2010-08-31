@@ -30,9 +30,9 @@
         <class name="AccountLinkagePolicy" table="ATC_ACCOUNT_LINKAGE_POLICY" />
         <class name="Activation" table="ATC_ACTIVATION" />
         <class name="AttributeProfile" table="ATC_ATTRIBUTE_PROFILE" />
-        <class name="AuthenticationAssertionEmissionPolicy" table="ATC_AUTH_ASSERTION_EMISSION_POLICY" />
-        <class name="AuthenticationMechanism" table="ATC_AUTHENTICATION_MECHANISM" />
-        <class name="AuthenticationContract" table="ATC_AUTHENTICATION_CONTRACT" />
+        <class name="AuthenticationAssertionEmissionPolicy" table="ATC_AUTHN_ASSERTION_EMISSION_POLICY" />
+        <class name="AuthenticationContract" table="ATC_AUTHN_CONTRACT" />
+        <class name="AuthenticationMechanism" table="ATC_AUTHN_MECHANISM" />
         <class name="BasicAuthentication" table="ATC_BASIC_AUTHN"/>
         <class name="Channel" table="ATC_CHANNEL">
             <field name="name" >
@@ -61,7 +61,10 @@
             <field name="identitySources" />
         </class>
         <class name="IdentityLookup" table="ATC_ID_LOOKUP"/>
-        <class name="IdentityProvider" table="ATC_IDP"/>
+        <class name="IdentityProvider" table="ATC_IDP">
+            <field name="authenticationMechanisms" table="ATC_IDP_AUTHN_MECHANISM"/>
+        </class>
+
         <class name="IdentityProviderChannel" table="ATC_IDP_CHANNEL"/>
         <class name="IdentitySource" table="ATC_ID_SOURCE"/>
         <class name="JBossExecutionEnvironment" table="ATC_JBOSS_EXECENV"/>
@@ -79,6 +82,7 @@
             </field>
             <field name="activeBindings" table="ATC_PROVIDER_BINDINGS"/>
             <field name="activeProfiles" table="ATC_PROVIDER_PROFILES"/>
+            
         </class>
         <class name="ProviderRole" table="ATC_PROVIDER_ROLE"/>
         <class name="ProvisioningServiceProvider" table="ATC_PSP"/>
@@ -90,7 +94,10 @@
         <class name="SamlR2IDPConfig" table="ATC_SAMLR2_IDP_CONFIG"/>
         <class name="SamlR2ProviderConfig" table="ATC_SAMLR2_PROVIDER_CONFIG" />
         <class name="SamlR2SPConfig" table="ATC_SAMLR2_SP_CONFIG" />
-        <class name="ServiceProvider" table="ATC_SP"/>
+        <class name="ServiceProvider" table="ATC_SP">
+            <field name="authenticationMechanisms" table="ATC_SP_AUTHN_MECHANISM"/>
+        </class>
+
         <class name="ServiceProviderChannel" table="ATC_SP_CHANNEL"/>
         <class name="TomcatExecutionEnvironmetn" table="ATC_TOMCAT_EXECENV"/>
         <class name="WeblogicExecutionEnvironmetn" table="ATC_WEBLOGIC_EXECENV"/>
