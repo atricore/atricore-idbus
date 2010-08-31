@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Author: Dejan Maric
@@ -12,6 +13,8 @@ public class ExecutionEnvironment implements Serializable {
     private String displayName;
     private String description;
     private String installUri;
+
+    private Set<Activation> activations;
 
     private static final long serialVersionUID = 175340870033867780L;
 
@@ -55,4 +58,11 @@ public class ExecutionEnvironment implements Serializable {
         this.installUri = installUri;
     }
 
+    public Set<Activation> getActivations() {
+        return activations;
+    }
+
+    public void setActivations(Set<Activation> activations) {
+        this.activations = activations;
+    }
 }
