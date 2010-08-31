@@ -135,6 +135,10 @@
                 <collection dependent-element="true" />
 			</field>
 
+            <field name="executionEnvironments" default-fetch-group="true" persistence-modifier="persistent">
+                <collection dependent-element="true" />
+			</field>
+
 			<field name="activeFeatures" default-fetch-group="true" persistence-modifier="persistent">
                 <collection dependent-element="true"/>
             </field>

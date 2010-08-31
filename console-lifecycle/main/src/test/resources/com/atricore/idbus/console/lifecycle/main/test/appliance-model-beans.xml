@@ -61,6 +61,12 @@
                 <ref bean="idsource1"/>
             </set>
         </property>
+        
+        <property name="executionEnvironments">
+            <set>
+                <ref bean="execEnv1"/>
+            </set>
+        </property>
 
     </bean>
 
