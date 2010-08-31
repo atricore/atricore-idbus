@@ -35,6 +35,7 @@ import oasis.names.tc.spml._2._0.search.ScopeType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
 import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
@@ -464,15 +465,15 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
 
         StringBuffer sb_query = new StringBuffer("/users[");
         if ( !"".equals(userSearchRequest.getUserName()))
-            sb_query.append("username=" + userSearchRequest.getUserName() + " | ");
+            sb_query.append("username='" + userSearchRequest.getUserName() + "' | ");
         if ( !"".equals(userSearchRequest.getFirstName()))
-            sb_query.append("firstname=" + userSearchRequest.getFirstName() + " | ");
+            sb_query.append("firstname='" + userSearchRequest.getFirstName() + "' | ");
         if ( !"".equals(userSearchRequest.getSurename()))
-            sb_query.append("surname=" + userSearchRequest.getSurename() + " | ");
+            sb_query.append("surname='" + userSearchRequest.getSurename() + "' | ");
         if ( !"".equals(userSearchRequest.getCommonName()))
-            sb_query.append("commonname=" + userSearchRequest.getCommonName() + " | ");
-        if ( !"".equals(userSearchRequest.getGivenName()))
-            sb_query.append("givenName=" + userSearchRequest.getGivenName() + " | ");
+            sb_query.append("commonname='" + userSearchRequest.getCommonName() + "' | ");
+        if ( StringUtils.isNotBlank(userSearchRequest.getGivenName()))
+            sb_query.append("givenName='" + userSearchRequest.getGivenName() + "' | ");
 
         String qry = sb_query.toString();
         qry = qry.substring(0,qry.length()-3)+"]";
@@ -583,7 +584,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
 
         PSOIdentifierType psoGroupId = new PSOIdentifierType();
         psoGroupId.setTargetID(pspTargetId);
-        psoGroupId.setID(id + "");
+        psoGroupId.setID(Long.toString(id));
         psoGroupId.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
         LookupRequestType spmlRequest = new LookupRequestType();
@@ -605,7 +606,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
 
         PSOIdentifierType psoUserId = new PSOIdentifierType();
         psoUserId.setTargetID(pspTargetId);
-        psoUserId.setID(id + "");
+        psoUserId.setID(Long.toString(id));
         psoUserId.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
 
         LookupRequestType spmlRequest = new LookupRequestType();
@@ -613,6 +614,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         spmlRequest.setPsoID(psoUserId);
 
         LookupResponseType resp = spmlService.spmlLookupRequest(spmlRequest);
+        
         if (!resp.getStatus().equals(StatusCodeType.SUCCESS)) {
             logger.error("SPML Status Code " + resp.getStatus() + " received while looking for user " + id);
             throw new IdentityMediationException("SPML Status Code " + resp.getStatus() + " received while looking for user " + id);
