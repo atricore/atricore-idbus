@@ -21,12 +21,15 @@
 
 package com.atricore.idbus.console.modeling.diagram
 {
+import com.atricore.idbus.console.components.CustomEdgeLabelRenderer;
+import com.atricore.idbus.console.components.CustomEdgeRenderer;
 import com.atricore.idbus.console.components.CustomVisualGraph;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.util.Constants;
 import com.atricore.idbus.console.modeling.browser.model.BrowserModelFactory;
 import com.atricore.idbus.console.modeling.browser.model.BrowserNode;
+import com.atricore.idbus.console.modeling.diagram.event.VEdgeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
@@ -44,7 +47,6 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityV
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannelElementRequest;
-import com.atricore.idbus.console.modeling.diagram.renderers.edgelabel.BaseEdgeLabelRendered;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
@@ -71,11 +73,13 @@ import mx.utils.UIDUtil;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
-import org.un.cava.birdeye.ravis.graphLayout.data.Graph;
+import org.un.cava.birdeye.ravis.enhancedGraphLayout.data.EnhancedGraph;
+import org.un.cava.birdeye.ravis.graphLayout.data.IEdge;
+import org.un.cava.birdeye.ravis.graphLayout.data.IGraph;
 import org.un.cava.birdeye.ravis.graphLayout.data.INode;
 import org.un.cava.birdeye.ravis.graphLayout.layout.CircularLayouter;
 import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
-import org.un.cava.birdeye.ravis.graphLayout.visual.edgeRenderers.BaseEdgeRenderer;
+import org.un.cava.birdeye.ravis.utils.TypeUtil;
 import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;
 
 public class DiagramMediator extends IocMediator {
@@ -101,6 +105,7 @@ public class DiagramMediator extends IocMediator {
     private var _emptyNotationModel:XML;
 
     private var _currentlySelectedNode:INode;
+    private var _currentlySelectedEdge:IEdge;
     private var _projectProxy:ProjectProxy;
 
     public function get projectProxy():ProjectProxy {
@@ -122,6 +127,7 @@ public class DiagramMediator extends IocMediator {
             _identityApplianceDiagram.removeEventListener(VNodeSelectedEvent.VNODE_SELECTED, nodeSelectedEventHandler);
             _identityApplianceDiagram.removeEventListener(VNodeRemoveEvent.VNODE_REMOVE, nodeRemoveEventHandler);
             _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.VNODES_LINKED, nodesLinkedEventHandler);
+            _identityApplianceDiagram.removeEventListener(VEdgeSelectedEvent.VEDGE_SELECTED, edgeSelectedEventHandler);
         }
 
         super.setViewComponent(viewComponent);
@@ -135,6 +141,7 @@ public class DiagramMediator extends IocMediator {
         _identityApplianceDiagram.addEventListener(VNodeSelectedEvent.VNODE_SELECTED, nodeSelectedEventHandler);
         _identityApplianceDiagram.addEventListener(VNodeRemoveEvent.VNODE_REMOVE, nodeRemoveEventHandler);
         _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.VNODES_LINKED, nodesLinkedEventHandler);
+        _identityApplianceDiagram.addEventListener(VEdgeSelectedEvent.VEDGE_SELECTED, edgeSelectedEventHandler);
         _emptyNotationModel = <Graph/>;
 
         resetGraph();
@@ -372,6 +379,13 @@ public class DiagramMediator extends IocMediator {
                             break;
                     }
                 }
+
+                if (_currentlySelectedEdge != null) {
+                    GraphDataManager.removeVEdge(_identityApplianceDiagram, _currentlySelectedEdge.vedge);
+                    _currentlySelectedEdge = null;
+                    sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                }
+
                 break;
         }
 
@@ -416,7 +430,6 @@ public class DiagramMediator extends IocMediator {
                     if (provider is LocalProvider) {
 //                        var locProv:LocalProvider = provider as LocalProvider;
                         var provider:Provider = identityApplianceDefinition.providers[i];
-                        var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, true, Constants.PROVIDER_DEEP);
                         if (provider is FederatedProvider) {
                             var locProv:FederatedProvider = provider as FederatedProvider;
                             if (locProv.federatedConnectionsA != null && locProv.federatedConnectionsA.length != 0) {
@@ -482,7 +495,11 @@ public class DiagramMediator extends IocMediator {
 
 
     private function resetGraph():void {
-        _identityApplianceDiagram.graph = new Graph("Graph", true, _emptyNotationModel as XML);
+        var graph:IGraph = new EnhancedGraph("Graph", true);
+		var vo:Object = TypeUtil.deserializeXMLString(_emptyNotationModel);
+		EnhancedGraph(graph).initFromVO(vo);
+		_identityApplianceDiagram.graph = graph;
+
         _identityApplianceDiagram.graph.purgeGraph();
         _identityApplianceDiagram.newNodesDefaultVisible = true;
 
@@ -497,13 +514,16 @@ public class DiagramMediator extends IocMediator {
 
         _identityApplianceDiagram.layouter = layouter;
 
-        _identityApplianceDiagram.edgeRenderer = new BaseEdgeRenderer(_identityApplianceDiagram.edgeDrawGraphics);
-
         var nodeRenderer:ClassFactory = new ClassFactory(NodeDetailedRenderer);
         _identityApplianceDiagram.itemRenderer = nodeRenderer;
 
-        _identityApplianceDiagram.edgeLabelRenderer = new ClassFactory(BaseEdgeLabelRendered);
+        _identityApplianceDiagram.edgeRenderer = new CustomEdgeRenderer(_identityApplianceDiagram.edgeDrawGraphics);
+        _identityApplianceDiagram.edgeLabelRenderer = new ClassFactory(CustomEdgeLabelRenderer);
 
+        /* set if edge labels should be displayed */
+        _identityApplianceDiagram.displayEdgeLabels = true;
+        _identityApplianceDiagram.displayNodeLabels = true;
+        
         _identityApplianceDiagram.draw();
         _identityApplianceDiagram.refresh();
 
@@ -515,6 +535,7 @@ public class DiagramMediator extends IocMediator {
         var node:INode = _identityApplianceDiagram.graph.nodeByStringId(event.vnodeId);
 
         toggleUnselectedNodesOff(_identityApplianceDiagram, event.target);
+        unselectAllEdges();
 
         if (node != null) {
             _currentlySelectedNode = node;
@@ -570,6 +591,20 @@ public class DiagramMediator extends IocMediator {
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
     }
 
+    private function edgeSelectedEventHandler(event:VEdgeSelectedEvent):void {
+        var edge:IEdge = event.edge;
+
+        //var edge:IEdge = _identityApplianceDiagram.edgeByStringId(event.vedgeId);
+
+        toggleUnselectedNodesOff(_identityApplianceDiagram, event.target);
+
+        if (edge != null) {
+            _currentlySelectedEdge = edge;
+            _projectProxy.currentIdentityApplianceElement = edge.data.data;
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_SELECTED);
+        }
+    }
+
     private function toggleUnselectedNodesOff(visualCompToCheck:Object, selectedItem:Object):void {
 
         for each(var obj:Object in visualCompToCheck.getChildren()) {
@@ -585,6 +620,14 @@ public class DiagramMediator extends IocMediator {
 
             }
         }
+    }
+
+    private function unselectAllEdges():void {
+        _currentlySelectedEdge = null;
+        for each (var edge:IEdge in _identityApplianceDiagram.graph.edges) {
+            edge.vedge.lineStyle.color = 0xCCCCCC;
+        }
+        _identityApplianceDiagram.refresh();
     }
 
     private function toggleNodeOnByData(visualCompToCheck:Object, targetSemanticElement:Object):void {

@@ -20,9 +20,12 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.model {
+import com.atricore.idbus.console.components.CustomVisualGraph;
 
-import org.un.cava.birdeye.ravis.graphLayout.data.IEdge;
+import com.atricore.idbus.console.main.EmbeddedIcons;
+
 import org.un.cava.birdeye.ravis.graphLayout.data.INode;
+import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualEdge;
 import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualGraph;
 import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
 
@@ -30,8 +33,6 @@ public class GraphDataManager {
 
     public static function addVNodeAsChild(_vgraph:IVisualGraph, sid:String, data:Object, parentNode:IVisualNode, refresh:Boolean, deep: int):IVisualNode {
         var rootVNode:IVisualNode;
-        var tmpEdge:IEdge;
-        var edgeData:Object;
         var node:INode;
         var vnode:IVisualNode;
 
@@ -41,13 +42,15 @@ public class GraphDataManager {
         if (_vgraph.currentRootVNode != null)
             rootVNode = _vgraph.currentRootVNode;
 
-        vnode = _vgraph.createNode(sid, data);
+        node = _vgraph.graph.createNode(sid, data);
+        vnode = (_vgraph as CustomVisualGraph).createVisualNode(node);
+        (_vgraph as CustomVisualGraph).setVNodeVisibility(vnode, true);
 
-        if (parentNode != null){
-            _vgraph.linkNodes(parentNode,vnode);
-//            _vgraph.currentRootVNode = rootVNode;
-        } else{
-//            _vgraph.currentRootVNode = vnode;
+        if (parentNode != null) {
+            (_vgraph as CustomVisualGraph).createCustomVEdge(parentNode.node, node, EmbeddedIcons.connectionMiniIcon, "Connection");
+            //_vgraph.currentRootVNode = rootVNode;
+        } else {
+            //_vgraph.currentRootVNode = vnode;
         }
 
         if (deep > 0 && deep > _vgraph.maxVisibleDistance){
@@ -60,7 +63,11 @@ public class GraphDataManager {
     }
 
     public static function linkVNodes(_vgraph:IVisualGraph, node:IVisualNode, parentNode:IVisualNode):void {
-       _vgraph.linkNodes(node, parentNode);
+        (_vgraph as CustomVisualGraph).createCustomVEdge(parentNode.node, node.node, EmbeddedIcons.connectionMiniIcon, "Connection");
+    }
+
+    public static function removeVEdge(_vgraph:IVisualGraph, edge:IVisualEdge):void {
+        (_vgraph as CustomVisualGraph).removeEdge(edge);
     }
 
     /**

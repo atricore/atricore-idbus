@@ -25,6 +25,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.connection.ConnectionCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.EmbeddedDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.ExternalDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.ExternalDBIdentityVaultLookupSection;
@@ -55,6 +56,8 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
+import mx.controls.Alert;
+import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 import mx.validators.Validator;
 
@@ -85,6 +88,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _idpChannelContractSection:IDPChannelContractSection;
     private var _spChannelContractSection:SPChannelContractSection;
     private var _externalDbVaultLookupSection:ExternalDBIdentityVaultLookupSection;
+    private var _connectionCoreSection:ConnectionCoreSection;
     private var _dirty:Boolean;
 
     protected var _validators : Array;
@@ -136,28 +140,23 @@ public class PropertySheetMediator extends IocMediator {
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
                 enablePropertyTabs();
+                _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                 if (_projectProxy.currentIdentityApplianceElement is IdentityAppliance) {
-                    _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                     enableIdentityAppliancePropertyTabs();
                 } else
                 if (_projectProxy.currentIdentityApplianceElement is IdentityProvider) {
-                    _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                     enableIdentityProviderPropertyTabs();
                 } else
                 if(_projectProxy.currentIdentityApplianceElement is ServiceProvider) {
-                    _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                     enableServiceProviderPropertyTabs();
                 } else
                 if(_projectProxy.currentIdentityApplianceElement is IdentityProviderChannel) {
-                    _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                     enableIdpChannelPropertyTabs();
                 }
                 if(_projectProxy.currentIdentityApplianceElement is ServiceProviderChannel) {
-                    _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                     enableSpChannelPropertyTabs();
                 }
                 if(_projectProxy.currentIdentityApplianceElement is IdentitySource) {
-                    _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
                     if(_currentIdentityApplianceElement is EmbeddedIdentitySource){
                         enableEmbeddedDbVaultPropertyTabs();
                     } else if(_currentIdentityApplianceElement is DbIdentitySource) {
@@ -167,6 +166,12 @@ public class PropertySheetMediator extends IocMediator {
                     }
 
                 }
+
+                if (_currentIdentityApplianceElement.hasOwnProperty("type") && 
+                        _currentIdentityApplianceElement.type == "connection") {
+                    enableConnectionPropertyTabs();
+                }
+                    
                 break;
         }
 
@@ -1196,6 +1201,36 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function enableLdapSourcePropertyTabs():void {}    
+
+    // TODO
+    protected function enableConnectionPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _connectionCoreSection = new ConnectionCoreSection();
+        corePropertyTab.addElement(_connectionCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _connectionCoreSection.btnRemove.addEventListener(MouseEvent.CLICK, handleRemoveConnection);
+    }
+
+    private function handleRemoveConnection(event:MouseEvent):void {
+        Alert.show("Are you sure you want to delete this connection?", "Confirm Removal",
+                Alert.YES | Alert.NO, null, nodeRemoveConfirmed, null, Alert.YES);
+    }
+
+    private function nodeRemoveConfirmed(event:CloseEvent):void {
+        if (event.detail == Alert.YES) {
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE);
+        }
+    }
 
     protected function clearPropertyTabs():void {
         // Attach appliance editor form to property tabbed view

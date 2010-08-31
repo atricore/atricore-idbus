@@ -22,7 +22,8 @@
 
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 	xmlns:primitive="org.un.cava.birdeye.ravis.assets.icons.primitives.*"
-	creationComplete="onCreationComplete()" autoLayout="true" rollOver="handleNodeRollOver(event)" rollOut="handleNodeRollOut(event)">
+	creationComplete="onCreationComplete()" autoLayout="true" rollOver="handleNodeRollOver(event)" rollOut="handleNodeRollOut(event)"
+    verticalGap="0" horizontalAlign="center">
 
     <mx:Zoom id="zoomAll" zoomWidthTo="1.2" zoomHeightTo="1.2" zoomWidthFrom="1" zoomHeightFrom="1"/>
 

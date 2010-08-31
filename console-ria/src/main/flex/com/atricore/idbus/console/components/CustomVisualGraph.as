@@ -1,5 +1,8 @@
 package com.atricore.idbus.console.components {
+import com.atricore.idbus.console.modeling.diagram.event.VEdgeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
+import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
+import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
 
 import flash.display.DisplayObject;
@@ -8,11 +11,14 @@ import flash.geom.Point;
 
 import mx.managers.CursorManager;
 
+import org.un.cava.birdeye.ravis.enhancedGraphLayout.event.VGEdgeEvent;
+import org.un.cava.birdeye.ravis.enhancedGraphLayout.visual.EnhancedVisualGraph;
+import org.un.cava.birdeye.ravis.graphLayout.data.IEdge;
 import org.un.cava.birdeye.ravis.graphLayout.data.INode;
+import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualEdge;
 import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
-import org.un.cava.birdeye.ravis.graphLayout.visual.VisualGraph;
 
-public class CustomVisualGraph extends VisualGraph {
+public class CustomVisualGraph extends EnhancedVisualGraph {
 
     private var _connectionMode:Boolean;
     private var _connectionStartPoint:Point;
@@ -20,19 +26,24 @@ public class CustomVisualGraph extends VisualGraph {
     private var _connectionTargetNode:IVisualNode;
     private var _connectionDragInProgress:Boolean;
 
+    private var _selectedEdge:IEdge;
+    private var _selectedEdgeId:int;
+    
     [Embed(source="/images/cursorImages/cross.png")]
     public static var crossCursorSymbol:Class;
 
     public function CustomVisualGraph() {
         super();
+        this.addEventListener(VGEdgeEvent.VG_EDGE_CLICK, edgeEventHandler);
     }
 
     override protected function dragBegin(event:MouseEvent):void {
         super.dragBegin(event);
-        if (_dragComponent != null && _connectionMode) {
+        if (event.currentTarget is NodeDetailedRenderer && _connectionMode) {
             _connectionDragInProgress = true;
             _connectionSourceNode = data as IVisualNode;
             _connectionStartPoint = new Point(_canvas.contentMouseX, _canvas.contentMouseY);
+            _canvas.addEventListener(MouseEvent.MOUSE_UP, dragEnd);
         }
     }
 
@@ -44,11 +55,12 @@ public class CustomVisualGraph extends VisualGraph {
                 if (!nodeLinkExists(_connectionSourceNode.node, _connectionTargetNode.node) &&
                         DiagramUtil.nodesCanBeLinked(_connectionSourceNode, _connectionTargetNode)) {
                     // TODO: move linkNodes() call to DiagramMediator.nodesLinkedEventHandler() ?
-                    linkNodes(_connectionSourceNode, _connectionTargetNode);
+                    GraphDataManager.linkVNodes(this, _connectionSourceNode, _connectionTargetNode);
                     dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.VNODES_LINKED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
                 }
             }
             resetConnectionModeParameters();
+            _canvas.removeEventListener(MouseEvent.MOUSE_UP, dragEnd);
         }
     }
 
@@ -66,7 +78,8 @@ public class CustomVisualGraph extends VisualGraph {
                 }
             }
 
-            edgeDrawGraphics.lineStyle(_defaultEdgeStyle.thickness, lineColor);
+            edgeDrawGraphics.lineStyle(2, lineColor);
+            //edgeDrawGraphics.lineStyle(_defaultEdgeStyle.thickness, lineColor);
             edgeDrawGraphics.beginFill(lineColor);
             edgeDrawGraphics.moveTo(_connectionStartPoint.x, _connectionStartPoint.y);
             edgeDrawGraphics.lineTo(_canvas.contentMouseX, _canvas.contentMouseY);
@@ -84,6 +97,7 @@ public class CustomVisualGraph extends VisualGraph {
         (document as DisplayObject).addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
         (document as DisplayObject).addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
         (document as DisplayObject).addEventListener(MouseEvent.ROLL_OUT, rollOutHandler);
+        (document as DisplayObject).addEventListener(MouseEvent.MOUSE_MOVE, handleConnectionDrag);
     }
 
     public function exitConnectionMode():void {
@@ -101,6 +115,7 @@ public class CustomVisualGraph extends VisualGraph {
         (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
         (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
         (document as DisplayObject).removeEventListener(MouseEvent.ROLL_OUT, rollOutHandler);
+        (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_MOVE, handleConnectionDrag);
     }
 
     public function resetConnectionModeParameters():void {
@@ -110,9 +125,6 @@ public class CustomVisualGraph extends VisualGraph {
         _connectionDragInProgress = false;
         _canvas.removeEventListener(MouseEvent.ROLL_OUT,dragEnd);
 	    _canvas.removeEventListener(MouseEvent.MOUSE_UP,dragEnd);
-        if (_dragComponent != null && _dragComponent.stage != null) {
-            _dragComponent.stage.removeEventListener(MouseEvent.MOUSE_MOVE, handleDrag);
-        }
         _dragComponent = null;
     }
 
@@ -149,11 +161,91 @@ public class CustomVisualGraph extends VisualGraph {
         }
     }
 
+    private function handleConnectionDrag(event:MouseEvent):void {
+        if (_connectionMode) {
+            refresh();
+			event.updateAfterEvent();
+        }
+    }
+
     private function nodeLinkExists(node1:INode, node2:INode):Boolean {
         if (node1 != null && node2 != null && node1.successors.indexOf(node2) != -1) {
             return true;
         }
         return false;
+    }
+
+    public function createVisualNode(node:INode):IVisualNode {
+        return createVNode(node);
+    }
+
+    public function createCustomVEdge(parentNode:INode, node:INode, edgeIcon:Class = null,
+                edgeIconToolTip:String = null, edgeLabel:String = null):IVisualEdge {
+        var tmpVEdge:IVisualEdge;
+        var tmpEdge:IEdge;
+        
+        var edgeData:Object = new Object();
+        if (edgeIcon) {
+            edgeData.edgeIcon = edgeIcon;
+            if (edgeIconToolTip) {
+                edgeData.edgeIconToolTip = edgeIconToolTip;
+            }
+            //edgeData.edgeIconWidth = 22;
+            //edgeData.edgeIconHeight = 22;
+        }
+        if (edgeLabel) {
+            edgeData.edgeLabel = edgeLabel;
+        }
+        edgeData.fromID = parentNode.stringid;
+        edgeData.toID = node.stringid;
+        // TODO: set real connection data object
+        edgeData.data = new Object();
+        edgeData.data.type = "connection";
+
+        tmpEdge = graph.link(parentNode,node, edgeData);
+
+        if (tmpEdge == null) {
+            throw Error("Could not create or find Graph edge!!!");
+        } else {
+            if (tmpEdge.vedge == null) {
+                /* we have a new edge, so we create a new VEdge */
+                tmpVEdge = createVEdge(tmpEdge);
+            } else {
+                /* existing one, so we use the existing vedge */
+                tmpVEdge = tmpEdge.vedge;
+            }
+        }
+        setEdgeVisibility(tmpEdge.vedge, true);
+
+        return tmpVEdge;
+    }
+
+    public function setVNodeVisibility(vnode:IVisualNode, visible:Boolean):void {
+        setNodeVisibility(vnode, visible);
+    }
+
+    public function removeEdge(vedge:IVisualEdge):void {
+        if (vedge != null) {
+            if (vedge.labelView != null) {
+                removeVEdgeView(vedge.labelView);
+            }
+            removeVEdge(vedge);
+        }
+    }
+    
+    private function edgeEventHandler(event:VGEdgeEvent):void {
+        _selectedEdge = event.edge;
+        _selectedEdgeId = _selectedEdge.id;
+        for each (var edge:IEdge in graph.edges) {
+            if (edge.id == _selectedEdgeId) {
+                edge.vedge.lineStyle.color = 0x6B8E23;
+            } else {
+                edge.vedge.lineStyle.color = 0xCCCCCC;
+            }
+        }
+
+        dispatchEvent(new VEdgeSelectedEvent(VEdgeSelectedEvent.VEDGE_SELECTED, _selectedEdge, true, false, 0));
+        refresh();
     }
 
     // Getters and Setters
