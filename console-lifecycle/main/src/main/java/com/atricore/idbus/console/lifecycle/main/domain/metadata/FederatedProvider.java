@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -14,6 +15,9 @@ public class FederatedProvider extends LocalProvider {
     private Set<FederatedConnection> federatedConnectionsB;
 
     public Set<FederatedConnection> getFederatedConnectionsA() {
+        if(federatedConnectionsA == null){
+            federatedConnectionsA = new HashSet<FederatedConnection>();
+        }
         return federatedConnectionsA;
     }
 
@@ -22,6 +26,9 @@ public class FederatedProvider extends LocalProvider {
     }
 
     public Set<FederatedConnection> getFederatedConnectionsB() {
+        if(federatedConnectionsB == null){
+            federatedConnectionsB = new HashSet<FederatedConnection>();
+        }
         return federatedConnectionsB;
     }
 

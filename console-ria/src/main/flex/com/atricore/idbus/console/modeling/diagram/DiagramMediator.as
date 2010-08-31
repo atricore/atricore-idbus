@@ -48,8 +48,10 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdpChanne
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
+import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
+import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
@@ -64,6 +66,8 @@ import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
+
+import flash.utils.Dictionary;
 
 import mx.collections.ArrayCollection;
 import mx.controls.Button;
@@ -168,7 +172,15 @@ public class DiagramMediator extends IocMediator {
                 var elementType:int = notification.getBody() as int;
 
                 if (_applianceId != null && elementType == DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE) {
-                    _identityApplianceDiagram.enterConnectionMode();
+                    _identityApplianceDiagram.enterFederatedConnectionMode();
+                    break;
+                }
+                if (_applianceId != null && elementType == DiagramElementTypes.ACTIVATION_ELEMENT_TYPE) {
+                    _identityApplianceDiagram.enterActivationMode();
+                    break;
+                }
+                if (_applianceId != null && elementType == DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE) {
+                    _identityApplianceDiagram.enterIdentityLookupMode();
                     break;
                 }
 
@@ -408,6 +420,8 @@ public class DiagramMediator extends IocMediator {
 
         resetGraph();
 
+        var providerNodes:Dictionary = new Dictionary();
+
         if (_identityAppliance != null) {
             var identityApplianceDefinition:IdentityApplianceDefinition = _identityAppliance.idApplianceDefinition;
 
@@ -417,7 +431,7 @@ public class DiagramMediator extends IocMediator {
             var vaults:ArrayCollection = new ArrayCollection();
             if (identityApplianceDefinition.identitySources != null) {
                 for(var k:int=0; k < identityApplianceDefinition.identitySources.length; k++){
-                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identitySources[k], true);
+//                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identitySources[k], true);
                     var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.identitySources[k], null, true, Constants.PROVIDER_DEEP);
                     vaults.addItem(identityVaultGraphNode);
                 }
@@ -427,6 +441,7 @@ public class DiagramMediator extends IocMediator {
                 for (var i:int = 0; i < identityApplianceDefinition.providers.length; i++) {
                     var provider:Provider = identityApplianceDefinition.providers[i];
                     var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, true, Constants.PROVIDER_DEEP);
+                    providerNodes[provider.id] = providerGraphNode;
                     if (provider is LocalProvider) {
 //                        var locProv:LocalProvider = provider as LocalProvider;
                         var provider:Provider = identityApplianceDefinition.providers[i];
@@ -450,40 +465,32 @@ public class DiagramMediator extends IocMediator {
                                     }
 
                                 }
-                                //TODO ADD CONNECTIONS
                             }
-    //                        if (locProv.channels != null) {
-    //                            for (var j:int = 0; j < locProv.channels.length; j++) {
-    //                                var channel = locProv.channels[j];
-    //                                var channelGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), channel, providerGraphNode, true, Constants.CHANNEL_DEEP);
-    //                                var identityVault:IdentitySource = null;
-    //                                if (channel is IdentityProviderChannel) {
-    //                                    identityVault = IdentityProviderChannel(channel).identityVault;
-    //                                } else if (channel is ServiceProviderChannel) {
-    //                                    identityVault = ServiceProviderChannel(channel).identityVault;
-    //                                }
-    //                                if (identityVault != null) {
-    //                                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityVault, true);
-    //                                    //link identity vault with the channel containing it
-    ////                                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, channelGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
-    //                                    vaultExists = false;
-    //                                    for each (tmpVaultGraphNode in vaults){
-    //                                        if(tmpVaultGraphNode.data as IdentitySource == identityVault){
-    //                                            GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, channelGraphNode);
-    //                                            vaultExists = true;
-    //                                        }
-    //                                    }
-    //                                    if(!vaultExists){
-    //                                        GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityVault, channelGraphNode, true, Constants.IDENTITY_VAULT_CHANNEL_DEEP);
-    //                                    }
-    //                                }
-    //                            }
-    //                        }
                             if(locProv is ServiceProvider){
                                 var sp:ServiceProvider = locProv as ServiceProvider;
                                 if(sp.activation != null && sp.activation.executionEnv != null){  //check for execution environment
                                     var execEnvironment:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), sp.activation.executionEnv, providerGraphNode, true, Constants.CHANNEL_DEEP);
                                 }
+                            }
+                        }
+                    }
+                }
+                //now we have all the providers added to the graph. Now we need to link them
+                for (var j:int = 0; j < identityApplianceDefinition.providers.length; j++) {
+                    if(identityApplianceDefinition.providers[j] is FederatedProvider){
+                        var fedProvider:FederatedProvider = identityApplianceDefinition.providers[j] as FederatedProvider;
+                        for each (var fedConnA:FederatedConnection in fedProvider.federatedConnectionsA){
+                            var graphNodeRoleA:IVisualNode = providerNodes[fedProvider.id];
+                            var graphNodeRoleB:IVisualNode = providerNodes[fedConnA.roleB.id];                            
+                            if(!DiagramUtil.nodeLinkExists(graphNodeRoleA.node, graphNodeRoleB.node)){ //avoid double linking
+                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB);
+                            }
+                        }
+                        for each (var fedConnB:FederatedConnection in fedProvider.federatedConnectionsB){
+                            var graphNodeRoleA:IVisualNode = providerNodes[fedConnB.roleA.id];
+                            var graphNodeRoleB:IVisualNode = providerNodes[fedProvider.id];                           
+                            if(!DiagramUtil.nodeLinkExists(graphNodeRoleA.node, graphNodeRoleB.node)){ //avoid double linking
+                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB);
                             }
                         }
                     }
