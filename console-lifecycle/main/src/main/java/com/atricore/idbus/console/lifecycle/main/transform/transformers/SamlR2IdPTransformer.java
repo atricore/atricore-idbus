@@ -31,7 +31,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
     private static final Log logger = LogFactory.getLog(SamlR2IdPTransformer.class);
 
     private String baseSrcPath = "/org/atricore/idbus/examples/simplefederation/idau/";
-    
+
     @Override
     public boolean accept(TransformEvent event) {
         return event.getData() instanceof IdentityProvider;
@@ -46,24 +46,11 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
             String providerBeanName = normalizeBeanName(provider.getName());
 
             // idp1-samlr2-metadata.xml
-            IdProjectResource<EntityDescriptorType> idpMetadata =  new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
+            IdProjectResource<EntityDescriptorType> idpMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
                     baseDestPath + providerBeanName, providerBeanName, "saml2", generateIDPMetadata(provider));
             idpMetadata.setClassifier("jaxb");
             module.addResource(idpMetadata);
-            
-            // atricore-users.xml
-            IdProjectResource<InputStream> atricoreUsers = new IdProjectResource<InputStream>(idGen.generateId(),
-                    baseDestPath, "atricore-users.xml", "copy",
-                    getClass().getResourceAsStream(baseSrcPath + "atricore-users.xml"));
-            atricoreUsers.setClassifier("copy");
-            module.addResource(atricoreUsers);
 
-            // atricore-credentials.xml
-            IdProjectResource<InputStream> atricoreCredentials = new IdProjectResource<InputStream>(idGen.generateId(),
-                    baseDestPath, "atricore-credentials.xml", "copy",
-                    getClass().getResourceAsStream(baseSrcPath + "atricore-credentials.xml"));
-            atricoreCredentials.setClassifier("copy");
-            module.addResource(atricoreCredentials);
         } catch (Exception e) {
             throw new TransformException(e);
         }
@@ -71,7 +58,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
 
     private EntityDescriptorType generateIDPMetadata(IdentityProvider provider) throws TransformException {
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
-        
+
         EntityDescriptorType entityDescriptor = new EntityDescriptorType();
         entityDescriptor.setID("id9uvH6lD7oa2zwey0JzQcpzJrKXY");
         entityDescriptor.setEntityID(resolveLocationUrl(provider) + "/SAML2/MD");
@@ -91,7 +78,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
             try {
                 byte[] keystore = cfg.getSigner().getStore().getValue();
                 if (logger.isTraceEnabled())
-                    logger.trace("Keystore ["+cfg.getSigner().getStore().getName()+"] length " + keystore.length);
+                    logger.trace("Keystore [" + cfg.getSigner().getStore().getName() + "] length " + keystore.length);
 
                 KeyStore ks = KeyStore.getInstance("PKCS#12".equals(cfg.getSigner().getType()) ? "PKCS12" : "JKS");
                 ks.load(new ByteArrayInputStream(keystore), cfg.getSigner().getPassword().toCharArray());
@@ -105,12 +92,12 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
             }
         }
         JAXBElement jaxbAuthoritySigningX509Certificate = new JAXBElement(
-                                    new QName("http://www.w3.org/2000/09/xmldsig#", "X509Certificate"),
-                                    authoritySigningCertificate.getClass(), authoritySigningCertificate);
+                new QName("http://www.w3.org/2000/09/xmldsig#", "X509Certificate"),
+                authoritySigningCertificate.getClass(), authoritySigningCertificate);
         authoritySigningX509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName().add(jaxbAuthoritySigningX509Certificate);
         JAXBElement jaxbAuthoritySigningX509Data = new JAXBElement(
-                                    new QName("http://www.w3.org/2000/09/xmldsig#", "X509Data"),
-                                    authoritySigningX509Data.getClass(), authoritySigningX509Data);
+                new QName("http://www.w3.org/2000/09/xmldsig#", "X509Data"),
+                authoritySigningX509Data.getClass(), authoritySigningX509Data);
         authoritySigningKeyInfo.getContent().add(jaxbAuthoritySigningX509Data);
         authoritySigningKeyDescriptor.setKeyInfo(authoritySigningKeyInfo);
         EncryptionMethodType authoritySigningEncryptionMethod = new EncryptionMethodType();
@@ -128,7 +115,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
             try {
                 byte[] keystore = cfg.getEncrypter().getStore().getValue();
                 if (logger.isTraceEnabled())
-                    logger.trace("Keystore ["+cfg.getEncrypter().getStore().getName()+"] length " + keystore.length);
+                    logger.trace("Keystore [" + cfg.getEncrypter().getStore().getName() + "] length " + keystore.length);
 
                 KeyStore ks = KeyStore.getInstance("PKCS#12".equals(cfg.getEncrypter().getType()) ? "PKCS12" : "JKS");
                 ks.load(new ByteArrayInputStream(keystore), cfg.getEncrypter().getPassword().toCharArray());
@@ -142,12 +129,12 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
             }
         }
         JAXBElement jaxbAuthorityEncryptionX509Certificate = new JAXBElement(
-                                    new QName("http://www.w3.org/2000/09/xmldsig#", "X509Certificate"),
-                                    authorityEncryptionCertificate.getClass(), authorityEncryptionCertificate);
+                new QName("http://www.w3.org/2000/09/xmldsig#", "X509Certificate"),
+                authorityEncryptionCertificate.getClass(), authorityEncryptionCertificate);
         authorityEncryptionX509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName().add(jaxbAuthorityEncryptionX509Certificate);
         JAXBElement jaxbAuthorityEncryptionX509Data = new JAXBElement(
-                                    new QName("http://www.w3.org/2000/09/xmldsig#", "X509Data"),
-                                    authorityEncryptionX509Data.getClass(), authorityEncryptionX509Data);
+                new QName("http://www.w3.org/2000/09/xmldsig#", "X509Data"),
+                authorityEncryptionX509Data.getClass(), authorityEncryptionX509Data);
         authorityEncryptionKeyInfo.getContent().add(jaxbAuthorityEncryptionX509Data);
         authorityEncryptionKeyDescriptor.setKeyInfo(authorityEncryptionKeyInfo);
         EncryptionMethodType authorityEncryptionEncryptionMethod = new EncryptionMethodType();
@@ -161,6 +148,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
 
          */
 
+        /* TODO : When serivce is supported, use proper Locations!
         EndpointType assertionIDRequestServiceSOAP = new EndpointType();
         assertionIDRequestServiceSOAP.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
         assertionIDRequestServiceSOAP.setLocation(resolveLocationBaseUrl(provider) + "/nidp/saml2/soap");
@@ -170,6 +158,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
         assertionIDRequestServiceURI.setBinding("urn:oasis:names:tc:SAML:2.0:bindings:URI");
         assertionIDRequestServiceURI.setLocation(resolveLocationBaseUrl(provider) + "/nidp/saml2/assertion");
         attributeAuthorityDescriptor.getAssertionIDRequestService().add(assertionIDRequestServiceURI);
+        */
 
         entityDescriptor.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor().add(attributeAuthorityDescriptor);
 
@@ -198,12 +187,12 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
             }
         }
         JAXBElement jaxbSigningX509Certificate = new JAXBElement(
-                                    new QName("http://www.w3.org/2000/09/xmldsig#", "X509Certificate"),
-                                    signingCertificate.getClass(), signingCertificate);
+                new QName("http://www.w3.org/2000/09/xmldsig#", "X509Certificate"),
+                signingCertificate.getClass(), signingCertificate);
         signingX509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName().add(jaxbSigningX509Certificate);
         JAXBElement jaxbSigningX509Data = new JAXBElement(
-                                    new QName("http://www.w3.org/2000/09/xmldsig#", "X509Data"),
-                                    signingX509Data.getClass(), signingX509Data);
+                new QName("http://www.w3.org/2000/09/xmldsig#", "X509Data"),
+                signingX509Data.getClass(), signingX509Data);
         signingKeyInfo.getContent().add(jaxbSigningX509Data);
         signingKeyDescriptor.setKeyInfo(signingKeyInfo);
         EncryptionMethodType signingEncryptionMethod = new EncryptionMethodType();
@@ -231,12 +220,12 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
             }
         }
         JAXBElement jaxbEncryptionX509Certificate = new JAXBElement(
-                                    new QName("http://www.w3.org/2000/09/xmldsig#", "X509Certificate"),
-                                    encryptionCertificate.getClass(), encryptionCertificate);
+                new QName("http://www.w3.org/2000/09/xmldsig#", "X509Certificate"),
+                encryptionCertificate.getClass(), encryptionCertificate);
         encryptionX509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName().add(jaxbEncryptionX509Certificate);
         JAXBElement jaxbEncryptionX509Data = new JAXBElement(
-                                    new QName("http://www.w3.org/2000/09/xmldsig#", "X509Data"),
-                                    encryptionX509Data.getClass(), encryptionX509Data);
+                new QName("http://www.w3.org/2000/09/xmldsig#", "X509Data"),
+                encryptionX509Data.getClass(), encryptionX509Data);
         encryptionKeyInfo.getContent().add(jaxbEncryptionX509Data);
         encryptionKeyDescriptor.setKeyInfo(encryptionKeyInfo);
         EncryptionMethodType encryptionEncryptionMethod = new EncryptionMethodType();
@@ -267,7 +256,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
         singleLogoutServiceLocal.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
         singleLogoutServiceLocal.setLocation("local://" + provider.getLocation().getUri() + "/SAML2/SLO/LOCAL");
         idpSSODescriptor.getSingleLogoutService().add(singleLogoutServiceLocal);
-        
+
         EndpointType singleLogoutServiceRedirect = new EndpointType();
         singleLogoutServiceRedirect.setBinding(SamlR2Binding.SAMLR2_REDIRECT.getValue());
         singleLogoutServiceRedirect.setLocation(resolveLocationUrl(provider) + "/SAML2/SLO/REDIR");
@@ -313,7 +302,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
         singleSignOnServiceSOAP.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
         singleSignOnServiceArtifact.setLocation(resolveLocationUrl(provider) + "/SAML2/SSO/SOAP");
         idpSSODescriptor.getSingleSignOnService().add(singleSignOnServiceSOAP);
-        
+
         entityDescriptor.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor().add(idpSSODescriptor);
 
         // organization

@@ -191,6 +191,7 @@
 
                                         <!-- IDP Transformers -->
                                         <ref bean="idpTransformer"/>
+                                        <ref bean="samlr2IdPTransformer"/>
                                         
                                         <ref bean="idpFederatedConnectionATransformer"/>
                                         <ref bean="idpFederatedConnectionBTransformer"/>
@@ -209,7 +210,7 @@
                                         <!--
                                         <ref bean="identityVaultTransformer"/>
 
-                                        <ref bean="samlr2IdPTransformer"/>
+
                                         <ref bean="samlr2SPTransformer"/>
                                         -->
                                     </list>
