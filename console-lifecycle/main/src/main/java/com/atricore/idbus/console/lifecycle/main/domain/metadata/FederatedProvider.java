@@ -6,10 +6,10 @@ import java.util.Set;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public class FederatedProvider extends LocalProvider {
+public abstract class FederatedProvider extends Provider {
 
     private static final long serialVersionUID = 1096573395672061313L;
-    
+
     private Set<FederatedConnection> federatedConnectionsA;
 
     private Set<FederatedConnection> federatedConnectionsB;

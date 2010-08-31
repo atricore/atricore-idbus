@@ -21,8 +21,6 @@
 
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
-import java.util.Set;
-
 public class ServiceProvider extends FederatedProvider {
 
 	private static final long serialVersionUID = 1098843994152761313L;
@@ -37,7 +35,6 @@ public class ServiceProvider extends FederatedProvider {
     // RFU
     private AuthenticationMechanism authenticationMechanism;
 
-    
     @Override
     public ProviderRole getRole() {
         return ProviderRole.SSOServiceProvider;
@@ -56,4 +53,27 @@ public class ServiceProvider extends FederatedProvider {
         this.activation = activation;
     }
 
+    public AccountLinkagePolicy getAccountLinkagePolicy() {
+        return accountLinkagePolicy;
+    }
+
+    public void setAccountLinkagePolicy(AccountLinkagePolicy accountLinkagePolicy) {
+        this.accountLinkagePolicy = accountLinkagePolicy;
+    }
+
+    public AuthenticationContract getAuthenticationContract() {
+        return authenticationContract;
+    }
+
+    public void setAuthenticationContract(AuthenticationContract authenticationContract) {
+        this.authenticationContract = authenticationContract;
+    }
+
+    public AuthenticationMechanism getAuthenticationMechanism() {
+        return authenticationMechanism;
+    }
+
+    public void setAuthenticationMechanism(AuthenticationMechanism authenticationMechanism) {
+        this.authenticationMechanism = authenticationMechanism;
+    }
 }

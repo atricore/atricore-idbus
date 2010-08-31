@@ -34,8 +34,7 @@ public class IdentityProvider extends FederatedProvider {
     // RFU
     private AttributeProfile attributeProfile;
 
-    // RFU
-    private AuthenticationMechanism authenticationMechanism;
+    private Set<AuthenticationMechanism> authenticationMechanisms;
 
     // RFU
     private AuthenticationContract authenticationContract;
@@ -85,12 +84,13 @@ public class IdentityProvider extends FederatedProvider {
         this.attributeProfile = attributeProfile;
     }
 
-    public AuthenticationMechanism getAuthenticationMechanism() {
-        return authenticationMechanism;
+
+    public Set<AuthenticationMechanism> getAuthenticationMechanisms() {
+        return authenticationMechanisms;
     }
 
-    public void setAuthenticationMechanism(AuthenticationMechanism authenticationMechanism) {
-        this.authenticationMechanism = authenticationMechanism;
+    public void setAuthenticationMechanisms(Set<AuthenticationMechanism> authenticationMechanisms) {
+        this.authenticationMechanisms = authenticationMechanisms;
     }
 
     public AuthenticationContract getAuthenticationContract() {
@@ -108,5 +108,4 @@ public class IdentityProvider extends FederatedProvider {
     public void setEmissionPolicy(AuthenticationAssertionEmissionPolicy emissionPolicy) {
         this.emissionPolicy = emissionPolicy;
     }
-
 }

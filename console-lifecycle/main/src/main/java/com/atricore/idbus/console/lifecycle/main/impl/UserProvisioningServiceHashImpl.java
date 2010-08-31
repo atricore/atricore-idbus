@@ -21,18 +21,21 @@
 
 package com.atricore.idbus.console.lifecycle.main.impl;
 
-import java.util.*;
-
 import com.atricore.idbus.console.lifecycle.main.domain.Group;
 import com.atricore.idbus.console.lifecycle.main.domain.User;
 import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundException;
 import com.atricore.idbus.console.lifecycle.main.exception.UserProvisioningAjaxException;
 import com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 import com.atricore.idbus.console.lifecycle.main.util.PasswordHashUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Deprecated
 public class UserProvisioningServiceHashImpl

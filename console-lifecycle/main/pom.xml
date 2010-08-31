@@ -57,6 +57,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.atricore.idbus.connectors</groupId>
+            <artifactId>org.atricore.idbus.connectors.jdoidentityvault</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.atricore.idbus.capabilities.josso</groupId>
             <artifactId>org.atricore.idbus.capabilities.josso.main</artifactId>
             <scope>provided</scope>

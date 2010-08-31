@@ -21,10 +21,10 @@
 
 package com.atricore.idbus.console.lifecycle.main.util;
 
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.namespace.NamespaceContext;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.Writer;
 
 /**

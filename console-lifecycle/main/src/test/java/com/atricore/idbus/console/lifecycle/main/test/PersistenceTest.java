@@ -301,130 +301,122 @@ public class PersistenceTest {
         TestCase.assertEquals(original.getLocation().getLocationAsString(), test.getLocation().getLocationAsString());
         TestCase.assertEquals(original.getClass().getName(), test.getClass().getName());
 
-        if (original instanceof LocalProvider) {
-            LocalProvider originalL = (LocalProvider) original;
-            LocalProvider testL = (LocalProvider) test;
-            assertConfigsAreEqual(originalL.getConfig(), testL.getConfig(), ignoreIds);
 
-            if (originalL instanceof ServiceProvider) {
+        Provider originalL = (Provider) original;
+        Provider testL = (Provider) test;
+        assertConfigsAreEqual(originalL.getConfig(), testL.getConfig(), ignoreIds);
 
-                ServiceProvider originalSp = (ServiceProvider) originalL;
-                ServiceProvider testSp = (ServiceProvider) testL;
+        if (originalL instanceof ServiceProvider) {
 
-                assertIdenityLookupsAreEqual(originalSp.getIdentityLookup(), testSp.getIdentityLookup(), ignoreIds);
-                assertActivationsAreEqual(originalSp.getActivation(), testSp.getActivation(), ignoreIds);
+            ServiceProvider originalSp = (ServiceProvider) originalL;
+            ServiceProvider testSp = (ServiceProvider) testL;
 
-                if (originalSp.getFederatedConnectionsA() != null) {
-                    TestCase.assertEquals(originalSp.getFederatedConnectionsA().size(), testSp.getFederatedConnectionsA().size());
+            assertIdenityLookupsAreEqual(originalSp.getIdentityLookup(), testSp.getIdentityLookup(), ignoreIds);
+            assertActivationsAreEqual(originalSp.getActivation(), testSp.getActivation(), ignoreIds);
 
-                    for (FederatedConnection originalC : originalSp.getFederatedConnectionsA()) {
+            if (originalSp.getFederatedConnectionsA() != null) {
+                TestCase.assertEquals(originalSp.getFederatedConnectionsA().size(), testSp.getFederatedConnectionsA().size());
 
-                        boolean found = false;
-                        for (FederatedConnection testC : testSp.getFederatedConnectionsA()) {
-                            if (!ignoreIds && originalC.getId() == testC.getId()) {
-                                found = true;
-                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
-                                break;
-                            } else if (originalC.getName().equals(testC.getName())) {
-                                found = true;
-                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
-                                break;
-                            }
+                for (FederatedConnection originalC : originalSp.getFederatedConnectionsA()) {
+
+                    boolean found = false;
+                    for (FederatedConnection testC : testSp.getFederatedConnectionsA()) {
+                        if (!ignoreIds && originalC.getId() == testC.getId()) {
+                            found = true;
+                            assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                            break;
+                        } else if (originalC.getName().equals(testC.getName())) {
+                            found = true;
+                            assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                            break;
                         }
-
-                        TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
                     }
+
+                    TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
                 }
+            }
 
-                if (originalSp.getFederatedConnectionsB() != null) {
+            if (originalSp.getFederatedConnectionsB() != null) {
 
-                    TestCase.assertEquals(originalSp.getFederatedConnectionsB().size(), testSp.getFederatedConnectionsB().size());
+                TestCase.assertEquals(originalSp.getFederatedConnectionsB().size(), testSp.getFederatedConnectionsB().size());
 
-                    for (FederatedConnection originalC : originalSp.getFederatedConnectionsB()) {
+                for (FederatedConnection originalC : originalSp.getFederatedConnectionsB()) {
 
-                        boolean found = false;
-                        for (FederatedConnection testC : testSp.getFederatedConnectionsB()) {
+                    boolean found = false;
+                    for (FederatedConnection testC : testSp.getFederatedConnectionsB()) {
 
-                            if (!ignoreIds && originalC.getId() == testC.getId()) {
-                                found = true;
-                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
-                                break;
-                            } else if (originalC.getName().equals(testC.getName())) {
-                                found = true;
-                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
-                                break;
-                            }
+                        if (!ignoreIds && originalC.getId() == testC.getId()) {
+                            found = true;
+                            assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                            break;
+                        } else if (originalC.getName().equals(testC.getName())) {
+                            found = true;
+                            assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                            break;
                         }
-
-                        TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
                     }
+
+                    TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
                 }
-
-
-            } else if (originalL instanceof IdentityProvider) {
-                IdentityProvider originalIdp = (IdentityProvider) originalL;
-                IdentityProvider testIdp = (IdentityProvider) testL;
-
-                assertIdenityLookupsAreEqual(originalIdp.getIdentityLookup(), testIdp.getIdentityLookup(), ignoreIds);
-
-                if (originalIdp.getFederatedConnectionsA() != null) {
-
-                    TestCase.assertEquals(originalIdp.getFederatedConnectionsA().size(), testIdp.getFederatedConnectionsA().size());
-
-                    for (FederatedConnection originalC : originalIdp.getFederatedConnectionsA()) {
-
-                        boolean found = false;
-                        for (FederatedConnection testC : testIdp.getFederatedConnectionsA()) {
-
-                            if (!ignoreIds && originalC.getId() == testC.getId()) {
-                                found = true;
-                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
-                                break;
-                            } else if (originalC.getName().equals(testC.getName())) {
-                                found = true;
-                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
-                                break;
-                            }
-                        }
-
-                        TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
-                    }
-                }
-
-                if (originalIdp.getFederatedConnectionsB() != null) {
-
-                    TestCase.assertEquals(originalIdp.getFederatedConnectionsB().size(), testIdp.getFederatedConnectionsB().size());
-
-                    for (FederatedConnection originalC : originalIdp.getFederatedConnectionsB()) {
-
-                        boolean found = false;
-                        for (FederatedConnection testC : testIdp.getFederatedConnectionsB()) {
-                            if (!ignoreIds && originalC.getId() == testC.getId()) {
-                                found = true;
-                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
-                                break;
-                            } else if (originalC.getName().equals(testC.getName())) {
-                                found = true;
-                                assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
-                                break;
-                            }
-                        }
-
-                        TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
-                    }
-                }
-
-
-            } else if (originalL instanceof ProvisioningServiceProvider) {
-                // TODO :
             }
 
 
-        } else if (original instanceof RemoteProvider) {
-            RemoteProvider originalR = (RemoteProvider) original;
-            RemoteProvider testR = (RemoteProvider) test;
+        } else if (originalL instanceof IdentityProvider) {
+            IdentityProvider originalIdp = (IdentityProvider) originalL;
+            IdentityProvider testIdp = (IdentityProvider) testL;
 
-            assertResourcesAreEqual(originalR.getMetadata(), testR.getMetadata(), ignoreIds);
+            assertIdenityLookupsAreEqual(originalIdp.getIdentityLookup(), testIdp.getIdentityLookup(), ignoreIds);
+
+            if (originalIdp.getFederatedConnectionsA() != null) {
+
+                TestCase.assertEquals(originalIdp.getFederatedConnectionsA().size(), testIdp.getFederatedConnectionsA().size());
+
+                for (FederatedConnection originalC : originalIdp.getFederatedConnectionsA()) {
+
+                    boolean found = false;
+                    for (FederatedConnection testC : testIdp.getFederatedConnectionsA()) {
+
+                        if (!ignoreIds && originalC.getId() == testC.getId()) {
+                            found = true;
+                            assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                            break;
+                        } else if (originalC.getName().equals(testC.getName())) {
+                            found = true;
+                            assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                            break;
+                        }
+                    }
+
+                    TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
+                }
+            }
+
+            if (originalIdp.getFederatedConnectionsB() != null) {
+
+                TestCase.assertEquals(originalIdp.getFederatedConnectionsB().size(), testIdp.getFederatedConnectionsB().size());
+
+                for (FederatedConnection originalC : originalIdp.getFederatedConnectionsB()) {
+
+                    boolean found = false;
+                    for (FederatedConnection testC : testIdp.getFederatedConnectionsB()) {
+                        if (!ignoreIds && originalC.getId() == testC.getId()) {
+                            found = true;
+                            assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                            break;
+                        } else if (originalC.getName().equals(testC.getName())) {
+                            found = true;
+                            assertFederatedConnectionsAreEqual(originalC, testC, ignoreIds);
+                            break;
+                        }
+                    }
+
+                    TestCase.assertTrue("FederatedConnection " + originalC.getName() + " not found.", found);
+                }
+            }
+
+
+        } else if (originalL instanceof ProvisioningServiceProvider) {
+            // TODO :
         }
     }
 

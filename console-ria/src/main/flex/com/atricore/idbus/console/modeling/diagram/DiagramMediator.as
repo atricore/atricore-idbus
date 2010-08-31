@@ -55,14 +55,12 @@ import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
-import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
+import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentitySource;
-import com.atricore.idbus.console.services.dto.LdapIdentitySource;
-import com.atricore.idbus.console.services.dto.LocalProvider;
 import com.atricore.idbus.console.services.dto.Provider;
-import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
@@ -442,7 +440,7 @@ public class DiagramMediator extends IocMediator {
                     var provider:Provider = identityApplianceDefinition.providers[i];
                     var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, true, Constants.PROVIDER_DEEP);
                     providerNodes[provider.id] = providerGraphNode;
-                    if (provider is LocalProvider) {
+                    //if (provider is LocalProvider) {
 //                        var locProv:LocalProvider = provider as LocalProvider;
                         var provider:Provider = identityApplianceDefinition.providers[i];
                         if (provider is FederatedProvider) {
@@ -473,7 +471,7 @@ public class DiagramMediator extends IocMediator {
                                 }
                             }
                         }
-                    }
+                    //}
                 }
                 //now we have all the providers added to the graph. Now we need to link them
                 for (var j:int = 0; j < identityApplianceDefinition.providers.length; j++) {

@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentitySource;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 
@@ -11,16 +12,12 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        if (event.getData() instanceof IdentitySource) {
-            IdentitySource iv = (IdentitySource) event.getData();
-            return false;
-        }
-        return false;
+        return event.getData() instanceof JOSSOActivation;
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
-
+        // Define Binding channel !
     }
 
     @Override

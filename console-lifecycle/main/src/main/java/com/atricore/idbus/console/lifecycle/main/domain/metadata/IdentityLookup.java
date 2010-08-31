@@ -7,15 +7,15 @@ public class IdentityLookup extends Connection {
 
     private static final long serialVersionUID = 3879493987564134875L;
 
-    private LocalProvider provider;
+    private Provider provider;
 
     private IdentitySource identitySource;
 
-    public LocalProvider getProvider() {
+    public Provider getProvider() {
         return provider;
     }
 
-    public void setProvider(LocalProvider provider) {
+    public void setProvider(Provider provider) {
         this.provider = provider;
     }
 

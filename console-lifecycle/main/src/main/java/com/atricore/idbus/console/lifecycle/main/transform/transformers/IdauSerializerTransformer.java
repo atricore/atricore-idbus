@@ -25,14 +25,17 @@ import com.atricore.idbus.console.lifecycle.main.transform.IdApplianceProject;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.util.XmlApplicationContextEnhancer;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.util.XmlApplicationContextEnhancer;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

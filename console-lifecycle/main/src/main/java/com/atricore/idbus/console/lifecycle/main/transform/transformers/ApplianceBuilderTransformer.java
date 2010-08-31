@@ -1,8 +1,5 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.FileObject;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceUnit;
@@ -13,6 +10,9 @@ import com.atricore.idbus.console.lifecycle.main.transform.IdApplianceProject;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.ProjectModuleLayout;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs.FileObject;
 import org.atricore.idbus.bundles.maven.MavenEmbeddedRuntime;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.context.BundleContextAware;

@@ -21,23 +21,22 @@
 
 package com.atricore.idbus.console.lifecycle.main.impl;
 
-import com.atricore.idbus.console.lifecycle.main.domain.dao.*;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
+import com.atricore.idbus.console.lifecycle.main.domain.dao.*;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
 import com.atricore.idbus.console.lifecycle.main.spi.*;
 import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.jdo.*;
-
+import javax.jdo.FetchPlan;
 import java.util.*;
 
 public class IdentityApplianceManagementServiceImpl implements IdentityApplianceManagementService{

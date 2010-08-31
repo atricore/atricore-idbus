@@ -6,15 +6,15 @@ package com.atricore.idbus.console.services.dto;
 public class IdentityLookupDTO extends ConnectionDTO {
     private static final long serialVersionUID = 3879493987564134875L;
 
-    private LocalProviderDTO provider;
+    private ProviderDTO provider;
 
     private IdentitySourceDTO identitySource;
 
-    public LocalProviderDTO getProvider() {
+    public ProviderDTO getProvider() {
         return provider;
     }
 
-    public void setProvider(LocalProviderDTO provider) {
+    public void setProvider(ProviderDTO provider) {
         this.provider = provider;
     }
 

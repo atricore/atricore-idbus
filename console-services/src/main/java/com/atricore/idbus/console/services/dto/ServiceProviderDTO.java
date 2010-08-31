@@ -22,7 +22,7 @@
 package com.atricore.idbus.console.services.dto;
 
 
-public class ServiceProviderDTO extends LocalProviderDTO {
+public class ServiceProviderDTO extends FederatedProviderDTO {
 
 	private static final long serialVersionUID = 1096573594152761313L;
 

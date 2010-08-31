@@ -21,9 +21,7 @@
 
 package com.atricore.idbus.console.services.dto;
 
-import java.util.Set;
-
-public class IdentityProviderDTO extends LocalProviderDTO {
+public class IdentityProviderDTO extends FederatedProviderDTO {
 
 	private static final long serialVersionUID = 141137856095909986L;
 
@@ -74,5 +72,37 @@ public class IdentityProviderDTO extends LocalProviderDTO {
 
     public void setEncryptAuthenticationAssertions(boolean encryptAuthenticationAssertions) {
         this.encryptAuthenticationAssertions = encryptAuthenticationAssertions;
+    }
+
+    public AttributeProfileDTO getAttributeProfile() {
+        return attributeProfile;
+    }
+
+    public void setAttributeProfile(AttributeProfileDTO attributeProfile) {
+        this.attributeProfile = attributeProfile;
+    }
+
+    public AuthenticationContractDTO getAuthenticationContract() {
+        return authenticationContract;
+    }
+
+    public void setAuthenticationContract(AuthenticationContractDTO authenticationContract) {
+        this.authenticationContract = authenticationContract;
+    }
+
+    public AuthenticationMechanismDTO getAuthenticationMechanism() {
+        return authenticationMechanism;
+    }
+
+    public void setAuthenticationMechanism(AuthenticationMechanismDTO authenticationMechanism) {
+        this.authenticationMechanism = authenticationMechanism;
+    }
+
+    public AuthenticationAssertionEmissionPolicyDTO getEmissionPolicy() {
+        return emissionPolicy;
+    }
+
+    public void setEmissionPolicy(AuthenticationAssertionEmissionPolicyDTO emissionPolicy) {
+        this.emissionPolicy = emissionPolicy;
     }
 }

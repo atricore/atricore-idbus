@@ -1,12 +1,12 @@
 package com.atricore.idbus.console.lifecycle.main.impl;
 
-import org.apache.felix.karaf.features.FeaturesService;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDeployer;
+import org.apache.felix.karaf.features.FeaturesService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.context.BundleContextAware;

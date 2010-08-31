@@ -1,9 +1,9 @@
 package com.atricore.idbus.console.lifecycle.main.transform.serializers;
 
+import com.atricore.idbus.console.lifecycle.main.transform.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
-import com.atricore.idbus.console.lifecycle.main.transform.*;
 
 import java.io.InputStream;
 import java.io.OutputStream;

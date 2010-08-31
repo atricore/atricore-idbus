@@ -19,8 +19,9 @@
 
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.LocalProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.Channel;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.Transformer;
@@ -46,8 +47,35 @@ public abstract class AbstractTransformer implements Transformer {
         return null;
     }
 
+    protected String resolveLocationUrl(Provider provider, Channel channel) {
 
-    protected String resolveLocationUrl(LocalProvider provider) {
+        Location cl = channel.getLocation();
+        Location pl = provider.getLocation();
+        Location al = provider.getIdentityAppliance().getLocation();
+
+        String location = "";
+
+        if (cl != null)
+            location = resolveLocationUrl(cl);
+
+        if (!"".equals(location) && !location.startsWith("/"))
+            return location;
+
+        if (pl != null)
+            location = resolveLocationUrl(pl) + location;
+
+        if (!"".equals(location) && !location.startsWith("/"))
+            return location;
+
+        if (al != null)
+            location = resolveLocationUrl(al) + location;
+
+        return location;
+
+    }
+
+    protected String resolveLocationUrl(Provider provider) {
+
         if (provider.getLocation() == null) {
             return "";
         }
@@ -58,39 +86,66 @@ public abstract class AbstractTransformer implements Transformer {
         return resolveLocationUrl(l);
     }
 
-    protected String resolveLocationBaseUrl(LocalProvider provider) {
+    protected String resolveLocationBaseUrl(Provider provider) {
         if (provider.getLocation() == null) {
             return "";
         }
-        
         // TODO : Location al = provider.getApplinaceDefinition().getLocation();
-
         Location l = provider.getLocation();
-
         return resolveLocationBaseUrl(l);
     }
 
     protected String resolveLocationUrl(Location location) {
+
         if (location == null) {
             return "";
         }
 
-        String portString = (location.getPort() == 80 || location.getPort() == 443 ? "" :  ":" + location.getPort());
-        String contextString = (location.getContext().startsWith("/") ? location.getContext().substring(1) : location.getContext());
-        contextString = (contextString.endsWith("/") ? contextString.substring(0, contextString.length() - 1) : contextString);
+        String contextString = "";
+        if (location.getContext() != null) {
+            contextString = (location.getContext().startsWith("/") ? location.getContext().substring(1) : location.getContext());
+            contextString = (contextString.endsWith("/") ? contextString.substring(0, contextString.length() - 1) : contextString);
+            contextString = "/" + contextString;
+        }
 
-        return location.getProtocol() + "://" + location.getHost() + portString + "/" +  contextString + "/" +
-                (location.getUri() != null ? location.getUri() : "");
+
+        String uriString = "";
+        if (location.getUri() != null) {
+            uriString = "/" +
+            (location.getUri() != null ? location.getUri() : "");
+
+            if (uriString.startsWith("//"))
+                uriString = uriString.substring(1);
+        }
+
+        return  resolveLocationBaseUrl(location) + contextString + uriString;
     }
 
     protected String resolveLocationBaseUrl(Location location) {
+
         if (location == null) {
             return "";
         }
 
-        String portString = (location.getPort() == 80 || location.getPort() == 443 ? "" :  ":" + location.getPort());
+        String portString = "";
+        if (location.getPort() > 0)
+            portString = location.getPort() + "";
 
-        return location.getProtocol()+ "://" + location.getHost() + portString;
+        String protocolString = "";
+        if (location.getProtocol() != null) {
+            protocolString = location.getProtocol() + "://";
+            // For HTTP, remove default ports
+            if (location.getProtocol().equalsIgnoreCase("http"))
+                portString = (location.getPort() == 80 ? "" :  ":" + location.getPort());
+            if (location.getProtocol().equalsIgnoreCase("https"))
+                portString = (location.getPort() == 443 ? "" :  ":" + location.getPort());
+        }
+
+        String hostString = "";
+        if (location.getHost() != null)
+            hostString = location.getHost();
+
+        return protocolString  + hostString + portString;
     }
 
     protected String normalizeBeanName(String name) {

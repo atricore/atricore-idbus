@@ -1,15 +1,18 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.ProviderRole;
-import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig;
+import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.*;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Description;
+import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Entry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SSOLogMessageBuilder;
@@ -33,28 +36,30 @@ import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import org.atricore.idbus.kernel.main.session.SSOSessionEventManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newAnonymousBean;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class IdPTransformer extends AbstractTransformer {
+public class IdPLocalTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(IdPTransformer.class);
+    private static final Log logger = LogFactory.getLog(IdPLocalTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof IdentityProvider;
+        return event.getData() instanceof IdentityProvider &&
+                !((IdentityProvider)event.getData()).isRemote();
     }
 
     @Override
     public void before(TransformEvent event) throws TransformException {
+
 
         IdentityProvider provider = (IdentityProvider) event.getData();
 
@@ -77,35 +82,40 @@ public class IdPTransformer extends AbstractTransformer {
         // Identity Provider
         // ----------------------------------------
 
-        Bean idp = newBean(idpBeans, normalizeBeanName(provider.getName()),
+        Bean idpBean = newBean(idpBeans, normalizeBeanName(provider.getName()),
                 IdentityProviderImpl.class.getName());
 
+        event.getContext().put("idpBean", idpBean);
+
         // Name
-        setPropertyValue(idp, "name", idp.getName());
+        setPropertyValue(idpBean, "name", idpBean.getName());
+        setPropertyValue(idpBean, "description", provider.getDisplayName());
 
         // Role
         if (!provider.getRole().equals(ProviderRole.SSOIdentityProvider)) {
-            logger.warn("Provider "+provider.getId()+" is not defined as IdP, forcing role! ");
+            logger.warn("Provider " + provider.getId() + " is defined as ["+provider.getRole()+"], forcing IDP role! ");
         }
-        setPropertyValue(idp, "role", SAMLR2MetadataConstants.IDPSSODescriptor_QNAME.toString());
-        
+        setPropertyValue(idpBean, "role", SAMLR2MetadataConstants.IDPSSODescriptor_QNAME.toString());
+
         // unitContainer
-        setPropertyRef(idp, "unitContainer", event.getContext().getCurrentModule().getId() + "-container");
+        setPropertyRef(idpBean, "unitContainer", event.getContext().getCurrentModule().getId() + "-container");
 
         // COT Manager
         Collection<Bean> cotMgrs = getBeansOfType(baseBeans, SamlR2CircleOfTrustManager.class.getName());
         if (cotMgrs.size() == 1) {
             Bean cotMgr = cotMgrs.iterator().next();
-            setPropertyRef(idp, "cotManager", cotMgr.getName());
+            setPropertyRef(idpBean, "cotManager", cotMgr.getName());
+        } else if (cotMgrs.size() > 1) {
+            throw new TransformException("Invalid number of COT Managers defined " + cotMgrs.size());
         }
 
         // State Manager
-        setPropertyRef(idp, "stateManager", event.getContext().getCurrentModule().getId() + "-state-manager");
+        setPropertyRef(idpBean, "stateManager", event.getContext().getCurrentModule().getId() + "-state-manager");
 
         // ----------------------------------------
         // Identity Provider Mediator
         // ----------------------------------------
-        Bean idpMediator = newBean(idpBeans, idp.getName() + "-samlr2-mediator",
+        Bean idpMediator = newBean(idpBeans, idpBean.getName() + "-samlr2-mediator",
                 SamlR2IDPMediator.class.getName());
         setPropertyValue(idpMediator, "logMessages", true);
 
@@ -123,11 +133,11 @@ public class IdPTransformer extends AbstractTransformer {
         idpLogBuilders.add(newAnonymousBean(HttpLogMessageBuilder.class));
 
         Bean idpLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
-        idpLogger.setName(idp.getName() + "-mediation-logger");
-        setPropertyValue(idpLogger, "category", "org.atricore.idbus.mediation.wire." + idp.getName());
+        idpLogger.setName(idpBean.getName() + "-mediation-logger");
+        setPropertyValue(idpLogger, "category", "org.atricore.idbus.mediation.wire." + idpBean.getName());
         setPropertyAsBeans(idpLogger, "messageBuilders", idpLogBuilders);
         setPropertyBean(idpMediator, "logger", idpLogger);
-        
+
         // errorUrl
         setPropertyValue(idpMediator, "errorUrl", resolveLocationBaseUrl(provider) + "/idbus-ui/error.do");
 
@@ -142,11 +152,11 @@ public class IdPTransformer extends AbstractTransformer {
                     ("PKCS#12".equalsIgnoreCase(cfg.getSigner().getType()) ? "pkcs12" : "jks");
 
             IdProjectResource<byte[]> signerResource = new IdProjectResource<byte[]>(idGen.generateId(),
-                    idauPath + idp.getName() + "/", signerResourceFileName,
+                    idauPath + idpBean.getName() + "/", signerResourceFileName,
                     "binary", cfg.getSigner().getStore().getValue());
             signerResource.setClassifier("byte");
 
-            Bean signer = newBean(idpBeans, idp.getName() + "-samlr2-signer", JSR105SamlR2SignerImpl.class);
+            Bean signer = newBean(idpBeans, idpBean.getName() + "-samlr2-signer", JSR105SamlR2SignerImpl.class);
             signer.setInitMethod("init");
 
             Description signerDescr = new Description();
@@ -155,7 +165,7 @@ public class IdPTransformer extends AbstractTransformer {
 
             Bean keyResolver = newAnonymousBean(SamlR2KeystoreKeyResolver.class);
             setPropertyValue(keyResolver, "keystoreType", cfg.getSigner().getType());
-            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + idp.getName() + "/" + signerResourceFileName);
+            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + idpBean.getName() + "/" + signerResourceFileName);
             setPropertyValue(keyResolver, "keystorePass", cfg.getSigner().getPassword());
             setPropertyValue(keyResolver, "privateKeyAlias", cfg.getSigner().getPrivateKeyName());
             setPropertyValue(keyResolver, "privateKeyPass", cfg.getSigner().getPrivateKeyPassword());
@@ -165,7 +175,7 @@ public class IdPTransformer extends AbstractTransformer {
             setPropertyBean(idpMediator, "signer", signer);
 
             event.getContext().getCurrentModule().addResource(signerResource);
-            
+
             // signer
             setPropertyRef(idpMediator, "signer", signer.getName());
         }
@@ -179,18 +189,18 @@ public class IdPTransformer extends AbstractTransformer {
                     ("PKCS#12".equalsIgnoreCase(cfg.getSigner().getType()) ? "pkcs12" : "jks");
 
             IdProjectResource<byte[]> encrypterResource = new IdProjectResource<byte[]>(idGen.generateId(),
-                    idauPath + idp.getName() + "/", encrypterResourceFileName,
+                    idauPath + idpBean.getName() + "/", encrypterResourceFileName,
                     "binary", cfg.getSigner().getStore().getValue());
             encrypterResource.setClassifier("byte");
-            
-            Bean encrypter = newBean(idpBeans, idp.getName() + "-samlr2-encrypter", XmlSecurityEncrypterImpl.class);
+
+            Bean encrypter = newBean(idpBeans, idpBean.getName() + "-samlr2-encrypter", XmlSecurityEncrypterImpl.class);
 
             setPropertyValue(encrypter, "symmetricKeyAlgorithmURI", "http://www.w3.org/2001/04/xmlenc#aes128-cbc");
             setPropertyValue(encrypter, "kekAlgorithmURI", "http://www.w3.org/2001/04/xmlenc#rsa-1_5");
-            
+
             Bean keyResolver = newAnonymousBean(SamlR2KeystoreKeyResolver.class);
             setPropertyValue(keyResolver, "keystoreType", cfg.getEncrypter().getType());
-            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + idp.getName() + "/" + encrypterResourceFileName);
+            setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + idpBean.getName() + "/" + encrypterResourceFileName);
             setPropertyValue(keyResolver, "keystorePass", cfg.getEncrypter().getPassword());
             setPropertyValue(keyResolver, "privateKeyAlias", cfg.getEncrypter().getPrivateKeyName());
             setPropertyValue(keyResolver, "privateKeyPass", cfg.getEncrypter().getPrivateKeyPassword());
@@ -204,19 +214,19 @@ public class IdPTransformer extends AbstractTransformer {
             // encrypter
             setPropertyRef(idpMediator, "encrypter", encrypter.getName());
         }
-        
-        Bean idpMd = newBean(idpBeans, idp.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
+
+        Bean idpMd = newBean(idpBeans, idpBean.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
         setPropertyValue(idpMd, "id", idpMd.getName());
         setPropertyValue(idpMd, "alias", resolveLocationUrl(provider) + "/SAML2/MD");
-        setPropertyValue(idpMd, "resource", "classpath:" + idauPath + idp.getName() + "/" + idp.getName() + "-samlr2-metadata.xml");
-        
+        setPropertyValue(idpMd, "resource", "classpath:" + idauPath + idpBean.getName() + "/" + idpBean.getName() + "-samlr2-metadata.xml");
+
         // ----------------------------------------
         // MBean
         // ----------------------------------------
-        Bean mBean = newBean(idpBeans, idp.getName() + "-mbean", "org.atricore.idbus.capabilities.samlr2.management.internal.IdentityProviderMBeanImpl");
-        setPropertyRef(mBean, "identityProvider", idp.getName());
+        Bean mBean = newBean(idpBeans, idpBean.getName() + "-mbean", "org.atricore.idbus.capabilities.samlr2.management.internal.IdentityProviderMBeanImpl");
+        setPropertyRef(mBean, "identityProvider", idpBean.getName());
 
-        Bean mBeanExporter = newBean(idpBeans, idp.getName() + "-mbean-exporter", "org.springframework.jmx.export.MBeanExporter");
+        Bean mBeanExporter = newBean(idpBeans, idpBean.getName() + "-mbean-exporter", "org.springframework.jmx.export.MBeanExporter");
         setPropertyRef(mBeanExporter, "server", "mBeanServer");
 
         // mbeans
@@ -225,7 +235,7 @@ public class IdPTransformer extends AbstractTransformer {
         Bean mBeanKey = newBean(idpBeans, mBean.getName() + "-key", String.class);
         setConstructorArg(mBeanKey, 0, "java.lang.String", "org.atricore.idbus." +
                 event.getContext().getCurrentModule().getId() +
-                ":type=IdentityProvider,name=" + idp.getName());
+                ":type=IdentityProvider,name=" + idpBean.getName());
 
         Entry mBeanEntry = new Entry();
         mBeanEntry.setKeyRef(mBeanKey.getName());
@@ -235,22 +245,22 @@ public class IdPTransformer extends AbstractTransformer {
         setPropertyAsMapEntries(mBeanExporter, "beans", mBeans);
 
         // plans
-        Bean sloToSamlPlan = newBean(idpBeans, idp.getName() + "-samlr2sloreq-to-samlr2resp-plan", SamlR2SloRequestToSamlR2RespPlan.class);
+        Bean sloToSamlPlan = newBean(idpBeans, idpBean.getName() + "-samlr2sloreq-to-samlr2resp-plan", SamlR2SloRequestToSamlR2RespPlan.class);
         setPropertyRef(sloToSamlPlan, "bpmsManager", "bpms-manager");
 
-        Bean sloToSamlSpSloPlan = newBean(idpBeans, idp.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan", SamlR2SloRequestToSpSamlR2SloRequestPlan.class);
+        Bean sloToSamlSpSloPlan = newBean(idpBeans, idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan", SamlR2SloRequestToSpSamlR2SloRequestPlan.class);
         setPropertyRef(sloToSamlSpSloPlan, "bpmsManager", "bpms-manager");
 
-        Bean authnToSamlPlan = newBean(idpBeans, idp.getName() + "-samlr2authnreq-to-samlr2resp-plan", SamlR2AuthnRequestToSamlR2ResponsePlan.class);
+        Bean authnToSamlPlan = newBean(idpBeans, idpBean.getName() + "-samlr2authnreq-to-samlr2resp-plan", SamlR2AuthnRequestToSamlR2ResponsePlan.class);
         setPropertyRef(authnToSamlPlan, "bpmsManager", "bpms-manager");
 
-        Bean stmtToAssertionPlan = newBean(idpBeans, idp.getName() + "-samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
+        Bean stmtToAssertionPlan = newBean(idpBeans, idpBean.getName() + "-samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
         setPropertyRef(stmtToAssertionPlan, "bpmsManager", "bpms-manager");
 
         //Bean authnToSamlResponsePlan = newBean(idpBeans, "samlr2authnreq-to-samlr2response-plan", SamlR2AuthnReqToSamlR2RespPlan.class);
         //setPropertyRef(authnToSamlResponsePlan, "bpmsManager", "bpms-manager");
 
-        
+
         // mbean assembler
         /*Bean mBeanAssembler = newAnonymousBean("org.springframework.jmx.export.assembler.MethodNameBasedMBeanInfoAssembler");
 
@@ -258,7 +268,7 @@ public class IdPTransformer extends AbstractTransformer {
 
         Prop prop = new Prop();
         prop.setKey("org.atricore.idbus." + event.getContext().getCurrentModule().getId() +
-                ":type=IdentityProvider,name=" + idp.getName());
+                ":type=IdentityProvider,name=" + idpBean.getName());
         prop.getContent().add("listSessions,listSessionsAsTable,listUserSessions,listUserSessionsAsTable,invalidateSession,invalidateAllSessions,invalidateUserSessions,getMaxInactiveInterval,listStatesAsTable,listStateEntriesAsTable");
         props.add(prop);
         
@@ -267,9 +277,9 @@ public class IdPTransformer extends AbstractTransformer {
         setPropertyBean(mBeanExporter, "assembler", mBeanAssembler);*/
 
         // -------------------------------------------------------
-        // Define Session Manager bean
+        // Session Manager bean
         // -------------------------------------------------------
-        Bean sessionManager = newBean(idpBeans, idp.getName() + "-session-manager",
+        Bean sessionManager = newBean(idpBeans, idpBean.getName() + "-session-manager",
                 "org.atricore.idbus.kernel.main.session.service.SSOSessionManagerImpl");
 
         // Properties
@@ -281,15 +291,15 @@ public class IdPTransformer extends AbstractTransformer {
         // Session ID Generator
         Bean sessionIdGenerator = newAnonymousBean("org.atricore.idbus.kernel.main.session.service.SessionIdGeneratorImpl");
         setPropertyValue(sessionIdGenerator, "algorithm", "MD5");
-        
+
         // Session Store
         //Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.memorysessionstore.MemorySessionStore");
         Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionStore");
         sessionStore.setInitMethod("init");
         setPropertyRef(sessionStore, "cacheManager", event.getContext().getCurrentModule().getId() + "-cache-manager");
         setPropertyValue(sessionStore, "cacheName", event.getContext().getCurrentModule().getId() +
-                "-" + idp.getName() + "-sessionsCache");
-        
+                "-" + idpBean.getName() + "-sessionsCache");
+
         // Wiring
         setPropertyBean(sessionManager, "sessionIdGenerator", sessionIdGenerator);
         setPropertyBean(sessionManager, "sessionStore", sessionStore);
@@ -343,7 +353,7 @@ public class IdPTransformer extends AbstractTransformer {
             addPropertyBean(sessionEventManager, "listeners", idpListener);
         }
 
-        IdProjectResource<Beans> rBeans =  new IdProjectResource<Beans>(idGen.generateId(), idpBean.getName(), idpBean.getName(), "spring-beans", idpBeans);
+        IdProjectResource<Beans> rBeans = new IdProjectResource<Beans>(idGen.generateId(), idpBean.getName(), idpBean.getName(), "spring-beans", idpBeans);
         rBeans.setClassifier("jaxb");
         rBeans.setNameSpace(idpBean.getName());
 

@@ -66,30 +66,28 @@ public class TransformationTest {
             logger.info("provider.name        : " + provider.getName());
             logger.info("provider.description : " + provider.getDescription());
             logger.info("provider.role        : " + provider.getRole().name());
-            if (provider instanceof LocalProvider) {
 
-                LocalProvider lp = (LocalProvider) provider;
 
-                for (Binding b : lp.getActiveBindings()) {
-                    logger.info("provider.binding     : " + b.getFullName());
-                }
+            Provider lp = (Provider) provider;
 
-                for (Profile p : lp.getActiveProfiles()) {
-                    logger.info("provider.profile     : " + p.getName());
-                }
+            for (Binding b : lp.getActiveBindings()) {
+                logger.info("provider.binding     : " + b.getFullName());
+            }
 
-                if (lp.getIdentityLookup() != null) {
+            for (Profile p : lp.getActiveProfiles()) {
+                logger.info("provider.profile     : " + p.getName());
+            }
 
-                    IdentityLookup idl = lp.getIdentityLookup();
-                    logger.info("provider.identityLookup.name               : " + idl.getName());
-                    logger.info("provider.identityLookup.provider.name      : " + idl.getProvider().getName());
+            if (lp.getIdentityLookup() != null) {
 
-                    IdentitySource ids = idl.getIdentitySource();
+                IdentityLookup idl = lp.getIdentityLookup();
+                logger.info("provider.identityLookup.name               : " + idl.getName());
+                logger.info("provider.identityLookup.provider.name      : " + idl.getProvider().getName());
 
-                    logger.info("provider.identityLookup.identitySourc.name     : " + ids.getName());
-                    logger.info("provider.identityLookup.identitySourc.class    : " + ids.getClass().getSimpleName());
+                IdentitySource ids = idl.getIdentitySource();
 
-                }
+                logger.info("provider.identityLookup.identitySourc.name     : " + ids.getName());
+                logger.info("provider.identityLookup.identitySourc.class    : " + ids.getClass().getSimpleName());
 
             }
 

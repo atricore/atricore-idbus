@@ -97,23 +97,11 @@
         <property name="persistenceManagerFactory" ref="pmfProxy"/>
     </bean>
 
-    <bean id="localProviderDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.LocalProviderDAOImpl">
-        <property name="persistenceManagerFactory" ref="pmfProxy"/>
-    </bean>
-
     <bean id="locationDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.LocationDAOImpl">
         <property name="persistenceManagerFactory" ref="pmfProxy"/>
     </bean>
 
     <bean id="organizationDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.OrganizationDAOImpl">
-        <property name="persistenceManagerFactory" ref="pmfProxy"/>
-    </bean>
-
-    <bean id="providerDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.ProviderDAOImpl">
-        <property name="persistenceManagerFactory" ref="pmfProxy"/>
-    </bean>
-
-    <bean id="remoteProviderDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.RemoteProviderDAOImpl">
         <property name="persistenceManagerFactory" ref="pmfProxy"/>
     </bean>
 

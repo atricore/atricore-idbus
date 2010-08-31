@@ -1,28 +1,10 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
-import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Ref;
-import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
-import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedLogoutReqToSamlR2LogoutReqPlan;
-import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPSessionHeartBeatReqToSamlR2AuthnReqPlan;
-import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
-import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
-import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @version $Id$
