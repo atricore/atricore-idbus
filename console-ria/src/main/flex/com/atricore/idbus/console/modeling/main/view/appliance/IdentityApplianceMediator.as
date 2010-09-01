@@ -160,7 +160,7 @@ public class IdentityApplianceMediator extends IocFormMediator
         location.port = parseInt(view.applianceLocationPort.text);
         location.context = view.applianceLocationPath.text;
         idApplianceDef.location = location;
-        idApplianceDef.certificate = _keystoreProxy.currentKeystore;
+        idApplianceDef.keystore = _keystoreProxy.currentKeystore;
 
         _newIdentityAppliance = new IdentityAppliance();
         _newIdentityAppliance.idApplianceDefinition = idApplianceDef;

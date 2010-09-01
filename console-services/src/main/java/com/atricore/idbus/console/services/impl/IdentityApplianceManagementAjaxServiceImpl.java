@@ -30,8 +30,7 @@ import com.atricore.idbus.console.services.dto.*;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
 import org.dozer.DozerBeanMapper;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 /**
  * Author: Dejan Maric
@@ -150,36 +149,15 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
         IdentityApplianceDefinitionDTO iad = req.getIdentityApplianceDefinition();
 
-        //providers that are currently in providers list are service providers
-        for(ProviderDTO sp : iad.getProviders()){
-            if(sp.getRole().equals(ProviderRoleDTO.SSOServiceProvider)){
-//                populateServiceProvider((ServiceProviderDTO)sp, iad);
-            }
-        }
         iad.getProviders().add(createIdentityProvider(iad));
 
-        List<BindingProviderDTO> bps = new ArrayList<BindingProviderDTO>();
-
-        // create binding providers
-        //iad.getProviders().add(createBindingProvider(iad));
+        // create josso activations
+        // providers that are currently in providers list are service providers
         for (ProviderDTO sp : iad.getProviders()) {
             if (sp.getRole().equals(ProviderRoleDTO.SSOServiceProvider)) {
-                boolean bpExists = false;
-                for (BindingProviderDTO bp : bps) {
-                    if (bp.getLocation().getProtocol().equals(sp.getLocation().getProtocol()) &&
-                            bp.getLocation().getHost().equals(sp.getLocation().getHost()) &&
-                            bp.getLocation().getPort() == bp.getLocation().getPort() &&
-                            ((JossoBPConfigDTO)bp.getConfig()).getTargetPlatform().equals(sp.getDescription())) {
-                        bpExists = true;
-                        break;
-                    }
-                }
-                if (!bpExists) {
-                    bps.add(createBindingProvider(iad, (ServiceProviderDTO)sp));
-                }
+                createJOSSOActivation(iad, (ServiceProviderDTO)sp);
             }
         }
-        iad.getProviders().addAll(bps);
 
         //TODO set Locations for all objects
         //TODO add bindings and profiles to channels
@@ -190,9 +168,9 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
         //here we'll set STORE to NULL, and later we'll fetch it from DB and update the appliance
         Long storeId = null;
-        if (iad.getCertificate() != null) {
-            storeId = iad.getCertificate().getStore().getId();
-            iad.getCertificate().setStore(null);
+        if (iad.getKeystore() != null) {
+            storeId = iad.getKeystore().getStore().getId();
+            iad.getKeystore().setStore(null);
         }
 
         com.atricore.idbus.console.lifecycle.main.spi.request.AddIdentityApplianceRequest addIdApplianceReq =
@@ -208,45 +186,14 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         AddIdentityApplianceResponse res = dozerMapper.map(beRes, AddIdentityApplianceResponse.class);
         idAppliance = res.getAppliance();
 
-        List<BindingProviderDTO> bindingProviders = new ArrayList<BindingProviderDTO>();
-        for (ProviderDTO p : idAppliance.getIdApplianceDefinition().getProviders()) {
-            if (p instanceof BindingProviderDTO) {
-                bindingProviders.add((BindingProviderDTO)p);
-            }
-        }
-
         for (ProviderDTO p : idAppliance.getIdApplianceDefinition().getProviders()) {
             if (p instanceof ServiceProviderDTO) {
-                ServiceProviderDTO sp = (ServiceProviderDTO)p;
-                BindingProviderDTO bindingProvider = null;
-                for (BindingProviderDTO bp : bindingProviders) {
-                    if (bp.getLocation().getProtocol().equals(sp.getLocation().getProtocol()) &&
-                            bp.getLocation().getHost().equals(sp.getLocation().getHost()) &&
-                            bp.getLocation().getPort() == bp.getLocation().getPort() &&
-                            ((JossoBPConfigDTO)bp.getConfig()).getTargetPlatform().equals(sp.getDescription())) {
-                        bindingProvider = bp;
-                        break;
-                    }
-                }
-                populateServiceProvider((ServiceProviderDTO)p, iad, bindingProvider);
+                populateServiceProvider((ServiceProviderDTO)p, iad);
             }
         }
 
-//        com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
-//                new  com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest();
-//
-//        beLookupReq.setIdentityApplianceId(new Long(idAppliance.getId()).toString());
-//
-//        com.atricore.idbus.console.lifecycle.main.spi.response.LookupIdentityApplianceByIdResponse beLookupRes =
-//                null;
-//        try {
-//            beLookupRes = idApplianceManagementService.lookupIdentityApplianceById(beLookupReq);
-//        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
-//            throw new IdentityServerException(e);
-//        }
-
-//        IdentityAppliance foundAppliance = beLookupRes.getIdentityAppliance();
-//
+        IdentityAppliance foundAppliance = prepareApplianceForUpdate(idAppliance);
+        idAppliance = this.updateAppliance(foundAppliance).getAppliance();
 
         if (storeId != null) {
             //lookup store
@@ -264,10 +211,9 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
                 throw new IdentityServerException(e);
             }
 
-            IdentityAppliance foundAppliance = prepareApplianceForUpdate(idAppliance);
+            foundAppliance = prepareApplianceForUpdate(idAppliance);
             foundAppliance.getIdApplianceDefinition().getKeystore().setStore(beLookupStoreRes.getResource());
-            UpdateIdentityApplianceResponse updateResponse = this.updateAppliance(foundAppliance);
-            idAppliance = updateResponse.getAppliance();
+            idAppliance = this.updateAppliance(foundAppliance).getAppliance();
         }
 
         CreateSimpleSsoResponse response = new CreateSimpleSsoResponse();
@@ -624,37 +570,22 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
      * Helper methods
      ******************************************************/
 
-    private void populateServiceProvider(ServiceProviderDTO sp, IdentityApplianceDefinitionDTO iad, BindingProviderDTO bp) {
+    private void populateServiceProvider(ServiceProviderDTO sp, IdentityApplianceDefinitionDTO iad) {
         sp.setIdentityAppliance(iad);
         sp.setDescription(sp.getName() + " description");
 
-        BindingChannelDTO bindingChannel = new BindingChannelDTO();
-        bindingChannel.setName(sp.getName() + " binding channel");
-        bindingChannel.setTarget(bp);
+        LocationDTO location = sp.getLocation();
+        location.setProtocol(iad.getLocation().getProtocol());
+        location.setHost(iad.getLocation().getHost());
+        location.setPort(iad.getLocation().getPort());
+        location.setContext(iad.getLocation().getContext());
+        location.setUri(createUrlSafeString(sp.getName() + "-sp"));
+        
+        sp.getActiveBindings().add(BindingDTO.SSO_ARTIFACT);
+        sp.getActiveBindings().add(BindingDTO.SSO_REDIRECT);
 
-        LocationDTO bcLocation = new LocationDTO();
-        bcLocation.setProtocol(iad.getLocation().getProtocol());
-        bcLocation.setHost(iad.getLocation().getHost());
-        bcLocation.setPort(iad.getLocation().getPort());
-        bcLocation.setContext(iad.getLocation().getContext());
-        bcLocation.setUri(createUrlSafeString(sp.getName() + "-sp"));
-        bindingChannel.setLocation(bcLocation);
-
-//        LocationDTO bpLocation = new LocationDTO();
-//        bpLocation.setProtocol(sp.getLocation().getProtocol());
-//        bpLocation.setHost(sp.getLocation().getHost());
-//        bpLocation.setPort(sp.getLocation().getPort());
-//        bpLocation.setContext(iad.getLocation().getContext());////not sp.getLocation.uri but iad.getLocation.Context
-//        bpLocation.setUri("/" + createUrlSafeString(sp.getName()) + "/SSOP");//delete sp.getLocation.uri
-//        bindingChannel.setLocation(bpLocation);
-
-        bindingChannel.getActiveBindings().add(BindingDTO.SSO_ARTIFACT);
-        bindingChannel.getActiveBindings().add(BindingDTO.SSO_REDIRECT);
-
-        bindingChannel.getActiveProfiles().add(ProfileDTO.SSO);
-        bindingChannel.getActiveProfiles().add(ProfileDTO.SSO_SLO);
-
-//        sp.setBindingChannel(bindingChannel);
+        sp.getActiveProfiles().add(ProfileDTO.SSO);
+        sp.getActiveProfiles().add(ProfileDTO.SSO_SLO);
 
         IdentityProviderChannelDTO idpChannel = new IdentityProviderChannelDTO();
         idpChannel.setName(sp.getName() + " to idp default channel");
@@ -678,48 +609,9 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
         SamlR2ProviderConfigDTO spSamlConfig = new SamlR2ProviderConfigDTO();
         spSamlConfig.setName(sp.getName() + " samlr2 config");
-        spSamlConfig.setSigner(iad.getCertificate());
-        spSamlConfig.setEncrypter(iad.getCertificate());
+        spSamlConfig.setSigner(iad.getKeystore());
+        spSamlConfig.setEncrypter(iad.getKeystore());
         sp.setConfig(spSamlConfig);
-    }
-
-    private BindingProviderDTO createBindingProvider(IdentityApplianceDefinitionDTO iad, ServiceProviderDTO sp) {
-        BindingProviderDTO bp = new BindingProviderDTO();
-        bp.setIdentityAppliance(iad);
-        bp.setName(iad.getName() + " " + createUrlSafeString(sp.getLocation().getHost()) + " " + sp.getDescription() + " bp");
-        BindingChannelDTO bindingChannel = new BindingChannelDTO();
-        bindingChannel.setName(bp.getName() + " josso binding channel");
-        bindingChannel.setTarget(bp);
-
-        LocationDTO bpLocation = new LocationDTO();
-        bpLocation.setProtocol(sp.getLocation().getProtocol());
-        bpLocation.setHost(sp.getLocation().getHost());
-        bpLocation.setPort(sp.getLocation().getPort());
-        bp.setLocation(bpLocation);
-
-        LocationDTO bcLocation = new LocationDTO();
-        bcLocation.setProtocol(iad.getLocation().getProtocol());
-        bcLocation.setHost(iad.getLocation().getHost());
-        bcLocation.setPort(iad.getLocation().getPort());
-        bcLocation.setContext(iad.getLocation().getContext());
-        bcLocation.setUri(createUrlSafeString(bp.getName()));
-        bindingChannel.setLocation(bcLocation);
-
-        bindingChannel.getActiveBindings().add(BindingDTO.SSO_ARTIFACT);
-        bindingChannel.getActiveBindings().add(BindingDTO.SSO_REDIRECT);
-        bindingChannel.getActiveBindings().add(BindingDTO.JOSSO_SOAP);
-
-        bindingChannel.getActiveProfiles().add(ProfileDTO.SSO);
-        bindingChannel.getActiveProfiles().add(ProfileDTO.SSO_SLO);
-        bp.setBindingChannel(bindingChannel);
-
-        JossoBPConfigDTO config = new JossoBPConfigDTO();
-        config.setTargetPlatform(sp.getDescription());
-        config.setName(bp.getName() + " config");
-        config.setDescription(bp.getName() + " config description");
-        bp.setConfig(config);
-
-        return bp;
     }
 
     private ProviderDTO createIdentityProvider(IdentityApplianceDefinitionDTO iad) {
@@ -762,11 +654,71 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
         SamlR2ProviderConfigDTO idpSamlConfig = new SamlR2ProviderConfigDTO();
         idpSamlConfig.setName(idp.getName() + " samlr2 config");
-        idpSamlConfig.setSigner(iad.getCertificate());
-        idpSamlConfig.setEncrypter(iad.getCertificate());
+        idpSamlConfig.setSigner(iad.getKeystore());
+        idpSamlConfig.setEncrypter(iad.getKeystore());
         idp.setConfig(idpSamlConfig);
 
         return idp;
+    }
+
+    private JOSSOActivationDTO createJOSSOActivation(IdentityApplianceDefinitionDTO iad, ServiceProviderDTO sp) {
+        JOSSOActivationDTO activation = new JOSSOActivationDTO();
+        activation.setPartnerAppId(sp.getName());
+        activation.setName(activation.getPartnerAppId().toLowerCase() + "-josso-activation");
+        activation.setDescription(activation.getPartnerAppId() + " JOSSO Activation");
+
+        LocationDTO location = new LocationDTO();
+        location.setProtocol(sp.getLocation().getProtocol());
+        location.setHost(sp.getLocation().getHost());
+        location.setPort(sp.getLocation().getPort());
+        location.setContext(sp.getLocation().getContext());
+        location.setUri(sp.getLocation().getUri());
+        activation.setPartnerAppLocation(location);
+
+        if (iad.getExecutionEnvironments() == null) {
+            iad.setExecutionEnvironments(new HashSet<ExecutionEnvironmentDTO>());
+        }
+        
+        String targetPlatform = sp.getDescription();
+        ExecutionEnvironmentDTO executionEnv = findExecutionEnvironment(iad, sp);
+        if (executionEnv == null) {
+            if (targetPlatform.equals("jb32") || targetPlatform.equals("jb40") ||
+                    targetPlatform.equals("jb42")) {
+                executionEnv = new JbossExecutionEnvironmentDTO();
+            } else if (targetPlatform.equals("tc50") || targetPlatform.equals("tc55") ||
+                    targetPlatform.equals("tc60")) {
+                executionEnv = new TomcatExecutionEnvironmentDTO();
+            }
+            executionEnv.setName(targetPlatform + "-" + sp.getLocation().getHost() +
+                    "-" + sp.getLocation().getPort());
+            executionEnv.setDescription(executionEnv.getName().replaceAll("-", " "));
+            int port = sp.getLocation().getPort();
+            String portString = (port == 80 || port == 443 ? "" :  ":" + port);
+            executionEnv.setInstallUri(sp.getLocation().getProtocol() + "://" +
+                    sp.getLocation().getHost() + portString);
+            executionEnv.setActivations(new HashSet<ActivationDTO>());
+            iad.getExecutionEnvironments().add(executionEnv);
+        }
+
+        activation.setSp(sp);
+        sp.setActivation(activation);
+
+        executionEnv.getActivations().add(activation);
+        activation.setExecutionEnv(executionEnv);
+
+        return activation;
+    }
+
+    private ExecutionEnvironmentDTO findExecutionEnvironment(IdentityApplianceDefinitionDTO iad, ServiceProviderDTO sp) {
+        if (iad.getExecutionEnvironments() != null) {
+            for (ExecutionEnvironmentDTO executionEnv : iad.getExecutionEnvironments()) {
+                if (executionEnv.getName().equals(sp.getDescription() + "-" +
+                        sp.getLocation().getHost() + "-" + sp.getLocation().getPort())) {
+                    return executionEnv;
+                }
+            }
+        }
+        return null;
     }
 
     /**

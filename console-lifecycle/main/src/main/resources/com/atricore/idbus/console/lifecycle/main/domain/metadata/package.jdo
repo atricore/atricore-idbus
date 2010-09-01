@@ -36,8 +36,8 @@
 
         <class name="Activation" detachable="true">
             <inheritance strategy="new-table"/>
-            <field name="sp" />
-            <field name="executionEnv"/>
+            <field name="sp" default-fetch-group="true"/>
+            <field name="executionEnv" default-fetch-group="true"/>
         </class>
 
         <class name="AttributeProfile" detachable="true">
@@ -84,6 +84,7 @@
 
         <class name="DbIdentitySource" detachable="true">
             <inheritance strategy="new-table"/>
+            <field name="driver" default-fetch-group="true"/>
         </class>
 
         <class name="EmbeddedIdentitySource" detachable="true">
@@ -192,6 +193,8 @@
 
         <class name="JOSSOActivation" detachable="true">
             <inheritance strategy="new-table"/>
+            <field name="partnerAppLocation" default-fetch-group="true"/>
+            <field name="ignoredWebResources" default-fetch-group="true"/>
         </class>
 
         <class name="Keystore" detachable="true">
