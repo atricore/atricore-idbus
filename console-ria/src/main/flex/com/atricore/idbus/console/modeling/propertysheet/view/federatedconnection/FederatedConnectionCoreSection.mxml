@@ -26,5 +26,17 @@
          xmlns:utils="com.atricore.idbus.console.components.*"
          width="100%" height="100%">
 
-    <s:Button id="btnRemove" label="Remove connection"/>
+    <fx:Declarations>
+        <mx:StringValidator id="nameValidator" source="{connectionName}" required="true" property="text"/>
+    </fx:Declarations>
+
+    <mx:Form width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'connection.name')}:" required="true">
+            <s:TextInput id="connectionName"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'connection.description')}:">
+            <s:TextInput id="connectionDescription"/>
+        </mx:FormItem>
+    </mx:Form>
 </s:Group>

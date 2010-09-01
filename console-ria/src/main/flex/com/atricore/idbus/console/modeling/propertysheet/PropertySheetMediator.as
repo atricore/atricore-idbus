@@ -25,32 +25,36 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.connection.ConnectionCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.EmbeddedDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.ExternalDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.ExternalDBIdentityVaultLookupSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.identitylookup.IdentityLookupCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idpchannel.IDPChannelContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idpchannel.IDPChannelCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.jossoactivation.JOSSOActivationCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelCoreSection;
 import com.atricore.idbus.console.services.dto.Binding;
-import com.atricore.idbus.console.services.dto.Channel;
+import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
+import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
+import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.JOSSOActivation;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
-import com.atricore.idbus.console.services.dto.UserInformationLookup;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -59,6 +63,7 @@ import mx.collections.ArrayCollection;
 import mx.controls.Alert;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
+import mx.utils.StringUtil;
 import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -88,7 +93,9 @@ public class PropertySheetMediator extends IocMediator {
     private var _idpChannelContractSection:IDPChannelContractSection;
     private var _spChannelContractSection:SPChannelContractSection;
     private var _externalDbVaultLookupSection:ExternalDBIdentityVaultLookupSection;
-    private var _connectionCoreSection:ConnectionCoreSection;
+    private var _federatedConnectionCoreSection:FederatedConnectionCoreSection;
+    private var _jossoActivationCoreSection:JOSSOActivationCoreSection;
+    private var _identityLookupCoreSection:IdentityLookupCoreSection;
     private var _dirty:Boolean;
 
     protected var _validators : Array;
@@ -141,37 +148,31 @@ public class PropertySheetMediator extends IocMediator {
             case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
                 enablePropertyTabs();
                 _currentIdentityApplianceElement = _projectProxy.currentIdentityApplianceElement;
-                if (_projectProxy.currentIdentityApplianceElement is IdentityAppliance) {
+                if (_currentIdentityApplianceElement is IdentityAppliance) {
                     enableIdentityAppliancePropertyTabs();
-                } else
-                if (_projectProxy.currentIdentityApplianceElement is IdentityProvider) {
+                } else if (_currentIdentityApplianceElement is IdentityProvider) {
                     enableIdentityProviderPropertyTabs();
-                } else
-                if(_projectProxy.currentIdentityApplianceElement is ServiceProvider) {
+                } else if (_currentIdentityApplianceElement is ServiceProvider) {
                     enableServiceProviderPropertyTabs();
-                } else
-                if(_projectProxy.currentIdentityApplianceElement is IdentityProviderChannel) {
+                } else if (_currentIdentityApplianceElement is IdentityProviderChannel) {
                     enableIdpChannelPropertyTabs();
-                }
-                if(_projectProxy.currentIdentityApplianceElement is ServiceProviderChannel) {
+                } else if (_currentIdentityApplianceElement is ServiceProviderChannel) {
                     enableSpChannelPropertyTabs();
-                }
-                if(_projectProxy.currentIdentityApplianceElement is IdentitySource) {
-                    if(_currentIdentityApplianceElement is EmbeddedIdentitySource){
+                } else if (_currentIdentityApplianceElement is IdentitySource) {
+                    if (_currentIdentityApplianceElement is EmbeddedIdentitySource) {
                         enableEmbeddedDbVaultPropertyTabs();
-                    } else if(_currentIdentityApplianceElement is DbIdentitySource) {
+                    } else if (_currentIdentityApplianceElement is DbIdentitySource) {
                         enableExternalDbVaultPropertyTabs();
-                    } else if(_currentIdentityApplianceElement is LdapIdentitySource){
+                    } else if (_currentIdentityApplianceElement is LdapIdentitySource) {
                         enableLdapSourcePropertyTabs();
                     }
-
+                } else if (_currentIdentityApplianceElement is FederatedConnection) {
+                    enableFederatedConnectionPropertyTabs();
+                } else if (_currentIdentityApplianceElement is JOSSOActivation) {
+                    enableJOSSOActivationPropertyTabs();
+                } else if (_currentIdentityApplianceElement is IdentityLookup) {
+                    enableIdentityLookupPropertyTabs();
                 }
-
-                if (_currentIdentityApplianceElement.hasOwnProperty("type") && 
-                        _currentIdentityApplianceElement.type == "connection") {
-                    enableConnectionPropertyTabs();
-                }
-                    
                 break;
         }
 
@@ -1202,8 +1203,7 @@ public class PropertySheetMediator extends IocMediator {
 
     private function enableLdapSourcePropertyTabs():void {}    
 
-    // TODO
-    protected function enableConnectionPropertyTabs():void {
+    protected function enableFederatedConnectionPropertyTabs():void {
         _propertySheetsViewStack.removeAllChildren();
 
         var corePropertyTab:Group = new Group();
@@ -1213,12 +1213,182 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.height = Number("100%");
         corePropertyTab.setStyle("borderStyle", "solid");
 
-        _connectionCoreSection = new ConnectionCoreSection();
-        corePropertyTab.addElement(_connectionCoreSection);
+        _federatedConnectionCoreSection = new FederatedConnectionCoreSection();
+        corePropertyTab.addElement(_federatedConnectionCoreSection);
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
-        _connectionCoreSection.btnRemove.addEventListener(MouseEvent.CLICK, handleRemoveConnection);
+        _federatedConnectionCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleFederatedConnectionCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleFederatedConnectionCorePropertyTabRollOut);
+
+        //_federatedConnectionCoreSection.btnRemove.addEventListener(MouseEvent.CLICK, handleRemoveConnection);
+    }
+
+    private function handleFederatedConnectionCorePropertyTabCreationComplete(event:Event):void {
+        var connection:Connection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
+
+        // bind view
+        _federatedConnectionCoreSection.connectionName.text = connection.name;
+        _federatedConnectionCoreSection.connectionDescription.text = connection.description;
+
+        _federatedConnectionCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
+        _federatedConnectionCoreSection.connectionDescription.addEventListener(Event.CHANGE, handleSectionChange);
+        
+        _validators = [];
+        _validators.push(_federatedConnectionCoreSection.nameValidator);
+    }
+
+    private function handleFederatedConnectionCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        if (_dirty && validate(true)) {
+             // bind model
+            var connection:Connection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
+            
+            connection.name = _federatedConnectionCoreSection.connectionName.text;
+            connection.description = _federatedConnectionCoreSection.connectionDescription.text;
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
+
+    protected function enableJOSSOActivationPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _jossoActivationCoreSection = new JOSSOActivationCoreSection();
+        corePropertyTab.addElement(_jossoActivationCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _jossoActivationCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleJOSSOActivationCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleJOSSOActivationCorePropertyTabRollOut);
+
+        //_jossoActivationCoreSection.btnRemove.addEventListener(MouseEvent.CLICK, handleRemoveConnection);
+    }
+
+    private function handleJOSSOActivationCorePropertyTabCreationComplete(event:Event):void {
+        var activation:JOSSOActivation = projectProxy.currentIdentityApplianceElement as JOSSOActivation;
+
+        // bind view
+        _jossoActivationCoreSection.connectionName.text = activation.name;
+        _jossoActivationCoreSection.connectionDescription.text = activation.description;
+        _jossoActivationCoreSection.partnerAppId.text = activation.partnerAppId;
+
+        var location:Location = activation.partnerAppLocation;
+        for (var i:int = 0; i < _jossoActivationCoreSection.partnerAppLocationProtocol.dataProvider.length; i++) {
+            if (location != null && location.protocol == _jossoActivationCoreSection.partnerAppLocationProtocol.dataProvider[i].label) {
+                _jossoActivationCoreSection.partnerAppLocationProtocol.selectedIndex = i;
+                break;
+            }
+        }
+        _jossoActivationCoreSection.partnerAppLocationDomain.text = location.host;
+        _jossoActivationCoreSection.partnerAppLocationPort.text = location.port.toString();
+        _jossoActivationCoreSection.partnerAppLocationPath.text = location.context;
+
+        var ignoredWebResources:String = "";
+        if (activation.ignoredWebResources != null) {
+            for (var i:int = 0; i < activation.ignoredWebResources.length; i++) {
+                if (ignoredWebResources != "") {
+                    ignoredWebResources += ", ";
+                }
+                ignoredWebResources += activation.ignoredWebResources[i] as String;
+            }
+        }
+        _jossoActivationCoreSection.ignoredWebResources.text = ignoredWebResources;
+
+        _jossoActivationCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
+        _jossoActivationCoreSection.connectionDescription.addEventListener(Event.CHANGE, handleSectionChange);
+        _jossoActivationCoreSection.partnerAppId.addEventListener(Event.CHANGE, handleSectionChange);
+        _jossoActivationCoreSection.partnerAppLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+        _jossoActivationCoreSection.partnerAppLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
+        _jossoActivationCoreSection.partnerAppLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
+        _jossoActivationCoreSection.partnerAppLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+        _jossoActivationCoreSection.ignoredWebResources.addEventListener(Event.CHANGE, handleSectionChange);
+
+        _validators = [];
+        _validators.push(_jossoActivationCoreSection.nameValidator);
+        _validators.push(_jossoActivationCoreSection.domainValidator);
+        _validators.push(_jossoActivationCoreSection.portValidator);
+        _validators.push(_jossoActivationCoreSection.pathValidator);
+    }
+
+    private function handleJOSSOActivationCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        if (_dirty && validate(true)) {
+             // bind model
+            var activation:JOSSOActivation = projectProxy.currentIdentityApplianceElement as JOSSOActivation;
+            activation.name = _jossoActivationCoreSection.connectionName.text;
+            activation.description = _jossoActivationCoreSection.connectionDescription.text;
+            activation.partnerAppId = _jossoActivationCoreSection.partnerAppId.text;
+            activation.partnerAppLocation.protocol = _jossoActivationCoreSection.partnerAppLocationProtocol.selectedItem.label;
+            activation.partnerAppLocation.host = _jossoActivationCoreSection.partnerAppLocationDomain.text;
+            activation.partnerAppLocation.port = parseInt(_jossoActivationCoreSection.partnerAppLocationPort.text);
+            activation.partnerAppLocation.context = _jossoActivationCoreSection.partnerAppLocationPath.text;
+            var ignoredWebResources:Array = _jossoActivationCoreSection.ignoredWebResources.text.split(",");
+            activation.ignoredWebResources = new ArrayCollection();
+            for each (var ignoredWebResource:String in ignoredWebResources) {
+                activation.ignoredWebResources.addItem(StringUtil.trim(ignoredWebResource));
+            }
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
+
+    protected function enableIdentityLookupPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _identityLookupCoreSection = new IdentityLookupCoreSection();
+        corePropertyTab.addElement(_identityLookupCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _identityLookupCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityLookupCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityLookupCorePropertyTabRollOut);
+
+        //_identityLookupCoreSection.btnRemove.addEventListener(MouseEvent.CLICK, handleRemoveConnection);
+    }
+
+    private function handleIdentityLookupCorePropertyTabCreationComplete(event:Event):void {
+        var identityLookup:IdentityLookup = projectProxy.currentIdentityApplianceElement as IdentityLookup;
+
+        // bind view
+        _identityLookupCoreSection.connectionName.text = identityLookup.name;
+        _identityLookupCoreSection.connectionDescription.text = identityLookup.description;
+
+        _identityLookupCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
+        _identityLookupCoreSection.connectionDescription.addEventListener(Event.CHANGE, handleSectionChange);
+
+        _validators = [];
+        _validators.push(_identityLookupCoreSection.nameValidator);
+    }
+
+    private function handleIdentityLookupCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        if (_dirty && validate(true)) {
+             // bind model
+            var identityLookup:IdentityLookup = projectProxy.currentIdentityApplianceElement as IdentityLookup;
+
+            identityLookup.name = _identityLookupCoreSection.connectionName.text;
+            identityLookup.description = _identityLookupCoreSection.connectionDescription.text;
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
     }
 
     private function handleRemoveConnection(event:MouseEvent):void {
