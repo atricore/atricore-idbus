@@ -1,11 +1,19 @@
 package com.atricore.idbus.console.components {
+import com.atricore.idbus.console.main.EmbeddedIcons;
+
+import com.atricore.idbus.console.modeling.diagram.event.VEdgeRemoveEvent;
+
 import flash.events.MouseEvent;
 import flash.text.TextField;
 import flash.text.TextFieldAutoSize;
 
+import mx.controls.Alert;
+import mx.controls.Button;
 import mx.controls.Image;
 import mx.core.IDataRenderer;
 import mx.core.UIComponent;
+
+import mx.events.CloseEvent;
 
 import org.un.cava.birdeye.ravis.enhancedGraphLayout.event.VGEdgeEvent;
 import org.un.cava.birdeye.ravis.graphLayout.data.IEdge;
@@ -22,6 +30,8 @@ public class CustomEdgeLabelRenderer extends UIComponent implements IDataRendere
     public var icon:Image;
     public var enableIcon:Boolean = true;
 
+    public var btnRemove:Button;
+    
     private var _data:Object;
     
     public function CustomEdgeLabelRenderer() {
@@ -72,12 +82,22 @@ public class CustomEdgeLabelRenderer extends UIComponent implements IDataRendere
                 this.addChild(icon);
             }
 
+            btnRemove = new Button();
+            btnRemove.setStyle("icon", EmbeddedIcons.removeNodeIcon);
+            btnRemove.width = 22;
+            btnRemove.height = 22;
+            btnRemove.visible = false;
+            btnRemove.addEventListener(MouseEvent.CLICK, confirmEdgeRemove);
+            this.addChild(btnRemove);
+            
             addEventListeners();
         }
     }
 
     private function addEventListeners():void {
         this.addEventListener(MouseEvent.CLICK, mouseEventHandler);
+        this.addEventListener(MouseEvent.ROLL_OVER, internalRollOverHandler);
+        this.addEventListener(MouseEvent.ROLL_OUT, internalRollOutHandler);
         /*
         this.addEventListener(MouseEvent.MOUSE_DOWN, mouseEventHandler);
         this.addEventListener(MouseEvent.MOUSE_UP, mouseEventHandler);
@@ -90,6 +110,8 @@ public class CustomEdgeLabelRenderer extends UIComponent implements IDataRendere
 
     private function removeEventListeners():void {
         this.removeEventListener(MouseEvent.CLICK, mouseEventHandler);
+        this.removeEventListener(MouseEvent.ROLL_OVER, internalRollOverHandler);
+        this.removeEventListener(MouseEvent.ROLL_OUT, internalRollOutHandler);
         /*
         this.removeEventListener(MouseEvent.MOUSE_DOWN, mouseEventHandler);
         this.removeEventListener(MouseEvent.MOUSE_UP, mouseEventHandler);
@@ -107,6 +129,25 @@ public class CustomEdgeLabelRenderer extends UIComponent implements IDataRendere
             edgeEvent.originalEvent = event;
             edgeEvent.edge = vedge.edge;
             vedge.vgraph.dispatchEvent(edgeEvent);
+        }
+    }
+
+    private function internalRollOverHandler(event:MouseEvent):void {
+        btnRemove.visible = true;
+    }
+
+    private function internalRollOutHandler(event:MouseEvent):void {
+        btnRemove.visible = false;
+    }
+
+    private function confirmEdgeRemove(e:MouseEvent):void {
+        Alert.show("Are you sure you want to delete this connection?", "Confirm Removal",
+                Alert.YES | Alert.NO, null, edgeRemoveConfirmed, null, Alert.YES);
+    }
+
+    private function edgeRemoveConfirmed(event:CloseEvent):void {
+        if (event.detail == Alert.YES) {
+            dispatchEvent(new VEdgeRemoveEvent(VEdgeRemoveEvent.VEDGE_REMOVE, data.data.data, true, false, 0));
         }
     }
 }

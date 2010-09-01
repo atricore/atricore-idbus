@@ -60,8 +60,6 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
-import mx.controls.Alert;
-import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 import mx.utils.StringUtil;
 import mx.validators.Validator;
@@ -1220,8 +1218,6 @@ public class PropertySheetMediator extends IocMediator {
 
         _federatedConnectionCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleFederatedConnectionCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleFederatedConnectionCorePropertyTabRollOut);
-
-        //_federatedConnectionCoreSection.btnRemove.addEventListener(MouseEvent.CLICK, handleRemoveConnection);
     }
 
     private function handleFederatedConnectionCorePropertyTabCreationComplete(event:Event):void {
@@ -1269,8 +1265,6 @@ public class PropertySheetMediator extends IocMediator {
 
         _jossoActivationCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleJOSSOActivationCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleJOSSOActivationCorePropertyTabRollOut);
-
-        //_jossoActivationCoreSection.btnRemove.addEventListener(MouseEvent.CLICK, handleRemoveConnection);
     }
 
     private function handleJOSSOActivationCorePropertyTabCreationComplete(event:Event):void {
@@ -1359,8 +1353,6 @@ public class PropertySheetMediator extends IocMediator {
 
         _identityLookupCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityLookupCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityLookupCorePropertyTabRollOut);
-
-        //_identityLookupCoreSection.btnRemove.addEventListener(MouseEvent.CLICK, handleRemoveConnection);
     }
 
     private function handleIdentityLookupCorePropertyTabCreationComplete(event:Event):void {
@@ -1388,17 +1380,6 @@ public class PropertySheetMediator extends IocMediator {
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
-        }
-    }
-
-    private function handleRemoveConnection(event:MouseEvent):void {
-        Alert.show("Are you sure you want to delete this connection?", "Confirm Removal",
-                Alert.YES | Alert.NO, null, nodeRemoveConfirmed, null, Alert.YES);
-    }
-
-    private function nodeRemoveConfirmed(event:CloseEvent):void {
-        if (event.detail == Alert.YES) {
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE);
         }
     }
 

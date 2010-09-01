@@ -27,8 +27,7 @@ import com.atricore.idbus.console.components.CustomVisualGraph;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.util.Constants;
-import com.atricore.idbus.console.modeling.browser.model.BrowserModelFactory;
-import com.atricore.idbus.console.modeling.browser.model.BrowserNode;
+import com.atricore.idbus.console.modeling.diagram.event.VEdgeRemoveEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VEdgeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
@@ -50,7 +49,6 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannel
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
-import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
@@ -130,6 +128,7 @@ public class DiagramMediator extends IocMediator {
             _identityApplianceDiagram.removeEventListener(VNodeRemoveEvent.VNODE_REMOVE, nodeRemoveEventHandler);
             _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.VNODES_LINKED, nodesLinkedEventHandler);
             _identityApplianceDiagram.removeEventListener(VEdgeSelectedEvent.VEDGE_SELECTED, edgeSelectedEventHandler);
+            _identityApplianceDiagram.removeEventListener(VEdgeRemoveEvent.VEDGE_REMOVE, edgeRemoveEventHandler);
         }
 
         super.setViewComponent(viewComponent);
@@ -144,6 +143,7 @@ public class DiagramMediator extends IocMediator {
         _identityApplianceDiagram.addEventListener(VNodeRemoveEvent.VNODE_REMOVE, nodeRemoveEventHandler);
         _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.VNODES_LINKED, nodesLinkedEventHandler);
         _identityApplianceDiagram.addEventListener(VEdgeSelectedEvent.VEDGE_SELECTED, edgeSelectedEventHandler);
+        _identityApplianceDiagram.addEventListener(VEdgeRemoveEvent.VEDGE_REMOVE, edgeRemoveEventHandler);
         _emptyNotationModel = <Graph/>;
 
         resetGraph();
@@ -608,6 +608,15 @@ public class DiagramMediator extends IocMediator {
             _projectProxy.currentIdentityApplianceElement = edge.data.data;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_SELECTED);
         }
+    }
+
+    private function edgeRemoveEventHandler(event:VEdgeRemoveEvent):void {
+        // edgeData is FederatedConnection, JOSSOActivation, etc.
+        var edgeData:Object = event.data;
+
+        // TODO: remove connection from database
+        
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE);
     }
 
     private function toggleUnselectedNodesOff(visualCompToCheck:Object, selectedItem:Object):void {
