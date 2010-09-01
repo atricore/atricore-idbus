@@ -1,7 +1,7 @@
 Feature: New Tomcat 5 Execution Environment
   In order to have a candidate execution environment available for activating it against a service provider
   As an identity architect
-  I want to define to define the target tomcat 5 execution environment element
+  I want to define the target tomcat 5 execution environment element
 
   Scenario: New local tomcat 5 execution environment
     Given I am on the modeler screen

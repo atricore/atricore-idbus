@@ -1,7 +1,7 @@
 Feature: New Weblogic 9 Execution Environment
   In order to have a candidate execution environment available for activating it against a service provider
   As an identity architect
-  I want to define to define the target weblogic 9 execution environment element
+  I want to define the target weblogic 9 execution environment element
 
   Scenario: New local weblogic 9 execution environment
     Given I am on the modeler screen
