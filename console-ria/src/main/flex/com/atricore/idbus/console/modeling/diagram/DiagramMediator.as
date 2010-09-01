@@ -225,7 +225,7 @@ public class DiagramMediator extends IocMediator {
                             break;
                         case DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE:
                             // assert that source end is an Identity Appliance
-                            if (_currentlySelectedNode.data is ServiceProvider) {
+                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is ServiceProvider) {
                                 var ownerServiceProvider:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
 
                                 var cidpc:CreateIdpChannelElementRequest = new CreateIdpChannelElementRequest(
@@ -242,7 +242,7 @@ public class DiagramMediator extends IocMediator {
                             break;
                         case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
                             // assert that source end is an Identity Appliance
-                            if (_currentlySelectedNode.data is IdentityProvider) {
+                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is IdentityProvider) {
                                 var ownerIdentityProvider:IdentityProvider = _currentlySelectedNode.data as IdentityProvider;
 
                                 var csdpc:CreateSpChannelElementRequest = new CreateSpChannelElementRequest(
@@ -277,7 +277,7 @@ public class DiagramMediator extends IocMediator {
 
                             break;
                         case DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE:
-                            if (_currentlySelectedNode.data is IdentityProvider || _currentlySelectedNode.data is ServiceProvider ) {
+                            if (_currentlySelectedNode != null && (_currentlySelectedNode.data is IdentityProvider || _currentlySelectedNode.data is ServiceProvider)) {
                                 var ownerObj:Object = _currentlySelectedNode.data;
 
                                 var cliv:CreateLdapIdentitySourceElementRequest = new CreateLdapIdentitySourceElementRequest(
@@ -293,7 +293,7 @@ public class DiagramMediator extends IocMediator {
 
                             break;
                         case DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            if (_currentlySelectedNode.data is ServiceProvider ) {
+                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is ServiceProvider ) {
                                 var execEnvironmentSp:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
 
                                 var ceenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
@@ -307,7 +307,7 @@ public class DiagramMediator extends IocMediator {
                             }
                             break;
                         case DiagramElementTypes.WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            if (_currentlySelectedNode.data is ServiceProvider ) {
+                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is ServiceProvider ) {
                                 var execEnvironmentSp:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
 
                                 var ceenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(

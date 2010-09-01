@@ -50,7 +50,7 @@
             </mx:FormItem>
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.location')}:"
-                         direction="horizontal" labelWidth="75">
+                         direction="horizontal">
                 <s:DropDownList id="idpLocationProtocol" width="70" selectedIndex="0">
                     <s:dataProvider>
                         <mx:ArrayCollection>
@@ -59,11 +59,11 @@
                         </mx:ArrayCollection>
                     </s:dataProvider>
                 </s:DropDownList>
-                <s:Label text="://" width="15"/>
+                <s:Label text="://" width="15" paddingTop="5"/>
                 <s:TextInput id="idpLocationDomain" width="150"/>
-                <s:Label text=":" width="10"/>
+                <s:Label text=":" width="10" paddingTop="5"/>
                 <s:TextInput id="idpLocationPort" width="40"/>
-                <s:Label id="idpLocationContext" text="/idbus/" width="45"/>
+                <s:Label id="idpLocationContext" text="/idbus/" width="45" paddingTop="5"/>
                 <s:TextInput id="idpLocationPath" width="180"/>
             </mx:FormItem>
 

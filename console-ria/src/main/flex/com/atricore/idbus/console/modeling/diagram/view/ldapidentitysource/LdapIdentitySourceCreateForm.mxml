@@ -55,9 +55,9 @@
                 </mx:ArrayCollection>
             </s:dataProvider>
         </s:DropDownList>
-        <s:Label text="://" width="15"/>
+        <s:Label text="://" width="15" paddingTop="5"/>
         <s:TextInput id="ldapIdentitySourceDomain" width="150"/>
-        <s:Label text=":" width="10"/>
+        <s:Label text=":" width="10" paddingTop="5"/>
         <s:TextInput id="ldapIdentitySourcePort" width="40"/>        
     </mx:FormItem>
 

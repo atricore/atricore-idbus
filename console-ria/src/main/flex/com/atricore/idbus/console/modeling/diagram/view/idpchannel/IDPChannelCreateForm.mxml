@@ -63,11 +63,11 @@
                 </mx:ArrayCollection>
             </s:dataProvider>
         </s:DropDownList>
-        <s:Label text="://" width="15"/>
+        <s:Label text="://" width="15" paddingTop="5"/>
         <s:TextInput id="idpChannelLocationDomain" width="150"/>
-        <s:Label text=":" width="10"/>
+        <s:Label text=":" width="10" paddingTop="5"/>
         <s:TextInput id="idpChannelLocationPort" width="40"/>
-        <s:Label id="idpChannelLocationContext" text="/idbus/" width="45"/>
+        <s:Label id="idpChannelLocationContext" text="/idbus/" width="45" paddingTop="5"/>
         <s:TextInput id="idpChannelLocationPath" width="180"/>
     </mx:FormItem>
 

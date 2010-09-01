@@ -343,7 +343,7 @@ public class PropertySheetMediator extends IocMediator {
             }
             _ipCoreSection.idpLocationDomain.text = identityProvider.location.host;
             _ipCoreSection.idpLocationPort.text = identityProvider.location.port.toString();
-            _ipCoreSection.idpLocationContext.text = identityProvider.location.context;
+            _ipCoreSection.idpLocationContext.text = "/" + identityProvider.location.context + "/";
             _ipCoreSection.idpLocationPath.text = identityProvider.location.uri;
 
             _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
@@ -377,7 +377,8 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.location.protocol = _ipCoreSection.idpLocationProtocol.labelDisplay.text;
             identityProvider.location.host = _ipCoreSection.idpLocationDomain.text;
             identityProvider.location.port = parseInt(_ipCoreSection.idpLocationPort.text);
-            identityProvider.location.context = _ipCoreSection.idpLocationContext.text;
+            identityProvider.location.context = _ipCoreSection.idpLocationContext.text.substring(1,
+                    _ipCoreSection.idpLocationContext.text.length - 1);
             identityProvider.location.uri = _ipCoreSection.idpLocationPath.text;
             
             // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
@@ -504,7 +505,7 @@ public class PropertySheetMediator extends IocMediator {
             }
             _spCoreSection.spLocationDomain.text = serviceProvider.location.host;
             _spCoreSection.spLocationPort.text = serviceProvider.location.port.toString();
-            _spCoreSection.spLocationContext.text = serviceProvider.location.context;
+            _spCoreSection.spLocationContext.text = "/" + serviceProvider.location.context + "/";
             _spCoreSection.spLocationPath.text = serviceProvider.location.uri;
 
             _spCoreSection.serviceProvName.addEventListener(Event.CHANGE, handleSectionChange);
@@ -537,7 +538,8 @@ public class PropertySheetMediator extends IocMediator {
             serviceProvider.location.protocol = _spCoreSection.spLocationProtocol.labelDisplay.text;
             serviceProvider.location.host = _spCoreSection.spLocationDomain.text;
             serviceProvider.location.port = parseInt(_spCoreSection.spLocationPort.text);
-            serviceProvider.location.context = _spCoreSection.spLocationContext.text;
+            serviceProvider.location.context = _spCoreSection.spLocationContext.text.substring(1,
+                    _spCoreSection.spLocationContext.text.length - 1);
             serviceProvider.location.uri = _spCoreSection.spLocationPath.text;
             
             // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
@@ -691,7 +693,7 @@ public class PropertySheetMediator extends IocMediator {
             }
             _idpChannelCoreSection.idpChannelLocationDomain.text = idpChannel.location.host;
             _idpChannelCoreSection.idpChannelLocationPort.text = idpChannel.location.port.toString();
-            _idpChannelCoreSection.idpChannelLocationContext.text = idpChannel.location.context;
+            _idpChannelCoreSection.idpChannelLocationContext.text = "/" + idpChannel.location.context + "/";
             _idpChannelCoreSection.idpChannelLocationPath.text = idpChannel.location.uri;
 
             _idpChannelCoreSection.identityProvChannelName.addEventListener(Event.CHANGE, handleSectionChange);
@@ -728,7 +730,8 @@ public class PropertySheetMediator extends IocMediator {
             idpChannel.location.protocol = _idpChannelCoreSection.idpChannelLocationProtocol.labelDisplay.text;
             idpChannel.location.host = _idpChannelCoreSection.idpChannelLocationDomain.text;
             idpChannel.location.port = parseInt(_idpChannelCoreSection.idpChannelLocationPort.text);
-            idpChannel.location.context = _idpChannelCoreSection.idpChannelLocationContext.text;
+            idpChannel.location.context = _idpChannelCoreSection.idpChannelLocationContext.text.substring(1,
+                    _idpChannelCoreSection.idpChannelLocationContext.text.length - 1);
             idpChannel.location.uri = _idpChannelCoreSection.idpChannelLocationPath.text;
 
             // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
@@ -877,7 +880,7 @@ public class PropertySheetMediator extends IocMediator {
             }
             _spChannelCoreSection.spChannelLocationDomain.text = spChannel.location.host;
             _spChannelCoreSection.spChannelLocationPort.text = spChannel.location.port.toString();
-            _spChannelCoreSection.spChannelLocationContext.text = spChannel.location.context;
+            _spChannelCoreSection.spChannelLocationContext.text = "/" + spChannel.location.context + "/";
             _spChannelCoreSection.spChannelLocationPath.text = spChannel.location.uri;
 
             _spChannelCoreSection.serviceProvChannelName.addEventListener(Event.CHANGE, handleSectionChange);
@@ -914,7 +917,8 @@ public class PropertySheetMediator extends IocMediator {
             spChannel.location.protocol = _spChannelCoreSection.spChannelLocationProtocol.labelDisplay.text;
             spChannel.location.host = _spChannelCoreSection.spChannelLocationDomain.text;
             spChannel.location.port = parseInt(_spChannelCoreSection.spChannelLocationPort.text);
-            spChannel.location.context = _spChannelCoreSection.spChannelLocationContext.text;
+            spChannel.location.context = _spChannelCoreSection.spChannelLocationContext.text.substring(1,
+                    _spChannelCoreSection.spChannelLocationContext.text.length - 1);
             spChannel.location.uri = _spChannelCoreSection.spChannelLocationPath.text;
 
             // TODO save remaining fields to channel, calling appropriate lookup methods
