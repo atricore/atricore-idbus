@@ -173,7 +173,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         }
 
         var keystore:Keystore = _wizardDataModel.certificateData;
-        identityApplianceDefinition.certificate = keystore;
+        identityApplianceDefinition.keystore = keystore;
 
         sendNotification(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);
     }

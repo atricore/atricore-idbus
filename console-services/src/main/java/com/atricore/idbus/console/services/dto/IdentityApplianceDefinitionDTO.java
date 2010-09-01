@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Author: Dejan Maric
@@ -37,6 +38,10 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     private String name;
 
+    private String displayName;
+
+    private String namespace;
+    
     private LocationDTO location;
 
     private String description;
@@ -53,7 +58,9 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     private List<IdentitySourceDTO> identitySources;
 
-    private KeystoreDTO certificate;
+    private Set<ExecutionEnvironmentDTO> executionEnvironments;
+    
+    private KeystoreDTO keystore;
 
     public long getId() {
         return id;
@@ -147,12 +154,36 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
         this.identitySources = identitySources;
     }
 
-    public KeystoreDTO getCertificate() {
-        return certificate;
+    public String getDisplayName() {
+        return displayName;
     }
 
-    public void setCertificate(KeystoreDTO certificate) {
-        this.certificate = certificate;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public KeystoreDTO getKeystore() {
+        return keystore;
+    }
+
+    public void setKeystore(KeystoreDTO keystore) {
+        this.keystore = keystore;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public Set<ExecutionEnvironmentDTO> getExecutionEnvironments() {
+        return executionEnvironments;
+    }
+
+    public void setExecutionEnvironments(Set<ExecutionEnvironmentDTO> executionEnvironments) {
+        this.executionEnvironments = executionEnvironments;
     }
 
     @Override

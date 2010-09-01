@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.services.dto;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Author: Dejan Maric
@@ -9,8 +10,12 @@ public class ExecutionEnvironmentDTO implements Serializable {
 
     private long id;
     private String name;
+    private String displayName;
     private String description;
     private String installUri;
+
+    private Set<ActivationDTO> activations;
+
     private static final long serialVersionUID = 175340870033867780L;
 
     public long getId() {
@@ -43,5 +48,21 @@ public class ExecutionEnvironmentDTO implements Serializable {
 
     public void setInstallUri(String installUri) {
         this.installUri = installUri;
+    }
+
+    public Set<ActivationDTO> getActivations() {
+        return activations;
+    }
+
+    public void setActivations(Set<ActivationDTO> activations) {
+        this.activations = activations;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 }

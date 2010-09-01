@@ -67,6 +67,20 @@
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
+            <a>executionEnvironments</a>
+            <b>executionEnvironments</b>
+            <a-hint>
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.TomcatExecutionEnvironment,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossExecutionEnvironment,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.WeblogicExecutionEnvironment
+            </a-hint>
+            <b-hint>
+                com.atricore.idbus.console.services.dto.TomcatExecutionEnvironmentDTO,
+                com.atricore.idbus.console.services.dto.JbossExecutionEnvironmentDTO,
+                com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironmentDTO
+            </b-hint>
+        </field>
+        <field relationship-type="non-cumulative" remove-orphans="true">
             <a>activeFeatures</a>
             <b>activeFeatures</b>
         </field>
