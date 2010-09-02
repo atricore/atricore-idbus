@@ -55,6 +55,11 @@ public class GraphDataManager {
             //_vgraph.currentRootVNode = vnode;
         }
 
+        if (_vgraph.currentRootVNode == null) {
+            _vgraph.currentRootVNode = vnode;
+            rootVNode = _vgraph.currentRootVNode;
+        }
+
         if (deep > 0 && deep > _vgraph.maxVisibleDistance){
             _vgraph.maxVisibleDistance = deep;
         }

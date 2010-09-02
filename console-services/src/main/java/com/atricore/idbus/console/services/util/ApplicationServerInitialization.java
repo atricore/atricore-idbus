@@ -37,7 +37,7 @@ public class ApplicationServerInitialization implements InitializingBean {
 
     private static Log logger = LogFactory.getLog(ApplicationServerInitialization.class);
 
-    private String adminUsername = "admin";
+    private String adminUsername = "atricore";
     private String adminPassword = "admin";
     private String adminFirstName = "Administrator";
     private String adminGivenName = "Administrator";
