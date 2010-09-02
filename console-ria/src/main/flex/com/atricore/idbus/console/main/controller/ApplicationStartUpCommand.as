@@ -121,6 +121,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _listUsersCommand:IIocCommand;
     private var _searchGroupsCommand:IIocCommand;
     private var _searchUsersCommand:IIocCommand;
+//    private var _createActivationCommand:IIocCommand;
+    private var _createIdentityLookupCommand:IIocCommand;
 
 
     public function get applicationMediator():IIocMediator {
@@ -692,6 +694,21 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _searchUsersCommand = value;
     }
 
+//    public function get createActivationCommand():IIocCommand {
+//        return _createActivationCommand;
+//    }
+//
+//    public function set createActivationCommand(value:IIocCommand):void {
+//        _createActivationCommand = value;
+//    }
+
+    public function get createIdentityLookupCommand():IIocCommand {
+        return _createIdentityLookupCommand;
+    }
+
+    public function set createIdentityLookupCommand(value:IIocCommand):void {
+        _createIdentityLookupCommand = value;
+    }
 
     override public function execute(note:INotification):void {
         var registry:ServiceRegistry = setupServiceRegistry();
@@ -728,6 +745,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_USERS, listUsersCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_GROUPS, searchGroupsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_USERS, searchUsersCommand.getConfigName());
+//        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_ACTIVATION, createActivationCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_LOOKUP, createIdentityLookupCommand.getConfigName());
 
         // setup for first level mediators
         applicationMediator.setViewComponent(app);

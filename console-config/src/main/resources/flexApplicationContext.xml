@@ -156,6 +156,13 @@
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
 
+    <!--<object id="createActivationCommand"-->
+            <!--class="com.atricore.idbus.console.modeling.main.controller.CreateActivationCommand">-->
+    <!--</object>-->
+
+    <object id="createIdentityLookupCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.CreateIdentityLookupCommand"/>
+
     <!-- Mediators -->
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
         <property name="popupManager" ref="consolePopUpManager"/>
@@ -351,6 +358,7 @@
         <property name="listUsersCommand" ref="listUsersCommand"/>
         <property name="searchGroupsCommand" ref="searchGroupsCommand"/>
         <property name="searchUsersCommand" ref="searchUsersCommand"/>
+        <property name="createIdentityLookupCommand" ref="createIdentityLookupCommand" />
 
 
         <!-- Mediators wiring -->

@@ -47,7 +47,7 @@ public class GraphDataManager {
         (_vgraph as CustomVisualGraph).setVNodeVisibility(vnode, true);
 
         if (parentNode != null) {
-            (_vgraph as CustomVisualGraph).createCustomVEdge(parentNode.node, node, EmbeddedIcons.connectionMiniIcon, "Connection");
+            (_vgraph as CustomVisualGraph).createCustomVEdge(parentNode.node, node, null, EmbeddedIcons.connectionMiniIcon, "Connection");
             //_vgraph.currentRootVNode = rootVNode;
         } else {
             //_vgraph.currentRootVNode = vnode;
@@ -62,8 +62,8 @@ public class GraphDataManager {
         return vnode;
     }
 
-    public static function linkVNodes(_vgraph:IVisualGraph, node:IVisualNode, parentNode:IVisualNode):void {
-        (_vgraph as CustomVisualGraph).createCustomVEdge(parentNode.node, node.node, EmbeddedIcons.connectionMiniIcon, "Connection");
+    public static function linkVNodes(_vgraph:IVisualGraph, node:IVisualNode, parentNode:IVisualNode, connection:Object):void {
+        (_vgraph as CustomVisualGraph).createCustomVEdge(parentNode.node, node.node, connection, EmbeddedIcons.connectionMiniIcon, "Connection");
     }
 
     public static function removeVEdge(_vgraph:IVisualGraph, edge:IVisualEdge):void {

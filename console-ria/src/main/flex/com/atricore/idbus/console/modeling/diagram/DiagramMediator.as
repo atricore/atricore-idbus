@@ -34,6 +34,7 @@ import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
 import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityVaultElementRequest;
@@ -128,7 +129,9 @@ public class DiagramMediator extends IocMediator {
         if (getViewComponent() != null) {
             _identityApplianceDiagram.removeEventListener(VNodeSelectedEvent.VNODE_SELECTED, nodeSelectedEventHandler);
             _identityApplianceDiagram.removeEventListener(VNodeRemoveEvent.VNODE_REMOVE, nodeRemoveEventHandler);
-            _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.VNODES_LINKED, nodesLinkedEventHandler);
+            _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.FEDERATED_CONNECTION_CREATED, federatedConnectionCreatedEventHandler);
+            _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.ACTIVATION_CREATED, activationCreatedEventHandler);
+            _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.IDENTITY_LOOKUP_CREATED, identityLookupCreatedEventHandler);
             _identityApplianceDiagram.removeEventListener(VEdgeSelectedEvent.VEDGE_SELECTED, edgeSelectedEventHandler);
         }
 
@@ -142,7 +145,9 @@ public class DiagramMediator extends IocMediator {
         _identityApplianceDiagram = view.identityApplianceDiagram;
         _identityApplianceDiagram.addEventListener(VNodeSelectedEvent.VNODE_SELECTED, nodeSelectedEventHandler);
         _identityApplianceDiagram.addEventListener(VNodeRemoveEvent.VNODE_REMOVE, nodeRemoveEventHandler);
-        _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.VNODES_LINKED, nodesLinkedEventHandler);
+        _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.FEDERATED_CONNECTION_CREATED, federatedConnectionCreatedEventHandler);
+        _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.ACTIVATION_CREATED, activationCreatedEventHandler);
+        _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.IDENTITY_LOOKUP_CREATED, identityLookupCreatedEventHandler);
         _identityApplianceDiagram.addEventListener(VEdgeSelectedEvent.VEDGE_SELECTED, edgeSelectedEventHandler);
         _emptyNotationModel = <Graph/>;
 
@@ -445,14 +450,14 @@ public class DiagramMediator extends IocMediator {
                         var provider:Provider = identityApplianceDefinition.providers[i];
                         if (provider is FederatedProvider) {
                             var locProv:FederatedProvider = provider as FederatedProvider;
-                            if (locProv.federatedConnectionsA != null && locProv.federatedConnectionsA.length != 0) {
+//                            if (locProv.federatedConnectionsA != null && locProv.federatedConnectionsA.length != 0) {
                                 if(locProv.identityLookup != null && locProv.identityLookup.identitySource != null){
                                     var idSource:IdentitySource = locProv.identityLookup.identitySource;
                                     //TODO add identitySource and connection towards it
                                     var vaultExists:Boolean = false;
                                     for each (var tmpVaultGraphNode:IVisualNode in vaults){
                                         if(tmpVaultGraphNode.data as IdentitySource == idSource){
-                                            GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode);
+                                            GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode, idSource);
                                             vaultExists = true;
                                         }
                                     }
@@ -463,7 +468,7 @@ public class DiagramMediator extends IocMediator {
                                     }
 
                                 }
-                            }
+//                            }
                             if(locProv is ServiceProvider){
                                 var sp:ServiceProvider = locProv as ServiceProvider;
                                 if(sp.activation != null && sp.activation.executionEnv != null){  //check for execution environment
@@ -481,14 +486,14 @@ public class DiagramMediator extends IocMediator {
                             var graphNodeRoleA:IVisualNode = providerNodes[fedProvider.id];
                             var graphNodeRoleB:IVisualNode = providerNodes[fedConnA.roleB.id];                            
                             if(!DiagramUtil.nodeLinkExists(graphNodeRoleA.node, graphNodeRoleB.node)){ //avoid double linking
-                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB);
+                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB, fedConnA);
                             }
                         }
                         for each (var fedConnB:FederatedConnection in fedProvider.federatedConnectionsB){
                             var graphNodeRoleA:IVisualNode = providerNodes[fedConnB.roleA.id];
                             var graphNodeRoleB:IVisualNode = providerNodes[fedProvider.id];                           
                             if(!DiagramUtil.nodeLinkExists(graphNodeRoleA.node, graphNodeRoleB.node)){ //avoid double linking
-                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB);
+                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB, fedConnB);
                             }
                         }
                     }
@@ -582,7 +587,7 @@ public class DiagramMediator extends IocMediator {
         }
     }
 
-    private function nodesLinkedEventHandler(event:VNodesLinkedEvent):void {
+    private function federatedConnectionCreatedEventHandler(event:VNodesLinkedEvent):void {
         var node1:IVisualNode = event.vnode1;
         var node2:IVisualNode = event.vnode2;
 
@@ -594,6 +599,25 @@ public class DiagramMediator extends IocMediator {
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+    }
+
+    private function identityLookupCreatedEventHandler(event:VNodesLinkedEvent):void {
+        var node1:IVisualNode = event.vnode1;
+        var node2:IVisualNode = event.vnode2;
+
+        var cilr:CreateIdentityLookupElementRequest = new CreateIdentityLookupElementRequest();
+        if(node1.data is Provider && node2.data is IdentitySource){
+            cilr.provider = node1.data as FederatedProvider;
+            cilr.identitySource = node2.data as IdentitySource;
+        } else if (node1.data is IdentitySource && node2.data is Provider){
+            cilr.provider = node2.data as FederatedProvider;
+            cilr.identitySource = node1.data as IdentitySource;
+        }
+        sendNotification(ApplicationFacade.CREATE_IDENTITY_LOOKUP, cilr);
+    }
+
+    private function activationCreatedEventHandler():void {
+
     }
 
     private function edgeSelectedEventHandler(event:VEdgeSelectedEvent):void {

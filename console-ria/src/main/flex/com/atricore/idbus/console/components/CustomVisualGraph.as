@@ -59,9 +59,16 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
             if (_connectionSourceNode != null && _connectionTargetNode != null) {
                 if (!DiagramUtil.nodeLinkExists(_connectionSourceNode.node, _connectionTargetNode.node)
                         && canConnect(_connectionSourceNode, _connectionTargetNode)){
-                    // TODO: move linkNodes() call to DiagramMediator.nodesLinkedEventHandler() ?
-                    GraphDataManager.linkVNodes(this, _connectionSourceNode, _connectionTargetNode);
-                    dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.VNODES_LINKED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
+//                     TODO: move linkNodes() call to DiagramMediator.nodesLinkedEventHandler() ?
+                    //don't link nodes here, dispatch the create LINK_NODES event and let modeler catch it
+//                    GraphDataManager.linkVNodes(this, _connectionSourceNode, _connectionTargetNode);
+                    if(_connectionMode == FEDERATED_CONNECTION_MODE){
+                        dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.FEDERATED_CONNECTION_CREATED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
+                    } else if(_connectionMode == ACTIVATION_MODE){
+                        dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.ACTIVATION_CREATED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
+                    } else if(_connectionMode == IDENTITY_LOOKUP_MODE){
+                        dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.IDENTITY_LOOKUP_CREATED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
+                    }
                 }
             }
             resetConnectionModeParameters();
@@ -192,7 +199,7 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         return createVNode(node);
     }
 
-    public function createCustomVEdge(parentNode:INode, node:INode, edgeIcon:Class = null,
+    public function createCustomVEdge(parentNode:INode, node:INode, connection:Object, edgeIcon:Class = null,
                 edgeIconToolTip:String = null, edgeLabel:String = null):IVisualEdge {
         var tmpVEdge:IVisualEdge;
         var tmpEdge:IEdge;

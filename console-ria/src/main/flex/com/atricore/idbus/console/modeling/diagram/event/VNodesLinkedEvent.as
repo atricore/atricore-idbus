@@ -7,7 +7,9 @@ public class VNodesLinkedEvent extends VGraphEvent {
     /**
      * This event type signals that two VNodes are linked.
      * */
-    public static const VNODES_LINKED:String = "vnodesLinked";
+    public static const FEDERATED_CONNECTION_CREATED:String = "vnodesLinked";
+    public static const ACTIVATION_CREATED:String = "activationCreated";
+    public static const IDENTITY_LOOKUP_CREATED:String = "identityLookupCreated";
 
     private var _vnode1:IVisualNode;
 
