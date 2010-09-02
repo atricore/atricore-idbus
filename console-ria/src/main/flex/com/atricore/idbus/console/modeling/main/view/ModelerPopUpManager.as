@@ -25,6 +25,8 @@ import com.atricore.idbus.console.main.view.certificate.ManageCertificateMediato
 import com.atricore.idbus.console.main.view.certificate.ManageCertificateView;
 import com.atricore.idbus.console.main.view.upload.UploadProgress;
 import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
+import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardView;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardViewMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateForm;
@@ -67,6 +69,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _uploadProgressMediator:UploadProgressMediator;
     private var _buildApplianceMediator:BuildApplianceMediator;
     private var _deployApplianceMediator:DeployApplianceMediator;
+    private var _activationCreateMediator:ActivationCreateMediator;
 
     // views
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
@@ -81,6 +84,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _uploadProgress:UploadProgress;
     private var _buildAppliance:BuildApplianceView;
     private var _deployAppliance:DeployApplianceView;
+    private var _activationCreateForm:ActivationCreateForm;
 
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
@@ -181,6 +185,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set weblogicExecutionEnvironmentCreateMediator(value:WeblogicExecutionEnvironmentCreateMediator):void {
         _weblogicExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get activationCreateMediator():ActivationCreateMediator {
+        return _activationCreateMediator;
+    }
+
+    public function set activationCreateMediator(value:ActivationCreateMediator):void {
+        _activationCreateMediator = value;
     }
 
     public function showCreateIdentityProviderWindow(notification:INotification):void {
@@ -336,6 +348,29 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleWeblogicExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
         weblogicExecutionEnvironmentCreateMediator.setViewComponent(_weblogicExecutionEnvironmentCreateForm);
         weblogicExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateActivationWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_activationCreateForm) {
+            createActivationCreateForm();
+        }
+        _popup.title = "Create JOSSO Activation";
+        _popup.width = 680;
+        _popup.height = 300;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_activationCreateForm);
+    }
+
+    private function createActivationCreateForm():void {
+        _activationCreateForm = new ActivationCreateForm();
+        _activationCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleActivationCreateFormCreated);
+    }
+
+    private function handleActivationCreateFormCreated(event:FlexEvent):void {
+        activationCreateMediator.setViewComponent(_activationCreateForm);
+        activationCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateJBossExecutionEnvironmentWindow(notification:INotification):void {

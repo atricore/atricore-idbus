@@ -32,6 +32,7 @@ import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
 import flash.events.MouseEvent;
 
+import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -90,14 +91,10 @@ public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator 
     private function handleWeblogicExecutionEnvironmentSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            var sp:ServiceProvider = _projectProxy.currentIdentityApplianceElementOwner as ServiceProvider;
-            if(sp.activation == null){
-                var activation:Activation = new Activation();
-                activation.sp = sp;
-                activation.name = sp.name + " to " + _newExecutionEnvironment.name;
-                sp.activation = activation;
+            if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null){
+                _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
             }
-            sp.activation.executionEnv = _newExecutionEnvironment;
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newExecutionEnvironment);
             _projectProxy.currentIdentityApplianceElement = _newExecutionEnvironment;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
             sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);

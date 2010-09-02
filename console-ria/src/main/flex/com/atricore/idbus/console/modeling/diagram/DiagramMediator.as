@@ -33,6 +33,7 @@ import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
 import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
@@ -50,6 +51,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannel
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
@@ -434,7 +436,6 @@ public class DiagramMediator extends IocMediator {
             var vaults:ArrayCollection = new ArrayCollection();
             if (identityApplianceDefinition.identitySources != null) {
                 for(var k:int=0; k < identityApplianceDefinition.identitySources.length; k++){
-//                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identitySources[k], true);
                     var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.identitySources[k], null, null, true, Constants.PROVIDER_DEEP);
                     vaults.addItem(identityVaultGraphNode);
                 }
@@ -616,8 +617,19 @@ public class DiagramMediator extends IocMediator {
         sendNotification(ApplicationFacade.CREATE_IDENTITY_LOOKUP, cilr);
     }
 
-    private function activationCreatedEventHandler():void {
+    private function activationCreatedEventHandler(event:VNodesLinkedEvent):void {
+        var node1:IVisualNode = event.vnode1;
+        var node2:IVisualNode = event.vnode2;
 
+        var car:CreateActivationElementRequest = new CreateActivationElementRequest();
+        if(node1.data is ServiceProvider && node2.data is ExecutionEnvironment){
+            car.sp = node1.data as ServiceProvider;
+            car.executionEnvironment = node2.data as ExecutionEnvironment;
+        } else if (node1.data is ExecutionEnvironment && node2.data is ServiceProvider){
+            car.sp = node2.data as ServiceProvider;
+            car.executionEnvironment = node1.data as ExecutionEnvironment;
+        }
+        sendNotification(ApplicationFacade.CREATE_ACTIVATION, car);
     }
 
     private function edgeSelectedEventHandler(event:VEdgeSelectedEvent):void {

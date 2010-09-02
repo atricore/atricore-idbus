@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.services.dto;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -35,6 +36,9 @@ public class JOSSOActivationDTO extends ActivationDTO {
     }
 
     public Set<String> getIgnoredWebResources() {
+        if(ignoredWebResources == null){
+            ignoredWebResources = new HashSet<String>();
+        }        
         return ignoredWebResources;
     }
 

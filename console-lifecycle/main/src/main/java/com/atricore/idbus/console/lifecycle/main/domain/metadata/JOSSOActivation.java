@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.domain.metadata;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -16,7 +17,6 @@ public class JOSSOActivation extends Activation {
     private Set<String> ignoredWebResources;
 
     // TODO : Add other properties used to create JOSSO Agent config (PHP, ISAPI, Java, etc)
-
 
     public String getPartnerAppId() {
         return partnerAppId;
@@ -35,6 +35,9 @@ public class JOSSOActivation extends Activation {
     }
 
     public Set<String> getIgnoredWebResources() {
+        if(ignoredWebResources == null){
+            ignoredWebResources = new HashSet<String>();
+        }        
         return ignoredWebResources;
     }
 

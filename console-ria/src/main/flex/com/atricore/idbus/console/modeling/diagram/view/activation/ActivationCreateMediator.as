@@ -19,15 +19,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss {
+package com.atricore.idbus.console.modeling.diagram.view.activation {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 
-import com.atricore.idbus.console.services.dto.Activation;
-import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
+import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.JOSSOActivation;
 
+import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 import flash.events.MouseEvent;
@@ -37,13 +39,16 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class JBossExecutionEnvironmentCreateMediator extends IocFormMediator {
+public class ActivationCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
 
-    private var _newExecutionEnvironment:JbossExecutionEnvironment;
+    private var _sp:ServiceProvider;
+    private var _execEnv:ExecutionEnvironment;
 
-    public function JBossExecutionEnvironmentCreateMediator(name:String = null, viewComp:JBossExecutionEnvironmentCreateForm = null) {
+    private var _jossoActivation:JOSSOActivation;
+
+    public function ActivationCreateMediator(name:String = null, viewComp:ActivationCreateForm = null) {
         super(name, viewComp);
     }
 
@@ -57,7 +62,7 @@ public class JBossExecutionEnvironmentCreateMediator extends IocFormMediator {
     
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.btnOk.removeEventListener(MouseEvent.CLICK, handleJbossExecutionEnvironmentSave);
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handleJOSSOActivationSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
         }
 
@@ -67,35 +72,55 @@ public class JBossExecutionEnvironmentCreateMediator extends IocFormMediator {
     }
 
     private function init():void {
-        view.btnOk.addEventListener(MouseEvent.CLICK, handleJbossExecutionEnvironmentSave);
+        view.btnOk.addEventListener(MouseEvent.CLICK, handleJOSSOActivationSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
     }
 
     private function resetForm():void {
-        view.executionEnvironmentName.text = "";
-        view.executionEnvironmentDescription.text = "";
+        view.activationName.text = "";
+        view.activationDescription.text = "";
+        view.activationProtocol.selectedIndex = 0;
+        view.activationDomain.text = "";
+        view.activationPort.text = "";
+        view.activationContext.text = "";
+        view.activationPartnerAppId.text = "";
 
         FormUtility.clearValidationErrors(_validators);
     }
 
     override public function bindModel():void {
 
-        var jbossExecutionEnvironment:JbossExecutionEnvironment = new JbossExecutionEnvironment();
+        var activation:JOSSOActivation = new JOSSOActivation();
 
-        jbossExecutionEnvironment.name = view.executionEnvironmentName.text;
-        jbossExecutionEnvironment.description = view.executionEnvironmentDescription.text;
+        activation.name = view.activationName.text;
+        activation.description = view.activationDescription.text;
+        //location
+        var loc:Location = new Location();
+        loc.protocol = view.activationProtocol.labelDisplay.text;
+        loc.host = view.activationDomain.text;
+        loc.port = parseInt(view.activationPort.text);
+        loc.context = view.activationContext.text;
 
-        _newExecutionEnvironment = jbossExecutionEnvironment;
+        activation.partnerAppId = view.activationPartnerAppId.text;
+
+        activation.partnerAppLocation = loc;
+
+        _jossoActivation = activation;
     }
 
-    private function handleJbossExecutionEnvironmentSave(event:MouseEvent):void {
+    private function handleJOSSOActivationSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null){
-                _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
+            _jossoActivation.sp = _sp;
+            _jossoActivation.executionEnv = _execEnv;
+
+            if(_execEnv.activations == null){
+                _execEnv.activations = new ArrayCollection();
             }
-            _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newExecutionEnvironment);
-            _projectProxy.currentIdentityApplianceElement = _newExecutionEnvironment;
+            _execEnv.activations.addItem(_jossoActivation);
+            _sp.activation = _jossoActivation;
+            
+            _projectProxy.currentIdentityApplianceElement = _jossoActivation;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
             sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -115,14 +140,18 @@ public class JBossExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
-    protected function get view():JBossExecutionEnvironmentCreateForm
+    protected function get view():ActivationCreateForm
     {
-        return viewComponent as JBossExecutionEnvironmentCreateForm;
+        return viewComponent as ActivationCreateForm;
     }
 
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
+        _validators.push(view.appIdValidator);
+        _validators.push(view.portValidator);
+        _validators.push(view.domainValidator);
+        _validators.push(view.pathValidator);
     }
 
 
@@ -131,9 +160,10 @@ public class JBossExecutionEnvironmentCreateMediator extends IocFormMediator {
     }
 
     override public function handleNotification(notification:INotification):void {
-
         super.handleNotification(notification);
-
+        var car:CreateActivationElementRequest = notification.getBody() as CreateActivationElementRequest;
+        _sp = car.sp;
+        _execEnv = car.executionEnvironment;
 
     }
 }

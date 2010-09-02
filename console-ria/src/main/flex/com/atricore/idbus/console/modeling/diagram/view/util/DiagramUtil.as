@@ -4,6 +4,7 @@ import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 
 import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 import org.un.cava.birdeye.ravis.graphLayout.data.INode;
@@ -40,10 +41,8 @@ public class DiagramUtil {
     public static function nodesCanBeLinkedWithIdentityLookup(node1:IVisualNode, node2:IVisualNode):Boolean {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
-            if ((node1.data is ServiceProvider && node2.data is IdentitySource) ||
-                (node1.data is IdentityProvider && node2.data is IdentitySource) ||
-                (node1.data is IdentitySource && node2.data is IdentityProvider) ||
-                (node1.data is IdentitySource && node2.data is ServiceProvider)) {
+            if ((node1.data is Provider && node2.data is IdentitySource) ||
+                (node1.data is IdentitySource && node2.data is Provider)) {
 
                 canBeLinked = true;
             }
