@@ -108,8 +108,10 @@ public class UserPrinter extends AbstractCmdPrinter {
 
         String groups = "";
         String prefix = "";
+
         for (GroupType spmlGroup : spmlUser.getGroup()) {
-            groups += groups + prefix + spmlGroup.getName();
+            groups += prefix + spmlGroup.getName();
+            prefix = ", ";
         }
         return getLeftString(groups, 64);
     }

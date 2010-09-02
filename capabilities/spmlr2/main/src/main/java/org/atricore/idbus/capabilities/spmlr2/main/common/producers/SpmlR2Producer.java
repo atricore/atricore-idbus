@@ -96,7 +96,6 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
                     GroupType spmlGroup = spmlUser.getGroup().get(i);
                     Group group = lookupGroup(target, spmlGroup.getName());
                     groups[i] = group;
-                    i++;
                 }
 
                 req.setGroups(groups);
@@ -112,10 +111,8 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
 
         UpdateUserRequest req =  new UpdateUserRequest ();
 
-
         try {
             ModificationType spmlMod = spmlRequest.getModification().get(0);
-
 
             UserType spmlUser = (UserType) spmlMod.getData();
             User user = lookupUser(target, spmlUser.getUserName());
@@ -126,13 +123,20 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
             BeanUtils.copyProperties(user, spmlUser, ignoredProps);
 
             if (spmlUser.getGroup() != null && spmlUser.getGroup().size() > 0) {
+
                 Group[] groups = new Group[spmlUser.getGroup().size()];
 
                 for (int i = 0 ; i < spmlUser.getGroup().size() ; i++) {
+
                     GroupType spmlGroup = spmlUser.getGroup().get(i);
-                    Group group = lookupGroup(target, spmlGroup.getName());
+
+                    Group group = new Group();
+                    group.setId(spmlGroup.getId());
+                    group.setName(spmlGroup.getName());
+                    group.setDescription(spmlGroup.getDescription());
+
                     groups[i] = group;
-                    i++;
+
                 }
 
                 user.setGroups(groups);

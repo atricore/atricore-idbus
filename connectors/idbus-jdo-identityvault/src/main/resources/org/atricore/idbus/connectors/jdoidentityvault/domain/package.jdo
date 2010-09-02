@@ -28,16 +28,16 @@
         <class name="JDOGroup">
             <inheritance strategy="new-table"/>
             <field name="id" primary-key="true" value-strategy="native"/>
-            <field name="name" unique="true"/>
+            <field name="name" />
             <field name="description"/>
         </class>
 
         <class name="JDOUser">
             <inheritance strategy="new-table"/>
             <field name="id" primary-key="true" value-strategy="increment"/>
-            <field name="userName" unique="true" />
-            <field name="groups" default-fetch-group="true">
-                <array dependent-element="false"/>
+            <field name="userName" />
+            <field name="groups" default-fetch-group="true" persistence-modifier="persistent">
+                <array dependent-element="false" />
                 <join delete-action="null"/>
             </field>
         </class>

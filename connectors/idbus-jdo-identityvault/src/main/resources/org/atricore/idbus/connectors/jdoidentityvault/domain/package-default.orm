@@ -163,8 +163,13 @@
                 <column name="EMAILNEWPASSWORD" />
             </field>
 
-            <field name="groups" table="IDB_USERGROUPS">
-                <join column="USER_ID"/>
+            <field name="groups" table="IDB_USER_GROUP">
+                <join >
+                    <column name="USER_ID"/>
+                </join>
+                <element>
+                    <column name="GROUP_ID"/>
+                </element>
                 <!--element column = "ID" primary-key="true" value-strategy="increment"/>
                 <element column="GROUP_ID"/>
                 <order column="GROUP_ORDER_IDX"/>

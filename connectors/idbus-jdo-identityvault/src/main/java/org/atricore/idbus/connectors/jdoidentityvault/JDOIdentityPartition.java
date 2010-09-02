@@ -336,11 +336,11 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
         BeanUtils.copyProperties(user, jdoUser, new String[] {"groups"});
 
         if (user.getGroups() != null) {
+
             JDOGroup[] jdoGroups = new JDOGroup[user.getGroups().length];
             for (int i = 0; i < user.getGroups().length; i++) {
                 Group group = user.getGroups()[i];
-                JDOGroup jdoGroup = new JDOGroup();
-                BeanUtils.copyProperties(group, jdoGroup);
+                JDOGroup jdoGroup = groupDao.findById(group.getId());
                 jdoGroups[i] = jdoGroup;
             }
             jdoUser.setGroups(jdoGroups);
