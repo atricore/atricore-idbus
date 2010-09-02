@@ -104,18 +104,18 @@ public class UserAddCommand extends SpmlCommandSupport {
         BeanUtils.copyProperties(spmlUser, this);
 
         // Recover list of Groups
-        List<GroupType> spmlGroups = new ArrayList<GroupType>();
-        for (String g : groupName) {
-            GroupType spmlGroup = new GroupType();
-            spmlGroup.setName(g);
-            spmlGroups.add(spmlGroup);
-        }
 
-        spmlUser.getGroup().addAll(spmlGroups);
+        if (this.groupName != null) {
+            spmlUser.getGroup().clear();
+            for (String groupName : this.groupName) {
+                PSOType psoGroup = lookupGroup(pspChannel, groupName);
+                GroupType spmlGroup = (GroupType) psoGroup.getData();
+                spmlUser.getGroup().add(spmlGroup);
+            }
+        }
 
         req.setData(spmlUser);
         req.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
-
 
         return req;
     }

@@ -11,21 +11,31 @@ import java.util.List;
  */
 public class GroupPrinter extends AbstractCmdPrinter {
     
-    public void printOutcome(Object spmlResponse) {
-        if (spmlResponse instanceof LookupResponseType) {
-            LookupResponseType lkRes = (LookupResponseType) spmlResponse;
+    public void printOutcome(Object response) {
+
+        if (response instanceof ResponseType ) {
+            ResponseType spmlResponse = (ResponseType) response;
+
+            if (!spmlResponse.getStatus().equals(StatusCodeType.SUCCESS)) {
+                super.printOutcome(spmlResponse);
+                return;
+            }
+        }
+        
+        if (response instanceof LookupResponseType) {
+            LookupResponseType lkRes = (LookupResponseType) response;
             printGroup(lkRes.getPso());
-        } else if (spmlResponse instanceof SearchResponseType) {
-            SearchResponseType schRes = (SearchResponseType) spmlResponse;
+        } else if (response instanceof SearchResponseType) {
+            SearchResponseType schRes = (SearchResponseType) response;
             printGroups(schRes.getPso());
-        } else if (spmlResponse instanceof AddResponseType) {
-            AddResponseType addRes = (AddResponseType) spmlResponse;
+        } else if (response instanceof AddResponseType) {
+            AddResponseType addRes = (AddResponseType) response;
             printGroup(addRes.getPso());
-        } else if (spmlResponse instanceof ModifyResponseType) {
-            ModifyResponseType modRes = (ModifyResponseType) spmlResponse;
+        } else if (response instanceof ModifyResponseType) {
+            ModifyResponseType modRes = (ModifyResponseType) response;
             printGroup(modRes.getPso());
         } else {
-            super.printResponse((ResponseType) spmlResponse);
+            super.printResponse((ResponseType) response);
         }
             
     }

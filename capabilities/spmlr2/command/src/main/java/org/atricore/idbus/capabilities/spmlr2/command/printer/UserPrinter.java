@@ -12,21 +12,31 @@ import java.util.List;
  */
 public class UserPrinter extends AbstractCmdPrinter {
     
-    public void printOutcome(Object spmlResponse) {
-        if (spmlResponse instanceof LookupResponseType) {
-            LookupResponseType lkRes = (LookupResponseType) spmlResponse;
+    public void printOutcome(Object response) {
+
+        if (response instanceof ResponseType ) {
+            ResponseType spmlResponse = (ResponseType) response;
+
+            if (!spmlResponse.getStatus().equals(StatusCodeType.SUCCESS)) {
+                super.printOutcome(spmlResponse);
+                return;
+            }
+        }
+
+        if (response instanceof LookupResponseType) {
+            LookupResponseType lkRes = (LookupResponseType) response;
             printUser(lkRes.getPso());
-        } else if (spmlResponse instanceof SearchResponseType) {
-            SearchResponseType schRes = (SearchResponseType) spmlResponse;
+        } else if (response instanceof SearchResponseType) {
+            SearchResponseType schRes = (SearchResponseType) response;
             printUsers(schRes.getPso());
-        } else if (spmlResponse instanceof AddResponseType) {
-            AddResponseType addRes = (AddResponseType) spmlResponse;
+        } else if (response instanceof AddResponseType) {
+            AddResponseType addRes = (AddResponseType) response;
             printUser(addRes.getPso());
-        } else if (spmlResponse instanceof ModifyResponseType) {
-            ModifyResponseType modRes = (ModifyResponseType) spmlResponse;
+        } else if (response instanceof ModifyResponseType) {
+            ModifyResponseType modRes = (ModifyResponseType) response;
             printUser(modRes.getPso());
         } else {
-            super.printResponse((ResponseType) spmlResponse);
+            super.printResponse((ResponseType) response);
         }
             
     }

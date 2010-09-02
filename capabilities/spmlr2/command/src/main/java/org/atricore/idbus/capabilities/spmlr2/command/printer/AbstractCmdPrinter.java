@@ -39,7 +39,14 @@ public abstract class AbstractCmdPrinter implements CmdPrinter {
                     response.getStatus().toString());
         } else {
             printErrMsg("SPML " + response.getClass().getSimpleName() + " ("+response.getRequestID()+")" + "=" +
-                    response.getStatus().toString());
+                    response.getStatus().toString() + (response.getError() != null ? " " + response.getError().toString() : ""));
+
+            if (response.getErrorMessage() != null) {
+                for (int i = 0; i < response.getErrorMessage().size(); i++) {
+                    String s = response.getErrorMessage().get(i);
+                    printErrMsg(s);
+                }
+            }
         }
     }
 
@@ -48,7 +55,9 @@ public abstract class AbstractCmdPrinter implements CmdPrinter {
     }
 
     public void printOutcome(Object outcome) {
-
+        if (outcome instanceof ResponseType) {
+            printResponse((ResponseType) outcome);
+        }
     }
 
     public void printMsg(String msg) {

@@ -6,15 +6,21 @@ import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDA
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
+import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.impl.AbstractIdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
+import org.datanucleus.exceptions.NucleusObjectNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.orm.jdo.JdoObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.jdo.JDOObjectNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -66,10 +72,21 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
     @Transactional
     public Group findGroupById(long id) throws ProvisioningException {
 
-        // TODO : Throw group not found exception
         try {
             JDOGroup jdoGroup = groupDao.findById(id);
             return toGroup(jdoGroup);
+
+        } catch (IncorrectResultSizeDataAccessException e) {
+            if (e.getActualSize() == 0)
+                throw new GroupNotFoundException(id);
+
+            throw new ProvisioningException(e);
+        } catch (JdoObjectRetrievalFailureException e) {
+            throw new GroupNotFoundException(id);
+        } catch (JDOObjectNotFoundException e) {
+            throw new GroupNotFoundException(id);
+        } catch (NucleusObjectNotFoundException e) {
+            throw new GroupNotFoundException(id);
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -77,10 +94,16 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
 
     @Transactional
     public Group findGroupByName(String name) throws ProvisioningException {
-        // TODO : Throw group not found exception
+
         try {
             JDOGroup jdoGroup = groupDao.findByName(name);
             return toGroup(jdoGroup);
+
+        } catch (IncorrectResultSizeDataAccessException e) {
+            if (e.getActualSize() == 0)
+                throw new GroupNotFoundException(name);
+
+            throw new ProvisioningException(e);
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -88,7 +111,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
 
     @Transactional
     public Collection<Group> findGroupsByUsernName(String userName) throws ProvisioningException {
-        // TODO : Throw group not found exception
+
         try {
             Collection<JDOGroup> jdoGroups = groupDao.findByUserName(userName);
             return toGroups(jdoGroups);
@@ -119,6 +142,12 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
 
             return toGroup(jdoGroup);
 
+        } catch (JdoObjectRetrievalFailureException e) {
+            throw new GroupNotFoundException(group.getId());
+        } catch (JDOObjectNotFoundException e) {
+            throw new GroupNotFoundException(group.getId());
+        } catch (NucleusObjectNotFoundException e) {
+            throw new GroupNotFoundException(group.getId());
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -139,6 +168,12 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
     public void deleteGroup(long id) throws ProvisioningException {
         try {
             groupDao.delete(id);
+        } catch (JdoObjectRetrievalFailureException e) {
+            throw new GroupNotFoundException(id);
+        } catch (JDOObjectNotFoundException e) {
+            throw new GroupNotFoundException(id);
+        } catch (NucleusObjectNotFoundException e) {
+            throw new GroupNotFoundException(id);
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -156,9 +191,20 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
     @Transactional
     public User findUserById(long id) throws ProvisioningException {
         try {
-            // TODO : Throw user not found exception
+
             JDOUser jdoUser = userDao.findById(id);
             return toUser(jdoUser);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            if (e.getActualSize() == 0)
+                throw new UserNotFoundException(id);
+
+            throw new ProvisioningException(e);
+        } catch (JdoObjectRetrievalFailureException e) {
+            throw new UserNotFoundException(id);
+        } catch (JDOObjectNotFoundException e) {
+            throw new UserNotFoundException(id);
+        } catch (NucleusObjectNotFoundException e) {
+            throw new UserNotFoundException(id);
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -166,10 +212,15 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
 
     @Transactional
     public User findUserByUserName(String username) throws ProvisioningException {
-        // TODO : Throw user not found exception
+        
         try {
             JDOUser jdoUser = userDao.findByUserName(username);
             return toUser(jdoUser);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            if (e.getActualSize() == 0)
+                throw new UserNotFoundException(username);
+
+            throw new ProvisioningException(e);
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -204,6 +255,12 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
             toJDOUser(jdoUser, user);
             jdoUser = userDao.save(jdoUser);
             return toUser(jdoUser);
+        } catch (JdoObjectRetrievalFailureException e) {
+            throw new UserNotFoundException(user.getId());
+        } catch (JDOObjectNotFoundException e) {
+            throw new UserNotFoundException(user.getId());
+        } catch (NucleusObjectNotFoundException e) {
+            throw new UserNotFoundException(user.getId());
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -213,6 +270,12 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
     public void deleteUser(long id) throws ProvisioningException {
         try {
             userDao.delete(id);
+        } catch (JdoObjectRetrievalFailureException e) {
+            throw new UserNotFoundException(id);
+        } catch (JDOObjectNotFoundException e) {
+            throw new UserNotFoundException(id);
+        } catch (NucleusObjectNotFoundException e) {
+            throw new UserNotFoundException(id);
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -269,15 +332,37 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
     }
 
     protected JDOUser toJDOUser(JDOUser jdoUser, User user) {
-        BeanUtils.copyProperties(user, jdoUser);
-        // TODO : Groups
+
+        BeanUtils.copyProperties(user, jdoUser, new String[] {"groups"});
+
+        if (user.getGroups() != null) {
+            JDOGroup[] jdoGroups = new JDOGroup[user.getGroups().length];
+            for (int i = 0; i < user.getGroups().length; i++) {
+                Group group = user.getGroups()[i];
+                JDOGroup jdoGroup = new JDOGroup();
+                BeanUtils.copyProperties(group, jdoGroup);
+                jdoGroups[i] = jdoGroup;
+            }
+            jdoUser.setGroups(jdoGroups);
+        }
         return jdoUser;
     }
 
     protected User toUser(JDOUser jdoUser) {
         User user = new User();
-        // TODO : Groups
-        BeanUtils.copyProperties(jdoUser, user);
+        BeanUtils.copyProperties(jdoUser, user, new String[] {"groups"});
+
+        if (jdoUser.getGroups() != null) {
+            Group[] groups = new Group[jdoUser.getGroups().length];
+            for (int i = 0; i < jdoUser.getGroups().length; i++) {
+                JDOGroup jdoGroup = jdoUser.getGroups()[i];
+                Group group = new Group();
+                BeanUtils.copyProperties(jdoGroup, group);
+                groups[i] = group;
+            }
+
+            user.setGroups(groups);
+        }
         return user;
 
     }

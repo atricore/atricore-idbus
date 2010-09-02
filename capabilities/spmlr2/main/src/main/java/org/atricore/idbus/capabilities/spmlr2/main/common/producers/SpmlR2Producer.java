@@ -1,12 +1,9 @@
 package org.atricore.idbus.capabilities.spmlr2.main.common.producers;
 
-import oasis.names.tc.dsml._2._0.core.ModifyRequest;
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.Converter;
+import org.springframework.beans.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
@@ -14,22 +11,24 @@ import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Exception;
 import org.atricore.idbus.capabilities.spmlr2.main.binding.SPMLR2MessagingConstants;
 import org.atricore.idbus.capabilities.spmlr2.main.common.DateUtils;
 import org.atricore.idbus.capabilities.spmlr2.main.common.plans.SPMLR2PlanningConstants;
-import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelProducer;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.AddUserRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.FindGroupByNameRequest;
+import org.atricore.idbus.kernel.main.provisioning.spi.request.FindUserByUsernameRequest;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.UpdateUserRequest;
-import org.atricore.idbus.kernel.main.provisioning.spi.response.AddUserResponse;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.FindGroupByNameResponse;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.FindUserByUsernameResponse;
 import org.atricore.idbus.kernel.main.store.exceptions.IdentityProvisioningException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 
 /**
@@ -42,24 +41,8 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
 
     protected UUIDGenerator idGen = new UUIDGenerator();
 
-    private Converter dateConverter = new Converter() {
-
-        public Object convert(Class aClass, Object o) {
-            if (aClass.isAssignableFrom(XMLGregorianCalendar.class)) {
-                return DateUtils.toXMLGregorianCalendar((Date) o);
-            } else if (aClass.isAssignableFrom(java.util.Date.class)) {
-                return DateUtils.toXMLGregorianCalendar((Date) o);
-            }
-
-            return null;
-        }
-    };
-
     protected SpmlR2Producer(AbstractCamelEndpoint<CamelMediationExchange> endpoint) {
         super(endpoint);
-
-        ConvertUtils.register(dateConverter, XMLGregorianCalendar.class);
-        ConvertUtils.register(dateConverter, Date.class);
     }
 
     @Override
@@ -92,31 +75,66 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
 
     // Kernel User to SPML User
 
-    protected AddUserRequest toAddUserRequest(ProvisioningTarget target, AddUserRequest req, AddRequestType spmlRequest) throws SpmlR2Exception {
+    protected AddUserRequest toAddUserRequest(ProvisioningTarget target, AddRequestType spmlRequest) throws SpmlR2Exception {
+
         try {
+
+            AddUserRequest req = new AddUserRequest();
             UserType spmlUser = (UserType) spmlRequest.getData();
             BeanUtils.copyProperties(req, spmlUser);
+
+            if (spmlUser.getGroup() != null) {
+                Group[] groups = new Group[spmlUser.getGroup().size()];
+
+                for (int i = 0 ; i < spmlUser.getGroup().size() ; i++) {
+                    GroupType spmlGroup = spmlUser.getGroup().get(i);
+                    Group group = lookupGroup(target, spmlGroup.getName());
+                    groups[i] = group;
+                    i++;
+                }
+
+                req.setGroups(groups);
+            }
+
             return req;
         } catch (Exception e) {
             throw new SpmlR2Exception(e);
         }
     }
 
-    protected UpdateUserRequest toUpdateUserRequest(ProvisioningTarget target, UpdateUserRequest req , ModifyRequestType spmlRequest) throws SpmlR2Exception {
+    protected UpdateUserRequest toUpdateUserRequest(ProvisioningTarget target, ModifyRequestType spmlRequest) throws SpmlR2Exception {
+
+        UpdateUserRequest req =  new UpdateUserRequest ();
+
+
         try {
             ModificationType spmlMod = spmlRequest.getModification().get(0);
+
+
             UserType spmlUser = (UserType) spmlMod.getData();
-            BeanUtils.copyProperties(req , spmlUser);
+            User user = lookupUser(target, spmlUser.getUserName());
+
+            BeanUtils.copyProperties(user, spmlUser, new String[] {"id, groups"});
+
+            if (spmlUser.getGroup() != null) {
+                Group[] groups = new Group[spmlUser.getGroup().size()];
+
+                for (int i = 0 ; i < spmlUser.getGroup().size() ; i++) {
+                    GroupType spmlGroup = spmlUser.getGroup().get(i);
+                    Group group = lookupGroup(target, spmlGroup.getName());
+                    groups[i] = group;
+                    i++;
+                }
+
+                user.setGroups(groups);
+            }
+
+            req.setUser(user);
+
             return req;
         } catch (Exception e) {
             throw new SpmlR2Exception(e);
         }
-    }
-
-    protected ResponseType toSpmlResponse(ProvisioningTarget target, AddUserResponse response) {
-        AddResponseType spmlResponse = null;
-        // TODO :
-        return spmlResponse;
     }
 
     protected PSOType toSpmlGroup(ProvisioningTarget target, Group group) {
@@ -146,8 +164,19 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
 
             UserType spmlUser = new UserType();
 
-            BeanUtils.copyProperties(spmlUser, user);
-            // TODO : Groups
+            BeanUtils.copyProperties(spmlUser, user, new String[] {"groups"});
+            if (user.getGroups() != null) {
+                for (int i = 0; i < user.getGroups().length; i++) {
+                    Group group = user.getGroups()[i];
+                    GroupType spmlGroup = new GroupType();
+
+                    spmlGroup.setId(group.getId());
+                    spmlGroup.setName(group.getName());
+                    spmlGroup.setDescription(group.getDescription());
+
+                    spmlUser.getGroup().add(spmlGroup);
+                }
+            }
 
             PSOIdentifierType psoGroupId = new PSOIdentifierType ();
             psoGroupId.setTargetID(target.getName());
@@ -163,7 +192,23 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
         }
 
     }
-    
 
-    
+    protected User lookupUser(ProvisioningTarget target, String username) throws ProvisioningException {
+        FindUserByUsernameRequest req = new FindUserByUsernameRequest ();
+        req.setUsername(username);
+        FindUserByUsernameResponse res = target.findUserByUsername(req);
+
+        return res.getUser();
+
+    }
+
+    protected Group lookupGroup(ProvisioningTarget target, String groupname) throws ProvisioningException {
+        FindGroupByNameRequest req = new FindGroupByNameRequest ();
+        req.setName(groupname);
+        FindGroupByNameResponse res = target.findGroupByName(req);
+
+        return res.getGroup();
+
+    }
+
 }

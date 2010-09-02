@@ -25,7 +25,9 @@ import org.atricore.idbus.kernel.main.mediation.channel.ProvisioningChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
+import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
@@ -139,10 +141,29 @@ public class PSPProducer extends SpmlR2Producer {
         if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
 
             if (logger.isDebugEnabled())
-                logger.debug("Processing SPML Add request for User");
+                logger.debug("Processing SPML Add request for User ");
+            
+            UserType spmlUser = (UserType) spmlRequest.getData();
+            
+            try {
 
-            AddUserRequest req = new AddUserRequest();
-            toAddUserRequest(target, req, spmlRequest);
+                lookupUser(target, spmlUser.getUserName());
+                
+                // ERROR, username already exists
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.ALREADY_EXISTS );
+                spmlResponse.getErrorMessage().add("Username '" + spmlUser.getUserName()+ "' already exitsts.");
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Username '" + spmlUser.getUserName()+ "' already exitsts.");
+
+                return spmlResponse;
+                
+            } catch(UserNotFoundException e) {
+                // OK!
+            }
+                
+            AddUserRequest req = toAddUserRequest(target, spmlRequest);
 
             // TODO : Groups
 
@@ -152,10 +173,28 @@ public class PSPProducer extends SpmlR2Producer {
 
         } if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
 
-            if (logger.isDebugEnabled())
-                logger.debug("Processing SPML Add request for Group");
-
             GroupType spmlGroup = (GroupType) spmlRequest.getData();
+            if (logger.isDebugEnabled())
+                logger.debug("Processing SPML Add request for Group " + spmlGroup.getName());
+
+            try {
+
+                lookupGroup(target, spmlGroup.getName());
+
+                // ERROR, username already exists
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.ALREADY_EXISTS );
+                spmlResponse.getErrorMessage().add("Group '" + spmlGroup.getName()+ "' already exitsts.");
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Group '" + spmlGroup.getName()+ "' already exitsts.");
+
+                return spmlResponse;
+
+            } catch(GroupNotFoundException e) {
+                // OK!
+            }
+            
             AddGroupRequest req = new AddGroupRequest();
             req.setName(spmlGroup.getName());
             req.setDescription(spmlGroup.getDescription());
@@ -281,10 +320,20 @@ public class PSPProducer extends SpmlR2Producer {
             FindGroupByIdRequest req = new FindGroupByIdRequest();
             req.setId(Long.parseLong(psoId.getID()));
 
-            FindGroupByIdResponse res = target.findGroupById(req);
+            try {
+                FindGroupByIdResponse res = target.findGroupById(req);
 
-            spmlResponse.setPso(toSpmlGroup(target, res.getGroup()));
-            spmlResponse.setStatus(StatusCodeType.SUCCESS );
+                spmlResponse.setPso(toSpmlGroup(target, res.getGroup()));
+                spmlResponse.setStatus(StatusCodeType.SUCCESS );
+
+            } catch (GroupNotFoundException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
+                spmlResponse.getErrorMessage().add(e.getMessage());
+
+            }
+
 
         } else if (psoId.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
 
@@ -294,12 +343,20 @@ public class PSPProducer extends SpmlR2Producer {
             FindUserByIdRequest req = new FindUserByIdRequest();
             req.setId(Long.parseLong(psoId.getID()));
 
-            FindUserByIdResponse res = target.findUserById(req);
+            try {
+                FindUserByIdResponse res = target.findUserById(req);
 
-            spmlResponse.setPso(toSpmlUser(target, res.getUser()));
-            spmlResponse.setStatus(StatusCodeType.SUCCESS );
+                spmlResponse.setPso(toSpmlUser(target, res.getUser()));
+                spmlResponse.setStatus(StatusCodeType.SUCCESS );
+            } catch (UserNotFoundException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
+                spmlResponse.getErrorMessage().add(e.getMessage());
+
+            }
         } else {
-            // TODO
+
             logger.error("Unknonw/Undefined PSO attribute that specifies entity type (Non-Normative)");
 
             spmlResponse.setStatus(StatusCodeType.FAILURE );
@@ -327,12 +384,17 @@ public class PSPProducer extends SpmlR2Producer {
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
             try {
-                
                 UpdateGroupResponse groupResponse = target.updateGroup(groupRequest);
                 Group group = groupResponse.getGroup();
 
                 spmlResponse.setPso(toSpmlGroup(target, group));
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+            } catch (GroupNotFoundException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
+                spmlResponse.getErrorMessage().add(e.getMessage());
 
             } catch (ProvisioningException e) {
                 logger.error(e.getMessage(), e);
@@ -346,19 +408,19 @@ public class PSPProducer extends SpmlR2Producer {
             ModifyResponseType spmlResponse = new ModifyResponseType();
             spmlResponse.setRequestID(spmlRequest.getRequestID());
 
-            UpdateUserRequest userRequest = new UpdateUserRequest ();
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
-
             try {
-                toUpdateUserRequest(target, userRequest, spmlRequest); 
-
-                // TODO : Groups
-
+                UpdateUserRequest userRequest = toUpdateUserRequest(target, spmlRequest); 
                 UpdateUserResponse userResponse = target.updateUser(userRequest);
 
                 spmlResponse.setPso(toSpmlUser(target, userResponse.getUser()));
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
+            } catch (UserNotFoundException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
+                spmlResponse.getErrorMessage().add(e.getMessage());
 
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
@@ -387,13 +449,19 @@ public class PSPProducer extends SpmlR2Producer {
 
             try {
                 RemoveGroupResponse groupResponse = target.removeGroup(groupRequest);
-
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
                 spmlResponse.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr);
+
+            } catch (GroupNotFoundException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
+                spmlResponse.getErrorMessage().add(e.getMessage());
 
             } catch (ProvisioningException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
+
             }
 
             return spmlResponse;
@@ -412,6 +480,12 @@ public class PSPProducer extends SpmlR2Producer {
 
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
                 spmlResponse.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr);
+
+            } catch (UserNotFoundException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
+                spmlResponse.getErrorMessage().add(e.getMessage());
 
             } catch (ProvisioningException e) {
                 logger.error(e.getMessage(), e);
@@ -461,7 +535,5 @@ public class PSPProducer extends SpmlR2Producer {
             this.users = users;
         }
     }
-
-     
-
+    
 }

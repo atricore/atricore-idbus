@@ -98,7 +98,18 @@ public class UserModifyCommand extends SpmlCommandSupport {
         UserType spmlUser = (UserType) psoUser.getData();
 
         BeanUtils.copyProperties(spmlUser, this);
-        // TODO : Groups
+
+        if (this.groupName != null) {
+
+            spmlUser.getGroup().clear();
+
+            for (String groupName : this.groupName) {
+                PSOType psoGroup = lookupGroup(pspChannel, groupName);
+                GroupType spmlGroup = (GroupType) psoGroup.getData();
+                spmlUser.getGroup().add(spmlGroup);
+            }
+
+        }
 
         ModificationType mod = new ModificationType();
 

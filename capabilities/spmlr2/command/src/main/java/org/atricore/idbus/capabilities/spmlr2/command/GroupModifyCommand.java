@@ -34,14 +34,21 @@ public class GroupModifyCommand extends SpmlCommandSupport {
         spmlRequest.setRequestID(uuidGenerator.generateId());
         spmlRequest.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
-        PSOType psoGroup = lookupGroup(pspChannel, id);
-        GroupType spmlGroup = (GroupType) psoGroup.getData();
-
+        GroupType spmlGroup = new GroupType();
+        spmlGroup.setId(id);
         if (name != null)
             spmlGroup.setName(name);
 
         if (description != null)
             spmlGroup.setDescription(description);
+
+        PSOIdentifierType psoId = new PSOIdentifierType();
+        psoId.setID(id + "");
+        psoId.setTargetID(targetId);
+
+        PSOType psoGroup = new PSOType();
+        psoGroup.setPsoID(psoId);
+        psoGroup.setData(spmlGroup);
 
         ModificationType mod = new ModificationType();
 

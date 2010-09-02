@@ -1,6 +1,10 @@
 package org.atricore.idbus.capabilities.spmlr2.command;
 
 import oasis.names.tc.spml._2._0.*;
+import oasis.names.tc.spml._2._0.search.ScopeType;
+import oasis.names.tc.spml._2._0.search.SearchQueryType;
+import oasis.names.tc.spml._2._0.search.SearchRequestType;
+import oasis.names.tc.spml._2._0.search.SearchResponseType;
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Option;
 import org.apache.felix.karaf.shell.console.OsgiCommandSupport;
@@ -18,10 +22,13 @@ import org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry;
 import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
+import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.osgi.framework.ServiceReference;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import java.util.List;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
@@ -175,7 +182,52 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
 
     //----------------------------< SPML Utils >
 
-    protected PSOType lookupGroup(PsPChannel pspChannel, Long id) throws IdentityMediationException {
+    protected PSOType lookupGroup(PsPChannel pspChannel, String groupName) throws IdentityMediationException {
+        SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) pspChannel.getIdentityMediator();
+        EndpointDescriptor ed = resolvePsPEndpoint(pspChannel, SpmlR2Binding.SPMLR2_LOCAL);
+
+        SearchRequestType spmlRequest = new SearchRequestType();
+        spmlRequest.setRequestID(uuidGenerator.generateId());
+        spmlRequest.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
+
+        SearchQueryType spmlQry  = new SearchQueryType();
+        spmlQry.setScope(ScopeType.ONE_LEVEL);
+        spmlQry.setTargetID(targetId);
+
+        spmlRequest.setQuery(spmlQry);
+
+        SelectionType spmlSelect = new SelectionType();
+        spmlSelect.setNamespaceURI("http://www.w3.org/TR/xpath20");
+
+        String qry = "/groups[name='"+groupName+"']";
+
+        spmlSelect.setPath(qry);
+        spmlSelect.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
+
+        JAXBElement jaxbSelect= new JAXBElement(
+                new QName( SPMLR2Constants.SPML_NS, "select"),
+                spmlSelect.getClass(),
+                spmlSelect
+        );
+
+        spmlQry.getAny().add(jaxbSelect);
+
+        SearchResponseType spmlResponse = (SearchResponseType) mediator.sendMessage(spmlRequest, ed, pspChannel);
+
+        List<PSOType> psoGroups = spmlResponse.getPso();
+
+        if (psoGroups.size() > 1)
+            throw new IdentityMediationException("Too many groups found for name " + groupName);
+
+        if (psoGroups.size() < 1)
+            throw new IdentityMediationException("Group not found for '" + groupName + "'");
+
+        return psoGroups.get(0);
+
+    }
+
+    protected LookupResponseType lookupGroup(PsPChannel pspChannel, Long id) throws IdentityMediationException, 
+            GroupNotFoundException {
 
         SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) pspChannel.getIdentityMediator();
         EndpointDescriptor ed = resolvePsPEndpoint(pspChannel, SpmlR2Binding.SPMLR2_LOCAL);
@@ -189,12 +241,11 @@ public abstract class SpmlCommandSupport extends OsgiCommandSupport {
         spmlRequest.setRequestID(uuidGenerator.generateId());
         spmlRequest.setPsoID(psoGroupId);
 
-        LookupResponseType spmlResponse = (LookupResponseType) mediator.sendMessage(spmlRequest, ed, pspChannel);
+        return (LookupResponseType) mediator.sendMessage(spmlRequest, ed, pspChannel);
 
-        return spmlResponse.getPso();
 
     }
-    
+
     protected PSOType lookupUser(PsPChannel pspChannel, Long id) throws IdentityMediationException {
 
         SpmlR2PSPMediator mediator = (SpmlR2PSPMediator) pspChannel.getIdentityMediator();

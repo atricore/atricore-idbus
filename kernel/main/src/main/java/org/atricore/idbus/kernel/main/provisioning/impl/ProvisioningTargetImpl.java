@@ -2,7 +2,9 @@ package org.atricore.idbus.kernel.main.provisioning.impl;
 
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
+import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
@@ -61,12 +63,13 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     
     public FindGroupByIdResponse findGroupById(FindGroupByIdRequest groupRequest) throws ProvisioningException {
 
-        // TODO : Throw group not found exception
         try {
             Group group = identityPartition.findGroupById(groupRequest.getId());
             FindGroupByIdResponse groupResponse = new FindGroupByIdResponse ();
             groupResponse.setGroup(group);
             return groupResponse;
+        } catch (GroupNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -75,12 +78,13 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     
     public FindGroupByNameResponse findGroupByName(FindGroupByNameRequest groupRequest) throws ProvisioningException {
 
-        // TODO : Throw group not found exception
         try {
             Group group = identityPartition.findGroupByName(groupRequest.getName());
             FindGroupByNameResponse groupResponse = new FindGroupByNameResponse ();
             groupResponse.setGroup(group);
             return groupResponse;
+        } catch (GroupNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -156,7 +160,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             groupResponse.setGroup(group);
 
             return groupResponse;
-
+        } catch (GroupNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -166,6 +171,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         try {
             identityPartition.deleteGroup(groupRequest.getId());
             return new RemoveGroupResponse();
+        } catch (GroupNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -175,6 +182,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         try {
             identityPartition.deleteUser(userRequest.getId());
             return new RemoveUserResponse();
+        } catch (UserNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -185,6 +194,11 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             
             User user = new User();
             BeanUtils.copyProperties(userRequest, user);
+
+            Group[] groups = userRequest.getGroups();
+            for (Group group : groups) {
+                user.setGroups(groups);
+            }
             
             user = identityPartition.addUser(user);
             AddUserResponse userResponse = new AddUserResponse();
@@ -198,12 +212,30 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     
     public FindUserByIdResponse findUserById(FindUserByIdRequest userRequest) throws ProvisioningException {
-        throw new UnsupportedOperationException("Not Implemented yet!");
+        try {
+            User user = identityPartition.findUserById(userRequest.getId());
+            FindUserByIdResponse userResponse = new FindUserByIdResponse();
+            userResponse.setUser(user);
+            return userResponse;
+        } catch (UserNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
     }
 
     
     public FindUserByUsernameResponse findUserByUsername(FindUserByUsernameRequest userRequest) throws ProvisioningException {
-        throw new UnsupportedOperationException("Not Implemented yet!");
+        try {
+            User user = identityPartition.findUserByUserName(userRequest.getUsername());
+            FindUserByUsernameResponse userResponse = new FindUserByUsernameResponse();
+            userResponse.setUser(user);
+            return userResponse;
+        } catch (UserNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
     }
 
     
@@ -238,6 +270,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             return userResponse;
 
+        } catch (UserNotFoundException e) {
+            throw e;
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
