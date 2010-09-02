@@ -140,11 +140,11 @@ public class PSPProducer extends SpmlR2Producer {
 
         if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.userAttr)) {
 
-            if (logger.isDebugEnabled())
-                logger.debug("Processing SPML Add request for User ");
-            
             UserType spmlUser = (UserType) spmlRequest.getData();
-            
+
+            if (logger.isDebugEnabled())
+                logger.debug("Processing SPML Add request for User " + spmlUser.getUserName());
+
             try {
 
                 lookupUser(target, spmlUser.getUserName());
@@ -164,8 +164,6 @@ public class PSPProducer extends SpmlR2Producer {
             }
                 
             AddUserRequest req = toAddUserRequest(target, spmlRequest);
-
-            // TODO : Groups
 
             AddUserResponse res = target.addUser(req);
             spmlResponse.setPso(toSpmlUser(target, res.getUser()));

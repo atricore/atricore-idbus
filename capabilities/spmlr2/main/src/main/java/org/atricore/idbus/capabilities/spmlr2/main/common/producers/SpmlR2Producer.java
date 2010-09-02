@@ -29,7 +29,12 @@ import org.atricore.idbus.kernel.main.store.exceptions.IdentityProvisioningExcep
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
@@ -80,8 +85,9 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
         try {
 
             AddUserRequest req = new AddUserRequest();
+
             UserType spmlUser = (UserType) spmlRequest.getData();
-            BeanUtils.copyProperties(req, spmlUser);
+            BeanUtils.copyProperties(spmlUser, req, new String[] {"groups"});
 
             if (spmlUser.getGroup() != null) {
                 Group[] groups = new Group[spmlUser.getGroup().size()];
@@ -114,9 +120,12 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
             UserType spmlUser = (UserType) spmlMod.getData();
             User user = lookupUser(target, spmlUser.getUserName());
 
-            BeanUtils.copyProperties(user, spmlUser, new String[] {"id, groups"});
+            // Do not override null properties in the original object
+            String[] ignoredProps = getNullProps(user, new String[] {"id, groups"});
 
-            if (spmlUser.getGroup() != null) {
+            BeanUtils.copyProperties(user, spmlUser, ignoredProps);
+
+            if (spmlUser.getGroup() != null && spmlUser.getGroup().size() > 0) {
                 Group[] groups = new Group[spmlUser.getGroup().size()];
 
                 for (int i = 0 ; i < spmlUser.getGroup().size() ; i++) {
@@ -163,8 +172,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
         try {
 
             UserType spmlUser = new UserType();
-
-            BeanUtils.copyProperties(spmlUser, user, new String[] {"groups"});
+            BeanUtils.copyProperties(user, spmlUser, new String[] {"groups"});
             if (user.getGroups() != null) {
                 for (int i = 0; i < user.getGroups().length; i++) {
                     Group group = user.getGroups()[i];
@@ -210,5 +218,37 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
         return res.getGroup();
 
     }
+
+    protected String[] getNullProps(Object o, String[] otherProps) {
+
+        PropertyDescriptor[] props = BeanUtils.getPropertyDescriptors(o.getClass());
+        List<String> nullProps = new ArrayList<String>();
+
+        for (String otherProp : otherProps)
+            nullProps.add(otherProp);
+
+        for (PropertyDescriptor prop : props) {
+
+            Method getter = prop.getReadMethod();
+
+            try {
+                Object result = getter.invoke(o);
+                if (result == null)
+                    nullProps.add(prop.getName());
+
+            } catch (InvocationTargetException e) {
+                logger.warn(e.getMessage(), e);
+
+            } catch (IllegalAccessException e) {
+                logger.warn(e.getMessage(), e);
+
+            }
+
+        }
+
+        return nullProps.toArray(new String[nullProps.size()]);
+
+    }
+
 
 }

@@ -1,5 +1,7 @@
 package org.atricore.idbus.kernel.main.provisioning.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
@@ -11,6 +13,9 @@ import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.springframework.beans.BeanUtils;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,6 +24,8 @@ import java.util.List;
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
 public class ProvisioningTargetImpl implements ProvisioningTarget {
+
+    private static final Log logger = LogFactory.getLog(ProvisioningTargetImpl.class);
 
     private String name;
 
@@ -151,8 +158,11 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             
             Group group = identityPartition.findGroupById(groupRequest.getId());
 
-            group.setName(groupRequest.getName());
-            group.setDescription(groupRequest.getDescription());
+            if (groupRequest.getName() != null)
+                group.setName(groupRequest.getName());
+
+            if (groupRequest.getDescription() != null)
+                group.setDescription(groupRequest.getDescription());
 
             group = identityPartition.updateGroup(group);
 
@@ -193,8 +203,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         try {
             
             User user = new User();
-            BeanUtils.copyProperties(userRequest, user);
 
+            PropertyDescriptor[] props = BeanUtils.getPropertyDescriptors(userRequest.getClass());
+
+            BeanUtils.copyProperties(userRequest, user, new String[] {"groups"});
             Group[] groups = userRequest.getGroups();
             for (Group group : groups) {
                 user.setGroups(groups);
@@ -254,6 +266,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     
     public SearchUserResponse searchUsers(SearchUserRequest userRequest) throws ProvisioningException {
+        // TODO
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
@@ -262,7 +275,6 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         try {
             
             User user = userRequest.getUser();
-
             user = identityPartition.updateUser(user);
 
             UpdateUserResponse userResponse = new UpdateUserResponse();
@@ -279,6 +291,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     
     public GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByUserRequest) throws ProvisioningException {
+        // TODO !
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
+
 }
