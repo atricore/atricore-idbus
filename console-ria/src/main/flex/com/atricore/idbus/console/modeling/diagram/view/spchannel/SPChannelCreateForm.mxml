@@ -58,11 +58,11 @@
                 </mx:ArrayCollection>
             </s:dataProvider>
         </s:DropDownList>
-        <s:Label text="://" width="15"/>
+        <s:Label text="://" width="15" paddingTop="5"/>
         <s:TextInput id="spChannelLocationDomain" width="150"/>
-        <s:Label text=":" width="10"/>
+        <s:Label text=":" width="10" paddingTop="5"/>
         <s:TextInput id="spChannelLocationPort" width="40"/>
-        <s:Label id="spChannelLocationContext" text="/idbus/" width="45"/>
+        <s:Label id="spChannelLocationContext" text="/idbus/" width="45" paddingTop="5"/>
         <s:TextInput id="spChannelLocationPath" width="180"/>
     </mx:FormItem>
 

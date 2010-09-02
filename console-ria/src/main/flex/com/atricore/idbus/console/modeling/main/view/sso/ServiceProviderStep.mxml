@@ -202,14 +202,14 @@
                             <fx:Object label="https" data="https"/>
                         </mx:ArrayCollection>
                     </s:DropDownList>
-                    <s:Label text="://" width="9" paddingLeft="-5"/>
+                    <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
                     <s:TextInput id="spLocationDomain" width="150" change="changeSPLocationLabel(event);"/>
                             <!--focusIn="clearDefaultValue(event);" focusOut="setDefaultValueIfEmpty(event)"/>-->
-                    <s:Label text=":" width="1" paddingLeft="-5"/>
+                    <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
                     <s:TextInput id="spLocationPort" width="40" change="changeSPLocationLabel(event);" />
-                    <s:Label text="/" width="2" paddingLeft="-5"/>
+                    <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
                     <s:TextInput id="spLocationContext" width="70" change="changeSPLocationLabel(event);" />
-                    <!--mx:Label text="/" width="2" paddingLeft="-5"/>
+                    <!--mx:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
                     <mx:TextInput id="spLocationPath" width="100" change="changeSPLocationLabel(event);" /-->
                 </mx:FormItem>
 

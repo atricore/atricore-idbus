@@ -1,7 +1,7 @@
 Feature: New Windows IIS Execution Environment
   In order to have a candidate execution environment available for activating it against a service provider
   As an identity architect
-  I want to define to define the target windows IIS execution environment element
+  I want to define the target windows IIS execution environment element
 
   Scenario: New local windows IIS execution environment
     Given I am on the modeler screen

@@ -55,8 +55,8 @@ public class CustomEdgeRenderer extends BaseEdgeRenderer {
             }
             
             if (castedComp && castedComp.icon) {
-                var castedCompVisible:Boolean = castedComp.icon.visible;
                 positionComponent(castedComp.icon, midPt.x - (castedComp.icon.width/2), midPt.y - (castedComp.icon.height/2));
+                positionComponent(castedComp.btnRemove, midPt.x - (castedComp.btnRemove.width/2), midPt.y + (castedComp.icon.height/2) - 1);
             }
         }
     }

@@ -27,26 +27,30 @@
          width="100%" height="100%">
 
     <fx:Declarations>
-        <mx:StringValidator id="nameValidator" source="{applianceName}" required="true" property="text"/>
-        <mx:NumberValidator id="portValidator" source="{applianceLocationPort}" required="false" property="text"
+        <mx:StringValidator id="nameValidator" source="{connectionName}" required="true" property="text"/>
+        <utils:URLPartValidator id="domainValidator" source="{partnerAppLocationDomain}" required="true" property="text"/>
+        <utils:URLPartValidator id="pathValidator" source="{partnerAppLocationPath}" required="false" property="text"/>
+        <mx:NumberValidator id="portValidator" source="{partnerAppLocationPort}" required="false" property="text"
                             minValue="1" maxValue="65535"
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.portValidationError')}"/>
-        <utils:URLPartValidator id="domainValidator" source="{applianceLocationDomain}" required="true" property="text"/>
-        <utils:URLPartValidator id="pathValidator" source="{applianceLocationPath}" required="false" property="text"/>
     </fx:Declarations>
 
     <mx:Form width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8">
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.name')}:" required="true">
-            <s:TextInput id="applianceName"/>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'connection.name')}:" required="true">
+            <s:TextInput id="connectionName"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.description')}:">
-            <s:TextArea id="applianceDescription" height="70"/>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'connection.description')}:">
+            <s:TextInput id="connectionDescription"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.applianceLocation')}:"
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'connection.activation.josso.partnerAppId')}:">
+            <s:TextInput id="partnerAppId"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'connection.activation.josso.partnerAppLocation')}:"
                      direction="horizontal" required="true">
-            <s:DropDownList id="applianceLocationProtocol" width="70" selectedIndex="0">
+            <s:DropDownList id="partnerAppLocationProtocol" width="70" selectedIndex="0">
                 <s:dataProvider>
                     <mx:ArrayCollection>
                         <fx:Object label="http" data="http"/>
@@ -55,11 +59,18 @@
                 </s:dataProvider>
             </s:DropDownList>
             <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
-            <s:TextInput id="applianceLocationDomain" width="150"/>
+            <s:TextInput id="partnerAppLocationDomain" width="150"/>
             <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
-            <s:TextInput id="applianceLocationPort" width="40"/>
+            <s:TextInput id="partnerAppLocationPort" width="40"/>
             <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
-            <s:TextInput id="applianceLocationPath" styleName="locationInput" width="100"/>
+            <s:TextInput id="partnerAppLocationPath" styleName="locationInput" width="100"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'connection.activation.josso.ignoredWebResources')}:">
+            <s:HGroup>
+                <s:TextInput id="ignoredWebResources" width="420"/>
+                <s:Label text="(comma separated)" paddingTop="5"/>
+            </s:HGroup>
         </mx:FormItem>
     </mx:Form>
 </s:Group>
