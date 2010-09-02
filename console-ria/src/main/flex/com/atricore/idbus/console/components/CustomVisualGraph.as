@@ -5,6 +5,8 @@ import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
 
+import com.atricore.idbus.console.services.dto.Connection;
+
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
 import flash.geom.Point;
@@ -199,7 +201,7 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         return createVNode(node);
     }
 
-    public function createCustomVEdge(parentNode:INode, node:INode, connection:Object, edgeIcon:Class = null,
+    public function createCustomVEdge(parentNode:INode, node:INode, connection:Connection, edgeIcon:Class = null,
                 edgeIconToolTip:String = null, edgeLabel:String = null):IVisualEdge {
         var tmpVEdge:IVisualEdge;
         var tmpEdge:IEdge;
@@ -218,9 +220,8 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         }
         edgeData.fromID = parentNode.stringid;
         edgeData.toID = node.stringid;
-        // TODO: set real connection data object
-        edgeData.data = new Object();
-        edgeData.data.type = "connection";
+        
+        edgeData.data = connection;
 
         tmpEdge = graph.link(parentNode,node, edgeData);
 

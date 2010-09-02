@@ -282,7 +282,7 @@ public class DiagramMediator extends IocMediator {
 
                             break;
                         case DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE:
-                            if (_currentlySelectedNode != null && (_currentlySelectedNode.data is IdentityProvider || _currentlySelectedNode.data is ServiceProvider)) {
+                            if (_currentlySelectedNode != null && _currentlySelectedNode.data !=null) {
                                 var ownerObj:Object = _currentlySelectedNode.data;
 
                                 var cliv:CreateLdapIdentitySourceElementRequest = new CreateLdapIdentitySourceElementRequest(
@@ -435,7 +435,7 @@ public class DiagramMediator extends IocMediator {
             if (identityApplianceDefinition.identitySources != null) {
                 for(var k:int=0; k < identityApplianceDefinition.identitySources.length; k++){
 //                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identitySources[k], true);
-                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.identitySources[k], null, true, Constants.PROVIDER_DEEP);
+                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.identitySources[k], null, null, true, Constants.PROVIDER_DEEP);
                     vaults.addItem(identityVaultGraphNode);
                 }
             }
@@ -443,7 +443,7 @@ public class DiagramMediator extends IocMediator {
             if (identityApplianceDefinition.providers != null) {
                 for (var i:int = 0; i < identityApplianceDefinition.providers.length; i++) {
                     var provider:Provider = identityApplianceDefinition.providers[i];
-                    var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, true, Constants.PROVIDER_DEEP);
+                    var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, null, true, Constants.PROVIDER_DEEP);
                     providerNodes[provider.id] = providerGraphNode;
                     //if (provider is LocalProvider) {
 //                        var locProv:LocalProvider = provider as LocalProvider;
@@ -457,12 +457,12 @@ public class DiagramMediator extends IocMediator {
                                     var vaultExists:Boolean = false;
                                     for each (var tmpVaultGraphNode:IVisualNode in vaults){
                                         if(tmpVaultGraphNode.data as IdentitySource == idSource){
-                                            GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode, idSource);
+                                            GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode, locProv.identityLookup);
                                             vaultExists = true;
                                         }
                                     }
                                     if(!vaultExists){
-                                        GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), idSource, providerGraphNode, true, Constants.IDENTITY_VAULT_DEEP);
+                                        GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), idSource, providerGraphNode, locProv.identityLookup, true, Constants.IDENTITY_VAULT_DEEP);
                                         //if vault doesn't exist in the vaults array, add it so other providers can find it
                                         vaults.addItem(idSource);
                                     }
@@ -472,7 +472,7 @@ public class DiagramMediator extends IocMediator {
                             if(locProv is ServiceProvider){
                                 var sp:ServiceProvider = locProv as ServiceProvider;
                                 if(sp.activation != null && sp.activation.executionEnv != null){  //check for execution environment
-                                    var execEnvironment:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), sp.activation.executionEnv, providerGraphNode, true, Constants.CHANNEL_DEEP);
+                                    var execEnvironment:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), sp.activation.executionEnv, providerGraphNode, sp.activation, true, Constants.CHANNEL_DEEP);
                                 }
                             }
                         }

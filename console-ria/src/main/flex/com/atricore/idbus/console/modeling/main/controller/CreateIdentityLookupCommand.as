@@ -30,6 +30,7 @@ public class CreateIdentityLookupCommand extends IocSimpleCommand implements IRe
         var identitySource:IdentitySource = car.identitySource;
 
         var identityLookup:IdentityLookup = new IdentityLookup();
+        identityLookup.name = car.provider.name + "-" + car.identitySource.name + " idLookup"; 
         identityLookup.provider = provider;
         identityLookup.identitySource = identitySource;
 
