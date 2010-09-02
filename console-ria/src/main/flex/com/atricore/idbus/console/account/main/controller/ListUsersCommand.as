@@ -67,6 +67,8 @@ public class ListUsersCommand extends IocSimpleCommand implements IResponder {
     public function result(data:Object):void {
         var resp:ListUserResponse = data.result as ListUserResponse;
         accountManagementProxy.userList = resp.users;
+        if (accountManagementProxy.userList.length > 0)
+            accountManagementProxy.currentUser = accountManagementProxy.userList[0]; 
         sendNotification(SUCCESS);
     }
 

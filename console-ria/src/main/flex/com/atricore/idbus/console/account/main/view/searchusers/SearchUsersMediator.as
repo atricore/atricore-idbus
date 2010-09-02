@@ -61,7 +61,7 @@ public class SearchUsersMediator extends IocFormMediator
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
             view.cancelSearchUsers.removeEventListener(MouseEvent.CLICK, handleCancel);
-            view.submitSearchUsersButton.removeEventListener(MouseEvent.CLICK, onSubmitEditUser);
+            view.submitSearchUsersButton.removeEventListener(MouseEvent.CLICK, onSubmitSearchUser);
             if (view.parent != null) {
                 view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
             }
@@ -73,7 +73,7 @@ public class SearchUsersMediator extends IocFormMediator
 
     private function init():void {
         view.cancelSearchUsers.addEventListener(MouseEvent.CLICK, handleCancel);
-        view.submitSearchUsersButton.addEventListener(MouseEvent.CLICK, onSubmitEditUser);
+        view.submitSearchUsersButton.addEventListener(MouseEvent.CLICK, onSubmitSearchUser);
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
     }
 
@@ -114,16 +114,18 @@ public class SearchUsersMediator extends IocFormMediator
         searchUserDef.firstName = view.userFirstName.text;
         searchUserDef.surename = view.userLastname.text;
         searchUserDef.commonName = view.userFullname.text;
+        searchUserDef.givenName = "";
 
         _searchUser = searchUserDef;
     }
 
-    private function onSubmitEditUser(event:MouseEvent):void {
+    private function onSubmitSearchUser(event:MouseEvent):void {
         _processingStarted = true;
 
         if (validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
+            _accountManagementProxy.searchedUsers = null;
             sendNotification(ApplicationFacade.SEARCH_USERS, _searchUser);
             closeWindow();
         }

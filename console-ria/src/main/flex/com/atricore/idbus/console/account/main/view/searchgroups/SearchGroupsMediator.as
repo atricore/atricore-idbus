@@ -118,7 +118,7 @@ public class SearchGroupsMediator extends IocFormMediator
         if (validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
-            _accountManagementProxy.currentGroup = _searchGroup;
+            _accountManagementProxy.searchedGroups = null;
             sendNotification(ApplicationFacade.SEARCH_GROUPS, _searchGroup);
             closeWindow();
         }

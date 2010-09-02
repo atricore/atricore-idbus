@@ -276,23 +276,18 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
             SearchQueryType spmlQry  = new SearchQueryType();
             spmlQry.setScope(ScopeType.ONE_LEVEL);
             spmlQry.setTargetID(pspTargetId);
-            String qry="";
 
             SelectionType spmlSelect = new SelectionType();
             spmlSelect.setNamespaceURI("http://www.w3.org/TR/xpath20");
 
-            if ( !"".equals(searchGroupsRequest.getName()) &&
-                    !"".equals(searchGroupsRequest.getDescription()))
-                qry = "/groups[name='"+searchGroupsRequest.getName()+"' | description='"+searchGroupsRequest.getDescription()+"']";
-            else if (!"".equals(searchGroupsRequest.getName()) &&
-                    "".equals(searchGroupsRequest.getDescription())) {
-                qry = "/groups[name='"+searchGroupsRequest.getName()+"']";
+            StringBuffer sb_query = new StringBuffer("/groups[");
+            if ( StringUtils.isNotBlank(searchGroupsRequest.getName()))
+                sb_query.append("name='" + searchGroupsRequest.getName() + "' and ");
+            if (StringUtils.isNotBlank(searchGroupsRequest.getDescription()))
+                sb_query.append("description='" + searchGroupsRequest.getDescription() + "' and ");
 
-            }
-            else if ("".equals(searchGroupsRequest.getName()) &&
-                    !"".equals(searchGroupsRequest.getDescription())) {
-                qry = "/groups[description='"+searchGroupsRequest.getDescription()+"']";
-            }
+            String qry = sb_query.toString();
+            qry = qry.substring(0,qry.length()-5)+"]";
 
             if (logger.isTraceEnabled())
                 logger.trace("SPML Groups Search query : " + qry);
@@ -343,17 +338,24 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
             modifyGroupRequest.setRequestID(uuidGenerator.generateId());
             modifyGroupRequest.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
 
-            PSOType psoGroup = lookupGroup(groupRequest.getId());
-            if (psoGroup == null) {
-                logger.error("Group not found with ID " + groupRequest.getId());
-                throw new UserProvisioningAjaxException("Group not found with ID " + groupRequest.getId());
-            }
-            GroupType spmlGroup = (GroupType) psoGroup.getData();
+            GroupType spmlGroup = new GroupType();
+            spmlGroup.setId(groupRequest.getId());
+            if (groupRequest.getName() != null)
+                spmlGroup.setName(groupRequest.getName());
 
-            spmlGroup.setName(groupRequest.getName());
-            spmlGroup.setDescription(groupRequest.getDescription());
+            if (groupRequest.getDescription() != null)
+                spmlGroup.setDescription(groupRequest.getDescription());
+
+            PSOIdentifierType psoId = new PSOIdentifierType();
+            psoId.setID(groupRequest.getId() + "");
+            psoId.setTargetID(pspTargetId);
+
+            PSOType psoGroup = new PSOType();
+            psoGroup.setPsoID(psoId);
+            psoGroup.setData(spmlGroup);
 
             ModificationType mod = new ModificationType();
+
             mod.setModificationMode(ModificationModeType.REPLACE);
             mod.setData(spmlGroup);
 
@@ -414,8 +416,19 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
             addReq.setTargetID(pspTargetId);
             addReq.setRequestID(uuidGenerator.generateId());
             addReq.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
-            UserType user = toUserType(userRequest);
-            addReq.setData(user);
+            UserType spmlUser = toUserType(userRequest);
+            if (userRequest.getGroups() != null) {
+                spmlUser.getGroup().clear();
+
+                for (GroupDTO grp : userRequest.getGroups()) {
+                    FindGroupByNameRequest fgbr = new FindGroupByNameRequest();
+                    fgbr.setName(grp.getName());
+                    FindGroupByNameResponse rspGroup = findGroupByName(fgbr);
+                    GroupType spmlGroup = toGroupType(rspGroup.getGroup());
+                    spmlUser.getGroup().add(spmlGroup);
+                }
+            }
+            addReq.setData(spmlUser);
 
             AddResponseType resp = spmlService.spmlAddRequest(addReq);
             if (!resp.getStatus().equals(StatusCodeType.SUCCESS)) {
@@ -423,9 +436,9 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
                 throw new UserProvisioningAjaxException("Error adding User [" + userRequest.getId() + "]");
             }
 
-            UserType spmlUser = (UserType) resp.getPso().getData();
+            UserType retUser = (UserType) resp.getPso().getData();
             AddUserResponse response = new AddUserResponse();
-            response.setUser(toUserDTO(spmlUser));
+            response.setUser(toUserDTO(retUser));
             return response;
         } catch (Exception e) {
             // Log the error ant throw an exception to the Ajax layer.
@@ -586,19 +599,19 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
             spmlSelect.setNamespaceURI("http://www.w3.org/TR/xpath20");
 
             StringBuffer sb_query = new StringBuffer("/users[");
-            if ( !"".equals(userSearchRequest.getUserName()))
-                sb_query.append("username='" + userSearchRequest.getUserName() + "' | ");
-            if ( !"".equals(userSearchRequest.getFirstName()))
-                sb_query.append("firstname='" + userSearchRequest.getFirstName() + "' | ");
-            if ( !"".equals(userSearchRequest.getSurename()))
-                sb_query.append("surname='" + userSearchRequest.getSurename() + "' | ");
-            if ( !"".equals(userSearchRequest.getCommonName()))
-                sb_query.append("commonname='" + userSearchRequest.getCommonName() + "' | ");
+            if ( StringUtils.isNotBlank(userSearchRequest.getUserName()))
+                sb_query.append("username='" + userSearchRequest.getUserName() + "' and ");
+            if ( StringUtils.isNotBlank(userSearchRequest.getFirstName()))
+                sb_query.append("firstname='" + userSearchRequest.getFirstName() + "' and ");
+            if ( StringUtils.isNotBlank(userSearchRequest.getSurename()))
+                sb_query.append("surname='" + userSearchRequest.getSurename() + "' and ");
+            if ( StringUtils.isNotBlank(userSearchRequest.getCommonName()))
+                sb_query.append("commonname='" + userSearchRequest.getCommonName() + "' and ");
             if ( StringUtils.isNotBlank(userSearchRequest.getGivenName()))
-                sb_query.append("givenName='" + userSearchRequest.getGivenName() + "' | ");
+                sb_query.append("givenName='" + userSearchRequest.getGivenName() + "' and ");
 
             String qry = sb_query.toString();
-            qry = qry.substring(0,qry.length()-3)+"]";
+            qry = qry.substring(0,qry.length()-5)+"]";
 
             if (logger.isTraceEnabled())
                 logger.trace("SPML Users Search query : " + qry);
@@ -653,6 +666,18 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
             }
 
             UserType spmlUser = toUserType(userRequest);
+            if (userRequest.getGroups() != null) {
+                spmlUser.getGroup().clear();
+
+                for (GroupDTO grp : userRequest.getGroups()) {
+                    FindGroupByNameRequest fgbr = new FindGroupByNameRequest();
+                    fgbr.setName(grp.getName());
+                    FindGroupByNameResponse rspGroup = findGroupByName(fgbr);
+                    GroupType spmlGroup = toGroupType(rspGroup.getGroup());
+                    spmlUser.getGroup().add(spmlGroup);
+                }
+            }
+
             spmlUser.setId( ((UserType) psoUser.getData()).getId());
 
             ModificationType mod = new ModificationType();
@@ -718,31 +743,6 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         }
         response.setUsers(users);
         return response;
-    }
-
-    protected PSOType lookupGroup(Long id) throws IdentityMediationException {
-
-        if (logger.isTraceEnabled())
-            logger.trace("Group lookup for " + id);
-
-        PSOIdentifierType psoGroupId = new PSOIdentifierType();
-        psoGroupId.setTargetID(pspTargetId);
-        psoGroupId.setID(Long.toString(id));
-        psoGroupId.getOtherAttributes().put(SPMLR2Constants.groupAttr, "true");
-
-        LookupRequestType spmlRequest = new LookupRequestType();
-        spmlRequest.setRequestID(uuidGenerator.generateId());
-        spmlRequest.setPsoID(psoGroupId);
-
-        LookupResponseType resp = spmlService.spmlLookupRequest(spmlRequest);
-
-        if (!resp.getStatus().equals(StatusCodeType.SUCCESS)) {
-            logger.error("SPML Status Code " + resp.getStatus() + " received while looking for group " + id);
-            throw new IdentityMediationException("SPML Status Code " + resp.getStatus() + " received while looking for group " + id);
-        }
-
-        return resp.getPso();
-
     }
 
     protected PSOType lookupUser(Long id) throws IdentityMediationException {
@@ -859,6 +859,14 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
 
         //user.setGroup(newUser.getGroups());
         return user;
+    }
+
+    private GroupType toGroupType(GroupDTO grp) {
+        GroupType g = new GroupType();
+        g.setName(grp.getName());
+        g.setDescription(grp.getDescription());
+        g.setId(grp.getId());
+        return g;
     }
 
     private GroupDTO toGroupDTO(GroupType grp) {
