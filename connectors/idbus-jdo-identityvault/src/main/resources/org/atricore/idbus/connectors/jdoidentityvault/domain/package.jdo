@@ -28,21 +28,17 @@
         <class name="JDOGroup">
             <inheritance strategy="new-table"/>
             <field name="id" primary-key="true" value-strategy="native"/>
-            <field name="name">
-                <column name="NAME"  length="255" jdbc-type="VARCHAR"/>
-            </field>
-            <field name="description">
-                <column name="DESCRIPTION" length="255" jdbc-type="VARCHAR"/>
-            </field>
+            <field name="name" unique="true"/>
+            <field name="description"/>
         </class>
 
         <class name="JDOUser">
             <inheritance strategy="new-table"/>
             <field name="id" primary-key="true" value-strategy="increment"/>
-
+            <field name="userName" unique="true" />
             <field name="groups" default-fetch-group="true">
-                <array/>
-                <join/>
+                <array dependent-element="false"/>
+                <join delete-action="null"/>
             </field>
         </class>
     </package>

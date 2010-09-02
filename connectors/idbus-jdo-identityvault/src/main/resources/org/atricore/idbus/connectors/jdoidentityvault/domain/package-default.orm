@@ -43,7 +43,7 @@
 
 
             <field name="userName">
-                <column name="USERNAME"  length="255" jdbc-type="VARCHAR"/>
+                <column name="USERNAME"  length="255" jdbc-type="VARCHAR" />
             </field>
             <field name="firstName">
                 <column name="FIRSTNAME" length="255" jdbc-type="VARCHAR"/>
@@ -165,10 +165,10 @@
 
             <field name="groups" table="IDB_USERGROUPS">
                 <join column="USER_ID"/>
-                <!--element column = "ID" primary-key="true" value-strategy="increment"/-->
+                <!--element column = "ID" primary-key="true" value-strategy="increment"/>
                 <element column="GROUP_ID"/>
                 <order column="GROUP_ORDER_IDX"/>
-                <foreign-key name="USER_GROUPS_FK" delete-action="cascade"/>
+                <foreign-key name="USER_GROUPS_FK" delete-action="cascade"/-->
             </field>
 
 

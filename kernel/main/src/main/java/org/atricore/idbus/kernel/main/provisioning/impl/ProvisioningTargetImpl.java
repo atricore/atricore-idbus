@@ -204,13 +204,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             
             User user = new User();
 
-            PropertyDescriptor[] props = BeanUtils.getPropertyDescriptors(userRequest.getClass());
-
             BeanUtils.copyProperties(userRequest, user, new String[] {"groups"});
+                
             Group[] groups = userRequest.getGroups();
-            for (Group group : groups) {
-                user.setGroups(groups);
-            }
+            user.setGroups(groups);
             
             user = identityPartition.addUser(user);
             AddUserResponse userResponse = new AddUserResponse();
