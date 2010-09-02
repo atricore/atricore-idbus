@@ -1330,9 +1330,16 @@ public class PropertySheetMediator extends IocMediator {
             activation.partnerAppLocation.port = parseInt(_jossoActivationCoreSection.partnerAppLocationPort.text);
             activation.partnerAppLocation.context = _jossoActivationCoreSection.partnerAppLocationPath.text;
             var ignoredWebResources:Array = _jossoActivationCoreSection.ignoredWebResources.text.split(",");
-            activation.ignoredWebResources = new ArrayCollection();
+            if (activation.ignoredWebResources == null) {
+                activation.ignoredWebResources = new ArrayCollection();
+            } else {
+                activation.ignoredWebResources.removeAll();
+            }
             for each (var ignoredWebResource:String in ignoredWebResources) {
-                activation.ignoredWebResources.addItem(StringUtil.trim(ignoredWebResource));
+                ignoredWebResource = StringUtil.trim(ignoredWebResource);
+                if (ignoredWebResource != "") {
+                    activation.ignoredWebResources.addItem(ignoredWebResource);
+                }
             }
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

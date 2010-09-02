@@ -74,7 +74,9 @@
             }
 
             private function initFields():void {
-                userRepositoryName.text = (previousStepData as IdentitySource).name;
+                callLater(function() {
+                    userRepositoryName.text = (previousStepData as IdentitySource).name;
+                });
             }
 
             private function initForm():void {
