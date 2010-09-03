@@ -433,11 +433,19 @@ public class DiagramMediator extends IocMediator {
 //            var rootGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), _identityAppliance, null, true, Constants.IDENTITY_BUS_DEEP);
 //            rootGraphNode.isVisible = false;
 
-            var vaults:ArrayCollection = new ArrayCollection();
+            var vaultNodes:ArrayCollection = new ArrayCollection();
             if (identityApplianceDefinition.identitySources != null) {
                 for(var k:int=0; k < identityApplianceDefinition.identitySources.length; k++){
                     var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.identitySources[k], null, null, true, Constants.PROVIDER_DEEP);
-                    vaults.addItem(identityVaultGraphNode);
+                    vaultNodes.addItem(identityVaultGraphNode);
+                }
+            }
+
+            var environmentNodes:ArrayCollection = new ArrayCollection();
+            if (identityApplianceDefinition.executionEnvironments != null) {
+                for(var l:int=0; l < identityApplianceDefinition.executionEnvironments.length; l++){
+                    var execEnvGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.executionEnvironments[l], null, null, true, Constants.PROVIDER_DEEP);
+                    environmentNodes.addItem(execEnvGraphNode);
                 }
             }
 
@@ -446,26 +454,23 @@ public class DiagramMediator extends IocMediator {
                     var provider:Provider = identityApplianceDefinition.providers[i];
                     var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, null, true, Constants.PROVIDER_DEEP);
                     providerNodes[provider.id] = providerGraphNode;
-                    //if (provider is LocalProvider) {
-//                        var locProv:LocalProvider = provider as LocalProvider;
                         var provider:Provider = identityApplianceDefinition.providers[i];
                         if (provider is FederatedProvider) {
                             var locProv:FederatedProvider = provider as FederatedProvider;
-//                            if (locProv.federatedConnectionsA != null && locProv.federatedConnectionsA.length != 0) {
                                 if(locProv.identityLookup != null && locProv.identityLookup.identitySource != null){
                                     var idSource:IdentitySource = locProv.identityLookup.identitySource;
                                     //TODO add identitySource and connection towards it
                                     var vaultExists:Boolean = false;
-                                    for each (var tmpVaultGraphNode:IVisualNode in vaults){
+                                    for each (var tmpVaultGraphNode:IVisualNode in vaultNodes){
                                         if(tmpVaultGraphNode.data as IdentitySource == idSource){
                                             GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode, locProv.identityLookup);
                                             vaultExists = true;
                                         }
                                     }
                                     if(!vaultExists){
-                                        GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), idSource, providerGraphNode, locProv.identityLookup, true, Constants.IDENTITY_VAULT_DEEP);
+                                        var newVaultNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), idSource, providerGraphNode, locProv.identityLookup, true, Constants.IDENTITY_VAULT_DEEP);
                                         //if vault doesn't exist in the vaults array, add it so other providers can find it
-                                        vaults.addItem(idSource);
+                                        vaultNodes.addItem(newVaultNode);
                                     }
 
                                 }
@@ -473,7 +478,19 @@ public class DiagramMediator extends IocMediator {
                             if(locProv is ServiceProvider){
                                 var sp:ServiceProvider = locProv as ServiceProvider;
                                 if(sp.activation != null && sp.activation.executionEnv != null){  //check for execution environment
-                                    var execEnvironment:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), sp.activation.executionEnv, providerGraphNode, sp.activation, true, Constants.CHANNEL_DEEP);
+                                    var environmentExists:Boolean = false;
+                                    for each (var tmpExecEnvGraphNode:IVisualNode in environmentNodes){
+                                        if(tmpExecEnvGraphNode.data as ExecutionEnvironment == sp.activation.executionEnv){
+                                            GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpExecEnvGraphNode, providerGraphNode, sp.activation);
+                                            environmentExists = true;
+                                        }
+                                    }
+                                    if(!environmentExists){
+                                        var newExecEnvNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), sp.activation.executionEnv, providerGraphNode, sp.activation, true, Constants.IDENTITY_VAULT_DEEP);
+                                        //if vault doesn't exist in the vaults array, add it so other providers can find it
+                                        environmentNodes.addItem(newExecEnvNode);
+                                    }
+
                                 }
                             }
                         }
