@@ -816,6 +816,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
 
     private UserType toUserType(UpdateUserRequest newUser) {
         UserType user = new UserType();
+        user.setId(newUser.getId());
         user.setUserName(newUser.getUserName());
         user.setFirstName(newUser.getFirstName());
         user.setSurename(newUser.getSurename());
@@ -879,6 +880,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
 
     private UserDTO toUserDTO(UserType usr) {
         UserDTO u = new UserDTO();
+        u.setId(usr.getId());
         u.setUserName(usr.getUserName());
         u.setFirstName(usr.getFirstName());
         u.setSurename(usr.getSurename());
