@@ -30,28 +30,10 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
             <property name="hashEncoding" value="HEX"/>
     </bean>
 
-    <!--
-    <bean id="userProvisioningServiceManagerBean" class="com.atricore.idbus.console.lifecycle.main.impl.UserProvisioningServiceJDOImpl">
-        <property name="pmf" ref="idbusLifecyclePmf"/>
-        <property name="passwordHashUtil" ref="passwordHashUtil"/>
-    </bean>
-    -->
-
-    <bean id="profileManagementServiceBean" class="com.atricore.idbus.console.lifecycle.main.impl.ProfileManagementServiceImpl">
-        <property name="pmf" ref="idbusLifecyclePmf"/>
-        <property name="passwordHashUtil" ref="passwordHashUtil"/>
-    </bean>
-
     <bean id="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
         <property name="persistenceManagerFactory">
             <ref local="idbusLifecyclePmf"/>
         </property>
-    </bean>
-
-    <bean id="signOnServiceBean" class="com.atricore.idbus.console.lifecycle.main.impl.SignOnServiceImpl">
-        <property name="sessionTokenGenerator" ref="sessionTokenGeneratorBean"/>
-        <!--property name="userProvisioningService" ref="userProvisioningServiceManagerBean"/-->
-        <property name="passwordHashUtil" ref="passwordHashUtil"/>
     </bean>
 
     <bean id="sessionTokenGeneratorBean" class="com.atricore.idbus.console.lifecycle.main.impl.SessionTokenGeneratorImpl">
@@ -116,24 +98,9 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <!-- IDBus Server Management Services exported as OSGI Services            -->
     <!-- ===================================================================== -->
 
-    <!--
-    <osgi:service id="osgiUserProvisioningServiceManagerBean"
-                  ref="userProvisioningServiceManagerBean"
-            interface="com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService"/>
-    -->
-                       
     <osgi:service id="osgiIdApplianceManagementService"
                   ref="idApplianceManagementService"
             interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"/>
-
-    <osgi:service id="osgiProfileManagementServiceBean"
-                  ref="profileManagementServiceBean"
-            interface="com.atricore.idbus.console.lifecycle.main.spi.ProfileManagementService"/>
-
-    <osgi:service id="osgiSignOnServiceBean"
-                  ref="signOnServiceBean"
-            interface="com.atricore.idbus.console.lifecycle.main.spi.SignOnService"/>
-
 
     <!-- TODO : Make this work Provided by Karaf
     <osgi:reference id="featuresService" cardinality="1..1" timeout="60"
@@ -151,7 +118,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <prop key="javax.jdo.PersistenceManagerFactoryClass">org.datanucleus.jdo.JDOPersistenceManagerFactory</prop>
 
         <prop key="javax.jdo.option.ConnectionURL">jdbc:derby://localhost:1527/idbus-console;create=true</prop>
-        <prop key="javax.jdo.option.ConnectionUserName">admin</prop>
+        <prop key="javax.jdo.option.ConnectionUserName">atricore</prop>
         <prop key="javax.jdo.option.ConnectionPassword">admin</prop>
         <prop key="javax.jdo.option.ConnectionDriverName">org.apache.derby.jdbc.ClientDriver</prop>
 

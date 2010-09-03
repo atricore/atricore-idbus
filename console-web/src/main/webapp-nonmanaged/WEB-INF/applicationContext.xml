@@ -11,48 +11,6 @@
     <!-- ==================================================================== -->
     <!-- Idbus Server Management OSGI Services                                -->
     <!-- ==================================================================== -->
-    <!--
-    <osgi:reference id="userProvisioningServiceManagerBean" cardinality="1..1" timeout="60"
-                interface="com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService"/>
-
-    <osgi:reference id="idApplianceManagementService" cardinality="1..1" timeout="60"
-                interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"/>
-
-    <osgi:reference id="profileManagementServiceBean" cardinality="1..1" timeout="60"
-                interface="com.atricore.idbus.console.lifecycle.main.spi.ProfileManagementService"/>
-
-    <osgi:reference id="signOnServiceBean" cardinality="1..1" timeout="60"
-                interface="com.atricore.idbus.console.lifecycle.main.spi.SignOnService"/>
-
-
-    <bean id="applicationServerInitialization" class="org.atricore.idbus.applications.server.services.util.ApplicationServerInitialization">
-        <property name="userProvisioningService" ref="userProvisioningServiceManagerBean"/>        
-    </bean>
-
-    <bean class="org.atricore.idbus.applications.server.services.util.EnumPropertyProxy" factory-method="registerPropertyProxy" />
-    -->
-
-    <!-- AJAX SERVICES -->
-
-    <!--<bean id="identityApplianceMetadataAjaxServiceBean" class="org.atricore.idbus.applications.server.services.impl.IdentityApplianceMetadataAjaxServiceImpl">-->
-        <!--<property name="idApplianceManagementService">-->
-            <!--<ref local="idApplianceManagementService"/>-->
-        <!--</property>-->
-    <!--</bean>-->
-
-    <!--
-    <bean id="profileManagementAjaxServiceBean" class="org.atricore.idbus.applications.server.services.impl.ProfileManagementAjaxServiceImpl">
-        <property name="profileManagementService">
-            <ref local="profileManagementServiceBean"/>
-        </property>
-    </bean>
-
-    <bean id="signOnAjaxServiceBean" class="org.atricore.idbus.applications.server.services.impl.SignOnAjaxServiceImpl">
-        <property name="signOnService">
-            <ref local="signOnServiceBean"/>
-        </property>
-    </bean>
-    -->
 
     <bean id="dozerMapper" class="org.dozer.DozerBeanMapper">
         <property name="mappingFiles">
@@ -67,10 +25,6 @@
             <ref local="userProvisioningServiceManagerBean"/>
         </property>
         <property name="dozerMapper" ref="dozerMapper" />
-    </bean>
-
-    <bean id="userProvisioningServiceManagerBean" class="com.atricore.idbus.console.lifecycle.main.impl.UserProvisioningServiceHashImpl">
-        <property name="passwordHashUtil" ref="passwordHashUtil"/>
     </bean>
 
     <bean name="passwordHashUtil"

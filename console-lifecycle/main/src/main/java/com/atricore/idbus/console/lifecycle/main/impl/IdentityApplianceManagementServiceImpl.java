@@ -171,13 +171,19 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
             xmlReader.loadBeanDefinitions(new ByteArrayResource(request.getDescriptor().getBytes()));
             ctx.refresh();
 
-            Map<String, IdentityApplianceDefinition> definitions = ctx.getBeansOfType(IdentityApplianceDefinition.class);
-            if (definitions.size() < 1 )
-                throw new IdentityServerException("No Identity Appliance Definition found in the given descriptor!");
-            if (definitions.size() > 1)
-                throw new IdentityServerException("Only one Identity Appliance definition is supported per descriptor. (found "+definitions.size()+")");
+            Map<String, IdentityAppliance> appliances = ctx.getBeansOfType(IdentityAppliance.class);
 
-            IdentityApplianceDefinition applianceDef = definitions.values().iterator().next();
+            if (appliances.size() < 1 )
+                throw new IdentityServerException("No Identity Appliance found in the given descriptor!");
+
+            if (appliances.size() > 1)
+                throw new IdentityServerException("Only one Identity Appliance per descriptor is supported. (found "+appliances.size()+")");
+
+            IdentityAppliance appliance = appliances.values().iterator().next();
+            IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
+            if (applianceDef == null)
+                throw new IdentityServerException("Appliance must contain an Appliance Definition");
+
             if (logger.isDebugEnabled())
                     logger.debug("Received Identity Appliance Definition : [" +
                             applianceDef.getId() + "] " +
@@ -192,11 +198,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
             if (logger.isTraceEnabled())
                 logger.trace("Creating Identity Appliance");
 
-            IdentityAppliance appliance = new IdentityAppliance ();
-
-            appliance.setIdApplianceDefinition(applianceDef);
             appliance.setState(IdentityApplianceState.PROJECTED.toString());
-
             appliance = identityApplianceDAO.save(appliance);
 
             if (logger.isTraceEnabled())

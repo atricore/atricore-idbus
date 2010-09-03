@@ -21,8 +21,6 @@
 
 package com.atricore.idbus.console.services.util;
 
-import com.atricore.idbus.console.lifecycle.main.impl.SignOnServiceImpl;
-import com.atricore.idbus.console.lifecycle.main.spi.request.FindGroupByNameRequest;
 import org.springframework.beans.factory.InitializingBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,11 +73,11 @@ public class ApplicationServerInitialization implements InitializingBean {
     }
 
     public void afterPropertiesSet() throws Exception {
+        /*
 
         com.atricore.idbus.console.lifecycle.main.spi.request.FindGroupByNameRequest findGroupByNameRequest = new FindGroupByNameRequest();
         findGroupByNameRequest.setName(SignOnServiceImpl.ADMIN_GROUP);
 
-        /*
         Group adminGroup;
         try {
             FindGroupByNameResponse findGroupByNameResponse = getUserProvisioningService().findGroupByName(findGroupByNameRequest);
