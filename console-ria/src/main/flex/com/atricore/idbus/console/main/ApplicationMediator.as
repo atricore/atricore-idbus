@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.main
 {
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
+import com.atricore.idbus.console.main.controller.LoginCommand;
 import com.atricore.idbus.console.main.controller.SetupServerCommand;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
@@ -113,6 +114,7 @@ public class ApplicationMediator extends IocMediator {
             ApplicationStartUpCommand.FAILURE,
             SetupServerCommand.SUCCESS,
             SetupServerCommand.FAILURE,
+            LoginCommand.SUCCESS,
             SetupWizardViewMediator.RUN,
             SimpleSSOWizardViewMediator.RUN,
             IdentityApplianceMediator.CREATE,
@@ -140,6 +142,13 @@ public class ApplicationMediator extends IocMediator {
             case SetupServerCommand.SUCCESS:
                 break;
             case SetupServerCommand.FAILURE:
+                break;
+            case LoginCommand.SUCCESS:
+                app.topBox.visible = true;
+                app.mainViewStack.selectedIndex = 1;
+                app.modulesViewStack.visible = true;
+                app.modulesViewStack.selectedIndex = 0;
+                app.validateNow();
                 break;
             case ApplicationFacade.SHOW_ERROR_MSG :
                 app.messageBox.showFailureMessage(notification.getBody() as String);

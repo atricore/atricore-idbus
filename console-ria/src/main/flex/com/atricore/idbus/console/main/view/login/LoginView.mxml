@@ -24,25 +24,24 @@
          xmlns:component="com.atricore.idbus.console.components.*"
          horizontalAlign="center" paddingTop="100" width="100%" height="100%">
 
-   <mx:EmailValidator id="userNameValidator" required="true" source="{userName}" property="text"/>
-   <mx:StringValidator id="passwordValidator" required="true" source="{password}" property="text"/>
+    <mx:StringValidator id="userNameValidator" required="true" source="{userName}" property="text"/>
+    <mx:StringValidator id="passwordValidator" required="true" source="{password}" property="text"/>
 
-   <mx:Form width="500" height="265" styleName="loginForm" verticalGap="4" defaultButton="{btnLogin}">
-      <mx:Label styleName="h1White" text="Login" width="100%" textAlign="center"/>
-      <mx:Spacer height="10"/>
-      <mx:FormItem required="true" label="Username (email)">
-         <mx:TextInput id="userName" width="200"/>
-      </mx:FormItem>
-      <mx:FormItem required="true" label="Password">
-         <mx:TextInput id="password" displayAsPassword="true" width="200"/>
-      </mx:FormItem>
-      <mx:FormItem label="Remember me">
-         <mx:CheckBox id="rememberMe"
-                      toolTip="Selecting will cause your login details to be remembered on this computer."/>
-      </mx:FormItem>
-      <mx:HBox styleName="buttonBox" width="100%">
-         <mx:Button id="btnLogin" label="Log In"/>
-         <mx:LinkButton id="btnClear" styleName="form" label="clear"/>
-      </mx:HBox>
-   </mx:Form>
+    <mx:Panel width="25%" height="40%" horizontalAlign="center" title="Login">
+        <mx:Form width="100%" height="100%" verticalGap="4" defaultButton="{btnLogin}">
+            <mx:FormItem required="true" label="Username">
+                <mx:TextInput id="userName" width="200"/>
+            </mx:FormItem>
+            <mx:FormItem required="true" label="Password">
+                <mx:TextInput id="password" displayAsPassword="true" width="200"/>
+            </mx:FormItem>
+            <mx:FormItem label="Remember me on this computer">
+                <mx:CheckBox id="rememberMe"
+                             toolTip="Selecting will cause your login details to be remembered on this computer."/>
+            </mx:FormItem>
+            <mx:FormItem>
+                <mx:Button id="btnLogin" label="Log In"/>
+            </mx:FormItem>
+        </mx:Form>
+    </mx:Panel>
 </mx:HBox>
