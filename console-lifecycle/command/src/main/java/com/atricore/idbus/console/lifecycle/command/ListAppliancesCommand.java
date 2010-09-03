@@ -87,7 +87,9 @@ public class ListAppliancesCommand extends ManagementCommandSupport {
 
     protected void printApplianceDefinition(StringBuilder sb, IdentityApplianceDefinition applianceDef) {
         sb.append("\n");
-        sb.append("     Defined  : ");
+        sb.append("     Defined  : (Rev. ");
+        sb.append(getRevisionString(applianceDef.getRevision()));
+        sb.append(")");
 
         if (applianceDef.getProviders() != null) {
             sb.append("\n");
@@ -132,7 +134,10 @@ public class ListAppliancesCommand extends ManagementCommandSupport {
 
     protected void printApplianceDeployment(StringBuilder sb, IdentityApplianceDeployment applianceDep) {
         sb.append("\n");
-        sb.append("     Deployed : ");
+        sb.append("     Deployed : (Rev. ");
+        sb.append(getRevisionString(applianceDep.getDeployedRevision()));
+        sb.append(")");
+
         for (IdentityApplianceUnit idau : applianceDep.getIdaus()) {
             printIdauString(sb, idau);
         }
