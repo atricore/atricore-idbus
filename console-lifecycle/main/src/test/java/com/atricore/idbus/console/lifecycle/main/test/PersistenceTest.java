@@ -21,20 +21,20 @@
 
 package com.atricore.idbus.console.lifecycle.main.test;
 
-import java.util.Map;
-
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
 import com.atricore.idbus.console.lifecycle.main.spi.request.AddIdentityApplianceRequest;
 import com.atricore.idbus.console.lifecycle.main.spi.response.AddIdentityApplianceResponse;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
-import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.Map;
 
 public class PersistenceTest {
 

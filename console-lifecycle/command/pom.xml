@@ -68,6 +68,12 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

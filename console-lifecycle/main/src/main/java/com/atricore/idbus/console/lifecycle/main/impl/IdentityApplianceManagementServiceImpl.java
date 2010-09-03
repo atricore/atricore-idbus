@@ -200,6 +200,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
 
             appliance.setState(IdentityApplianceState.PROJECTED.toString());
             appliance = identityApplianceDAO.save(appliance);
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
 
             if (logger.isTraceEnabled())
                 logger.trace("Created Identity Appliance " + appliance.getId());
@@ -273,7 +274,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
             if (logger.isTraceEnabled())
                 logger.trace("Added appliance " + appliance.getIdApplianceDefinition().getName() + " with ID:" + appliance.getId());
 
-            appliance = identityApplianceDAO.detachCopy(appliance, 99);
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
 
             res = new AddIdentityApplianceResponse();
             res.setAppliance(appliance);
@@ -346,8 +347,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         ListIdentityAppliancesResponse res = null;
         try {
             Collection<IdentityAppliance> appliances = identityApplianceDAO.list(req.isStartedOnly());
-            appliances = identityApplianceDAO.detachCopyAll(appliances, 6);
-
+            appliances = identityApplianceDAO.detachCopyAll(appliances, FetchPlan.FETCH_SIZE_GREEDY);
             res = new ListIdentityAppliancesResponse();
             res.setIdentityAppliances(appliances);
         } catch (Exception e){
@@ -362,39 +362,12 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     }
 
     @Transactional
-    public AddIdentityApplianceDefinitionResponse addIdentityApplianceDefinition(AddIdentityApplianceDefinitionRequest req)
-            throws IdentityServerException {
-
-        AddIdentityApplianceDefinitionResponse res = null;
-        try {
-
-            /* TODO : Improve
-            if (!URLValidator.validateUrl(req.getLocation())){
-                String msg = "URL Location is invalid :"+req.getLocation();
-                logger.error(msg);
-                throw new IdentityApplianceMetadataManagementException("URL Location invalid :" + req.getLocation());
-            }
-            */
-
-            logger.debug("Persisting identity appliance definition with name: " + req.getIdentityApplianceDefinition().getName());
-
-            //TODO : Check if the idApplianceDefinition (and entire tree) is correct
-            identityApplianceDefinitionDAO.save(req.getIdentityApplianceDefinition());
-	    } catch (Exception e){
-	        logger.error("Error adding identity appliance definition", e);
-	        throw new IdentityServerException(e);
-
-	    }
-		return res;
-    }
-
-    @Transactional
     public LookupIdentityApplianceDefinitionByIdResponse lookupIdentityApplianceDefinitionById(LookupIdentityApplianceDefinitionByIdRequest request) throws IdentityServerException {
         LookupIdentityApplianceDefinitionByIdResponse res = null;
         try {
             logger.debug("Finding identity appliance definition by ID : "+ request.getIdentityApplianceDefinitionId());
             IdentityApplianceDefinition iad = identityApplianceDefinitionDAO.findById(Long.parseLong(request.getIdentityApplianceDefinitionId()));
-            iad = identityApplianceDefinitionDAO.detachCopy(iad, 3);  //fetching providers and channels as well
+            iad = identityApplianceDefinitionDAO.detachCopy(iad, FetchPlan.FETCH_SIZE_GREEDY);  //fetching providers and channels as well
             res = new LookupIdentityApplianceDefinitionByIdResponse();
             res.setIdentityApplianceDefinition(iad);
 	    } catch (Exception e){
@@ -410,7 +383,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         try {
             logger.debug("Listing all identity appliance definitions");
             Collection result = identityApplianceDefinitionDAO.findAll();
-            res.getIdentityApplianceDefinitions().addAll(identityApplianceDefinitionDAO.detachCopyAll(result, 3));  //fetching providers and channels as well
+            res.getIdentityApplianceDefinitions().addAll(identityApplianceDefinitionDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));  //fetching providers and channels as well
         } catch (Exception e){
 	        logger.error("Error retrieving identity appliance definitions!!!", e);
 	        throw new IdentityServerException(e);
@@ -428,7 +401,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         try {
             logger.debug("Listing all identity vaults");
             Collection result = identitySourceDAO.findAll();
-            res.getIdentityVaults().addAll(identitySourceDAO.detachCopyAll(result, 2));  //fetching user lookup information as well
+            res.getIdentityVaults().addAll(identitySourceDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));  //fetching user lookup information as well
         } catch (Exception e){
 	        logger.error("Error retrieving identity vaults!!!", e);
 	        throw new IdentityServerException(e);
@@ -442,7 +415,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         try {
             logger.debug("Listing all user information lookups");
             Collection result = userInformationLookupDAO.findAll();
-            res.getUserInfoLookups().addAll(userInformationLookupDAO.detachCopyAll(result, 1));
+            res.getUserInfoLookups().addAll(userInformationLookupDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
 	        logger.error("Error retrieving user information lookups!!!", e);
 	        throw new IdentityServerException(e);
@@ -456,7 +429,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         try {
             logger.debug("Listing all account linkage policies");
             Collection result = accountLinkagePolicyDAO.findAll();
-            res.getAccountLinkagePolicies().addAll(accountLinkagePolicyDAO.detachCopyAll(result, 1));
+            res.getAccountLinkagePolicies().addAll(accountLinkagePolicyDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
 	        logger.error("Error retrieving account linkage policies!!!", e);
 	        throw new IdentityServerException(e);
@@ -470,7 +443,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         try {
             logger.debug("Listing all authentication contracts");
             Collection result = authenticationContractDAO.findAll();
-            res.getAuthContracts().addAll(authenticationContractDAO.detachCopyAll(result, 1));
+            res.getAuthContracts().addAll(authenticationContractDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
 	        logger.error("Error retrieving authentication contracts!!!", e);
 	        throw new IdentityServerException(e);
@@ -484,7 +457,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         try {
             logger.debug("Listing all authentication mechanisms");
             Collection result = authenticationMechanismDAO.findAll();
-            res.getAuthMechanisms().addAll(authenticationMechanismDAO.detachCopyAll(result, 1));
+            res.getAuthMechanisms().addAll(authenticationMechanismDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
 	        logger.error("Error retrieving authentication mechanisms!!!", e);
 	        throw new IdentityServerException(e);
@@ -498,7 +471,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         try {
             logger.debug("Listing all attribute profiles");
             Collection result = attributeProfileDAO.findAll();
-            res.getAttributeProfiles().addAll(attributeProfileDAO.detachCopyAll(result, 1));
+            res.getAttributeProfiles().addAll(attributeProfileDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
 	        logger.error("Error retrieving attribute profiles!!!", e);
 	        throw new IdentityServerException(e);
@@ -512,7 +485,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         try {
             logger.debug("Listing all authentication assertion emission policies");
             Collection result = authenticationAssertionEmissionPolicyDAO.findAll();
-            res.getAuthEmissionPolicies().addAll(authenticationAssertionEmissionPolicyDAO.detachCopyAll(result, 1));
+            res.getAuthEmissionPolicies().addAll(authenticationAssertionEmissionPolicyDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
 	        logger.error("Error retrieving authentication assertion emission policies!!!", e);
 	        throw new IdentityServerException(e);
@@ -531,7 +504,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
             logger.debug("Finding identity vault by ID : "+ req.getIdentityVaultId());
             IdentitySource identitySource = identitySourceDAO.findById(req.getIdentityVaultId());
             res = new LookupIdentityVaultByIdResponse();
-            res.setIdentityVault(identitySourceDAO.detachCopy(identitySource, 2));
+            res.setIdentityVault(identitySourceDAO.detachCopy(identitySource, FetchPlan.FETCH_SIZE_GREEDY));
 	    } catch (Exception e){
 	        logger.error("Error retrieving identity vault with id : " + req.getIdentityVaultId(), e);
 	        throw new IdentityServerException(e);
@@ -546,7 +519,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
             logger.debug("Finding user information lookup by ID : "+ req.getUserInformationLookupId());
             UserInformationLookup userInformationLookup = userInformationLookupDAO.findById(req.getUserInformationLookupId());
             res = new LookupUserInformationLookupByIdResponse();
-            res.setUserInfoLookup(userInformationLookupDAO.detachCopy(userInformationLookup, 1));
+            res.setUserInfoLookup(userInformationLookupDAO.detachCopy(userInformationLookup, FetchPlan.FETCH_SIZE_GREEDY));
 	    } catch (Exception e){
 	        logger.error("Error retrieving user information lookup with id : " + req.getUserInformationLookupId(), e);
 	        throw new IdentityServerException(e);
@@ -561,7 +534,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
             logger.debug("Finding account linkage policy by ID : "+ req.getAccountLinkagePolicyId());
             AccountLinkagePolicy policy = accountLinkagePolicyDAO.findById(req.getAccountLinkagePolicyId());
             res = new LookupAccountLinkagePolicyByIdResponse();
-            res.setAccountLinkagePolicy(accountLinkagePolicyDAO.detachCopy(policy, 1));
+            res.setAccountLinkagePolicy(accountLinkagePolicyDAO.detachCopy(policy, FetchPlan.FETCH_SIZE_GREEDY));
 	    } catch (Exception e){
 	        logger.error("Error retrieving account linkage policy with id : " + req.getAccountLinkagePolicyId(), e);
 	        throw new IdentityServerException(e);
@@ -576,7 +549,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
             logger.debug("Finding authentication contract by ID : "+ req.getAuthenticationContactId());
             AuthenticationContract authenticationContract = authenticationContractDAO.findById(req.getAuthenticationContactId());
             res = new LookupAuthenticationContractByIdResponse();
-            res.setAuthenticationContract(authenticationContractDAO.detachCopy(authenticationContract, 1));
+            res.setAuthenticationContract(authenticationContractDAO.detachCopy(authenticationContract, FetchPlan.FETCH_SIZE_GREEDY));
 	    } catch (Exception e){
 	        logger.error("Error retrieving authentication contract with id : " + req.getAuthenticationContactId(), e);
 	        throw new IdentityServerException(e);
@@ -591,7 +564,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
             logger.debug("Finding authentication mechanism by ID : "+ req.getAuthMechanismId());
             AuthenticationMechanism authenticationMechanism = authenticationMechanismDAO.findById(req.getAuthMechanismId());
             res = new LookupAuthenticationMechanismByIdResponse();
-            res.setAuthenticationMechanism(authenticationMechanismDAO.detachCopy(authenticationMechanism, 1));
+            res.setAuthenticationMechanism(authenticationMechanismDAO.detachCopy(authenticationMechanism, FetchPlan.FETCH_SIZE_GREEDY));
 	    } catch (Exception e){
 	        logger.error("Error retrieving authentication mechanism with id : " + req.getAuthMechanismId(), e);
 	        throw new IdentityServerException(e);
@@ -606,7 +579,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
             logger.debug("Finding attribute profile by ID : "+ req.getAttributeProfileId());
             AttributeProfile attributeProfile = attributeProfileDAO.findById(req.getAttributeProfileId());
             res = new LookupAttributeProfileByIdResponse();
-            res.setAttributeProfile(attributeProfileDAO.detachCopy(attributeProfile, 1));
+            res.setAttributeProfile(attributeProfileDAO.detachCopy(attributeProfile, FetchPlan.FETCH_SIZE_GREEDY));
 	    } catch (Exception e){
 	        logger.error("Error retrieving attribute profile with id : " + req.getAttributeProfileId(), e);
 	        throw new IdentityServerException(e);
@@ -621,7 +594,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
             logger.debug("Finding authentication assertion emission policy by ID : "+ req.getAuthAssertionEmissionPolicyId());
             AuthenticationAssertionEmissionPolicy policy = authenticationAssertionEmissionPolicyDAO.findById(req.getAuthAssertionEmissionPolicyId());
             res = new LookupAuthAssertionEmissionPolicyByIdResponse();
-            res.setPolicy(authenticationAssertionEmissionPolicyDAO.detachCopy(policy, 1));
+            res.setPolicy(authenticationAssertionEmissionPolicyDAO.detachCopy(policy, FetchPlan.FETCH_SIZE_GREEDY));
 	    } catch (Exception e){
 	        logger.error("Error retrieving authentication assertion emission policy with id : " + req.getAuthAssertionEmissionPolicyId(), e);
 	        throw new IdentityServerException(e);

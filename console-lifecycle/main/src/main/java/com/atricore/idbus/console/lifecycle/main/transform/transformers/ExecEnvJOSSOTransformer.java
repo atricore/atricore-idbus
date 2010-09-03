@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ExecutionEnvironment;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
@@ -237,6 +238,9 @@ public class ExecEnvJOSSOTransformer extends AbstractTransformer {
         Beans bpBeans = (Beans) event.getContext().get("bpBeans");
 
         Bean bpBean = getBeansOfType(bpBeans, BindingProviderImpl.class.getName()).iterator().next();
+
+        if (logger.isDebugEnabled())
+            logger.debug("Wiring BP Provider/Channel with mediation components ("+bpBean.getName()+")");
 
         // Wire provider to COT
         Collection<Bean> cots = getBeansOfType(baseBeans, CircleOfTrustImpl.class.getName());

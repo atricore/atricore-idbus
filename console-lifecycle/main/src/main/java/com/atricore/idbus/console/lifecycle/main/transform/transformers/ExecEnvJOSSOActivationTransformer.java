@@ -2,19 +2,16 @@ package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.ExecutionEnvironment;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.*;
 import org.atricore.idbus.capabilities.josso.main.JossoMediator;
 import org.atricore.idbus.capabilities.josso.main.PartnerAppMapping;
-import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.BindingProviderImpl;
 
 import java.util.Collection;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>

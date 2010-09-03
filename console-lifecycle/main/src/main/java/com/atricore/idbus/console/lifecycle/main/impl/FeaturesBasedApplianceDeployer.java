@@ -49,7 +49,6 @@ public class FeaturesBasedApplianceDeployer implements IdentityApplianceDeployer
             if (applianceDep == null)
                 throw new IdentityServerException("No Appliance Deployment information found for appliance " +
                         appliance.getId());
-            
 
             FeaturesService svc = (FeaturesService) getBundleContext().getService(ref);
             if (svc == null) {
@@ -127,8 +126,9 @@ public class FeaturesBasedApplianceDeployer implements IdentityApplianceDeployer
                 case INSTALLED:
                     IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
                     String featureName = applianceDep.getFeatureName();
+                    String featureVersion = "1.0." + appliance.getIdApplianceDeployment().getDeployedRevision();
                     try {
-                        svc.installFeature(featureName);
+                        svc.installFeature(featureName, featureVersion);
                     } catch (Exception e) {
                         throw new IdentityServerException("Cannot start appliance " + appliance.getId() +
                                 " using feature " + featureName, e);

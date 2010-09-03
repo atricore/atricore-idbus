@@ -1,10 +1,10 @@
 package com.atricore.idbus.console.lifecycle.command;
 
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
 import com.atricore.idbus.console.lifecycle.main.spi.request.UndeployIdentityApplianceRequest;
 import com.atricore.idbus.console.lifecycle.main.spi.response.UndeployIdentityApplianceResponse;
+import org.apache.felix.gogo.commands.Argument;
+import org.apache.felix.gogo.commands.Command;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
