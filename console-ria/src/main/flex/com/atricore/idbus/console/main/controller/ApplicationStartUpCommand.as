@@ -755,27 +755,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
         loginMediator.setViewComponent(app.loginView);
         iocFacade.registerMediatorByConfigName(loginMediator.getConfigName());
-
-        modelerMediator.setViewComponent(app.modelerView);
         iocFacade.registerMediatorByConfigName(modelerMediator.getConfigName());
-
-        lifecycleViewMediator.setViewComponent(app.lifecycleView);
         iocFacade.registerMediatorByConfigName(lifecycleViewMediator.getConfigName());
-
-        accountManagementMediator.setViewComponent(app.accountManagementView);
         iocFacade.registerMediatorByConfigName(accountManagementMediator.getConfigName());
 
         // setup for second level modeler mediators
-        browserMediator.setViewComponent(app.modelerView.browser);
         iocFacade.registerMediatorByConfigName(browserMediator.getConfigName());
-
-        diagramMediator.setViewComponent(app.modelerView.diagram);
         iocFacade.registerMediatorByConfigName(diagramMediator.getConfigName());
-
-        paletteMediator.setViewComponent(app.modelerView.palette);
         iocFacade.registerMediatorByConfigName(paletteMediator.getConfigName());
-
-        propertySheetMediator.setViewComponent(app.modelerView.propertysheet);
         iocFacade.registerMediatorByConfigName(propertySheetMediator.getConfigName());
 
         iocFacade.registerMediatorByConfigName(groupsMediator.getConfigName());

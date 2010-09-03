@@ -60,7 +60,6 @@
             m_facade.addConfigSource("flex/flexApplicationContext.xml");
             m_facade.addEventListener(Event.COMPLETE, startupApp);
             m_facade.initializeIocContainer();
-            stackButtonBar.selectedIndex = 0;
         }
 
         private function startupApp(p_event:Event):void {
@@ -89,13 +88,18 @@
     <fx:Style source="../resources/style/yflexskin.css"/>
     <fx:Style source="../resources/style/style.css"/>
 
+    <s:states>
+        <s:State name="splash"/>
+        <s:State name="operation"/>
+    </s:states>
+
     <s:VGroup paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
-              width="100%" height="100%" visible="true">
+              width="100%" height="100%" includeIn="splash,operation">
         <!--minHeight="955" minWidth="600">-->
-        <s:HGroup paddingTop="2" paddingLeft="10" paddingRight="10" height="8%" width="100%">
+        <s:HGroup paddingTop="2" paddingLeft="10" paddingRight="10" height="8%" width="100%" includeIn="splash,operation">
             <mx:Image source="@Embed('/assets/icons/ui/a3c_logo.jpeg')"/>
-            <comp:MessageBox id="messageBox" showEffect="{wipeRight}" verticalAlign="middle"/>
-            <s:HGroup id="topBox" styleName="topBox" width="100%" height="100%" visible="false" verticalAlign="middle" horizontalAlign="right">
+            <comp:MessageBox id="messageBox" showEffect="{wipeRight}" width="100%" height="70%" verticalAlign="middle" horizontalAlign="center" />
+            <s:HGroup id="topBox" styleName="topBox" width="100%" height="100%" includeIn="operation" verticalAlign="middle" horizontalAlign="right">
                 <mx:MenuBar id="userActionMenuBar" width="9%" labelField="@label">
                     <fx:XMLList>
                         <menuitem label="Administrator">
@@ -106,14 +110,15 @@
                 </mx:MenuBar>
             </s:HGroup>
         </s:HGroup>
+
         <mx:HRule width="100%"/>
 
-        <comp:CustomViewStack id="mainViewStack" width="100%" height="100%">
-            <login:LoginView id="loginView"/>
-            <s:ButtonBar id="stackButtonBar" labelField="name"
-                         change="stackChanged()" skinClass="com.atricore.idbus.console.skin.buttonbar.IconButtonBarSkin">
-                <s:dataProvider>
-            <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%">
+            <login:LoginView id="loginView" includeIn="splash"/>
+            <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name"
+                         change="stackChanged()" skinClass="com.atricore.idbus.console.skin.buttonbar.IconButtonBarSkin"
+                         includeIn="operation"/>
+
+            <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%" includeIn="operation">
                 <modeler:ModelerView id="modelerView" name="Modeler"/>
                 <lifecycle:LifecycleView id="lifecycleView" name="Lifecycle"/>
                 <account:AccountManagementView id="accountManagementView" name="Account"/>
@@ -124,9 +129,6 @@
                 <!--</s:Group>-->
 
             </comp:CustomViewStack>
-            </s:dataProvider>
-            </s:ButtonBar>
-        </comp:CustomViewStack>
 
 
     </s:VGroup>
