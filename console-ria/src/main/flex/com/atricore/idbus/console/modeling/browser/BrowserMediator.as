@@ -125,38 +125,11 @@ public class BrowserMediator extends IocMediator {
 
                     if (provider is FederatedProvider) {
                         var locProv:FederatedProvider = provider as FederatedProvider;
-                            if(locProv.identityLookup != null && locProv.identityLookup.identitySource != null){
-                                var idSource:IdentitySource = locProv.identityLookup.identitySource;
-                                var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(idSource, true);
-                                providerNode.addChild(identityVaultNode);
-                            }
-//                        if (locProv.defaultChannel != null) {
-//                            var identityVault:IdentitySource = null;
-//                            if (locProv.defaultChannel is IdentityProviderChannel) {
-//                                identityVault = IdentityProviderChannel(locProv.defaultChannel).identityVault;
-//                            } else if (locProv.defaultChannel is ServiceProviderChannel) {
-//                                identityVault = ServiceProviderChannel(locProv.defaultChannel).identityVault;
-//                            }
-//                            if (identityVault != null) {
-//                                var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityVault, true);
-//                                providerNode.addChild(identityVaultNode);
-//                            }
-//                        }
-//                        if (locProv.channels != null) {
-//                            for (var j:int = 0; j < locProv.channels.length; j++) {
-//                                var channel = locProv.channels[j];
-//                                var identityVault:IdentitySource = null;
-//                                if (channel is IdentityProviderChannel) {
-//                                    identityVault = IdentityProviderChannel(channel).identityVault;
-//                                } else if (channel is ServiceProviderChannel) {
-//                                    identityVault = ServiceProviderChannel(channel).identityVault;
-//                                }
-//                                if (identityVault != null) {
-//                                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityVault, true);
-//                                    providerNode.addChild(identityVaultNode);
-//                                }
-//                            }
-//                        }
+                        if(locProv.identityLookup != null && locProv.identityLookup.identitySource != null){
+                            var idSource:IdentitySource = locProv.identityLookup.identitySource;
+                            var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(idSource, true);
+                            providerNode.addChild(identityVaultNode);
+                        }
                         if(locProv is ServiceProvider){
                             var sp:ServiceProvider = locProv as ServiceProvider;
                             if(sp.activation != null && sp.activation.executionEnv != null){
@@ -173,6 +146,12 @@ public class BrowserMediator extends IocMediator {
                 for (i = 0; i < identityApplianceDefinition.identitySources.length; i++) {
                     var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identitySources[i], true);
                     _applianceRootNode.addChild(identityVaultNode);
+                }
+            }
+            if (identityApplianceDefinition.executionEnvironments != null) {
+                for (var j:int = 0; j < identityApplianceDefinition.executionEnvironments.length; j++) {
+                    var executionNode:BrowserNode = BrowserModelFactory.createExecutionEnvironmentNode(identityApplianceDefinition.executionEnvironments[j], true);
+                    _applianceRootNode.addChild(executionNode);
                 }
             }
             view.dataProvider = _applianceRootNode;
