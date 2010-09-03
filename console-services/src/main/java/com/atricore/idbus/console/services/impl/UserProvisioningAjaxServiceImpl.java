@@ -600,13 +600,13 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
 
             StringBuffer sb_query = new StringBuffer("/users[");
             if ( StringUtils.isNotBlank(userSearchRequest.getUserName()))
-                sb_query.append("username='" + userSearchRequest.getUserName() + "' and ");
+                sb_query.append("userName='" + userSearchRequest.getUserName() + "' and ");
             if ( StringUtils.isNotBlank(userSearchRequest.getFirstName()))
-                sb_query.append("firstname='" + userSearchRequest.getFirstName() + "' and ");
+                sb_query.append("firstName='" + userSearchRequest.getFirstName() + "' and ");
             if ( StringUtils.isNotBlank(userSearchRequest.getSurename()))
-                sb_query.append("surname='" + userSearchRequest.getSurename() + "' and ");
+                sb_query.append("surename='" + userSearchRequest.getSurename() + "' and ");
             if ( StringUtils.isNotBlank(userSearchRequest.getCommonName()))
-                sb_query.append("commonname='" + userSearchRequest.getCommonName() + "' and ");
+                sb_query.append("commonName='" + userSearchRequest.getCommonName() + "' and ");
             if ( StringUtils.isNotBlank(userSearchRequest.getGivenName()))
                 sb_query.append("givenName='" + userSearchRequest.getGivenName() + "' and ");
 
@@ -780,7 +780,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         user.setEmail(newUser.getEmail());
         user.setTelephoneNumber(newUser.getTelephoneNumber());
         user.setFacsimilTelephoneNumber(newUser.getFacsimilTelephoneNumber());
-        user.setCountryName(newUser.getCommonName());
+        user.setCountryName(newUser.getCountryName());
         user.setLocalityName(newUser.getLocalityName());
         user.setStateOrProvinceName(newUser.getStateOrProvinceName());
         user.setStreetAddress(newUser.getStreetAddress());
@@ -828,7 +828,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         user.setEmail(newUser.getEmail());
         user.setTelephoneNumber(newUser.getTelephoneNumber());
         user.setFacsimilTelephoneNumber(newUser.getFacsimilTelephoneNumber());
-        user.setCountryName(newUser.getCommonName());
+        user.setCountryName(newUser.getCountryName());
         user.setLocalityName(newUser.getLocalityName());
         user.setStateOrProvinceName(newUser.getStateOrProvinceName());
         user.setStreetAddress(newUser.getStreetAddress());
