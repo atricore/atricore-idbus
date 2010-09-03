@@ -18,5 +18,6 @@ public class VEdgeRemoveEvent extends VGraphEvent {
     public function get data():Object {
         return _data;
     }
+
 }
 }

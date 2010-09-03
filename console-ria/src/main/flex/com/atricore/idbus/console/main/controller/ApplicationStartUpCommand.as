@@ -108,6 +108,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _loginCommand:IIocCommand;
     private var _identityApplianceUpdateCommand:IIocCommand;
     private var _identityVaultRemoveCommand:IIocCommand;
+    private var _activationRemoveCommand:IIocCommand;
     private var _createSimpleSSOIdentityApplianceCommand:IIocCommand;
     private var _identityApplianceListLoadCommand:IIocCommand;
     private var _identityApplianceCreateCommand:IIocCommand;
@@ -591,6 +592,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _identityVaultRemoveCommand = value;
     }
 
+    public function get activationRemoveCommand():IIocCommand {
+        return _activationRemoveCommand;
+    }
+
+    public function set activationRemoveCommand(value:IIocCommand):void {
+        _activationRemoveCommand = value;
+    }
+
     public function get createSimpleSSOIdentityApplianceCommand():IIocCommand {
         return _createSimpleSSOIdentityApplianceCommand;
     }
@@ -735,6 +744,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDP_CHANNEL_REMOVE, idpChannelRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SP_CHANNEL_REMOVE, spChannelRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DB_IDENTITY_VAULT_REMOVE, identityVaultRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATION_REMOVE, activationRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, lookupIdentityApplianceByIdCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD, identityApplianceListLoadCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.UPLOAD, uploadCommand.getConfigName());

@@ -42,6 +42,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdpChanne
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSpChannelElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
@@ -50,15 +51,18 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServicePr
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
+import com.atricore.idbus.console.services.dto.Activation;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
+import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.JOSSOActivation;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
@@ -666,10 +670,18 @@ public class DiagramMediator extends IocMediator {
     private function edgeRemoveEventHandler(event:VEdgeRemoveEvent):void {
         // edgeData is FederatedConnection, JOSSOActivation, etc.
         var edgeData:Object = event.data;
-
-        // TODO: remove connection from database
+        var elementType:int = -1;
         
-        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE);
+        if(edgeData is FederatedConnection){
+            elementType = DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE;
+        } else if (edgeData is Activation){
+//            elementType = DiagramElementTypes.ACTIVATION_ELEMENT_TYPE;
+            var activation:JOSSOActivation = edgeData as JOSSOActivation;
+            var ract:RemoveActivationElementRequest = new RemoveActivationElementRequest(activation);
+            sendNotification(ApplicationFacade.REMOVE_ACTIVATION_ELEMENT, ract);
+        } else if (edgeData is IdentityLookup){
+            elementType = DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE;
+        }
     }
 
     private function toggleUnselectedNodesOff(visualCompToCheck:Object, selectedItem:Object):void {
