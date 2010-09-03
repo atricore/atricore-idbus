@@ -48,7 +48,6 @@ public class LoginMediator extends IocMediator
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
             view.btnLogin.removeEventListener(MouseEvent.CLICK, handleLoginButton);
-            view.btnClear.removeEventListener(MouseEvent.CLICK, handleClearButton);
             view.removeEventListener(FlexEvent.SHOW, handleShowLogin);
         }
 
@@ -60,7 +59,6 @@ public class LoginMediator extends IocMediator
     private function init():void {
 
         view.btnLogin.addEventListener(MouseEvent.CLICK, handleLoginButton);
-        view.btnClear.addEventListener(MouseEvent.CLICK, handleClearButton);
         view.addEventListener(FlexEvent.SHOW, handleShowLogin);
 
         _loginValidators = [];

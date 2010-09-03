@@ -168,14 +168,6 @@
             class="com.atricore.idbus.console.modeling.main.controller.CreateIdentityLookupCommand"/>
 
     <!-- Mediators -->
-    <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
-        <property name="popupManager" ref="consolePopUpManager"/>
-        <property name="secureContextProxy" ref="secureContextProxy"/>
-    </object>
-    <object id="modelerMediator" class="com.atricore.idbus.console.modeling.main.ModelerMediator">
-        <property name="popupManager" ref="modelerPopUpManager"/>
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
     <object id="manageCertificateMediator"
             class="com.atricore.idbus.console.main.view.certificate.ManageCertificateMediator">
         <property name="keystoreProxy" ref="keystoreProxy"/>
@@ -252,12 +244,6 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="paletteMediator" class="com.atricore.idbus.console.modeling.palette.PaletteMediator"/>
-    <object id="accountManagementMediator" class="com.atricore.idbus.console.account.main.AccountManagementMediator">
-        <property name="popupManager" ref="accountManagementPopUpManager"/>
-        <property name="accountManagementProxy" ref="accountManagementProxy"/>
-        <property name="groupsMediator" ref="groupsMediator"/>
-        <property name="usersMediator" ref="usersMediator"/>
-    </object>
     <object id="groupsMediator" class="com.atricore.idbus.console.account.groups.GroupsMediator">
         <property name="popupManager" ref="accountManagementPopUpManager"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
@@ -288,6 +274,34 @@
     </object>
     <object id="searchUsersMediator" class="com.atricore.idbus.console.account.main.view.searchusers.SearchUsersMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+
+    <object id="modelerMediator" class="com.atricore.idbus.console.modeling.main.ModelerMediator">
+        <property name="browserMediator" ref="browserMediator"/>
+        <property name="diagramMediator" ref="diagramMediator"/>
+        <property name="paletteMediator" ref="paletteMediator"/>
+        <property name="propertySheetMediator" ref="propertySheetMediator"/>
+        <property name="popupManager" ref="modelerPopUpManager"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+
+    <object id="lifecycleViewMediator" class="com.atricore.idbus.console.lifecycle.LifecycleViewMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+
+    <object id="accountManagementMediator" class="com.atricore.idbus.console.account.main.AccountManagementMediator">
+        <property name="popupManager" ref="accountManagementPopUpManager"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="groupsMediator" ref="groupsMediator"/>
+        <property name="usersMediator" ref="usersMediator"/>
+    </object>
+
+    <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
+        <property name="popupManager" ref="consolePopUpManager"/>
+        <property name="secureContextProxy" ref="secureContextProxy"/>
+        <property name="modelerMediator" ref="modelerMediator"/>
+        <property name="lifecycleViewMediator" ref="lifecycleViewMediator"/>
+        <property name="accountManagementMediator" ref="accountManagementMediator"/>
     </object>
 
     <!-- support components -->

@@ -47,6 +47,7 @@ import flash.events.MouseEvent;
 import mx.events.FlexEvent;
 
 import org.puremvc.as3.interfaces.INotification;
+import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class ModelerMediator extends IocMediator {
@@ -69,9 +70,45 @@ public class ModelerMediator extends IocMediator {
     public var _applianceList:Array;
 
     private var _created:Boolean;
+    private var _browserMediator:IIocMediator;
+    private var _diagramMediator:IIocMediator;
+    private var _paletteMediator:IIocMediator;
+    private var _propertySheetMediator:IIocMediator;
     
     public function ModelerMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
+    }
+
+    public function get browserMediator():IIocMediator {
+        return _browserMediator;
+    }
+
+    public function set browserMediator(value:IIocMediator):void {
+        _browserMediator = value;
+    }
+
+    public function get diagramMediator():IIocMediator {
+        return _diagramMediator;
+    }
+
+    public function set diagramMediator(value:IIocMediator):void {
+        _diagramMediator = value;
+    }
+
+    public function get paletteMediator():IIocMediator {
+        return _paletteMediator;
+    }
+
+    public function set paletteMediator(value:IIocMediator):void {
+        _paletteMediator = value;
+    }
+
+    public function get propertySheetMediator():IIocMediator {
+        return _propertySheetMediator;
+    }
+
+    public function set propertySheetMediator(value:IIocMediator):void {
+        _propertySheetMediator = value;
     }
 
     public function get projectProxy():ProjectProxy {
@@ -101,15 +138,19 @@ public class ModelerMediator extends IocMediator {
         }
 
         //this is not working for first viewStack child?
-        //(p_viewComponent as ModelerView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+        (p_viewComponent as ModelerView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
         
         super.setViewComponent(p_viewComponent);
 
-        creationCompleteHandler();
     }
 
-    public function creationCompleteHandler():void {
+    private function creationCompleteHandler(event:Event):void {
         _created = true;
+
+        browserMediator.setViewComponent(view.browser);
+        diagramMediator.setViewComponent(view.diagram);
+        paletteMediator.setViewComponent(view.palette);
+        propertySheetMediator.setViewComponent(view.propertysheet);
 
         view.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
         view.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
