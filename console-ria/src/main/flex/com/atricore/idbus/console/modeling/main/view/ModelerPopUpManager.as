@@ -33,6 +33,8 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbo
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateForm;
@@ -70,6 +72,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _buildApplianceMediator:BuildApplianceMediator;
     private var _deployApplianceMediator:DeployApplianceMediator;
     private var _activationCreateMediator:ActivationCreateMediator;
+    private var _federatedConnectionCreateMediator:FederatedConnectionCreateMediator;
 
     // views
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
@@ -85,6 +88,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _buildAppliance:BuildApplianceView;
     private var _deployAppliance:DeployApplianceView;
     private var _activationCreateForm:ActivationCreateForm;
+    private var _federatedConnectionCreateForm:FederatedConnectionCreateForm;
 
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
@@ -193,6 +197,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set activationCreateMediator(value:ActivationCreateMediator):void {
         _activationCreateMediator = value;
+    }
+
+    public function get federatedConnectionCreateMediator():FederatedConnectionCreateMediator {
+        return _federatedConnectionCreateMediator;
+    }
+
+    public function set federatedConnectionCreateMediator(value:FederatedConnectionCreateMediator):void {
+        _federatedConnectionCreateMediator = value;
     }
 
     public function showCreateIdentityProviderWindow(notification:INotification):void {
@@ -348,6 +360,30 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleWeblogicExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
         weblogicExecutionEnvironmentCreateMediator.setViewComponent(_weblogicExecutionEnvironmentCreateForm);
         weblogicExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateFederatedConnectionWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_federatedConnectionCreateForm) {
+            createFederatedConnectionCreateForm();
+        }
+        _popup.title = "Create Federated Connection";
+        _popup.width = 680;
+        _popup.height = 530;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_federatedConnectionCreateForm);
+    }
+
+    private function createFederatedConnectionCreateForm():void {
+        _federatedConnectionCreateForm = new FederatedConnectionCreateForm();
+        _federatedConnectionCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleFederatedConnectionCreateFormCreated);
+    }
+
+    private function handleFederatedConnectionCreateFormCreated(event:FlexEvent):void {
+        federatedConnectionCreateMediator.setViewComponent(_federatedConnectionCreateForm);
+        federatedConnectionCreateMediator.handleNotification(_lastWindowNotification);
+        federatedConnectionCreateMediator.registerListeners();
     }
 
     public function showCreateActivationWindow(notification:INotification):void {

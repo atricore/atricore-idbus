@@ -34,6 +34,7 @@ import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
 import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
@@ -613,14 +614,10 @@ public class DiagramMediator extends IocMediator {
         var node1:IVisualNode = event.vnode1;
         var node2:IVisualNode = event.vnode2;
 
-        // TODO: link node1.data and node2.data
-        if ((node1.data is IdentityProvider && node2.data is ServiceProvider) ||
-                (node1.data is ServiceProvider && node2.data is IdentityProvider)) {
-            // connect IDP and SP
-        }
-
-        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        var cfc:CreateFederatedConnectionElementRequest = new CreateFederatedConnectionElementRequest();
+        cfc.roleA = node1.data as FederatedProvider;
+        cfc.roleB = node2.data as FederatedProvider
+        sendNotification(ApplicationFacade.CREATE_FEDERATED_CONNECTION, cfc);
     }
 
     private function identityLookupCreatedEventHandler(event:VNodesLinkedEvent):void {

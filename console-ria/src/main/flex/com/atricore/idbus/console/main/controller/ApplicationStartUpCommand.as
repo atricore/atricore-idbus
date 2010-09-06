@@ -88,6 +88,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _editUserMediator:IIocMediator;
     private var _searchUsersMediator:IIocMediator;
     private var _activationCreateMediator:IIocMediator;
+    private var _federatedConnectionCreateMediator:IIocMediator;
 
 
     /* Commands */
@@ -405,6 +406,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set activationCreateMediator(value:IIocMediator):void {
         _activationCreateMediator = value;
+    }
+
+    public function get federatedConnectionCreateMediator():IIocMediator {
+        return _federatedConnectionCreateMediator;
+    }
+
+    public function set federatedConnectionCreateMediator(value:IIocMediator):void {
+        _federatedConnectionCreateMediator = value;
     }
 
     public function get serviceRegistry():IIocProxy {
@@ -822,6 +831,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(deployApplianceMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(processingMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(activationCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(federatedConnectionCreateMediator.getConfigName());
 
         // IDENTITY_APPLIANCE_LIST_LOAD notification is sent from
         // modelerMediator.setViewComponent() -> modelerMediator.init()

@@ -6,6 +6,8 @@ public class ListItemValueObject {
     [Bindable]
     public var isSelected:Boolean;
 
+    public var name:String;
+
     public function ListItemValueObject() {
         super();
     }

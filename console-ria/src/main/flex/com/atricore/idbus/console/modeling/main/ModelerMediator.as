@@ -192,6 +192,7 @@ public class ModelerMediator extends IocMediator {
             ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.REMOVE_ACTIVATION_ELEMENT,
+            ApplicationFacade.CREATE_FEDERATED_CONNECTION,
             ApplicationFacade.MANAGE_CERTIFICATE,
             ApplicationFacade.SHOW_UPLOAD_PROGRESS,
             ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
@@ -277,6 +278,9 @@ public class ModelerMediator extends IocMediator {
             case ApplicationFacade.REMOVE_ACTIVATION_ELEMENT:
                 var ract:RemoveActivationElementRequest = RemoveActivationElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.ACTIVATION_REMOVE, ract.activation);
+                break;
+            case ApplicationFacade.CREATE_FEDERATED_CONNECTION:
+                popupManager.showCreateFederatedConnectionWindow(notification);
                 break;
             case ApplicationFacade.MANAGE_CERTIFICATE:
                 popupManager.showManageCertificateWindow(notification);

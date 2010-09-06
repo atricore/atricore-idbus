@@ -66,6 +66,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const SEARCH_GROUPS:String = "searchGroups";
     public static const SEARCH_USERS:String = "searchUsers";
     public static const CREATE_ACTIVATION:String = "createActivation";
+    public static const CREATE_FEDERATED_CONNECTION:String = "createFederatedConnection";
     public static const CREATE_IDENTITY_LOOKUP:String = "createIdentityLookup";
 
     // mediator-backed notifications
