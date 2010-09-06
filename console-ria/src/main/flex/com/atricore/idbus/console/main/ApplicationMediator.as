@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.main
 {
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
+import com.atricore.idbus.console.main.controller.LoginCommand;
 import com.atricore.idbus.console.main.controller.SetupServerCommand;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
@@ -33,7 +34,10 @@ import flash.events.Event;
 
 import mx.events.FlexEvent;
 
+import mx.events.StateChangeEvent;
+
 import org.puremvc.as3.interfaces.INotification;
+import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 import spark.components.ButtonBar;
@@ -49,11 +53,38 @@ public class ApplicationMediator extends IocMediator {
 
     private var _secureContextProxy:SecureContextProxy;
     private var _popupManager:ConsolePopUpManager;
+    private var _modelerMediator:IIocMediator;
+    private var _lifecycleViewMediator:IIocMediator;
+    private var _accountManagementMediator:IIocMediator;
 
     public function ApplicationMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
 
         super(p_mediatorName, p_viewComponent);
 
+    }
+
+    public function get modelerMediator():IIocMediator {
+        return _modelerMediator;
+    }
+
+    public function set modelerMediator(value:IIocMediator):void {
+        _modelerMediator = value;
+    }
+
+    public function get lifecycleViewMediator():IIocMediator {
+        return _lifecycleViewMediator;
+    }
+
+    public function set lifecycleViewMediator(value:IIocMediator):void {
+        _lifecycleViewMediator = value;
+    }
+
+    public function get accountManagementMediator():IIocMediator {
+        return _accountManagementMediator;
+    }
+
+    public function set accountManagementMediator(value:IIocMediator):void {
+          _accountManagementMediator = value;
     }
 
     public function get popupManager():ConsolePopUpManager {
@@ -86,7 +117,6 @@ public class ApplicationMediator extends IocMediator {
 
     public function init():void {
         popupManager.init(iocFacade, app);
-        app.stackButtonBar.addEventListener(IndexChangeEvent.CHANGE, handleStackChange);
         app.addEventListener(FlexEvent.SHOW, handleShowConsole);
     }
 
@@ -113,6 +143,7 @@ public class ApplicationMediator extends IocMediator {
             ApplicationStartUpCommand.FAILURE,
             SetupServerCommand.SUCCESS,
             SetupServerCommand.FAILURE,
+            LoginCommand.SUCCESS,
             SetupWizardViewMediator.RUN,
             SimpleSSOWizardViewMediator.RUN,
             IdentityApplianceMediator.CREATE,
@@ -141,6 +172,10 @@ public class ApplicationMediator extends IocMediator {
                 break;
             case SetupServerCommand.FAILURE:
                 break;
+            case LoginCommand.SUCCESS:
+                app.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, switchedToOperationMode);
+                app.currentState = "operation";
+                break;
             case ApplicationFacade.SHOW_ERROR_MSG :
                 app.messageBox.showFailureMessage(notification.getBody() as String);
                 break;
@@ -167,6 +202,15 @@ public class ApplicationMediator extends IocMediator {
                 popupManager.hideProcessingWindow(notification);
                 break;
         }
+    }
+
+    private function switchedToOperationMode(event:StateChangeEvent):void {
+        modelerMediator.setViewComponent(app.modelerView);
+        lifecycleViewMediator.setViewComponent(app.lifecycleView);
+        accountManagementMediator.setViewComponent(app.accountManagementView);
+
+        app.stackButtonBar.addEventListener(IndexChangeEvent.CHANGE, handleStackChange);
+        app.stackButtonBar.selectedIndex = 0;
     }
 
     public function get app():AtricoreConsole {

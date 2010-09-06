@@ -319,7 +319,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
             applianceDef.setRevision(applianceDef.getRevision() + 1);
 
             appliance = identityApplianceDAO.save(appliance);
-            appliance = identityApplianceDAO.detachCopy(appliance, 6);
+            appliance = identityApplianceDAO.detachCopy(appliance, 7);
 
             res = new UpdateIdentityApplianceResponse(appliance);
         } catch (Exception e){
@@ -334,7 +334,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         LookupIdentityApplianceByIdResponse res = null;
         try {
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getIdentityApplianceId()));
-            appliance = identityApplianceDAO.detachCopy(appliance, 6);
+            appliance = identityApplianceDAO.detachCopy(appliance, 7);
             res = new LookupIdentityApplianceByIdResponse();
             res.setIdentityAppliance(appliance);
         } catch (Exception e){

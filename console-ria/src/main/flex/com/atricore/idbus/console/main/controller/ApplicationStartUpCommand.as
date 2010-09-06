@@ -735,6 +735,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
         // first register commands (some commands are needed for mediator creation/initialization)
         iocFacade.registerCommandByConfigName(ApplicationFacade.SETUP_SERVER, setupServerCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LOGIN, loginCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.REGISTER, registerCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, createSimpleSSOIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, identityApplianceCreateCommand.getConfigName());
@@ -771,26 +772,16 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         applicationMediator.setViewComponent(app);
         iocFacade.registerMediatorByConfigName(applicationMediator.getConfigName());
 
-        modelerMediator.setViewComponent(app.modelerView);
+        loginMediator.setViewComponent(app.loginView);
+        iocFacade.registerMediatorByConfigName(loginMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(modelerMediator.getConfigName());
-
-        lifecycleViewMediator.setViewComponent(app.lifecycleView);
         iocFacade.registerMediatorByConfigName(lifecycleViewMediator.getConfigName());
-
-        accountManagementMediator.setViewComponent(app.accountManagementView);
         iocFacade.registerMediatorByConfigName(accountManagementMediator.getConfigName());
 
         // setup for second level modeler mediators
-        browserMediator.setViewComponent(app.modelerView.browser);
         iocFacade.registerMediatorByConfigName(browserMediator.getConfigName());
-
-        diagramMediator.setViewComponent(app.modelerView.diagram);
         iocFacade.registerMediatorByConfigName(diagramMediator.getConfigName());
-
-        paletteMediator.setViewComponent(app.modelerView.palette);
         iocFacade.registerMediatorByConfigName(paletteMediator.getConfigName());
-
-        propertySheetMediator.setViewComponent(app.modelerView.propertysheet);
         iocFacade.registerMediatorByConfigName(propertySheetMediator.getConfigName());
 
         iocFacade.registerMediatorByConfigName(groupsMediator.getConfigName());

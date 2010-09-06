@@ -59,6 +59,10 @@ public class LoginCommand extends IocSimpleCommand implements IResponder
     }
 
     override public function execute(notification:INotification):void {
+
+        sendNotification(SUCCESS);
+
+        /**
         var loginRequest:LoginRequest = notification.getBody() as LoginRequest;
         _password = loginRequest.password;
 
@@ -69,6 +73,7 @@ public class LoginCommand extends IocSimpleCommand implements IResponder
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.SIGN_ON_SERVICE);
         var call:Object = service.signOn(signOnRequest);
         call.addResponder(this);
+        */
     }
 
     public function result(data:Object):void {

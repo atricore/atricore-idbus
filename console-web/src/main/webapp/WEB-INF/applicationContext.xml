@@ -60,12 +60,12 @@
     </bean>
 
     <bean id="profileManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ProfileManagementAjaxServiceImpl">
-        <property name="profileManagementService" ref="profileManagementServiceBean"/>
+        <!--property name="profileManagementService" ref="profileManagementServiceBean"/-->
         <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 
     <bean id="signOnAjaxServiceBean" class="com.atricore.idbus.console.services.impl.SignOnAjaxServiceImpl">
-        <property name="signOnService" ref="signOnServiceBean"/>
+        <!--property name="signOnService" ref="signOnServiceBean"/-->
         <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 

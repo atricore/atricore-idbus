@@ -141,29 +141,31 @@ public class LifecycleViewMediator extends IocMediator {
             view.grdDeployedAppliances.selectedIndex = deployedAppliancesSelectedIndex;
             view.grdDisposedAppliances.selectedIndex = disposedAppliancesSelectedIndex;
 
-            for (var i:int = 0; i < projectProxy.identityApplianceList.length; i++) {
-                var appliance:IdentityAppliance = projectProxy.identityApplianceList[i] as IdentityAppliance;
-                var selected:Boolean = false;
-                if (projectProxy.currentIdentityAppliance != null &&
-                        appliance.id == projectProxy.currentIdentityAppliance.id) {
-                    selected = true;
-                }
-                if (appliance.idApplianceDeployment == null) {
-                    savedAppliances.addItem(appliance);
-                    if (selected) {
-                        savedAppliancesSelectedIndex = savedAppliances.length - 1;
+            if (projectProxy.identityApplianceList != null) {
+                for (var i:int = 0; i < projectProxy.identityApplianceList.length; i++) {
+                    var appliance:IdentityAppliance = projectProxy.identityApplianceList[i] as IdentityAppliance;
+                    var selected:Boolean = false;
+                    if (projectProxy.currentIdentityAppliance != null &&
+                            appliance.id == projectProxy.currentIdentityAppliance.id) {
+                        selected = true;
                     }
-                } else if (appliance.state == IdentityApplianceState.PROJECTED.name) {
-                    compiledAppliances.addItem(appliance);
-                    //if (selected) {
-                    //    //compiledAppliancesSelectedIndex = compiledAppliances.length - 1;
-                    //}
-                } else if (appliance.state == IdentityApplianceState.INSTALLED.name ||
-                        appliance.state == IdentityApplianceState.STARTED.name) {
-                    deployedAppliances.addItem(appliance);
-                    //if (selected) {
-                    //    deployedAppliancesSelectedIndex = deployedAppliances.length - 1;
-                    //}
+                    if (appliance.idApplianceDeployment == null) {
+                        savedAppliances.addItem(appliance);
+                        if (selected) {
+                            savedAppliancesSelectedIndex = savedAppliances.length - 1;
+                        }
+                    } else if (appliance.state == IdentityApplianceState.PROJECTED.name) {
+                        compiledAppliances.addItem(appliance);
+                        //if (selected) {
+                        //    //compiledAppliancesSelectedIndex = compiledAppliances.length - 1;
+                        //}
+                    } else if (appliance.state == IdentityApplianceState.INSTALLED.name ||
+                            appliance.state == IdentityApplianceState.STARTED.name) {
+                        deployedAppliances.addItem(appliance);
+                        //if (selected) {
+                        //    deployedAppliancesSelectedIndex = deployedAppliances.length - 1;
+                        //}
+                    }
                 }
             }
 
