@@ -62,7 +62,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     public var _resourceId:String;
 
     [Bindable]
-    public var _selectedFiles:Array;
+    public var _selectedFiles:ArrayCollection;
 
     private var _processingStarted:Boolean;
 
@@ -229,8 +229,9 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     }
 
     private function fileSelectHandler(evt:Event):void {
-        _selectedFiles = new Array();
-        _selectedFiles.push(_fileRef.name);
+        view.steps[1].certificateKeyPair.prompt = null;
+        _selectedFiles = new ArrayCollection();
+        _selectedFiles.addItem(_fileRef.name);
         view.steps[1].certificateKeyPair.selectedIndex = 0;
         view.steps[1].btnUpload.enabled = true;
     }
@@ -243,7 +244,8 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     private function uploadCompleteHandler(event:Event):void {
         sendNotification(UploadProgressMediator.UPLOAD_COMPLETED);
         _fileRef = null;
-        _selectedFiles = new Array();
+        _selectedFiles = new ArrayCollection();
+        view.steps[1].certificateKeyPair.prompt = "Browse Key Pair";
         view.steps[1].btnUpload.enabled = false;
     }
 

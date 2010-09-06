@@ -38,18 +38,20 @@ public class UploadCommand extends IocSimpleCommand
    override public function execute(notification:INotification):void {
         var fileRef:FileReference = notification.getBody() as FileReference;
 
-        var currentUrl:String = ExternalInterface.call("window.location.href.toString");
-        var url:String = currentUrl.substring(0, currentUrl.lastIndexOf("/")) + "/upload";
+        if (fileRef != null) {
+            var currentUrl:String = ExternalInterface.call("window.location.href.toString");
+            var url:String = currentUrl.substring(0, currentUrl.lastIndexOf("/")) + "/upload";
 
-        var request:URLRequest = new URLRequest(url);
-        request.method = URLRequestMethod.POST;
+            var request:URLRequest = new URLRequest(url);
+            request.method = URLRequestMethod.POST;
 
-        var variables:URLVariables = new URLVariables();
-        variables.resourceName = fileRef.name;
-        variables.resourceDisplayName = fileRef.name;
-        request.data = variables;
+            var variables:URLVariables = new URLVariables();
+            variables.resourceName = fileRef.name;
+            variables.resourceDisplayName = fileRef.name;
+            request.data = variables;
 
-        fileRef.upload(request, "file", false);
+            fileRef.upload(request, "file", false);
+        }
    }
 }
 }

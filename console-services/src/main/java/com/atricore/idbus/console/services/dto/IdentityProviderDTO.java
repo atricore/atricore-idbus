@@ -21,6 +21,8 @@
 
 package com.atricore.idbus.console.services.dto;
 
+import java.util.Set;
+
 public class IdentityProviderDTO extends FederatedProviderDTO {
 
 	private static final long serialVersionUID = 141137856095909986L;
@@ -32,7 +34,7 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
     private AttributeProfileDTO attributeProfile;
 
     // RFU
-    private AuthenticationMechanismDTO authenticationMechanism;
+    private Set<AuthenticationMechanismDTO> authenticationMechanisms;
 
     // RFU
     private AuthenticationContractDTO authenticationContract;
@@ -90,12 +92,12 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
         this.authenticationContract = authenticationContract;
     }
 
-    public AuthenticationMechanismDTO getAuthenticationMechanism() {
-        return authenticationMechanism;
+    public Set<AuthenticationMechanismDTO> getAuthenticationMechanisms() {
+        return authenticationMechanisms;
     }
 
-    public void setAuthenticationMechanism(AuthenticationMechanismDTO authenticationMechanism) {
-        this.authenticationMechanism = authenticationMechanism;
+    public void setAuthenticationMechanisms(Set<AuthenticationMechanismDTO> authenticationMechanisms) {
+        this.authenticationMechanisms = authenticationMechanisms;
     }
 
     public AuthenticationAssertionEmissionPolicyDTO getEmissionPolicy() {

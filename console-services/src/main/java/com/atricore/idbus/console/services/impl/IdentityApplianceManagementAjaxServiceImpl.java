@@ -31,6 +31,7 @@ import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagement
 import org.dozer.DozerBeanMapper;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Author: Dejan Maric
@@ -657,6 +658,14 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idpSamlConfig.setSigner(iad.getKeystore());
         idpSamlConfig.setEncrypter(iad.getKeystore());
         idp.setConfig(idpSamlConfig);
+
+        Set<AuthenticationMechanismDTO> authMechanisms = new HashSet<AuthenticationMechanismDTO>();
+        BasicAuthenticationDTO authMechanism = new BasicAuthenticationDTO();
+        authMechanism.setHashAlgorithm("MD5");
+        authMechanism.setHashEncoding("HEX");
+        authMechanism.setIgnoreUsernameCase(false);
+        authMechanisms.add(authMechanism);
+        idp.setAuthenticationMechanisms(authMechanisms);
 
         return idp;
     }
