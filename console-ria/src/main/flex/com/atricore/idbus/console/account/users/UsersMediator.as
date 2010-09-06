@@ -199,7 +199,7 @@ public class UsersMediator extends IocMediator {
     private function handleClearSearch(event:MouseEvent):void {
         trace("Clear Search Button Click: " + event);
         view.btnClearSearch.visible = false;
-        sendNotification(ApplicationFacade.LIST_GROUPS);
+        sendNotification(ApplicationFacade.LIST_USERS);
     }
 
     public function userListSelectHandler(e:ListEvent):void {

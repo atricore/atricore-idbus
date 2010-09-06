@@ -19,15 +19,12 @@
 
 package com.atricore.idbus.console.lifecycle.main.test;
 
-import com.atricore.idbus.console.lifecycle.main.transform.IdentityApplianceDefinitionVisitor;
-import com.atricore.idbus.console.lifecycle.main.transform.IdentityApplianceDefinitionWalker;
-import com.atricore.idbus.console.lifecycle.main.transform.ReflexiveIdentityApplianceDefinitionWalker;
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
+import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceBuilder;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformerApplianceBuilderImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
-import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
-import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -165,7 +162,6 @@ public class TransformationTest {
     
     @Test
     public void reflexiveWalkerTest() {
-
         IdentityAppliance appliance = newApplianceInstance("ida1");
         TransformerApplianceBuilderImpl builder = (TransformerApplianceBuilderImpl) applicationContext.getBean("testApplianceBuilder");
         builder.build(appliance);

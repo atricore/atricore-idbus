@@ -28,9 +28,7 @@ import com.atricore.idbus.console.services.spi.request.UpdateUserProfileRequest;
 import com.atricore.idbus.console.services.spi.response.FetchGroupMembershipResponse;
 import com.atricore.idbus.console.services.spi.response.UpdateUserPasswordResponse;
 import com.atricore.idbus.console.services.spi.response.UpdateUserProfileResponse;
-import com.atricore.idbus.console.lifecycle.main.exception.ProfileManagementException;
 import com.atricore.idbus.console.services.spi.ProfileManagementAjaxService;
-import com.atricore.idbus.console.lifecycle.main.spi.ProfileManagementService;
 import org.dozer.DozerBeanMapper;
 
 /**
@@ -38,10 +36,10 @@ import org.dozer.DozerBeanMapper;
  */
 public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxService {
 
-    ProfileManagementService profileManagementService;
     private DozerBeanMapper dozerMapper;
 
     public UpdateUserProfileResponse updateUserProfile(UpdateUserProfileRequest updateProfileRequest) throws IdentityServerException {
+        /** TODO : Use SPML Service
         com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserProfileRequest beReq =
                 dozerMapper.map(updateProfileRequest, com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserProfileRequest.class);
 
@@ -52,9 +50,12 @@ public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxSe
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, UpdateUserProfileResponse.class);
+         */
+        throw new UnsupportedOperationException("New SPML based version needs to be implemented!");
     }
 
     public UpdateUserPasswordResponse updateUserPassword(UpdateUserPasswordRequest updatePasswordRequest) throws IdentityServerException {
+        /*
         com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserPasswordRequest beReq =
                 dozerMapper.map(updatePasswordRequest, com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserPasswordRequest.class);
 
@@ -65,9 +66,12 @@ public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxSe
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, UpdateUserPasswordResponse.class);
+        */
+        throw new UnsupportedOperationException("New SPML based version needs to be implemented!");
     }
 
     public FetchGroupMembershipResponse fetchGroupMembership(FetchGroupMembershipRequest fetchGroupMembership) throws IdentityServerException {
+        /*
         com.atricore.idbus.console.lifecycle.main.spi.request.FetchGroupMembershipRequest beReq =
                 dozerMapper.map(fetchGroupMembership, com.atricore.idbus.console.lifecycle.main.spi.request.FetchGroupMembershipRequest.class);
 
@@ -78,10 +82,8 @@ public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxSe
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, FetchGroupMembershipResponse.class);
-    }
-
-    public void setProfileManagementService(ProfileManagementService profileManagementService) {
-        this.profileManagementService = profileManagementService;
+        */
+        throw new UnsupportedOperationException("New SPML based version needs to be implemented!");
     }
 
     public void setDozerMapper(DozerBeanMapper dozerMapper) {

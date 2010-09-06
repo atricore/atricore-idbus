@@ -1,7 +1,7 @@
 package com.atricore.idbus.console.lifecycle.command.completers;
 
-import org.apache.felix.karaf.shell.console.Completer;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
+import org.apache.felix.karaf.shell.console.Completer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 

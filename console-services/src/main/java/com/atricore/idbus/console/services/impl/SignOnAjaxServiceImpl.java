@@ -8,7 +8,6 @@ import com.atricore.idbus.console.services.spi.response.SignOnResponse;
 import com.atricore.idbus.console.services.spi.response.SignOutResponse;
 import com.atricore.idbus.console.services.spi.response.UserLoggedResponse;
 import com.atricore.idbus.console.lifecycle.main.exception.SignOnServiceException;
-import com.atricore.idbus.console.lifecycle.main.spi.SignOnService;
 import org.dozer.DozerBeanMapper;
 
 /**
@@ -16,35 +15,19 @@ import org.dozer.DozerBeanMapper;
  */
 public class SignOnAjaxServiceImpl implements SignOnAjaxService {
 
-    private SignOnService signOnService;
+
     private DozerBeanMapper dozerMapper;
 
     public SignOnResponse signOn(SignOnRequest signOnRequest) throws SignOnServiceException {
-        com.atricore.idbus.console.lifecycle.main.spi.request.SignOnRequest beReq =
-                dozerMapper.map(signOnRequest, com.atricore.idbus.console.lifecycle.main.spi.request.SignOnRequest.class);
-
-        com.atricore.idbus.console.lifecycle.main.spi.response.SignOnResponse beRes = signOnService.signOn(beReq);
-        return dozerMapper.map(beRes, SignOnResponse.class);
+        throw new UnsupportedOperationException("Use new SPML Service !");
     }
 
     public SignOutResponse signOut(SignOutRequest signOutRequest) throws SignOnServiceException {
-        com.atricore.idbus.console.lifecycle.main.spi.request.SignOutRequest beReq =
-                dozerMapper.map(signOutRequest, com.atricore.idbus.console.lifecycle.main.spi.request.SignOutRequest.class);
-
-        com.atricore.idbus.console.lifecycle.main.spi.response.SignOutResponse beRes = signOnService.signOut(beReq);
-        return dozerMapper.map(beRes, SignOutResponse.class);
+        throw new UnsupportedOperationException("Use new SPML Service !");
     }
 
     public UserLoggedResponse userLogged(UserLoggedRequest userLoggedRequest) throws SignOnServiceException {
-        com.atricore.idbus.console.lifecycle.main.spi.request.UserLoggedRequest beReq =
-                dozerMapper.map(userLoggedRequest, com.atricore.idbus.console.lifecycle.main.spi.request.UserLoggedRequest.class);
-
-        com.atricore.idbus.console.lifecycle.main.spi.response.UserLoggedResponse beRes = signOnService.userLogged(beReq);
-        return dozerMapper.map(beRes, UserLoggedResponse.class);
-    }
-
-    public void setSignOnService(SignOnService signOnService) {
-        this.signOnService = signOnService;
+        throw new UnsupportedOperationException("Use new SPML Service !");
     }
 
     public void setDozerMapper(DozerBeanMapper dozerMapper) {

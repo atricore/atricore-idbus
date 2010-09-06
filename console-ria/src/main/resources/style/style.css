@@ -13,11 +13,6 @@ Application {
     backgroundAlpha: 1.0;
 }
 
-.banner {
-    background-image: Embed(source = "/images/nav-bg.png");
-    backgroundSize: "100%";
-}
-
 Label.welcome {
     font-size: 16;
     font-family: "News Gothic MT,Trebuchet MS";
@@ -85,7 +80,6 @@ Label.welcome {
 .main {
     border-skin: ClassReference('com.atricore.idbus.console.skin.HaloBorderWithImagePositioning');
     background-position: center, top;
-    background-image: Embed(source = "/images/main-bg.jpg");
     background-color: #ffffff;
     padding-right: 0;
     padding-left: 10;

@@ -76,14 +76,21 @@ public abstract class AbstractTransformer implements Transformer {
 
     protected String resolveLocationUrl(Provider provider) {
 
-        if (provider.getLocation() == null) {
-            return "";
-        }
-        
-        Location l = provider.getLocation();
-        // TODO : Location al = provider.getApplinaceDefinition().getLocation();
+        Location pl = provider.getLocation();
+        Location al = provider.getIdentityAppliance().getLocation();
 
-        return resolveLocationUrl(l);
+        String location = "";
+
+        if (pl != null)
+            location = resolveLocationUrl(pl);
+
+        if (!"".equals(location) && !location.startsWith("/"))
+            return location;
+
+        if (al != null)
+            location = resolveLocationUrl(al) + location;
+
+        return location;
     }
 
     protected String resolveLocationBaseUrl(Provider provider) {

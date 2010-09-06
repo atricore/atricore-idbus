@@ -48,7 +48,6 @@ public class UploadProgressMediator extends IocMediator
         if (getViewComponent() != null) {
             view.btnCancel.removeEventListener("click", onUploadBtnCancel);
             view.btnFinish.removeEventListener("click", onUploadBtnFinish);
-            view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
         }
 
         init();
@@ -57,9 +56,10 @@ public class UploadProgressMediator extends IocMediator
     }
 
     private function init():void {
-        view.btnCancel.addEventListener("click", onUploadBtnCancel);
-        view.btnFinish.addEventListener("click", onUploadBtnFinish);
-        view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+        if (view != null) {
+            view.btnCancel.addEventListener("click", onUploadBtnCancel);
+            view.btnFinish.addEventListener("click", onUploadBtnFinish);
+        }
     }
 
     override public function listNotificationInterests():Array {
@@ -69,10 +69,13 @@ public class UploadProgressMediator extends IocMediator
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case ApplicationFacade.SHOW_UPLOAD_PROGRESS:
-                _fileRef = notification.getBody() as FileReference;
-                view.txtFile.text = "Uploading file: " + _fileRef.name;
-                view.progBar.label = "0%";
-                sendNotification(CREATED);
+                if (view != null) {
+                    _fileRef = notification.getBody() as FileReference;
+                    view.txtFile.text = "Uploading file: " + _fileRef.name;
+                    view.progBar.label = "0%";
+                    init();
+                    sendNotification(CREATED);
+                }
                 break;
             case UPDATE_PROGRESS:
                 var numPerc:Number = notification.getBody() as Number;

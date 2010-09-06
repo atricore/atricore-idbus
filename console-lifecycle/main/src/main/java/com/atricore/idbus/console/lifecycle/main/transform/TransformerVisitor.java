@@ -318,6 +318,8 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
     public boolean walkNextChild(IdentityProviderChannel node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        if (child instanceof FederatedConnection)
+            return false;
         return true;
     }
 
@@ -371,6 +373,9 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
      * @return <code>false</code>, if no more childs should be walked, else <code>true</code>
      */
     public boolean walkNextChild(ServiceProviderChannel node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        if (child instanceof FederatedConnection)
+            return false;
+
         return true;
     }
 

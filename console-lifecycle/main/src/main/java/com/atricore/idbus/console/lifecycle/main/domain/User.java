@@ -25,13 +25,11 @@ import javax.jdo.annotations.*;
 import java.io.Serializable;
 import java.util.Date;
 
-//@PersistenceCapable
 public class User
     implements Serializable
 {
     private static final long serialVersionUID = -2547786148798290707L;
 
-//    @Persistent(primaryKey="true", valueStrategy = IdGeneratorStrategy.INCREMENT)
      private long id;
 
 //<--- General Information ---->

@@ -5,6 +5,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeploym
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceUnit;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceUnitType;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdApplianceProject;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
@@ -52,7 +53,6 @@ public class ApplianceBuilderTransformer extends AbstractTransformer implements 
 
         try {
 
-
             IdApplianceProject prj = event.getContext().getProject();
             IdentityAppliance appliance = prj.getIdAppliance();
 
@@ -91,7 +91,7 @@ public class ApplianceBuilderTransformer extends AbstractTransformer implements 
             if (idaModule == null)
                 throw new TransformException("No 'Appliance' module found in project");
 
-            String featureName = applianceDef.getName() + "-" + idaModule.getId() + "-idau";
+            String featureName = applianceDef.getName();
             URI featuresUri = new URI("mvn:" + idaModule.getGroup() +
                     "/" + idaModule.getName() +
                     "/" + idaModule.getVersion() +
@@ -100,10 +100,21 @@ public class ApplianceBuilderTransformer extends AbstractTransformer implements 
             applianceDep.setFeatureName(featureName);
             applianceDep.setFeatureUri(featuresUri.toString());
 
-
             Collection<IdProjectModule> idauModules = getApplianceUnitModules(rootModule);
+
+            applianceDep.getIdaus().clear();
+
             for (IdProjectModule idauModule : idauModules) {
+
                 IdentityApplianceUnit idau = new IdentityApplianceUnit ();
+
+                // TODO : Need a way to set providers in different IDAUs !!
+                List<Provider> providers = new ArrayList<Provider>();
+                for (Provider p : applianceDef.getProviders()) {
+                    providers.add(p);
+                }
+                idau.setProviders(providers);
+
                 idau.setDescription(idauModule.getDescription());
                 idau.setType(IdentityApplianceUnitType.FEDERATION_UNIT);
 
@@ -114,9 +125,6 @@ public class ApplianceBuilderTransformer extends AbstractTransformer implements 
 
                 applianceDep.getIdaus().add(idau);
             }
-
-
-
 
         } catch (Exception e) {
             throw new TransformException(e.getMessage(), e);

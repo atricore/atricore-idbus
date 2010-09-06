@@ -12,19 +12,8 @@
     <!-- Idbus Server Management OSGI Services                                -->
     <!-- ==================================================================== -->
 
-    <!--
-    <osgi:reference id="userProvisioningServiceManagerBean" cardinality="1..1" timeout="60"
-                interface="com.atricore.idbus.console.lifecycle.main.spi.UserProvisioningService"/>
-    -->
-
     <osgi:reference id="idApplianceManagementService" cardinality="1..1" timeout="60"
                 interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"/>
-
-    <osgi:reference id="profileManagementServiceBean" cardinality="1..1" timeout="60"
-                interface="com.atricore.idbus.console.lifecycle.main.spi.ProfileManagementService"/>
-
-    <osgi:reference id="signOnServiceBean" cardinality="1..1" timeout="60"
-                interface="com.atricore.idbus.console.lifecycle.main.spi.SignOnService"/>
 
     <osgi:reference id="activationServiceBean" cardinality="1..1" timeout="60"
                 interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
@@ -71,12 +60,12 @@
     </bean>
 
     <bean id="profileManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ProfileManagementAjaxServiceImpl">
-        <property name="profileManagementService" ref="profileManagementServiceBean"/>
+        <!--property name="profileManagementService" ref="profileManagementServiceBean"/-->
         <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 
     <bean id="signOnAjaxServiceBean" class="com.atricore.idbus.console.services.impl.SignOnAjaxServiceImpl">
-        <property name="signOnService" ref="signOnServiceBean"/>
+        <!--property name="signOnService" ref="signOnServiceBean"/-->
         <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 

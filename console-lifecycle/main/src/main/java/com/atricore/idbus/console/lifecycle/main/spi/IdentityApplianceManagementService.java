@@ -48,12 +48,6 @@ public interface IdentityApplianceManagementService {
     ListIdentityAppliancesByStateResponse listIdentityAppliancesByState(ListIdentityAppliancesByStateRequest req) throws IdentityServerException;
 
     /**
-     * Adds a new Identity Bus definition
-     */
-    @Deprecated
-    AddIdentityApplianceDefinitionResponse addIdentityApplianceDefinition(AddIdentityApplianceDefinitionRequest req) throws IdentityServerException;
-
-    /**
      * Look up an identity bus instance based on its id.
      */
     LookupIdentityApplianceDefinitionByIdResponse lookupIdentityApplianceDefinitionById(LookupIdentityApplianceDefinitionByIdRequest request) throws IdentityServerException;

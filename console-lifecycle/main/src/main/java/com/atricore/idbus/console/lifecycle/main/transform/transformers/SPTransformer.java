@@ -14,8 +14,6 @@ import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Descrip
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Entry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.josso.main.JossoMediator;
-import org.atricore.idbus.capabilities.josso.main.PartnerAppMapping;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SSOLogMessageBuilder;
@@ -39,7 +37,6 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogM
 import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
-import org.atricore.idbus.kernel.main.mediation.provider.BindingProviderImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
 
 import java.util.ArrayList;

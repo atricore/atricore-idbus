@@ -65,7 +65,7 @@
     <bean name="spJOSSOActivationTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPJOSSOActivationTransformer"/>
 
-    <bean name="exeEnvJOSSOActivationTransformer"
+    <bean name="execEnvJOSSOActivationTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecEnvJOSSOActivationTransformer"/>
 
     <bean name="execEnvJOSSOTransformer"
@@ -170,14 +170,14 @@
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
                                         <ref bean="spJOSSOActivationTransformer"/>
-                                        <ref bean="execEnvJOSSOTransformer"/>
-                                        <!-- ref bean="samlr2SPTransformer"/ -->
+                                        <ref bean="execEnvJOSSOActivationTransformer"/>
+                                        <ref bean="samlr2SPTransformer"/>
 
                                         <!-- PSP Transformers -->
 
                                         <!-- Other Transformers -->
-                                        <ref bean="identityLookupTransformer"/>
                                         <ref bean="execEnvJOSSOTransformer"/>
+                                        <ref bean="identityLookupTransformer"/>
 
                                     </list>
                                 </property>
@@ -191,8 +191,7 @@
                                 <property name="transformers">
                                     <list>
                                         <ref bean="projectSerializerTransformer"/>
-
-                                        <!-- CAN'T BUILD OUTSIDE OSGi container ref bean="applianceBuilderTransfomer"/-->
+                                        <ref bean="applianceBuilderTransfomer"/>
                                     </list>
                                 </property>
 
