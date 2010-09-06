@@ -31,6 +31,7 @@ import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ByteArrayResource;
@@ -39,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.jdo.FetchPlan;
 import java.util.*;
 
-public class IdentityApplianceManagementServiceImpl implements IdentityApplianceManagementService{
+public class IdentityApplianceManagementServiceImpl implements IdentityApplianceManagementService, InitializingBean {
 
 	private static final Log logger = LogFactory.getLog(IdentityApplianceManagementServiceImpl.class);
 
@@ -69,7 +70,30 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
 
     private ResourceDAO resourceDAO;
 
+    public void afterPropertiesSet() throws Exception {
 
+        startup();
+    }
+
+    public void startup() throws IdentityServerException {
+        // TODO : Start deployed appliances based on DB state ...
+        try {
+            Collection<IdentityAppliance> appiances = identityApplianceDAO.findAll();
+            for (IdentityAppliance appliance : appiances) {
+
+                if (appliance.getState().equals(IdentityApplianceState.STARTED.toString())) {
+
+                    // We mark all appliancies as INSTALLED, because we're starting the platform again.
+                    // TODO : Check if the bundle is OK to assert state ... use ApplianceDeployer 
+                    appliance.setState(IdentityApplianceState.INSTALLED.toString());
+                    this.startAppliance(appliance);
+                }
+            }
+
+        } catch (Exception e) {
+            throw new IdentityServerException(e);
+        }
+    }
 
     @Transactional
     public BuildIdentityApplianceResponse buildIdentityAppliance(BuildIdentityApplianceRequest request) throws IdentityServerException {
