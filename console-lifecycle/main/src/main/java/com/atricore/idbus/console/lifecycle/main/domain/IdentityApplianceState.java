@@ -7,6 +7,6 @@ package com.atricore.idbus.console.lifecycle.main.domain;
 public enum IdentityApplianceState {
 
     PROJECTED,
-    INSTALLED,
+    DEPLOYED,
     STARTED;
 }

@@ -43,24 +43,17 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {
-        if (event.getData() instanceof FederatedConnection) {
-            FederatedConnection fc = (FederatedConnection) event.getData();
+        if (event.getData() instanceof IdentityProviderChannel) {
+
+            IdentityProviderChannel idpChannel = (IdentityProviderChannel) event.getData();
+            FederatedConnection fc = (FederatedConnection) event.getContext().getParentNode();
 
             if (roleA) {
-                if (fc.getRoleA() instanceof ServiceProvider) {
-                    IdentityProviderChannel idpChannel = (IdentityProviderChannel) fc.getChannelA();
-
-                    // Only accept a connection if channel overrides provider setup.
-                    return idpChannel.isOverrideProviderSetup();
-                }
+                return fc.getRoleA() instanceof ServiceProvider
+                        && !fc.getRoleA().isRemote();
             } else {
-                if (fc.getRoleB() instanceof ServiceProvider) {
-                    IdentityProviderChannel idpChannel = (IdentityProviderChannel) fc.getChannelB();
-
-                    // Only accept a connection if channel overrides provider setup.
-                    return idpChannel.isOverrideProviderSetup();
-                }
-
+                return fc.getRoleB() instanceof ServiceProvider
+                        && !fc.getRoleB().isRemote();
             }
 
         }
@@ -71,46 +64,54 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
     @Override
     public void before(TransformEvent event) throws TransformException {
 
-        FederatedConnection federatedConnection = (FederatedConnection) event.getData();
+        FederatedConnection federatedConnection = (FederatedConnection) event.getContext().getParentNode();
+        IdentityProviderChannel idpChannel = (IdentityProviderChannel) event.getData();
 
-        ServiceProvider provider = (ServiceProvider) event.getContext().getParentNode();
-        ServiceProviderChannel idpChannel = null;
-        ServiceProvider roleProvider = null;
-        FederatedProvider target = null;
-        FederatedChannel targetChannel = null;
+        ServiceProvider sp;
+
+        FederatedProvider target;
+        FederatedChannel targetChannel;
 
         if (roleA) {
 
-            roleProvider = (ServiceProvider) federatedConnection.getRoleA();
-            idpChannel = (ServiceProviderChannel) federatedConnection.getChannelA();
+            assert idpChannel == federatedConnection.getChannelA() :
+                    "IDP Channel " + idpChannel.getName() + " should be 'A' channel in federated connection " +
+                            federatedConnection.getName();
+
+            sp = (ServiceProvider) federatedConnection.getRoleA();
+            idpChannel = (IdentityProviderChannel) federatedConnection.getChannelA();
 
             target = federatedConnection.getRoleB();
             targetChannel = federatedConnection.getChannelB();
 
-            if (!provider.getName().equals(federatedConnection.getRoleA().getName()))
-                throw new IllegalStateException("Context provider " + provider +
+            if (!sp.getName().equals(federatedConnection.getRoleA().getName()))
+                throw new IllegalStateException("Context provider " + sp +
                         " is not roleA provider in Federated Connection " + federatedConnection.getName());
 
         } else {
 
-            roleProvider = (ServiceProvider) federatedConnection.getRoleB();
-            idpChannel = (ServiceProviderChannel) federatedConnection.getChannelB();
+            assert idpChannel == federatedConnection.getChannelB() :
+                    "IDP Channel " + idpChannel.getName() + " should be 'B' channel in federated connection " +
+                            federatedConnection.getName();
+
+
+            sp = (ServiceProvider) federatedConnection.getRoleB();
+            idpChannel = (IdentityProviderChannel) federatedConnection.getChannelB();
 
             target = federatedConnection.getRoleA();
             targetChannel = federatedConnection.getChannelA();
 
-            if (!provider.getName().equals(federatedConnection.getRoleB().getName()))
-                throw new IllegalStateException("Context provider " + provider +
+            if (!sp.getName().equals(federatedConnection.getRoleB().getName()))
+                throw new IllegalStateException("Context provider " + sp +
                         " is not roleB provider in Federated Connection " + federatedConnection.getName());
 
         }
 
-        generateSPComponents(provider, idpChannel, federatedConnection, target, targetChannel, event.getContext());
-
+        generateSPComponents(sp, idpChannel, federatedConnection, target, targetChannel, event.getContext());
     }
 
-    protected void generateSPComponents(ServiceProvider provider,
-                                     ServiceProviderChannel idpChannel,
+    protected void generateSPComponents(ServiceProvider sp,
+                                     IdentityProviderChannel idpChannel,
                                      FederatedConnection fc,
                                      FederatedProvider target,
                                      FederatedChannel targetChannel,
@@ -120,7 +121,7 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         Beans beans = (Beans) ctx.get("beans");
         
         if (logger.isTraceEnabled())
-            logger.trace("Generating Beans for IdP Channel " + idpChannel.getName()  + " of SP " + provider.getName());
+            logger.trace("Generating Beans for IdP Channel " + idpChannel.getName()  + " of SP " + sp.getName());
 
         Bean spBean = null;
         Collection<Bean> b = getBeansOfType(spBeans, ServiceProviderImpl.class.getName());
@@ -129,43 +130,23 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         }
         spBean = b.iterator().next();
 
-        boolean isDefault = false ; // TODO RETROFIT  : idpChannel.getTarget() == null || idpChannel.getTarget().equals(provider);
-        // TODO RETROFIT  : String name = spBean.getName() + (isDefault ? "-default" : "-" + normalizeBeanName(idpChannel.getTarget().getName())) + "-sp-channel";
-        String name  = null;
-        
-        Bean idpChannelBean = newBean(spBeans, name, IdPChannelImpl.class.getName());
+        String idpChannelName = spBean.getName() +  "-" + (!idpChannel.isOverrideProviderSetup() ? "default" : normalizeBeanName(target.getName())) + "-idp-channel";
+        Bean idpChannelBean = newBean(spBeans, idpChannelName, IdPChannelImpl.class.getName());
 
         ctx.put("idpChannelBean", idpChannelBean);
 
+        if (logger.isDebugEnabled())
+            logger.debug("Creating IdP Channel definition for " + idpChannelName);
+
+
         // name
         setPropertyValue(idpChannelBean, "name", idpChannelBean.getName());
-
-        // description
-        setPropertyValue(idpChannelBean, "description", idpChannel.getDescription());
-
-        // location
-        // TODO RETROFIT  : setPropertyValue(idpChannelBean, "location", resolveLocationUrl(provider.getBindingChannel().getLocation()) + "/SAML2");
-
-        // provider
-        // TODO RETROFIT  :
-        /*
-        if (idpChannel.getTarget() != null) {
-            setPropertyRef(idpChannelBean, "provider", normalizeBeanName(idpChannel.getTarget().getName()));
-        } else {
-            setPropertyRef(idpChannelBean, "provider", spBean.getName());
-        }
-        */
-
-        // sessionManager
+        setPropertyValue(idpChannelBean, "description", idpChannel.getDisplayName());
+        setPropertyValue(idpChannelBean, "location", resolveLocationUrl(sp, idpChannel));
+        setPropertyRef(idpChannelBean, "provider", normalizeBeanName(sp.getName()));
+        if (idpChannel.isOverrideProviderSetup())
+            setPropertyRef(idpChannelBean, "targetProvider", normalizeBeanName(target.getName()));
         setPropertyRef(idpChannelBean, "sessionManager", spBean.getName() + "-session-manager");
-
-        // identityManager
-        // TODO RETROFIT  :
-//        if (idpChannel.getIdentityVault() != null) {
-//            setPropertyRef(idpChannelBean, "identityManager", spBean.getName() + "-identity-manager");
-//        }
-
-        // member
         setPropertyRef(idpChannelBean, "member", spBean.getName() + "-md");
         
         // identityMediator
@@ -219,7 +200,7 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(sloLocal, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
         setPropertyValue(sloLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
         // NOTE: location doesn't exist in simple-federation example
-        setPropertyValue(sloLocal, "location", "local://" + spBean.getName() + "/SLO/LOCAL");
+        setPropertyValue(sloLocal, "location", "local://" + sp.getLocation().getUri().toUpperCase() + "/SLO/LOCAL");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
         plan.setBean(spBean.getName() + "-spsso-samlr2sloreq-to-samlr2resp-plan");

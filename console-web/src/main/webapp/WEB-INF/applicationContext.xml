@@ -31,7 +31,6 @@
         </property>
     </bean>
 
-
     <bean id="applicationServerInitialization" class="com.atricore.idbus.console.services.util.ApplicationServerInitialization">
         <!--property name="userProvisioningService" ref="userProvisioningServiceManagerBean"/-->
     </bean>

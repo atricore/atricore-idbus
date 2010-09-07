@@ -6,6 +6,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDeployer;
+import org.apache.felix.karaf.features.Feature;
 import org.apache.felix.karaf.features.FeaturesService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -31,6 +32,68 @@ public class FeaturesBasedApplianceDeployer implements IdentityApplianceDeployer
         this.bundleContext = bundleContext;
     }
 
+    public boolean isDeployed(IdentityAppliance appliance) throws IdentityServerException {
+        ServiceReference ref = getBundleContext().getServiceReference(FeaturesService.class.getName());
+        if (ref == null) {
+            throw new IdentityServerException("Features Service is unavailable. (no service reference)");
+        }
+
+        try {
+            FeaturesService svc = (FeaturesService) getBundleContext().getService(ref);
+            if (svc == null) {
+                throw new IdentityServerException("Features Service is unavailable. (no service)");
+            }
+
+            IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
+
+            for (Feature f : svc.listFeatures()) {
+                if (f.getName().equals(applianceDep.getFeatureName()) &&
+                        f.getVersion().equals("1.0." + applianceDep.getDeployedRevision())) {
+                    return true;
+                }
+            }
+
+        } catch (Exception e) {
+            throw new IdentityServerException("Cannot deploy appliance " + appliance.getId(), e);
+
+        } finally {
+            getBundleContext().ungetService(ref);
+        }
+
+        return false;
+    }
+
+    public boolean isStarted(IdentityAppliance appliance) throws IdentityServerException {
+        ServiceReference ref = getBundleContext().getServiceReference(FeaturesService.class.getName());
+        if (ref == null) {
+            throw new IdentityServerException("Features Service is unavailable. (no service reference)");
+        }
+
+        try {
+            FeaturesService svc = (FeaturesService) getBundleContext().getService(ref);
+            if (svc == null) {
+                throw new IdentityServerException("Features Service is unavailable. (no service)");
+            }
+
+            IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
+
+            for (Feature f : svc.listFeatures()) {
+                if (f.getName().equals(applianceDep.getFeatureName()) &&
+                        f.getVersion().equals("1.0." + applianceDep.getDeployedRevision())) {
+                    return  svc.isInstalled(f);
+                }
+            }
+
+        } catch (Exception e) {
+            throw new IdentityServerException("Cannot deploy appliance " + appliance.getId(), e);
+
+        } finally {
+            getBundleContext().ungetService(ref);
+        }
+
+        return false;
+    }
+
     public IdentityAppliance deploy(IdentityAppliance appliance) throws IdentityServerException {
 
         ServiceReference ref = getBundleContext().getServiceReference(FeaturesService.class.getName());
@@ -39,6 +102,12 @@ public class FeaturesBasedApplianceDeployer implements IdentityApplianceDeployer
         }
 
         try {
+
+            FeaturesService svc = (FeaturesService) getBundleContext().getService(ref);
+            if (svc == null) {
+                throw new IdentityServerException("Features Service is unavailable. (no service)");
+            }
+
 
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
 
@@ -50,10 +119,6 @@ public class FeaturesBasedApplianceDeployer implements IdentityApplianceDeployer
                 throw new IdentityServerException("No Appliance Deployment information found for appliance " +
                         appliance.getId());
 
-            FeaturesService svc = (FeaturesService) getBundleContext().getService(ref);
-            if (svc == null) {
-                throw new IdentityServerException("Features Service is unavailable. (no service)");
-            }
 
             svc.addRepository(new URI(applianceDep.getFeatureUri()));
             //svc.installFeature(applianceDep.getFeatureName());
@@ -61,7 +126,7 @@ public class FeaturesBasedApplianceDeployer implements IdentityApplianceDeployer
             applianceDep.setDeployedRevision(applianceDef.getRevision());
             applianceDep.setDeploymentTime(new Date());
 
-            appliance.setState(IdentityApplianceState.INSTALLED.toString());
+            appliance.setState(IdentityApplianceState.DEPLOYED.toString());
 
             return appliance;
         } catch (Exception e) {
@@ -89,7 +154,7 @@ public class FeaturesBasedApplianceDeployer implements IdentityApplianceDeployer
             IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
 
-            if (!appliance.getState().equals(IdentityApplianceState.INSTALLED.toString()))
+            if (!appliance.getState().equals(IdentityApplianceState.DEPLOYED.toString()))
                 throw new IllegalStateException("Appliance in state " + appliance.getState() + " cannot be undeployed");
 
             svc.removeRepository(new URI(applianceDep.getFeatureUri()));
@@ -123,7 +188,7 @@ public class FeaturesBasedApplianceDeployer implements IdentityApplianceDeployer
 
             IdentityApplianceState state = IdentityApplianceState.valueOf(appliance.getState());
             switch (state) {
-                case INSTALLED:
+                case DEPLOYED:
                     IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
                     String featureName = applianceDep.getFeatureName();
                     String featureVersion = "1.0." + appliance.getIdApplianceDeployment().getDeployedRevision();
@@ -171,7 +236,7 @@ public class FeaturesBasedApplianceDeployer implements IdentityApplianceDeployer
                         throw new IdentityServerException("Cannot stop appliance " + appliance.getId() +
                                 " using feature " + featureName, e);
                     }
-                    appliance.setState(IdentityApplianceState.INSTALLED.toString());
+                    appliance.setState(IdentityApplianceState.DEPLOYED.toString());
 
                     break;
                 default:

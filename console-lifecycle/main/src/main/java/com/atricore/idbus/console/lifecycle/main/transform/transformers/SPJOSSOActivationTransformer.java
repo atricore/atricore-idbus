@@ -15,6 +15,7 @@ import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPSessionHeartBeatRe
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
+import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
 
 import java.util.ArrayList;
@@ -41,10 +42,10 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
         Beans spBeans = (Beans) event.getContext().get("spBeans");
 
         JOSSOActivation activation = (JOSSOActivation) event.getData();
-        ServiceProvider provider = activation.getSp();
+        ServiceProvider sp = activation.getSp();
 
         if (logger.isTraceEnabled())
-            logger.trace("Generating Beans for JOSSO Activation " + activation.getName()  + " of SP " + provider.getName());
+            logger.trace("Generating Beans for JOSSO Activation " + activation.getName()  + " of SP " + sp.getName());
 
         Bean spBean = null;
         Collection<Bean> b = getBeansOfType(spBeans, ServiceProviderImpl.class.getName());
@@ -55,11 +56,12 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
 
         Bean bc = newBean(spBeans, normalizeBeanName(activation.getName()),
                 "org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl");
+
         setPropertyValue(bc, "name", bc.getName());
         setPropertyValue(bc, "description", activation.getDisplayName());
 
         setPropertyRef(bc, "provider", spBean.getName());
-        setPropertyValue(bc, "location", resolveLocationUrl(provider) + "/" + activation.getPartnerAppId().toUpperCase());
+        setPropertyValue(bc, "location", resolveLocationUrl(sp) + "/" + activation.getPartnerAppId().toUpperCase());
 
         setPropertyRef(bc, "identityMediator", spBean.getName() + "-samlr2-mediator");
 
@@ -149,7 +151,7 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
         setPropertyValue(aisAuthLocal, "name", aisAuthLocal.getName());
         setPropertyValue(aisAuthLocal, "type", SAMLR2MetadataConstants.AssertIdentityWithSimpleAuthenticationService_QNAME.toString());
         setPropertyValue(aisAuthLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
-        setPropertyValue(aisAuthLocal, "location", "local:/" + spBean.getName().toUpperCase() + "/SSO/IAAUTHN/LOCAL");
+        setPropertyValue(aisAuthLocal, "location", "local://" + sp.getLocation().getUri().toUpperCase() + "/SSO/IAAUTHN/LOCAL");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
         plan.setBean(spSloToSamlPlan.getName());
@@ -173,7 +175,7 @@ public class SPJOSSOActivationTransformer extends AbstractTransformer {
         setPropertyValue(shbLocal, "name", shbLocal.getName());
         setPropertyValue(shbLocal, "type", SAMLR2MetadataConstants.SPSessionHeartBeatService_QNAME.toString());
         setPropertyValue(shbLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
-        setPropertyValue(shbLocal, "location", "local:/" + spBean.getName().toUpperCase() + "/SSO/SSHB/LOCAL");
+        setPropertyValue(shbLocal, "location", "local://" + sp.getLocation().getUri().toUpperCase() + "/SSO/SSHB/LOCAL");
         endpoints.add(shbLocal);
 
         setPropertyAsBeans(bc, "endpoints", endpoints);

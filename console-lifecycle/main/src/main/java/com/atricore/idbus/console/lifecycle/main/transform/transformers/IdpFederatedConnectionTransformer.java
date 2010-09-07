@@ -141,7 +141,6 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         idpBean = b.iterator().next();
 
         List<Bean> spChannelBeans = getPropertyBeans(idpBean, "channels");
-
         String spChannelName = idpBean.getName() +  "-" + (!spChannel.isOverrideProviderSetup() ? "default" : normalizeBeanName(target.getName())) + "-sp-channel";
 
         if (logger.isDebugEnabled())
@@ -164,25 +163,18 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         Bean spChannelBean = newBean(idpBeans, spChannelName, SPChannelImpl.class.getName());
         ctx.put("spChannelBean", spChannelBean);
         setPropertyValue(spChannelBean, "name", spChannelBean.getName());
-        setPropertyValue(spChannelBean, "description", spChannel.getDescription());
+        setPropertyValue(spChannelBean, "description", spChannel.getDisplayName());
         setPropertyValue(spChannelBean, "location", resolveLocationUrl(idp, spChannel));
         setPropertyRef(spChannelBean, "provider", normalizeBeanName(idp.getName()));
-
         if (spChannel.isOverrideProviderSetup())
             setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(target.getName()));
-
         setPropertyRef(spChannelBean, "sessionManager", idpBean.getName() + "-session-manager");
-        
-        // identityManager
-
-        // member
         setPropertyRef(spChannelBean, "member", idpBean.getName() + "-md");
 
         // identityMediator
         Bean identityMediatorBean = getBean(idpBeans, idpBean.getName() + "-samlr2-mediator");
         if (identityMediatorBean == null)
             throw new TransformException("No identity mediator defined for " + idpBean.getName() + "-samlr2-identity-mediator");
-
         setPropertyRef(spChannelBean, "identityMediator", identityMediatorBean.getName());
 
         // -------------------------------------------------------
@@ -317,7 +309,7 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(shbLocal, "name", shbLocal.getName());
         setPropertyValue(shbLocal, "type", SAMLR2MetadataConstants.IDPSessionHeartBeatService_QNAME.toString());
         setPropertyValue(shbLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
-        setPropertyValue(shbLocal, "location", "local://" + idp.getLocation().getUri() + "/SSO/SSHB/LOCAL");
+        setPropertyValue(shbLocal, "location", "local://" + idp.getLocation().getUri().toUpperCase() + "/SSO/SSHB/LOCAL");
         endpoints.add(shbLocal);
 
         // SSO SSO HTTP ARTIFACT
@@ -357,7 +349,7 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(ssoSloLocal, "name", ssoSloLocal.getName());
         setPropertyValue(ssoSloLocal, "type", SAMLR2MetadataConstants.IDPInitiatedSingleLogoutService_QNAME.toString());
         setPropertyValue(ssoSloLocal, "binding", SamlR2Binding.SSO_LOCAL.getValue());
-        setPropertyValue(ssoSloLocal, "location", "local://" + idp.getLocation().getUri() + "/" + idpBean.getName().toUpperCase() + "/SSO/SLO/LOCAL");
+        setPropertyValue(ssoSloLocal, "location", "local://" + idp.getLocation().getUri().toUpperCase() + "/" + idpBean.getName().toUpperCase() + "/SSO/SLO/LOCAL");
         plansList = new ArrayList<Ref>();
         plan = new Ref();
         plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");

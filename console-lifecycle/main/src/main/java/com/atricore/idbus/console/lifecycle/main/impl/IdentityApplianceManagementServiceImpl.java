@@ -40,7 +40,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.jdo.FetchPlan;
 import java.util.*;
 
-public class IdentityApplianceManagementServiceImpl implements IdentityApplianceManagementService, InitializingBean {
+public class IdentityApplianceManagementServiceImpl implements
+        IdentityApplianceManagementService,
+        InitializingBean {
 
 	private static final Log logger = LogFactory.getLog(IdentityApplianceManagementServiceImpl.class);
 
@@ -70,34 +72,82 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
 
     private ResourceDAO resourceDAO;
 
+    private boolean lazySyncAppliances = false;
+
+    private boolean alreadySynchronizededAppliances = false;
+
     public void afterPropertiesSet() throws Exception {
 
-        startup();
     }
 
-    public void startup() throws IdentityServerException {
-        // TODO : Start deployed appliances based on DB state ...
-        try {
-            Collection<IdentityAppliance> appiances = identityApplianceDAO.findAll();
-            for (IdentityAppliance appliance : appiances) {
+    protected void syncAppliances() throws IdentityServerException {
+
+        if (alreadySynchronizededAppliances)
+            return;
+
+        Collection<IdentityAppliance> appiances = identityApplianceDAO.findAll();
+
+        for (IdentityAppliance appliance : appiances) {
+
+            try {
+                appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Synchronizing Appliance state for [" + appliance.getId() + "] " +
+                            appliance.getIdApplianceDefinition().getName());
 
                 if (appliance.getState().equals(IdentityApplianceState.STARTED.toString())) {
 
-                    // We mark all appliancies as INSTALLED, because we're starting the platform again.
-                    // TODO : Check if the bundle is OK to assert state ... use ApplianceDeployer 
-                    appliance.setState(IdentityApplianceState.INSTALLED.toString());
-                    this.startAppliance(appliance);
-                }
-            }
+                    if (!deployer.isDeployed(appliance)) {
+                        // STARTED in DB but not DEPLOYED in OSGI --> PROJECTED
+                        appliance.setState(IdentityApplianceState.PROJECTED.toString());
+                        if (logger.isDebugEnabled())
+                            logger.debug("Synchronizing Appliance state : PROJECTED " + appliance.getId());
+                        appliance = identityApplianceDAO.save(appliance);
 
-        } catch (Exception e) {
-            throw new IdentityServerException(e);
+                        if (logger.isDebugEnabled())
+                            logger.debug("Automatically Starting appliance ... " + appliance.getId());
+                        this.startAppliance(appliance);
+
+                    } else if (!deployer.isStarted(appliance)) {
+
+                        // STARTED in DB but not STARTED in OSGI --> DEPLOYED
+                        appliance.setState(IdentityApplianceState.DEPLOYED.toString());
+                        if (logger.isDebugEnabled())
+                            logger.debug("Synchronizing Appliance state : DEPLOYED " + appliance.getId());
+                        appliance = identityApplianceDAO.save(appliance);
+
+                        if (logger.isDebugEnabled())
+                            logger.debug("Automatically Starting appliance ... " + appliance.getId());
+                        this.startAppliance(appliance);
+
+                    }
+
+                } else if (appliance.getState().equals(IdentityApplianceState.DEPLOYED.toString())) {
+                    // Appliance is marked as DEPLOYED
+
+                    if (!deployer.isDeployed(appliance)) {
+                        appliance.setState(IdentityApplianceState.PROJECTED.toString());
+                        logger.debug("Synchronizing Appliance state : PROJECTED " + appliance.getId());
+                        appliance = identityApplianceDAO.save(appliance);
+
+                        logger.debug("Automatically Starting appliance ... " + appliance.getId());
+                        this.startAppliance(appliance);
+
+                    }
+
+                }
+            } catch (Exception e) {
+                logger.warn("Appliance " + appliance.getId() + " state synchronization failed : " + e.getMessage(), e);
+            }
         }
+
     }
 
     @Transactional
     public BuildIdentityApplianceResponse buildIdentityAppliance(BuildIdentityApplianceRequest request) throws IdentityServerException {
         try {
+            syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
             appliance = buildAppliance(appliance, request.isDeploy());
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
@@ -115,6 +165,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     @Transactional
     public DeployIdentityApplianceResponse deployIdentityAppliance(DeployIdentityApplianceRequest req) throws IdentityServerException {
         try {
+            syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(req.getApplianceId()));
             appliance = deployAppliance(appliance);
             if (req.getStartAppliance()) {
@@ -135,6 +186,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     @Transactional
     public UndeployIdentityApplianceResponse undeployIdentityAppliance(UndeployIdentityApplianceRequest req) throws IdentityServerException {
         try {
+            syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(req.getApplianceId()));
             appliance = undeployAppliance(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
@@ -148,6 +200,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     @Transactional
     public StartIdentityApplianceResponse startIdentityAppliance(StartIdentityApplianceRequest req) throws IdentityServerException {
         try {
+            syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(req.getId()));
             appliance = startAppliance(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
@@ -161,6 +214,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     @Transactional
     public StopIdentityApplianceResponse stopIdentityAppliance(StopIdentityApplianceRequest req) throws IdentityServerException {
         try {
+            syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(req.getId()));
             appliance = stopAppliance(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
@@ -171,11 +225,15 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
 	    }
     }
 
-    public ImportIdentityApplianceResponse importIdentityAppliance(ImportIdentityApplianceRequest request) {
+    @Transactional
+    public ImportIdentityApplianceResponse importIdentityAppliance(ImportIdentityApplianceRequest request) throws IdentityServerException {
+        syncAppliances();
         throw new UnsupportedOperationException("Not Supported!");
     }
 
-    public ExportIdentityApplianceResponse exportIdentityAppliance(ExportIdentityApplianceRequest request) {
+    @Transactional
+    public ExportIdentityApplianceResponse exportIdentityAppliance(ExportIdentityApplianceRequest request) throws IdentityServerException {
+        syncAppliances();
         throw new UnsupportedOperationException("Not Supported!");
     }
 
@@ -183,6 +241,8 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public ImportApplianceDefinitionResponse importApplianceDefinition(ImportApplianceDefinitionRequest request) throws IdentityServerException {
 
         try {
+
+            syncAppliances();
 
             if (logger.isTraceEnabled())
                 logger.trace("Importing appliance definition \n" + request.getDescriptor() + "\n");
@@ -244,6 +304,9 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     @Transactional
     public ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException {
         try {
+
+            syncAppliances();
+
             String appId = req.getApplianceId();
             Long id = Long.parseLong(appId);
 
@@ -281,6 +344,8 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         AddIdentityApplianceResponse res = null;
         try {
 
+            syncAppliances();
+
             IdentityAppliance appliance = req.getIdentityAppliance();
 
             // TODO : Validate the entire appliance ...
@@ -313,6 +378,8 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public UpdateIdentityApplianceResponse updateIdentityAppliance(UpdateIdentityApplianceRequest request) throws IdentityServerException {
         UpdateIdentityApplianceResponse res = null;
         try {
+
+            syncAppliances();
             IdentityAppliance appliance = request.getAppliance();
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
             applianceDef.setLastModification(new Date());
@@ -333,6 +400,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public LookupIdentityApplianceByIdResponse lookupIdentityApplianceById(LookupIdentityApplianceByIdRequest request) throws IdentityServerException {
         LookupIdentityApplianceByIdResponse res = null;
         try {
+            syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getIdentityApplianceId()));
             appliance = identityApplianceDAO.detachCopy(appliance, 7);
             res = new LookupIdentityApplianceByIdResponse();
@@ -347,6 +415,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     @Transactional
     public RemoveIdentityApplianceResponse removeIdentityAppliance(RemoveIdentityApplianceRequest req) throws IdentityServerException{
         try {
+            syncAppliances();
             //First delete deployment data to prevent reference error when deleting providers
             IdentityAppliance appliance = req.getIdentityAppliance();
             appliance.setIdApplianceDeployment(null);
@@ -368,8 +437,12 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
 
     @Transactional
     public ListIdentityAppliancesResponse listIdentityAppliances(ListIdentityAppliancesRequest req) throws IdentityServerException {
+
+
+
         ListIdentityAppliancesResponse res = null;
         try {
+            syncAppliances();
             Collection<IdentityAppliance> appliances = identityApplianceDAO.list(req.isStartedOnly());
             appliances = identityApplianceDAO.detachCopyAll(appliances, FetchPlan.FETCH_SIZE_GREEDY);
             res = new ListIdentityAppliancesResponse();
@@ -382,6 +455,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     }
 
     public ListIdentityAppliancesByStateResponse listIdentityAppliancesByState(ListIdentityAppliancesByStateRequest req) throws IdentityServerException {
+        syncAppliances();
         throw new UnsupportedOperationException("Not Supported!");
     }
 
@@ -389,6 +463,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public LookupIdentityApplianceDefinitionByIdResponse lookupIdentityApplianceDefinitionById(LookupIdentityApplianceDefinitionByIdRequest request) throws IdentityServerException {
         LookupIdentityApplianceDefinitionByIdResponse res = null;
         try {
+            syncAppliances();
             logger.debug("Finding identity appliance definition by ID : "+ request.getIdentityApplianceDefinitionId());
             IdentityApplianceDefinition iad = identityApplianceDefinitionDAO.findById(Long.parseLong(request.getIdentityApplianceDefinitionId()));
             iad = identityApplianceDefinitionDAO.detachCopy(iad, FetchPlan.FETCH_SIZE_GREEDY);  //fetching providers and channels as well
@@ -405,6 +480,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public ListIdentityApplianceDefinitionsResponse listIdentityApplianceDefinitions(ListIdentityApplianceDefinitionsRequest req) throws IdentityServerException {
         ListIdentityApplianceDefinitionsResponse res = new ListIdentityApplianceDefinitionsResponse();
         try {
+            syncAppliances();
             logger.debug("Listing all identity appliance definitions");
             Collection result = identityApplianceDefinitionDAO.findAll();
             res.getIdentityApplianceDefinitions().addAll(identityApplianceDefinitionDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));  //fetching providers and channels as well
@@ -423,6 +499,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public ListIdentityVaultsResponse listIdentityVaults(ListIdentityVaultsRequest req) throws IdentityServerException {
         ListIdentityVaultsResponse res = new ListIdentityVaultsResponse();
         try {
+            syncAppliances();
             logger.debug("Listing all identity vaults");
             Collection result = identitySourceDAO.findAll();
             res.getIdentityVaults().addAll(identitySourceDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));  //fetching user lookup information as well
@@ -437,6 +514,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public ListUserInformationLookupsResponse listUserInformationLookups(ListUserInformationLookupsRequest req) throws IdentityServerException {
         ListUserInformationLookupsResponse res = new ListUserInformationLookupsResponse();
         try {
+            syncAppliances();
             logger.debug("Listing all user information lookups");
             Collection result = userInformationLookupDAO.findAll();
             res.getUserInfoLookups().addAll(userInformationLookupDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
@@ -451,6 +529,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public ListAccountLinkagePoliciesResponse listAccountLinkagePolicies(ListAccountLinkagePoliciesRequest req) throws IdentityServerException {
         ListAccountLinkagePoliciesResponse res = new ListAccountLinkagePoliciesResponse();
         try {
+            syncAppliances();
             logger.debug("Listing all account linkage policies");
             Collection result = accountLinkagePolicyDAO.findAll();
             res.getAccountLinkagePolicies().addAll(accountLinkagePolicyDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
@@ -465,6 +544,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public ListAuthenticationContractsResponse listAuthenticationContracts(ListAuthenticationContractsRequest req) throws IdentityServerException {
         ListAuthenticationContractsResponse res = new ListAuthenticationContractsResponse();
         try {
+            syncAppliances();
             logger.debug("Listing all authentication contracts");
             Collection result = authenticationContractDAO.findAll();
             res.getAuthContracts().addAll(authenticationContractDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
@@ -479,6 +559,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public ListAuthenticationMechanismsResponse listAuthenticationMechanisms(ListAuthenticationMechanismsRequest req) throws IdentityServerException {
         ListAuthenticationMechanismsResponse res = new ListAuthenticationMechanismsResponse();
         try {
+            syncAppliances();
             logger.debug("Listing all authentication mechanisms");
             Collection result = authenticationMechanismDAO.findAll();
             res.getAuthMechanisms().addAll(authenticationMechanismDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
@@ -493,6 +574,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public ListAttributeProfilesResponse listAttributeProfiles(ListAttributeProfilesRequest req) throws IdentityServerException {
         ListAttributeProfilesResponse res = new ListAttributeProfilesResponse();
         try {
+            syncAppliances();
             logger.debug("Listing all attribute profiles");
             Collection result = attributeProfileDAO.findAll();
             res.getAttributeProfiles().addAll(attributeProfileDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
@@ -507,6 +589,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public ListAuthAssertionEmissionPoliciesResponse listAuthAssertionEmissionPolicies(ListAuthAssertionEmissionPoliciesRequest req) throws IdentityServerException {
         ListAuthAssertionEmissionPoliciesResponse res = new ListAuthAssertionEmissionPoliciesResponse();
         try {
+            syncAppliances();
             logger.debug("Listing all authentication assertion emission policies");
             Collection result = authenticationAssertionEmissionPolicyDAO.findAll();
             res.getAuthEmissionPolicies().addAll(authenticationAssertionEmissionPolicyDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
@@ -525,6 +608,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public LookupIdentityVaultByIdResponse lookupIdentityVaultById(LookupIdentityVaultByIdRequest req) throws IdentityServerException {
         LookupIdentityVaultByIdResponse res = null;
         try {
+            syncAppliances();
             logger.debug("Finding identity vault by ID : "+ req.getIdentityVaultId());
             IdentitySource identitySource = identitySourceDAO.findById(req.getIdentityVaultId());
             res = new LookupIdentityVaultByIdResponse();
@@ -540,6 +624,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public LookupUserInformationLookupByIdResponse lookupUserInformationLookupById(LookupUserInformationLookupByIdRequest req) throws IdentityServerException {
         LookupUserInformationLookupByIdResponse res = null;
         try {
+            syncAppliances();
             logger.debug("Finding user information lookup by ID : "+ req.getUserInformationLookupId());
             UserInformationLookup userInformationLookup = userInformationLookupDAO.findById(req.getUserInformationLookupId());
             res = new LookupUserInformationLookupByIdResponse();
@@ -555,6 +640,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public LookupAccountLinkagePolicyByIdResponse lookupAccountLinkagePolicyById(LookupAccountLinkagePolicyByIdRequest req) throws IdentityServerException {
         LookupAccountLinkagePolicyByIdResponse res = null;
         try {
+            syncAppliances();
             logger.debug("Finding account linkage policy by ID : "+ req.getAccountLinkagePolicyId());
             AccountLinkagePolicy policy = accountLinkagePolicyDAO.findById(req.getAccountLinkagePolicyId());
             res = new LookupAccountLinkagePolicyByIdResponse();
@@ -570,6 +656,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public LookupAuthenticationContractByIdResponse lookupAuthenticationContractById(LookupAuthenticationContractByIdRequest req) throws IdentityServerException {
         LookupAuthenticationContractByIdResponse res = null;
         try {
+            syncAppliances();
             logger.debug("Finding authentication contract by ID : "+ req.getAuthenticationContactId());
             AuthenticationContract authenticationContract = authenticationContractDAO.findById(req.getAuthenticationContactId());
             res = new LookupAuthenticationContractByIdResponse();
@@ -585,6 +672,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public LookupAuthenticationMechanismByIdResponse lookupAuthenticationMechanismById(LookupAuthenticationMechanismByIdRequest req) throws IdentityServerException {
         LookupAuthenticationMechanismByIdResponse res = null;
         try {
+            syncAppliances();
             logger.debug("Finding authentication mechanism by ID : "+ req.getAuthMechanismId());
             AuthenticationMechanism authenticationMechanism = authenticationMechanismDAO.findById(req.getAuthMechanismId());
             res = new LookupAuthenticationMechanismByIdResponse();
@@ -600,6 +688,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public LookupAttributeProfileByIdResponse lookupAttributeProfileById(LookupAttributeProfileByIdRequest req) throws IdentityServerException {
         LookupAttributeProfileByIdResponse res = null;
         try {
+            syncAppliances();
             logger.debug("Finding attribute profile by ID : "+ req.getAttributeProfileId());
             AttributeProfile attributeProfile = attributeProfileDAO.findById(req.getAttributeProfileId());
             res = new LookupAttributeProfileByIdResponse();
@@ -615,6 +704,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public LookupAuthAssertionEmissionPolicyByIdResponse lookupAuthAssertionEmissionPolicyById(LookupAuthAssertionEmissionPolicyByIdRequest req) throws IdentityServerException {
         LookupAuthAssertionEmissionPolicyByIdResponse res = null;
         try {
+            syncAppliances();
             logger.debug("Finding authentication assertion emission policy by ID : "+ req.getAuthAssertionEmissionPolicyId());
             AuthenticationAssertionEmissionPolicy policy = authenticationAssertionEmissionPolicyDAO.findById(req.getAuthAssertionEmissionPolicyId());
             res = new LookupAuthAssertionEmissionPolicyByIdResponse();
@@ -630,6 +720,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public AddResourceResponse addResource(AddResourceRequest req) throws IdentityServerException {
         AddResourceResponse res = null;
         try {
+            syncAppliances();
             logger.debug("Persisting resource with name: " + req.getResource().getName());
             Resource resource = resourceDAO.save(req.getResource());
             res = new AddResourceResponse();
@@ -645,6 +736,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
     public LookupResourceByIdResponse lookupResourceById(LookupResourceByIdRequest req) throws IdentityServerException {
         LookupResourceByIdResponse res = null;
         try {
+            syncAppliances();
             Long id = Long.parseLong(req.getResourceId());
             Resource resource = resourceDAO.findById(id);
             resource = resourceDAO.detachCopy(resource, FetchPlan.FETCH_SIZE_GREEDY);
@@ -834,7 +926,7 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
         if (appliance.getState().equals(IdentityApplianceState.STARTED.toString()))
             appliance = stopAppliance(appliance);
 
-        if (appliance.getState().equals(IdentityApplianceState.INSTALLED.toString()))
+        if (appliance.getState().equals(IdentityApplianceState.DEPLOYED.toString()))
             appliance = undeployAppliance(appliance);
 
         if (appliance.getIdApplianceDeployment() == null)
@@ -908,5 +1000,13 @@ public class IdentityApplianceManagementServiceImpl implements IdentityAppliance
             // TODO RETROFIT  : else return 1;
             return 1;
         }
+    }
+
+    public boolean isLazySyncAppliances() {
+        return lazySyncAppliances;
+    }
+
+    public void setLazySyncAppliances(boolean lazySyncAppliances) {
+        this.lazySyncAppliances = lazySyncAppliances;
     }
 }
