@@ -88,7 +88,6 @@ public class UsersMediator extends IocMediator {
             view.btnEditUser.removeEventListener(MouseEvent.CLICK, handleEditUserClick);
             view.btnDeleteUser.removeEventListener(MouseEvent.CLICK, handleDeleteUserClick);
             view.btnSearchUser.removeEventListener(MouseEvent.CLICK, handleSearchUsersClick);
-            view.btnBack.removeEventListener(MouseEvent.CLICK, handleGoBack);
 
             view.userList.removeEventListener(ListEvent.ITEM_CLICK , userListSelectHandler);
             view.btnClearSearch.removeEventListener(MouseEvent.CLICK, handleClearSearch);
@@ -103,7 +102,6 @@ public class UsersMediator extends IocMediator {
         view.btnEditUser.addEventListener(MouseEvent.CLICK, handleEditUserClick);
         view.btnDeleteUser.addEventListener(MouseEvent.CLICK, handleDeleteUserClick);
         view.btnSearchUser.addEventListener(MouseEvent.CLICK, handleSearchUsersClick);
-        view.btnBack.addEventListener(MouseEvent.CLICK, handleGoBack);
 
         view.userList.addEventListener(ListEvent.ITEM_CLICK , userListSelectHandler);
         view.btnClearSearch.addEventListener(MouseEvent.CLICK, handleClearSearch);
@@ -189,11 +187,6 @@ public class UsersMediator extends IocMediator {
     private function handleSearchUsersClick(event:MouseEvent):void {
         trace("Search Users Button Click: " + event);
         sendNotification(ApplicationFacade.DISPLAY_SEARCH_USERS);
-    }
-
-    private function handleGoBack(event:MouseEvent):void {
-        trace("Go Back Button Click: " + event);
-        sendNotification(ApplicationFacade.DISPLAY_ACCOUNT_MNGMT_HOME);
     }
 
     private function handleClearSearch(event:MouseEvent):void {

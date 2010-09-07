@@ -20,22 +20,29 @@
  */
 
 package com.atricore.idbus.console.account.main {
+import com.atricore.idbus.console.account.groups.GroupsView;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
+import com.atricore.idbus.console.account.users.UsersView;
 import com.atricore.idbus.console.main.ApplicationFacade;
 
 import flash.events.Event;
-import flash.events.MouseEvent;
 
 import mx.events.FlexEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
+import spark.components.Group;
+import spark.events.IndexChangeEvent;
+
 public class AccountManagementMediator extends IocMediator {
 
     public static const BUNDLE:String = "console";
+    private var resMan:IResourceManager = ResourceManager.getInstance();
 
     private var _popupManager:AccountManagementPopUpManager;
     private var _accountManagementProxy:AccountManagementProxy;
@@ -44,7 +51,7 @@ public class AccountManagementMediator extends IocMediator {
     private var _usersMediator:IIocMediator;
 
     private var _created:Boolean;
-    
+
     public function AccountManagementMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
     }
@@ -83,9 +90,6 @@ public class AccountManagementMediator extends IocMediator {
 
     override public function setViewComponent(p_viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.btnHome.removeEventListener(MouseEvent.CLICK, handleHomeClick);
-            view.btnGroups.removeEventListener(MouseEvent.CLICK, handleGroupsClick);
-            view.btnUsers.removeEventListener(MouseEvent.CLICK, handleUsersClick);
         }
 
         (p_viewComponent as AccountManagementView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
@@ -96,50 +100,54 @@ public class AccountManagementMediator extends IocMediator {
     private function creationCompleteHandler(event:Event):void {
         _created = true;
 
-        view.btnHome.addEventListener(MouseEvent.CLICK, handleHomeClick);
-        view.btnGroups.addEventListener(MouseEvent.CLICK, handleGroupsClick);
-        view.btnUsers.addEventListener(MouseEvent.CLICK, handleUsersClick);
-
-        groupsMediator.setViewComponent(view.groups);
-        usersMediator.setViewComponent(view.users);
         popupManager.init(iocFacade, view);
-
         init();
     }
 
     public function init():void {
-    }
+        var groupsTab:Group = new Group();
+        var usersTab:Group = new Group();
+        var gView:GroupsView  = new GroupsView();
+        var uView:UsersView  = new UsersView();
 
-    private function handleHomeClick(event:MouseEvent):void {
-        trace("Home Button Click: " + event);
-        view.vsAccountMng.selectedIndex = 0;
-        view.homePanel.setVisible(true);
-    }
+        view.vsAccountMng.removeAllElements();
 
-    private function handleGroupsClick(event:MouseEvent):void {
-        trace("Groups Button Click: " + event);
+        groupsTab.id = "groupsTab";
+        groupsTab.width = Number("100%");
+        groupsTab.height = Number("100%");
+        groupsTab.setStyle("borderStyle", "solid");
+        groupsTab.addElement(gView);
+
+        usersTab.id = "usersTab";
+        usersTab.width = Number("100%");
+        usersTab.height = Number("100%");
+        usersTab.setStyle("borderStyle", "solid");
+        usersTab.addElement(uView);
+
+        groupsMediator.setViewComponent(gView);
+        usersMediator.setViewComponent(uView);
+
+        view.vsAccountMng.addNewChild(gView);
+        view.vsAccountMng.addNewChild(uView);
+
+        view.accountManagementTabBar.selectedIndex = 1;
         view.vsAccountMng.selectedIndex = 1;
-        view.groups.setVisible(true);
+        view.accountManagementTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
     }
 
-    private function handleUsersClick(event:MouseEvent):void {
-        trace("Users Button Click: " + event);
-        view.vsAccountMng.selectedIndex = 2;
-        view.users.setVisible(true);
+    private function stackChanged(event:IndexChangeEvent):void {
+        view.vsAccountMng.selectedIndex = view.accountManagementTabBar.selectedIndex;
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.ACCOUNT_VIEW_SELECTED,
-                ApplicationFacade.DISPLAY_ACCOUNT_MNGMT_HOME];
+        return [ApplicationFacade.ACCOUNT_VIEW_SELECTED
+        ];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case ApplicationFacade.ACCOUNT_VIEW_SELECTED:
                 init();
-                break;
-            case ApplicationFacade.DISPLAY_ACCOUNT_MNGMT_HOME:
-                view.vsAccountMng.selectedIndex = 0;
                 break;
         }
     }

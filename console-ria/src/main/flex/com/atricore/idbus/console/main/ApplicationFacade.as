@@ -104,7 +104,6 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const REMOVE_FEDERATED_CONNECTION_ELEMENT:String = "removeFederatedConnectionElement";
     public static const MANAGE_CERTIFICATE:String = "manageCertificate";
     public static const SHOW_UPLOAD_PROGRESS:String = "uploadProgress";
-    public static const DISPLAY_ACCOUNT_MNGMT_HOME:String = "displayAccountManagementHome";
     public static const DISPLAY_ADD_NEW_GROUP:String = "displayAddNewGroup";
     public static const DISPLAY_ADD_NEW_USER:String = "displayAddNewUser";
     public static const DISPLAY_EDIT_GROUP:String = "displayEditGroup";

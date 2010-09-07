@@ -88,7 +88,6 @@ public class GroupsMediator extends IocMediator {
             view.btnEditGroup.removeEventListener(MouseEvent.CLICK, handleEditGroupClick);
             view.btnDeleteGroup.removeEventListener(MouseEvent.CLICK, handleDeleteGroupClick);
             view.btnSearchGroup.removeEventListener(MouseEvent.CLICK, handleSearchGroupsClick);
-            view.btnBack.removeEventListener(MouseEvent.CLICK, handleGoBack);
 
             view.groupList.removeEventListener(ListEvent.ITEM_CLICK , groupListClickHandler);
             view.btnClearSearch.removeEventListener(MouseEvent.CLICK, handleClearSearch);
@@ -103,7 +102,6 @@ public class GroupsMediator extends IocMediator {
         view.btnEditGroup.addEventListener(MouseEvent.CLICK, handleEditGroupClick);
         view.btnDeleteGroup.addEventListener(MouseEvent.CLICK, handleDeleteGroupClick);
         view.btnSearchGroup.addEventListener(MouseEvent.CLICK, handleSearchGroupsClick);
-        view.btnBack.addEventListener(MouseEvent.CLICK, handleGoBack);
 
         view.groupList.addEventListener(ListEvent.ITEM_CLICK , groupListClickHandler);
         view.btnClearSearch.addEventListener(MouseEvent.CLICK, handleClearSearch);
@@ -188,11 +186,6 @@ public class GroupsMediator extends IocMediator {
     private function handleSearchGroupsClick(event:MouseEvent):void {
         trace("Search Groups Button Click: " + event);
         sendNotification(ApplicationFacade.DISPLAY_SEARCH_GROUPS);
-    }
-
-    private function handleGoBack(event:MouseEvent):void {
-        trace("Go Back Button Click: " + event);
-        sendNotification(ApplicationFacade.DISPLAY_ACCOUNT_MNGMT_HOME);
     }
 
     private function handleClearSearch(event:MouseEvent):void {

@@ -37,47 +37,52 @@
           xmlns:flexlib="http://flexlib.googlecode.com/"
           xmlns:properties="com.atricore.idbus.console.account.userproperties.*"
           width="100%" height="100%"
-          paddingLeft="5" paddingTop="5"
+          name="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.list.panel.label')}"
         >
 
     <fx:Metadata>
         [ResourceBundle("console")]
     </fx:Metadata>
 
+    <fx:Script>
+        <![CDATA[
+        import com.atricore.idbus.console.main.EmbeddedIcons;
+
+        public var icon:Class = EmbeddedIcons.usersIcon;
+        ]]>
+    </fx:Script>
+
     <s:HGroup id="buttonBar" width="100%" height="5%"
-              paddingLeft="5" paddingBottom="5">
-        <components:IconButton id="btnNewUser"
+              paddingLeft="15" paddingRight="15" paddingTop="5" paddingBottom="5">
+        <components:IconLabelButton id="btnNewUser"
                                iconUp="@Embed('/assets/icons/ui/user-group-new.png')"
                                paddingTop="3" paddingLeft="3" isLinkButton="false"
-                               skinClass="com.atricore.idbus.console.components.IconButtonSkin"
-                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.add.panel.label')}"/>
-        <components:IconButton id="btnEditUser" enabled="false"
+                               skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
+                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.add.panel.label')}"
+                               label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.add.panel.label')}"/>
+        <components:IconLabelButton id="btnEditUser" enabled="false"
                                iconUp="@Embed('/assets/icons/ui/user-properties.png')"
                                paddingTop="3" paddingLeft="3" isLinkButton="false"
-                               skinClass="com.atricore.idbus.console.components.IconButtonSkin"
-                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.edit.panel.label')}"/>
-        <components:IconButton id="btnDeleteUser" enabled="false"
+                               skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
+                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.edit.panel.label')}"
+                               label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.edit.panel.label')}"/>
+        <components:IconLabelButton id="btnDeleteUser" enabled="false"
                                iconUp="@Embed('/assets/icons/ui/user-group-delete.png')"
                                paddingTop="3" paddingLeft="3" isLinkButton="false"
-                               skinClass="com.atricore.idbus.console.components.IconButtonSkin"
-                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.delete.panel.label')}"/>
-        <components:IconButton id="btnSearchUser"
+                               skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
+                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.delete.panel.label')}"
+                               label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.delete.panel.label')}"/>
+        <components:IconLabelButton id="btnSearchUser"
                                iconUp="@Embed('/assets/icons/ui/edit-find.png')"
                                paddingTop="3" paddingLeft="3" isLinkButton="false"
-                               skinClass="com.atricore.idbus.console.components.IconButtonSkin"
-                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.search.panel.label')}"/>
-        <components:IconButton id="btnBack"
-                               iconUp="@Embed('/assets/icons/ui/back.jpg')"
-                               paddingTop="3" paddingLeft="3" isLinkButton="false"
-                               skinClass="com.atricore.idbus.console.components.IconButtonSkin"
-                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'action.goback')}"/>
-
+                               skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
+                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.search.panel.label')}"
+                               label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.search.panel.label')}"/>
     </s:HGroup>
 
     <s:HGroup id="bodyHBox" width="100%" height="95%" paddingLeft="15" paddingRight="15">
-        <s:VGroup width="70%" height="95%">
-            <mx:DataGrid id="userList" width="100%" rowCount="14"
-                         resizeEffect="Resize" verticalAlign="middle">
+        <s:VGroup width="75%" height="95%">
+            <mx:DataGrid id="userList" width="100%" rowCount="14" verticalAlign="middle">
                 <mx:columns>
                     <mx:DataGridColumn dataField="userName" headerText="Username"/>
                     <mx:DataGridColumn dataField="firstName" headerText="First Name"/>

@@ -50,34 +50,38 @@
 
                 <mx:HRule width="100%"/>
 
-                <mx:FormItem required="true"
+                <mx:FormItem required="true" labelWidth="100"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.username')}:">
                     <mx:TextInput id="userUsername" width="300" />
                 </mx:FormItem>
 
-                <mx:FormItem required="true"
+                <mx:FormItem required="true" labelWidth="100"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.firstname')}:">
                     <mx:TextInput id="userFirstName" width="300" />
                 </mx:FormItem>
 
-                <mx:FormItem required="true"
+                <mx:FormItem required="true" labelWidth="100"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.lastname')}:">
                     <mx:TextInput id="userLastName" width="300"  />
                 </mx:FormItem>
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.fullname')}:">
+                <mx:FormItem labelWidth="100"
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.fullname')}:">
                     <mx:TextInput id="userFullName" width="300" editable="false"/>
                 </mx:FormItem>
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.email')}:">
+                <mx:FormItem labelWidth="100"
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.email')}:">
                     <mx:TextInput id="userEmail" width="300" />
                 </mx:FormItem>
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.telephone')}:">
+                <mx:FormItem labelWidth="100"
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.telephone')}:">
                     <mx:TextInput id="userTelephone" width="300"/>
                 </mx:FormItem>
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.fax')}:">
+                <mx:FormItem labelWidth="100"
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.fax')}:">
                     <mx:TextInput id="userFax" width="300"/>
                 </mx:FormItem>
             </s:VGroup>

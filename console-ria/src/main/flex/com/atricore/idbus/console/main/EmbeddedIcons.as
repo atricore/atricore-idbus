@@ -164,6 +164,10 @@ package com.atricore.idbus.console.main {
         static public var usersIcon:Class;
 
         [Bindable]
+        [Embed(source="/assets/icons/ui/user-group-new.png")]
+        static public var groupsIcon:Class;
+
+        [Bindable]
         [Embed(source="/assets/icons/notation/48x48/identity_appliance.png")]
         static public var busIcon:Class;
 
