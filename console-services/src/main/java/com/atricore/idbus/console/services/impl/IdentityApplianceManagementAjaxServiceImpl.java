@@ -145,6 +145,10 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(beRes, ManageIdentityApplianceLifeCycleResponse.class);
     }
 
+    public ActivateSPExecEnvResponse activateSPExecEnv(ActivateSPExecEnvRequest request) throws IdentityServerException {
+        throw new UnsupportedOperationException("NOT IMPLEMENTED");
+    }
+
     public CreateSimpleSsoResponse createSimpleSso(CreateSimpleSsoRequest req)
             throws IdentityServerException {
 

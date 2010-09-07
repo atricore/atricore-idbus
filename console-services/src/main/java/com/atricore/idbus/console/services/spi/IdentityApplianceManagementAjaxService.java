@@ -44,6 +44,8 @@ public interface IdentityApplianceManagementAjaxService {
     ExportIdentityApplianceResponse ExportIdentityAppliance(ExportIdentityApplianceRequest request) throws IdentityServerException;
 
     ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException;
+
+    ActivateSPExecEnvResponse activateSPExecEnv(ActivateSPExecEnvRequest request) throws IdentityServerException;
     
     // D -> DEPLOYED -> STARTED -> STOPPED -> UNDEPLOYED(D)
 
