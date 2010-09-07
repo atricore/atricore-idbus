@@ -1,0 +1,173 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+    <!--<utils:ValidatingForm id="identityProvForm" width="100%" height="100%" defaultButton="{btnOk}">-->
+<mx:Form xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:utils="com.atricore.idbus.console.components.*"
+         defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
+
+    <fx:Declarations>
+        <mx:ArrayCollection id="authMechanismColl">
+            <utils:ListItemValueObject label="Form-Based Basic" name="basic" isSelected="false" />
+            <utils:ListItemValueObject label="Strong (Digital Sertificate)" name="strong" isSelected="false" />
+            <utils:ListItemValueObject label="Windows (NTLM)" name="ntlm" isSelected="false" />
+            <utils:ListItemValueObject label="Remember Me" name="rememberme" isSelected="false" />
+        </mx:ArrayCollection>
+        
+        <mx:StringValidator id="nameValidator" source="{federatedConnectionName}" required="true" property="text" trigger="{btnOk}"
+                        triggerEvent="click"/>
+    </fx:Declarations>
+    
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.name')}:" required="true">
+        <s:TextInput id="federatedConnectionName" width="300"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.description')}:">
+        <s:TextInput id="federatedConnectionDescription" width="300"/>
+    </mx:FormItem>
+
+    <mx:TabNavigator id="channelNavigator" borderStyle="solid" width="100%" height="370">
+        <!-- IDP CHANNEL TAB -->
+        <s:NavigatorContent id="idpChannelTab" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.idpchannel')}">
+            <s:VGroup width="100%" height="100%">
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.useinheritedspsettings')}:" labelWidth="235">
+                     <s:CheckBox id="useInheritedSPSettings"/>
+                </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.profiles')}:" direction="horizontal" labelWidth="235">
+                    <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}"/>
+                    <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.bindings')}:" direction="horizontal" labelWidth="235">
+                    <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}"/>
+                    <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
+                    <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
+                    <s:CheckBox id="samlBindingSoapCheck"
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:" labelWidth="235">
+                    <s:CheckBox id="signAuthRequestCheck"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:" labelWidth="235">
+                    <s:CheckBox id="encryptAuthRequestCheck"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.user.information.lookup')}:" labelWidth="235">
+                    <s:DropDownList id="userInfoLookupCombo" labelField="name" width="180" selectedIndex="0"/>
+                </mx:FormItem>
+
+                <s:HGroup width="100%" horizontalAlign="left">
+                    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.mechanism')}:" labelWidth="235">
+                        <s:List id="authMechanismCombo"
+                                       dataProvider="{authMechanismColl}"
+                                       itemRenderer="com.atricore.idbus.console.components.CheckBoxItemRenderer"
+                                       alternatingItemColors="[#EEEEEE, white]"
+                                       width="200">
+                            <s:layout>
+                                <s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedRowCount="4" />
+                            </s:layout>
+                        </s:List>
+                    </mx:FormItem>
+                    <s:Button id="configureAuthMechanism"
+                       label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
+                </s:HGroup>
+
+                <s:HGroup width="100%">
+                    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:" labelWidth="235">
+                        <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0"/>
+                    </mx:FormItem>
+                    <s:Button id="configureAccLinkagePolicy"
+                       label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
+                </s:HGroup>
+
+                <s:HGroup width="100%">
+                    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.contract')}:" labelWidth="235">
+                        <s:DropDownList id="authContractCombo" width="200" labelField="name" selectedIndex="0"/>
+                    </mx:FormItem>
+                </s:HGroup>
+            </s:VGroup>
+        </s:NavigatorContent>
+        
+        <!-- SP CHANNEL TAB -->
+        <s:NavigatorContent id="spChannelTab" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.spchannel')}">
+            <s:VGroup width="100%" height="100%">
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.useinheritedidpsettings')}:" labelWidth="235">
+                     <s:CheckBox id="useInheritedIDPSettings"/>
+                </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:" direction="horizontal" labelWidth="235">
+                    <s:CheckBox id="spChannelSamlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}"/>
+                    <s:CheckBox id="spChannelSamlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:" direction="horizontal" labelWidth="235">
+                    <s:CheckBox id="spChannelSamlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}"/>
+                    <s:CheckBox id="spChannelSamlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
+                    <s:CheckBox id="spChannelSamlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
+                    <s:CheckBox id="spChannelSamlBindingSoapCheck"
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:" labelWidth="235">
+                    <s:CheckBox id="signAuthAssertionCheck"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:" labelWidth="235">
+                    <s:CheckBox id="encryptAuthAssertionCheck"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.user.information.lookup')}:" labelWidth="235">
+                    <s:DropDownList id="spChannelUserInfoLookupCombo" labelField="name" selectedIndex="0" width="180"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:" labelWidth="235">
+                    <s:DropDownList id="spChannelAuthContractCombo"  labelField="name" selectedIndex="0" width="180"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.mechanism')}:" labelWidth="235">
+                    <s:DropDownList id="spChannelAuthMechanismCombo" labelField="name" selectedIndex="0" width="180"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:" labelWidth="235">
+                    <s:DropDownList id="spChannelAuthAssertionEmissionPolicyCombo" labelField="name" selectedIndex="0" width="180"/>
+                </mx:FormItem>
+            </s:VGroup>
+        </s:NavigatorContent>
+    </mx:TabNavigator>
+
+    <!-- TODO: create custom panel skin to change controlBarContent style? or use mx:ControlBar? -->
+    <s:Panel id="controlBarPanel" width="100%" height="40" borderVisible="false"
+            horizontalCenter="0" verticalCenter="0" contentBackgroundAlpha="0" dropShadowVisible="false"
+            creationComplete="controlBarPanel.titleDisplay.height=controlBarPanel.titleDisplay.minHeight=0;">
+        <s:controlBarContent>
+            <s:Button id="btnCancel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
+            <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}" enabled="true"/>
+        </s:controlBarContent>
+        <s:controlBarLayout>
+            <s:HorizontalLayout horizontalAlign="center"/>
+        </s:controlBarLayout>
+    </s:Panel>
+</mx:Form>
+<!--</mx:VBox>-->

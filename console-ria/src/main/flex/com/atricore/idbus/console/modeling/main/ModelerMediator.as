@@ -24,6 +24,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
@@ -233,6 +234,8 @@ public class ModelerMediator extends IocMediator {
             ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.REMOVE_ACTIVATION_ELEMENT,
+            ApplicationFacade.REMOVE_FEDERATED_CONNECTION_ELEMENT,
+            ApplicationFacade.CREATE_FEDERATED_CONNECTION,
             ApplicationFacade.MANAGE_CERTIFICATE,
             ApplicationFacade.SHOW_UPLOAD_PROGRESS,
             ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
@@ -318,6 +321,13 @@ public class ModelerMediator extends IocMediator {
             case ApplicationFacade.REMOVE_ACTIVATION_ELEMENT:
                 var ract:RemoveActivationElementRequest = RemoveActivationElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.ACTIVATION_REMOVE, ract.activation);
+                break;
+            case ApplicationFacade.CREATE_FEDERATED_CONNECTION:
+                popupManager.showCreateFederatedConnectionWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_FEDERATED_CONNECTION_ELEMENT:
+                var rfc:RemoveFederatedConnectionElementRequest = RemoveFederatedConnectionElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.FEDERATED_CONNECTION_REMOVE, rfc.federatedConnection);
                 break;
             case ApplicationFacade.MANAGE_CERTIFICATE:
                 popupManager.showManageCertificateWindow(notification);

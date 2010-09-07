@@ -34,6 +34,7 @@ import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
 import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
@@ -43,6 +44,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdent
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
@@ -613,14 +615,10 @@ public class DiagramMediator extends IocMediator {
         var node1:IVisualNode = event.vnode1;
         var node2:IVisualNode = event.vnode2;
 
-        // TODO: link node1.data and node2.data
-        if ((node1.data is IdentityProvider && node2.data is ServiceProvider) ||
-                (node1.data is ServiceProvider && node2.data is IdentityProvider)) {
-            // connect IDP and SP
-        }
-
-        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        var cfc:CreateFederatedConnectionElementRequest = new CreateFederatedConnectionElementRequest();
+        cfc.roleA = node1.data as FederatedProvider;
+        cfc.roleB = node2.data as FederatedProvider
+        sendNotification(ApplicationFacade.CREATE_FEDERATED_CONNECTION, cfc);
     }
 
     private function identityLookupCreatedEventHandler(event:VNodesLinkedEvent):void {
@@ -673,14 +671,15 @@ public class DiagramMediator extends IocMediator {
         var elementType:int = -1;
         
         if(edgeData is FederatedConnection){
-            elementType = DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE;
+            var fedConnection:FederatedConnection = edgeData as FederatedConnection;
+            var rfc:RemoveFederatedConnectionElementRequest = new RemoveFederatedConnectionElementRequest(fedConnection);
+            sendNotification(ApplicationFacade.REMOVE_FEDERATED_CONNECTION_ELEMENT, rfc);
         } else if (edgeData is Activation){
-//            elementType = DiagramElementTypes.ACTIVATION_ELEMENT_TYPE;
             var activation:JOSSOActivation = edgeData as JOSSOActivation;
             var ract:RemoveActivationElementRequest = new RemoveActivationElementRequest(activation);
             sendNotification(ApplicationFacade.REMOVE_ACTIVATION_ELEMENT, ract);
         } else if (edgeData is IdentityLookup){
-            elementType = DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE;
+            //TODO
         }
     }
 
