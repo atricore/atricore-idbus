@@ -88,6 +88,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _editUserMediator:IIocMediator;
     private var _searchUsersMediator:IIocMediator;
     private var _activationCreateMediator:IIocMediator;
+    private var _federatedConnectionCreateMediator:IIocMediator;
 
 
     /* Commands */
@@ -109,6 +110,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _identityApplianceUpdateCommand:IIocCommand;
     private var _identityVaultRemoveCommand:IIocCommand;
     private var _activationRemoveCommand:IIocCommand;
+    private var _federatedConnectionRemoveCommand:IIocCommand;
     private var _createSimpleSSOIdentityApplianceCommand:IIocCommand;
     private var _identityApplianceListLoadCommand:IIocCommand;
     private var _identityApplianceCreateCommand:IIocCommand;
@@ -407,6 +409,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _activationCreateMediator = value;
     }
 
+    public function get federatedConnectionCreateMediator():IIocMediator {
+        return _federatedConnectionCreateMediator;
+    }
+
+    public function set federatedConnectionCreateMediator(value:IIocMediator):void {
+        _federatedConnectionCreateMediator = value;
+    }
+
     public function get serviceRegistry():IIocProxy {
         return _serviceRegistry;
     }
@@ -600,6 +610,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _activationRemoveCommand = value;
     }
 
+    public function get federatedConnectionRemoveCommand():IIocCommand {
+        return _federatedConnectionRemoveCommand;
+    }
+
+    public function set federatedConnectionRemoveCommand(value:IIocCommand):void {
+        _federatedConnectionRemoveCommand = value;
+    }
+
     public function get createSimpleSSOIdentityApplianceCommand():IIocCommand {
         return _createSimpleSSOIdentityApplianceCommand;
     }
@@ -746,6 +764,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.SP_CHANNEL_REMOVE, spChannelRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DB_IDENTITY_VAULT_REMOVE, identityVaultRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATION_REMOVE, activationRemoveCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.FEDERATED_CONNECTION_REMOVE, federatedConnectionRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, lookupIdentityApplianceByIdCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD, identityApplianceListLoadCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.UPLOAD, uploadCommand.getConfigName());
@@ -813,6 +832,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(deployApplianceMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(processingMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(activationCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(federatedConnectionCreateMediator.getConfigName());
 
         // IDENTITY_APPLIANCE_LIST_LOAD notification is sent from
         // modelerMediator.setViewComponent() -> modelerMediator.init()

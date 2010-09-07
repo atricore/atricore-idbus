@@ -21,7 +21,7 @@
 
 package com.atricore.idbus.console.services.dto;
 
-public class IdentityProviderChannelDTO extends ChannelDTO {
+public class IdentityProviderChannelDTO extends FederatedChannelDTO {
 
 	private static final long serialVersionUID = 8276649486690667445L;
 
