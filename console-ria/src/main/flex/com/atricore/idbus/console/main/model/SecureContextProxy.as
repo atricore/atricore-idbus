@@ -21,60 +21,33 @@
 
 package com.atricore.idbus.console.main.model
 {
-import com.atricore.idbus.console.main.model.domain.User;
+import com.atricore.idbus.console.services.dto.User;
 
-import mx.collections.ArrayCollection;
 
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 public class SecureContextProxy extends IocProxy
 {
-   public static const ROLE_PROJECT_ADMIN :String = "role.projectAdmin";
-   public static const ROLE_ITERATION_ADMIN :String = "role.iterationAdmin";
 
    private var _currentUser : User;
-   private var _availableRoles: ArrayCollection;
-   private var _menu : ArrayCollection;
 
    public function SecureContextProxy() {
       super(NAME, null);
-      _availableRoles = new ArrayCollection();
-      _menu = new ArrayCollection();
    }
 
    public function logout() : void {
       _currentUser = null;
    }
 
-   public function get menu() : ArrayCollection {
-      return _menu;
-   }
 
    public function set currentUser(user : User) : void {
       _currentUser = user;
-      if(user != null) {
-         loadMenu();
-      }
    }
 
    public function get currentUser() : User {
       return _currentUser;
    }
 
-   public function get availableRoles():ArrayCollection {
-      return _availableRoles;
-   }
 
-   private function loadMenu() : void {
-   }
-
-   public function hasRole(role : String) : Boolean {
-      for each(var existingRole : String in _availableRoles) {
-         if(existingRole == role) {
-            return true;
-         }
-      }
-      return false;
-   }
 }
 }

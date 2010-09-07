@@ -22,25 +22,18 @@
 package com.atricore.idbus.console.services.spi.response;
 
 import com.atricore.idbus.console.lifecycle.main.spi.response.AbstractManagementResponse;
+import com.atricore.idbus.console.services.dto.UserDTO;
 
 public class SignOnResponse extends AbstractManagementResponse {
 
-    private String assertion;
-    private String signOnStatusCode;
+    private UserDTO authenticatedUser;
 
-    public String getAssertion() {
-        return assertion;
+    public UserDTO getAuthenticatedUser() {
+        return authenticatedUser;
     }
 
-    public void setAssertion(String assertion) {
-        this.assertion = assertion;
+    public void setAuthenticatedUser(UserDTO authenticatedUser) {
+        this.authenticatedUser = authenticatedUser;
     }
 
-    public String getSignOnStatusCode() {
-        return signOnStatusCode;
-    }
-
-    public void setSignOnStatusCode(String signOnStatusCode) {
-        this.signOnStatusCode = signOnStatusCode;
-    }
 }
