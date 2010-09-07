@@ -21,10 +21,15 @@
 
 package com.atricore.idbus.console.lifecycle.main.impl;
 
+import com.atricore.idbus.console.activation.main.spi.ActivationService;
+import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
+import com.atricore.idbus.console.activation.main.spi.response.ActivateAgentResponse;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceUnit;
 import com.atricore.idbus.console.lifecycle.main.domain.dao.*;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
+import com.atricore.idbus.console.lifecycle.main.exception.ExecEnvAlreadyActivated;
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
 import com.atricore.idbus.console.lifecycle.main.spi.*;
 import com.atricore.idbus.console.lifecycle.main.spi.request.*;
@@ -36,6 +41,7 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.transaction.annotation.Transactional;
+import sun.management.Agent;
 
 import javax.jdo.FetchPlan;
 import java.util.*;
@@ -45,6 +51,8 @@ public class IdentityApplianceManagementServiceImpl implements
         InitializingBean {
 
 	private static final Log logger = LogFactory.getLog(IdentityApplianceManagementServiceImpl.class);
+
+    private ActivationService activationService;
 
     private IdentityApplianceBuilder builder;
 
@@ -337,6 +345,86 @@ public class IdentityApplianceManagementServiceImpl implements
 	        logger.error("Error processing identity appliance lifecycle action", e);
 	        throw new IdentityServerException(e);
 	    }
+    }
+
+    @Transactional
+    public ActivateSPExecEnvResponse activateSPExecEnv(ActivateSPExecEnvRequest request) throws IdentityServerException {
+        try {
+
+            syncAppliances();
+            
+            ActivateSPExecEnvResponse response = new ActivateSPExecEnvResponse();
+
+            if (logger.isDebugEnabled())
+                logger.debug("Activating SP Execution Environment for appliance/sp " +
+                        request.getApplianceId() + "/" + request.getSPName());
+
+            IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
+            if (!appliance.getState().equals(IdentityApplianceState.DEPLOYED.toString()) &&
+                    !appliance.getState().equals(IdentityApplianceState.STARTED.toString())) {
+
+                logger.error("Cannot activate execution enviroments for appliance " +
+                        request.getApplianceId() + " in state " + appliance.getState());
+
+                throw new IdentityServerException("Cannot activate execution enviroments for appliance " +
+                        request.getApplianceId() + " in state " + appliance.getState());
+            }
+
+            boolean found = false;
+
+            for (IdentityApplianceUnit idau : appliance.getIdApplianceDeployment().getIdaus()) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Looking for SP in IDAU " + idau.getName());
+
+                for (Provider p : idau.getProviders()) {
+
+                    if (p.getName().equals(request.getSPName())) {
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("Checking Provider type for " + p.getName());
+
+                        if (!(p instanceof ServiceProvider )) {
+                            throw new IdentityServerException("Provider " + p.getName() + " is not a service provider!");
+                        }
+
+                        found = true;
+
+                        ServiceProvider sp = (ServiceProvider) p;
+                        Activation a = sp.getActivation();
+
+                        if (!a.isActivated() || request.isReactivate()) {
+
+                            if (logger.isTraceEnabled())
+                                logger.trace("Activating " + a.getName());
+
+                            ActivateAgentRequest activationRequest = doMakAgentActivationRequest(a);
+                            ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
+
+                            // Mark activation as activated and save appliance.
+                            a.setActivated(true);
+                            identityApplianceDAO.save(appliance);
+
+                        } else {
+                            throw new ExecEnvAlreadyActivated(a);
+                        }
+                    }
+                }
+            }
+
+            if (!found)
+                throw new IdentityServerException("SP "+request.getSPName()+" not found/deployed in appliance " +
+                        request.getApplianceId() + ". Try to deploy latest version.");
+
+            return response;
+
+        } catch (Exception e) {
+            throw new IdentityServerException("Cannot activate SP Execution Environment for " +
+                    request.getSPName() + " : " + e.getMessage(), e);
+        }
+
+
+
     }
 
     @Transactional
@@ -1008,5 +1096,32 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setLazySyncAppliances(boolean lazySyncAppliances) {
         this.lazySyncAppliances = lazySyncAppliances;
+    }
+
+    public ActivationService getActivationService() {
+        return activationService;
+    }
+
+    public void setActivationService(ActivationService activationService) {
+        this.activationService = activationService;
+    }
+
+    protected ActivateAgentRequest doMakAgentActivationRequest(Activation activation) {
+
+        ExecutionEnvironment execEnv = activation.getExecutionEnv();
+
+        ActivateAgentRequest req = new ActivateAgentRequest ();
+        req.setTarget(execEnv.getInstallUri());
+        req.setTargetPlatformId(execEnv.getPlatformId());
+
+        if (execEnv instanceof JBossExecutionEnvironment) {
+            JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) execEnv;
+            req.setJbossInstance(jbExecEnv.getInstance());
+        } else if (execEnv instanceof WeblogicExecutionEnvironment) {
+            WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
+            req.setWeblogicDomain(wlExecEnv.getDomain());
+        } // TODO : Add support for Liferay, JBPortal, Alfresco, PHP, PHPBB, etc ...
+
+        return req;
     }
 }

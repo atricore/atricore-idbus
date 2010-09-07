@@ -2,6 +2,7 @@ package com.atricore.idbus.console.lifecycle.command;
 
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
+import org.apache.felix.gogo.commands.Option;
 import org.apache.felix.karaf.shell.console.OsgiCommandSupport;
 import org.osgi.framework.ServiceReference;
 
@@ -10,6 +11,9 @@ import org.osgi.framework.ServiceReference;
  * @version $Id$
  */
 public abstract class ManagementCommandSupport extends OsgiCommandSupport {
+
+    @Option(name = "-v", aliases = "--verbose", description = "Print out additional information during deployment", required = false, multiValued = false)
+    boolean verbose = false;
 
     @Override
     protected Object doExecute() throws Exception {

@@ -7,6 +7,8 @@ import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 
 public interface IdentityApplianceManagementService {
 
+    //-----------------------< Lifecycle operations >
+
     /**
      * Builds the Identity Appliance artifact, it will also be installed.
      *
@@ -31,6 +33,10 @@ public interface IdentityApplianceManagementService {
     ImportApplianceDefinitionResponse importApplianceDefinition(ImportApplianceDefinitionRequest request) throws IdentityServerException;
 
     ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException;
+
+    ActivateSPExecEnvResponse activateSPExecEnv(ActivateSPExecEnvRequest request) throws IdentityServerException;
+
+    //-----------------------< CRUD Operations >
 
     /**
      * Adds new Identity Appliance

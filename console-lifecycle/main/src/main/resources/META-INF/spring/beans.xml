@@ -71,6 +71,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
         <property name="lazySyncAppliances" value="true"/>
 
+        <property name="activationService" ref="activationService" />
         <property name="builder" ref="applianceBuilder"/>
         <property name="deployer" ref="applianceDeployer"/>
         <!-- DAO's -->
@@ -106,10 +107,8 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
                   ref="idApplianceManagementService"
             interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"/>
 
-    <!-- TODO : Make this work Provided by Karaf
-    <osgi:reference id="featuresService" cardinality="1..1" timeout="60"
-                    interface="org.apache.felix.karaf.features.FeaturesService"  />
-    -->
+    <osgi:reference id="activationService" cardinality="1..1" timeout="60"
+                    interface="com.atricore.idbus.console.activation.main.spi.ActivationService"  />
 
     <!-- =================================================================== -->
     <!-- Configuration Admin entry                                           -->

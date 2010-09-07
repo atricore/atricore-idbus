@@ -40,6 +40,14 @@
             <field name="executionEnv" default-fetch-group="true"/>
         </class>
 
+        <class name="AlfrescoExecutionEnvironment" detachable="true">
+            <inheritance strategy="new-table"/>
+        </class>
+
+        <class name="Apache2ExecutionEnvironment" detachable="true">
+            <inheritance strategy="new-table"/>
+        </class>
+
         <class name="AttributeProfile" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="id" value-strategy="native" primary-key="true"/>
@@ -186,9 +194,20 @@
             <field name="id" value-strategy="native" primary-key="true"/>
         </class>
 
+        <class name="IISExecutionEnvironment" detachable="true">
+            <inheritance strategy="new-table"/>
+        </class>
+
         <class name="JBossExecutionEnvironment" detachable="true">
             <inheritance strategy="new-table"/>
+        </class>
 
+        <class name="JBossPortalExecutionEnvironment" detachable="true">
+            <inheritance strategy="new-table"/>
+        </class>
+
+        <class name="JEEExecutionEnvironment" detachable="true">
+            <inheritance strategy="new-table"/>
         </class>
 
         <class name="JOSSOActivation" detachable="true">
@@ -207,6 +226,10 @@
             <inheritance strategy="new-table"/>
         </class>
 
+        <class name="LiferayExecutionEnvironment" detachable="true">
+            <inheritance strategy="new-table"/>
+        </class>
+
         <class name="Location" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="id" value-strategy="native" primary-key="true"/>
@@ -215,6 +238,10 @@
         <class name="Organization" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="id" value-strategy="native" primary-key="true"/>
+        </class>
+
+        <class name="PHPExecutionEnvironment" detachable="true">
+            <inheritance strategy="new-table"/>
         </class>
 
         <class name="Provider" detachable="true">
@@ -280,6 +307,14 @@
             
             <field name="authenticationContract" default-fetch-group="true" />
             <field name="emissionPolicy" default-fetch-group="true" />
+        </class>
+
+        <class name="TomcatExecutionEnvironment" detachable="true">
+            <inheritance strategy="new-table"/>
+        </class>
+
+        <class name="WASCEExecutionEnvironment" detachable="true">
+            <inheritance strategy="new-table"/>
         </class>
 
         <class name="WeblogicExecutionEnvironment" detachable="true">

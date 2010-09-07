@@ -65,6 +65,10 @@
             <action class="com.atricore.idbus.console.lifecycle.command.ImportApplianceDefinitionCommand"/>
         </command>
 
+        <command name="appliance/activate-sp">
+            <action class="com.atricore.idbus.console.lifecycle.command.ActivateSPExecEnvCommand"/>
+        </command>
+
     </command-bundle>
 
     <bean id="buildApplianceCompleter"

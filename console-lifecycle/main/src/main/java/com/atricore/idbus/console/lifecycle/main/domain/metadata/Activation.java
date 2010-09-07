@@ -11,6 +11,8 @@ public class Activation extends Connection {
 
     private ServiceProvider sp;
 
+    private boolean activated;
+
     public ExecutionEnvironment getExecutionEnv() {
         return executionEnv;
     }
@@ -25,5 +27,17 @@ public class Activation extends Connection {
 
     public void setSp(ServiceProvider sp) {
         this.sp = sp;
+    }
+
+    public boolean isActivated() {
+        return activated;
+    }
+
+    public boolean getActivated() {
+        return activated;
+    }
+
+    public void setActivated(boolean activated) {
+        this.activated = activated;
     }
 }

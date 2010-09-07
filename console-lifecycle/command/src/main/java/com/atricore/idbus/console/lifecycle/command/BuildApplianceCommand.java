@@ -20,10 +20,6 @@ public class BuildApplianceCommand extends ManagementCommandSupport {
     @Option(name = "-d", aliases = "--deploy", description = "Deploy and start the Identity Appliance ", required = false, multiValued = false)
     boolean deploy = false;
 
-    @Option(name = "-v", aliases = "--verbose", description = "Print out additional information during deployment", required = false, multiValued = false)
-    boolean verbose = false;
-
-
     @Override
     protected Object doExecute(IdentityApplianceManagementService svc) throws Exception {
 

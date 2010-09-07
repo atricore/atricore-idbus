@@ -22,9 +22,6 @@ public class ListAppliancesCommand extends ManagementCommandSupport {
     @Option(name = "-s", aliases = "--state", description = "List appliances for the specified states", required = false, multiValued = true)
     List<String> states;
 
-    @Option(name = "-v", aliases = "--verbose", description = "Verbose output", required = false, multiValued = false)
-    boolean verbose;
-
     @Override
     protected Object doExecute(IdentityApplianceManagementService svc) throws Exception {
 
@@ -159,6 +156,19 @@ public class ListAppliancesCommand extends ManagementCommandSupport {
             sb.append(getNameString(p));
             sb.append(":");
             sb.append(getLocationString(p));
+
+            if (p instanceof ServiceProvider ) {
+                ServiceProvider sp = (ServiceProvider) p;
+                if (sp.getActivation() != null) {
+
+                    if (sp.getActivation().isActivated()) {
+                        sb.append(" (Active:");
+                        sb.append(sp.getActivation().getExecutionEnv().getInstallUri());
+                        sb.append(")");
+                    }
+
+                }
+            }
         }
 
     }

@@ -300,10 +300,11 @@
 
     </bean>
 
-    <bean name="execEnv1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossExecutionEnvironment">
+    <bean name="execEnv1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.TomcatExecutionEnvironment">
         <property name="name" value="execEnv1"/>
+        <property name="platformId" value="tc60"/>
         <property name="description" value="Execution Environment One"/>
-        <property name="installUri" value="file://tmp/jboss4.2.3.GA"/>
+        <property name="installUri" value="/tmp/apache-tomcat-6.0.29"/>
         <property name="activations">
             <set>
                 <ref bean="sp1-josso"/>

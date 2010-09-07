@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Set;
 
 /**
+ * TODO : Subclass to support PHP, Liferay, Alfresco, Apache, ISAPI, PHPBB, 
+ *
  * Author: Dejan Maric
  */
 public class ExecutionEnvironment implements Serializable {
@@ -13,6 +15,7 @@ public class ExecutionEnvironment implements Serializable {
     private String displayName;
     private String description;
     private String installUri;
+    private String platformId;
 
     private Set<Activation> activations;
 
@@ -64,5 +67,13 @@ public class ExecutionEnvironment implements Serializable {
 
     public void setActivations(Set<Activation> activations) {
         this.activations = activations;
+    }
+
+    public String getPlatformId() {
+        return platformId;
+    }
+
+    public void setPlatformId(String platformId) {
+        this.platformId = platformId;
     }
 }
