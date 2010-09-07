@@ -34,6 +34,7 @@ import flash.events.Event;
 
 import mx.events.FlexEvent;
 
+import mx.events.MenuEvent;
 import mx.events.StateChangeEvent;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -108,12 +109,14 @@ public class ApplicationMediator extends IocMediator {
         if (getViewComponent() != null) {
             app.stackButtonBar.removeEventListener(IndexChangeEvent.CHANGE, handleStackChange);
             app.removeEventListener(FlexEvent.SHOW, handleShowConsole);
+            app.userActionMenuBar.addEventListener(MenuEvent.ITEM_CLICK, handleUserMenuAction)
         }
 
         super.setViewComponent(p_viewComponent);
 
         init();
     }
+
 
     public function init():void {
         popupManager.init(iocFacade, app);
@@ -133,6 +136,16 @@ public class ApplicationMediator extends IocMediator {
 
     public function handleShowConsole(event:Event):void {
 
+    }
+
+    private function handleUserMenuAction(event:MenuEvent):void {
+        if (event.index == 0) {
+            // TODO: show change password popup
+
+        } else
+        if (event.index == 1) {
+            app.currentState = "splash";
+        }
     }
 
     override public function listNotificationInterests():Array {
@@ -173,7 +186,7 @@ public class ApplicationMediator extends IocMediator {
             case SetupServerCommand.FAILURE:
                 break;
             case LoginCommand.SUCCESS:
-                app.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, switchedToOperationMode);
+                app.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, switchedMode);
                 app.currentState = "operation";
                 break;
             case ApplicationFacade.SHOW_ERROR_MSG :
@@ -204,13 +217,27 @@ public class ApplicationMediator extends IocMediator {
         }
     }
 
-    private function switchedToOperationMode(event:StateChangeEvent):void {
+    private function switchedMode(event:StateChangeEvent):void {
+        if (event.newState == "operation") {
+            login();
+        } else
+        if (event.newState == "splash") {
+            logout();
+        }
+    }
+
+    public function login():void {
         modelerMediator.setViewComponent(app.modelerView);
         lifecycleViewMediator.setViewComponent(app.lifecycleView);
         accountManagementMediator.setViewComponent(app.accountManagementView);
 
         app.stackButtonBar.addEventListener(IndexChangeEvent.CHANGE, handleStackChange);
         app.stackButtonBar.selectedIndex = 0;
+    }
+
+    public function logout():void {
+       _secureContextProxy.logout();
+        // TODO: cleanup proxyies holding for instance appliance state
     }
 
     public function get app():AtricoreConsole {

@@ -21,22 +21,18 @@
 
 package com.atricore.idbus.console.services.spi;
 
+import com.atricore.idbus.console.lifecycle.main.exception.SignOnException;
 import com.atricore.idbus.console.services.spi.request.SignOnRequest;
 import com.atricore.idbus.console.services.spi.request.SignOutRequest;
-import com.atricore.idbus.console.services.spi.request.UserLoggedRequest;
 import com.atricore.idbus.console.services.spi.response.SignOnResponse;
 import com.atricore.idbus.console.services.spi.response.SignOutResponse;
-import com.atricore.idbus.console.services.spi.response.UserLoggedResponse;
-import com.atricore.idbus.console.lifecycle.main.exception.SignOnServiceException;
 
 /**
  * Author: Dejan Maric
  */
 public interface SignOnAjaxService {
 
-    public SignOnResponse signOn(SignOnRequest signOnRequest) throws SignOnServiceException;
+    public SignOnResponse signOn(SignOnRequest signOnRequest) throws SignOnException;
 
-    public SignOutResponse signOut(SignOutRequest signOutRequest) throws SignOnServiceException;
-
-    UserLoggedResponse userLogged(UserLoggedRequest userLoggedRequest) throws SignOnServiceException;
+    public SignOutResponse signOut(SignOutRequest signOutRequest) throws SignOnException;
 }
