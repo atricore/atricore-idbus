@@ -114,14 +114,6 @@ public abstract class Provider implements Serializable {
         this.identityAppliance = identityAppliance;
     }
 
-    public boolean isRemote() {
-        return isRemote;
-    }
-
-    public void setRemote(boolean remote) {
-        isRemote = remote;
-    }
-
     public ProviderConfig getConfig() {
         return config;
     }
@@ -160,6 +152,14 @@ public abstract class Provider implements Serializable {
 
     public void setMetadata(Resource metadata) {
         this.metadata = metadata;
+    }
+
+    public boolean isRemote() {
+        return isRemote;
+    }
+
+    public void setRemote(boolean remote) {
+        isRemote = remote;
     }
 
     @Override

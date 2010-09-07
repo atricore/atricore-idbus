@@ -141,6 +141,14 @@ public class ProviderDTO implements Serializable {
         this.identityLookup = identityLookup;
     }
 
+    public ResourceDTO getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(ResourceDTO metadata) {
+        this.metadata = metadata;
+    }
+
     public boolean isRemote() {
         return isRemote;
     }
@@ -149,12 +157,15 @@ public class ProviderDTO implements Serializable {
         isRemote = remote;
     }
 
-    public ResourceDTO getMetadata() {
-        return metadata;
+    /*getIsRemote and setIsRemote are added as a workaround
+    * to make granite generate proper getter/setter in Provider.as
+    * */
+    public boolean getIsRemote(){
+        return isRemote;
     }
 
-    public void setMetadata(ResourceDTO metadata) {
-        this.metadata = metadata;
+    public void setIsRemote(boolean remote) {
+        isRemote = remote;
     }
 
     @Override
