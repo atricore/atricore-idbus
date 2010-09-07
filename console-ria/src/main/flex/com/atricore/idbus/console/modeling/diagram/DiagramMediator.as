@@ -44,6 +44,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdent
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
@@ -670,14 +671,15 @@ public class DiagramMediator extends IocMediator {
         var elementType:int = -1;
         
         if(edgeData is FederatedConnection){
-            elementType = DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE;
+            var fedConnection:FederatedConnection = edgeData as FederatedConnection;
+            var rfc:RemoveFederatedConnectionElementRequest = new RemoveFederatedConnectionElementRequest(fedConnection);
+            sendNotification(ApplicationFacade.REMOVE_FEDERATED_CONNECTION_ELEMENT, rfc);
         } else if (edgeData is Activation){
-//            elementType = DiagramElementTypes.ACTIVATION_ELEMENT_TYPE;
             var activation:JOSSOActivation = edgeData as JOSSOActivation;
             var ract:RemoveActivationElementRequest = new RemoveActivationElementRequest(activation);
             sendNotification(ApplicationFacade.REMOVE_ACTIVATION_ELEMENT, ract);
         } else if (edgeData is IdentityLookup){
-            elementType = DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE;
+            //TODO
         }
     }
 

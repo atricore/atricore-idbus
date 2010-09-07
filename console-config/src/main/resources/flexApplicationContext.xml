@@ -97,6 +97,10 @@
             class="com.atricore.idbus.console.modeling.main.controller.ActivationRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="federatedConnectionRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.FederatedConnectionRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="createSimpleSSOSetupCommand"
             class="com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOSetupCommand"/>
     <object id="buildIdentityApplianceCommand"
@@ -375,6 +379,7 @@
         <property name="idpChannelRemoveCommand" ref="idpChannelRemoveCommand"/>
         <property name="identityProviderRemoveCommand" ref="identityProviderRemoveCommand"/>
         <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
+        <property name="federatedConnectionRemoveCommand" ref="federatedConnectionRemoveCommand"/>        
         <property name="createSimpleSSOSetupCommand" ref="createSimpleSSOSetupCommand"/>
         <property name="buildIdentityApplianceCommand" ref="buildIdentityApplianceCommand"/>
         <property name="lookupIdentityApplianceByIdCommand" ref="lookupIdentityApplianceByIdCommand"/>

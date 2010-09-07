@@ -48,6 +48,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const SP_CHANNEL_REMOVE:String = "spChannelRemove";
     public static const DB_IDENTITY_VAULT_REMOVE:String = "identityVaultRemove";
     public static const ACTIVATION_REMOVE:String = "activationRemove";
+    public static const FEDERATED_CONNECTION_REMOVE:String = "federatedConnectionRemove";
     public static const IDENTITY_APPLIANCE_UPDATE:String = "identityApplianceUpdate";
     public static const UPLOAD:String = "upload";
     public static const BUILD_IDENTITY_APPLIANCE:String = "buildIdentityAppliance";
@@ -100,6 +101,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJbossExecutionEnvironmentElement";
     public static const CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWeblogicExecutionEnvironmentElement";
     public static const REMOVE_ACTIVATION_ELEMENT:String = "removeActivationElement";
+    public static const REMOVE_FEDERATED_CONNECTION_ELEMENT:String = "removeFederatedConnectionElement";
     public static const MANAGE_CERTIFICATE:String = "manageCertificate";
     public static const SHOW_UPLOAD_PROGRESS:String = "uploadProgress";
     public static const DISPLAY_ACCOUNT_MNGMT_HOME:String = "displayAccountManagementHome";
