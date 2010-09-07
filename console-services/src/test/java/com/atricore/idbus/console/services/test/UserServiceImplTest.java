@@ -209,12 +209,12 @@ public class UserServiceImplTest {
         searchUserRequest.setId(1);
         UserResponse response = _userService.findById(searchUserRequest);
 
-        checkFields(userRequest,response.getUser());
+        checkFields(userRequest,response.getAuthenticatedUser());
 
         searchUserRequest.setId(2);
         response = _userService.findById(searchUserRequest);
 
-        checkFields(userRequest2,response.getUser());
+        checkFields(userRequest2,response.getAuthenticatedUser());
        
         logger.debug("[Finish]: testLookupUserById");
 
@@ -272,7 +272,7 @@ public class UserServiceImplTest {
         searchUserRequest.setId(1);
         response = _userService.findById(searchUserRequest);
 
-        checkFields(userUpdateRequest, response.getUser());
+        checkFields(userUpdateRequest, response.getAuthenticatedUser());
 
         logger.debug("[Start]: testListAllUsers");
 

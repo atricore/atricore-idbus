@@ -21,31 +21,19 @@
 
 package com.atricore.idbus.console.main.controller
 {
-import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
-import com.atricore.idbus.console.main.model.request.LoginRequest;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.dto.SignOnStatusCode;
-import com.atricore.idbus.console.services.dto.User;
-import com.atricore.idbus.console.services.spi.request.SignOnRequest;
-import com.atricore.idbus.console.services.spi.request.UserLoggedRequest;
-import com.atricore.idbus.console.services.spi.response.SignOnResponse;
 
 import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
-import mx.rpc.remoting.mxml.RemoteObject;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class LoginCommand extends IocSimpleCommand implements IResponder
+public class ChangePasswordCommand extends IocSimpleCommand implements IResponder
 {
-    public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.LoginCommand.SUCCESS";
-    public static const FAILURE:String = "com.atricore.idbus.console.main.controller.LoginCommand.FAILURE";
-    public static const EMAIL_SUCCESS:String = "com.atricore.idbus.console.main.controller.LoginCommand.EMAIL_SUCCESS";
-    public static const UNKNOWN_PRINCIPAL:String = "com.atricore.idbus.console.main.controller.LoginCommand.UnknownPrincipal";
-    public static const AUTH_FAILED:String = "com.atricore.idbus.console.main.controller.LoginCommand.AuthFailed";
-    public static const REQUEST_DENIED:String = "com.atricore.idbus.console.main.controller.LoginCommand.RequestDenied";
+    public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.ChangePasswordCommand.SUCCESS";
+    public static const FAILURE:String = "com.atricore.idbus.console.main.controller.ChangePasswordCommand.FAILURE";
 
     private var _registry:ServiceRegistry;
     private var _secureContext:SecureContextProxy;
@@ -71,26 +59,11 @@ public class LoginCommand extends IocSimpleCommand implements IResponder
 
         sendNotification(SUCCESS);
 
-        /** Uncomment in order to invoke authentication operation
-        var loginRequest:LoginRequest = notification.getBody() as LoginRequest;
-        _password = loginRequest.password;
-
-        var signOnRequest:SignOnRequest = new SignOnRequest();
-        signOnRequest.username = loginRequest.username;
-        signOnRequest.password = loginRequest.password;
-
-        var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.SIGN_ON_SERVICE);
-        var call:Object = service.signOn(signOnRequest);
-        call.addResponder(this);
+        /** TODO: invoke change password operation in profile  management service 
         */
     }
 
     public function result(data:Object):void {
-        var signOnResponse:SignOnResponse = data.result as SignOnResponse;
-
-        var user:User = data.result as User;
-
-        secureContext.currentUser = user;
         sendNotification(SUCCESS);
     }
 

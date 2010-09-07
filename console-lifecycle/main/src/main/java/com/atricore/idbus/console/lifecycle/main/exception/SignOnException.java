@@ -27,20 +27,20 @@ package com.atricore.idbus.console.lifecycle.main.exception;
  * Time: 9:26:51 AM
  * email: cbirge@atricore.org
  */
-public class SignOnServiceException extends Exception{
+public class SignOnException extends Exception{
 
-    public SignOnServiceException() {
+    public SignOnException() {
     }
 
-    public SignOnServiceException(String message) {
+    public SignOnException(String message) {
         super(message);
     }
 
-    public SignOnServiceException(String message, Throwable cause) {
+    public SignOnException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public SignOnServiceException(Throwable cause) {
+    public SignOnException(Throwable cause) {
         super(cause);
     }
 }
