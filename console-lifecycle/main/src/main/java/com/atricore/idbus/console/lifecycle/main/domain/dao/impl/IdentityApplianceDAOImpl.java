@@ -27,7 +27,7 @@ public class IdentityApplianceDAOImpl extends GenericDAOImpl<IdentityAppliance, 
             
             Query query = pm.newQuery("SELECT FROM com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance" +
                     //" WHERE this.idApplianceDeployment != null");
-                    " WHERE this.state == '" + IdentityApplianceState.INSTALLED + "'" +
+                    " WHERE this.state == '" + IdentityApplianceState.DEPLOYED + "'" +
                     "or this.state == '" + IdentityApplianceState.STARTED + "'");
 
             return (Collection<IdentityAppliance>) query.execute();
