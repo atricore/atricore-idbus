@@ -53,8 +53,6 @@
     <!-- Apache Tomcat 6.0.x -->
 
     <bean name="tc60-installer" class="org.josso.tooling.gshell.install.installer.TomcatInstaller">
-        
-        
         <constructor-arg index="0" ref="tc60"/>
         <property name="printer" ref="printerServiceBean"/>
     </bean>

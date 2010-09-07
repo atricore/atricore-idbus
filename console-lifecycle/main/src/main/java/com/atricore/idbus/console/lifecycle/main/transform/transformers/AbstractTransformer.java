@@ -102,8 +102,7 @@ public abstract class AbstractTransformer implements Transformer {
         return resolveLocationBaseUrl(l);
     }
 
-    protected String resolveLocationUrl(Location location) {
-
+    protected String resolveLocationPath(Location location) {
         if (location == null) {
             return "";
         }
@@ -125,7 +124,18 @@ public abstract class AbstractTransformer implements Transformer {
                 uriString = uriString.substring(1);
         }
 
-        return  resolveLocationBaseUrl(location) + contextString + uriString;
+        return contextString + uriString;
+
+    }
+
+    protected String resolveLocationUrl(Location location) {
+        if (location == null) {
+            return "";
+        }
+
+        String path = resolveLocationPath(location);
+
+        return  resolveLocationBaseUrl(location) + path;
     }
 
     protected String resolveLocationBaseUrl(Location location) {

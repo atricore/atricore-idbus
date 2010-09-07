@@ -133,7 +133,7 @@ public class SPTransformer extends AbstractTransformer {
 
         setPropertyValue(spMediator, "preferredIdpSSOBinding", SamlR2Binding.SAMLR2_POST.getValue());
         setPropertyValue(spMediator, "preferredIdpSLOBinding", SamlR2Binding.SAMLR2_POST.getValue());
-        //this is set from ExecEnvJOSSOTransformer
+        //this is set from JOSSOExecEnvransformer
         //setPropertyValue(spMediator, "spBindingACS", "http://localhost:8081/IDBUS/BP1/SSO/ACS/ARTIFACT");
         //setPropertyValue(spMediator, "spBindingSLO", "http://localhost:8081/IDBUS/BP1/SSO/SLO/ARTIFACT");
 
