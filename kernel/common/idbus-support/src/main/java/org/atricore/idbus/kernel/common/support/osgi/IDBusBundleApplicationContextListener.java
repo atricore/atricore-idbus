@@ -16,17 +16,26 @@ public class IDBusBundleApplicationContextListener implements OsgiBundleApplicat
 
         if (event instanceof OsgiBundleContextRefreshedEvent) {
             OsgiBundleContextRefreshedEvent e = (OsgiBundleContextRefreshedEvent) event;
-            logger.debug("Spring Application context in Bundle (" + e.getBundle().getBundleId() + ") " + e.getBundle().getSymbolicName() + " : REFRESHED/STARTED");
+            logger.debug("Spring Application context in Bundle (" +
+                    e.getBundle().getBundleId() + ") " + e.getBundle().getSymbolicName() + " : REFRESHED/STARTED");
 
         } else if (event instanceof OsgiBundleContextFailedEvent) {
 
             OsgiBundleContextFailedEvent e = (OsgiBundleContextFailedEvent) event;
-            logger.debug("Spring Application context in Bundle (" + e.getBundle().getBundleId() + ") " + e.getBundle().getSymbolicName() + " : FAILED");
+            logger.debug("Spring Application context in Bundle (" +
+                    e.getBundle().getBundleId() + ") " + e.getBundle().getSymbolicName() + " : FAILED");
 
         } else if (event instanceof OsgiBundleContextClosedEvent) {
 
             OsgiBundleContextClosedEvent e = (OsgiBundleContextClosedEvent) event;
-            logger.debug("Spring Application context in Bundle (" + e.getBundle().getBundleId() + ") " + e.getBundle().getSymbolicName() + " : CLOSED");
+            logger.debug("Spring Application context in Bundle (" +
+                    e.getBundle().getBundleId() + ") " + e.getBundle().getSymbolicName() + " : CLOSED");
+
+        }  else {
+
+            logger.debug("Spring Application context in Bundle (" +
+                    event.getBundle().getBundleId() + ") " + event.getBundle().getSymbolicName() + " : <UNKNOWN>" +
+                    event.getClass().getSimpleName());
 
         }
 

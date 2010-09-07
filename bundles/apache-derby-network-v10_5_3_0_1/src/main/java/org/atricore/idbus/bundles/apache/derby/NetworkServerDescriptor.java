@@ -10,7 +10,7 @@ public class NetworkServerDescriptor {
 
     private int port = 1527;
 
-    private String username = "admin";
+    private String username = "atricore";
     
     private String password = "admin";
 

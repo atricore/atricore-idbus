@@ -143,7 +143,7 @@
                         <prop key="javax.jdo.option.ConnectionPassword"></prop>
                         -->
                         <prop key="javax.jdo.option.ConnectionURL">jdbc:derby://localhost:1528/idau2-psp1-idpart1;create=true</prop>
-                        <prop key="javax.jdo.option.ConnectionUserName">admin</prop>
+                        <prop key="javax.jdo.option.ConnectionUserName">atricore</prop>
                         <prop key="javax.jdo.option.ConnectionPassword">admin</prop>
                         <prop key="javax.jdo.option.ConnectionDriverName">org.apache.derby.jdbc.ClientDriver</prop>
 
@@ -173,7 +173,7 @@
           class="org.atricore.idbus.bundles.apache.derby.NetworkServerDescriptor" >
         
         <property name="port" value="1528"/>
-        <property name="username" value="admin"/>
+        <property name="username" value="atricore"/>
         <property name="password" value="admin"/>
     </bean>
     <!-- Contribute the DB Server Descriptor using Spring DM -->

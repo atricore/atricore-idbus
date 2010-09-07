@@ -65,6 +65,8 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
     protected UUIDGenerator uuidGenerator = new UUIDGenerator();
 
+    protected boolean initialized = false;
+
     // TODO : remove it , should be somewhere else!
     private MessageQueueManager artifactQueueManager;
 
@@ -77,10 +79,15 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
         context = container.getContext();
         registry = (JndiRegistry) context.getRegistry();
 
+        initialized = true;
+
     }
 
     public void setupEndpoints(Channel channel) throws
             IdentityMediationException {
+
+        if (!isInitialized())
+            throw new IllegalStateException("Mediator not initialized!");
 
         if (channel instanceof SPChannel)
             setupIdentityProviderEndpoints((SPChannel)channel);
@@ -115,6 +122,9 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
             IdentityMediationException {
         try {
 
+            if (!isInitialized())
+                throw new IllegalStateException("Mediator not initialized!");
+
             logger.info("Setting up IdP endpoints for channel : " + SPChannel.getName());
 
             RouteBuilder idpRoutes = createIdPRoutes(SPChannel);
@@ -133,6 +143,9 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
     protected void setupServiceProviderEndpoints(IdPChannel idPChannel) throws
             IdentityMediationException {
 
+        if (!isInitialized())
+            throw new IllegalStateException("Mediator not initialized!");
+
         try {
             logger.info("Setting up SP endpoints for channel : " + idPChannel.getName());
 
@@ -150,6 +163,10 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
     protected void setupBindingEndpoints(BindingChannel bindingChannel) throws
             IdentityMediationException {
+
+        if (!isInitialized())
+            throw new IllegalStateException("Mediator not initialized!");
+
 
         try {
 
@@ -170,6 +187,9 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
     protected void setupClaimEndpoints(ClaimChannel claimChannel) throws
             IdentityMediationException {
 
+        if (!isInitialized())
+            throw new IllegalStateException("Mediator not initialized!");
+
         try {
 
             logger.info("Setting up Claim endpoints for channel : " + claimChannel.getName());
@@ -187,6 +207,10 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
     }
 
     public void setupProvisioningServiceProviderEndpoints(PsPChannel pspChannel) throws IdentityMediationException {
+
+        if (!isInitialized())
+            throw new IllegalStateException("Mediator not initialized!");
+
         try {
 
             logger.info("Setting up PSP endpoints for channel : " + pspChannel.getName());
@@ -286,6 +310,9 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
     public Object sendMessage(Object content, EndpointDescriptor destination, Channel channel) throws IdentityMediationException {
 
+        if (!isInitialized())
+            throw new IllegalStateException("Mediator not initialized!");
+
         MediationMessageImpl msg = new MediationMessageImpl (uuidGenerator.generateId(),
                 content,
                 content.getClass().getSimpleName(), null, destination, null);
@@ -299,8 +326,10 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
             logger.trace("Sending Message to " + message.getDestination());
         }
 
-        MediationBinding b = bindingFactory.createBinding(message.getDestination().getBinding(), channel);
+        if (!isInitialized())
+            throw new IllegalStateException("Mediator not initialized!");
 
+        MediationBinding b = bindingFactory.createBinding(message.getDestination().getBinding(), channel);
         return b.sendMessage(message);
     }
 
@@ -313,6 +342,10 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
 
     public void setArtifactQueueManager(MessageQueueManager artifactQueueManager) {
         this.artifactQueueManager = artifactQueueManager;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 
     protected class LoggerProcessor implements Processor {
@@ -333,9 +366,5 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
             mediationLogger.logIncomming(exchange.getIn());
         }
     }
-
-
-
-
 
 }
