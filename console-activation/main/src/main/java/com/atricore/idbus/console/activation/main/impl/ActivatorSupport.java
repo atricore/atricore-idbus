@@ -168,7 +168,7 @@ public abstract class ActivatorSupport implements Activator {
 
 
     protected String getHomeDir() {
-        return System.getProperty("karaf.base") + "/josso";
+        return System.getProperty("karaf.base");
     }
 
     protected JOSSOArtifact createAgentArtifact(String baseUrl, String artifactId, String type) {

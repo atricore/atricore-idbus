@@ -54,6 +54,7 @@ public class AgentActivator extends ActivatorSupport {
         FileSystemManager fs = VFS.getManager();
 
         homeDir = fs.resolveFile(getHomeDir());
+
         jossoDistDir = homeDir.resolveFile("josso");
         appliancesDir = homeDir.resolveFile("appliances");
         libsDir = jossoDistDir.resolveFile("dist/agents/bin");
