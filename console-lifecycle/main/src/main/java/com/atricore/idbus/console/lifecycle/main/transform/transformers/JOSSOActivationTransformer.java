@@ -84,7 +84,7 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
             Bean cfgBean = cfgs.get(0);
 
             Bean agentAppBean = newAnonymousBean("org.josso.agent.SSOPartnerAppConfig");
-            agentAppBean.
+            //agentAppBean.
 
             addPropertyBean(cfgBean, "ssoPartnerApps", agentAppBean);
 
