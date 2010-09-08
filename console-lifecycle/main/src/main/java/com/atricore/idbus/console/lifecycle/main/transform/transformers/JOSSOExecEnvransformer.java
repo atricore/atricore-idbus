@@ -267,7 +267,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                 setPropertyValue(gatewayServiceLocator, "endpoint", applianceDef.getLocation().getHost() + ":" + applianceDef.getLocation().getPort());
                 setPropertyValue(gatewayServiceLocator, "sessionManagerServicePath", locationPath + "/JOSSO/SSOSessionManager/SOAP");
                 setPropertyValue(gatewayServiceLocator, "identityManagerServicePath", locationPath + "/JOSSO/SSOIdentityManager/SOAP");
-                setPropertyValue(gatewayServiceLocator, "identityManagerProviderServicePath", locationPath + "/JOSSO/SSOIdentityProvider/SOAP");
+                setPropertyValue(gatewayServiceLocator, "identityProviderServicePath", locationPath + "/JOSSO/SSOIdentityProvider/SOAP");
 
                 setPropertyBean(agentBean, "gatewayServiceLocator", gatewayServiceLocator);
 
@@ -290,7 +290,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
                 setPropertyAsBeans(agentBean, "automaticLoginStrategies", autoLoginStrats);
 
-                Bean parnterAppConfigBean = newAnonymousBean("org.josso.agent.SSOAgentConfiguration");
+                Bean parnterAppConfigBean = newAnonymousBean("org.josso.agent.SSOAgentConfigurationImpl");
                 setPropertyBean(agentBean, "configuration", parnterAppConfigBean);
             }
 

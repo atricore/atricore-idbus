@@ -38,9 +38,7 @@ public class XmlApplicationContextEnhancer implements XMLStreamWriter {
     XMLStreamWriter writer;
 
     public XmlApplicationContextEnhancer(Writer w) throws XMLStreamException {
-        XMLOutputFactory f = XMLOutputFactory.newInstance();
-        f.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        writer = f.createXMLStreamWriter(w);
+        writer = XMLOutputFactory.newInstance().createXMLStreamWriter(w);
     }
 
     public void writeStartElement(String localName) throws XMLStreamException {
