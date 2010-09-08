@@ -65,8 +65,8 @@ log4j.category.idbus.mediation.wire=TRACE
 
 # All Atricore
 log4j.category.org.atricore=TRACE
+log4j.category.com.atricore=TRACE
 log4j.category.org.josso=TRACE
-log4j.category.org.ops4j.pax.web.service.jetty=TRACE
 
 # Specific Atricore components
 #log4j.category.org.atricore.idbus.kernel=TRACE
@@ -90,6 +90,9 @@ log4j.category.org.ops4j.pax.web.service.jetty=TRACE
 #log4j.category.org.codehaus.wadi=TRACE
 #log4j.category.org.mortbay.jetty.servlet.wadi=TRACE
 #log4j.category.org.apache.catalina.tribes=TRACE
+
+## PAX/Jetty
+#log4j.category.org.ops4j.pax.web.service.jetty=TRACE
 
 # DataNucleus Categories
 #log4j.category.DataNucleus.JDO=INFO
