@@ -3,12 +3,14 @@ package org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroup;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupDAO;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -35,11 +37,15 @@ public class JDOGroupDAOImpl extends GenericDAOImpl<JDOGroup, Long> implements J
     public Collection<JDOGroup> findByUserName(String userName) {
         PersistenceManager pm = getPersistenceManager();
 
-        Query query = pm.newQuery("SELECT GROUP " +
-                "FROM org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroup GROUP, " +
-                "   org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser USER " +
-                "WHERE GROUP.id == USER.groups.id AND USER.userName == '" + userName + "'");
+        Query query = pm.newQuery("SELECT FROM org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser" +
+                " WHERE this.userName == '" + userName + "'");
 
-        return (Collection<JDOGroup>) query.execute();
+        Collection<JDOUser> users = (Collection<JDOUser>) query.execute();
+        if (users == null || users.size() != 1)
+            throw new IncorrectResultSizeDataAccessException(1, users.size());
+
+        JDOUser user = users.iterator().next();
+
+        return Arrays.asList(user.getGroups());
     }
 }

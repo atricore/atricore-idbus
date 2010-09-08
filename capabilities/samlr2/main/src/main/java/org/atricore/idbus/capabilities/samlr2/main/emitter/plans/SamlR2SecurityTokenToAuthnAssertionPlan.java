@@ -98,6 +98,10 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSAMLR2Asser
             SSORole[] ssoRoles = getIdentityManager().findRolesByUsername(username);
             principals.addAll(Arrays.asList(ssoRoles));
 
+            if (logger.isTraceEnabled()) {
+
+            }
+
             // Build subject and publish as execution context variable.
             Subject s = null;
             // If we had a subject already, use the private / public credentials!

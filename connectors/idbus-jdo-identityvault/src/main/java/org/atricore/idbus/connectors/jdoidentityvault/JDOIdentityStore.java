@@ -1,9 +1,5 @@
 package org.atricore.idbus.connectors.jdoidentityvault;
 
-import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupDAO;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserDAO;
-import org.atricore.idbus.kernel.main.authn.scheme.UsernameCredential;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.authn.*;
@@ -63,7 +59,7 @@ public class JDOIdentityStore extends AbstractStore
 
         try {
             Collection<Group> groups = idPartition.findGroupsByUsernName(key.toString());
-            return toSSORole(groups);
+            return toSSORoles(groups);
         } catch (ProvisioningException e) {
             throw new SSOIdentityException(e);
         }
@@ -88,15 +84,18 @@ public class JDOIdentityStore extends AbstractStore
 
     }
 
-    protected BaseRole[] toSSORole(Collection<Group> groups) {
+    protected BaseRole[] toSSORoles(Collection<Group> groups) {
 
         if (groups == null)
             return new BaseRole[0];
         
         BaseRole[] ssoRoles = new BaseRole[groups.size()];
+        int i = 0;
         for (Group group : groups) {
             BaseRole ssoRole = new BaseRoleImpl();
             ssoRole.setName(group.getName());
+            ssoRoles[i] = ssoRole;
+            i++;
         }
 
         return ssoRoles;

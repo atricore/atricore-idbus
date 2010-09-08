@@ -20,6 +20,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.orm.jdo.JdoObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.jdo.FetchPlan;
 import javax.jdo.JDOObjectNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,6 +75,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
 
         try {
             JDOGroup jdoGroup = groupDao.findById(id);
+            jdoGroup = groupDao.detachCopy(jdoGroup, FetchPlan.FETCH_SIZE_GREEDY);
             return toGroup(jdoGroup);
 
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -97,6 +99,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
 
         try {
             JDOGroup jdoGroup = groupDao.findByName(name);
+            jdoGroup = groupDao.detachCopy(jdoGroup, FetchPlan.FETCH_SIZE_GREEDY);
             return toGroup(jdoGroup);
 
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -114,6 +117,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
 
         try {
             Collection<JDOGroup> jdoGroups = groupDao.findByUserName(userName);
+            jdoGroups = groupDao.detachCopyAll(jdoGroups, FetchPlan.FETCH_SIZE_GREEDY);
             return toGroups(jdoGroups);
         } catch (Exception e) {
             throw new ProvisioningException(e);
@@ -125,6 +129,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
     public Collection<Group> findAllGroups() throws ProvisioningException {
         try {
             Collection<JDOGroup> jdoGroups = groupDao.findAll();
+            jdoGroups = groupDao.detachCopyAll(jdoGroups, FetchPlan.FETCH_SIZE_GREEDY);
             return toGroups(jdoGroups);
 
         } catch (Exception e) {
@@ -159,6 +164,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
         try {
             JDOGroup jdoGroup = toJDOGroup(group);
             jdoGroup = groupDao.save(jdoGroup);
+            jdoGroup = groupDao.detachCopy(jdoGroup, FetchPlan.FETCH_SIZE_GREEDY);
             return toGroup(jdoGroup);
         } catch (Exception e) {
             throw new ProvisioningException(e);
@@ -193,6 +199,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
         try {
 
             JDOUser jdoUser = userDao.findById(id);
+            jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
             return toUser(jdoUser);
         } catch (IncorrectResultSizeDataAccessException e) {
             if (e.getActualSize() == 0)
@@ -215,6 +222,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
         
         try {
             JDOUser jdoUser = userDao.findByUserName(username);
+            jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
             return toUser(jdoUser);
         } catch (IncorrectResultSizeDataAccessException e) {
             if (e.getActualSize() == 0)
@@ -230,6 +238,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
     public Collection<User> findAllUsers() throws ProvisioningException {
         try {
             Collection<JDOUser> jdoUsers = userDao.findAll();
+            jdoUsers = userDao.detachCopyAll(jdoUsers, FetchPlan.FETCH_SIZE_GREEDY);
             return toUsers(jdoUsers);
         } catch (Exception e) {
             throw new ProvisioningException(e);
@@ -241,6 +250,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
         try {
             JDOUser jdoUser = toJDOUser(user);
             jdoUser = userDao.save(jdoUser);
+            jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
             return toUser(jdoUser);
 
         } catch (Exception e) {
@@ -254,6 +264,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
             JDOUser jdoUser = userDao.findById(user.getId());
             toJDOUser(jdoUser, user);
             jdoUser = userDao.save(jdoUser);
+            jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
             return toUser(jdoUser);
         } catch (JdoObjectRetrievalFailureException e) {
             throw new UserNotFoundException(user.getId());
@@ -284,7 +295,9 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
     // -------------------------------------------< Utils >
 
     protected JDOGroup toJDOGroup(Group group) {
-        return toJDOGroup(new JDOGroup(), group);
+        JDOGroup jdoGroup = toJDOGroup(new JDOGroup(), group);
+        jdoGroup.setId(group.getId());
+        return jdoGroup;
     }
 
     protected JDOGroup toJDOGroup(JDOGroup jdoGroup, Group group) {
@@ -328,15 +341,15 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
 
     protected JDOUser toJDOUser(User user) {
         JDOUser jdoUser = new JDOUser();
+        jdoUser.setId(user.getId());
         return toJDOUser(jdoUser, user);
     }
 
     protected JDOUser toJDOUser(JDOUser jdoUser, User user) {
 
-        BeanUtils.copyProperties(user, jdoUser, new String[] {"groups"});
+        BeanUtils.copyProperties(user, jdoUser, new String[] {"id, groups"});
 
         if (user.getGroups() != null) {
-
             JDOGroup[] jdoGroups = new JDOGroup[user.getGroups().length];
             for (int i = 0; i < user.getGroups().length; i++) {
                 Group group = user.getGroups()[i];
@@ -354,10 +367,14 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
 
         if (jdoUser.getGroups() != null) {
             Group[] groups = new Group[jdoUser.getGroups().length];
+
             for (int i = 0; i < jdoUser.getGroups().length; i++) {
                 JDOGroup jdoGroup = jdoUser.getGroups()[i];
                 Group group = new Group();
-                BeanUtils.copyProperties(jdoGroup, group);
+                group.setName(jdoGroup.getName());
+                group.setDescription(jdoGroup.getDescription());
+                group.setId(jdoGroup.getId());
+
                 groups[i] = group;
             }
 

@@ -103,7 +103,9 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
             // 1. Authenticate
             // -----------------------------------------
             subject = authenticate(requestToken.getValue(), tokenType.getValue());
-            logger.debug( "User " + subject + " authenticated successfuly !" );
+            if (logger.isDebugEnabled())
+                logger.debug( "User " + subject + " authenticated successfuly !" );
+
             processingContext.setProperty(SUBJECT_PROP, subject);
 
             // -----------------------------------------
@@ -186,7 +188,7 @@ public class WSTSecurityTokenService extends SecurityTokenServiceImpl implements
         for (SecurityTokenEmitter emitter : emitters) {
 
             if(logger.isDebugEnabled())
-                logger.debug( "testing emitter " + emitter.getId() );
+                logger.debug( "Testing emitter " + emitter.getId() );
 
             if (emitter.canEmit(requestToken, tokenType)) {
 
