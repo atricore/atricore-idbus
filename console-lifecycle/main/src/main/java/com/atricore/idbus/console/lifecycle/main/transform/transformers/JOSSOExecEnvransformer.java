@@ -305,6 +305,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         Beans bpBeans = (Beans) event.getContext().get("bpBeans");
 
         Beans agentBeans = (Beans) event.getContext().get("agentBeans");
+        Bean agentBean = (Bean) event.getContext().get("agentBean");        
 
         Bean bpBean = getBeansOfType(bpBeans, BindingProviderImpl.class.getName()).iterator().next();
 
@@ -352,7 +353,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
             IdProjectResource<Beans> rAgentBeans =  new IdProjectResource<Beans>(idGen.generateId(),
                     bpBean.getName() + "/josso",
-                    "josso-agent-config",
+                    "josso-agent-" + bpBean.getName(),
                     "spring-beans",
                     agentBeans);
 

@@ -16,8 +16,8 @@ public class ActivateSPExecEnvCommand extends ManagementCommandSupport {
     @Argument(index = 0, name = "id", description = "The id of the identity appliance", required = true, multiValued = false)
     String id;
 
-    @Argument(index = 1, name = "sp", description = "Service Provider name", required = true, multiValued = false)
-    String sp;
+    @Argument(index = 1, name = "exec-env", description = "Execution Environment name", required = true, multiValued = false)
+    String execEnv;
 
     @Option(name = "-f", aliases = "--force", description = "Force activation", required = false, multiValued = false)
     boolean force = false;
@@ -26,11 +26,11 @@ public class ActivateSPExecEnvCommand extends ManagementCommandSupport {
     protected Object doExecute(IdentityApplianceManagementService svc) throws Exception {
 
         if (verbose)
-            System.out.println("Activating SP Execution Environment for " + sp + " in appliance " + id);
+            System.out.println("Activating Execution Environment " + execEnv + " in appliance " + id);
 
         ActivateSPExecEnvRequest req = new ActivateSPExecEnvRequest();
         req.setApplianceId(id);
-        req.setSPName(sp);
+        req.setExecEnvName(execEnv);
         req.setReactivate(force);
         ActivateSPExecEnvResponse res = svc.activateSPExecEnv(req);
 

@@ -7,7 +7,7 @@ public class ActivateSPExecEnvRequest extends AbstractManagementRequest {
 
     private String applianceId;
 
-    private String spName;
+    private String execEnvName;
 
     private boolean reactivate;
 
@@ -19,12 +19,12 @@ public class ActivateSPExecEnvRequest extends AbstractManagementRequest {
         this.applianceId = applianceId;
     }
 
-    public String getSPName() {
-        return spName;
+    public String getExecEnvName() {
+        return execEnvName;
     }
 
-    public void setSPName(String spName) {
-        this.spName = spName;
+    public void setExecEnvName(String spName) {
+        this.execEnvName = spName;
     }
 
     public boolean isReactivate() {

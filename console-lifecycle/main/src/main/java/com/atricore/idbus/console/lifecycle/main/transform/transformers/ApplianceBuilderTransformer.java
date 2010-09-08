@@ -4,7 +4,9 @@ import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceUnit;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceUnitType;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ExecutionEnvironment;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentitySource;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdApplianceProject;
@@ -109,6 +111,7 @@ public class ApplianceBuilderTransformer extends AbstractTransformer implements 
                 IdentityApplianceUnit idau = new IdentityApplianceUnit ();
 
                 // TODO : Need a way to set providers in different IDAUs !!
+                // TODO : Clone providers or use a DeployedProvider definition !?!
                 List<Provider> providers = new ArrayList<Provider>();
                 for (Provider p : applianceDef.getProviders()) {
                     providers.add(p);
