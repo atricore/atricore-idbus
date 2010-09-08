@@ -13,6 +13,8 @@ public class ActivateExecEnvRequest extends AbstractManagementRequest {
 
     private boolean replace;
 
+    private boolean activateSamples;
+
     public String getApplianceId() {
         return applianceId;
     }
@@ -43,5 +45,13 @@ public class ActivateExecEnvRequest extends AbstractManagementRequest {
 
     public void setReplace(boolean replace) {
         this.replace = replace;
+    }
+
+    public boolean isActivateSamples() {
+        return activateSamples;
+    }
+
+    public void setActivateSamples(boolean activateSamples) {
+        this.activateSamples = activateSamples;
     }
 }

@@ -14,4 +14,6 @@ public class ActivateAgentRequest extends AbstractActivationRequest {
     public void setJossoAgentConfigUri(String jossoAgentConfigUri) {
         this.jossoAgentConfigUri = jossoAgentConfigUri;
     }
+
+    
 }

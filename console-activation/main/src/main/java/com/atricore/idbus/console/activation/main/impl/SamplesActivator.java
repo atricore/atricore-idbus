@@ -18,12 +18,13 @@ import java.util.List;
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
 public class SamplesActivator extends ActivatorSupport {
-    
-    private static final Log log = LogFactory.getLog(SamplesActivator.class); 
+
+    private static final Log log = LogFactory.getLog(SamplesActivator.class);
 
     // -----------------------------------------------------------------------
-       protected FileObject homeDir;
-       protected FileObject appDir;
+    protected FileObject homeDir;
+    protected FileObject jossoDistDir;
+    protected FileObject appDir;
 
 
     protected SamplesActivator(List<Installer> installers, MessagePrinter printer, AbstractActivationRequest request, AbstractActivationResponse response) {
@@ -31,87 +32,88 @@ public class SamplesActivator extends ActivatorSupport {
     }
 
     protected void init() throws Exception {
-           getInstaller(request).init();
-       }
+        getInstaller(request).init();
+    }
 
-       protected void verifyTarget() throws Exception {
-           if (!request.isForceInstall())
-               getInstaller(request).validatePlatform();
-       }
-
-
-       protected void validate() throws Exception {
-           if (!isTargetPlatformIdValid(request.getTargetPlatformId()))
-               throw new Exception("Invalid id ["+request.getTargetPlatformId()+"] specified!");
-       }
-
-       protected void setup() throws Exception {
-           // -----------------------------------------------------------------------
-           // TODO : We could use a remote repository to get our artifacts instead of the vfs or we could use vfs providers.
-           FileSystemManager fs = VFS.getManager();
-           homeDir = fs.resolveFile(getHomeDir());
-           appDir = homeDir.resolveFile("dist/samples/apps");
-       }
+    protected void verifyTarget() throws Exception {
+        if (!request.isForceInstall())
+            getInstaller(request).validatePlatform();
+    }
 
 
-       protected void installConfig() throws Exception {
+    protected void validate() throws Exception {
+        if (!isTargetPlatformIdValid(request.getTargetPlatformId()))
+            throw new Exception("Invalid id [" + request.getTargetPlatformId() + "] specified!");
+    }
 
-       }
+    protected void setup() throws Exception {
+        // -----------------------------------------------------------------------
+        // TODO : We could use a remote repository to get our artifacts instead of the vfs or we could use vfs providers.
+        FileSystemManager fs = VFS.getManager();
+        homeDir = fs.resolveFile(getHomeDir());
+        jossoDistDir = homeDir.resolveFile("josso"); 
+        appDir = jossoDistDir.resolveFile("dist/samples/apps");
+    }
 
-       protected void deployWar() throws Exception {
 
-           for (FileObject child : appDir.getChildren()) {
-               getInstaller(request).installApplication(createArtifact(appDir.getURL().toString(), JOSSOScope.AGENT, child.getName().getBaseName()), true);
-           }
+    protected void installConfig() throws Exception {
 
-       }
+    }
 
-       public void doActivate() throws ActivationException {
+    protected void deployWar() throws Exception {
 
-           try {
+        for (FileObject child : appDir.getChildren()) {
+            getInstaller(request).installApplication(createArtifact(appDir.getURL().toString(), JOSSOScope.AGENT, child.getName().getBaseName()), true);
+        }
 
-               init();
+    }
 
-               validate();
+    public void doActivate() throws ActivationException {
 
-               setup();
+        try {
 
-               printer.printMsg();
-               printer.printMsg("@|bold Deploying " + getInstaller(request).getPlatformName() + " " + getInstaller(request).getPlatformVersion() + " JOSSO Gateway v." + getJossoVersion() + "|");
-               printer.printMsg();
+            init();
 
-               printer.printMsg("Verifying Target " + getInstaller(request).getPlatformDescription());
-               verifyTarget();
-               printer.printMsg();
+            validate();
 
-               printer.printMsg("Install JOSSO Samples Configuration");
-               installConfig();
-               printer.printMsg();
+            setup();
 
-               printer.printMsg("Deploy JOSSO Samples Applications");
-               deployWar();
-               printer.printMsg();
+            printer.printMsg();
+            printer.printMsg("@|bold Deploying " + getInstaller(request).getPlatformName() + " " + getInstaller(request).getPlatformVersion() + " JOSSO Gateway v." + getJossoVersion() + "|");
+            printer.printMsg();
 
-               // -----------------------------------------------------------------------
-               // 6. Inform outcome
-               printer.printMsg(getInstaller(request).getPlatformDescription() + " JOSSO Samples v." + getJossoVersion());
-               printer.printOkStatus("Overall Installation", "Successful!");
-               printer.printMsg();
+            printer.printMsg("Verifying Target " + getInstaller(request).getPlatformDescription());
+            verifyTarget();
+            printer.printMsg();
 
-               printer.printMsg("@|bold Congratulations!| You've successfully installed the samples.");
-               printer.printMsg();
+            printer.printMsg("Install JOSSO Samples Configuration");
+            installConfig();
+            printer.printMsg();
 
-           } catch (Exception e) {
-               // 5. Inform outcome (error)
-               printer.printMsg();
-               printer.printMsg(getInstaller(request).getPlatformDescription() + " JOSSO Samples v." + getJossoVersion());
-               printer.printErrStatus("Overall Installation", e.getMessage());
-               printer.printMsg();
-               printer.printMsg("See ../log/gshell.log for details");
-               log.error(e.getMessage(), e);
+            printer.printMsg("Deploy JOSSO Samples Applications");
+            deployWar();
+            printer.printMsg();
 
-           }
+            // -----------------------------------------------------------------------
+            // 6. Inform outcome
+            printer.printMsg(getInstaller(request).getPlatformDescription() + " JOSSO Samples v." + getJossoVersion());
+            printer.printOkStatus("Overall Installation", "Successful!");
+            printer.printMsg();
 
-       }
-    
+            printer.printMsg("@|bold Congratulations!| You've successfully installed the samples.");
+            printer.printMsg();
+
+        } catch (Exception e) {
+            // 5. Inform outcome (error)
+            printer.printMsg();
+            printer.printMsg(getInstaller(request).getPlatformDescription() + " JOSSO Samples v." + getJossoVersion());
+            printer.printErrStatus("Overall Installation", e.getMessage());
+            printer.printMsg();
+            printer.printMsg("See ../log/gshell.log for details");
+            log.error(e.getMessage(), e);
+
+        }
+
+    }
+
 }

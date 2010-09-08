@@ -7,6 +7,8 @@ public class FederatedConnection extends Connection {
 
     private static final long serialVersionUID = 2960169484758674128L;
 
+    private boolean preferred;
+
     private FederatedProvider roleA;
 
     private FederatedChannel channelA;
@@ -46,4 +48,6 @@ public class FederatedConnection extends Connection {
     public void setChannelB(FederatedChannel channelB) {
         this.channelB = channelB;
     }
+
+
 }

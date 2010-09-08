@@ -23,7 +23,9 @@ package com.atricore.idbus.console.lifecycle.main.impl;
 
 import com.atricore.idbus.console.activation.main.spi.ActivationService;
 import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
+import com.atricore.idbus.console.activation.main.spi.request.ActivateSamplesRequest;
 import com.atricore.idbus.console.activation.main.spi.response.ActivateAgentResponse;
+import com.atricore.idbus.console.activation.main.spi.response.ActivateSamplesResponse;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceUnit;
@@ -417,6 +419,16 @@ public class IdentityApplianceManagementServiceImpl implements
                                 activationRequest.setReplaceConfig(request.isReplace());
 
                                 ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
+
+                                if (request.isActivateSamples()) {
+                                    if (logger.isDebugEnabled())
+                                        logger.debug("Activating Samples in Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
+
+                                    ActivateSamplesRequest samplesActivationRequest =
+                                            doMakAgentSamplesActivationRequest(execEnv);
+                                    ActivateSamplesResponse samplesActivationResponse =
+                                            activationService.activateSamples(samplesActivationRequest);
+                                }
 
                                 // Mark activation as activated and save appliance.
                                 execEnv.setActive(true);
@@ -1128,6 +1140,23 @@ public class IdentityApplianceManagementServiceImpl implements
     protected ActivateAgentRequest doMakAgentActivationRequest(ExecutionEnvironment execEnv ) {
 
         ActivateAgentRequest req = new ActivateAgentRequest ();
+        req.setTarget(execEnv.getInstallUri());
+        req.setTargetPlatformId(execEnv.getPlatformId());
+
+        if (execEnv instanceof JBossExecutionEnvironment) {
+            JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) execEnv;
+            req.setJbossInstance(jbExecEnv.getInstance());
+        } else if (execEnv instanceof WeblogicExecutionEnvironment) {
+            WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
+            req.setWeblogicDomain(wlExecEnv.getDomain());
+        } // TODO : Add support for Liferay, JBPortal, Alfresco, PHP, PHPBB, etc ...
+
+        return req;
+    }
+
+    protected ActivateSamplesRequest doMakAgentSamplesActivationRequest(ExecutionEnvironment execEnv) {
+
+        ActivateSamplesRequest req = new ActivateSamplesRequest ();
         req.setTarget(execEnv.getInstallUri());
         req.setTargetPlatformId(execEnv.getPlatformId());
 

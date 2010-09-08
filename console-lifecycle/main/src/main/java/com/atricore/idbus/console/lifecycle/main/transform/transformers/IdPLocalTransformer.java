@@ -256,6 +256,7 @@ public class IdPLocalTransformer extends AbstractTransformer {
 
         Bean stmtToAssertionPlan = newBean(idpBeans, idpBean.getName() + "-samlr2authnstmt-to-samlr2assertion-plan", SamlR2SecurityTokenToAuthnAssertionPlan.class);
         setPropertyRef(stmtToAssertionPlan, "bpmsManager", "bpms-manager");
+        setPropertyRef(stmtToAssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
 
         //Bean authnToSamlResponsePlan = newBean(idpBeans, "samlr2authnreq-to-samlr2response-plan", SamlR2AuthnReqToSamlR2RespPlan.class);
         //setPropertyRef(authnToSamlResponsePlan, "bpmsManager", "bpms-manager");

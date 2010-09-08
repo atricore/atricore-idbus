@@ -68,11 +68,7 @@ public class STSTransformer extends AbstractTransformer {
         Bean stsSecTkn2AssertionPlan = newBean(idpBeans,
                 idpBean.getName() + "-samlr2-sectoken-to-authnassertion-plan",
                 "org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan");
-        // TODO RETROFIT  :
-        /*
-        if (spChannel.getIdentityVault() != null) {
-            setPropertyRef(stsSecTkn2AssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
-        } */
+        setPropertyRef(stsSecTkn2AssertionPlan, "identityManager", idpBean.getName() + "-identity-manager");
         setPropertyRef(stsSecTkn2AssertionPlan, "bpmsManager", "bpms-manager");
 
         // identityPlan
@@ -115,7 +111,8 @@ public class STSTransformer extends AbstractTransformer {
                 BasicAuthentication basicAuthn = (BasicAuthentication) authn;
                 Bean basicAuthnBean = newBean(idpBeans, normalizeBeanName(provider.getName()) + "-basic-authn", UsernamePasswordAuthScheme.class);
 
-                setPropertyValue(basicAuthnBean, "name", basicAuthnBean.getName());
+                // Auth scheme name cannot be changed!
+                setPropertyValue(basicAuthnBean, "name", "basic-authentication");
                 setPropertyValue(basicAuthnBean, "hashAlgorithm", basicAuthn.getHashAlgorithm());
                 setPropertyValue(basicAuthnBean, "hashEncoding", basicAuthn.getHashEncoding());
                 setPropertyValue(basicAuthnBean, "ignorePasswordCase", false); // Dangerous

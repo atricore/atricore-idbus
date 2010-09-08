@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.command;
 
+import com.atricore.idbus.console.lifecycle.command.printers.CmdPrinter;
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
 import org.apache.felix.gogo.commands.Option;
@@ -14,6 +15,8 @@ public abstract class ManagementCommandSupport extends OsgiCommandSupport {
 
     @Option(name = "-v", aliases = "--verbose", description = "Print out additional information during deployment", required = false, multiValued = false)
     boolean verbose = false;
+
+    protected CmdPrinter cmdPrinter;
 
     @Override
     protected Object doExecute() throws Exception {
@@ -43,7 +46,13 @@ public abstract class ManagementCommandSupport extends OsgiCommandSupport {
 
     }
 
-
-
     protected abstract Object doExecute(IdentityApplianceManagementService svc) throws Exception;
+
+    public CmdPrinter getPrinter() {
+        return cmdPrinter;
+    }
+
+    public void setPrinter(CmdPrinter cmdPrinter) {
+        this.cmdPrinter = cmdPrinter;
+    }
 }
