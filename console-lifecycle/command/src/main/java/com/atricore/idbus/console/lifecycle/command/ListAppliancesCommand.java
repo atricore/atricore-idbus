@@ -95,7 +95,6 @@ public class ListAppliancesCommand extends ManagementCommandSupport {
                 sb.append("\n");
                 sb.append("          ");
                 sb.append(getNameString(p));
-                sb.append(":");
                 sb.append(getLocationString(p));
             }
         }
@@ -108,8 +107,12 @@ public class ListAppliancesCommand extends ManagementCommandSupport {
                 sb.append("\n");
                 sb.append("          ");
                 sb.append(getNameString(ex));
-                sb.append(":");
                 sb.append(ex.getInstallUri());
+                if (ex.isActive()) {
+                    sb.append(" (");
+                    sb.append("activated");
+                    sb.append(")");
+                }
             }
         }
 
@@ -121,7 +124,6 @@ public class ListAppliancesCommand extends ManagementCommandSupport {
                 sb.append("\n");
                 sb.append("          ");
                 sb.append(getNameString(is));
-                sb.append(":");
                 sb.append(is.getClass().getSimpleName());
 
             }
@@ -156,19 +158,6 @@ public class ListAppliancesCommand extends ManagementCommandSupport {
             sb.append(getNameString(p));
             sb.append(":");
             sb.append(getLocationString(p));
-
-            if (p instanceof ServiceProvider ) {
-                ServiceProvider sp = (ServiceProvider) p;
-                if (sp.getActivation() != null) {
-
-                    if (sp.getActivation().isActivated()) {
-                        sb.append(" (Active:");
-                        sb.append(sp.getActivation().getExecutionEnv().getInstallUri());
-                        sb.append(")");
-                    }
-
-                }
-            }
         }
 
     }

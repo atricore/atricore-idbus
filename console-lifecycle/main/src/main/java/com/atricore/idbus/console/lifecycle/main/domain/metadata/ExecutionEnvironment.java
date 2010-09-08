@@ -16,6 +16,7 @@ public class ExecutionEnvironment implements Serializable {
     private String description;
     private String installUri;
     private String platformId;
+    private boolean active;
 
     private Set<Activation> activations;
 
@@ -75,5 +76,17 @@ public class ExecutionEnvironment implements Serializable {
 
     public void setPlatformId(String platformId) {
         this.platformId = platformId;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public boolean getActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

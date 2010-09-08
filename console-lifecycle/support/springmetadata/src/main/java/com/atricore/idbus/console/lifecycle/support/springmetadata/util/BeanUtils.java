@@ -290,6 +290,11 @@ public class BeanUtils {
         list.getBeenAndRevesAndIdreves().add(bean);
     }
 
+    protected static void addValueToList(com.atricore.idbus.console.lifecycle.support.springmetadata.model.List list, Value value){
+        list.getBeenAndRevesAndIdreves().add(value);
+    }
+
+
     protected static com.atricore.idbus.console.lifecycle.support.springmetadata.model.List getListOfValuesAndRefs(Bean bean, String name){
         Property prop = getProperty(bean, name);
         if(prop != null && prop.getList() != null){
@@ -314,6 +319,32 @@ public class BeanUtils {
         for (String ref : references){
            addRefToList(list, ref);
         }
+    }
+
+    public static void setPropertyAsValues(Bean bean, String listName, java.util.List<String> values) {
+        com.atricore.idbus.console.lifecycle.support.springmetadata.model.List list = null;//getListOfValuesAndRefs(bean, listName);
+        Property prop = getProperty(bean, listName);
+
+        if(prop != null){
+            bean.getMetasAndConstructorArgsAndProperties().remove(prop);
+        }
+
+        list = new com.atricore.idbus.console.lifecycle.support.springmetadata.model.List();
+        prop = new Property();
+        prop.setName(listName);
+
+        //in case of update, we need to remove all items from the list first
+        list.getBeenAndRevesAndIdreves().clear();
+        for (String strValue : values) {
+            Value value = new Value();
+            value.getContent().add(strValue);
+
+           addValueToList(list, value);
+        }
+
+        prop.setList(list);
+        bean.getMetasAndConstructorArgsAndProperties().add(prop);
+
     }
 
     public static void setPropertyAsBeans(Bean bean, String listName, java.util.List<Bean> beansToAdd) {

@@ -1,7 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ExecutionEnvironment;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
@@ -29,10 +28,7 @@ import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoi
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.BindingProviderImpl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
@@ -40,8 +36,12 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class ExecEnvJOSSOTransformer extends AbstractTransformer {
+public class JOSSOExecEnvransformer extends AbstractTransformer {
+
     private static final Log logger = LogFactory.getLog(IdPLocalTransformer.class);
+
+    private Map<String, ExecutionEnvironmentProperties> execEnvProperties =
+            new HashMap<String, ExecutionEnvironmentProperties>();
 
     @Override
     public boolean accept(TransformEvent event) {
@@ -135,8 +135,8 @@ public class ExecEnvJOSSOTransformer extends AbstractTransformer {
         setPropertyValue(bc, "description", execEnv.getDisplayName());
         setPropertyRef(bc, "provider", bpBean.getName());
 
-        String location = resolveLocationUrl(applianceDef.getLocation());
-        location += execEnv.getName().toUpperCase();
+        String locationPath = resolveLocationPath(applianceDef.getLocation()) + "/" + execEnv.getName().toUpperCase();
+        String location = resolveLocationBaseUrl(applianceDef.getLocation()) + locationPath;
 
         setPropertyValue(bc, "location", location);
 
@@ -228,6 +228,73 @@ public class ExecEnvJOSSOTransformer extends AbstractTransformer {
         setPropertyValue(bpLogger, "category", "idbus.mediation.wire." + bpBean.getName());
         setPropertyAsBeans(bpLogger, "messageBuilders", bpLogBuilders);
         setPropertyBean(bindingMediator, "logger", bpLogger);
+
+        ExecutionEnvironmentProperties execEnvProps = this.execEnvProperties.get(execEnv.getPlatformId());
+
+        // Clear previous beans, just in case.
+        event.getContext().put("agentBeans", null);
+        event.getContext().put("agentBean", null);
+
+        if (execEnvProps != null) {
+            String agentJavaClass = execEnvProps.getJavaAgentClass();
+
+            if (agentJavaClass != null) {
+
+                // We need to generate a Spring josso agent config file.
+                Beans agentBeans = new Beans();
+                Bean agentBean = newBean(agentBeans, "josso-" + execEnv.getPlatformId() + "-agent", agentJavaClass);
+
+                event.getContext().put("agentBeans", agentBeans);
+                event.getContext().put("agentBean", agentBean);
+
+                setPropertyValue(agentBean, "sessionAccessMinInterval", "1000");
+                setPropertyValue(agentBean, "isStateOnClient", "true");
+
+                setPropertyValue(agentBean, "gatewayLoginUrl", location + "/JOSSO/SSO/REDIR");
+                setPropertyValue(agentBean, "gatewayLogoutUrl", location + "/JOSSO/SLO/REDIR");
+
+                // ------------------ GatewayServiceLocator
+                //    endpoint
+                //    username (OPTIONAL)
+                //    transportSecurity = TRANSPORT_SECURITY_NONE; (OPTIONAL)
+                //    servicesWebContext (OPTIONAL)
+                //    sessionManagerServicePath
+                //    identityManagerServicePath
+                //    identityProviderServicePath
+
+                Bean gatewayServiceLocator = newAnonymousBean("org.josso.gateway.WebserviceGatewayServiceLocator");
+
+                setPropertyValue(gatewayServiceLocator, "endpoint", applianceDef.getLocation().getHost() + ":" + applianceDef.getLocation().getPort());
+                setPropertyValue(gatewayServiceLocator, "sessionManagerServicePath", locationPath + "/JOSSO/SSOSessionManager/SOAP");
+                setPropertyValue(gatewayServiceLocator, "identityManagerServicePath", locationPath + "/JOSSO/SSOIdentityManager/SOAP");
+                setPropertyValue(gatewayServiceLocator, "identityManagerProviderServicePath", locationPath + "/JOSSO/SSOIdentityProvider/SOAP");
+
+                setPropertyBean(agentBean, "gatewayServiceLocator", gatewayServiceLocator);
+
+                // FrontChannelParametersBuilder
+
+                List<Bean> parametersBuildersBeans = new ArrayList<Bean>();
+                Bean appIdParamsBuilderBean = newAnonymousBean("org.josso.agent.http.AppIdParametersBuilder");
+
+                parametersBuildersBeans.add(appIdParamsBuilderBean);
+                setPropertyAsBeans(agentBean, "parametersBuilders", parametersBuildersBeans);
+
+                // AutomaticLoginStrategy
+                Bean defaultAutomaticLoginStrategyBean = newAnonymousBean("org.josso.agent.http.DefaultAutomaticLoginStrategy");
+                List<String> ignoredReferers = new ArrayList<String>();
+                ignoredReferers.add(resolveLocationUrl(applianceDef.getLocation()));
+                setPropertyAsValues(defaultAutomaticLoginStrategyBean, "ignoredReferrers", ignoredReferers);
+
+                List<Bean> autoLoginStrats = new ArrayList<Bean>();
+                autoLoginStrats.add(defaultAutomaticLoginStrategyBean);
+
+                setPropertyAsBeans(agentBean, "automaticLoginStrategies", autoLoginStrats);
+
+                // TODO : SSOAgentConfiguration
+
+            }
+
+        }
     }
 
     @Override
@@ -236,6 +303,9 @@ public class ExecEnvJOSSOTransformer extends AbstractTransformer {
         IdProjectModule module = event.getContext().getCurrentModule();
         Beans baseBeans = (Beans) event.getContext().get("beans");
         Beans bpBeans = (Beans) event.getContext().get("bpBeans");
+
+        Beans agentBeans = (Beans) event.getContext().get("agentBeans");
+        Bean agentBean = (Bean) event.getContext().get("agentBean");        
 
         Bean bpBean = getBeansOfType(bpBeans, BindingProviderImpl.class.getName()).iterator().next();
 
@@ -269,12 +339,39 @@ public class ExecEnvJOSSOTransformer extends AbstractTransformer {
             throw new TransformException("One and only one Identity Mediation Unit is expected, found " + mus.size());
         }
 
-        IdProjectResource<Beans> rBeans =  new IdProjectResource<Beans>(idGen.generateId(), bpBean.getName(), bpBean.getName(), "spring-beans", bpBeans);
+        IdProjectResource<Beans> rBeans =  new IdProjectResource<Beans>(idGen.generateId(),
+                bpBean.getName(),
+                bpBean.getName(),
+                "spring-beans",
+                bpBeans);
+
         rBeans.setClassifier("jaxb");
-        rBeans.setNameSpace(bpBean.getName());
 
         module.addResource(rBeans);
 
+        if (agentBeans != null) {
+
+            IdProjectResource<Beans> rAgentBeans =  new IdProjectResource<Beans>(idGen.generateId(),
+                    bpBean.getName() + "/josso",
+                    "josso-agent-" + bpBean.getName(),
+                    "spring-beans",
+                    agentBeans);
+
+            rAgentBeans.setClassifier("jaxb");
+
+            module.addResource(rAgentBeans);
+
+        }
+
         return rBeans;
+    }
+
+
+    public Map<String, ExecutionEnvironmentProperties> getExecEnvProperties() {
+        return execEnvProperties;
+    }
+
+    public void setExecEnvProperties(Map<String, ExecutionEnvironmentProperties> execEnvProperties) {
+        this.execEnvProperties = execEnvProperties;
     }
 }
