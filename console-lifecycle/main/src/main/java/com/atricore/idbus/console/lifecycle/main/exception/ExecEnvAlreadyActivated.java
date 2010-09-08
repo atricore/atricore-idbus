@@ -1,13 +1,14 @@
 package com.atricore.idbus.console.lifecycle.main.exception;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Activation;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ExecutionEnvironment;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
 public class ExecEnvAlreadyActivated extends IdentityServerException {
 
-    public ExecEnvAlreadyActivated(Activation a) {
-        super(a.getName() + " already active for " + a.getSp().getName());
+    public ExecEnvAlreadyActivated(ExecutionEnvironment execEnv) {
+        super(execEnv.getName() + " execution environment already active");
     }
 }

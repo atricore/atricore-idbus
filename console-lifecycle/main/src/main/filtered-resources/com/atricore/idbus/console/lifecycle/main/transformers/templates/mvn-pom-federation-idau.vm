@@ -204,6 +204,37 @@
 
     <build>
         <plugins>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach-artifact</goal>
+                        </goals>
+                        <configuration>
+                            <artifacts>
+#foreach($resource in $module.getResources())
+#if($resource.getName().startsWith("josso-agent-"))
+                                <artifact>
+#set ( $artifactFile = "target/classes/META-INF/spring/" + $resource.getNameSpace() + "/" + $resource.getName() + "-config.xml")
+#set ( $artifactClassifier = $resource.getNameSpace().substring(0, $resource.getNameSpace().indexOf("/")))                                    
+                                    <file>$artifactFile</file>
+                                    <type>xml</type>
+                                    <classifier>$artifactClassifier</classifier>
+                                </artifact>
+#end
+#end
+                            </artifacts>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>

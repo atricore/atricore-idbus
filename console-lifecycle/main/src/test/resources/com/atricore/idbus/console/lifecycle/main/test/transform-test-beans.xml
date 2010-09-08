@@ -69,10 +69,10 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPJOSSOActivationTransformer"/>
 
     <bean name="execEnvJOSSOActivationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecEnvJOSSOActivationTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSOActivationTransformer"/>
 
     <bean name="execEnvJOSSOTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecEnvJOSSOTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSOExecEnvransformer"/>
 
     <bean name="identityLookupTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>

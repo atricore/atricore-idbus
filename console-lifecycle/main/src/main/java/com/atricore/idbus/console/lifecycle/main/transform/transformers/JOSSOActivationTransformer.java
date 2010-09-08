@@ -16,7 +16,7 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public class ExecEnvJOSSOActivationTransformer extends AbstractTransformer {
+public class JOSSOActivationTransformer extends AbstractTransformer {
 
     @Override
     public boolean accept(TransformEvent event) {

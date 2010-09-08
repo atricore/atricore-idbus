@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.domain;
 
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.ExecutionEnvironment;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
 
 import java.io.Serializable;
@@ -26,6 +27,7 @@ public class IdentityApplianceUnit implements Serializable {
     private IdentityApplianceUnitType type;
 
     private List<Provider> providers;
+
     private static final long serialVersionUID = 3697762423262532741L;
 
     public long getId() {

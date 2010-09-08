@@ -3,13 +3,15 @@ package com.atricore.idbus.console.lifecycle.main.spi.request;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public class ActivateSPExecEnvRequest extends AbstractManagementRequest {
+public class ActivateExecEnvRequest extends AbstractManagementRequest {
 
     private String applianceId;
 
-    private String spName;
+    private String execEnvName;
 
     private boolean reactivate;
+
+    private boolean replace;
 
     public String getApplianceId() {
         return applianceId;
@@ -19,12 +21,12 @@ public class ActivateSPExecEnvRequest extends AbstractManagementRequest {
         this.applianceId = applianceId;
     }
 
-    public String getSPName() {
-        return spName;
+    public String getExecEnvName() {
+        return execEnvName;
     }
 
-    public void setSPName(String spName) {
-        this.spName = spName;
+    public void setExecEnvName(String spName) {
+        this.execEnvName = spName;
     }
 
     public boolean isReactivate() {
@@ -33,5 +35,13 @@ public class ActivateSPExecEnvRequest extends AbstractManagementRequest {
 
     public void setReactivate(boolean reactivate) {
         this.reactivate = reactivate;
+    }
+
+    public boolean isReplace() {
+        return replace;
+    }
+
+    public void setReplace(boolean replace) {
+        this.replace = replace;
     }
 }

@@ -22,8 +22,6 @@
 package com.atricore.idbus.console.services.spi.response;
 
 import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
-import com.atricore.idbus.console.lifecycle.main.spi.response.AbstractManagementResponse;
-
 
 public class BuildIdentityApplianceResponse extends AbstractManagementResponse {
 

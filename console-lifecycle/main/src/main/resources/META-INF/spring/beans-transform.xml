@@ -65,11 +65,91 @@
     <bean name="spJOSSOActivationTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPJOSSOActivationTransformer"/>
 
-    <bean name="execEnvJOSSOActivationTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecEnvJOSSOActivationTransformer"/>
+    <bean name="JOSSOActivationTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSOActivationTransformer"/>
 
-    <bean name="execEnvJOSSOTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecEnvJOSSOTransformer"/>
+    <bean name="JOSSOExecEnvTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.JOSSOExecEnvransformer">
+        <property name="execEnvProperties">
+            <map>
+                <!-- Tomcat Family -->
+                <entry key="tc50">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="tc50"/>
+                        <property name="javaAgentClass" value="org.josso.tc50.agent.CatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="tc55">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="tc55"/>
+                        <property name="javaAgentClass" value="org.josso.tc55.agent.CatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="tc60">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="tc60"/>
+                        <property name="javaAgentClass" value="org.josso.tc60.agent.CatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <!-- JBoss Family -->
+                <entry key="jb32">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="jb32"/>
+                        <property name="javaAgentClass" value="org.josso.jb32.agent.JBossCatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="jb40">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="jb40"/>
+                        <property name="javaAgentClass" value="org.josso.jb40.agent.JBossCatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="jb42">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="jb42"/>
+                        <property name="javaAgentClass" value="org.josso.jb42.agent.JBossCatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <!-- TODO : Agent class is wrong !
+                <entry key="jb5">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="jb5"/>
+                        <property name="javaAgentClass" value="org.josso.jb5.agent.JBossCatalinaSSOAgent"/>
+                    </bean>
+                </entry>
+                -->
+
+                <!-- Weblogic Family -->
+                <entry key="wl81">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="wl81"/>
+                        <property name="javaAgentClass" value="org.josso.wls81.agent.WLSSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="wl92">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="wl92"/>
+                        <property name="javaAgentClass" value="org.josso.wls92.agent.WLSSSOAgent"/>
+                    </bean>
+                </entry>
+
+                <entry key="wl10">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.transform.transformers.ExecutionEnvironmentProperties">
+                        <property name="platformId" value="wl10"/>
+                        <property name="javaAgentClass" value="org.josso.wls10.agent.WLSSSOAgent"/>
+                    </bean>
+                </entry>
+
+            </map>
+        </property>
+    </bean>
 
     <bean name="identityLookupTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdentityLookupTransformer"/>
@@ -170,13 +250,13 @@
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
                                         <ref bean="spJOSSOActivationTransformer"/>
-                                        <ref bean="execEnvJOSSOActivationTransformer"/>
+                                        <ref bean="JOSSOActivationTransformer"/>
                                         <ref bean="samlr2SPTransformer"/>
 
                                         <!-- PSP Transformers -->
 
                                         <!-- Other Transformers -->
-                                        <ref bean="execEnvJOSSOTransformer"/>
+                                        <ref bean="JOSSOExecEnvTransformer"/>
                                         <ref bean="identityLookupTransformer"/>
 
                                     </list>
