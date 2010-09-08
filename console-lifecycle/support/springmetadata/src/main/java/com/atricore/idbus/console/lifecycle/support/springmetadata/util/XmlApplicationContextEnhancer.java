@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.lifecycle.support.springmetadata.util;
 
+import javax.xml.bind.Marshaller;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -37,7 +38,9 @@ public class XmlApplicationContextEnhancer implements XMLStreamWriter {
     XMLStreamWriter writer;
 
     public XmlApplicationContextEnhancer(Writer w) throws XMLStreamException {
-        writer = XMLOutputFactory.newInstance().createXMLStreamWriter(w);
+        XMLOutputFactory f = XMLOutputFactory.newInstance();
+        f.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        writer = f.createXMLStreamWriter(w);
     }
 
     public void writeStartElement(String localName) throws XMLStreamException {

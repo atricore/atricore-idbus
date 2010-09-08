@@ -290,8 +290,8 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
                 setPropertyAsBeans(agentBean, "automaticLoginStrategies", autoLoginStrats);
 
-                // TODO : SSOAgentConfiguration
-
+                Bean parnterAppConfigBean = newAnonymousBean("org.josso.agent.SSOAgentConfiguration");
+                setPropertyBean(agentBean, "configuration", parnterAppConfigBean);
             }
 
         }

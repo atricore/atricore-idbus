@@ -75,6 +75,21 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
 
         addEntryToMap(bindingMediator, "partnerAppMappings", partnerappMapping);
 
+        // Add Partner app config, if necessary
+        if (event.getContext().get("agentBean") != null) {
+
+
+            Bean agentBean = (Bean) event.getContext().get("agentBean");
+            java.util.List<Bean> cfgs = getPropertyBeans(agentBean, "configuration");
+            Bean cfgBean = cfgs.get(0);
+
+            Bean agentAppBean = newAnonymousBean("org.josso.agent.SSOPartnerAppConfig");
+            agentAppBean.
+
+            addPropertyBean(cfgBean, "ssoPartnerApps", agentAppBean);
+
+        }
+
     }
 
     @Override

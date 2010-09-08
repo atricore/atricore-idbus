@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemManager;
+import org.apache.commons.vfs.FileUtil;
 import org.apache.commons.vfs.VFS;
 import org.josso.tooling.gshell.core.support.MessagePrinter;
 import org.josso.tooling.gshell.install.JOSSOScope;
@@ -23,6 +24,7 @@ public class AgentActivator extends ActivatorSupport {
 
     protected FileObject homeDir;
 
+    protected FileObject tmpDir;
     protected FileObject appliancesDir;
 
     protected FileObject jossoDistDir;
@@ -54,6 +56,11 @@ public class AgentActivator extends ActivatorSupport {
         FileSystemManager fs = VFS.getManager();
 
         homeDir = fs.resolveFile(getHomeDir());
+
+
+        tmpDir = homeDir.resolveFile("data/work/tmp");
+        if (!tmpDir.exists())
+            tmpDir.createFolder();
 
         jossoDistDir = homeDir.resolveFile("josso");
         appliancesDir = homeDir.resolveFile("appliances");
@@ -99,19 +106,28 @@ public class AgentActivator extends ActivatorSupport {
             getInstaller(request).installConfiguration(createArtifact(confDir.getURL().toString(), JOSSOScope.AGENT, fileName), request.isReplaceConfig());
         }
 
+        boolean updateAgentCfg = true;
         if (request instanceof ActivateAgentRequest) {
             ActivateAgentRequest ar = (ActivateAgentRequest) request;
-            /*
-             TODO : INstall generated JOSSO AGENT CONFIG file!
             if (ar.getJossoAgentConfigUri() != null) {
+                FileObject agentCfg = appliancesDir.resolveFile(ar.getJossoAgentConfigUri());
+                if (agentCfg.exists()) {
+                    // Rename file
 
-                getInstaller(request).install
-                getInstaller(request).installConfiguration(createArtifact(confDir.getURL().toString(), JOSSOScope.AGENT, "josso-agent-config.xml"), request.isReplaceConfig());
-            } */
+                    FileObject finalAgentCfg = tmpDir.resolveFile("josso-agent-config.xml");
+                    FileUtil.copyContent(agentCfg, finalAgentCfg);
+                    getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, "josso-agent-config.xml"), request.isReplaceConfig());
+                    finalAgentCfg.delete();
+
+                    // We're installing a generated config
+                    updateAgentCfg = false;
+                }
+            }
 
         }
 
-        getInstaller(request).updateAgentConfiguration(request.getIdpHostName(), request.getIdpPort(), request.getIdpType());
+        if (updateAgentCfg)
+            getInstaller(request).updateAgentConfiguration(request.getIdpHostName(), request.getIdpPort(), request.getIdpType());
     }
 
     public void install3rdParty() throws Exception {
