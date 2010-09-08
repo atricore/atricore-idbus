@@ -127,11 +127,11 @@ public class AccountManagementMediator extends IocMediator {
         groupsMediator.setViewComponent(gView);
         usersMediator.setViewComponent(uView);
 
-        view.vsAccountMng.addNewChild(gView);
         view.vsAccountMng.addNewChild(uView);
+        view.vsAccountMng.addNewChild(gView);
 
-        view.accountManagementTabBar.selectedIndex = 1;
-        view.vsAccountMng.selectedIndex = 1;
+        view.accountManagementTabBar.selectedIndex = 0;
+        view.vsAccountMng.selectedIndex = 0;
         view.accountManagementTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
     }
 
