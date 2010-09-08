@@ -1,9 +1,9 @@
-package com.atricore.idbus.console.lifecycle.main.spi.request;
+package com.atricore.idbus.console.services.spi.request;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public class ActivateSPExecEnvRequest extends AbstractManagementRequest {
+public class ActivateExecEnvRequest extends AbstractManagementRequest {
 
     private String applianceId;
 
@@ -34,4 +34,5 @@ public class ActivateSPExecEnvRequest extends AbstractManagementRequest {
     public void setReactivate(boolean reactivate) {
         this.reactivate = reactivate;
     }
+
 }

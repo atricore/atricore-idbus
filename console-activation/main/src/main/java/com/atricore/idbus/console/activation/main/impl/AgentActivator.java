@@ -20,14 +20,21 @@ import java.util.List;
 public class AgentActivator extends ActivatorSupport {
     
     private static final Log log = LogFactory.getLog(AgentActivator.class);
-    
+
     protected FileObject homeDir;
+
+    protected FileObject appliancesDir;
+
+    protected FileObject jossoDistDir;
     protected FileObject libsDir;
     protected FileObject srcsDir;
     protected FileObject trdpartyDir;
     protected FileObject confDir;
 
-    public AgentActivator(List<Installer> installers, MessagePrinter printer, ActivateAgentRequest request, ActivateAgentResponse response) {
+    public AgentActivator(List<Installer> installers,
+                          MessagePrinter printer,
+                          ActivateAgentRequest request,
+                          ActivateAgentResponse response) {
         super(installers, printer, request, response);
     }
 
@@ -45,11 +52,14 @@ public class AgentActivator extends ActivatorSupport {
         // TODO : We could use a remote repository to get our artifacts instead of the vfs or we could use vfs providers.
         // TODO : In OSGI , we can use Classloader URL resolvers
         FileSystemManager fs = VFS.getManager();
+
         homeDir = fs.resolveFile(getHomeDir());
-        libsDir = homeDir.resolveFile("dist/agents/bin");
-        srcsDir = homeDir.resolveFile("dist/agents/src");
+        jossoDistDir = homeDir.resolveFile("josso");
+        appliancesDir = homeDir.resolveFile("appliances");
+        libsDir = jossoDistDir.resolveFile("dist/agents/bin");
+        srcsDir = jossoDistDir.resolveFile("dist/agents/src");
         trdpartyDir = libsDir.resolveFile("3rdparty");
-        confDir = homeDir.resolveFile("dist/agents/config/" + request.getTargetPlatformId());
+        confDir = jossoDistDir.resolveFile("dist/agents/config/" + request.getTargetPlatformId());
     }
 
     protected void verifyTarget() throws Exception {
@@ -81,12 +91,25 @@ public class AgentActivator extends ActivatorSupport {
     }
 
     protected void installJOSSOAgentConfig() throws Exception {
-        FileObject[] libs = confDir.getChildren();
+        FileObject[] cfgFiles = confDir.getChildren();
         for (int i = 0 ; i < confDir.getChildren().length ; i ++) {
-            FileObject trdPartyFile = libs[i];
-            String fileName = trdPartyFile.getName().getBaseName();
+            FileObject cfgFile = cfgFiles[i];
+            String fileName = cfgFile.getName().getBaseName();
             getInstaller(request).installConfiguration(createArtifact(confDir.getURL().toString(), JOSSOScope.AGENT, fileName), request.isReplaceConfig());
         }
+
+        if (request instanceof ActivateAgentRequest) {
+            ActivateAgentRequest ar = (ActivateAgentRequest) request;
+            /*
+             TODO : INstall generated JOSSO AGENT CONFIG file!
+            if (ar.getJossoAgentConfigUri() != null) {
+
+                getInstaller(request).install
+                getInstaller(request).installConfiguration(createArtifact(confDir.getURL().toString(), JOSSOScope.AGENT, "josso-agent-config.xml"), request.isReplaceConfig());
+            } */
+
+        }
+
         getInstaller(request).updateAgentConfiguration(request.getIdpHostName(), request.getIdpPort(), request.getIdpType());
     }
 

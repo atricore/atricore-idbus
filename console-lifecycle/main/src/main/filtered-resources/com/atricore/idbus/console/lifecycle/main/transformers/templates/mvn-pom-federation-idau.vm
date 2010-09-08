@@ -219,12 +219,13 @@
                         <configuration>
                             <artifacts>
 #foreach($resource in $module.getResources())
-#if($resource.getName().startsWith("josso-agent-config"))
+#if($resource.getName().startsWith("josso-agent-"))
                                 <artifact>
-#set ( $featuresFile = "target/classes/META-INF/spring/" + $resource.getNameSpace() + "/" + $resource.getName() + "-config.xml")
-                                    <file>$featuresFile</file>
+#set ( $artifactFile = "target/classes/META-INF/spring/" + $resource.getNameSpace() + "/" + $resource.getName() + "-config.xml")
+#set ( $artifactClassifier = $resource.getNameSpace().substring(0, $resource.getNameSpace().indexOf("/")))                                    
+                                    <file>$artifactFile</file>
                                     <type>xml</type>
-                                    <classifier>features</classifier>
+                                    <classifier>$artifactClassifier</classifier>
                                 </artifact>
 #end
 #end

@@ -347,12 +347,12 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     @Transactional
-    public ActivateSPExecEnvResponse activateSPExecEnv(ActivateSPExecEnvRequest request) throws IdentityServerException {
+    public ActivateExecEnvResponse activateSPExecEnv(ActivateExecEnvRequest request) throws IdentityServerException {
         try {
 
             syncAppliances();
             
-            ActivateSPExecEnvResponse response = new ActivateSPExecEnvResponse();
+            ActivateExecEnvResponse response = new ActivateExecEnvResponse();
 
             if (logger.isDebugEnabled())
                 logger.debug("Activating Execution Environment for appliance/exec-env " +
@@ -391,7 +391,26 @@ public class IdentityApplianceManagementServiceImpl implements
                         if (execEnv.getName().equals(request.getExecEnvName())) {
                             found = true;
                             if (!execEnv.isActive() || request.isReactivate()) {
+
+                                String agentCfgLocation = appliance.getIdApplianceDefinition().getNamespace();
+                                agentCfgLocation = agentCfgLocation.replace('.', '/');
+                                agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getName();
+                                agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getNamespace() +
+                                        "." + appliance.getIdApplianceDefinition().getName() + "/1.0." +
+                                        appliance.getIdApplianceDeployment().getDeployedRevision();
+
+                                String agentCfgName = appliance.getIdApplianceDefinition().getNamespace() + "." +
+                                        appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
+                                        appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName() + ".xml";
+
+                                String agentCfg = agentCfgLocation + "/" + agentCfgName;
+
+                                if (logger.isDebugEnabled())
+                                    logger.debug("Activating Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
+
                                 ActivateAgentRequest activationRequest = doMakAgentActivationRequest(execEnv);
+                                activationRequest.setJossoAgentConfigUri(agentCfg);
+
                                 ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
 
                                 // Mark activation as activated and save appliance.
