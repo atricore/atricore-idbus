@@ -973,7 +973,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
             if (transformer.accept(event)) {
                 try {
                     if (logger.isTraceEnabled())
-                        logger.trace("before        -> " + transformer.getClass().getSimpleName());
+                        logger.trace("before        -> " + transformer.getClass().getSimpleName() + " ["+event.getData().getClass().getSimpleName()+"]");
                     transformer.before(event);
                 } catch (TransformException e) {
                     logger.error(e.getMessage(), e);
@@ -981,7 +981,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
                 }
             } else {
                 if (logger.isTraceEnabled())
-                    logger.trace("skip before   -> " + transformer.getClass().getSimpleName());
+                    logger.trace("skip before   -> " + transformer.getClass().getSimpleName() + " ["+event.getData().getClass().getSimpleName()+"]");
             }
         }
     }
@@ -995,7 +995,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
             if (transformer.accept(event)) {
                 try {
                     if (logger.isTraceEnabled())
-                        logger.trace("after         -> " + transformer.getClass().getSimpleName());
+                        logger.trace("after         -> " + transformer.getClass().getSimpleName() + " ["+event.getData().getClass().getSimpleName()+"]");
                     newResults.add(transformer.after(event));
                 } catch (TransformException e) {
                     logger.error(e.getMessage(), e);
@@ -1003,7 +1003,7 @@ public class TransformerVisitor implements IdentityApplianceDefinitionVisitor {
                 }
             } else {
                 if (logger.isTraceEnabled())
-                    logger.trace("skip after    -> " + transformer.getClass().getSimpleName());
+                    logger.trace("skip after    -> " + transformer.getClass().getSimpleName() + " ["+event.getData().getClass().getSimpleName()+"]");
             }
         }
 

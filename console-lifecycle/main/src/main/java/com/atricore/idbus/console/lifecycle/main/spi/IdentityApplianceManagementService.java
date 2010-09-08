@@ -34,7 +34,7 @@ public interface IdentityApplianceManagementService {
 
     ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException;
 
-    ActivateExecEnvResponse activateSPExecEnv(ActivateExecEnvRequest request) throws IdentityServerException;
+    ActivateExecEnvResponse activateExecEnv(ActivateExecEnvRequest request) throws IdentityServerException;
 
     //-----------------------< CRUD Operations >
 
