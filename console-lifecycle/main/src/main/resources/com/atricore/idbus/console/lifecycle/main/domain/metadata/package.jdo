@@ -167,7 +167,7 @@
         <class name="IdentityLookup" detachable="true">
             <inheritance strategy="new-table"/>
             <field name="identitySource" default-fetch-group="true"/>
-            <field name="provider" default-fetch-group="true" />
+            <field name="provider" default-fetch-group="true" mapped-by="identityLookup" />
         </class>
 
         <class name="IdentityProvider" detachable="true">
@@ -257,7 +257,7 @@
             <field name="activeProfiles" default-fetch-group="true">
                 <join delete-action="cascade"/>
             </field>
-            <field name="identityLookup" persistence-modifier="persistent" default-fetch-group="true" dependent="true" mapped-by="provider" />
+            <field name="identityLookup" persistence-modifier="persistent" default-fetch-group="true" dependent="true" />
             <field name="metadata" default-fetch-group="true" dependent="true"/>
         </class>
 

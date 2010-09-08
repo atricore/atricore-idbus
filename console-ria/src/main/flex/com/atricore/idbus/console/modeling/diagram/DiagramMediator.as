@@ -46,6 +46,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateSpChannel
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdpChannelElementRequest;
@@ -679,7 +680,9 @@ public class DiagramMediator extends IocMediator {
             var ract:RemoveActivationElementRequest = new RemoveActivationElementRequest(activation);
             sendNotification(ApplicationFacade.REMOVE_ACTIVATION_ELEMENT, ract);
         } else if (edgeData is IdentityLookup){
-            //TODO
+            var identityLookup:IdentityLookup = edgeData as IdentityLookup;
+            var ril:RemoveIdentityLookupElementRequest = new RemoveIdentityLookupElementRequest(identityLookup);
+            sendNotification(ApplicationFacade.REMOVE_IDENTITY_LOOKUP_ELEMENT, ril);
         }
     }
 
