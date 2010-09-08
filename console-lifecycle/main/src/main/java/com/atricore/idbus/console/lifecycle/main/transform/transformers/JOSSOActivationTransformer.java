@@ -75,6 +75,25 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
 
         addEntryToMap(bindingMediator, "partnerAppMappings", partnerappMapping);
 
+        // Add Partner app config, if necessary
+        if (event.getContext().get("agentBean") != null) {
+
+            Bean agentBean = (Bean) event.getContext().get("agentBean");
+            Bean cfgBean = getPropertyBean(agentBean, "configuration");
+            Bean agentAppBean = newAnonymousBean("org.josso.agent.SSOPartnerAppConfig");
+
+            setPropertyValue(agentAppBean, "id", activation.getPartnerAppId());
+            setPropertyValue(agentAppBean, "vhost", activation.getPartnerAppLocation().getHost());
+            setPropertyValue(agentAppBean, "context",
+                    (!activation.getPartnerAppLocation().getContext().startsWith("/") ? "/" : "") +
+                    activation.getPartnerAppLocation().getContext());
+
+            // TODO : Support ignored web resources, rememberme, disable autologin, etc. ....
+
+            addPropertyBean(cfgBean, "ssoPartnerApps", agentAppBean);
+
+        }
+
     }
 
     @Override

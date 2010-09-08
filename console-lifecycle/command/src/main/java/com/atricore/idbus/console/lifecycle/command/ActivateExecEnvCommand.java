@@ -37,7 +37,7 @@ public class ActivateExecEnvCommand extends ManagementCommandSupport {
         req.setExecEnvName(execEnv);
         req.setReactivate(force);
         req.setReplace(replace);
-        ActivateExecEnvResponse res = svc.activateSPExecEnv(req);
+        ActivateExecEnvResponse res = svc.activateExecEnv(req);
 
         return null;
 

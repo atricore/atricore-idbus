@@ -347,7 +347,7 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     @Transactional
-    public ActivateExecEnvResponse activateSPExecEnv(ActivateExecEnvRequest request) throws IdentityServerException {
+    public ActivateExecEnvResponse activateExecEnv(ActivateExecEnvRequest request) throws IdentityServerException {
         try {
 
             syncAppliances();
@@ -375,7 +375,7 @@ public class IdentityApplianceManagementServiceImpl implements
             for (IdentityApplianceUnit idau : appliance.getIdApplianceDeployment().getIdaus()) {
 
                 if (logger.isTraceEnabled())
-                    logger.trace("Looking for SP in IDAU " + idau.getName());
+                    logger.trace("Looking for Execution Environment in IDAU " + idau.getName());
 
                 for (Provider p : idau.getProviders()) {
 
@@ -390,18 +390,20 @@ public class IdentityApplianceManagementServiceImpl implements
 
                         if (execEnv.getName().equals(request.getExecEnvName())) {
                             found = true;
+
                             if (!execEnv.isActive() || request.isReactivate()) {
 
                                 String agentCfgLocation = appliance.getIdApplianceDefinition().getNamespace();
                                 agentCfgLocation = agentCfgLocation.replace('.', '/');
+
                                 agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getName();
                                 agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getNamespace() +
-                                        "." + appliance.getIdApplianceDefinition().getName() + "/1.0." +
-                                        appliance.getIdApplianceDeployment().getDeployedRevision();
+                                        "." + appliance.getIdApplianceDefinition().getName() + ".idau";
+                                agentCfgLocation += "/1.0." + appliance.getIdApplianceDeployment().getDeployedRevision();
 
                                 String agentCfgName = appliance.getIdApplianceDefinition().getNamespace() + "." +
                                         appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
-                                        appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName() + ".xml";
+                                        appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase() + ".xml";
 
                                 String agentCfg = agentCfgLocation + "/" + agentCfgName;
 
@@ -409,7 +411,10 @@ public class IdentityApplianceManagementServiceImpl implements
                                     logger.debug("Activating Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
 
                                 ActivateAgentRequest activationRequest = doMakAgentActivationRequest(execEnv);
+                                activationRequest.setReplaceConfig(request.isReplace());
+                                
                                 activationRequest.setJossoAgentConfigUri(agentCfg);
+                                activationRequest.setReplaceConfig(request.isReplace());
 
                                 ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
 
