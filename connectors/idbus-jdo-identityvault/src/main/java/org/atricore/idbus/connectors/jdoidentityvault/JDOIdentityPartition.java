@@ -10,9 +10,8 @@ import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundExcept
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.impl.AbstractIdentityPartition;
-import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
-import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -347,7 +346,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
 
     protected JDOUser toJDOUser(JDOUser jdoUser, User user) {
 
-        BeanUtils.copyProperties(user, jdoUser, new String[] {"id, groups"});
+        BeanUtils.copyProperties(user, jdoUser, new String[] {"id", "groups"});
 
         if (user.getGroups() != null) {
             JDOGroup[] jdoGroups = new JDOGroup[user.getGroups().length];

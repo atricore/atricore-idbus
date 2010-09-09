@@ -48,6 +48,7 @@
         <idbus.kernel.version>1.0.0-SNAPSHOT</idbus.kernel.version>
 
         <commons-codec.version>1.3</commons-codec.version>
+        <commons-beautils.version>1.8.0</commons-beautils.version>
         <datanucleus.version>2.0.3</datanucleus.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
@@ -135,6 +136,13 @@
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>${commons-codec.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${commons-beautils.version}</version>
             <scope>provided</scope>
         </dependency>
 
