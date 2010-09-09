@@ -48,9 +48,6 @@
                 var identitySource:IdentitySource; // = new IdentitySource();
                 readableDecisionArray = new Array();
 
-                identitySource.name = userRepositoryName.text;
-                readableDecisionArray.push("Repository Name: " + identitySource.name);
-
                 if (repositoryType.selectedValue == "embedded") {
                     identitySource = new EmbeddedIdentitySource();
                     readableDecisionArray.push("Create Embedded Repository");
@@ -59,6 +56,9 @@
                     readableDecisionArray.push("Create External Repository");
                 }
 
+                identitySource.name = userRepositoryName.text;
+                readableDecisionArray.push("Repository Name: " + identitySource.name);
+                
                 return identitySource;
             }
 

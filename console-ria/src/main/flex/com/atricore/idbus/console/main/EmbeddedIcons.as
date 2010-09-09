@@ -360,6 +360,10 @@ package com.atricore.idbus.console.main {
         public static var setupMiniIcon:Class;
 
         [Bindable]
+        [Embed(source="/assets/icons/main/setup.png")]
+        public static var setupIcon:Class;
+        
+        [Bindable]
         [Embed(source="/assets/icons/modeler/new_identity_appliance_22.png")]
         public static var newApplianceMiniIcon:Class;
 
@@ -371,6 +375,34 @@ package com.atricore.idbus.console.main {
         [Embed(source="/assets/icons/modeler/save_identity_appliance_22.png")]
         public static var saveApplianceMiniIcon:Class;
 
+        [Bindable]
+        [Embed(source="/images/icons/edit.png")]
+        public static var editApplianceIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/lifecycle/deploy_identity_appliance.png")]
+        public static var deployApplianceIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/lifecycle/undeploy_identity_appliance.png")]
+        public static var undeployApplianceIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/lifecycle/dispose_identity_appliance.png")]
+        public static var disposeApplianceIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/lifecycle/start_identity_appliance.png")]
+        public static var startApplianceIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/lifecycle/stop_identity_appliance.png")]
+        public static var stopApplianceIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/lifecycle/trash_identity_appliance.png")]
+        public static var trashApplianceIcon:Class;
+        
         [Bindable]
         [Embed(source="/style/yflexskin.swf",symbol="Tree_folderOpenIcon")]
         public static var folderOpenIcon:Class;

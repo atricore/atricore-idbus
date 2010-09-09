@@ -61,6 +61,8 @@
 	    	source="{hostComponent.getStyle('iconUp')}"
 	    	verticalCenter="0"
 	    	alpha="{(this.currentState == 'disabled')?.5:1}"
+            width="{hostComponent.getStyle('iconWidth')}"
+            height="{hostComponent.getStyle('iconHeight')}"
 	    	/>
  	</s:Group>
 

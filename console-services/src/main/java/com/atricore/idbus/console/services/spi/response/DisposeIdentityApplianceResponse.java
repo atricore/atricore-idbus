@@ -19,16 +19,28 @@
  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.services.dto;
+package com.atricore.idbus.console.services.spi.response;
 
-/**
- * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
- * @version $Id$
- */
-public enum IdentityApplianceStateDTO {
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
-    PROJECTED,
-    DEPLOYED,
-    STARTED,
-    DISPOSED;
+
+public class DisposeIdentityApplianceResponse extends AbstractManagementResponse {
+
+    private IdentityApplianceDTO appliance;
+
+    public DisposeIdentityApplianceResponse() {
+
+    }
+
+    public DisposeIdentityApplianceResponse(IdentityApplianceDTO appliance) {
+        this.appliance = appliance;
+    }
+    
+    public IdentityApplianceDTO getAppliance() {
+        return appliance;
+    }
+
+    public void setAppliance(IdentityApplianceDTO appliance) {
+        this.appliance = appliance;
+    }
 }

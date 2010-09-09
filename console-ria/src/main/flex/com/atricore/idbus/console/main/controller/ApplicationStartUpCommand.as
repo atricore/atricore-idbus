@@ -107,6 +107,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _undeployIdentityApplianceCommand:IIocCommand;
     private var _startIdentityApplianceCommand:IIocCommand;
     private var _stopIdentityApplianceCommand:IIocCommand;
+    private var _disposeIdentityApplianceCommand:IIocCommand;
     private var _loginCommand:IIocCommand;
     private var _identityApplianceUpdateCommand:IIocCommand;
     private var _identityVaultRemoveCommand:IIocCommand;
@@ -588,6 +589,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _stopIdentityApplianceCommand = value;
     }
 
+    public function get disposeIdentityApplianceCommand():IIocCommand {
+        return _disposeIdentityApplianceCommand;
+    }
+
+    public function set disposeIdentityApplianceCommand(value:IIocCommand):void {
+        _disposeIdentityApplianceCommand = value;
+    }
+
     public function get loginCommand():IIocCommand {
         return _loginCommand;
     }
@@ -792,6 +801,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, undeployIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.START_IDENTITY_APPLIANCE, startIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.STOP_IDENTITY_APPLIANCE, stopIdentityApplianceCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.DISPOSE_IDENTITY_APPLIANCE, disposeIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE, identityApplianceUpdateCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_GROUP, addGroupCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_USER, addUserCommand.getConfigName());
