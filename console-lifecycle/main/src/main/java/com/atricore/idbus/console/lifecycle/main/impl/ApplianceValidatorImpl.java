@@ -44,27 +44,33 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor i
 
     @Override
     public void arrive(IdentityApplianceDefinition node) throws Exception {
-        // TODO : Validate more !!!
-        /*
-        if (node.getName() == null) {
-            addError("Appliance name cannot be null");
+
+        validateName(node.getName(), "Appliance name");
+        validateName(node.getDisplayName(), "Appliance display name");
+        validateName(node.getNamespace(), "Appliance namespace");
+
+        if (node.getLocation() == null) {
+            addError("Appliance location cannot be null");
         } else {
-            if (!nameIsValid(node.getName()))
-                addError("Appliance name is not valid '"+node.getName()+"'. Use only alphanumeric characters are supported");
+            Location l = node.getLocation();
+
+            if (l.getHost() == null)
+                addError("Appliance location host cannot be null");
         }
 
-        if (node.getDisplayName() == null)
-            addError("Appliance display name cannot be null");
-
-
-        if (node.getNamespace() == null)
-            addError("Appliance namespace cannot be null");
-            */
     }
 
     protected void validateName(String propertyName, String name) {
-        if (name == null)
+        if (name == null || name.length() == 0) {
             addError(propertyName + " cannot be null");
+            return;
+        }
+
+        for (int i = 0 ; i < name.length() ; i ++) {
+            if (Character.isLetterOrDigit(name.charAt(i)));
+        }
+
+
     }
 
 
