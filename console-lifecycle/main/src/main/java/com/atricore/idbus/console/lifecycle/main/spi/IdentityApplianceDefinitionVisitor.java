@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.lifecycle.main.transform;
+package com.atricore.idbus.console.lifecycle.main.spi;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 
@@ -35,7 +35,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(IdentityApplianceDefinition node);
+    void arrive(IdentityApplianceDefinition node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -51,7 +51,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(IdentityApplianceDefinition node, Object[] results);
+    Object[] leave(IdentityApplianceDefinition node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -81,7 +81,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(ServiceProvider node);
+    void arrive(ServiceProvider node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -97,7 +97,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(ServiceProvider node, Object[] results);
+    Object[] leave(ServiceProvider node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -127,7 +127,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(IdentityProvider node);
+    void arrive(IdentityProvider node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -143,7 +143,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(IdentityProvider node, Object[] results);
+    Object[] leave(IdentityProvider node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -173,7 +173,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(IdentityProviderChannel node);
+    void arrive(IdentityProviderChannel node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -189,7 +189,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(IdentityProviderChannel node, Object[] results);
+    Object[] leave(IdentityProviderChannel node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -219,7 +219,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(ServiceProviderChannel node);
+    void arrive(ServiceProviderChannel node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -235,7 +235,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(ServiceProviderChannel node, Object[] results);
+    Object[] leave(ServiceProviderChannel node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -264,7 +264,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(IdentitySource node);
+    void arrive(IdentitySource node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -280,7 +280,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(IdentitySource node, Object[] results);
+    Object[] leave(IdentitySource node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -309,7 +309,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(EmbeddedIdentitySource node);
+    void arrive(EmbeddedIdentitySource node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -325,7 +325,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(EmbeddedIdentitySource node, Object[] results);
+    Object[] leave(EmbeddedIdentitySource node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -354,7 +354,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(LdapIdentitySource node);
+    void arrive(LdapIdentitySource node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -370,7 +370,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(LdapIdentitySource node, Object[] results);
+    Object[] leave(LdapIdentitySource node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -399,7 +399,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(DbIdentitySource node);
+    void arrive(DbIdentitySource node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -415,7 +415,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(DbIdentitySource node, Object[] results);
+    Object[] leave(DbIdentitySource node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -444,7 +444,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(JOSSOActivation node);
+    void arrive(JOSSOActivation node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -460,7 +460,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(JOSSOActivation node, Object[] results);
+    Object[] leave(JOSSOActivation node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -489,7 +489,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(Location node);
+    void arrive(Location node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -505,7 +505,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(Location node, Object[] results);
+    Object[] leave(Location node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -534,7 +534,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(FederatedConnection node);
+    void arrive(FederatedConnection node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -550,7 +550,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(FederatedConnection node, Object[] results);
+    Object[] leave(FederatedConnection node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -579,7 +579,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(IdentityLookup node);
+    void arrive(IdentityLookup node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -595,7 +595,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(IdentityLookup node, Object[] results);
+    Object[] leave(IdentityLookup node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -624,7 +624,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(ExecutionEnvironment node);
+    void arrive(ExecutionEnvironment node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -640,7 +640,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(ExecutionEnvironment node, Object[] results);
+    Object[] leave(ExecutionEnvironment node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument
@@ -669,7 +669,7 @@ public interface IdentityApplianceDefinitionVisitor {
      *
      * @param node the node to be walked
      */
-    void arrive(Activation node);
+    void arrive(Activation node) throws Exception;
 
     /**
      * This method is called after walking the children of the argument
@@ -685,7 +685,7 @@ public interface IdentityApplianceDefinitionVisitor {
      * @param results the results of walking the node's children
      * @return the result of walking the node and it's children
      */
-    Object[] leave(Activation node, Object[] results);
+    Object[] leave(Activation node, Object[] results) throws Exception;
 
     /**
      * This method is called before walking each child of the argument

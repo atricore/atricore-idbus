@@ -21,6 +21,7 @@ package com.atricore.idbus.console.lifecycle.main.transform;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
+import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionWalker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

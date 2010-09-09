@@ -9,7 +9,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
  * Time: 8:35:23 AM
  * To change this template use File | Settings | File Templates.
  */
-public interface IdentityApplianceBuilder {
+public interface ApplianceBuilder {
 
     IdentityAppliance build(IdentityAppliance appliance) ;
 
