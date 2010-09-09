@@ -22,7 +22,7 @@ public class TargetPrinter extends AbstractCmdPrinter {
 
         StringBuilder sb = new StringBuilder();
         // Build headers line
-        sb.append("  ID        Profile           Capabilities       \n");
+        sb.append("\u001B[0m  ID        Profile           Capabilities       \u001B[0m\n");
         for (TargetType target : targets) {
 
             // TODO : Build a line, using proper format and information (id, description, state, version, ... ?).

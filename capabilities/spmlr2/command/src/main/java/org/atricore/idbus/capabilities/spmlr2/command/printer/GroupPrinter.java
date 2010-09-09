@@ -45,7 +45,8 @@ public class GroupPrinter extends AbstractCmdPrinter {
 
         StringBuilder sb = new StringBuilder();
         // Build headers line
-        sb.append("  ID                Name                     Description       \n");
+
+        sb.append("\u001B[1m  ID                Name                     Description       \u001B[0m\n");
 
         for (PSOType psoGroup : psoGroups) {
             psoGroup.getPsoID();

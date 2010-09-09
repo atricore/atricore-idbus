@@ -36,10 +36,10 @@ public abstract class AbstractCmdPrinter implements CmdPrinter {
     public void printResponse(ResponseType response) {
         if (response.getStatus().equals(StatusCodeType.SUCCESS)) {
             printMsg("SPML " + response.getClass().getSimpleName() + " ("+response.getRequestID()+")" + "=" +
-                    response.getStatus().toString());
+                    "\u001B[32m" + response.getStatus().toString() + "\u001B[0m");
         } else {
             printErrMsg("SPML " + response.getClass().getSimpleName() + " ("+response.getRequestID()+")" + "=" +
-                    response.getStatus().toString() + (response.getError() != null ? " " + response.getError().toString() : ""));
+                    "\u001B[31m" + response.getStatus().toString() + (response.getError() != null ? " " + response.getError().toString() : "") + "\u001B[0m");
 
             if (response.getErrorMessage() != null) {
                 for (int i = 0; i < response.getErrorMessage().size(); i++) {
@@ -65,7 +65,7 @@ public abstract class AbstractCmdPrinter implements CmdPrinter {
     }
 
     public void printErrMsg(String errMsg) {
-        err.println(errMsg);
+        err.println("\u001B[31m" + errMsg + "\u001B[0m");
     }
 
     protected void printMsg(StringBuilder sb) {
