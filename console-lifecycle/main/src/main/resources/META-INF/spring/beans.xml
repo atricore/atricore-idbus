@@ -1,43 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns:osgi="http://www.springframework.org/schema/osgi"
-xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
-xmlns:ctx="http://www.springframework.org/schema/context"
-xsi:schemaLocation="http://www.springframework.org/schema/beans
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+       xmlns:ctx="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
                     http://www.springframework.org/schema/beans/spring-beans.xsd
                     http://www.springframework.org/schema/osgi
                     http://www.springframework.org/schema/osgi/spring-osgi.xsd
                     http://www.springframework.org/schema/context
                     http://www.springframework.org/schema/context/spring-context.xsd
                     http://www.springframework.org/schema/osgi-compendium
-                    http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
-                    ">
+                    http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+    <tx:annotation-driven/>
 
     <!-- ===================================================================== -->
     <!-- User Provissioning componentes                                        -->
     <!-- ===================================================================== -->
 
-    <bean id="idbusLifecyclePmf"
-        class="org.atricore.idbus.bundles.datanucleus.core.OsgiJDOPersistenceManagerFactoryBean">
-        <property name="jdoProperties" ref="lifecycleJDOProps"/>
-    </bean>
-
     <bean name="passwordHashUtil"
           class="com.atricore.idbus.console.lifecycle.main.util.PasswordHashUtil">
-            <property name="hashAlgorithm" value="MD5"/>
-            <property name="hashEncoding" value="HEX"/>
+        <property name="hashAlgorithm" value="MD5"/>
+        <property name="hashEncoding" value="HEX"/>
     </bean>
 
-    <bean id="transactionManager" class="org.springframework.orm.jdo.JdoTransactionManager">
-        <property name="persistenceManagerFactory">
-            <ref local="idbusLifecyclePmf"/>
-        </property>
-    </bean>
-
-    <bean id="sessionTokenGeneratorBean" class="com.atricore.idbus.console.lifecycle.main.impl.SessionTokenGeneratorImpl">
-        <property name="algorithm" value="MD5" />
+    <bean id="sessionTokenGeneratorBean"
+          class="com.atricore.idbus.console.lifecycle.main.impl.SessionTokenGeneratorImpl">
+        <property name="algorithm" value="MD5"/>
     </bean>
 
     <!-- ===================================================================== -->
@@ -50,28 +42,31 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
     <bean id="beanUtils" class="com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils"/>
 
-	<bean id="keystoreResolver" class="com.atricore.idbus.console.lifecycle.main.util.SamlR2KeystoreKeyResolver">
-		<property name="keystoreType" value="${keystore.keystoreType}"/>
-		<property name="keystoreFile" value="file:${server.bundleInputFolder}${server.idauFolder}${keystore.fileName}"/>
-		<property name="privateKeyAlias" value="${keystore.privateKeyAlias}"/>
-		<property name="privateKeyPass" value="${keystore.privateKeyPass}"/>
-		<property name="certificateAlias" value="${keystore.certificateAliasPrefix}"/>
-		<property name="keystorePass" value="${keystore.keystorePass}"/>
-	</bean>
+    <!--
+    <bean id="keystoreResolver" class="com.atricore.idbus.console.lifecycle.main.util.SamlR2KeystoreKeyResolver">
+        <property name="keystoreType" value="${keystore.keystoreType}"/>
+        <property name="keystoreFile" value="file:${server.bundleInputFolder}${server.idauFolder}${keystore.fileName}"/>
+        <property name="privateKeyAlias" value="${keystore.privateKeyAlias}"/>
+        <property name="privateKeyPass" value="${keystore.privateKeyPass}"/>
+        <property name="certificateAlias" value="${keystore.certificateAliasPrefix}"/>
+        <property name="keystorePass" value="${keystore.keystorePass}"/>
+    </bean>
 
-    <bean id="idauBundleDescriptor" class="com.atricore.idbus.console.lifecycle.main.util.ApplianceUnitBundleDescriptor">
-		<property name="fileName" value="${server.bundleFileName}"/>
-		<property name="inputFolder" value="${server.bundleInputFolder}"/>
-		<property name="outputFolder" value="${server.bundleOutputFolder}"/>
-		<property name="idauFolder" value="${server.idauFolder}"/>
-	</bean>
+    <bean id="idauBundleDescriptor"
+          class="com.atricore.idbus.console.lifecycle.main.util.ApplianceUnitBundleDescriptor">
+        <property name="fileName" value="${server.bundleFileName}"/>
+        <property name="inputFolder" value="${server.bundleInputFolder}"/>
+        <property name="outputFolder" value="${server.bundleOutputFolder}"/>
+        <property name="idauFolder" value="${server.idauFolder}"/>
+    </bean>
+    -->
 
-	<bean id="idApplianceManagementService"
+    <bean id="idApplianceManagementService"
           class="com.atricore.idbus.console.lifecycle.main.impl.IdentityApplianceManagementServiceImpl">
 
         <property name="lazySyncAppliances" value="true"/>
 
-        <property name="activationService" ref="activationService" />
+        <property name="activationService" ref="activationService"/>
         <property name="builder" ref="applianceBuilder"/>
         <property name="deployer" ref="applianceDeployer"/>
         <!-- DAO's -->
@@ -86,11 +81,12 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <property name="authenticationAssertionEmissionPolicyDAO" ref="authenticationAssertionEmissionPolicyDAO"/>
         <property name="resourceDAO" ref="resourceDAO"/>
 
+        <property name="validateAppliances" value="true"/>
         <property name="validator" ref="applianceDefValidator"/>
     </bean>
 
-    <bean id="applianceDefValidator" class="com.atricore.idbus.console.lifecycle.main.impl.ApplianceValidatorImpl" >
-        <property name="walker" >
+    <bean id="applianceDefValidator" class="com.atricore.idbus.console.lifecycle.main.impl.ApplianceDefinitionValidatorImpl">
+        <property name="walker">
             <bean name="idbusWalker"
                   class="com.atricore.idbus.console.lifecycle.main.transform.ReflexiveIdentityApplianceDefinitionWalker"/>
         </property>
@@ -100,6 +96,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <!--property name="featuresService" ref="featuresService"/-->
     </bean>
 
+    <!--
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
             <list>
@@ -107,6 +104,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
             </list>
         </property>
     </bean>
+    -->
 
     <!-- ===================================================================== -->
     <!-- IDBus Server Management Services exported as OSGI Services            -->
@@ -114,17 +112,19 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
     <osgi:service id="osgiIdApplianceManagementService"
                   ref="idApplianceManagementService"
-            interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"/>
+                  interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"/>
 
     <osgi:reference id="activationService" cardinality="1..1" timeout="60"
-                    interface="com.atricore.idbus.console.activation.main.spi.ActivationService"  />
+                    interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
 
     <!-- =================================================================== -->
     <!-- Configuration Admin entry                                           -->
     <!-- =================================================================== -->
 
     <!-- Expose JDO Properties as OSGi configuration properties -->
-    <osgix:cm-properties id="lifecycleJDOProps" persistent-id="com.atricore.idbus.console.lifecycle.jdo">
+    <osgix:cm-properties id="lifecycleProps" persistent-id="com.atricore.idbus.console.lifecycle">
+
+        <prop key="validateAppliances">true</prop>
 
         <prop key="javax.jdo.option.Mapping">default</prop>
         <prop key="javax.jdo.PersistenceManagerFactoryClass">org.datanucleus.jdo.JDOPersistenceManagerFactory</prop>
@@ -148,14 +148,15 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
 
     </osgix:cm-properties>
 
-    <ctx:property-placeholder properties-ref="lifecycleJDOProps" />
-
-    <osgix:cm-properties id="lifecycleProps" persistent-id="com.atricore.idbus.console.lifecycle">
-    </osgix:cm-properties>
-
     <ctx:property-placeholder properties-ref="lifecycleProps" />
 
+    <!--
+    <osgix:cm-properties id="lifecycleProps" persistent-id="com.atricore.idbus.console.lifecycle">
+        <prop key="validateAppliances">true</prop>
+    </osgix:cm-properties>
 
+    <ctx:property-placeholder properties-ref="lifecycleProps"/>
+    -->
 
 
 </beans>

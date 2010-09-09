@@ -10,4 +10,7 @@ public interface CmdPrinter<T> {
     void print(T o);
 
     void printAll(Collection<T> os);
+
+    void printError(Exception e);
+
 }

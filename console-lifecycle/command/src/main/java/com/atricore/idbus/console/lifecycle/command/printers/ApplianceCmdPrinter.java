@@ -4,6 +4,8 @@ import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceUnit;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
+import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
+import com.atricore.idbus.console.lifecycle.main.impl.ValidationError;
 
 import java.util.Collection;
 
@@ -26,7 +28,7 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
 
         StringBuilder sb = new StringBuilder();
         // Build headers line
-        sb.append("  ID      Name           State       Revision        Display Name\n");
+        sb.append("\u001B[1m  ID      Name           State       Revision        Display Name\u001B[0m\n");
         sb.append("                                   Last/Deployed\n");
 
         for (IdentityAppliance appliance : os) {
@@ -34,6 +36,36 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
         }
 
         System.out.println(sb);
+    }
+
+    public void printError(Exception e) {
+
+        StringBuilder sb = new StringBuilder();
+
+
+        if (e instanceof ApplianceValidationException) {
+
+            int i = 0;
+            sb.append("\u001B[1m ").append(((ApplianceValidationException) e).getErrors().size()).append(" Appliance Validation Errors \u001B[0m\n");
+            sb.append("  -------------------------------------\n");
+
+            for (ValidationError err : ((ApplianceValidationException)e).getErrors()) {
+
+                sb.append("\u001B[1m");
+                sb.append(getIntegerString(i, 2));
+                sb.append(") \u001B[0m");
+                sb.append("\u001B[31m").append(err.getMsg()).append("\u001B[0m");
+                if (err.getError() != null) {
+                    sb.append(" Cause:").append(err.getError().getMessage());
+                }
+                sb.append("\n");
+                i++;
+            }
+
+            System.err.println(sb);
+            return;
+        }
+        System.err.println(e.getMessage());
     }
 
     protected void printDetails(IdentityAppliance appliance, StringBuilder sb, boolean verbose) {
@@ -303,13 +335,18 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
     }
 
     protected String getRevisionString(int revision) {
-        if (revision > 99)
-            return "" + revision;
+        return getIntegerString(revision, 2);
+    }
 
-        if (revision > 9)
-            return "0" + revision;
+    protected String getIntegerString(int value, int length) {
 
-        return "00" + revision;
+        String strRevision = value + "";
+
+        while (strRevision.length() < length) {
+            strRevision = "0" + strRevision;
+        }
+
+        return strRevision;
     }
 
     protected String getVersionString(IdentityApplianceUnit idau) {
@@ -319,5 +356,7 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
         }
         return v;
     }
+
+
 
 }

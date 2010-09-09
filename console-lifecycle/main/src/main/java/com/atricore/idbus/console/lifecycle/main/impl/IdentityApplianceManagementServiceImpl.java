@@ -31,6 +31,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceUnit;
 import com.atricore.idbus.console.lifecycle.main.domain.dao.*;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
+import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.exception.ExecEnvAlreadyActivated;
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
 import com.atricore.idbus.console.lifecycle.main.spi.*;
@@ -86,6 +87,8 @@ public class IdentityApplianceManagementServiceImpl implements
     private boolean lazySyncAppliances = false;
 
     private boolean alreadySynchronizededAppliances = false;
+
+    private boolean enableValidation = true;
 
     public void afterPropertiesSet() throws Exception {
 
@@ -293,6 +296,9 @@ public class IdentityApplianceManagementServiceImpl implements
             if (applianceDef == null)
                 throw new IdentityServerException("Appliance must contain an Appliance Definition");
 
+            if (isValidateAppliances())
+                validator.validate(appliance);
+
             if (logger.isDebugEnabled())
                     logger.debug("Received Identity Appliance Definition : [" +
                             applianceDef.getId() + "] " +
@@ -320,6 +326,8 @@ public class IdentityApplianceManagementServiceImpl implements
 
             return response;
 
+        } catch(ApplianceValidationException e) {
+            throw e;
         } catch (Exception e) {
 	        logger.error("Error importing identity appliance", e);
 	        throw new IdentityServerException(e);
@@ -1164,6 +1172,14 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setLazySyncAppliances(boolean lazySyncAppliances) {
         this.lazySyncAppliances = lazySyncAppliances;
+    }
+
+    public boolean isValidateAppliances() {
+        return enableValidation;
+    }
+
+    public void setValidateAppliances(boolean enableValidation) {
+        this.enableValidation = enableValidation;
     }
 
     public ActivationService getActivationService() {
