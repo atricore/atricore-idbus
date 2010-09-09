@@ -5,7 +5,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeploym
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
-import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDeployer;
+import com.atricore.idbus.console.lifecycle.main.spi.ApplianceDeployer;
 import org.apache.felix.karaf.features.Feature;
 import org.apache.felix.karaf.features.FeaturesService;
 import org.osgi.framework.BundleContext;
@@ -19,7 +19,7 @@ import java.util.Date;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class FeaturesBasedApplianceDeployer implements IdentityApplianceDeployer, BundleContextAware {
+public class FeaturesBasedApplianceDeployer implements ApplianceDeployer, BundleContextAware {
 
     // TODO : Rely on Spring DM references to obtain a featureservice instance
     private BundleContext bundleContext;

@@ -21,6 +21,7 @@ package com.atricore.idbus.console.lifecycle.main.transform;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
+import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionVisitor;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.impl.SpringMetadataManagerImpl;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.spi.SpringMetadataManager;
 import org.apache.commons.logging.Log;

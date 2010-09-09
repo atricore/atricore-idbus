@@ -2,7 +2,7 @@ package com.atricore.idbus.console.lifecycle.main.transform;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
-import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceBuilder;
+import com.atricore.idbus.console.lifecycle.main.spi.ApplianceBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class TransformerApplianceBuilderImpl implements IdentityApplianceBuilder {
+public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
 
     private static final Log logger = LogFactory.getLog(TransformerApplianceBuilderImpl.class);
 

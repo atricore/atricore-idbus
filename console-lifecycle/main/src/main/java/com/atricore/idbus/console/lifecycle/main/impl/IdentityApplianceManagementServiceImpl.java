@@ -55,11 +55,13 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private ActivationService activationService;
 
-    private IdentityApplianceBuilder builder;
+    private ApplianceBuilder builder;
 
     private IdentityApplianceRegistry registry;
 
-    private IdentityApplianceDeployer deployer;
+    private ApplianceDeployer deployer;
+
+    private ApplianceDefinitionValidator validator;
 
     private IdentityApplianceDAO identityApplianceDAO;
 
@@ -435,11 +437,13 @@ public class IdentityApplianceManagementServiceImpl implements
                                 ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
 
                                 if (request.isActivateSamples()) {
+
                                     if (logger.isDebugEnabled())
                                         logger.debug("Activating Samples in Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
 
                                     ActivateSamplesRequest samplesActivationRequest =
                                             doMakAgentSamplesActivationRequest(execEnv);
+
                                     ActivateSamplesResponse samplesActivationResponse =
                                             activationService.activateSamples(samplesActivationRequest);
                                 }
@@ -884,11 +888,11 @@ public class IdentityApplianceManagementServiceImpl implements
 
 // -------------------------------------------------< Properties >
 
-    public IdentityApplianceBuilder getBuilder() {
+    public ApplianceBuilder getBuilder() {
         return builder;
     }
 
-    public void setBuilder(IdentityApplianceBuilder builder) {
+    public void setBuilder(ApplianceBuilder builder) {
         this.builder = builder;
     }
 
@@ -900,12 +904,20 @@ public class IdentityApplianceManagementServiceImpl implements
         this.registry = registry;
     }
 
-    public IdentityApplianceDeployer getDeployer() {
+    public ApplianceDeployer getDeployer() {
         return deployer;
     }
 
-    public void setDeployer(IdentityApplianceDeployer deployer) {
+    public void setDeployer(ApplianceDeployer deployer) {
         this.deployer = deployer;
+    }
+
+    public ApplianceDefinitionValidator getValidator() {
+        return validator;
+    }
+
+    public void setValidator(ApplianceDefinitionValidator validator) {
+        this.validator = validator;
     }
 
     public IdentityApplianceDAO getIdentityApplianceDAO() {
@@ -1195,4 +1207,5 @@ public class IdentityApplianceManagementServiceImpl implements
 
         return req;
     }
+
 }

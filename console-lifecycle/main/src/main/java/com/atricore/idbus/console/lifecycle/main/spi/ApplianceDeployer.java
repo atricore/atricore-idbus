@@ -5,7 +5,7 @@ import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerExcepti
 
 /**
  */
-public interface IdentityApplianceDeployer {
+public interface ApplianceDeployer {
 
     boolean isDeployed(IdentityAppliance ia) throws IdentityServerException;
 

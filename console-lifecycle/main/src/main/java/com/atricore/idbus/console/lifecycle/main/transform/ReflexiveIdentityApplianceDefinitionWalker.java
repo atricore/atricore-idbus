@@ -21,6 +21,8 @@ package com.atricore.idbus.console.lifecycle.main.transform;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Connection;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
+import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionVisitor;
+import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionWalker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,7 +38,7 @@ public class ReflexiveIdentityApplianceDefinitionWalker implements IdentityAppli
 
 private static final Log logger = LogFactory.getLog(ReflexiveIdentityApplianceDefinitionWalker.class);
 
-    public Object[] walk(IdentityApplianceDefinition idAppliance, IdentityApplianceDefinitionVisitor visitor) {
+    public Object[] walk(IdentityApplianceDefinition idAppliance, IdentityApplianceDefinitionVisitor visitor) throws Exception {
         return walkAny(idAppliance, visitor, new HashSet<Object>());
     }
 
@@ -49,7 +51,7 @@ private static final Log logger = LogFactory.getLog(ReflexiveIdentityApplianceDe
      */
     protected Object[] walkAny(Object idApplianceElement,
                              IdentityApplianceDefinitionVisitor visitor,
-                             Set<Object> stack) {
+                             Set<Object> stack) throws Exception {
         
         if (idApplianceElement == null)
             return null;
@@ -128,15 +130,8 @@ private static final Log logger = LogFactory.getLog(ReflexiveIdentityApplianceDe
             Method leave = lookupVisitorMethod(visitor, "leave", idApplianceElement.getClass(), new Class[] {Object[].class});
             return (Object[]) leave.invoke(visitor, new Object[]{idApplianceElement, results});
 
-        } catch (InvocationTargetException e) {
-            // TODO !
-            throw new RuntimeException(e);
         } catch (NoSuchMethodException e) {
             logger.debug("No method found to walk element " + idApplianceElement + " [" + e.getMessage() + "]");
-            
-        } catch (IllegalAccessException e) {
-            // TODO !
-            throw new RuntimeException(e);
         }
 
         return null;

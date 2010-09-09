@@ -85,6 +85,15 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         <property name="attributeProfileDAO" ref="attributeProfileDAO"/>
         <property name="authenticationAssertionEmissionPolicyDAO" ref="authenticationAssertionEmissionPolicyDAO"/>
         <property name="resourceDAO" ref="resourceDAO"/>
+
+        <property name="validator" ref="applianceDefValidator"/>
+    </bean>
+
+    <bean id="applianceDefValidator" class="com.atricore.idbus.console.lifecycle.main.impl.ApplianceValidatorImpl" >
+        <property name="walker" >
+            <bean name="idbusWalker"
+                  class="com.atricore.idbus.console.lifecycle.main.transform.ReflexiveIdentityApplianceDefinitionWalker"/>
+        </property>
     </bean>
 
     <bean id="applianceDeployer" class="com.atricore.idbus.console.lifecycle.main.impl.FeaturesBasedApplianceDeployer">
