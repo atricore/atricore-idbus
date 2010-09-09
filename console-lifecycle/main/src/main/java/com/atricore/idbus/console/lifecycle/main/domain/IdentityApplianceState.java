@@ -8,5 +8,6 @@ public enum IdentityApplianceState {
 
     PROJECTED,
     DEPLOYED,
-    STARTED;
+    STARTED,
+    DISPOSED;
 }
