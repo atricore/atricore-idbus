@@ -237,6 +237,20 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     @Transactional
+    public DisposeIdentityApplianceResponse disposeIdentityAppliance(DisposeIdentityApplianceRequest req) throws IdentityServerException {
+        try {
+            syncAppliances();
+            IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(req.getId()));
+            appliance = disposeAppliance(appliance);
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
+            return new DisposeIdentityApplianceResponse(appliance);
+	    } catch (Exception e){
+	        logger.error("Error disposing identity appliance", e);
+	        throw new IdentityServerException(e);
+	    }
+    }
+
+    @Transactional
     public ImportIdentityApplianceResponse importIdentityAppliance(ImportIdentityApplianceRequest request) throws IdentityServerException {
         syncAppliances();
         throw new UnsupportedOperationException("Not Supported!");
@@ -1037,6 +1051,17 @@ public class IdentityApplianceManagementServiceImpl implements
         appliance = identityApplianceDAO.save(appliance);
         return appliance;
 
+    }
+
+    protected IdentityAppliance disposeAppliance(IdentityAppliance appliance) throws IdentityServerException {
+        if (logger.isDebugEnabled())
+            logger.debug("Disposing Identity Appliance " + appliance.getId());
+
+        appliance = undeployAppliance(appliance);
+        appliance.setState(IdentityApplianceState.DISPOSED.toString());
+        appliance = identityApplianceDAO.save(appliance);
+
+        return appliance;
     }
 
     protected void remove(IdentityAppliance appliance) throws IdentityServerException {

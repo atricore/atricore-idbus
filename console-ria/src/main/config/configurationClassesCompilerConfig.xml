@@ -59,6 +59,9 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.ServiceProviderRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.UndeployIdentityApplianceCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.StartIdentityApplianceCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.StopIdentityApplianceCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.DisposeIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand</symbol>

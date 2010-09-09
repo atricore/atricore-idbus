@@ -106,6 +106,19 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(beRes, StopIdentityApplianceResponse.class);
     }
 
+    public DisposeIdentityApplianceResponse disposeIdentityAppliance(DisposeIdentityApplianceRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.DisposeIdentityApplianceRequest beReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.DisposeIdentityApplianceRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.DisposeIdentityApplianceResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.disposeIdentityAppliance(beReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, DisposeIdentityApplianceResponse.class);
+    }
+
     public ImportIdentityApplianceResponse importIdentityAppliance(ImportIdentityApplianceRequest req) throws IdentityServerException {
         com.atricore.idbus.console.lifecycle.main.spi.request.ImportIdentityApplianceRequest beReq =
                 dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ImportIdentityApplianceRequest.class);

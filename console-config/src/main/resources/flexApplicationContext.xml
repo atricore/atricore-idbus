@@ -76,6 +76,11 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="disposeIdentityApplianceCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.DisposeIdentityApplianceCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="identityApplianceCreateCommand"
             class="com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -257,7 +262,9 @@
     <object id="browserMediator" class="com.atricore.idbus.console.modeling.browser.BrowserMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="paletteMediator" class="com.atricore.idbus.console.modeling.palette.PaletteMediator"/>
+    <object id="paletteMediator" class="com.atricore.idbus.console.modeling.palette.PaletteMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="groupsMediator" class="com.atricore.idbus.console.account.groups.GroupsMediator">
         <property name="popupManager" ref="accountManagementPopUpManager"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
@@ -380,6 +387,7 @@
         <property name="undeployIdentityApplianceCommand" ref="undeployIdentityApplianceCommand"/>
         <property name="startIdentityApplianceCommand" ref="startIdentityApplianceCommand"/>
         <property name="stopIdentityApplianceCommand" ref="stopIdentityApplianceCommand"/>
+        <property name="disposeIdentityApplianceCommand" ref="disposeIdentityApplianceCommand"/>
         <property name="identityApplianceCreateCommand" ref="identityApplianceCreateCommand"/>
         <property name="spChannelRemoveCommand" ref="spChannelRemoveCommand"/>
         <property name="idpChannelRemoveCommand" ref="idpChannelRemoveCommand"/>

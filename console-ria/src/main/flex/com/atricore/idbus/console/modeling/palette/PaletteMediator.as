@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.modeling.palette {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.EmbeddedIcons;
+import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.diagram.DiagramElementTypes;
 import com.atricore.idbus.console.modeling.palette.event.PaletteEvent;
 import com.atricore.idbus.console.modeling.palette.model.PaletteDrawer;
@@ -39,6 +40,16 @@ import spark.primitives.BitmapImage;
 public class PaletteMediator extends IocMediator {
     private var selectedIndex:int;
 
+    private var _projectProxy:ProjectProxy;
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+    
     public function PaletteMediator(name : String = null, viewComp:PaletteView = null) {
         super(name, viewComp);
 
@@ -174,12 +185,12 @@ public class PaletteMediator extends IocMediator {
 
 
     public function handlePaletteClick(event : PaletteEvent) : void {
-       var notification:Notification;
-
        switch(event.action) {
           case PaletteEvent.ACTION_PALETTE_ITEM_CLICKED :
-             var selectedPaletteEntry:PaletteEntry = event.data as PaletteEntry;
-             sendNotification(ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
+             if (projectProxy.currentIdentityAppliance != null) {
+                var selectedPaletteEntry:PaletteEntry = event.data as PaletteEntry;
+                sendNotification(ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
+             }
              break;
        }
 
