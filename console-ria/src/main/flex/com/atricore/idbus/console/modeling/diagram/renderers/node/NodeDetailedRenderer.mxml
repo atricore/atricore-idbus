@@ -51,6 +51,7 @@
         import com.atricore.idbus.console.services.dto.LdapIdentitySource;
         import com.atricore.idbus.console.services.dto.ServiceProvider;
 
+        import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
         import mx.controls.Alert;
@@ -136,6 +137,8 @@
                                                 _linkIcon = EmbeddedIcons.jbossEnvironmentIcon;
                                             } else if(obj is WeblogicExecutionEnvironment){
                                                 _linkIcon = EmbeddedIcons.weblogicEnvironmentIcon;
+                                            } else if (obj is TomcatExecutionEnvironment){
+                                                _linkIcon = EmbeddedIcons.tomcatEnvironmentIcon;
                                             } else {
                                                 _linkIcon = EmbeddedIcons.executionEnvironmentIcon;
                                             }

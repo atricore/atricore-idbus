@@ -250,7 +250,7 @@ package com.atricore.idbus.console.main {
 
         //Execution environments
         [Bindable]
-        [Embed(source="/assets/icons/notation/48x48/execution_environment.png")]
+        [Embed(source="/assets/icons/notation/22x22/execution_environment.png")]
         public static var executionEnvironmentMiniIcon:Class;
 
         [Bindable]
@@ -297,7 +297,7 @@ package com.atricore.idbus.console.main {
         public static var windowsEnvironmentMiniIcon:Class;    
 
         [Bindable]
-        [Embed(source="/assets/icons/notation/22x22/execution_environment.png")]
+        [Embed(source="/assets/icons/notation/48x48/execution_environment.png")]
         public static var executionEnvironmentIcon:Class;
 
         [Bindable]

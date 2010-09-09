@@ -68,6 +68,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _ldapIdentitySourceCreateMediator:IIocMediator;
     private var _jbossExecutionEnvironmentCreateMediator:IIocMediator;
     private var _weblogicExecutionEnvironmentCreateMediator:IIocMediator;
+    private var _tomcatExecutionEnvironmentCreateMediator:IIocMediator;
     private var _uploadProgressMediator:IIocMediator;
     private var _buildApplianceMediator:IIocMediator;
     private var _deployApplianceMediator:IIocMediator;
@@ -248,6 +249,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set weblogicExecutionEnvironmentCreateMediator(value:IIocMediator):void {
         _weblogicExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get tomcatExecutionEnvironmentCreateMediator():IIocMediator {
+        return _tomcatExecutionEnvironmentCreateMediator;
+    }
+
+    public function set tomcatExecutionEnvironmentCreateMediator(value:IIocMediator):void {
+        _tomcatExecutionEnvironmentCreateMediator = value;
     }
 
     public function get uploadProgressMediator():IIocMediator {
@@ -837,6 +846,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(ldapIdentitySourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(jbossExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(weblogicExecutionEnvironmentCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(tomcatExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(uploadProgressMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(buildApplianceMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(deployApplianceMediator.getConfigName());

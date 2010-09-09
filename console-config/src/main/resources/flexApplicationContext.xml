@@ -234,6 +234,10 @@
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="tomcatExecutionEnvironmentCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="idpChannelCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -340,6 +344,7 @@
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator" />
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
         <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator" />
+        <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />        
         <property name="activationCreateMediator" ref="activationCreateMediator"/>
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
 
@@ -423,6 +428,7 @@
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator" />
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
         <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator" />
+        <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />
         <property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>
         <property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>
         <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>

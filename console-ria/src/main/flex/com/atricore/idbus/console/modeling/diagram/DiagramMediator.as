@@ -307,32 +307,28 @@ public class DiagramMediator extends IocMediator {
 
                             break;
                         case DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is ServiceProvider ) {
-                                var execEnvironmentSp:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
-
-                                var ceenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
-                                        execEnvironmentSp,
-                                        _currentlySelectedNode.stringid
-                                        );
-                                _projectProxy.currentIdentityApplianceElementOwner = execEnvironmentSp;
-                                // this notification will be grabbed by the modeler mediator which will open
-                                // the corresponding form
-                                sendNotification(ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT, ceenv);
-                            }
+                            var cjbeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                    );
+                            _projectProxy.currentIdentityAppliance = _identityAppliance;
+                            // this notification will be grabbed by the modeler mediator which will open
+                            // the corresponding form
+                            sendNotification(ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT, cjbeenv);
                             break;
                         case DiagramElementTypes.WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is ServiceProvider ) {
-                                var execEnvironmentSp:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
-
-                                var ceenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
-                                        execEnvironmentSp,
-                                        _currentlySelectedNode.stringid
-                                        );
-                                _projectProxy.currentIdentityApplianceElementOwner = execEnvironmentSp;
-                                // this notification will be grabbed by the modeler mediator which will open
-                                // the corresponding form
-                                sendNotification(ApplicationFacade.CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT, ceenv);
-                            }
+                            var cweenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                    );
+                            _projectProxy.currentIdentityAppliance = _identityAppliance;
+                            // this notification will be grabbed by the modeler mediator which will open
+                            // the corresponding form
+                            sendNotification(ApplicationFacade.CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT, cweenv);
+                            break;
+                        case DiagramElementTypes.TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                            var cteenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                    );
+                            _projectProxy.currentIdentityAppliance = _identityAppliance;
+                            // this notification will be grabbed by the modeler mediator which will open
+                            // the corresponding form
+                            sendNotification(ApplicationFacade.CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT, cteenv);
                             break;
                     }
 //                }

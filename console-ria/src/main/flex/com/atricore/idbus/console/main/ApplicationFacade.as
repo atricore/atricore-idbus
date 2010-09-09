@@ -101,6 +101,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const REMOVE_SERVICE_PROVIDER_ELEMENT:String = "removeServiceProviderElement";
     public static const CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJbossExecutionEnvironmentElement";
     public static const CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWeblogicExecutionEnvironmentElement";
+    public static const CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT:String = "createTomcatExecutionEnvironmentElement";
     public static const REMOVE_ACTIVATION_ELEMENT:String = "removeActivationElement";
     public static const REMOVE_FEDERATED_CONNECTION_ELEMENT:String = "removeFederatedConnectionElement";
     public static const REMOVE_IDENTITY_LOOKUP_ELEMENT:String = "removeIdentityLookupElement";

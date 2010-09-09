@@ -269,6 +269,12 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig</class-a>
         <class-b>com.atricore.idbus.console.services.dto.SamlR2ProviderConfigDTO</class-b>
+        <field>
+            <a>encrypter</a>
+            <b>encrypter</b>
+            <a-hint>com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore</a-hint>
+            <b-hint>com.atricore.idbus.console.services.dto.KeystoreDTO</b-hint>
+        </field>
     </mapping>
 
     <mapping>

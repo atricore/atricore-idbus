@@ -234,6 +234,7 @@ public class ModelerMediator extends IocMediator {
             ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT,
+            ApplicationFacade.CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.REMOVE_ACTIVATION_ELEMENT,
             ApplicationFacade.REMOVE_FEDERATED_CONNECTION_ELEMENT,
             ApplicationFacade.REMOVE_IDENTITY_LOOKUP_ELEMENT,
@@ -316,6 +317,9 @@ public class ModelerMediator extends IocMediator {
                 break;
             case ApplicationFacade.CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateWeblogicExecutionEnvironmentWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT:
+                popupManager.showCreateTomcatExecutionEnvironmentWindow(notification);
                 break;
             case ApplicationFacade.CREATE_ACTIVATION:
                 popupManager.showCreateActivationWindow(notification);

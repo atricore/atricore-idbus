@@ -23,21 +23,16 @@ package com.atricore.idbus.console.modeling.diagram.model.request {
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 public class CreateExecutionEnvironmentElementRequest {
-    private var _owner:ServiceProvider;
-    private var _notationalElementId:String;
+//    private var _owner:ServiceProvider;
 
-    public function CreateExecutionEnvironmentElementRequest(owner:ServiceProvider, notationalElementId:String) {
-        _owner = owner;
-        _notationalElementId = notationalElementId;
+    public function CreateExecutionEnvironmentElementRequest() {
+//        _owner = owner;
     }
 
-    public function get owner():ServiceProvider {
-        return _owner;
-    }
+//    public function get owner():ServiceProvider {
+//        return _owner;
+//    }
 
-    public function get notationalElementId():String {
-        return _notationalElementId;
-    }
 
 }
 }

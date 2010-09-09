@@ -1,0 +1,98 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+    <!--<utils:ValidatingForm id="identityProvForm" width="100%" height="100%" defaultButton="{btnOk}">-->
+<mx:Form xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:utils="com.atricore.idbus.console.components.*"
+         defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
+
+    <fx:Declarations>
+        <mx:StringValidator id="nameValidator" source="{executionEnvironmentName}" required="true" property="text" trigger="{btnOk}"
+                        triggerEvent="click"/>
+        <!--<mx:NumberValidator id="portValidator" source="{ldapIdentitySourcePort}" required="false" property="text"-->
+                        <!--trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"-->
+                        <!--invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>-->
+        <!--<utils:URLPartValidator id="domainValidator" source="{ldapIdentitySourceDomain}" required="true" property="text"-->
+                        <!--trigger="{btnOk}" triggerEvent="click"/>-->
+    </fx:Declarations>
+    
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.name')}:" required="true">
+        <s:TextInput id="executionEnvironmentName" width="300"/>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.description')}:">
+        <s:TextInput id="executionEnvironmentDescription" width="300"/>
+    </mx:FormItem>
+
+    <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.location')}:" required="true"-->
+            <!--direction="horizontal" labelWidth="152">-->
+        <!--<s:DropDownList id="ldapIdentitySourceProtocol" width="70" selectedIndex="0">-->
+            <!--<s:dataProvider>-->
+                <!--<mx:ArrayCollection>-->
+                    <!--<fx:Object label="http" data="http"/>-->
+                    <!--<fx:Object label="https" data="https"/>-->
+                <!--</mx:ArrayCollection>-->
+            <!--</s:dataProvider>-->
+        <!--</s:DropDownList>-->
+        <!--<s:Label text="://" width="15"/>-->
+        <!--<s:TextInput id="ldapIdentitySourceDomain" width="150"/>-->
+        <!--<s:Label text=":" width="10"/>-->
+        <!--<s:TextInput id="ldapIdentitySourcePort" width="40"/>        -->
+    <!--</mx:FormItem>-->
+
+    <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.baseDN')}:">-->
+        <!--<s:TextInput id="ldapIdentitySourceBaseDN" width="300"/>-->
+    <!--</mx:FormItem>-->
+
+    <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.auth.mechanism')}:">-->
+        <!--<s:DropDownList id="ldapIdentitySourceAuthMechanismCombo" selectedIndex="0" width="180">-->
+            <!--<s:dataProvider>-->
+                <!--<mx:ArrayCollection>-->
+                    <!--<fx:Object label="None" data="none"/>-->
+                    <!--<fx:Object label="Simple" data="simple"/>-->
+                    <!--<fx:Object label="Strong" data="strong"/>-->
+                <!--</mx:ArrayCollection>-->
+            <!--</s:dataProvider>-->
+        <!--</s:DropDownList>-->
+    <!--</mx:FormItem>-->
+
+    <!--</utils:ValidatingForm>-->
+
+    <!-- TODO: create custom panel skin to change controlBarContent style? or use mx:ControlBar? -->
+    <s:Panel id="controlBarPanel" width="100%" height="40" borderVisible="false"
+            horizontalCenter="0" verticalCenter="0" contentBackgroundAlpha="0" dropShadowVisible="false"
+            creationComplete="controlBarPanel.titleDisplay.height=controlBarPanel.titleDisplay.minHeight=0;">
+        <s:controlBarContent>
+            <s:Button id="btnCancel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
+            <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}" enabled="true"/>
+        </s:controlBarContent>
+        <s:controlBarLayout>
+            <s:HorizontalLayout horizontalAlign="center"/>
+        </s:controlBarLayout>
+    </s:Panel>
+    <fx:Script><![CDATA[
+        import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.*;
+        ]]></fx:Script>
+</mx:Form>
+<!--</mx:VBox>-->

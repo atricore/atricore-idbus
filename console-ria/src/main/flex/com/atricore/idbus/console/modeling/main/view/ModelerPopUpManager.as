@@ -31,6 +31,8 @@ import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdenti
 import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardViewMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateForm;
@@ -68,6 +70,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _ldapIdentitySourceCreateMediator:LdapIdentitySourceCreateMediator;
     private var _jbossExecutionEnvironmentCreateMediator:JBossExecutionEnvironmentCreateMediator;
     private var _weblogicExecutionEnvironmentCreateMediator:WeblogicExecutionEnvironmentCreateMediator;
+    private var _tomcatExecutionEnvironmentCreateMediator:TomcatExecutionEnvironmentCreateMediator;
     private var _uploadProgressMediator:UploadProgressMediator;
     private var _buildApplianceMediator:BuildApplianceMediator;
     private var _deployApplianceMediator:DeployApplianceMediator;
@@ -83,6 +86,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _ldapIdentitySourceCreateForm:LdapIdentitySourceCreateForm;
     private var _jbossExecutionEnvironmentCreateForm:JBossExecutionEnvironmentCreateForm;
     private var _weblogicExecutionEnvironmentCreateForm:WeblogicExecutionEnvironmentCreateForm;
+    private var _tomcatExecutionEnvironmentCreateForm:TomcatExecutionEnvironmentCreateForm;
     private var _manageCertificateForm:ManageCertificateView;
     private var _uploadProgress:UploadProgress;
     private var _buildAppliance:BuildApplianceView;
@@ -189,6 +193,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set weblogicExecutionEnvironmentCreateMediator(value:WeblogicExecutionEnvironmentCreateMediator):void {
         _weblogicExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get tomcatExecutionEnvironmentCreateMediator():TomcatExecutionEnvironmentCreateMediator {
+        return _tomcatExecutionEnvironmentCreateMediator;
+    }
+
+    public function set tomcatExecutionEnvironmentCreateMediator(value:TomcatExecutionEnvironmentCreateMediator):void {
+        _tomcatExecutionEnvironmentCreateMediator = value;
     }
 
     public function get activationCreateMediator():ActivationCreateMediator {
@@ -360,6 +372,29 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleWeblogicExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
         weblogicExecutionEnvironmentCreateMediator.setViewComponent(_weblogicExecutionEnvironmentCreateForm);
         weblogicExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateTomcatExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_tomcatExecutionEnvironmentCreateForm) {
+            createTomcatExecutionEnvironmentCreateForm();
+        }
+        _popup.title = "Create Tomcat Execution Environment";
+        _popup.width = 650;
+        _popup.height = 300;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_tomcatExecutionEnvironmentCreateForm);
+    }
+
+    private function createTomcatExecutionEnvironmentCreateForm():void {
+        _tomcatExecutionEnvironmentCreateForm = new TomcatExecutionEnvironmentCreateForm();
+        _tomcatExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleTomcatExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handleTomcatExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        tomcatExecutionEnvironmentCreateMediator.setViewComponent(_tomcatExecutionEnvironmentCreateForm);
+        tomcatExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateFederatedConnectionWindow(notification:INotification):void {
