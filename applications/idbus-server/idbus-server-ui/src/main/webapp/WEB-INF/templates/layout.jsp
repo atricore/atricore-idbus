@@ -62,9 +62,8 @@
     <div id="header">
 
         <h1> <!-- Logo IDBus-->
-            <a href="http://www.atricore.org" title="Click here to go to the homepage">
-                Atricore Identity Bus (IDBus)
-                <!--TODO : img src="<%=request.getContextPath()%>/resources/img/content/josso-logo.png" alt="Atricore IDBus" width="372" height="48"/-->
+            <a href="http://www.josso.org" title="Click here to go to the homepage">
+                <img src="<%=request.getContextPath()%>/resources/img/content/josso-logo.png" alt="Atricore IDBus" width="372" height="48"/>
             </a>
         </h1> <!-- /Logo IDBus-->
 
