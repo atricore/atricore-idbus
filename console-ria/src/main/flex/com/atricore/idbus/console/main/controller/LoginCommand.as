@@ -25,10 +25,8 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.model.request.LoginRequest;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.dto.SignOnStatusCode;
 import com.atricore.idbus.console.services.dto.User;
 import com.atricore.idbus.console.services.spi.request.SignOnRequest;
-import com.atricore.idbus.console.services.spi.request.UserLoggedRequest;
 import com.atricore.idbus.console.services.spi.response.SignOnResponse;
 
 import mx.rpc.IResponder;
@@ -42,11 +40,7 @@ public class LoginCommand extends IocSimpleCommand implements IResponder
 {
     public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.LoginCommand.SUCCESS";
     public static const FAILURE:String = "com.atricore.idbus.console.main.controller.LoginCommand.FAILURE";
-    public static const EMAIL_SUCCESS:String = "com.atricore.idbus.console.main.controller.LoginCommand.EMAIL_SUCCESS";
-    public static const UNKNOWN_PRINCIPAL:String = "com.atricore.idbus.console.main.controller.LoginCommand.UnknownPrincipal";
-    public static const AUTH_FAILED:String = "com.atricore.idbus.console.main.controller.LoginCommand.AuthFailed";
-    public static const REQUEST_DENIED:String = "com.atricore.idbus.console.main.controller.LoginCommand.RequestDenied";
-
+    
     private var _registry:ServiceRegistry;
     private var _secureContext:SecureContextProxy;
 
@@ -68,30 +62,25 @@ public class LoginCommand extends IocSimpleCommand implements IResponder
     }
 
     override public function execute(notification:INotification):void {
-
-        sendNotification(SUCCESS);
-
-        /** Uncomment in order to invoke authentication operation
         var loginRequest:LoginRequest = notification.getBody() as LoginRequest;
-        _password = loginRequest.password;
-
         var signOnRequest:SignOnRequest = new SignOnRequest();
+
         signOnRequest.username = loginRequest.username;
         signOnRequest.password = loginRequest.password;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.SIGN_ON_SERVICE);
         var call:Object = service.signOn(signOnRequest);
         call.addResponder(this);
-        */
     }
 
     public function result(data:Object):void {
         var signOnResponse:SignOnResponse = data.result as SignOnResponse;
-
-        var user:User = data.result as User;
-
+        var user:User = signOnResponse.authenticatedUser;
         secureContext.currentUser = user;
-        sendNotification(SUCCESS);
+        if (secureContext.currentUser !=null)
+            sendNotification(SUCCESS);
+        else
+            sendNotification(FAILURE);
     }
 
     public function fault(info:Object):void {

@@ -109,7 +109,6 @@ public class ApplicationMediator extends IocMediator {
         if (getViewComponent() != null) {
             app.stackButtonBar.removeEventListener(IndexChangeEvent.CHANGE, handleStackChange);
             app.removeEventListener(FlexEvent.SHOW, handleShowConsole);
-            app.userActionMenuBar.addEventListener(MenuEvent.ITEM_CLICK, handleUserMenuAction)
         }
 
         super.setViewComponent(p_viewComponent);
@@ -233,6 +232,8 @@ public class ApplicationMediator extends IocMediator {
 
         app.stackButtonBar.addEventListener(IndexChangeEvent.CHANGE, handleStackChange);
         app.stackButtonBar.selectedIndex = 0;
+        app.userActionMenuBar.getMenuAt(0).name = _secureContextProxy.currentUser.userName;
+        app.userActionMenuBar.addEventListener(MenuEvent.ITEM_CLICK, handleUserMenuAction)
     }
 
     public function logout():void {

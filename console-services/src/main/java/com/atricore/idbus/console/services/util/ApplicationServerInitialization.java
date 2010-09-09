@@ -21,24 +21,100 @@
 
 package com.atricore.idbus.console.services.util;
 
-import org.springframework.beans.factory.InitializingBean;
+import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundException;
+import com.atricore.idbus.console.lifecycle.main.exception.UserProvisioningAjaxException;
+import com.atricore.idbus.console.services.dto.GroupDTO;
+import com.atricore.idbus.console.services.dto.UserDTO;
+import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
+import com.atricore.idbus.console.services.spi.request.AddGroupRequest;
+import com.atricore.idbus.console.services.spi.request.AddUserRequest;
+import com.atricore.idbus.console.services.spi.request.FindGroupByNameRequest;
+import com.atricore.idbus.console.services.spi.request.FindUserByUsernameRequest;
+import com.atricore.idbus.console.services.spi.response.AddGroupResponse;
+import com.atricore.idbus.console.services.spi.response.FindGroupByNameResponse;
+import com.atricore.idbus.console.services.spi.response.FindUserByUsernameResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * User: cdbirge
- * Date: Nov 4, 2009
+ * User: dfisic
+ * Date: Sep 8, 2010
  * Time: 3:35:20 PM
- * email: cbirge@atricore.org
+ * email: dfisic@atricore.org
  */
-public class ApplicationServerInitialization implements InitializingBean {
+public class ApplicationServerInitialization {
 
     private static Log logger = LogFactory.getLog(ApplicationServerInitialization.class);
 
-    private String adminUsername = "atricore";
-    private String adminPassword = "admin";
-    private String adminFirstName = "Administrator";
-    private String adminGivenName = "Administrator";
+    private UserProvisioningAjaxService usrProvService;
+
+    private String adminGroupName;
+    private String adminGroupDescription;
+
+    private String adminUsername;
+    private String adminPassword;
+
+    private GroupDTO adminGroup;
+    private UserDTO adminUser;
+
+    public void init() throws Exception {
+        checkCreateAdminGroup();
+        checkCreateAdminUser();
+    }
+
+    private void checkCreateAdminGroup() {
+        FindGroupByNameRequest findGroupByNameRequest = new FindGroupByNameRequest();
+        findGroupByNameRequest.setName(adminGroupName);
+
+        try {
+            FindGroupByNameResponse findGroupByNameResponse = usrProvService.findGroupByName(findGroupByNameRequest);
+            adminGroup = findGroupByNameResponse.getGroup();
+            if (adminGroup == null) {
+                logger.debug(" Group '"+ adminGroupName + "' don't exist. Must be created");
+                AddGroupRequest addGroupRequest = new AddGroupRequest();
+                addGroupRequest.setName(adminGroupName);
+                addGroupRequest.setDescription(adminGroupDescription);
+                try {
+                    AddGroupResponse addGroupResponse = usrProvService.addGroup(addGroupRequest);
+                    adminGroup = addGroupResponse.getGroup();
+                } catch (UserProvisioningAjaxException e1) {
+                    logger.error("The group "+ adminGroupName +" couldn't be created. Impossible to continue initialization",e1);
+                }
+            }
+        } catch (GroupNotFoundException e1) {
+            logger.error("The group "+adminGroupName+" not found");
+        }
+    }
+
+    private void checkCreateAdminUser() {
+        FindUserByUsernameRequest findUserByUsernameRequest = new FindUserByUsernameRequest();
+        findUserByUsernameRequest.setUsername(adminUsername);
+        try {
+            FindUserByUsernameResponse resp = usrProvService.findUserByUsername(findUserByUsernameRequest);
+            adminUser = resp.getUser();
+            if ( adminUser == null) {
+                logger.debug(" User '"+adminUsername+ "' don't exist. Must be created");
+                AddUserRequest addUserRequest = new AddUserRequest();
+                addUserRequest.setUserName(adminUsername);
+                addUserRequest.setUserPassword(adminPassword);
+                addUserRequest.setFirstName(adminGroupName);
+                addUserRequest.setGivenName(adminGroupDescription);
+                addUserRequest.setAccountDisabled(false);
+                addUserRequest.setAllowUserToChangePassword(true);
+                GroupDTO[] groups = new GroupDTO[1];
+                groups[0] = adminGroup;
+                addUserRequest.setGroups(groups);
+                try {
+                    usrProvService.addUser(addUserRequest);
+                } catch (Exception e1) {
+                    logger.error("The user "+adminUsername+" couldn't be created. Impossible to continue initialization",e1);
+                    throw new Exception("The user "+adminUsername+" couldn't be created. Impossible to continue initialization",e1);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("The user "+adminUsername+" not found");
+        }
+    }
 
     public String getAdminUsername() {
         return adminUsername;
@@ -56,72 +132,28 @@ public class ApplicationServerInitialization implements InitializingBean {
         this.adminPassword = adminPassword;
     }
 
-    public String getAdminFirstName() {
-        return adminFirstName;
+    public String getAdminGroupName() {
+        return adminGroupName;
     }
 
-    public void setAdminFirstName(String adminFirstName) {
-        this.adminFirstName = adminFirstName;
+    public void setAdminGroupName(String adminGroupName) {
+        this.adminGroupName = adminGroupName;
     }
 
-    public String getAdminGivenName() {
-        return adminGivenName;
+    public String getAdminGroupDescription() {
+        return adminGroupDescription;
     }
 
-    public void setAdminGivenName(String adminGivenName) {
-        this.adminGivenName = adminGivenName;
+    public void setAdminGroupDescription(String adminGroupDescription) {
+        this.adminGroupDescription = adminGroupDescription;
     }
 
-    public void afterPropertiesSet() throws Exception {
-        /*
-
-        com.atricore.idbus.console.lifecycle.main.spi.request.FindGroupByNameRequest findGroupByNameRequest = new FindGroupByNameRequest();
-        findGroupByNameRequest.setName(SignOnServiceImpl.ADMIN_GROUP);
-
-        Group adminGroup;
-        try {
-            FindGroupByNameResponse findGroupByNameResponse = getUserProvisioningService().findGroupByName(findGroupByNameRequest);
-            adminGroup = findGroupByNameResponse.getGroup();
-        } catch (GroupNotFoundException e) {
-            logger.debug(" Group '"+SignOnServiceImpl.ADMIN_GROUP+ "' don't exist. Must be created");
-
-            AddGroupRequest addGroupRequest = new AddGroupRequest();
-            addGroupRequest.setName(SignOnServiceImpl.ADMIN_GROUP);
-            addGroupRequest.setDescription(SignOnServiceImpl.ADMIN_GROUP+" Group");
-            try {
-                AddGroupResponse addGroupResponse = getUserProvisioningService().addGroup(addGroupRequest);
-                adminGroup = addGroupResponse.getGroup();
-            } catch (UserProvisioningAjaxException e1) {
-                logger.error("The group "+SignOnServiceImpl.ADMIN_GROUP+" couldn't be created. Impossible to continue initialization",e);
-                throw new Exception("The group "+SignOnServiceImpl.ADMIN_GROUP+" couldn't be created. Impossible to continue initialization",e);
-            }
-        }
-        */
-
-        /*
-        FindUserByUsernameRequest findUserByUsernameRequest = new FindUserByUsernameRequest();
-        findUserByUsernameRequest.setUsername(adminUsername);
-        try {
-            getUserProvisioningService().findUserByUsername(findUserByUsernameRequest);
-        } catch (Exception e) {
-            logger.debug(" User '"+adminUsername+ "' don't exist. Must be created");
-            AddUserRequest addUserRequest = new AddUserRequest();
-            addUserRequest.setUserName(adminUsername);
-            addUserRequest.setUserPassword(adminPassword);
-            addUserRequest.setFirstName(adminFirstName);
-            addUserRequest.setGivenName(adminGivenName);
-            addUserRequest.setAccountDisabled(false);
-            addUserRequest.setAllowUserToChangePassword(true);
-            Group[] groups = new Group[1];
-            groups[0] = adminGroup;
-            addUserRequest.setGroups(groups);
-            try {
-                getUserProvisioningService().addUser(addUserRequest);
-            } catch (Exception e1) {
-                logger.error("The user "+adminUsername+" couldn't be created. Impossible to continue initialization",e);
-                throw new Exception("The user "+adminUsername+" couldn't be created. Impossible to continue initialization",e);
-            }
-        }
-        */
+    public UserProvisioningAjaxService getUsrProvService() {
+        return usrProvService;
     }
+
+    public void setUsrProvService(UserProvisioningAjaxService usrProvService) {
+        this.usrProvService = usrProvService;
+    }
+
 }

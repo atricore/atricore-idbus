@@ -21,72 +21,111 @@
 
 package com.atricore.idbus.console.services.impl;
 
+import com.atricore.idbus.console.lifecycle.main.exception.UserNotFoundException;
+import com.atricore.idbus.console.services.dto.UserDTO;
 import com.atricore.idbus.console.services.spi.IdentityServerException;
-import com.atricore.idbus.console.services.spi.request.FetchGroupMembershipRequest;
-import com.atricore.idbus.console.services.spi.request.UpdateUserPasswordRequest;
-import com.atricore.idbus.console.services.spi.request.UpdateUserProfileRequest;
-import com.atricore.idbus.console.services.spi.response.FetchGroupMembershipResponse;
-import com.atricore.idbus.console.services.spi.response.UpdateUserPasswordResponse;
-import com.atricore.idbus.console.services.spi.response.UpdateUserProfileResponse;
 import com.atricore.idbus.console.services.spi.ProfileManagementAjaxService;
-import org.dozer.DozerBeanMapper;
+import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
+import com.atricore.idbus.console.services.spi.request.*;
+import com.atricore.idbus.console.services.spi.response.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
- * Author: Dejan Maric
+ * Author: Dusan Fisic
  */
 public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxService {
+    private static Log logger = LogFactory.getLog(ProfileManagementAjaxServiceImpl.class);
 
-    private DozerBeanMapper dozerMapper;
+    private UserProvisioningAjaxService usrProvService;
+
 
     public UpdateUserProfileResponse updateUserProfile(UpdateUserProfileRequest updateProfileRequest) throws IdentityServerException {
-        /** TODO : Use SPML Service
-        com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserProfileRequest beReq =
-                dozerMapper.map(updateProfileRequest, com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserProfileRequest.class);
-
-        com.atricore.idbus.console.lifecycle.main.spi.response.UpdateUserProfileResponse beRes = null;
         try {
-            beRes = profileManagementService.updateUserProfile(beReq);
-        } catch (ProfileManagementException e) {
-            throw new IdentityServerException(e);
+            FindUserByUsernameRequest userRequest = new FindUserByUsernameRequest();
+            userRequest.setUsername(updateProfileRequest.getUsername());
+            FindUserByUsernameResponse findResp = usrProvService.findUserByUsername(userRequest);
+            UserDTO retUser = findResp.getUser();
+            Long userId=null;
+            if (retUser != null)
+                userId = retUser.getId();
+            else
+                throw new UserNotFoundException("User not found with username: " + updateProfileRequest.getUsername() );
+
+            UpdateUserRequest updateReq = new UpdateUserRequest();
+            updateReq.setId(userId);
+            updateReq.setUserName(updateProfileRequest.getUsername());
+            updateReq.setFirstName(updateProfileRequest.getFirstName());
+            updateReq.setSurename(updateProfileRequest.getLastName());
+            updateReq.setEmail(updateProfileRequest.getEmail());
+
+            UpdateUserResponse updResp = usrProvService.updateUser(updateReq);
+            UpdateUserProfileResponse response = new UpdateUserProfileResponse();
+            response.setUser(retUser);
+            return response;
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new IdentityServerException("Error updateing user with username: " +
+                    updateProfileRequest.getUsername() + " : " + e.getMessage(), e);
         }
-        return dozerMapper.map(beRes, UpdateUserProfileResponse.class);
-         */
-        throw new UnsupportedOperationException("New SPML based version needs to be implemented!");
     }
 
     public UpdateUserPasswordResponse updateUserPassword(UpdateUserPasswordRequest updatePasswordRequest) throws IdentityServerException {
-        /*
-        com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserPasswordRequest beReq =
-                dozerMapper.map(updatePasswordRequest, com.atricore.idbus.console.lifecycle.main.spi.request.UpdateUserPasswordRequest.class);
-
-        com.atricore.idbus.console.lifecycle.main.spi.response.UpdateUserPasswordResponse beRes = null;
         try {
-            beRes = profileManagementService.updateUserPassword(beReq);
-        } catch (ProfileManagementException e) {
-            throw new IdentityServerException(e);
+            FindUserByUsernameRequest userRequest = new FindUserByUsernameRequest();
+            userRequest.setUsername(updatePasswordRequest.getUsername());
+            FindUserByUsernameResponse findResp = usrProvService.findUserByUsername(userRequest);
+            UserDTO retUser = findResp.getUser();
+            Long userId=null;
+            if (retUser != null)
+                userId = retUser.getId();
+            else
+                throw new UserNotFoundException("User not found with username: " + updatePasswordRequest.getUsername() );
+
+            UpdateUserRequest updateReq = new UpdateUserRequest();
+            updateReq.setId(userId);
+            updateReq.setUserPassword(updatePasswordRequest.getNewPassword());
+
+            UpdateUserResponse updResp = usrProvService.updateUser(updateReq);
+            UpdateUserPasswordResponse response = new UpdateUserPasswordResponse();
+            response.setUser(retUser);
+            return response;
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new IdentityServerException("Error updateing user's password: " +
+                    updatePasswordRequest.getUsername() + " : " + e.getMessage(), e);
         }
-        return dozerMapper.map(beRes, UpdateUserPasswordResponse.class);
-        */
-        throw new UnsupportedOperationException("New SPML based version needs to be implemented!");
     }
 
     public FetchGroupMembershipResponse fetchGroupMembership(FetchGroupMembershipRequest fetchGroupMembership) throws IdentityServerException {
-        /*
-        com.atricore.idbus.console.lifecycle.main.spi.request.FetchGroupMembershipRequest beReq =
-                dozerMapper.map(fetchGroupMembership, com.atricore.idbus.console.lifecycle.main.spi.request.FetchGroupMembershipRequest.class);
-
-        com.atricore.idbus.console.lifecycle.main.spi.response.FetchGroupMembershipResponse beRes = null;
         try {
-            beRes = profileManagementService.fetchGroupMembership(beReq);
-        } catch (ProfileManagementException e) {
-            throw new IdentityServerException(e);
+            FindUserByUsernameRequest userRequest = new FindUserByUsernameRequest();
+            userRequest.setUsername(fetchGroupMembership.getUsername());
+            FindUserByUsernameResponse findResp = usrProvService.findUserByUsername(userRequest);
+            UserDTO retUser = findResp.getUser();
+            FetchGroupMembershipResponse response = new FetchGroupMembershipResponse();
+            if (retUser != null)
+                response.setGroups(retUser.getGroups());
+            else
+                throw new UserNotFoundException("User not found with username: " + fetchGroupMembership.getUsername() );
+
+            return response;
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new IdentityServerException("Error finding user: " +
+                    fetchGroupMembership.getUsername() + " : " + e.getMessage(), e);
         }
-        return dozerMapper.map(beRes, FetchGroupMembershipResponse.class);
-        */
-        throw new UnsupportedOperationException("New SPML based version needs to be implemented!");
     }
 
-    public void setDozerMapper(DozerBeanMapper dozerMapper) {
-        this.dozerMapper = dozerMapper;
+    public UserProvisioningAjaxService getUsrProvService() {
+        return usrProvService;
     }
+
+    public void setUsrProvService(UserProvisioningAjaxService usrProvService) {
+        this.usrProvService = usrProvService;
+    }
+
 }

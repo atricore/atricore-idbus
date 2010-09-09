@@ -21,7 +21,6 @@
 
 package com.atricore.idbus.console.main.view.profile
 {
-import com.atricore.idbus.console.main.view.profile.*;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.controller.ChangePasswordCommand;
 import com.atricore.idbus.console.main.view.form.FormUtility;
@@ -67,7 +66,8 @@ public class ChangePasswordMediator extends IocMediator
     }
 
     override public function listNotificationInterests():Array {
-        return [ChangePasswordCommand.FAILURE, ChangePasswordCommand.SUCCESS];
+        return [ChangePasswordCommand.SUCCESS,
+            ChangePasswordCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -90,11 +90,11 @@ public class ChangePasswordMediator extends IocMediator
         FormUtility.doValidate(_changePasswordValidators);
         if (FormUtility.validateAll(_changePasswordValidators)) {
             /* Implement Request/Response Objects and uncomment
-            var changePasswordRequest:ChangePasswordRequest = new ChangePasswordRequest();
-            changePasswordRequest.oldPassword = view.oldPassword.text;
-            changePasswordRequest.newPassword = view.newPassword.text;
-            sendNotification(ApplicationFacade.ChangePassword, changePasswordRequest);
-            */
+             var changePasswordRequest:ChangePasswordRequest = new ChangePasswordRequest();
+             changePasswordRequest.oldPassword = view.oldPassword.text;
+             changePasswordRequest.newPassword = view.newPassword.text;
+             sendNotification(ApplicationFacade.ChangePassword, changePasswordRequest);
+             */
         }
         else {
             sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "Missing or invalid data entered");
@@ -105,17 +105,17 @@ public class ChangePasswordMediator extends IocMediator
         resetPasswordChangeForm();
     }
 
-
-    public function handlePasswordChangeFailure():void {
-        sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                "The user name and/or password you entered are not correct. " +
-                "Please re-enter to log in again.");
-    }
-
     public function handlePasswordChangeSuccess():void {
         sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
                 "An email with your password has been sent to your account.");
     }
+
+    public function handlePasswordChangeFailure():void {
+        sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                "The user name and/or password you entered are not correct. " +
+                        "Please re-enter to log in again.");
+    }
+
 
     public function resetPasswordChangeForm():void {
         view.oldPassword.text = "";

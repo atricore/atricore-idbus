@@ -23,14 +23,10 @@ package com.atricore.idbus.console.main.controller
 {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.spi.request.FindGroupByNameRequest;
 
-import mx.managers.BrowserManager;
-import mx.managers.IBrowserManager;
 import mx.messaging.Channel;
 import mx.messaging.config.ServerConfig;
 import mx.rpc.IResponder;
-import mx.rpc.remoting.mxml.RemoteObject;
 
 import org.puremvc.as3.interfaces.*;
 import org.springextensions.actionscript.puremvc.interfaces.IIocCommand;
@@ -41,8 +37,6 @@ import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleComma
 public class ApplicationStartUpCommand extends IocSimpleCommand implements IResponder {
     public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.ApplicationStartUpCommand.SUCCESS";
     public static const FAILURE:String = "com.atricore.idbus.console.main.controller.ApplicationStartUpCommand.FAILURE";
-
-    public static var ADMIN_GROUP:String = "Administrators";
 
     /* Proxies */
     private var _serviceRegistry:IIocProxy;
@@ -73,6 +67,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _deployApplianceMediator:IIocMediator;
     private var _processingMediator:IIocMediator;
     private var _loginMediator:IIocMediator;
+    private var _changePasswordMediator:IIocMediator;
     private var _setupWizardViewMediator:IIocMediator;
     private var _lifecycleViewMediator:IIocMediator;
     private var _simpleSSOWizardViewMediator:IIocMediator;
@@ -127,7 +122,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _listUsersCommand:IIocCommand;
     private var _searchGroupsCommand:IIocCommand;
     private var _searchUsersCommand:IIocCommand;
-//    private var _createActivationCommand:IIocCommand;
+    //    private var _createActivationCommand:IIocCommand;
     private var _createIdentityLookupCommand:IIocCommand;
 
 
@@ -468,6 +463,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _loginMediator = value;
     }
 
+    public function get changePasswordMediator():IIocMediator {
+        return _changePasswordMediator;
+    }
+
+    public function set changePasswordMediator(value:IIocMediator):void {
+        _changePasswordMediator = value;
+    }
+
     public function get setupServerCommand():IIocCommand {
         return _setupServerCommand;
     }
@@ -748,13 +751,13 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _searchUsersCommand = value;
     }
 
-//    public function get createActivationCommand():IIocCommand {
-//        return _createActivationCommand;
-//    }
-//
-//    public function set createActivationCommand(value:IIocCommand):void {
-//        _createActivationCommand = value;
-//    }
+    //    public function get createActivationCommand():IIocCommand {
+    //        return _createActivationCommand;
+    //    }
+    //
+    //    public function set createActivationCommand(value:IIocCommand):void {
+    //        _createActivationCommand = value;
+    //    }
 
     public function get createIdentityLookupCommand():IIocCommand {
         return _createIdentityLookupCommand;
@@ -804,7 +807,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_USERS, listUsersCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_GROUPS, searchGroupsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_USERS, searchUsersCommand.getConfigName());
-//        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_ACTIVATION, createActivationCommand.getConfigName());
+        //        iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_ACTIVATION, createActivationCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_LOOKUP, createIdentityLookupCommand.getConfigName());
 
         // setup for first level mediators
@@ -853,6 +856,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(processingMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(activationCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(federatedConnectionCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(changePasswordMediator.getConfigName());
 
         // IDENTITY_APPLIANCE_LIST_LOAD notification is sent from
         // modelerMediator.setViewComponent() -> modelerMediator.init()
@@ -861,7 +865,6 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         // to catch notifications from commands), and then set views components?
         //sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
 
-        checkFirstRun();
     }
 
     protected function setupServiceRegistry():ServiceRegistry {
@@ -877,28 +880,6 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         return registry;
     }
 
-    private function checkFirstRun():void {
-
-        var browserManager:IBrowserManager = BrowserManager.getInstance();
-        browserManager.init();
-        browserManager.setTitle("Atricore Identity Bus | Administration Console");
-
-        var registry:ServiceRegistry = _serviceRegistry as ServiceRegistry;
-        var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
-
-        var findAdminGroup:FindGroupByNameRequest = new FindGroupByNameRequest();
-        findAdminGroup.name = ADMIN_GROUP;
-        var call:Object = service.findGroupByName(findAdminGroup);
-        call.addResponder(this);
-
-        /*
-         var findAdminGroup:FindGroupByNameRequest = new FindGroupByNameRequest();
-         findAdminGroup.name = ADMIN_GROUP;
-         var call:Object = service.findGroupByName(findAdminGroup);
-         call.addResponder(this);
-         */
-    }
-
     public function result(data:Object):void {
         if (data.result == null) {
             sendNotification(FAILURE);
@@ -912,5 +893,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         sendNotification(FAILURE);
 
     }
+
+
 }
 }
