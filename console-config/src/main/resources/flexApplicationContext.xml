@@ -18,6 +18,7 @@
     <!-- Commands -->
     <object id="loginCommand" class="com.atricore.idbus.console.main.controller.LoginCommand">
         <property name="registry" ref="serviceRegistry"/>
+        <property name="secureContext" ref="secureContextProxy"/>
     </object>
     <object id="uploadCommand" class="com.atricore.idbus.console.main.controller.UploadCommand"/>
     <object id="setupServerCommand" class="com.atricore.idbus.console.main.controller.SetupServerCommand">
@@ -191,6 +192,8 @@
     <object id="uploadProgressMediator" class="com.atricore.idbus.console.main.view.upload.UploadProgressMediator"/>
     <object id="processingMediator" class="com.atricore.idbus.console.main.view.progress.ProcessingMediator"/>
     <object id="loginMediator" class="com.atricore.idbus.console.main.view.login.LoginMediator"/>
+    <object id="changePasswordMediator" class="com.atricore.idbus.console.main.view.profile.ChangePasswordMediator"/>
+
     <object id="setupWizardViewMediator" class="com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator">
         <property name="profileProxy" ref="profileProxy"/>
     </object>
@@ -423,6 +426,7 @@
         <property name="uploadProgressMediator" ref="uploadProgressMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
         <property name="loginMediator" ref="loginMediator"/>
+        <property name="changePasswordMediator" ref="changePasswordMediator"/>
         <property name="setupWizardViewMediator" ref="setupWizardViewMediator"/>
         <property name="lifecycleViewMediator" ref="lifecycleViewMediator"/>
         <property name="buildApplianceMediator" ref="buildApplianceMediator"/>

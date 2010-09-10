@@ -68,13 +68,14 @@ public class LoginMediator extends IocMediator
     }
 
     override public function listNotificationInterests():Array {
-        return [LoginCommand.FAILURE, LoginCommand.EMAIL_SUCCESS];
+        return [ LoginCommand.SUCCESS,
+            LoginCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case LoginCommand.EMAIL_SUCCESS :
-                handleEmailSuccess();
+            case LoginCommand.SUCCESS :
+                // do nothing AppMediator is taking care of it
                 break;
             case LoginCommand.FAILURE :
                 handleLoginFailure();

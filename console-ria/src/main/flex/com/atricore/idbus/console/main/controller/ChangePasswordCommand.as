@@ -21,11 +21,16 @@
 
 package com.atricore.idbus.console.main.controller
 {
+import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 
+import com.atricore.idbus.console.services.spi.request.UpdateUserPasswordRequest;
+
 import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
+
+import mx.rpc.remoting.mxml.RemoteObject;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
@@ -56,11 +61,10 @@ public class ChangePasswordCommand extends IocSimpleCommand implements IResponde
     }
 
     override public function execute(notification:INotification):void {
-
-        sendNotification(SUCCESS);
-
-        /** TODO: invoke change password operation in profile  management service 
-        */
+        var passChangeRequest:UpdateUserPasswordRequest = notification.getBody() as UpdateUserPasswordRequest;
+        var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.PROFILE_MANAGEMENT_SERVICE);
+        var call:Object = service.updateUserPassword(passChangeRequest);
+        call.addResponder(this);
     }
 
     public function result(data:Object):void {

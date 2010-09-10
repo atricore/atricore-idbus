@@ -498,7 +498,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
             spmlSelect.setNamespaceURI("http://www.w3.org/TR/xpath20");
 
             if (userRequest.getUsername() != null)
-                qry = "/users[username='"+userRequest.getUsername()+"']";
+                qry = "/users[userName='"+userRequest.getUsername()+"']";
 
             if (logger.isTraceEnabled())
                 logger.trace("SPML Users Search query : " + qry);

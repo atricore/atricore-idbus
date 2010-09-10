@@ -13,10 +13,10 @@
     <!-- ==================================================================== -->
 
     <osgi:reference id="idApplianceManagementService" cardinality="1..1" timeout="60"
-                interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"/>
+                    interface="com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService"/>
 
     <osgi:reference id="activationServiceBean" cardinality="1..1" timeout="60"
-                interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
+                    interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
 
     <osgi:list id="spmlServiceBeans" interface="org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client"
                cardinality="0..N" >
@@ -31,26 +31,22 @@
         </property>
     </bean>
 
-    <bean id="applicationServerInitialization" class="com.atricore.idbus.console.services.util.ApplicationServerInitialization">
-        <!--property name="userProvisioningService" ref="userProvisioningServiceManagerBean"/-->
-    </bean>
-
     <bean class="com.atricore.idbus.console.services.util.EnumPropertyProxy" factory-method="registerPropertyProxy" />
 
     <bean id="dozerMapper" class="org.dozer.DozerBeanMapper">
         <property name="mappingFiles">
-          <list>
-            <value>com/atricore/idbus/console/services/dto/dozer-mappings.xml</value>
-          </list>
+            <list>
+                <value>com/atricore/idbus/console/services/dto/dozer-mappings.xml</value>
+            </list>
         </property>
-    </bean>    
+    </bean>
 
     <!-- AJAX SERVICES -->
 
     <!--<bean id="identityApplianceMetadataAjaxServiceBean" class="org.atricore.idbus.applications.server.services.impl.IdentityApplianceMetadataAjaxServiceImpl">-->
-        <!--<property name="idApplianceManagementService">-->
-            <!--<ref local="idApplianceManagementService"/>-->
-        <!--</property>-->
+    <!--<property name="idApplianceManagementService">-->
+    <!--<ref local="idApplianceManagementService"/>-->
+    <!--</property>-->
     <!--</bean>-->
 
     <bean id="identityApplianceManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.IdentityApplianceManagementAjaxServiceImpl">
@@ -58,26 +54,32 @@
         <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 
-    <bean id="profileManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ProfileManagementAjaxServiceImpl">
-        <!--property name="profileManagementService" ref="profileManagementServiceBean"/-->
-        <property name="dozerMapper" ref="dozerMapper" />
-    </bean>
-
-    <bean id="signOnAjaxServiceBean" class="com.atricore.idbus.console.services.impl.SignOnAjaxServiceImpl">
-        <!--property name="signOnService" ref="signOnServiceBean"/-->
-        <property name="dozerMapper" ref="dozerMapper" />
-    </bean>
-
     <bean id="activationAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ActivationAjaxServiceImpl">
         <property name="activationService" ref="activationServiceBean"/>
         <property name="dozerMapper" ref="dozerMapper" />
-
     </bean>
 
     <bean id="userProvisioningAjaxServiceBean"
           class="com.atricore.idbus.console.services.impl.UserProvisioningAjaxServiceImpl">
         <!-- TODO : Expose through OSGi config support -->
         <property name="pspTargetId" value="pst-default" />
+    </bean>
+
+    <bean id="applicationServerInitialization" init-method="init"
+          class="com.atricore.idbus.console.services.util.ApplicationServerInitialization">
+        <property name="usrProvService" ref="userProvisioningAjaxServiceBean" />
+        <property name="adminGroupName" value="Administrators" />
+        <property name="adminGroupDescription" value="Administrators" />
+        <property name="adminUsername" value="admin" />
+        <property name="adminPassword" value="admin" />
+    </bean>
+
+    <bean id="signOnAjaxServiceBean" class="com.atricore.idbus.console.services.impl.SignOnAjaxServiceImpl">
+        <property name="usrProvService" ref="userProvisioningAjaxServiceBean" />
+    </bean>
+
+    <bean id="profileManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ProfileManagementAjaxServiceImpl">
+        <property name="usrProvService" ref="userProvisioningAjaxServiceBean" />
     </bean>
 
     <bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">

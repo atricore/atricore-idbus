@@ -26,18 +26,22 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
 
     public IdentityAppliance build(IdentityAppliance appliance) {
 
-        IdentityApplianceDeployment deployment = appliance.getIdApplianceDeployment();
-        if (deployment == null) {
+        try {
+            IdentityApplianceDeployment deployment = appliance.getIdApplianceDeployment();
+            if (deployment == null) {
 
-            if (logger.isDebugEnabled())
-                logger.debug("Creating new IdentityApplianceDeployment instance");
-            deployment = new IdentityApplianceDeployment();
-            appliance.setIdApplianceDeployment(deployment);
+                if (logger.isDebugEnabled())
+                    logger.debug("Creating new IdentityApplianceDeployment instance");
+                deployment = new IdentityApplianceDeployment();
+                appliance.setIdApplianceDeployment(deployment);
+            }
+
+            IdApplianceTransformationContext ctx = engine.transform(appliance);
+
+            return ctx.getProject().getIdAppliance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
-        IdApplianceTransformationContext ctx = engine.transform(appliance);
-
-        return ctx.getProject().getIdAppliance();
     }
 
 

@@ -71,7 +71,9 @@
         </command>
 
         <command name="appliance/import-definition">
-            <action class="com.atricore.idbus.console.lifecycle.command.ImportApplianceDefinitionCommand"/>
+            <action class="com.atricore.idbus.console.lifecycle.command.ImportApplianceDefinitionCommand">
+                <property name="printer" ref="appliancePrinter"/>
+            </action>
         </command>
 
         <command name="appliance/activate">
