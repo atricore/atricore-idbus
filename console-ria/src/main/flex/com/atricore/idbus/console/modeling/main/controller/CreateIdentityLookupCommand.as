@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.modeling.main.controller {
 
 import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
 
 import com.atricore.idbus.console.services.dto.FederatedProvider;
@@ -21,6 +22,17 @@ public class CreateIdentityLookupCommand extends IocSimpleCommand implements IRe
     public static const SUCCESS:String = "CreateIdentityLookupCommand.SUCCESS";
     public static const FAILURE:String = "CreateIdentityLookupCommand.FAILURE";
 
+    private var _projectProxy:ProjectProxy;
+
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }    
+
     public function CreateIdentityLookupCommand() {
     }
 
@@ -29,12 +41,15 @@ public class CreateIdentityLookupCommand extends IocSimpleCommand implements IRe
         var provider:FederatedProvider = car.provider;
         var identitySource:IdentitySource = car.identitySource;
 
-        var identityLookup:IdentityLookup = new IdentityLookup();
-        identityLookup.name = car.provider.name + "-" + car.identitySource.name + " idLookup"; 
-        identityLookup.provider = provider;
-        identityLookup.identitySource = identitySource;
+        var index:int = _projectProxy.currentIdentityAppliance.idApplianceDefinition.identitySources.getItemIndex(identitySource);        
 
-        provider.identityLookup = identityLookup;
+        if(index > -1){
+            var identityLookup:IdentityLookup = new IdentityLookup();
+            identityLookup.name = car.provider.name + "-" + car.identitySource.name + " idLookup";
+            identityLookup.provider = provider;
+            identityLookup.identitySource = _projectProxy.currentIdentityAppliance.idApplianceDefinition.identitySources[index];
+            provider.identityLookup = identityLookup;
+        }
 
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);        

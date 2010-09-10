@@ -13,6 +13,8 @@ public class ExecutionEnvironmentDTO implements Serializable {
     private String displayName;
     private String description;
     private String installUri;
+    private String platformId;
+    private boolean active;
 
     private Set<ActivationDTO> activations;
 
@@ -64,5 +66,40 @@ public class ExecutionEnvironmentDTO implements Serializable {
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public String getPlatformId() {
+        return platformId;
+    }
+
+    public void setPlatformId(String platformId) {
+        this.platformId = platformId;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ExecutionEnvironmentDTO)) return false;
+
+        ExecutionEnvironmentDTO that = (ExecutionEnvironmentDTO) o;
+
+        if(id == 0) return false;
+
+        if (id != that.id) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
     }
 }

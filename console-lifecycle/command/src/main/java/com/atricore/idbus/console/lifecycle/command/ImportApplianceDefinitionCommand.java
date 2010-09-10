@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.command;
 
+import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
 import com.atricore.idbus.console.lifecycle.main.spi.request.ImportApplianceDefinitionRequest;
 import com.atricore.idbus.console.lifecycle.main.spi.response.ImportApplianceDefinitionResponse;
@@ -28,6 +29,7 @@ public class ImportApplianceDefinitionCommand extends ManagementCommandSupport {
     
     @Override
     protected Object doExecute(IdentityApplianceManagementService svc) throws Exception {
+
 
         FileSystemManager fs = VFS.getManager();
 
@@ -58,10 +60,18 @@ public class ImportApplianceDefinitionCommand extends ManagementCommandSupport {
             }
         }
 
-        ImportApplianceDefinitionRequest req = new ImportApplianceDefinitionRequest ();
-        req.setDescriptor(descriptor.toString());
-        ImportApplianceDefinitionResponse res = svc.importApplianceDefinition(req);
-        System.out.println("Created Identity Appliance " + res.getAppliance().getId() + " from " + input);
+        try {
+            ImportApplianceDefinitionRequest req = new ImportApplianceDefinitionRequest ();
+            req.setDescriptor(descriptor.toString());
+
+            // Invoke service
+            ImportApplianceDefinitionResponse res = svc.importApplianceDefinition(req);
+
+            System.out.println("Created Identity Appliance " + res.getAppliance().getId() + " from " + input);
+
+        } catch (ApplianceValidationException e) {
+            cmdPrinter.printError(e);
+        }
 
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

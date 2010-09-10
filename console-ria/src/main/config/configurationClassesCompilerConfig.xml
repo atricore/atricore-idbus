@@ -17,6 +17,7 @@
         <symbol>com.atricore.idbus.console.main.view.upload.UploadProgressMediator</symbol>
         <symbol>com.atricore.idbus.console.main.view.progress.ProcessingMediator</symbol>
         <symbol>com.atricore.idbus.console.main.view.login.LoginMediator</symbol>
+        <symbol>com.atricore.idbus.console.main.view.profile.ChangePasswordMediator</symbol>
         <symbol>com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator</symbol>
         <symbol>com.atricore.idbus.console.lifecycle.LifecycleViewMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.ModelerMediator</symbol>
@@ -59,6 +60,9 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.ServiceProviderRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.UndeployIdentityApplianceCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.StartIdentityApplianceCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.StopIdentityApplianceCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.DisposeIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand</symbol>
@@ -67,6 +71,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ActivationRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityLookupRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.FederatedConnectionRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateIdentityLookupCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.AddGroupCommand</symbol>

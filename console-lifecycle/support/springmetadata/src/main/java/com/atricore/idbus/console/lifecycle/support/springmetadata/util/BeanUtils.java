@@ -142,6 +142,17 @@ public class BeanUtils {
         }
     }
 
+    public static Bean getPropertyBean(Bean bean, String name){
+        Property propFound = null;
+        propFound = getProperty(bean, name);
+        if(propFound != null && propFound.getBean() != null){
+            return propFound.getBean();
+        } else {
+            return null;
+        }
+    }
+
+
     public static String getPropertyRef(Bean foundBean, String propertyName) {
         Property prop = getProperty(foundBean, propertyName);
         if (prop == null || prop.getRef() == null)
@@ -266,7 +277,7 @@ public class BeanUtils {
             logger.trace("created new constructor arg of type [" + type + "] with value:" + value);
     }
 
-    protected static Property getProperty(Bean bean, String name){
+    public static Property getProperty(Bean bean, String name){
         Property propFound = null;
         for (Object obj : bean.getMetasAndConstructorArgsAndProperties()){
             if(obj instanceof Property){

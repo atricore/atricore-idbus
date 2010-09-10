@@ -1,9 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ProviderRole;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
@@ -64,6 +61,30 @@ public class SPTransformer extends AbstractTransformer {
 
         ServiceProvider provider = (ServiceProvider) event.getData();
 
+        IdentityProvider preferredIdp = null;
+        for (FederatedConnection fc : provider.getFederatedConnectionsA()) {
+            IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelA();
+            if (idpc.isPreferred()) {
+                preferredIdp = (IdentityProvider) fc.getRoleB();
+                break;
+            }
+        }
+
+        if (preferredIdp == null) {
+            for (FederatedConnection fc : provider.getFederatedConnectionsB()) {
+                IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelB();
+                if (idpc.isPreferred()) {
+                    preferredIdp = (IdentityProvider) fc.getRoleA();
+                    break;
+                }
+            }
+        }
+
+        if (preferredIdp == null) {
+            logger.warn("No preferred IDP could be found for SP " + provider.getName());
+        }
+
+
         Date now = new Date();
 
         Beans spBeans = new Beans();
@@ -78,7 +99,7 @@ public class SPTransformer extends AbstractTransformer {
 
         // TODO : Can we asure that there is only one IdP and that it's the prefered one ? This should be part of SP definition
         // Beans idpBeans = (Beans) event.getContext().get("idpBeans");
-        
+
         spBeans.setDescription(descr);
 
         // Publish root element so that other transformers can use it.
@@ -128,17 +149,22 @@ public class SPTransformer extends AbstractTransformer {
         Collection<Bean> idpMds = getBeansOfType(idpBeans, ResourceCircleOfTrustMemberDescriptorImpl.class.getName());
         Bean idpMd = idpMds.iterator().next();
 
-        setPropertyValue(spMediator, "preferredIdpAlias", getPropertyValue(idpMd, "alias"));
+
         */
+
+        if (preferredIdp != null)
+            setPropertyValue(spMediator, "preferredIdpAlias", resolveLocationUrl(preferredIdp) + "/SAML2/MD");
 
         setPropertyValue(spMediator, "preferredIdpSSOBinding", SamlR2Binding.SAMLR2_POST.getValue());
         setPropertyValue(spMediator, "preferredIdpSLOBinding", SamlR2Binding.SAMLR2_POST.getValue());
-        //this is set from JOSSOExecEnvransformer
-        //setPropertyValue(spMediator, "spBindingACS", "http://localhost:8081/IDBUS/BP1/SSO/ACS/ARTIFACT");
-        //setPropertyValue(spMediator, "spBindingSLO", "http://localhost:8081/IDBUS/BP1/SSO/SLO/ARTIFACT");
 
 
-        String bpLocation = resolveLocationUrl(provider) + "/" + ((JOSSOActivation)provider.getActivation()).getPartnerAppId().toUpperCase();
+        ExecutionEnvironment execEnv = provider.getActivation().getExecutionEnv();
+        IdentityApplianceDefinition applianceDef = provider.getIdentityAppliance();
+
+        String bpLocationPath = resolveLocationPath(applianceDef.getLocation()) + "/" + execEnv.getName().toUpperCase();
+        String bpLocation = resolveLocationBaseUrl(applianceDef.getLocation()) + bpLocationPath;
+
         setPropertyValue(spMediator, "spBindingACS", bpLocation + "/SSO/ACS/ARTIFACT");
         setPropertyValue(spMediator, "spBindingSLO", bpLocation + "/SSO/SLO/ARTIFACT");
         

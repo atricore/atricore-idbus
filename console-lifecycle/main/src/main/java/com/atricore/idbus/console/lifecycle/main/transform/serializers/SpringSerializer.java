@@ -79,6 +79,8 @@ public class SpringSerializer extends VfsIdProjectResourceSerializer {
                     getClass().getClassLoader());
 
             Marshaller m = jaxbCtx.createMarshaller();
+
+            // No good ... :(
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
             Beans beans = (Beans) resource.getValue();

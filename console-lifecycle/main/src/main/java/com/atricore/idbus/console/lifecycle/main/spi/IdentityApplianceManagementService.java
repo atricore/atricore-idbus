@@ -26,6 +26,8 @@ public interface IdentityApplianceManagementService {
 
 	StopIdentityApplianceResponse stopIdentityAppliance(StopIdentityApplianceRequest req) throws IdentityServerException;
 
+    DisposeIdentityApplianceResponse disposeIdentityAppliance(DisposeIdentityApplianceRequest req) throws IdentityServerException;
+
     ImportIdentityApplianceResponse importIdentityAppliance(ImportIdentityApplianceRequest request) throws IdentityServerException;
     
     ExportIdentityApplianceResponse exportIdentityAppliance(ExportIdentityApplianceRequest request) throws IdentityServerException;
@@ -34,7 +36,7 @@ public interface IdentityApplianceManagementService {
 
     ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException;
 
-    ActivateExecEnvResponse activateSPExecEnv(ActivateExecEnvRequest request) throws IdentityServerException;
+    ActivateExecEnvResponse activateExecEnv(ActivateExecEnvRequest request) throws IdentityServerException;
 
     //-----------------------< CRUD Operations >
 

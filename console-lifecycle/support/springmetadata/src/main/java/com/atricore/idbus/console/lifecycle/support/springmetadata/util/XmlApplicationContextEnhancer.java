@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.lifecycle.support.springmetadata.util;
 
+import javax.xml.bind.Marshaller;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;

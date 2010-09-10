@@ -20,6 +20,8 @@
  */
 
 package com.atricore.idbus.console.main {
+import com.atricore.idbus.console.main.view.profile.ChangePasswordMediator;
+import com.atricore.idbus.console.main.view.profile.ChangePasswordView;
 import com.atricore.idbus.console.main.view.setup.SetupWizardView;
 import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
 import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceForm;
@@ -38,10 +40,12 @@ public class ConsolePopUpManager extends BasePopUpManager {
     private var _setupWizardMediator:SetupWizardViewMediator;
     private var _simpleSSOWizardMediator:SimpleSSOWizardViewMediator;
     private var _identityApplianceMediator:IdentityApplianceMediator;
+    private var _changePasswordMediator:ChangePasswordMediator;
 
     protected var _setupWizardView:SetupWizardView;
     protected var _simpleSSOWizardView:SimpleSSOWizardView;
     protected var _identityApplianceForm:IdentityApplianceForm;
+    protected var _changePasswordForm:ChangePasswordView;
 
 
     override public function init(facade:IFacade, popupParent:UIComponent):void {
@@ -73,6 +77,14 @@ public class ConsolePopUpManager extends BasePopUpManager {
 
     public function set identityApplianceMediator(value:IdentityApplianceMediator):void {
         _identityApplianceMediator = value;
+    }
+
+    public function get changePasswordMediator():ChangePasswordMediator {
+        return _changePasswordMediator;
+    }
+
+    public function set changePasswordMediator(value:ChangePasswordMediator):void {
+        _changePasswordMediator = value;
     }
 
     public function showSetupWizardWindow(notification:INotification):void {
@@ -128,5 +140,25 @@ public class ConsolePopUpManager extends BasePopUpManager {
         identityApplianceMediator.handleNotification(_lastWindowNotification);
     }
 
+    public function showChangePasswordWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createChangePasswordForm();
+        _popup.title = "Change Password";
+        _popup.width = 650;
+        _popup.height = 410;
+        //_popup.x = (_popupParent.width / 2) - 225;
+        //_popup.y = 80;
+        showPopup(_changePasswordForm);
+    }
+
+    private function createChangePasswordForm():void {
+        _changePasswordForm = new ChangePasswordView();
+        _changePasswordForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleChangePasswordFormCreated);
+    }
+
+    private function handleChangePasswordFormCreated(event:FlexEvent):void {
+        changePasswordMediator.setViewComponent(_changePasswordForm);
+        changePasswordMediator.handleNotification(_lastWindowNotification);
+    }
 }
 }

@@ -26,6 +26,7 @@ import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdpChannelElementRequest;
@@ -233,8 +234,10 @@ public class ModelerMediator extends IocMediator {
             ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT,
+            ApplicationFacade.CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.REMOVE_ACTIVATION_ELEMENT,
             ApplicationFacade.REMOVE_FEDERATED_CONNECTION_ELEMENT,
+            ApplicationFacade.REMOVE_IDENTITY_LOOKUP_ELEMENT,
             ApplicationFacade.CREATE_FEDERATED_CONNECTION,
             ApplicationFacade.MANAGE_CERTIFICATE,
             ApplicationFacade.SHOW_UPLOAD_PROGRESS,
@@ -315,6 +318,9 @@ public class ModelerMediator extends IocMediator {
             case ApplicationFacade.CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateWeblogicExecutionEnvironmentWindow(notification);
                 break;
+            case ApplicationFacade.CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT:
+                popupManager.showCreateTomcatExecutionEnvironmentWindow(notification);
+                break;
             case ApplicationFacade.CREATE_ACTIVATION:
                 popupManager.showCreateActivationWindow(notification);
                 break;
@@ -328,6 +334,10 @@ public class ModelerMediator extends IocMediator {
             case ApplicationFacade.REMOVE_FEDERATED_CONNECTION_ELEMENT:
                 var rfc:RemoveFederatedConnectionElementRequest = RemoveFederatedConnectionElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.FEDERATED_CONNECTION_REMOVE, rfc.federatedConnection);
+                break;
+            case ApplicationFacade.REMOVE_IDENTITY_LOOKUP_ELEMENT:
+                var ril:RemoveIdentityLookupElementRequest = RemoveIdentityLookupElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.IDENTITY_LOOKUP_REMOVE, ril.identityLookup);
                 break;
             case ApplicationFacade.MANAGE_CERTIFICATE:
                 popupManager.showManageCertificateWindow(notification);

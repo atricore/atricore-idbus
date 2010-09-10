@@ -20,7 +20,7 @@ import java.util.Collection;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
 /**
- * TODO : Split in LDAP, DB, EMBEDDED IDLOOKUP TRANSFOMER ...
+ * TODO : Split into LDAP, DB, EMBEDDED, etc TRANSFOMER ...
  *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
@@ -45,7 +45,7 @@ public class IdentityLookupTransformer extends AbstractTransformer {
         Provider provider = idLookup.getProvider();
 
         if (provider != event.getContext().getParentNode()) {
-            throw new TransformException("Lookkup service provider is not parent node for " + idLookup.getName());
+            throw new TransformException("Lookup service provider is not parent node for " + idLookup.getName());
         }
 
         if (identitySource != null) {
@@ -53,7 +53,7 @@ public class IdentityLookupTransformer extends AbstractTransformer {
             String idauPath = (String) event.getContext().get("idauPath");
 
             if (logger.isTraceEnabled())
-                logger.trace("Generating Beans for Identity Vault " + identitySource.getName()  + " of provider " + provider.getName());
+                logger.trace("Generating Beans for Identity Source " + identitySource.getName()  + ", provider " + provider.getName());
 
             Beans providerBeans = null;
             Bean providerBean = null;

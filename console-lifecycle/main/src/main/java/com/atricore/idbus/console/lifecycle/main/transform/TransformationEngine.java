@@ -21,6 +21,7 @@ package com.atricore.idbus.console.lifecycle.main.transform;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
+import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionWalker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -67,7 +68,7 @@ public class TransformationEngine  {
         this.cycles = cycles;
     }
 
-    public IdApplianceTransformationContext transform(IdentityAppliance appliance, String cycleName) {
+    public IdApplianceTransformationContext transform(IdentityAppliance appliance, String cycleName) throws Exception {
         IdApplianceTransformationContext ctx = doMakeContext(appliance);
         for (Cycle cycle : cycles) {
             if (cycle.getName().equals(cycleName)) {
@@ -79,7 +80,7 @@ public class TransformationEngine  {
 
     }
 
-    public IdApplianceTransformationContext transform(IdentityAppliance appliance) {
+    public IdApplianceTransformationContext transform(IdentityAppliance appliance) throws Exception {
 
         IdApplianceTransformationContext ctx = doMakeContext(appliance);
         for (Cycle cycle : cycles) {
@@ -91,7 +92,8 @@ public class TransformationEngine  {
 
     protected void transform(IdentityApplianceDefinition identityApplianceDefinition,
                              Cycle cycle,
-                             IdApplianceTransformationContext ctx) {
+                             IdApplianceTransformationContext ctx) throws Exception {
+
 
         if (logger.isTraceEnabled())
             logger.trace("cycle         -> " + cycle.getName());

@@ -30,8 +30,17 @@
         </command>
 
         <command name="appliance/list">
-            <action class="com.atricore.idbus.console.lifecycle.command.ListAppliancesCommand"/>
+            <action class="com.atricore.idbus.console.lifecycle.command.ListAppliancesCommand">
+                <property name="printer" ref="appliancePrinter"/>
+            </action>
         </command>
+
+        <command name="appliance/view">
+            <action class="com.atricore.idbus.console.lifecycle.command.ViewApplianceDetailsCommand">
+                <property name="printer" ref="appliancePrinter"/>
+            </action>
+        </command>
+
 
         <command name="appliance/deploy">
             <action class="com.atricore.idbus.console.lifecycle.command.DeployApplianceCommand"/>
@@ -62,7 +71,9 @@
         </command>
 
         <command name="appliance/import-definition">
-            <action class="com.atricore.idbus.console.lifecycle.command.ImportApplianceDefinitionCommand"/>
+            <action class="com.atricore.idbus.console.lifecycle.command.ImportApplianceDefinitionCommand">
+                <property name="printer" ref="appliancePrinter"/>
+            </action>
         </command>
 
         <command name="appliance/activate">
@@ -98,6 +109,8 @@
           class="com.atricore.idbus.console.lifecycle.command.completers.StoppableAppliancesCompleter" >
         <property name="idApplianceService" ref="idApplianceManagementService"/>
     </bean>
+
+    <bean id="appliancePrinter" class="com.atricore.idbus.console.lifecycle.command.printers.ApplianceCmdPrinter"/>
 
 
     <!-- Should be exported by Spring. Reference ID value must match the one used to export the service! -->

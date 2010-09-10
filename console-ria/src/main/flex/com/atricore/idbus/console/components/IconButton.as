@@ -12,12 +12,19 @@ import spark.components.Button;
 	[Style(name="paddingRight",type="Number")]
 	[Style(name="paddingTop",type="Number")]
 	[Style(name="paddingBottom",type="Number")]
+
+    [Style(name="iconWidth",type="Number")]
+	[Style(name="iconHeight",type="Number")]
 	public class IconButton extends Button
 	{
         private var _selected:Boolean;
 
         private var _isLinkButton:Boolean;
 
+        private var _iconWidth:Number;
+
+        private var _iconHeight:Number;
+        
 		public function IconButton() {
 			super();
 		}

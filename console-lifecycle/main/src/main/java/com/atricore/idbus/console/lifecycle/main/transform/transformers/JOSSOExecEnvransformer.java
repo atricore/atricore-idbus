@@ -264,10 +264,18 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
                 Bean gatewayServiceLocator = newAnonymousBean("org.josso.gateway.WebserviceGatewayServiceLocator");
 
-                setPropertyValue(gatewayServiceLocator, "endpoint", applianceDef.getLocation().getHost() + ":" + applianceDef.getLocation().getPort());
-                setPropertyValue(gatewayServiceLocator, "sessionManagerServicePath", locationPath + "/JOSSO/SSOSessionManager/SOAP");
-                setPropertyValue(gatewayServiceLocator, "identityManagerServicePath", locationPath + "/JOSSO/SSOIdentityManager/SOAP");
-                setPropertyValue(gatewayServiceLocator, "identityManagerProviderServicePath", locationPath + "/JOSSO/SSOIdentityProvider/SOAP");
+                setPropertyValue(gatewayServiceLocator, "endpoint",
+                        applianceDef.getLocation().getHost() + ":" + applianceDef.getLocation().getPort());
+
+                // Remove starting slash
+                setPropertyValue(gatewayServiceLocator, "sessionManagerServicePath",
+                        (locationPath.startsWith("/") ? locationPath.substring(1) : locationPath) + "/JOSSO/SSOSessionManager/SOAP");
+                // Remove starting slash
+                setPropertyValue(gatewayServiceLocator, "identityManagerServicePath",
+                        (locationPath.startsWith("/") ? locationPath.substring(1) : locationPath) + "/JOSSO/SSOIdentityManager/SOAP");
+                // Remove starting slash
+                setPropertyValue(gatewayServiceLocator, "identityProviderServicePath",
+                        (locationPath.startsWith("/") ? locationPath.substring(1) : locationPath) + "/JOSSO/SSOIdentityProvider/SOAP");
 
                 setPropertyBean(agentBean, "gatewayServiceLocator", gatewayServiceLocator);
 
@@ -281,6 +289,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
                 // AutomaticLoginStrategy
                 Bean defaultAutomaticLoginStrategyBean = newAnonymousBean("org.josso.agent.http.DefaultAutomaticLoginStrategy");
+                setPropertyValue(defaultAutomaticLoginStrategyBean, "mode", "REQUIRED");
                 List<String> ignoredReferers = new ArrayList<String>();
                 ignoredReferers.add(resolveLocationUrl(applianceDef.getLocation()));
                 setPropertyAsValues(defaultAutomaticLoginStrategyBean, "ignoredReferrers", ignoredReferers);
@@ -290,8 +299,8 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
                 setPropertyAsBeans(agentBean, "automaticLoginStrategies", autoLoginStrats);
 
-                // TODO : SSOAgentConfiguration
-
+                Bean parnterAppConfigBean = newAnonymousBean("org.josso.agent.SSOAgentConfigurationImpl");
+                setPropertyBean(agentBean, "configuration", parnterAppConfigBean);
             }
 
         }

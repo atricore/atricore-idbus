@@ -21,7 +21,7 @@ package com.atricore.idbus.console.lifecycle.main.test;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
-import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceBuilder;
+import com.atricore.idbus.console.lifecycle.main.spi.ApplianceBuilder;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformerApplianceBuilderImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -170,7 +170,7 @@ public class TransformationTest {
 
     @Test
     public void transformTest() throws Exception {
-        IdentityApplianceBuilder builder = (IdentityApplianceBuilder) applicationContext.getBean("applianceBuilder");
+        ApplianceBuilder builder = (ApplianceBuilder) applicationContext.getBean("applianceBuilder");
         IdentityAppliance appliance = newApplianceInstance("ida1");
         appliance = builder.build(appliance);
     }

@@ -25,6 +25,8 @@ public class IdentityProviderChannel extends FederatedChannel {
 
 	private static final long serialVersionUID = 8276649486690667445L;
 
+    private boolean preferred;
+
     private AccountLinkagePolicy accountLinkagePolicy;
 
     // RFU
@@ -55,5 +57,13 @@ public class IdentityProviderChannel extends FederatedChannel {
 
     public void setAuthenticationMechanism(AuthenticationMechanism authenticationMechanism) {
         this.authenticationMechanism = authenticationMechanism;
+    }
+
+    public boolean isPreferred() {
+        return preferred;
+    }
+
+    public void setPreferred(boolean preferred) {
+        this.preferred = preferred;
     }
 }

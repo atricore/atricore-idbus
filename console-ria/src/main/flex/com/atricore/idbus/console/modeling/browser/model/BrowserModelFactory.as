@@ -36,6 +36,7 @@ import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
 public class BrowserModelFactory {
@@ -120,6 +121,8 @@ public class BrowserModelFactory {
                 execEnvironmentNode.icon = EmbeddedIcons.jbossEnvironmentMiniIcon;
             } else if(executionEnvironment is WeblogicExecutionEnvironment){
                 execEnvironmentNode.icon = EmbeddedIcons.weblogicEnvironmentMiniIcon;
+            } else if(executionEnvironment is TomcatExecutionEnvironment){
+                execEnvironmentNode.icon = EmbeddedIcons.tomcatEnvironmentMiniIcon;                
             } else {
                 execEnvironmentNode.icon = EmbeddedIcons.executionEnvironmentMiniIcon;
             }

@@ -23,12 +23,15 @@ package com.atricore.idbus.console.lifecycle.main.impl;
 
 import com.atricore.idbus.console.activation.main.spi.ActivationService;
 import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
+import com.atricore.idbus.console.activation.main.spi.request.ActivateSamplesRequest;
 import com.atricore.idbus.console.activation.main.spi.response.ActivateAgentResponse;
+import com.atricore.idbus.console.activation.main.spi.response.ActivateSamplesResponse;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceUnit;
 import com.atricore.idbus.console.lifecycle.main.domain.dao.*;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
+import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.exception.ExecEnvAlreadyActivated;
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
 import com.atricore.idbus.console.lifecycle.main.spi.*;
@@ -53,11 +56,13 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private ActivationService activationService;
 
-    private IdentityApplianceBuilder builder;
+    private ApplianceBuilder builder;
 
     private IdentityApplianceRegistry registry;
 
-    private IdentityApplianceDeployer deployer;
+    private ApplianceDeployer deployer;
+
+    private ApplianceDefinitionValidator validator;
 
     private IdentityApplianceDAO identityApplianceDAO;
 
@@ -82,6 +87,8 @@ public class IdentityApplianceManagementServiceImpl implements
     private boolean lazySyncAppliances = false;
 
     private boolean alreadySynchronizededAppliances = false;
+
+    private boolean enableValidation = true;
 
     public void afterPropertiesSet() throws Exception {
 
@@ -233,6 +240,20 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     @Transactional
+    public DisposeIdentityApplianceResponse disposeIdentityAppliance(DisposeIdentityApplianceRequest req) throws IdentityServerException {
+        try {
+            syncAppliances();
+            IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(req.getId()));
+            appliance = disposeAppliance(appliance);
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
+            return new DisposeIdentityApplianceResponse(appliance);
+	    } catch (Exception e){
+	        logger.error("Error disposing identity appliance", e);
+	        throw new IdentityServerException(e);
+	    }
+    }
+
+    @Transactional
     public ImportIdentityApplianceResponse importIdentityAppliance(ImportIdentityApplianceRequest request) throws IdentityServerException {
         syncAppliances();
         throw new UnsupportedOperationException("Not Supported!");
@@ -275,6 +296,9 @@ public class IdentityApplianceManagementServiceImpl implements
             if (applianceDef == null)
                 throw new IdentityServerException("Appliance must contain an Appliance Definition");
 
+            if (isValidateAppliances())
+                validator.validate(appliance);
+
             if (logger.isDebugEnabled())
                     logger.debug("Received Identity Appliance Definition : [" +
                             applianceDef.getId() + "] " +
@@ -302,6 +326,8 @@ public class IdentityApplianceManagementServiceImpl implements
 
             return response;
 
+        } catch(ApplianceValidationException e) {
+            throw e;
         } catch (Exception e) {
 	        logger.error("Error importing identity appliance", e);
 	        throw new IdentityServerException(e);
@@ -347,7 +373,7 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     @Transactional
-    public ActivateExecEnvResponse activateSPExecEnv(ActivateExecEnvRequest request) throws IdentityServerException {
+    public ActivateExecEnvResponse activateExecEnv(ActivateExecEnvRequest request) throws IdentityServerException {
         try {
 
             syncAppliances();
@@ -375,7 +401,7 @@ public class IdentityApplianceManagementServiceImpl implements
             for (IdentityApplianceUnit idau : appliance.getIdApplianceDeployment().getIdaus()) {
 
                 if (logger.isTraceEnabled())
-                    logger.trace("Looking for SP in IDAU " + idau.getName());
+                    logger.trace("Looking for Execution Environment in IDAU " + idau.getName());
 
                 for (Provider p : idau.getProviders()) {
 
@@ -390,18 +416,20 @@ public class IdentityApplianceManagementServiceImpl implements
 
                         if (execEnv.getName().equals(request.getExecEnvName())) {
                             found = true;
+
                             if (!execEnv.isActive() || request.isReactivate()) {
 
                                 String agentCfgLocation = appliance.getIdApplianceDefinition().getNamespace();
                                 agentCfgLocation = agentCfgLocation.replace('.', '/');
+
                                 agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getName();
                                 agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getNamespace() +
-                                        "." + appliance.getIdApplianceDefinition().getName() + "/1.0." +
-                                        appliance.getIdApplianceDeployment().getDeployedRevision();
+                                        "." + appliance.getIdApplianceDefinition().getName() + ".idau";
+                                agentCfgLocation += "/1.0." + appliance.getIdApplianceDeployment().getDeployedRevision();
 
                                 String agentCfgName = appliance.getIdApplianceDefinition().getNamespace() + "." +
                                         appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
-                                        appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName() + ".xml";
+                                        appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase() + ".xml";
 
                                 String agentCfg = agentCfgLocation + "/" + agentCfgName;
 
@@ -409,9 +437,24 @@ public class IdentityApplianceManagementServiceImpl implements
                                     logger.debug("Activating Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
 
                                 ActivateAgentRequest activationRequest = doMakAgentActivationRequest(execEnv);
+                                activationRequest.setReplaceConfig(request.isReplace());
+                                
                                 activationRequest.setJossoAgentConfigUri(agentCfg);
+                                activationRequest.setReplaceConfig(request.isReplace());
 
                                 ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
+
+                                if (request.isActivateSamples()) {
+
+                                    if (logger.isDebugEnabled())
+                                        logger.debug("Activating Samples in Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
+
+                                    ActivateSamplesRequest samplesActivationRequest =
+                                            doMakAgentSamplesActivationRequest(execEnv);
+
+                                    ActivateSamplesResponse samplesActivationResponse =
+                                            activationService.activateSamples(samplesActivationRequest);
+                                }
 
                                 // Mark activation as activated and save appliance.
                                 execEnv.setActive(true);
@@ -853,11 +896,11 @@ public class IdentityApplianceManagementServiceImpl implements
 
 // -------------------------------------------------< Properties >
 
-    public IdentityApplianceBuilder getBuilder() {
+    public ApplianceBuilder getBuilder() {
         return builder;
     }
 
-    public void setBuilder(IdentityApplianceBuilder builder) {
+    public void setBuilder(ApplianceBuilder builder) {
         this.builder = builder;
     }
 
@@ -869,12 +912,20 @@ public class IdentityApplianceManagementServiceImpl implements
         this.registry = registry;
     }
 
-    public IdentityApplianceDeployer getDeployer() {
+    public ApplianceDeployer getDeployer() {
         return deployer;
     }
 
-    public void setDeployer(IdentityApplianceDeployer deployer) {
+    public void setDeployer(ApplianceDeployer deployer) {
         this.deployer = deployer;
+    }
+
+    public ApplianceDefinitionValidator getValidator() {
+        return validator;
+    }
+
+    public void setValidator(ApplianceDefinitionValidator validator) {
+        this.validator = validator;
     }
 
     public IdentityApplianceDAO getIdentityApplianceDAO() {
@@ -1010,6 +1061,17 @@ public class IdentityApplianceManagementServiceImpl implements
 
     }
 
+    protected IdentityAppliance disposeAppliance(IdentityAppliance appliance) throws IdentityServerException {
+        if (logger.isDebugEnabled())
+            logger.debug("Disposing Identity Appliance " + appliance.getId());
+
+        appliance = undeployAppliance(appliance);
+        appliance.setState(IdentityApplianceState.DISPOSED.toString());
+        appliance = identityApplianceDAO.save(appliance);
+
+        return appliance;
+    }
+
     protected void remove(IdentityAppliance appliance) throws IdentityServerException {
         try {
         	logger.debug("Deleting identity appliance with id: " + appliance.getId());
@@ -1112,6 +1174,14 @@ public class IdentityApplianceManagementServiceImpl implements
         this.lazySyncAppliances = lazySyncAppliances;
     }
 
+    public boolean isValidateAppliances() {
+        return enableValidation;
+    }
+
+    public void setValidateAppliances(boolean enableValidation) {
+        this.enableValidation = enableValidation;
+    }
+
     public ActivationService getActivationService() {
         return activationService;
     }
@@ -1136,4 +1206,22 @@ public class IdentityApplianceManagementServiceImpl implements
 
         return req;
     }
+
+    protected ActivateSamplesRequest doMakAgentSamplesActivationRequest(ExecutionEnvironment execEnv) {
+
+        ActivateSamplesRequest req = new ActivateSamplesRequest ();
+        req.setTarget(execEnv.getInstallUri());
+        req.setTargetPlatformId(execEnv.getPlatformId());
+
+        if (execEnv instanceof JBossExecutionEnvironment) {
+            JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) execEnv;
+            req.setJbossInstance(jbExecEnv.getInstance());
+        } else if (execEnv instanceof WeblogicExecutionEnvironment) {
+            WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
+            req.setWeblogicDomain(wlExecEnv.getDomain());
+        } // TODO : Add support for Liferay, JBPortal, Alfresco, PHP, PHPBB, etc ...
+
+        return req;
+    }
+
 }

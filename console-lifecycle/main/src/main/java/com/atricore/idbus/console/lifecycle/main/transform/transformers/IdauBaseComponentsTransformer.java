@@ -149,7 +149,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
 
         setConstructorArgRef(stateManager, 0, idbusCfg.getId());
         setPropertyRef(stateManager, "cacheManager", cacheManager.getName());
-        setPropertyValue(stateManager, "cacheName", idauName + "-psm-cache");
+        setPropertyValue(stateManager, "cacheName", module.getName() + "-psm-cache");  //cache name needs to be unique
         setPropertyValue(stateManager, "forceNonDirtyStorage", false);
 
         // -------------------------------------------------------

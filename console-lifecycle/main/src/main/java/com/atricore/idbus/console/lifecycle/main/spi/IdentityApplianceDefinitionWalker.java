@@ -17,7 +17,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.lifecycle.main.transform;
+package com.atricore.idbus.console.lifecycle.main.spi;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
 
@@ -27,6 +27,6 @@ import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplian
  */
 public interface IdentityApplianceDefinitionWalker {
 
-    Object[] walk(IdentityApplianceDefinition idApplianceDefinition, IdentityApplianceDefinitionVisitor visitor);
+    Object[] walk(IdentityApplianceDefinition idApplianceDefinition, IdentityApplianceDefinitionVisitor visitor) throws Exception;
 
 }

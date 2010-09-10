@@ -38,6 +38,8 @@ public interface IdentityApplianceManagementAjaxService {
     StartIdentityApplianceResponse startIdentityAppliance(StartIdentityApplianceRequest req) throws IdentityServerException;
 
     StopIdentityApplianceResponse stopIdentityAppliance(StopIdentityApplianceRequest req) throws IdentityServerException;
+
+    DisposeIdentityApplianceResponse disposeIdentityAppliance(DisposeIdentityApplianceRequest req) throws IdentityServerException;
     
     ImportIdentityApplianceResponse importIdentityAppliance(ImportIdentityApplianceRequest request) throws IdentityServerException;
 
@@ -45,7 +47,7 @@ public interface IdentityApplianceManagementAjaxService {
 
     ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException;
 
-    ActivateExecEnvResponse activateSPExecEnv(ActivateExecEnvRequest request) throws IdentityServerException;
+    ActivateExecEnvResponse activateExecEnv(ActivateExecEnvRequest request) throws IdentityServerException;
     
     // D -> DEPLOYED -> STARTED -> STOPPED -> UNDEPLOYED(D)
 
