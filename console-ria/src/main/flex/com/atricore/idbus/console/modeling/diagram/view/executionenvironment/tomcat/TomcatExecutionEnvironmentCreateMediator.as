@@ -66,11 +66,15 @@ public class TomcatExecutionEnvironmentCreateMediator extends IocFormMediator {
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleTomcatExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+        view.selectedHost.selectedIndex = 0;
+        view.selectedHost.enabled = false;
     }
 
     private function resetForm():void {
         view.executionEnvironmentName.text = "";
         view.executionEnvironmentDescription.text = "";
+        view.selectedHost.selectedIndex = 0;
+        view.homeDirectory.text = "";
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -81,7 +85,8 @@ public class TomcatExecutionEnvironmentCreateMediator extends IocFormMediator {
 
         tomcatExecutionEnvironment.name = view.executionEnvironmentName.text;
         tomcatExecutionEnvironment.description = view.executionEnvironmentDescription.text;
-
+        tomcatExecutionEnvironment.installUri = view.homeDirectory.text;
+        tomcatExecutionEnvironment.platformId = view.tomcatPlatform.selectedItem.data;
         _newExecutionEnvironment = tomcatExecutionEnvironment;
     }
 
@@ -120,6 +125,7 @@ public class TomcatExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
+        _validators.push(view.homeDirValidator);
     }
 
 
