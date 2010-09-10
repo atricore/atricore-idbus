@@ -4,6 +4,7 @@ import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroup;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDAOImpl;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl;
+import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
@@ -28,7 +29,8 @@ import java.util.List;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public class JDOIdentityPartition extends AbstractIdentityPartition implements InitializingBean, DisposableBean {
+public class JDOIdentityPartition extends AbstractIdentityPartition
+        implements InitializingBean, DisposableBean, IdentityServiceLifecycle {
 
     private JDOUserDAOImpl userDao;
     private JDOGroupDAOImpl groupDao;
@@ -49,6 +51,13 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
         return groupDao;
     }
 
+    public void boot() throws Exception {
+        try {
+            this.findUserByUserName("admin");
+        } catch (Exception e) {
+            /* Ignore this ... */
+        }
+    }
 
     public void afterPropertiesSet() throws ProvisioningException {
         init();
@@ -65,6 +74,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition implements I
             store.setIdPartition(this);
             setIdentityStore(store);
         }
+
     }
 
     // -------------------------------------< Group >

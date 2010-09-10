@@ -45,7 +45,7 @@ public class UserPrinter extends AbstractCmdPrinter {
 
         StringBuilder sb = new StringBuilder();
         // Build headers line
-        sb.append("  ID                Name                     Description       \n");
+        sb.append("\u001B[1m  ID                Username         E-Mail               Groups\u001B[0m\n");
 
         for (PSOType psoUser : psoUsers) {
             psoUser.getPsoID();
@@ -70,6 +70,9 @@ public class UserPrinter extends AbstractCmdPrinter {
 
         StringBuilder sb = new StringBuilder();
 
+        sb.append("\u001B[1m  User details : \u001B[0m\n");
+        sb.append("----------------\n");
+
         UserType spmlUser = (UserType) psoUser.getData();
         PSOIdentifierType psoGroupId = psoUser.getPsoID();
 
@@ -77,7 +80,7 @@ public class UserPrinter extends AbstractCmdPrinter {
         sb.append(getPsoIDString(psoGroupId));
         sb.append("\n");
 
-        sb.append(getLabelString("Name"));
+        sb.append(getLabelString("Username"));
         sb.append(getUserNameString(spmlUser));
         sb.append("\n");
 
@@ -89,6 +92,7 @@ public class UserPrinter extends AbstractCmdPrinter {
         sb.append(getUserGroupsString(spmlUser));
         sb.append("\n");
         
+        // TODO : Display more attributes!
 
         printMsg(sb);
 

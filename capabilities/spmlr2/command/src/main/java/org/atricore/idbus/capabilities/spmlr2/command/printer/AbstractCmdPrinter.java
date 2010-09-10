@@ -88,7 +88,7 @@ public abstract class AbstractCmdPrinter implements CmdPrinter {
     protected String getLabelString(String label, int size) {
         label = getLeftString(label, size);
         label += ": ";
-        return label;
+        return "\u001B[1m" + label + "\u001B[0m";
     }
 
     protected String getLeftString(String str, int padding) {
