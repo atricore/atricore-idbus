@@ -174,9 +174,11 @@
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
 
-    <!--<object id="createActivationCommand"-->
-            <!--class="com.atricore.idbus.console.modeling.main.controller.CreateActivationCommand">-->
-    <!--</object>-->
+    <object id="activateExecEnvironmentCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ActivateExecEnvironmentCommand">
+                <property name="projectProxy" ref="projectProxy"/>
+                <property name="registry" ref="serviceRegistry"/>
+    </object>
 
     <object id="createIdentityLookupCommand"
             class="com.atricore.idbus.console.modeling.main.controller.CreateIdentityLookupCommand">
@@ -417,7 +419,7 @@
         <property name="searchGroupsCommand" ref="searchGroupsCommand"/>
         <property name="searchUsersCommand" ref="searchUsersCommand"/>
         <property name="createIdentityLookupCommand" ref="createIdentityLookupCommand" />
-
+        <property name="activateExecEnvironmentCommand" ref="activateExecEnvironmentCommand" />
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>
