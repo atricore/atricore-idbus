@@ -7,6 +7,8 @@ import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 
 public interface IdentityApplianceManagementService {
 
+    void boot() throws IdentityServerException;
+
     //-----------------------< Lifecycle operations >
 
     /**

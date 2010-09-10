@@ -117,6 +117,12 @@
     <osgi:reference id="activationService" cardinality="1..1" timeout="60"
                     interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
 
+
+    <bean name="servicesLifecycelMgr" class="com.atricore.idbus.console.lifecycle.main.boot.ServicesLifecycleManager"/>
+
+    <osgi:service id="osgiServicesLifecycelMgr" ref="servicesLifecycelMgr"
+                  interface="org.springframework.osgi.context.event.OsgiBundleApplicationContextListener" />
+
     <!-- =================================================================== -->
     <!-- Configuration Admin entry                                           -->
     <!-- =================================================================== -->
@@ -149,14 +155,5 @@
     </osgix:cm-properties>
 
     <ctx:property-placeholder properties-ref="lifecycleProps" />
-
-    <!--
-    <osgix:cm-properties id="lifecycleProps" persistent-id="com.atricore.idbus.console.lifecycle">
-        <prop key="validateAppliances">true</prop>
-    </osgix:cm-properties>
-
-    <ctx:property-placeholder properties-ref="lifecycleProps"/>
-    -->
-
 
 </beans>

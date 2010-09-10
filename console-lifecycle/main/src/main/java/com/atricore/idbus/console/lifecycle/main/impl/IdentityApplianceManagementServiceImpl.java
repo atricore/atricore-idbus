@@ -40,6 +40,7 @@ import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
@@ -51,7 +52,8 @@ import java.util.*;
 
 public class IdentityApplianceManagementServiceImpl implements
         IdentityApplianceManagementService,
-        InitializingBean {
+        InitializingBean,
+        IdentityServiceLifecycle {
 
 	private static final Log logger = LogFactory.getLog(IdentityApplianceManagementServiceImpl.class);
 
@@ -95,68 +97,11 @@ public class IdentityApplianceManagementServiceImpl implements
 
     }
 
-    protected void syncAppliances() throws IdentityServerException {
 
-        if (alreadySynchronizededAppliances)
-            return;
-
-        Collection<IdentityAppliance> appiances = identityApplianceDAO.findAll();
-
-        for (IdentityAppliance appliance : appiances) {
-
-            try {
-                appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Synchronizing Appliance state for [" + appliance.getId() + "] " +
-                            appliance.getIdApplianceDefinition().getName());
-
-                if (appliance.getState().equals(IdentityApplianceState.STARTED.toString())) {
-
-                    if (!deployer.isDeployed(appliance)) {
-                        // STARTED in DB but not DEPLOYED in OSGI --> PROJECTED
-                        appliance.setState(IdentityApplianceState.PROJECTED.toString());
-                        if (logger.isDebugEnabled())
-                            logger.debug("Synchronizing Appliance state : PROJECTED " + appliance.getId());
-                        appliance = identityApplianceDAO.save(appliance);
-
-                        if (logger.isDebugEnabled())
-                            logger.debug("Automatically Starting appliance ... " + appliance.getId());
-                        this.startAppliance(appliance);
-
-                    } else if (!deployer.isStarted(appliance)) {
-
-                        // STARTED in DB but not STARTED in OSGI --> DEPLOYED
-                        appliance.setState(IdentityApplianceState.DEPLOYED.toString());
-                        if (logger.isDebugEnabled())
-                            logger.debug("Synchronizing Appliance state : DEPLOYED " + appliance.getId());
-                        appliance = identityApplianceDAO.save(appliance);
-
-                        if (logger.isDebugEnabled())
-                            logger.debug("Automatically Starting appliance ... " + appliance.getId());
-                        this.startAppliance(appliance);
-
-                    }
-
-                } else if (appliance.getState().equals(IdentityApplianceState.DEPLOYED.toString())) {
-                    // Appliance is marked as DEPLOYED
-
-                    if (!deployer.isDeployed(appliance)) {
-                        appliance.setState(IdentityApplianceState.PROJECTED.toString());
-                        logger.debug("Synchronizing Appliance state : PROJECTED " + appliance.getId());
-                        appliance = identityApplianceDAO.save(appliance);
-
-                        logger.debug("Automatically Starting appliance ... " + appliance.getId());
-                        this.startAppliance(appliance);
-
-                    }
-
-                }
-            } catch (Exception e) {
-                logger.warn("Appliance " + appliance.getId() + " state synchronization failed : " + e.getMessage(), e);
-            }
-        }
-
+    @Transactional
+    public void boot() throws IdentityServerException {
+        logger.info("Initializing Identity Appliance Management serivce ....");
+        syncAppliances();
     }
 
     @Transactional
@@ -1030,6 +975,30 @@ public class IdentityApplianceManagementServiceImpl implements
         this.resourceDAO = resourceDAO;
     }
 
+    public boolean isLazySyncAppliances() {
+        return lazySyncAppliances;
+    }
+
+    public void setLazySyncAppliances(boolean lazySyncAppliances) {
+        this.lazySyncAppliances = lazySyncAppliances;
+    }
+
+    public boolean isValidateAppliances() {
+        return enableValidation;
+    }
+
+    public void setValidateAppliances(boolean enableValidation) {
+        this.enableValidation = enableValidation;
+    }
+
+    public ActivationService getActivationService() {
+        return activationService;
+    }
+
+    public void setActivationService(ActivationService activationService) {
+        this.activationService = activationService;
+    }
+
     // -------------------------------------------------< Protected Utils , they need transactional context !>
     
     protected IdentityAppliance startAppliance(IdentityAppliance appliance) throws IdentityServerException {
@@ -1179,38 +1148,70 @@ public class IdentityApplianceManagementServiceImpl implements
         return appliance;
     }
 
-    public class ServiceProviderComparator implements Comparator<Provider> {
-        public int compare(Provider sp1, Provider sp2) {
+    protected void syncAppliances() throws IdentityServerException {
 
-            // TODO RETROFIT  : if (((ServiceProvider)sp1).getBindingChannel().getTarget().equals(((ServiceProvider)sp2).getBindingChannel().getTarget())) return 0;
-            // TODO RETROFIT  : else return 1;
-            return 1;
+        if (alreadySynchronizededAppliances)
+            return;
+
+        Collection<IdentityAppliance> appiances = identityApplianceDAO.findAll();
+
+        for (IdentityAppliance appliance : appiances) {
+
+            try {
+                appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Synchronizing Appliance state for [" + appliance.getId() + "] " +
+                            appliance.getIdApplianceDefinition().getName());
+
+                if (appliance.getState().equals(IdentityApplianceState.STARTED.toString())) {
+
+                    if (!deployer.isDeployed(appliance)) {
+                        // STARTED in DB but not DEPLOYED in OSGI --> PROJECTED
+                        appliance.setState(IdentityApplianceState.PROJECTED.toString());
+                        if (logger.isDebugEnabled())
+                            logger.debug("Synchronizing Appliance state : PROJECTED " + appliance.getId());
+                        appliance = identityApplianceDAO.save(appliance);
+
+                        if (logger.isDebugEnabled())
+                            logger.debug("Automatically Starting appliance ... " + appliance.getId());
+                        this.startAppliance(appliance);
+
+                    } else if (!deployer.isStarted(appliance)) {
+
+                        // STARTED in DB but not STARTED in OSGI --> DEPLOYED
+                        appliance.setState(IdentityApplianceState.DEPLOYED.toString());
+                        if (logger.isDebugEnabled())
+                            logger.debug("Synchronizing Appliance state : DEPLOYED " + appliance.getId());
+                        appliance = identityApplianceDAO.save(appliance);
+
+                        if (logger.isDebugEnabled())
+                            logger.debug("Automatically Starting appliance ... " + appliance.getId());
+                        this.startAppliance(appliance);
+
+                    }
+
+                } else if (appliance.getState().equals(IdentityApplianceState.DEPLOYED.toString())) {
+                    // Appliance is marked as DEPLOYED
+
+                    if (!deployer.isDeployed(appliance)) {
+                        appliance.setState(IdentityApplianceState.PROJECTED.toString());
+                        logger.debug("Synchronizing Appliance state : PROJECTED " + appliance.getId());
+                        appliance = identityApplianceDAO.save(appliance);
+
+                        logger.debug("Automatically Starting appliance ... " + appliance.getId());
+                        this.startAppliance(appliance);
+
+                    }
+
+                }
+            } catch (Exception e) {
+                logger.warn("Appliance " + appliance.getId() + " state synchronization failed : " + e.getMessage(), e);
+            }
         }
+
     }
 
-    public boolean isLazySyncAppliances() {
-        return lazySyncAppliances;
-    }
-
-    public void setLazySyncAppliances(boolean lazySyncAppliances) {
-        this.lazySyncAppliances = lazySyncAppliances;
-    }
-
-    public boolean isValidateAppliances() {
-        return enableValidation;
-    }
-
-    public void setValidateAppliances(boolean enableValidation) {
-        this.enableValidation = enableValidation;
-    }
-
-    public ActivationService getActivationService() {
-        return activationService;
-    }
-
-    public void setActivationService(ActivationService activationService) {
-        this.activationService = activationService;
-    }
 
     protected ActivateAgentRequest doMakAgentActivationRequest(ExecutionEnvironment execEnv ) {
 
@@ -1245,5 +1246,19 @@ public class IdentityApplianceManagementServiceImpl implements
 
         return req;
     }
+
+    public class ServiceProviderComparator implements Comparator<Provider> {
+        public int compare(Provider sp1, Provider sp2) {
+
+            if (sp1 == sp2)
+                return 0;
+
+            // TODO : Is this OK  !!
+            if (((ServiceProvider)sp1).getActivation().getSp().equals(((ServiceProvider)sp2).getActivation().getSp())) return 0;
+
+            return 1;
+        }
+    }
+
 
 }
