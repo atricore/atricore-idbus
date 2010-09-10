@@ -547,7 +547,7 @@ public class IdentityApplianceManagementServiceImpl implements
         try {
             syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getIdentityApplianceId()));
-            appliance = identityApplianceDAO.detachCopy(appliance, 7);
+            appliance = identityApplianceDAO.detachCopy(appliance, 9);
             res = new LookupIdentityApplianceByIdResponse();
             res.setIdentityAppliance(appliance);
         } catch (Exception e){
