@@ -31,6 +31,7 @@ import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceUnit;
 import com.atricore.idbus.console.lifecycle.main.domain.dao.*;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
+import com.atricore.idbus.console.lifecycle.main.exception.ApplianceNotFoundException;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.exception.ExecEnvAlreadyActivated;
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
@@ -385,7 +386,7 @@ public class IdentityApplianceManagementServiceImpl implements
                         request.getApplianceId() + "/" + request.getExecEnvName());
 
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
-            /*
+
             if (!appliance.getState().equals(IdentityApplianceState.DEPLOYED.toString()) &&
                     !appliance.getState().equals(IdentityApplianceState.STARTED.toString())) {
 
@@ -394,7 +395,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
                 throw new IdentityServerException("Cannot activate execution enviroments for appliance " +
                         request.getApplianceId() + " in state " + appliance.getState());
-            } */
+            }
 
             boolean found = false;
 
@@ -479,9 +480,25 @@ public class IdentityApplianceManagementServiceImpl implements
             throw new IdentityServerException("Cannot activate SP Execution Environment for " +
                     request.getExecEnvName() + " : " + e.getMessage(), e);
         }
+    }
 
+    @Transactional
+    public ValidateApplianceResponse validateApplinace(ValidateApplianceRequest request) throws IdentityServerException {
 
+        ValidateApplianceResponse response = new ValidateApplianceResponse();
 
+        IdentityAppliance appliance = request.getAppliance();
+        if (appliance == null)
+            appliance = this.identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
+
+        if (appliance == null)
+            throw new ApplianceNotFoundException(Long.parseLong(request.getApplianceId()));
+
+        if (logger.isDebugEnabled())
+            logger.debug("Validating appliance " + appliance.getId());
+
+        validator.validate(appliance);
+        return response;
     }
 
     @Transactional
@@ -503,6 +520,11 @@ public class IdentityApplianceManagementServiceImpl implements
             
             applianceDef.setRevision(1);
             applianceDef.setLastModification(new Date());
+
+            if (appliance.getIdApplianceDeployment() != null) {
+                logger.warn("New appliances should not have deployment information!");
+                appliance.setIdApplianceDeployment(null);
+            }
 
             appliance = identityApplianceDAO.save(appliance);
             if (logger.isTraceEnabled())

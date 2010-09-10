@@ -38,6 +38,8 @@ public interface IdentityApplianceManagementService {
 
     ActivateExecEnvResponse activateExecEnv(ActivateExecEnvRequest request) throws IdentityServerException;
 
+    ValidateApplianceResponse validateApplinace(ValidateApplianceRequest request) throws IdentityServerException;
+
     //-----------------------< CRUD Operations >
 
     /**
