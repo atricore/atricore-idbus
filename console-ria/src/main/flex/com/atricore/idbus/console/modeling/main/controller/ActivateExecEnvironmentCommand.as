@@ -3,6 +3,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 
+import com.atricore.idbus.console.modeling.diagram.model.request.ActivateExecutionEnvironmentRequest;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.spi.request.ActivateExecEnvRequest;
@@ -20,8 +21,8 @@ import mx.rpc.remoting.mxml.RemoteObject;
 
 public class ActivateExecEnvironmentCommand extends IocSimpleCommand implements IResponder {
 
-    public static const SUCCESS:String = "CreateSimpleSSOIdentityApplianceCommand.SUCCESS";
-    public static const FAILURE:String = "CreateSimpleSSOIdentityApplianceCommand.FAILURE";
+    public static const SUCCESS:String = "ActivateExecEnvironmentCommand.SUCCESS";
+    public static const FAILURE:String = "ActivateExecEnvironmentCommand.FAILURE";
 
     private var _projectProxy:ProjectProxy;
     private var _registry:ServiceRegistry;
@@ -45,12 +46,16 @@ public class ActivateExecEnvironmentCommand extends IocSimpleCommand implements 
 
     override public function execute(notification:INotification):void {
         var identityAppliance:IdentityAppliance = _projectProxy.currentIdentityAppliance;
-        var execEnvironment:ExecutionEnvironment = notification.getBody() as ExecutionEnvironment;
+        var activateExecutionEnvRequest:ActivateExecutionEnvironmentRequest = notification.getBody() as ActivateExecutionEnvironmentRequest;
 
+        var execEnvironment:ExecutionEnvironment = activateExecutionEnvRequest.executionEnvironment;
         var req:ActivateExecEnvRequest = new ActivateExecEnvRequest();
         req.applianceId = identityAppliance.id.toString();
         req.execEnvName = execEnvironment.name;
-//        req.reactivate
+        req.reactivate = activateExecutionEnvRequest.reactivate;
+
+        req.activateSamples = activateExecutionEnvRequest.installSamples;
+        req.replace = activateExecutionEnvRequest.replaceConfFiles;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
 

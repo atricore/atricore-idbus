@@ -40,7 +40,7 @@ import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
+//import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;
@@ -52,8 +52,8 @@ import java.util.*;
 
 public class IdentityApplianceManagementServiceImpl implements
         IdentityApplianceManagementService,
-        InitializingBean,
-        IdentityServiceLifecycle {
+        InitializingBean {
+//        IdentityServiceLifecycle {
 
 	private static final Log logger = LogFactory.getLog(IdentityApplianceManagementServiceImpl.class);
 

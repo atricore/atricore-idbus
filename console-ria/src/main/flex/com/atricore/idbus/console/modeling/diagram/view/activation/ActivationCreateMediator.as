@@ -121,7 +121,6 @@ public class ActivationCreateMediator extends IocFormMediator {
             _sp.activation = _jossoActivation;
             
             _projectProxy.currentIdentityApplianceElement = _jossoActivation;
-            sendNotification(ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT, _execEnv);
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
             sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
