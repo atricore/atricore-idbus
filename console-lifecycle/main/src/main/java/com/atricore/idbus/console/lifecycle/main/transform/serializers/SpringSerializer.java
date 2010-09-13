@@ -79,7 +79,7 @@ public class SpringSerializer extends VfsIdProjectResourceSerializer {
                     getClass().getClassLoader());
 
             Marshaller m = jaxbCtx.createMarshaller();
-
+            m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
             // No good ... :(
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
