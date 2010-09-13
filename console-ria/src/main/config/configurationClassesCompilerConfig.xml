@@ -48,6 +48,7 @@
         <symbol>com.atricore.idbus.console.account.main.view.searchusers.SearchUsersMediator</symbol>
 
         <symbol>com.atricore.idbus.console.main.controller.LoginCommand</symbol>
+        <symbol>com.atricore.idbus.console.main.controller.ChangePasswordCommand</symbol>
         <symbol>com.atricore.idbus.console.main.controller.UploadCommand</symbol>
         <symbol>com.atricore.idbus.console.main.controller.SetupServerCommand</symbol>
         <symbol>com.atricore.idbus.console.main.controller.RegisterCommand</symbol>

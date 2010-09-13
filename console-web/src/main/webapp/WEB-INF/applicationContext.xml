@@ -27,6 +27,7 @@
         <property name="services">
             <list>
                 <ref bean="userProvisioningAjaxServiceBean"/>
+                <ref bean="profileManagementAjaxServiceBean"/>
             </list>
         </property>
     </bean>
@@ -74,6 +75,7 @@
 
     <bean id="profileManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ProfileManagementAjaxServiceImpl">
         <property name="usrProvService" ref="userProvisioningAjaxServiceBean" />
+        <property name="pspTargetId" value="pst-default" />
     </bean>
 
     <bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">

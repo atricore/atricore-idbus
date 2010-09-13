@@ -144,10 +144,8 @@ public class ConsolePopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createChangePasswordForm();
         _popup.title = "Change Password";
-        _popup.width = 650;
-        _popup.height = 410;
-        //_popup.x = (_popupParent.width / 2) - 225;
-        //_popup.y = 80;
+        _popup.width = 400;
+        _popup.height = 200;
         showPopup(_changePasswordForm);
     }
 

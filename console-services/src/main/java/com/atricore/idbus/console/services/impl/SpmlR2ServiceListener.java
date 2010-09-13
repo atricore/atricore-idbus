@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.services.impl;
 
+import com.atricore.idbus.console.services.spi.AjaxService;
 import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,24 +17,27 @@ public class SpmlR2ServiceListener {
 
     private static final Log logger = LogFactory.getLog(SpmlR2ServiceListener.class);
 
-    private List<UserProvisioningAjaxService> services;
+    private List<AjaxService> services;
 
-    public List<UserProvisioningAjaxService> getServices() {
+    public List<AjaxService> getServices() {
         return services;
     }
 
-    public void setServices(List<UserProvisioningAjaxService> services) {
+    public void setServices(List<AjaxService> services) {
         this.services = services;
     }
 
     public void register(SpmlR2Client spml,  Map<String, ?> properties) throws Exception {
-        for (UserProvisioningAjaxService svc : services) {
+        for ( AjaxService svc : services) {
             if (spml.hasTarget(svc.getPspTargetId())) {
 
                 logger.info("Binding Ajax service w/PSP-Target [" + svc.getPspTargetId() + "] to SPML Client "
                         + spml.getPSProviderName());
 
-                ((UserProvisioningAjaxServiceImpl)svc).setSpmlService(spml);
+                if (svc instanceof UserProvisioningAjaxService)
+                    ((UserProvisioningAjaxServiceImpl)svc).setSpmlService(spml);
+                else if (svc instanceof ProfileManagementAjaxServiceImpl)
+                    ((ProfileManagementAjaxServiceImpl)svc).setSpmlService(spml);
             }
 
         }
@@ -41,13 +45,16 @@ public class SpmlR2ServiceListener {
     }
 
     public void unregister(SpmlR2Client spml,  Map<String, ?> properties) throws Exception {
-        for (UserProvisioningAjaxService svc : services) {
+        for (AjaxService svc : services) {
             if (spml.hasTarget(svc.getPspTargetId())) {
 
                 logger.info("Unbinding Ajax service w/PSP-Target [" + svc.getPspTargetId() + "] from SPML Client "
                         + spml.getPSProviderName());
 
-                ((UserProvisioningAjaxServiceImpl)svc).setSpmlService(null);
+                if (svc instanceof UserProvisioningAjaxService)
+                    ((UserProvisioningAjaxServiceImpl)svc).setSpmlService(null);
+                else if (svc instanceof ProfileManagementAjaxServiceImpl)
+                    ((ProfileManagementAjaxServiceImpl)svc).setSpmlService(null);
             }
 
         }

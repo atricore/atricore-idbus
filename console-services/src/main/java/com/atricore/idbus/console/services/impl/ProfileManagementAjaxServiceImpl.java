@@ -23,21 +23,33 @@ package com.atricore.idbus.console.services.impl;
 
 import com.atricore.idbus.console.lifecycle.main.exception.UserNotFoundException;
 import com.atricore.idbus.console.services.dto.UserDTO;
+import com.atricore.idbus.console.services.spi.AjaxService;
 import com.atricore.idbus.console.services.spi.IdentityServerException;
 import com.atricore.idbus.console.services.spi.ProfileManagementAjaxService;
 import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
+import oasis.names.tc.spml._2._0.PSOIdentifierType;
+import oasis.names.tc.spml._2._0.ResponseType;
+import oasis.names.tc.spml._2._0.StatusCodeType;
+import oasis.names.tc.spml._2._0.password.SetPasswordRequestType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
+import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 /**
  * Author: Dusan Fisic
  */
-public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxService {
+public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxService, AjaxService {
     private static Log logger = LogFactory.getLog(ProfileManagementAjaxServiceImpl.class);
 
+    private UUIDGenerator uuidGenerator = new UUIDGenerator();
     private UserProvisioningAjaxService usrProvService;
+
+    private SpmlR2Client spmlService;
+    private String pspTargetId;
 
 
     public UpdateUserProfileResponse updateUserProfile(UpdateUserProfileRequest updateProfileRequest) throws IdentityServerException {
@@ -73,6 +85,10 @@ public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxSe
 
     public UpdateUserPasswordResponse updateUserPassword(UpdateUserPasswordRequest updatePasswordRequest) throws IdentityServerException {
         try {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Processing update request for user [" + updatePasswordRequest.getUsername() + "]");
+
             FindUserByUsernameRequest userRequest = new FindUserByUsernameRequest();
             userRequest.setUsername(updatePasswordRequest.getUsername());
             FindUserByUsernameResponse findResp = usrProvService.findUserByUsername(userRequest);
@@ -83,18 +99,30 @@ public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxSe
             else
                 throw new UserNotFoundException("User not found with username: " + updatePasswordRequest.getUsername() );
 
-            UpdateUserRequest updateReq = new UpdateUserRequest();
-            updateReq.setId(userId);
-            updateReq.setUserPassword(updatePasswordRequest.getNewPassword());
+            PSOIdentifierType psoUserId = new PSOIdentifierType();
+            psoUserId.setTargetID(pspTargetId);
+            psoUserId.setID(userId + "");
+            psoUserId.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
 
-            UpdateUserResponse updResp = usrProvService.updateUser(updateReq);
+            SetPasswordRequestType setPassReqType = new SetPasswordRequestType();
+            setPassReqType.setRequestID(uuidGenerator.generateId());
+            setPassReqType.setPsoID(psoUserId);
+            setPassReqType.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
+            setPassReqType.setCurrentPassword(updatePasswordRequest.getOriginalPassword());
+            setPassReqType.setPassword(updatePasswordRequest.getNewPassword());
+
+            ResponseType resp = spmlService.spmlSetPasswordRequest(setPassReqType);
+            StatusCodeType status = resp.getStatus();
+            logger.trace("Update password for user " + updatePasswordRequest.getUsername()+ " return status code " + status.value());
+
             UpdateUserPasswordResponse response = new UpdateUserPasswordResponse();
+            retUser.setUserPassword(updatePasswordRequest.getNewPassword());
             response.setUser(retUser);
             return response;
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new IdentityServerException("Error updateing user's password: " +
+            throw new IdentityServerException("Error updating user's password: " +
                     updatePasswordRequest.getUsername() + " : " + e.getMessage(), e);
         }
     }
@@ -126,6 +154,23 @@ public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxSe
 
     public void setUsrProvService(UserProvisioningAjaxService usrProvService) {
         this.usrProvService = usrProvService;
+    }
+
+
+    public SpmlR2Client getSpmlService() {
+        return spmlService;
+    }
+
+    public void setSpmlService(SpmlR2Client spmlService) {
+        this.spmlService = spmlService;
+    }
+
+    public String getPspTargetId() {
+        return pspTargetId;
+    }
+
+    public void setPspTargetId(String pspTargetId) {
+        this.pspTargetId = pspTargetId;
     }
 
 }
