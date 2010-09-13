@@ -76,6 +76,12 @@
             </action>
         </command>
 
+        <command name="appliance/validate">
+            <action class="com.atricore.idbus.console.lifecycle.command.ValidateApplianceCommand">
+                <property name="printer" ref="appliancePrinter"/>
+            </action>
+        </command>
+
         <command name="appliance/activate">
             <action class="com.atricore.idbus.console.lifecycle.command.ActivateExecEnvCommand"/>
         </command>

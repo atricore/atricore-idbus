@@ -43,12 +43,6 @@
 
     <!-- AJAX SERVICES -->
 
-    <!--<bean id="identityApplianceMetadataAjaxServiceBean" class="org.atricore.idbus.applications.server.services.impl.IdentityApplianceMetadataAjaxServiceImpl">-->
-    <!--<property name="idApplianceManagementService">-->
-    <!--<ref local="idApplianceManagementService"/>-->
-    <!--</property>-->
-    <!--</bean>-->
-
     <bean id="identityApplianceManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.IdentityApplianceManagementAjaxServiceImpl">
         <property name="idApplianceManagementService" ref="idApplianceManagementService"/>
         <property name="dozerMapper" ref="dozerMapper" />

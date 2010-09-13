@@ -5,6 +5,8 @@ import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.spi.ApplianceDefinitionValidator;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionWalker;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +16,8 @@ import java.util.List;
  */
 public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitionVisitor
         implements ApplianceDefinitionValidator {
+
+    private static final Log logger = LogFactory.getLog(ApplianceDefinitionValidatorImpl.class);
 
     private IdentityApplianceDefinitionWalker walker;
 
@@ -26,7 +30,8 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
         try {
             walker.walk(appliance.getIdApplianceDefinition(), this);
         } catch (Exception e) {
-            addError("Fatal error : " + e.getMessage(), e);
+            logger.error(e.getMessage(), e);
+            addError("Fatal error", e);
         }
 
         if (vctx.getErrors().size() > 0) {
@@ -238,6 +243,11 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
 
 
     protected void validatePackageName(String propertyName, String pkgName) {
+        if (pkgName == null || pkgName.length() == 0) {
+            addError(propertyName + " cannot be null or empty");
+            return;
+        }
+
         for (int i = 0 ; i < pkgName.length() ; i ++) {
             char c = pkgName.charAt(i);
             if (!Character.isLetterOrDigit(c)) {

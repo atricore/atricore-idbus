@@ -7,6 +7,8 @@ import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 
 public interface IdentityApplianceManagementService {
 
+    void boot() throws IdentityServerException;
+
     //-----------------------< Lifecycle operations >
 
     /**
@@ -37,6 +39,8 @@ public interface IdentityApplianceManagementService {
     ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException;
 
     ActivateExecEnvResponse activateExecEnv(ActivateExecEnvRequest request) throws IdentityServerException;
+
+    ValidateApplianceResponse validateApplinace(ValidateApplianceRequest request) throws IdentityServerException;
 
     //-----------------------< CRUD Operations >
 

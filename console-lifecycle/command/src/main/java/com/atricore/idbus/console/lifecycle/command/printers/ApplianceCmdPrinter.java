@@ -21,7 +21,7 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
         sb.append("                                   Last/Deployed\n");
 
         printDetails(appliance, sb, true);
-        System.out.println(sb);
+        getOut().println(sb);
     }
 
     public void printAll(Collection<IdentityAppliance> os) {
@@ -35,7 +35,7 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
             printDetails(appliance, sb, false);
         }
 
-        System.out.println(sb);
+        getOut().println(sb);
     }
 
     public void printError(Exception e) {
@@ -56,16 +56,23 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
                 sb.append(") \u001B[0m");
                 sb.append("\u001B[31m").append(err.getMsg()).append("\u001B[0m");
                 if (err.getError() != null) {
-                    sb.append(" Cause:").append(err.getError().getMessage());
+                    Throwable cause = err.getError();
+                    while (cause.getCause() != null)
+                        cause = cause.getCause();
+
+                    sb.append(" Cause:").
+                            append(cause.getClass().getName()).
+                            append(cause.getMessage() != null ? ":" + cause.getMessage() : "");
+                    
                 }
                 sb.append("\n");
                 i++;
             }
 
-            System.err.println(sb);
+            getErr().println(sb);
             return;
         }
-        System.err.println(e.getMessage());
+        getErr().println(e.getMessage());
     }
 
     protected void printDetails(IdentityAppliance appliance, StringBuilder sb, boolean verbose) {
