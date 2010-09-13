@@ -155,7 +155,7 @@
                                  styleName="applianceGrid" headerHeight="30" sortExpertMode="true"
                                  folderClosedIcon="{null}" folderOpenIcon="{null}" variableRowHeight="true"
                                  dragProxyImage="com.atricore.idbus.console.components.CustomDragProxy"
-                                 dragIcon="{EmbeddedIcons.trashApplianceIcon}">
+                                 dragIcon="{EmbeddedIcons.disposeApplianceIcon}">
                 <comp:columns>
                     <mx:AdvancedDataGridColumn id="colDeployedApplianceName" fontSize="12" color="#3679b0"
                                                headerText="Identity Appliance"
