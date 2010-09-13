@@ -34,6 +34,7 @@ import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
 import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateDbIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
@@ -43,6 +44,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdpChanne
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateSpChannelElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateXmlIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
@@ -271,40 +273,49 @@ public class DiagramMediator extends IocMediator {
 
 
                             break;
-                        case DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE:
-                            // assert that source end is an Identity Appliance
-//                            if (_currentlySelectedNode.data is IdentityAppliance) {
-//                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
-                                ownerIdentityAppliance = _identityAppliance;
-                                
-                                var civ:CreateIdentityVaultElementRequest = new CreateIdentityVaultElementRequest(
-                                        ownerIdentityAppliance,
-//                                        _currentlySelectedNode.stringid
-                                        null
-                                        );
+                        case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
+                            ownerIdentityAppliance = _identityAppliance;
 
-                                // this notification will be grabbed by the modeler mediator which will open
-                                // the corresponding form
-                                sendNotification(ApplicationFacade.CREATE_DB_IDENTITY_VAULT_ELEMENT, civ);
-//                            }
+                            var civ:CreateIdentityVaultElementRequest = new CreateIdentityVaultElementRequest(
+                                    ownerIdentityAppliance, null);
 
+                            // this notification will be grabbed by the modeler mediator which will open
+                            // the corresponding form
+                            sendNotification(ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT, civ);
 
                             break;
+                        case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
+                            ownerIdentityAppliance = _identityAppliance;
+
+                            var cdiv:CreateDbIdentitySourceElementRequest = new CreateDbIdentitySourceElementRequest(
+                                    ownerIdentityAppliance, null);
+
+                            // this notification will be grabbed by the modeler mediator which will open
+                            // the corresponding form
+                            sendNotification(ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT, cdiv);
+//
+                            break;
                         case DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE:
-                            if (_currentlySelectedNode != null && _currentlySelectedNode.data !=null) {
-                                var ownerObj:Object = _currentlySelectedNode.data;
+                            ownerIdentityAppliance = _identityAppliance;
 
-                                var cliv:CreateLdapIdentitySourceElementRequest = new CreateLdapIdentitySourceElementRequest(
-                                        ownerObj,
-                                        _currentlySelectedNode.stringid
-                                        );
+                            var cliv:CreateLdapIdentitySourceElementRequest = new CreateLdapIdentitySourceElementRequest(
+                                    ownerIdentityAppliance, null);
 
-                                // this notification will be grabbed by the modeler mediator which will open
-                                // the corresponding form
-                                sendNotification(ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT, cliv);
-                            }
+                            // this notification will be grabbed by the modeler mediator which will open
+                            // the corresponding form
+                            sendNotification(ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT, cliv);
+                            
+                            break;
+                        case DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE:
+                            ownerIdentityAppliance = _identityAppliance;
 
+                            var cxiv:CreateXmlIdentitySourceElementRequest = new CreateXmlIdentitySourceElementRequest(
+                                    ownerIdentityAppliance, null);
 
+                            // this notification will be grabbed by the modeler mediator which will open
+                            // the corresponding form
+                            sendNotification(ApplicationFacade.CREATE_XML_IDENTITY_SOURCE_ELEMENT, cxiv);
+                            
                             break;
                         case DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
                             var cjbeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
@@ -388,14 +399,14 @@ public class DiagramMediator extends IocMediator {
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT, rspc);
                             break;
-                        case DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE:
+                        case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
                             var identityVault:DbIdentitySource = _currentlySelectedNode.data as DbIdentitySource;
 
                             var riv:RemoveIdentityVaultElementRequest = new RemoveIdentityVaultElementRequest(identityVault);
 
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.REMOVE_DB_IDENTITY_VAULT_ELEMENT, riv);
+                            sendNotification(ApplicationFacade.REMOVE_DB_IDENTITY_SOURCE_ELEMENT, riv);
                             break;
                     }
                 }
@@ -600,7 +611,7 @@ public class DiagramMediator extends IocMediator {
                 elementType = DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE;
             } else
             if(node.data is DbIdentitySource){
-                elementType = DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE;
+                elementType = DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE;
             }
             //TODO - add other element types
 

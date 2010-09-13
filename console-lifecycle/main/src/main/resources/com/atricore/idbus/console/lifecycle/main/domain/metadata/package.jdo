@@ -321,6 +321,10 @@
             <inheritance strategy="new-table"/>
         </class>
 
+        <class name="XmlIdentitySource" detachable="true">
+            <inheritance strategy="new-table"/>
+        </class>
+
     </package>
 
 </jdo>

@@ -35,6 +35,8 @@
             import com.atricore.idbus.console.services.dto.DbIdentitySource;
             import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
             import com.atricore.idbus.console.services.dto.IdentitySource;
+            import com.atricore.idbus.console.services.dto.LdapIdentitySource;
+            import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
             [Bindable]
             private var validators:Array;
@@ -53,15 +55,25 @@
                     readableDecisionArray.push("Obfuscate Password: " + obfuscatePass.selected);
                 }
 
-                if (repositoryType.selectedValue == "embedded") {
+                if (embedded.selected) {
                     identitySource = new EmbeddedIdentitySource();
                     readableDecisionArray.push("Create Embedded Repository");
                 } else {
-                    identitySource = new DbIdentitySource();
                     readableDecisionArray.push("Create External Repository");
+                    if (externalRepositoryType.selectedItem.data == "database") {
+                        identitySource = new DbIdentitySource();
+                    } else if (externalRepositoryType.selectedItem.data == "ldap") {
+                        identitySource = new LdapIdentitySource();
+                    } else if (externalRepositoryType.selectedItem.data == "xml") {
+                        identitySource = new XmlIdentitySource();
+                    }
                 }
+                
                 identitySource.name = userRepositoryName.text;
                 readableDecisionArray.push("Repository Name: " + identitySource.name);
+                if (!(identitySource is EmbeddedIdentitySource)) {
+                    readableDecisionArray.push("Repository type: " + externalRepositoryType.labelDisplay.text);
+                }
                 
                 return identitySource;
             }
@@ -81,13 +93,30 @@
                 // Check the step validity
                 ssoWizStep1Form.validateForm(event);
                 isValid = ssoWizStep1Form.isValid;
+
+                if (external.selected) {
+                    if (!externalRepositoryType.enabled) {
+                        externalRepositoryType.enabled = true;
+                    }
+                    if (externalRepositoryType.selectedItem.data == "database") {
+                        jumpToStep = "databaseStep";
+                    } else if (externalRepositoryType.selectedItem.data == "ldap") {
+                        jumpToStep = "ldapStep";
+                    } else if (externalRepositoryType.selectedItem.data == "xml") {
+                        jumpToStep = "xmlStep";
+                    }
+                } else {
+                    externalRepositoryType.enabled = false;
+                    jumpToStep = "spStep";
+                }
             }
 
             override public function get isJumpToConditionMet():Boolean {
-                if (repositoryType.selectedValue == "embedded") {
+                /*if (embedded.selected) {
                     return true;
                 }
-                return false;
+                return false;*/
+                return true;
             }
 
         ]]>
@@ -115,8 +144,17 @@
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.type')}:">
                     <s:RadioButton groupName="repositoryType" id="embedded" value="embedded" selected="true"
                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.embeddedRepository')}"/>
-                    <s:RadioButton groupName="repositoryType" id="external" value="external"
-                            label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.externalRepository')}"/>
+                    <s:HGroup>
+                        <s:RadioButton groupName="repositoryType" id="external" value="external"
+                                label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.externalRepository')}"/>
+                        <s:DropDownList id="externalRepositoryType" width="100" selectedIndex="0" enabled="false" change="handleFormChange(event);">
+                            <mx:ArrayCollection>
+                                <fx:Object label="Database" data="database"/>
+                                <fx:Object label="LDAP" data="ldap"/>
+                                <fx:Object label="XML" data="xml"/>
+                            </mx:ArrayCollection>
+                        </s:DropDownList>
+                    </s:HGroup>
                 </mx:FormItem>
             </utils:TitledBorderBox>
        </utils:ValidatingForm>

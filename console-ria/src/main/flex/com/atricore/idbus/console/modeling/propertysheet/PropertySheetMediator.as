@@ -26,21 +26,24 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.EmbeddedDBIdentityVaultCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.ExternalDBIdentityVaultCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.dbidentityvault.ExternalDBIdentityVaultLookupSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultLookupSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionIDPChannelSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionSPChannelSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.identitylookup.IdentityLookupCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.identityvault.EmbeddedDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idpchannel.IDPChannelContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idpchannel.IDPChannelCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.jossoactivation.JOSSOActivationCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceLookupSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.xmlidentitysource.XmlIdentitySourceCoreSection;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
@@ -57,6 +60,8 @@ import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
+
+import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -87,6 +92,9 @@ public class PropertySheetMediator extends IocMediator {
     private var _spChannelCoreSection:SPChannelCoreSection;
     private var _embeddedDbVaultCoreSection:EmbeddedDBIdentityVaultCoreSection;
     private var _externalDbVaultCoreSection:ExternalDBIdentityVaultCoreSection;
+    private var _ldapIdentitySourceCoreSection:LdapIdentitySourceCoreSection;
+    private var _ldapIdentitySourceLookupSection:LdapIdentitySourceLookupSection;
+    private var _xmlIdentitySourceCoreSection:XmlIdentitySourceCoreSection;
     private var _currentIdentityApplianceElement:Object;
     private var _ipContractSection:IdentityProviderContractSection;
     private var _spContractSection:ServiceProviderContractSection;
@@ -162,11 +170,13 @@ public class PropertySheetMediator extends IocMediator {
                     enableSpChannelPropertyTabs();
                 } else if (_currentIdentityApplianceElement is IdentitySource) {
                     if (_currentIdentityApplianceElement is EmbeddedIdentitySource) {
-                        enableEmbeddedDbVaultPropertyTabs();
+                        enableIdentityVaultPropertyTabs();
                     } else if (_currentIdentityApplianceElement is DbIdentitySource) {
                         enableExternalDbVaultPropertyTabs();
                     } else if (_currentIdentityApplianceElement is LdapIdentitySource) {
-                        enableLdapSourcePropertyTabs();
+                        enableLdapIdentitySourcePropertyTabs();
+                    } else if (_currentIdentityApplianceElement is XmlIdentitySource) {
+                        enableXmlIdentitySourcePropertyTabs();
                     }
                 } else if (_currentIdentityApplianceElement is FederatedConnection) {
                     enableFederatedConnectionPropertyTabs();
@@ -1011,7 +1021,7 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    protected function enableEmbeddedDbVaultPropertyTabs():void {
+    protected function enableIdentityVaultPropertyTabs():void {
         // Attach embedded DB identity vault editor form to property tabbed view
         _propertySheetsViewStack.removeAllChildren();
 
@@ -1027,52 +1037,48 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
 
-        _embeddedDbVaultCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleEmbeddedDbVaultCorePropertyTabCreationComplete);
-        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleEmbeddedDbVaultCorePropertyTabRollOut);
+        _embeddedDbVaultCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityVaultCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityVaultCorePropertyTabRollOut);
     }
 
-    private function handleEmbeddedDbVaultCorePropertyTabCreationComplete(event:Event):void {
-        var dbIdentityVault:DbIdentitySource;
-
-        dbIdentityVault = _currentIdentityApplianceElement as DbIdentitySource;
+    private function handleIdentityVaultCorePropertyTabCreationComplete(event:Event):void {
+        var dbIdentityVault:EmbeddedIdentitySource = _currentIdentityApplianceElement as EmbeddedIdentitySource;
 
         // if dbIdentityVault is null that means some other element was selected before completing this
         if (dbIdentityVault != null) {
             // bind view
             _embeddedDbVaultCoreSection.userRepositoryName.text = dbIdentityVault.name;
-            _embeddedDbVaultCoreSection.serverPort.text = dbIdentityVault.port.toString();
-            _embeddedDbVaultCoreSection.schema.text = dbIdentityVault.schema;
-            _embeddedDbVaultCoreSection.admin.text = dbIdentityVault.admin;
-            _embeddedDbVaultCoreSection.adminPass.text = dbIdentityVault.password;
-            _embeddedDbVaultCoreSection.confirmAdminPass.text = dbIdentityVault.password;
+            _embeddedDbVaultCoreSection.description.text = dbIdentityVault.description;
+            _embeddedDbVaultCoreSection.idau.text = dbIdentityVault.idau
+            _embeddedDbVaultCoreSection.psp.text = dbIdentityVault.psp;
+            _embeddedDbVaultCoreSection.pspTarget.text = dbIdentityVault.pspTarget;
 
             _embeddedDbVaultCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
-            _embeddedDbVaultCoreSection.serverPort.addEventListener(Event.CHANGE, handleSectionChange);
-            _embeddedDbVaultCoreSection.schema.addEventListener(Event.CHANGE, handleSectionChange);
-            _embeddedDbVaultCoreSection.admin.addEventListener(Event.CHANGE, handleSectionChange);
-            _embeddedDbVaultCoreSection.adminPass.addEventListener(Event.CHANGE, handleSectionChange);
-            _embeddedDbVaultCoreSection.confirmAdminPass.addEventListener(Event.CHANGE, handleSectionChange);
-
+            _embeddedDbVaultCoreSection.description.addEventListener(Event.CHANGE, handleSectionChange);
+            _embeddedDbVaultCoreSection.idau.addEventListener(Event.CHANGE, handleSectionChange);
+            _embeddedDbVaultCoreSection.psp.addEventListener(Event.CHANGE, handleSectionChange);
+            _embeddedDbVaultCoreSection.pspTarget.addEventListener(Event.CHANGE, handleSectionChange);
+            
             _validators = [];
             _validators.push(_embeddedDbVaultCoreSection.nameValidator);
-            _validators.push(_embeddedDbVaultCoreSection.serverPortValidator);
-            _validators.push(_embeddedDbVaultCoreSection.schemaValidator);
-            _validators.push(_embeddedDbVaultCoreSection.adminValidator);
+            _validators.push(_embeddedDbVaultCoreSection.idauValidator);
+            _validators.push(_embeddedDbVaultCoreSection.pspValidator);
+            _validators.push(_embeddedDbVaultCoreSection.pspTargetValidator);
         }
     }
 
-    private function handleEmbeddedDbVaultCorePropertyTabRollOut(e:Event):void {
-        if (_dirty && validate(true) && comparePasswords(_embeddedDbVaultCoreSection.adminPass, _embeddedDbVaultCoreSection.confirmAdminPass)) {
+    private function handleIdentityVaultCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
             // bind model
-            var dbIdentityVault:DbIdentitySource;
+            var dbIdentityVault:EmbeddedIdentitySource;
 
-            dbIdentityVault = _currentIdentityApplianceElement as DbIdentitySource;
+            dbIdentityVault = _currentIdentityApplianceElement as EmbeddedIdentitySource;
             dbIdentityVault.name = _embeddedDbVaultCoreSection.userRepositoryName.text;
-            dbIdentityVault.port = parseInt(_embeddedDbVaultCoreSection.serverPort.text);
-            dbIdentityVault.schema = _embeddedDbVaultCoreSection.schema.text;
-            dbIdentityVault.admin = _embeddedDbVaultCoreSection.admin.text;
-            dbIdentityVault.password = _embeddedDbVaultCoreSection.adminPass.text;
-
+            dbIdentityVault.description = _embeddedDbVaultCoreSection.description.text;
+            dbIdentityVault.idau = _embeddedDbVaultCoreSection.idau.text;
+            dbIdentityVault.psp = _embeddedDbVaultCoreSection.psp.text;
+            dbIdentityVault.pspTarget = _embeddedDbVaultCoreSection.pspTarget.text;
+            
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
@@ -1110,28 +1116,23 @@ public class PropertySheetMediator extends IocMediator {
         _externalDbVaultLookupSection = new ExternalDBIdentityVaultLookupSection();
         contractPropertyTab.addElement(_externalDbVaultLookupSection);
         _propertySheetsViewStack.addNewChild(contractPropertyTab);
-        _externalDbVaultLookupSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalDbVaulLookupPropertyTabCreationComplete);
+        _externalDbVaultLookupSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalDbVaultLookupPropertyTabCreationComplete);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalDbVaultLookupPropertyTabRollOut);
     }
 
     private function handleExternalDbVaultCorePropertyTabCreationComplete(event:Event):void {
-        var dbIdentityVault:DbIdentitySource;
-
-        dbIdentityVault = _currentIdentityApplianceElement as DbIdentitySource;
+        var dbIdentityVault:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
 
         // if dbIdentityVault is null that means some other element was selected before completing this
         if (dbIdentityVault != null) {
             // bind view
             _externalDbVaultCoreSection.userRepositoryName.text = dbIdentityVault.name;
-            _externalDbVaultCoreSection.connectionName.text = dbIdentityVault.connectionName;
-            //TODO DRIVER
             _externalDbVaultCoreSection.driverName.text = dbIdentityVault.driverName;
             _externalDbVaultCoreSection.connectionUrl.text = dbIdentityVault.connectionUrl;
             _externalDbVaultCoreSection.dbUsername.text = dbIdentityVault.admin;
             _externalDbVaultCoreSection.dbPassword.text = dbIdentityVault.password;
 
             _externalDbVaultCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
-            _externalDbVaultCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.driverName.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.connectionUrl.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.dbUsername.addEventListener(Event.CHANGE, handleSectionChange);
@@ -1139,7 +1140,6 @@ public class PropertySheetMediator extends IocMediator {
 
             _validators = [];
             _validators.push(_externalDbVaultCoreSection.nameValidator);
-            _validators.push(_externalDbVaultCoreSection.connNameValidator);
             _validators.push(_externalDbVaultCoreSection.driverNameValidator);
             _validators.push(_externalDbVaultCoreSection.connUrlValidator);
             _validators.push(_externalDbVaultCoreSection.dbUsernameValidator);
@@ -1154,7 +1154,6 @@ public class PropertySheetMediator extends IocMediator {
 
             dbIdentityVault = _currentIdentityApplianceElement as DbIdentitySource;
             dbIdentityVault.name = _externalDbVaultCoreSection.userRepositoryName.text;
-            dbIdentityVault.connectionName = _externalDbVaultCoreSection.connectionName.text;
             dbIdentityVault.driverName = _externalDbVaultCoreSection.driverName.text;
             dbIdentityVault.connectionUrl = _externalDbVaultCoreSection.connectionUrl.text;
             dbIdentityVault.admin = _externalDbVaultCoreSection.dbUsername.text;
@@ -1166,10 +1165,8 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function handleExternalDbVaulLookupPropertyTabCreationComplete(event:Event):void {
-        var dbIdentityVault:DbIdentitySource;
-
-        dbIdentityVault = _currentIdentityApplianceElement as DbIdentitySource;
+    private function handleExternalDbVaultLookupPropertyTabCreationComplete(event:Event):void {
+        var dbIdentityVault:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
 
         // if dbIdentityVault is null that means some other element was selected before completing this
         if (dbIdentityVault != null) {
@@ -1182,11 +1179,13 @@ public class PropertySheetMediator extends IocMediator {
             _externalDbVaultLookupSection.rolesQuery.text = dbIdentityVault.rolesQueryString;
             _externalDbVaultLookupSection.credentialsQuery.text = dbIdentityVault.credentialsQueryString;
             _externalDbVaultLookupSection.propertiesQuery.text = dbIdentityVault.userPropertiesQueryString;
+            _externalDbVaultLookupSection.credentialsUpdate.text = dbIdentityVault.resetCredentialDml;
 
             _externalDbVaultLookupSection.userQuery.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultLookupSection.credentialsQuery.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultLookupSection.rolesQuery.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultLookupSection.propertiesQuery.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalDbVaultLookupSection.credentialsUpdate.addEventListener(Event.CHANGE, handleSectionChange);
         }
     }
 
@@ -1200,6 +1199,7 @@ public class PropertySheetMediator extends IocMediator {
             dbIdentityVault.rolesQueryString = _externalDbVaultLookupSection.rolesQuery.text;
             dbIdentityVault.credentialsQueryString =  _externalDbVaultLookupSection.credentialsQuery.text;
             dbIdentityVault.userPropertiesQueryString = _externalDbVaultLookupSection.propertiesQuery.text;
+            dbIdentityVault.resetCredentialDml = _externalDbVaultLookupSection.credentialsUpdate.text;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -1207,7 +1207,218 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function enableLdapSourcePropertyTabs():void {}    
+   protected function enableLdapIdentitySourcePropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+       // Core Tab
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _ldapIdentitySourceCoreSection = new LdapIdentitySourceCoreSection();
+        corePropertyTab.addElement(_ldapIdentitySourceCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _ldapIdentitySourceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleLdapIdentitySourceCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleLdapIdentitySourceCorePropertyTabRollOut);
+
+        // Lookup Tab
+        var contractPropertyTab:Group = new Group();
+        contractPropertyTab.id = "propertySheetContractSection";
+        contractPropertyTab.name = "Lookup";
+        contractPropertyTab.width = Number("100%");
+        contractPropertyTab.height = Number("100%");
+        contractPropertyTab.setStyle("borderStyle", "solid");
+
+        _ldapIdentitySourceLookupSection = new LdapIdentitySourceLookupSection();
+        contractPropertyTab.addElement(_ldapIdentitySourceLookupSection);
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _ldapIdentitySourceLookupSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleLdapIdentitySourceLookupPropertyTabCreationComplete);
+        contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleLdapIdentitySourceLookupPropertyTabRollOut);
+    }
+
+    private function handleLdapIdentitySourceCorePropertyTabCreationComplete(event:Event):void {
+        var ldapIdentitySource:LdapIdentitySource = _currentIdentityApplianceElement as LdapIdentitySource;
+
+        // if ldapIdentitySource is null that means some other element was selected before completing this
+        if (ldapIdentitySource != null) {
+            // bind view
+            _ldapIdentitySourceCoreSection.userRepositoryName.text = ldapIdentitySource.name;
+            _ldapIdentitySourceCoreSection.description.text = ldapIdentitySource.description;
+            _ldapIdentitySourceCoreSection.initialContextFactory.text = ldapIdentitySource.initialContextFactory;
+            _ldapIdentitySourceCoreSection.providerUrl.text = ldapIdentitySource.providerUrl;
+            _ldapIdentitySourceCoreSection.securityPrincipal.text = ldapIdentitySource.securityPrincipal;
+            _ldapIdentitySourceCoreSection.securityCredential.text = ldapIdentitySource.securityCredential;
+            for (var i:int = 0; i < _ldapIdentitySourceCoreSection.securityAuthentication.dataProvider.length; i++) {
+                if (_ldapIdentitySourceCoreSection.securityAuthentication.dataProvider[i].data == ldapIdentitySource.securityAuthentication) {
+                    _ldapIdentitySourceCoreSection.securityAuthentication.selectedIndex = i;
+                    break;
+                }
+            }
+            for (var i:int = 0; i < _ldapIdentitySourceCoreSection.ldapSearchScope.dataProvider.length; i++) {
+                if (_ldapIdentitySourceCoreSection.ldapSearchScope.dataProvider[i].data == ldapIdentitySource.ldapSearchScope) {
+                    _ldapIdentitySourceCoreSection.ldapSearchScope.selectedIndex = i;
+                    break;
+                }
+            }
+
+            _ldapIdentitySourceCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceCoreSection.description.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceCoreSection.initialContextFactory.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceCoreSection.providerUrl.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceCoreSection.securityPrincipal.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceCoreSection.securityCredential.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceCoreSection.securityAuthentication.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceCoreSection.ldapSearchScope.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_ldapIdentitySourceCoreSection.nameValidator);
+            _validators.push(_ldapIdentitySourceCoreSection.initialContextFactoryValidator);
+            _validators.push(_ldapIdentitySourceCoreSection.providerUrlValidator);
+            _validators.push(_ldapIdentitySourceCoreSection.securityPrincipalValidator);
+            _validators.push(_ldapIdentitySourceCoreSection.securityCredentialValidator);
+        }
+    }
+
+    private function handleLdapIdentitySourceCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+            // bind model
+            var ldapIdentitySource:LdapIdentitySource = _currentIdentityApplianceElement as LdapIdentitySource;
+            ldapIdentitySource.name = _ldapIdentitySourceCoreSection.userRepositoryName.text;
+            ldapIdentitySource.description = _ldapIdentitySourceCoreSection.description.text;
+            ldapIdentitySource.initialContextFactory = _ldapIdentitySourceCoreSection.initialContextFactory.text;
+            ldapIdentitySource.providerUrl = _ldapIdentitySourceCoreSection.providerUrl.text;
+            ldapIdentitySource.securityPrincipal = _ldapIdentitySourceCoreSection.securityPrincipal.text;
+            ldapIdentitySource.securityCredential = _ldapIdentitySourceCoreSection.securityCredential.text;
+            ldapIdentitySource.securityAuthentication = _ldapIdentitySourceCoreSection.securityAuthentication.selectedItem.data;
+            ldapIdentitySource.ldapSearchScope = _ldapIdentitySourceCoreSection.ldapSearchScope.selectedItem.data;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
+
+    private function handleLdapIdentitySourceLookupPropertyTabCreationComplete(event:Event):void {
+        var ldapIdentitySource:LdapIdentitySource = _currentIdentityApplianceElement as LdapIdentitySource;
+
+        // if ldapIdentitySource is null that means some other element was selected before completing this
+        if (ldapIdentitySource != null) {
+            _ldapIdentitySourceLookupSection.usersCtxDN.text = ldapIdentitySource.usersCtxDN;
+            _ldapIdentitySourceLookupSection.principalUidAttributeID.text = ldapIdentitySource.principalUidAttributeID;
+            _ldapIdentitySourceLookupSection.roleMatchingMode.text = ldapIdentitySource.roleMatchingMode;
+            _ldapIdentitySourceLookupSection.uidAttributeID.text = ldapIdentitySource.uidAttributeID;
+            _ldapIdentitySourceLookupSection.rolesCtxDN.text = ldapIdentitySource.rolesCtxDN;
+            _ldapIdentitySourceLookupSection.roleAttributeID.text = ldapIdentitySource.roleAttributeID;
+            _ldapIdentitySourceLookupSection.credentialQueryString.text = ldapIdentitySource.credentialQueryString;
+            _ldapIdentitySourceLookupSection.updateableCredentialAttribute.text = ldapIdentitySource.updateableCredentialAttribute;
+            _ldapIdentitySourceLookupSection.userPropertiesQueryString.text = ldapIdentitySource.userPropertiesQueryString;
+
+            _ldapIdentitySourceLookupSection.usersCtxDN.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceLookupSection.principalUidAttributeID.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceLookupSection.roleMatchingMode.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceLookupSection.uidAttributeID.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceLookupSection.rolesCtxDN.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceLookupSection.roleAttributeID.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceLookupSection.credentialQueryString.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceLookupSection.updateableCredentialAttribute.addEventListener(Event.CHANGE, handleSectionChange);
+            _ldapIdentitySourceLookupSection.userPropertiesQueryString.addEventListener(Event.CHANGE, handleSectionChange);
+            
+            _validators = [];
+            _validators.push(_ldapIdentitySourceLookupSection.usersCtxDNValidator);
+            _validators.push(_ldapIdentitySourceLookupSection.principalUidAttributeIDValidator);
+            _validators.push(_ldapIdentitySourceLookupSection.roleMatchingModeValidator);
+            _validators.push(_ldapIdentitySourceLookupSection.uidAttributeIDValidator);
+            _validators.push(_ldapIdentitySourceLookupSection.rolesCtxDNValidator);
+            _validators.push(_ldapIdentitySourceLookupSection.roleAttributeIDValidator);
+            _validators.push(_ldapIdentitySourceLookupSection.credentialQueryStringValidator);
+            _validators.push(_ldapIdentitySourceLookupSection.updateableCredentialAttributeValidator);
+            _validators.push(_ldapIdentitySourceLookupSection.userPropertiesQueryStringValidator);
+        }
+    }
+
+    private function handleLdapIdentitySourceLookupPropertyTabRollOut(event:Event):void {
+        if (_dirty && validate(true)) {
+            // bind model
+            var ldapIdentitySource:LdapIdentitySource = _currentIdentityApplianceElement as LdapIdentitySource;
+            ldapIdentitySource.usersCtxDN = _ldapIdentitySourceLookupSection.usersCtxDN.text;
+            ldapIdentitySource.principalUidAttributeID = _ldapIdentitySourceLookupSection.principalUidAttributeID.text;
+            ldapIdentitySource.roleMatchingMode = _ldapIdentitySourceLookupSection.roleMatchingMode.text;
+            ldapIdentitySource.uidAttributeID = _ldapIdentitySourceLookupSection.uidAttributeID.text;
+            ldapIdentitySource.rolesCtxDN = _ldapIdentitySourceLookupSection.rolesCtxDN.text;
+            ldapIdentitySource.roleAttributeID = _ldapIdentitySourceLookupSection.roleAttributeID.text;
+            ldapIdentitySource.credentialQueryString = _ldapIdentitySourceLookupSection.credentialQueryString.text;
+            ldapIdentitySource.updateableCredentialAttribute = _ldapIdentitySourceLookupSection.updateableCredentialAttribute.text;
+            ldapIdentitySource.userPropertiesQueryString = _ldapIdentitySourceLookupSection.userPropertiesQueryString.text;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
+
+    protected function enableXmlIdentitySourcePropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _xmlIdentitySourceCoreSection = new XmlIdentitySourceCoreSection();
+        corePropertyTab.addElement(_xmlIdentitySourceCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _xmlIdentitySourceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleXmlIdentitySourceCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleXmlIdentitySourceCorePropertyTabRollOut);
+    }
+
+    private function handleXmlIdentitySourceCorePropertyTabCreationComplete(event:Event):void {
+        var xmlIdentitySource:XmlIdentitySource;
+
+        xmlIdentitySource = _currentIdentityApplianceElement as XmlIdentitySource;
+
+        // if xmlIdentitySource is null that means some other element was selected before completing this
+        if (xmlIdentitySource != null) {
+            // bind view
+            _xmlIdentitySourceCoreSection.userRepositoryName.text = xmlIdentitySource.name;
+            _xmlIdentitySourceCoreSection.description.text = xmlIdentitySource.description
+            _xmlIdentitySourceCoreSection.xmlUrl.text = xmlIdentitySource.xmlUrl;
+
+            _xmlIdentitySourceCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
+            _xmlIdentitySourceCoreSection.description.addEventListener(Event.CHANGE, handleSectionChange);
+            _xmlIdentitySourceCoreSection.xmlUrl.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_xmlIdentitySourceCoreSection.nameValidator);
+            _validators.push(_xmlIdentitySourceCoreSection.xmlValidator);
+        }
+    }
+
+    private function handleXmlIdentitySourceCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+            // bind model
+            var xmlIdentitySource:XmlIdentitySource;
+
+            xmlIdentitySource = _currentIdentityApplianceElement as XmlIdentitySource;
+            xmlIdentitySource.name = _xmlIdentitySourceCoreSection.userRepositoryName.text;
+            xmlIdentitySource.description = _xmlIdentitySourceCoreSection.description.text;
+            xmlIdentitySource.xmlUrl = _xmlIdentitySourceCoreSection.xmlUrl.text;
+            
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
 
     protected function enableFederatedConnectionPropertyTabs():void {
         _propertySheetsViewStack.removeAllChildren();

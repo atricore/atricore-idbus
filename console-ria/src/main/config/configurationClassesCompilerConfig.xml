@@ -28,7 +28,12 @@
         <symbol>com.atricore.idbus.console.modeling.propertysheet.PropertySheetMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.DiagramMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator</symbol>
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardViewMediator
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator
+        </symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.ldapidentitysource.LdapIdentitySourceCreateMediator
+        </symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateMediator
         </symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator</symbol>

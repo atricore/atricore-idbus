@@ -229,9 +229,11 @@ public class ModelerMediator extends IocMediator {
             ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT,
             ApplicationFacade.CREATE_SP_CHANNEL_ELEMENT,
             ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT,
-            ApplicationFacade.CREATE_DB_IDENTITY_VAULT_ELEMENT,
-            ApplicationFacade.REMOVE_DB_IDENTITY_VAULT_ELEMENT,
+            ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT,
+            ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT,
+            ApplicationFacade.REMOVE_DB_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT,
+            ApplicationFacade.CREATE_XML_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT,
@@ -300,17 +302,22 @@ public class ModelerMediator extends IocMediator {
                 //                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.SP_CHANNEL_REMOVE, rspc.spChannel);
                 break;
-
-            case ApplicationFacade.CREATE_DB_IDENTITY_VAULT_ELEMENT:
-                popupManager.showCreateDbIdentityVaultWindow(notification);
+            case ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT:
+                popupManager.showCreateIdentityVaultWindow(notification);
                 break;
-            case ApplicationFacade.REMOVE_DB_IDENTITY_VAULT_ELEMENT:
+            case ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT:
+                popupManager.showCreateDbIdentitySourceWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_DB_IDENTITY_SOURCE_ELEMENT:
                 var rdbiv:RemoveIdentityVaultElementRequest = RemoveIdentityVaultElementRequest(notification.getBody());
                 //                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.DB_IDENTITY_VAULT_REMOVE, rdbiv.identityVault);
                 break;
             case ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:
                 popupManager.showCreateLdapIdentitySourceWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_XML_IDENTITY_SOURCE_ELEMENT:
+                popupManager.showCreateXmlIdentitySourceWindow(notification);
                 break;
             case ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreateJBossExecutionEnvironmentWindow(notification);

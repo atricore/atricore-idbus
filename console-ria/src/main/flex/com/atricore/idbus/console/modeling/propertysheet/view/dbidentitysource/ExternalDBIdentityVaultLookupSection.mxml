@@ -27,17 +27,20 @@
          width="100%" height="100%">
 
     <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%" verticalGap="8">
-       <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.userQuery')}:">
+       <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.userQuery')}:">
             <s:TextArea id="userQuery" width="370" height="40" />
         </utils:FormItemVerticalAlign>
-        <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.rolesQuery')}:">
+        <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.rolesQuery')}:">
             <s:TextArea id="rolesQuery" width="370" height="40" />
         </utils:FormItemVerticalAlign>
-        <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.credentialsQuery')}:">
+        <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.credentialsQuery')}:">
             <s:TextArea id="credentialsQuery" width="370" height="40" />
         </utils:FormItemVerticalAlign>
-        <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.propertiesQuery')}:">
+        <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.propertiesQuery')}:">
             <s:TextArea id="propertiesQuery" width="370" height="40" />
+        </utils:FormItemVerticalAlign>
+        <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.credentialsUpdate')}:">
+            <s:TextArea id="credentialsUpdate" width="370" height="40" />
         </utils:FormItemVerticalAlign>
     </mx:Form>
 </s:Group>

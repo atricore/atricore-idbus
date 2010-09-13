@@ -26,7 +26,7 @@ public class DiagramElementTypes {
     public static const IDENTITY_APPLIANCE_ELEMENT_TYPE = 2;
     public static const IDP_CHANNEL_ELEMENT_TYPE:int = 3;
     public static const SP_CHANNEL_ELEMENT_TYPE:int = 4;
-    public static const DB_IDENTITY_VAULT_ELEMENT_TYPE = 5;
+    public static const DB_IDENTITY_SOURCE_ELEMENT_TYPE = 5;
     public static const FEDERATED_CONNECTION_ELEMENT_TYPE = 6;
     public static const LDAP_IDENTITY_SOURCE_ELEMENT_TYPE = 7;
     public static const ACTIVATION_ELEMENT_TYPE = 8;
@@ -42,5 +42,7 @@ public class DiagramElementTypes {
     public static const WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT_TYPE = 18;
     public static const WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE = 19;
     public static const WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE = 20;
+    public static const IDENTITY_VAULT_ELEMENT_TYPE = 21;
+    public static const XML_IDENTITY_SOURCE_ELEMENT_TYPE = 22;
 }
 }

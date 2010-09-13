@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<WizardStep
+        xmlns="com.atricore.idbus.console.components.wizard.*"
+        xmlns:mx="library://ns.adobe.com/flex/mx"
+        xmlns:fx="http://ns.adobe.com/mxml/2009"
+        xmlns:s="library://ns.adobe.com/flex/spark"
+        stepName="External User Repository"
+        xmlns:utils="com.atricore.idbus.console.components.*"
+        xmlns:components="com.atricore.idbus.console.components.*"
+        creationComplete="initForm()"
+        show="initFields()">
+
+        <fx:Script>
+        <![CDATA[
+
+            import com.atricore.idbus.console.services.dto.DbIdentitySource;
+            import com.atricore.idbus.console.services.dto.IdentitySource;
+            import com.atricore.idbus.console.services.dto.UserInformationLookup;
+
+            [Bindable]
+            private var validators:Array;
+
+            private var readableDecisionArray:Array;
+
+            override public function get stepDecision():* {
+                var identitySource:DbIdentitySource = null;
+                identitySource = new DbIdentitySource();
+                identitySource.name = userRepositoryName.text;
+                identitySource.driverName = driverName.text;
+                identitySource.connectionUrl = connectionUrl.text;
+                identitySource.admin = dbUsername.text;
+                identitySource.password = dbPassword.text;
+
+                identitySource.userQueryString = userQuery.text;
+                identitySource.rolesQueryString = rolesQuery.text;
+                identitySource.credentialsQueryString = credentialsQuery.text;
+                identitySource.userPropertiesQueryString = propertiesQuery.text;
+                identitySource.resetCredentialDml = credentialsUpdate.text;
+                identitySource.relayCredentialQueryString = relayCredentialQuery.text;
+
+                return identitySource;
+            }
+
+            override public function get readableStepDecision():String {
+                readableDecisionArray = new Array();
+                return readableDecisionArray.join("\n").toString();
+            }
+
+            private function initFields():void {
+                callLater(function() {
+                    userRepositoryName.text = (previousStepData as IdentitySource).name;
+                });
+            }
+
+            private function initForm():void {
+                if (validators == null) {
+                    validators = new Array();
+                    validators.push(nameValidator);
+                    validators.push(driverNameValidator);
+                    validators.push(connUrlValidator);
+                    validators.push(dbUsernameValidator);
+                    validators.push(dbPasswordValidator);
+                }
+            }
+
+            private function handleFormChange(event:Event):void {
+                // Check the step validity
+                dbSourceForm.validateForm(event);
+                isValid = dbSourceForm.isValid;
+            }
+
+            override public function get isJumpToConditionMet():Boolean {
+                return true;
+            }
+
+        ]]>
+    </fx:Script>
+    <fx:Style>
+        .textAreaLabel {
+           verticalAlign:middle;
+           textAlign: left;
+           padding-left:5;
+        }
+    </fx:Style>
+
+    <fx:Declarations>
+        <mx:StringValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"/>
+        <mx:StringValidator id="driverNameValidator" source="{driverName}" required="true" property="text"/>
+        <mx:StringValidator id="connUrlValidator" source="{connectionUrl}" required="true" property="text"/>
+        <mx:StringValidator id="dbUsernameValidator" source="{dbUsername}" required="true" property="text"/>
+        <mx:StringValidator id="dbPasswordValidator" source="{dbPassword}" required="true" property="text"/>
+    </fx:Declarations>
+
+    <s:VGroup width="100%" height="100%">
+
+        <utils:ValidatingForm id="dbSourceForm" width="100%" height="100%" validators="{validators}" labelWidth="120"
+                    paddingLeft="10" paddingTop="10" paddingRight="10" paddingBottom="10">
+            <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.dbUsersRepository')}"
+                           width="100%" height="100%" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
+                <s:HGroup>
+                    <mx:FormItem labelWidth="50" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.name')}:" required="true">
+                        <s:TextInput id="userRepositoryName" width="150" editable="false"/>
+                    </mx:FormItem>
+                </s:HGroup>
+
+                <mx:TabNavigator borderStyle="solid" width="100%" height="230">
+
+                    <!-- CONNECTION TAB -->
+                    <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.connectionTab')}">
+                        <s:VGroup width="100%" height="100%">
+
+                            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.driverName')}:" required="true">
+                                <s:TextInput id="driverName" width="200" change="handleFormChange(event);"/>
+                            </mx:FormItem>
+
+                            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.connectionUrl')}:" required="true">
+                                <s:TextInput id="connectionUrl" width="200" change="handleFormChange(event);"/>
+                            </mx:FormItem>
+
+                            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.dbUsername')}:" required="true">
+                                <s:TextInput id="dbUsername" width="200" change="handleFormChange(event);"/>
+                            </mx:FormItem>
+
+                            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.dbPassword')}:" required="true">
+                                <s:TextInput id="dbPassword" width="200" change="handleFormChange(event);"/>
+                            </mx:FormItem>
+
+                            <mx:FormItem>
+                                <s:CheckBox id="skipConnTest" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.skipConnTest')}"/>
+                            </mx:FormItem>
+
+                            <mx:FormItem>
+                                <s:Button id="testConnBtn" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.testConnection')}"/>
+                            </mx:FormItem>
+                        </s:VGroup>
+                    </s:NavigatorContent>
+
+                    <!-- USER LOOKUP TAB -->
+                    <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.userLookupTab')}">
+                        <s:VGroup>
+                            <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.userQuery')}:">
+                                <s:TextArea id="userQuery" width="370" height="37" />
+                            </utils:FormItemVerticalAlign>
+                            <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.rolesQuery')}:">
+                                <s:TextArea id="rolesQuery" width="370" height="37" />
+                            </utils:FormItemVerticalAlign>
+                            <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.credentialsQuery')}:">
+                                <s:TextArea id="credentialsQuery" width="370" height="37" />
+                            </utils:FormItemVerticalAlign>
+                            <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.propertiesQuery')}:">
+                                <s:TextArea id="propertiesQuery" width="370" height="37" />
+                            </utils:FormItemVerticalAlign>
+                            <s:HGroup width="100%">
+                                <mx:Spacer width="402"/>
+                                <s:Button id="testQueries" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.testQueries')}"/>
+                            </s:HGroup>
+                        </s:VGroup>
+                    </s:NavigatorContent>
+
+                    <!-- UPDATE TAB -->
+                    <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.passUpdateTab')}">
+                        <s:VGroup>
+                            <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.credentialsUpdate')}:">
+                                <s:TextArea id="credentialsUpdate" width="370" height="40" />
+                            </utils:FormItemVerticalAlign>
+                            <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.relayCredentials')}:">
+                                <s:TextArea id="relayCredentialQuery" width="370" height="40" />
+                            </utils:FormItemVerticalAlign>
+                            <s:HGroup width="100%">
+                                <mx:Spacer width="407"/>
+                                <s:Button id="testUpdates" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.testUpdate')}"/>
+                            </s:HGroup>
+                        </s:VGroup>
+                    </s:NavigatorContent>
+                </mx:TabNavigator>
+            </utils:TitledBorderBox>
+        </utils:ValidatingForm>
+
+    </s:VGroup>
+</WizardStep>

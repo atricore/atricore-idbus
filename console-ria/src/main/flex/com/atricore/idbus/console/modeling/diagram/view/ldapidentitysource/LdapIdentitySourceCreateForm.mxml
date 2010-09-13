@@ -20,7 +20,6 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-    <!--<utils:ValidatingForm id="identityProvForm" width="100%" height="100%" defaultButton="{btnOk}">-->
 <mx:Form xmlns:mx="library://ns.adobe.com/flex/mx"
          xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
@@ -28,61 +27,153 @@
          defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
 
     <fx:Declarations>
-        <mx:StringValidator id="nameValidator" source="{ldapIdentitySourceName}" required="true" property="text" trigger="{btnOk}"
-                        triggerEvent="click"/>
-        <mx:NumberValidator id="portValidator" source="{ldapIdentitySourcePort}" required="false" property="text"
-                        trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
-                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
-        <utils:URLPartValidator id="domainValidator" source="{ldapIdentitySourceDomain}" required="true" property="text"
-                        trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="initialContextFactoryValidator" source="{initialContextFactory}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="providerUrlValidator" source="{providerUrl}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="securityPrincipalValidator" source="{securityPrincipal}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="securityCredentialValidator" source="{securityCredential}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="usersCtxDNValidator" source="{usersCtxDN}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="principalUidAttributeIDValidator" source="{principalUidAttributeID}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="roleMatchingModeValidator" source="{roleMatchingMode}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="uidAttributeIDValidator" source="{uidAttributeID}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="rolesCtxDNValidator" source="{rolesCtxDN}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="roleAttributeIDValidator" source="{roleAttributeID}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="credentialQueryStringValidator" source="{credentialQueryString}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="updateableCredentialAttributeValidator" source="{updateableCredentialAttribute}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="userPropertiesQueryStringValidator" source="{userPropertiesQueryString}" required="true" property="text"
+                            trigger="{btnOk}" triggerEvent="click"/>
     </fx:Declarations>
+
+    <mx:TabNavigator borderStyle="solid" width="100%" height="285" creationPolicy="all">
+
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.tab.base')}">
+            <s:VGroup>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.name')}:"
+                         required="true">
+                <s:TextInput id="userRepositoryName" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.description')}:">
+                <s:TextInput id="description" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.initialContextFactory')}:"
+                         required="true">
+                <s:TextInput id="initialContextFactory" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.providerUrl')}:"
+                         required="true">
+                <s:TextInput id="providerUrl" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.securityPrincipal')}:"
+                         required="true">
+                <s:TextInput id="securityPrincipal" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.securityCredential')}:"
+                         required="true">
+                <s:TextInput id="securityCredential" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.securityAuthentication')}:"
+                         required="true">
+                <s:DropDownList id="securityAuthentication" selectedIndex="0" width="180">
+                    <s:dataProvider>
+                        <mx:ArrayCollection>
+                            <fx:Object label="None" data="none"/>
+                            <fx:Object label="Simple" data="simple"/>
+                            <fx:Object label="Strong" data="strong"/>
+                        </mx:ArrayCollection>
+                    </s:dataProvider>
+                </s:DropDownList>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.ldapSearchScope')}:"
+                         required="true">
+                <s:DropDownList id="ldapSearchScope" selectedIndex="0" width="180">
+                    <s:dataProvider>
+                        <mx:ArrayCollection>
+                            <fx:Object label="Base" data="base"/>
+                            <fx:Object label="One" data="one"/>
+                            <fx:Object label="Subtree" data="subtree"/>
+                            <fx:Object label="Children" data="children"/>
+                        </mx:ArrayCollection>
+                    </s:dataProvider>
+                </s:DropDownList>
+            </mx:FormItem>
+
+            </s:VGroup>
+        </s:NavigatorContent>
+
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.tab.lookup')}">
+            <s:VGroup>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.usersCtxDN')}:"
+                         required="true">
+                <s:TextInput id="usersCtxDN" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.principalUidAttributeID')}:"
+                         required="true">
+                <s:TextInput id="principalUidAttributeID" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.roleMatchingMode')}:"
+                         required="true">
+                <s:TextInput id="roleMatchingMode" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.uidAttributeID')}:"
+                         required="true">
+                <s:TextInput id="uidAttributeID" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.rolesCtxDN')}:"
+                         required="true">
+                <s:TextInput id="rolesCtxDN" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.roleAttributeID')}:"
+                         required="true">
+                <s:TextInput id="roleAttributeID" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.updateableCredentialAttribute')}:"
+                         required="true">
+                <s:TextInput id="updateableCredentialAttribute" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.credentialQueryString')}:"
+                         required="true">
+                <s:TextInput id="credentialQueryString" width="300"/>
+            </mx:FormItem>
+
+            <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.userPropertiesQueryString')}:"
+                         required="true">
+                <s:TextInput id="userPropertiesQueryString" width="300"/>
+            </mx:FormItem>
+
+            </s:VGroup>
+        </s:NavigatorContent>
+
+    </mx:TabNavigator>
     
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.name')}:" required="true">
-        <s:TextInput id="ldapIdentitySourceName" width="300"/>
-    </mx:FormItem>
-
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.description')}:">
-        <s:TextInput id="ldapIdentitySourceDescription" width="300"/>
-    </mx:FormItem>
-
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.location')}:" required="true"
-            direction="horizontal" labelWidth="152">
-        <s:DropDownList id="ldapIdentitySourceProtocol" width="70" selectedIndex="0">
-            <s:dataProvider>
-                <mx:ArrayCollection>
-                    <fx:Object label="http" data="http"/>
-                    <fx:Object label="https" data="https"/>
-                </mx:ArrayCollection>
-            </s:dataProvider>
-        </s:DropDownList>
-        <s:Label text="://" width="15" paddingTop="5"/>
-        <s:TextInput id="ldapIdentitySourceDomain" width="150"/>
-        <s:Label text=":" width="10" paddingTop="5"/>
-        <s:TextInput id="ldapIdentitySourcePort" width="40"/>        
-    </mx:FormItem>
-
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.baseDN')}:">
-        <s:TextInput id="ldapIdentitySourceBaseDN" width="300"/>
-    </mx:FormItem>
-
-    <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.encryption.method')}:" direction="horizontal">-->
-        <!--<s:CheckBox id="ldapIdentitySourceSupportedEncryptionMethod" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}"/>-->
-    <!--</mx:FormItem>-->
-
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.auth.mechanism')}:">
-        <s:DropDownList id="ldapIdentitySourceAuthMechanismCombo" selectedIndex="0" width="180">
-            <s:dataProvider>
-                <mx:ArrayCollection>
-                    <fx:Object label="None" data="none"/>
-                    <fx:Object label="Simple" data="simple"/>
-                    <fx:Object label="Strong" data="strong"/>
-                </mx:ArrayCollection>
-            </s:dataProvider>
-        </s:DropDownList>
-    </mx:FormItem>
-
-    <!--</utils:ValidatingForm>-->
-
     <!-- TODO: create custom panel skin to change controlBarContent style? or use mx:ControlBar? -->
     <s:Panel id="controlBarPanel" width="100%" height="40" borderVisible="false"
             horizontalCenter="0" verticalCenter="0" contentBackgroundAlpha="0" dropShadowVisible="false"
@@ -96,4 +187,3 @@
         </s:controlBarLayout>
     </s:Panel>
 </mx:Form>
-<!--</mx:VBox>-->

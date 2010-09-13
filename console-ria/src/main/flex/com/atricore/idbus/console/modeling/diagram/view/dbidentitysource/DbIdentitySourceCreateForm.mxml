@@ -1,0 +1,139 @@
+<?xml version="1.0" ?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<mx:Form xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:utils="com.atricore.idbus.console.components.*"
+         defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8" labelWidth="120">
+
+    <fx:Style>
+        .textAreaLabel {
+           verticalAlign:middle;
+           textAlign: left;
+           padding-left:5;
+        }
+    </fx:Style>
+    
+    <fx:Declarations>
+        <mx:StringValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"
+                trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="driverNameValidator" source="{driverName}" required="true" property="text"
+                trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="connUrlValidator" source="{connectionUrl}" required="true" property="text"
+                trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="dbUsernameValidator" source="{dbUsername}" required="true" property="text"
+                trigger="{btnOk}" triggerEvent="click"/>
+        <mx:StringValidator id="dbPasswordValidator" source="{dbPassword}" required="true" property="text"
+                trigger="{btnOk}" triggerEvent="click"/>
+    </fx:Declarations>
+
+    <s:HGroup>
+        <mx:FormItem labelWidth="50" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.name')}:" required="true">
+            <s:TextInput id="userRepositoryName" width="200"/>
+        </mx:FormItem>
+    </s:HGroup>
+
+    <mx:TabNavigator borderStyle="solid" width="100%" height="230">
+
+        <!-- CONNECTION TAB -->
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.connectionTab')}">
+            <s:VGroup width="100%" height="100%">
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.driverName')}:" required="true">
+                    <s:TextInput id="driverName" width="200"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.connectionUrl')}:" required="true">
+                    <s:TextInput id="connectionUrl" width="200"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.dbUsername')}:" required="true">
+                    <s:TextInput id="dbUsername" width="200"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.dbPassword')}:" required="true">
+                    <s:TextInput id="dbPassword" width="200"/>
+                </mx:FormItem>
+
+                <mx:FormItem>
+                    <s:CheckBox id="skipConnTest" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.skipConnTest')}"/>
+                </mx:FormItem>
+
+                <mx:FormItem>
+                    <s:Button id="testConnBtn" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.testConnection')}"/>
+                </mx:FormItem>
+            </s:VGroup>
+        </s:NavigatorContent>
+
+        <!-- USER LOOKUP TAB -->
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.userLookupTab')}">
+            <s:VGroup>
+                <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.userQuery')}:">
+                    <s:TextArea id="userQuery" width="370" height="37" />
+                </utils:FormItemVerticalAlign>
+                <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.rolesQuery')}:">
+                    <s:TextArea id="rolesQuery" width="370" height="37" />
+                </utils:FormItemVerticalAlign>
+                <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.credentialsQuery')}:">
+                    <s:TextArea id="credentialsQuery" width="370" height="37" />
+                </utils:FormItemVerticalAlign>
+                <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.propertiesQuery')}:">
+                    <s:TextArea id="propertiesQuery" width="370" height="37" />
+                </utils:FormItemVerticalAlign>
+                <s:HGroup width="100%">
+                    <mx:Spacer width="402"/>
+                    <s:Button id="testQueries" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.testQueries')}"/>
+                </s:HGroup>
+            </s:VGroup>
+        </s:NavigatorContent>
+
+        <!-- UPDATE TAB -->
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.passUpdateTab')}">
+            <s:VGroup>
+                <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.credentialsUpdate')}:">
+                    <s:TextArea id="credentialsUpdate" width="370" height="40" />
+                </utils:FormItemVerticalAlign>
+                <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.relayCredentials')}:">
+                    <s:TextArea id="relayCredentialQuery" width="370" height="40" />
+                </utils:FormItemVerticalAlign>
+                <s:HGroup width="100%">
+                    <mx:Spacer width="407"/>
+                    <s:Button id="testUpdates" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.testUpdate')}"/>
+                </s:HGroup>
+            </s:VGroup>
+        </s:NavigatorContent>
+    </mx:TabNavigator>
+
+    <!-- TODO: create custom panel skin to change controlBarContent style? or use mx:ControlBar? -->
+    <s:Panel id="controlBarPanel" width="100%" height="40" borderVisible="false"
+            horizontalCenter="0" verticalCenter="0" contentBackgroundAlpha="0" dropShadowVisible="false"
+            creationComplete="controlBarPanel.titleDisplay.height=controlBarPanel.titleDisplay.minHeight=0;">
+        <s:controlBarContent>
+            <s:Button id="btnCancel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
+            <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}" enabled="true"/>
+        </s:controlBarContent>
+        <s:controlBarLayout>
+            <s:HorizontalLayout horizontalAlign="center"/>
+        </s:controlBarLayout>
+    </s:Panel>
+</mx:Form>

@@ -153,11 +153,19 @@ public class PaletteMediator extends IocMediator {
 
         var identitySourcesPaletteDrawer:PaletteDrawer = new PaletteDrawer("Identity Sources", null, null);
         identitySourcesPaletteDrawer.add(
-                    new PaletteEntry("DB Identity Vault", EmbeddedIcons.dbIdentitySourceMiniIcon, "Database Identity Vault Entry", DiagramElementTypes.DB_IDENTITY_VAULT_ELEMENT_TYPE)
+                    new PaletteEntry("Identity Vault", EmbeddedIcons.vaultMiniIcon, "Identity Vault Entry", DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE)
+
+                );
+        identitySourcesPaletteDrawer.add(
+                    new PaletteEntry("DB Identity Source", EmbeddedIcons.dbIdentitySourceMiniIcon, "DB Identity Source Entry", DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE)
 
                 );
         identitySourcesPaletteDrawer.add(
                     new PaletteEntry("LDAP Identity Source", EmbeddedIcons.ldapIdentitySourceMiniIcon, "LDAP Identity Source Entry", DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE)
+
+                );
+        identitySourcesPaletteDrawer.add(
+                    new PaletteEntry("XML Identity Source", EmbeddedIcons.xmlIdentitySourceMiniIcon, "XML Identity Source Entry", DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE)
 
                 );
 

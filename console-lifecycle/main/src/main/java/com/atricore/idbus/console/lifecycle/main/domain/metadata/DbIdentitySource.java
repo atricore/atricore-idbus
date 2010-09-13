@@ -6,16 +6,10 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  */
 public class DbIdentitySource extends IdentitySource {
 
-    // TODO : JDBCU/Datasource setup
-
     protected String admin;
     protected String password;
-    //TODO
     protected String connectionUrl;
-    protected int port;
-    protected String schema;
-    protected String connectionName;
-    
+
     protected String driverName;
 
     private String userQueryString;
@@ -42,30 +36,6 @@ public class DbIdentitySource extends IdentitySource {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
-    public String getConnectionName() {
-        return connectionName;
-    }
-
-    public void setConnectionName(String connectionName) {
-        this.connectionName = connectionName;
     }
 
     public String getDriverName() {

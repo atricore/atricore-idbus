@@ -204,6 +204,9 @@ package com.atricore.idbus.console.main {
         [Embed(source="/assets/icons/notation/48x48/database_identity_source.png")]
         public static var dbIdentitySourceIcon:Class;
 
+        [Bindable]
+        [Embed(source="/assets/icons/notation/48x48/xml_identity_source.png")]
+        public static var xmlIdentitySourceIcon:Class;
 
         //TODO USE APPROPRIATE ICONS        
         [Bindable]
@@ -242,6 +245,10 @@ package com.atricore.idbus.console.main {
         [Bindable]
         [Embed(source="/assets/icons/notation/22x22/database_identity_source.png")]
         public static var dbIdentitySourceMiniIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/notation/22x22/xml_identity_source.png")]
+        public static var xmlIdentitySourceMiniIcon:Class;
 
         //CONNECTIONS
         [Bindable]

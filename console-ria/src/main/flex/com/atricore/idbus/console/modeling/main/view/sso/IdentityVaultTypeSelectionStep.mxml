@@ -80,7 +80,7 @@
             }
 
             override public function get isJumpToConditionMet():Boolean {
-                if (repositoryType.selectedValue == "embedded") {
+                if (embedded.selected) {
                     return true;
                 }
                 return false;
@@ -107,7 +107,7 @@
                     <s:RadioButton groupName="repositoryType" id="embedded" value="embedded" selected="true"
                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.embeddedRepository')}"/>
                     <s:RadioButton groupName="repositoryType" id="external" value="external"
-                            label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.externalRepository')}"/>
+                                label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.externalRepository')}"/>
                 </mx:FormItem>
             </utils:TitledBorderBox>
        </utils:ValidatingForm>

@@ -96,9 +96,11 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const REMOVE_IDP_CHANNEL_ELEMENT:String = "removeIdpChannelElement";
     public static const CREATE_SP_CHANNEL_ELEMENT:String = "createSpChannelElement";
     public static const REMOVE_SP_CHANNEL_ELEMENT:String = "removeSpChannelElement";
-    public static const CREATE_DB_IDENTITY_VAULT_ELEMENT:String = "createIdentityVaultElement";
-    public static const REMOVE_DB_IDENTITY_VAULT_ELEMENT:String = "removeIdentityVaultElement";
+    public static const CREATE_DB_IDENTITY_SOURCE_ELEMENT:String = "createDbIdentitySourceElement";
+    public static const REMOVE_DB_IDENTITY_SOURCE_ELEMENT:String = "removeDbIdentitySourceElement";
     public static const CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:String = "createLdapIdentitySourceElement";
+    public static const CREATE_XML_IDENTITY_SOURCE_ELEMENT:String = "createXmlIdentitySourceElement";
+    public static const CREATE_IDENTITY_VAULT_ELEMENT:String = "createIdentityVaultElement";
     public static const REMOVE_SERVICE_PROVIDER_ELEMENT:String = "removeServiceProviderElement";
     public static const CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJbossExecutionEnvironmentElement";
     public static const CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWeblogicExecutionEnvironmentElement";

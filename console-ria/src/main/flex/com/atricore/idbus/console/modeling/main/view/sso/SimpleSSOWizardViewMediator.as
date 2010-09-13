@@ -32,7 +32,10 @@ import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.Keystore;
+import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
+
+import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
 import flash.events.DataEvent;
 import flash.events.Event;
@@ -167,8 +170,8 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         identityApplianceDefinition.identitySources.addItem(createIdentityVault());
 
         identityApplianceDefinition.providers = new ArrayCollection();
-        for (var i:int = 0; i < _wizardDataModel.step3Data.length; i++) {
-            var sp:ServiceProvider = _wizardDataModel.step3Data[i] as ServiceProvider;
+        for (var i:int = 0; i < _wizardDataModel.spData.length; i++) {
+            var sp:ServiceProvider = _wizardDataModel.spData[i] as ServiceProvider;
             identityApplianceDefinition.providers.addItem(sp);
         }
 
@@ -184,10 +187,18 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
     private function createIdentityVault():IdentitySource {
         var data:IdentitySource;
-        if (_wizardDataModel.step1Data is EmbeddedIdentitySource) {
-            data = _wizardDataModel.step2EmbeddedData as IdentitySource;
-        } else if (_wizardDataModel.step1Data is DbIdentitySource) {
-            data = _wizardDataModel.step2ExternalData as IdentitySource;
+        if (_wizardDataModel.authData is EmbeddedIdentitySource) {
+            var embeddedIdentitySource:EmbeddedIdentitySource = _wizardDataModel.authData as EmbeddedIdentitySource;
+            embeddedIdentitySource.idau = "idau-default";
+            embeddedIdentitySource.psp = "psp-default";
+            embeddedIdentitySource.pspTarget = "pst-default";
+            data = embeddedIdentitySource;
+        } else if (_wizardDataModel.authData is DbIdentitySource) {
+            data = _wizardDataModel.databaseData as DbIdentitySource;
+        } else if (_wizardDataModel.authData is LdapIdentitySource) {
+            data = _wizardDataModel.ldapData as LdapIdentitySource;
+        } else if (_wizardDataModel.authData is XmlIdentitySource) {
+            data = _wizardDataModel.xmlData as XmlIdentitySource;
         }
         return data;
     }

@@ -32,16 +32,18 @@
         <steps>
             <ssowizardsteps:IdentityApplianceStep stepId="appliance" jumpToStep="certificateStep"
                 dataField="applianceData"/>
-            <ssowizardsteps:ManageCertificateStep stepId="certificateStep" jumpToStep="ssoStep1"
+            <ssowizardsteps:ManageCertificateStep stepId="certificateStep" jumpToStep="authStep"
                 dataField="certificateData"/>
-            <ssowizardsteps:BasicAuthStep stepId="ssoStep1" jumpToStep="ssoStep2Embedded"
-                dataField="step1Data"/>
-            <ssowizardsteps:ExternalVaultStep stepId="ssoStep2External" jumpToStep="ssoStep3"
-                dataField="step2ExternalData"/>
-            <ssowizardsteps:EmbeddedVaultStep stepId="ssoStep2Embedded"
-                dataField="step2EmbeddedData"/>
-            <ssowizardsteps:ServiceProviderStep stepId="ssoStep3"
-                dataField="step3Data"/>
+            <ssowizardsteps:BasicAuthStep stepId="authStep" jumpToStep="spStep"
+                dataField="authData"/>
+            <ssowizardsteps:DbIdentitySourceStep stepId="databaseStep" jumpToStep="spStep"
+                dataField="databaseData"/>
+            <ssowizardsteps:LdapIdentitySourceStep stepId="ldapStep" jumpToStep="spStep"
+                dataField="ldapData"/>
+            <ssowizardsteps:XmlIdentitySourceStep stepId="xmlStep" jumpToStep="spStep"
+                dataField="xmlData"/>
+            <ssowizardsteps:ServiceProviderStep stepId="spStep"
+                dataField="spData"/>
         </steps>
 </Wizard>
 

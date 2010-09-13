@@ -111,6 +111,7 @@
         <class name="ServiceProviderChannel" table="ATC_SP_CHANNEL"/>
         <class name="TomcatExecutionEnvironmetn" table="ATC_TOMCAT_EXECENV"/>
         <class name="WASCEExecutionEnvironmetn" table="ATC_WASCE_EXECENV"/>
-        <class name="WeblogicExecutionEnvironmetn" table="ATC_WEBLOGIC_EXECENV"/>
+        <class name="WeblogicExecutionEnvironment" table="ATC_WEBLOGIC_EXECENV"/>
+        <class name="XmlIdentitySource" table="ATC_XML_ID_SOURCE"/>
     </package>
 </orm>

@@ -58,8 +58,10 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _serviceProviderCreateMediator:IIocMediator;
     private var _idpChannelCreateMediator:IIocMediator;
     private var _spChannelCreateMediator:IIocMediator;
-    private var _dbIdentityVaultWizardViewMediator:IIocMediator;
+    private var _identityVaultCreateMediator:IIocMediator;
+    private var _dbIdentitySourceCreateMediator:IIocMediator;
     private var _ldapIdentitySourceCreateMediator:IIocMediator;
+    private var _xmlIdentitySourceCreateMediator:IIocMediator;
     private var _jbossExecutionEnvironmentCreateMediator:IIocMediator;
     private var _weblogicExecutionEnvironmentCreateMediator:IIocMediator;
     private var _tomcatExecutionEnvironmentCreateMediator:IIocMediator;
@@ -215,12 +217,20 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _spChannelCreateMediator = value;
     }
 
-    public function get dbIdentityVaultWizardViewMediator():IIocMediator {
-        return _dbIdentityVaultWizardViewMediator;
+    public function get identityVaultCreateMediator():IIocMediator {
+        return _identityVaultCreateMediator;
     }
 
-    public function set dbIdentityVaultWizardViewMediator(value:IIocMediator):void {
-        _dbIdentityVaultWizardViewMediator = value;
+    public function set identityVaultCreateMediator(value:IIocMediator):void {
+        _identityVaultCreateMediator = value;
+    }
+
+    public function get dbIdentitySourceCreateMediator():IIocMediator {
+        return _dbIdentitySourceCreateMediator;
+    }
+
+    public function set dbIdentitySourceCreateMediator(value:IIocMediator):void {
+        _dbIdentitySourceCreateMediator = value;
     }
 
     public function get ldapIdentitySourceCreateMediator():IIocMediator {
@@ -229,6 +239,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set ldapIdentitySourceCreateMediator(value:IIocMediator):void {
         _ldapIdentitySourceCreateMediator = value;
+    }
+
+    public function get xmlIdentitySourceCreateMediator():IIocMediator {
+        return _xmlIdentitySourceCreateMediator;
+    }
+
+    public function set xmlIdentitySourceCreateMediator(value:IIocMediator):void {
+        _xmlIdentitySourceCreateMediator = value;
     }
 
     public function get jbossExecutionEnvironmentCreateMediator():IIocMediator {
@@ -855,8 +873,10 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(serviceProviderCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(idpChannelCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(spChannelCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(dbIdentityVaultWizardViewMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(identityVaultCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(dbIdentitySourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(ldapIdentitySourceCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(xmlIdentitySourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(jbossExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(weblogicExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(tomcatExecutionEnvironmentCreateMediator.getConfigName());

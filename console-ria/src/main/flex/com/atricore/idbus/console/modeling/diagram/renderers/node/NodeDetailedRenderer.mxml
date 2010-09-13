@@ -54,6 +54,8 @@
         import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
+        import com.atricore.idbus.console.services.dto.XmlIdentitySource;
+
         import mx.controls.Alert;
 
         import mx.events.CloseEvent;
@@ -116,6 +118,8 @@
                                         _linkIcon = EmbeddedIcons.dbIdentitySourceIcon;
                                     } else if(obj is LdapIdentitySource){
                                         _linkIcon = EmbeddedIcons.ldapIdentitySourceIcon;
+                                    } else if(obj is XmlIdentitySource){
+                                        _linkIcon = EmbeddedIcons.xmlIdentitySourceIcon;
                                     } else {
                                         _linkIcon = EmbeddedIcons.vaultIcon;
                                     }

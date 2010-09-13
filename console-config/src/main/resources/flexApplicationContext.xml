@@ -226,12 +226,20 @@
             class="com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="dbIdentityVaultWizardViewMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardViewMediator">
+    <object id="identityVaultCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="dbIdentitySourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="ldapIdentitySourceCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.ldapidentitysource.LdapIdentitySourceCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="xmlIdentitySourceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="jbossExecutionEnvironmentCreateMediator"
@@ -346,12 +354,14 @@
         <property name="serviceProviderMediator" ref="serviceProviderCreateMediator"/>
         <property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>
         <property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>
-        <property name="dbIdentityVaultWizardViewMediator" ref="dbIdentityVaultWizardViewMediator"/>
+        <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
         <property name="uploadProgressMediator" ref="uploadProgressMediator"/>
         <property name="buildApplianceMediator" ref="buildApplianceMediator"/>
         <property name="deployApplianceMediator" ref="deployApplianceMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
+        <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator" />
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator" />
+        <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator" />
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
         <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator" />
         <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />        
@@ -436,8 +446,10 @@
         <property name="propertySheetMediator" ref="propertySheetMediator"/>
         <property name="diagramMediator" ref="diagramMediator"/>
         <property name="identityProviderCreateMediator" ref="identityProviderCreateMediator"/>
-        <property name="dbIdentityVaultWizardViewMediator" ref="dbIdentityVaultWizardViewMediator"/>
+        <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator" />
+        <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator" />
+        <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator" />
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
         <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator" />
         <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />

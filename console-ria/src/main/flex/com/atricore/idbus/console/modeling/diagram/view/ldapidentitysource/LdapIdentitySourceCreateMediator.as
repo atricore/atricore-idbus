@@ -24,12 +24,10 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
-
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 
 import flash.events.MouseEvent;
 
-import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -38,12 +36,10 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
 
-    //TODO - create LdapIdentitySource domain object. LdapIdentitySource is used just as a workaround
     private var _newLdapIdentitySource:LdapIdentitySource;
 
     public function LdapIdentitySourceCreateMediator(name:String = null, viewComp:LdapIdentitySourceCreateForm = null) {
         super(name, viewComp);
-
     }
 
     public function get projectProxy():ProjectProxy {
@@ -71,34 +67,45 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
     }
 
     private function resetForm():void {
-        view.ldapIdentitySourceName.text = "";
-        view.ldapIdentitySourceDescription.text = "";
-        view.ldapIdentitySourceProtocol.selectedIndex = 0;
-        view.ldapIdentitySourceDomain.text = "";
-        view.ldapIdentitySourcePort.text = "";
-        view.ldapIdentitySourceBaseDN.text = "";
-        view.ldapIdentitySourceAuthMechanismCombo.selectedIndex = 0;
-
+        view.userRepositoryName.text = "";
+        view.description.text = "";
+        view.initialContextFactory.text = "";
+        view.providerUrl.text = "";
+        view.securityPrincipal.text = "";
+        view.securityCredential.text = "";
+        view.securityAuthentication.selectedIndex = 0;
+        view.ldapSearchScope.selectedIndex = 0;
+        view.usersCtxDN.text = "";
+        view.principalUidAttributeID.text = "";
+        view.roleMatchingMode.text = "";
+        view.uidAttributeID.text = "";
+        view.rolesCtxDN.text = "";
+        view.roleAttributeID.text = "";
+        view.credentialQueryString.text = "";
+        view.updateableCredentialAttribute.text = "";
+        view.userPropertiesQueryString.text = "";
         FormUtility.clearValidationErrors(_validators);
     }
 
     override public function bindModel():void {
-
         var ldapIdentitySource:LdapIdentitySource = new LdapIdentitySource();
-
-        ldapIdentitySource.name = view.ldapIdentitySourceName.text;
-        ldapIdentitySource.description = view.ldapIdentitySourceDescription.text;
-//
-//        var loc:Location = new Location();
-//        loc.protocol = view.ldapIdentitySourceProtocol.labelDisplay.text;
-//        loc.host = view.ldapIdentitySourceDomain.text;
-//        loc.port = parseInt(view.ldapIdentitySourcePort.text);
-//        ldapIdentitySource.location = loc;
-//
-//        ldapIdentitySource.baseDn = view.ldapIdentitySourceBaseDN.text;
-//        ldapIdentitySource.authMechanism = view.ldapIdentitySourceAuthMechanismCombo.labelDisplay.text;
-//
-//
+        ldapIdentitySource.name = view.userRepositoryName.text;
+        ldapIdentitySource.description = view.description.text;
+        ldapIdentitySource.initialContextFactory = view.initialContextFactory.text;
+        ldapIdentitySource.providerUrl = view.providerUrl.text;
+        ldapIdentitySource.securityPrincipal = view.securityPrincipal.text;
+        ldapIdentitySource.securityCredential = view.securityCredential.text;
+        ldapIdentitySource.securityAuthentication = view.securityAuthentication.selectedItem.data;
+        ldapIdentitySource.ldapSearchScope = view.ldapSearchScope.selectedItem.data;
+        ldapIdentitySource.usersCtxDN = view.usersCtxDN.text;
+        ldapIdentitySource.principalUidAttributeID = view.principalUidAttributeID.text;
+        ldapIdentitySource.roleMatchingMode = view.roleMatchingMode.text;
+        ldapIdentitySource.uidAttributeID = view.uidAttributeID.text;
+        ldapIdentitySource.rolesCtxDN = view.rolesCtxDN.text;
+        ldapIdentitySource.roleAttributeID = view.roleAttributeID.text;
+        ldapIdentitySource.credentialQueryString = view.credentialQueryString.text;
+        ldapIdentitySource.updateableCredentialAttribute = view.updateableCredentialAttribute.text;
+        ldapIdentitySource.userPropertiesQueryString = view.userPropertiesQueryString.text;
         _newLdapIdentitySource = ldapIdentitySource;
     }
 
@@ -131,23 +138,29 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
         return viewComponent as LdapIdentitySourceCreateForm;
     }
 
-
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
-        _validators.push(view.portValidator);
-        _validators.push(view.domainValidator);
+        _validators.push(view.initialContextFactoryValidator);
+        _validators.push(view.providerUrlValidator);
+        _validators.push(view.securityPrincipalValidator);
+        _validators.push(view.securityCredentialValidator);
+        _validators.push(view.usersCtxDNValidator);
+        _validators.push(view.principalUidAttributeIDValidator);
+        _validators.push(view.roleMatchingModeValidator);
+        _validators.push(view.uidAttributeIDValidator);
+        _validators.push(view.rolesCtxDNValidator);
+        _validators.push(view.roleAttributeIDValidator);
+        _validators.push(view.credentialQueryStringValidator);
+        _validators.push(view.updateableCredentialAttributeValidator);
+        _validators.push(view.userPropertiesQueryStringValidator);
     }
-
 
     override public function listNotificationInterests():Array {
         return super.listNotificationInterests();
     }
 
     override public function handleNotification(notification:INotification):void {
-
         super.handleNotification(notification);
-
-
     }
 }
 }

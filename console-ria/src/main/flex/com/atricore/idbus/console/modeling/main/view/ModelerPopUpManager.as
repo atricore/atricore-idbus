@@ -27,8 +27,8 @@ import com.atricore.idbus.console.main.view.upload.UploadProgress;
 import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
 import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardView;
-import com.atricore.idbus.console.modeling.diagram.view.dbidentityvault.DbIdentityVaultWizardViewMediator;
+import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateForm;
@@ -37,6 +37,8 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.web
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateForm;
@@ -47,6 +49,8 @@ import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreate
 import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateMediator;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceView;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
@@ -66,8 +70,10 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _serviceProviderMediator:ServiceProviderCreateMediator;
     private var _idpChannelCreateMediator:IDPChannelCreateMediator;
     private var _spChannelCreateMediator:SPChannelCreateMediator;
-    private var _dbIdentityVaultWizardViewMediator:DbIdentityVaultWizardViewMediator;
+    private var _identityVaultCreateMediator:IdentityVaultCreateMediator;
+    private var _dbIdentitySourceCreateMediator:DbIdentitySourceCreateMediator;
     private var _ldapIdentitySourceCreateMediator:LdapIdentitySourceCreateMediator;
+    private var _xmlIdentitySourceCreateMediator:XmlIdentitySourceCreateMediator;
     private var _jbossExecutionEnvironmentCreateMediator:JBossExecutionEnvironmentCreateMediator;
     private var _weblogicExecutionEnvironmentCreateMediator:WeblogicExecutionEnvironmentCreateMediator;
     private var _tomcatExecutionEnvironmentCreateMediator:TomcatExecutionEnvironmentCreateMediator;
@@ -82,8 +88,10 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _serviceProviderCreateForm:ServiceProviderCreateForm;
     private var _idpChannelCreateForm:IDPChannelCreateForm;
     private var _spChannelCreateForm:SPChannelCreateForm;
-    private var _dbIdentityVaultWizardView:DbIdentityVaultWizardView;
+    private var _identityVaultCreateForm:IdentityVaultCreateForm;
+    private var _dbIdentitySourceCreateForm:DbIdentitySourceCreateForm;
     private var _ldapIdentitySourceCreateForm:LdapIdentitySourceCreateForm;
+    private var _xmlIdentitySourceCreateForm:XmlIdentitySourceCreateForm;
     private var _jbossExecutionEnvironmentCreateForm:JBossExecutionEnvironmentCreateForm;
     private var _weblogicExecutionEnvironmentCreateForm:WeblogicExecutionEnvironmentCreateForm;
     private var _tomcatExecutionEnvironmentCreateForm:TomcatExecutionEnvironmentCreateForm;
@@ -139,12 +147,20 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _spChannelCreateMediator = value;
     }
 
-    public function get dbIdentityVaultWizardViewMediator():DbIdentityVaultWizardViewMediator {
-        return _dbIdentityVaultWizardViewMediator;
+    public function get identityVaultCreateMediator():IdentityVaultCreateMediator {
+        return _identityVaultCreateMediator;
     }
 
-    public function set dbIdentityVaultWizardViewMediator(value:DbIdentityVaultWizardViewMediator):void {
-        _dbIdentityVaultWizardViewMediator = value;
+    public function set identityVaultCreateMediator(value:IdentityVaultCreateMediator):void {
+        _identityVaultCreateMediator = value;
+    }
+
+    public function get dbIdentitySourceCreateMediator():DbIdentitySourceCreateMediator {
+        return _dbIdentitySourceCreateMediator;
+    }
+
+    public function set dbIdentitySourceCreateMediator(value:DbIdentitySourceCreateMediator):void {
+        _dbIdentitySourceCreateMediator = value;
     }
 
     public function get uploadProgressMediator():UploadProgressMediator {
@@ -177,6 +193,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set ldapIdentitySourceCreateMediator(value:LdapIdentitySourceCreateMediator):void {
         _ldapIdentitySourceCreateMediator = value;
+    }
+
+    public function get xmlIdentitySourceCreateMediator():XmlIdentitySourceCreateMediator {
+        return _xmlIdentitySourceCreateMediator;
+    }
+
+    public function set xmlIdentitySourceCreateMediator(value:XmlIdentitySourceCreateMediator):void {
+        _xmlIdentitySourceCreateMediator = value;
     }
 
     public function get jbossExecutionEnvironmentCreateMediator():JBossExecutionEnvironmentCreateMediator {
@@ -312,20 +336,50 @@ public class ModelerPopUpManager extends BasePopUpManager {
         spChannelCreateMediator.handleNotification(_lastWindowNotification);
     }
 
-    public function showCreateDbIdentityVaultWindow(notification:INotification):void {
+    public function showCreateIdentityVaultWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        createDbIdentityVaultWizardView();
-        showWizard(_dbIdentityVaultWizardView);
+        if (!_identityVaultCreateForm) {
+            createIdentityVaultCreateForm();
+        }
+        _popup.title = "Create Identity Vault";
+        _popup.width = 410;
+        _popup.height = 150;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_identityVaultCreateForm);
     }
 
-    private function createDbIdentityVaultWizardView():void {
-        _dbIdentityVaultWizardView = new DbIdentityVaultWizardView();
-        _dbIdentityVaultWizardView.addEventListener(FlexEvent.CREATION_COMPLETE, handleDbIdentityVaultWizardViewCreated);
+    private function createIdentityVaultCreateForm():void {
+        _identityVaultCreateForm = new IdentityVaultCreateForm();
+        _identityVaultCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityVaultCreateFormCreated);
     }
 
-    private function handleDbIdentityVaultWizardViewCreated(event:FlexEvent):void {
-        dbIdentityVaultWizardViewMediator.setViewComponent(_dbIdentityVaultWizardView);
-        dbIdentityVaultWizardViewMediator.handleNotification(_lastWindowNotification);
+    private function handleIdentityVaultCreateFormCreated(event:FlexEvent):void {
+        identityVaultCreateMediator.setViewComponent(_identityVaultCreateForm);
+        identityVaultCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateDbIdentitySourceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_dbIdentitySourceCreateForm) {
+            createDbIdentitySourceCreateForm();
+        }
+        _popup.title = "Create DB Identity Source";
+        _popup.width = 540;
+        _popup.height = 360;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_dbIdentitySourceCreateForm);
+    }
+
+    private function createDbIdentitySourceCreateForm():void {
+        _dbIdentitySourceCreateForm = new DbIdentitySourceCreateForm();
+        _dbIdentitySourceCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleDbIdentitySourceCreateFormCreated);
+    }
+
+    private function handleDbIdentitySourceCreateFormCreated(event:FlexEvent):void {
+        dbIdentitySourceCreateMediator.setViewComponent(_dbIdentitySourceCreateForm);
+        dbIdentitySourceCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateLdapIdentitySourceWindow(notification:INotification):void {
@@ -334,8 +388,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
             createLdapIdentitySourceCreateForm();
         }
         _popup.title = "Create LDAP Identity Source";
-        _popup.width = 650;
-        _popup.height = 300;
+        _popup.width = 500;
+        _popup.height = 380;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_ldapIdentitySourceCreateForm);
@@ -349,6 +403,29 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleLdapIdentitySourceCreateFormCreated(event:FlexEvent):void {
         ldapIdentitySourceCreateMediator.setViewComponent(_ldapIdentitySourceCreateForm);
         ldapIdentitySourceCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateXmlIdentitySourceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_xmlIdentitySourceCreateForm) {
+            createXmlIdentitySourceCreateForm();
+        }
+        _popup.title = "Create XML Identity Source";
+        _popup.width = 410;
+        _popup.height = 180;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_xmlIdentitySourceCreateForm);
+    }
+
+    private function createXmlIdentitySourceCreateForm():void {
+        _xmlIdentitySourceCreateForm = new XmlIdentitySourceCreateForm();
+        _xmlIdentitySourceCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleXmlIdentitySourceCreateFormCreated);
+    }
+
+    private function handleXmlIdentitySourceCreateFormCreated(event:FlexEvent):void {
+        xmlIdentitySourceCreateMediator.setViewComponent(_xmlIdentitySourceCreateForm);
+        xmlIdentitySourceCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateWeblogicExecutionEnvironmentWindow(notification:INotification):void {
