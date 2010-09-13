@@ -103,31 +103,10 @@ public class AgentActivator extends ActivatorSupport {
         for (int i = 0 ; i < confDir.getChildren().length ; i ++) {
             FileObject cfgFile = cfgFiles[i];
             String fileName = cfgFile.getName().getBaseName();
-            getInstaller(request).installConfiguration(createArtifact(confDir.getURL().toString(), JOSSOScope.AGENT, fileName), request.isReplaceConfig());
+            getInstaller(request).installConfiguration(createArtifact(confDir.getURL().toString(), JOSSOScope.AGENT, fileName), false);
         }
 
-        boolean updateAgentCfg = true;
-        if (request instanceof ActivateAgentRequest) {
-            ActivateAgentRequest ar = (ActivateAgentRequest) request;
-            if (ar.getJossoAgentConfigUri() != null) {
-                FileObject agentCfg = appliancesDir.resolveFile(ar.getJossoAgentConfigUri());
-                if (agentCfg.exists()) {
-                    // Rename file
-
-                    FileObject finalAgentCfg = tmpDir.resolveFile("josso-agent-config.xml");
-                    FileUtil.copyContent(agentCfg, finalAgentCfg);
-                    getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, "josso-agent-config.xml"), request.isReplaceConfig());
-                    finalAgentCfg.delete();
-
-                    // We're installing a generated config
-                    updateAgentCfg = false;
-                }
-            }
-
-        }
-
-        if (updateAgentCfg)
-            getInstaller(request).updateAgentConfiguration(request.getIdpHostName(), request.getIdpPort(), request.getIdpType());
+        getInstaller(request).updateAgentConfiguration(request.getIdpHostName(), request.getIdpPort(), request.getIdpType());
     }
 
     public void install3rdParty() throws Exception {
@@ -135,7 +114,7 @@ public class AgentActivator extends ActivatorSupport {
         for (int i = 0 ; i < trdpartyDir.getChildren().length ; i ++) {
             FileObject trdPartyFile = libs[i];
             String fileName = trdPartyFile.getName().getBaseName();
-            getInstaller(request).install3rdPartyComponent(createArtifact(trdpartyDir.getURL().toString(), JOSSOScope.AGENT, fileName), request.isReplaceConfig());
+            getInstaller(request).install3rdPartyComponent(createArtifact(trdpartyDir.getURL().toString(), JOSSOScope.AGENT, fileName), false);
         }
     }
 
@@ -146,9 +125,6 @@ public class AgentActivator extends ActivatorSupport {
 
     protected void backupAndRemoveOldArtifacts() throws Exception {
         getInstaller(request).removeOldComponents(true);
-        if (request.isReplaceConfig()) {
-        	getInstaller(request).backupAgentConfigurations(false);
-        }
     }
 
     protected void performAdditionalTasks() throws Exception {

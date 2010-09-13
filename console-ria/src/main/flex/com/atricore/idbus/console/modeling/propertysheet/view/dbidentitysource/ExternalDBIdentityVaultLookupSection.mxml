@@ -42,5 +42,8 @@
         <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.credentialsUpdate')}:">
             <s:TextArea id="credentialsUpdate" width="370" height="40" />
         </utils:FormItemVerticalAlign>
+        <utils:FormItemVerticalAlign styleName="textAreaLabel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.relayCredentials')}:">
+            <s:TextArea id="relayCredentialQuery" width="370" height="40" />
+        </utils:FormItemVerticalAlign>
     </mx:Form>
 </s:Group>

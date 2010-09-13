@@ -1,18 +1,19 @@
 package com.atricore.idbus.console.activation.command;
 
 import com.atricore.idbus.console.activation.main.spi.ActivationService;
-import com.atricore.idbus.console.activation.main.spi.request.ActivateSamplesRequest;
+import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
 import org.apache.felix.gogo.commands.Command;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "activate", name = "samples", description = "Activates a Sample Partner Appliaciont")
-public class ActivateSamplesCommand extends ActivationCommandSupport {
+@Command(scope = "activate", name = "josso-agent", description = "Activates a JOSSO Agent")
+public class ActiavteExecEnvCommand extends ActivationCommandSupport {
+
     @Override
     protected Object doActivate(ActivationService svc) throws Exception {
-
-        ActivateSamplesRequest request = new ActivateSamplesRequest();
+        
+        ActivateAgentRequest request = new ActivateAgentRequest();
 
         request.setForceInstall(forceInstall);
         request.setIdpHostName(idpHostName);
@@ -27,6 +28,6 @@ public class ActivateSamplesCommand extends ActivationCommandSupport {
         request.setUser(user);
         request.setWeblogicDomain(weblogicDomain);
 
-        return svc.activateSamples(request);
+        return svc.activateAgent(request);
     }
 }

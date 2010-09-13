@@ -158,8 +158,18 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(beRes, ManageIdentityApplianceLifeCycleResponse.class);
     }
 
-    public ActivateExecEnvResponse activateExecEnv(ActivateExecEnvRequest request) throws IdentityServerException {
-        throw new UnsupportedOperationException("NOT IMPLEMENTED");
+    public ActivateExecEnvResponse activateExecEnv(ActivateExecEnvRequest req) throws IdentityServerException {
+//        throw new UnsupportedOperationException("NOT IMPLEMENTED");
+        com.atricore.idbus.console.lifecycle.main.spi.request.ActivateExecEnvRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ActivateExecEnvRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ActivateExecEnvResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.activateExecEnv(beReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, ActivateExecEnvResponse.class);
     }
 
     public CreateSimpleSsoResponse createSimpleSso(CreateSimpleSsoRequest req)

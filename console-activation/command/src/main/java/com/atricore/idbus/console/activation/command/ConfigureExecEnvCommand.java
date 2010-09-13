@@ -1,19 +1,17 @@
 package com.atricore.idbus.console.activation.command;
 
 import com.atricore.idbus.console.activation.main.spi.ActivationService;
-import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
-import org.apache.felix.gogo.commands.Command;
+import com.atricore.idbus.console.activation.main.spi.request.ActivateSamplesRequest;
+import com.atricore.idbus.console.activation.main.spi.request.ConfigureAgentRequest;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "activate", name = "josso-agent", description = "Activates a JOSSO Agent")
-public class ActiavteAgentCommand extends ActivationCommandSupport {
+public class ConfigureExecEnvCommand extends ActivationCommandSupport {
 
     @Override
     protected Object doActivate(ActivationService svc) throws Exception {
-        
-        ActivateAgentRequest request = new ActivateAgentRequest();
+        ConfigureAgentRequest request = new ConfigureAgentRequest();
 
         request.setForceInstall(forceInstall);
         request.setIdpHostName(idpHostName);
@@ -22,13 +20,14 @@ public class ActiavteAgentCommand extends ActivationCommandSupport {
         request.setJbossInstallDir(jbossInstallDir);
         request.setJbossInstance(jbossInstance);
         request.setPassword(password);
-        request.setReplaceConfig(replaceConfig);
         request.setTarget(target);
         request.setTargetPlatformId(targetPlatformId);
         request.setTomcatInstallDir(tomcatInstallDir);
         request.setUser(user);
         request.setWeblogicDomain(weblogicDomain);
 
-        return svc.activateAgent(request);
+        request.setReplaceConfig(replaceConfig);
+
+        return svc.configureAgent(request);
     }
 }

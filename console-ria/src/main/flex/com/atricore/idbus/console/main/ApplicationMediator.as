@@ -139,8 +139,7 @@ public class ApplicationMediator extends IocMediator {
 
     private function handleUserMenuAction(event:MenuEvent):void {
         if (event.index == 0) {
-            // TODO: show change password popup
-
+            sendNotification(ApplicationFacade.DISPLAY_CHANGE_PASSWORD);
         } else
         if (event.index == 1) {
             app.currentState = "splash";
@@ -161,6 +160,7 @@ public class ApplicationMediator extends IocMediator {
             IdentityApplianceMediator.CREATE,
             ApplicationFacade.DISPLAY_APPLIANCE_MODELER,
             ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE,
+            ApplicationFacade.DISPLAY_CHANGE_PASSWORD,
             ProcessingMediator.START,
             ProcessingMediator.STOP
         ];
@@ -207,6 +207,9 @@ public class ApplicationMediator extends IocMediator {
                 app.modulesViewStack.selectedIndex = LIFECYCLE_VIEW_INDEX;
                 sendNotification(ApplicationFacade.LIFECYCLE_VIEW_SELECTED);
                 break;
+            case ApplicationFacade.DISPLAY_CHANGE_PASSWORD:
+                popupManager.showChangePasswordWindow(notification);
+                break;
             case ProcessingMediator.START:
                 popupManager.showProcessingWindow(notification);
                 break;
@@ -232,7 +235,7 @@ public class ApplicationMediator extends IocMediator {
 
         app.stackButtonBar.addEventListener(IndexChangeEvent.CHANGE, handleStackChange);
         app.stackButtonBar.selectedIndex = 0;
-        app.userActionMenuBar.getMenuAt(0).name = _secureContextProxy.currentUser.userName;
+        app.userActionMenuBar.dataProvider.source[0].@label = _secureContextProxy.currentUser.userName;
         app.userActionMenuBar.addEventListener(MenuEvent.ITEM_CLICK, handleUserMenuAction)
     }
 

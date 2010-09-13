@@ -25,6 +25,7 @@ import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundExceptio
 import com.atricore.idbus.console.lifecycle.main.exception.UserProvisioningAjaxException;
 import com.atricore.idbus.console.services.dto.GroupDTO;
 import com.atricore.idbus.console.services.dto.UserDTO;
+import com.atricore.idbus.console.services.spi.AjaxService;
 import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
@@ -52,7 +53,7 @@ import java.util.List;
 /**
  * Author: Dusan Fisic
  */
-public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxService, InitializingBean {
+public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxService, InitializingBean, AjaxService {
     private static Log logger = LogFactory.getLog(UserProvisioningAjaxServiceImpl.class);
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
@@ -767,7 +768,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
 
     }
 
-    private UserType toUserType(AddUserRequest newUser) {
+    public UserType toUserType(AddUserRequest newUser) {
         UserType user = new UserType();
         user.setUserName(newUser.getUserName());
         user.setFirstName(newUser.getFirstName());
@@ -814,7 +815,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         return user;
     }
 
-    private UserType toUserType(UpdateUserRequest newUser) {
+    public UserType toUserType(UpdateUserRequest newUser) {
         UserType user = new UserType();
         user.setId(newUser.getId());
         user.setUserName(newUser.getUserName());
@@ -862,7 +863,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         return user;
     }
 
-    private GroupType toGroupType(GroupDTO grp) {
+    public GroupType toGroupType(GroupDTO grp) {
         GroupType g = new GroupType();
         g.setName(grp.getName());
         g.setDescription(grp.getDescription());
@@ -870,7 +871,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         return g;
     }
 
-    private GroupDTO toGroupDTO(GroupType grp) {
+    public GroupDTO toGroupDTO(GroupType grp) {
         GroupDTO g = new GroupDTO();
         g.setName(grp.getName());
         g.setDescription(grp.getDescription());
@@ -878,7 +879,7 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
         return g;
     }
 
-    private UserDTO toUserDTO(UserType usr) {
+    public UserDTO toUserDTO(UserType usr) {
         UserDTO u = new UserDTO();
         u.setId(usr.getId());
         u.setUserName(usr.getUserName());

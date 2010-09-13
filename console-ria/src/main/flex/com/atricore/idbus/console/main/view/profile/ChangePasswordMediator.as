@@ -23,11 +23,15 @@ package com.atricore.idbus.console.main.view.profile
 {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.controller.ChangePasswordCommand;
+import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
+
+import com.atricore.idbus.console.services.spi.request.UpdateUserPasswordRequest;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -35,34 +39,33 @@ import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class ChangePasswordMediator extends IocMediator
 {
-
     private var _changePasswordValidators:Array;
+    private var _secureContextProxy:SecureContextProxy;
 
     public function ChangePasswordMediator(name:String = null, viewComp:ChangePasswordView = null) {
         super(name, viewComp);
     }
 
-
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
             view.btnConfirm.removeEventListener(MouseEvent.CLICK, handleChangePasswordConfirmation);
-            view.removeEventListener(FlexEvent.SHOW, handleShowchangePassword);
+            view.removeEventListener(FlexEvent.SHOW, handleShowChangePassword);
+            view.removeEventListener(CloseEvent.CLOSE, handleClose);
         }
-
         super.setViewComponent(viewComponent);
-
         init();
     }
 
     private function init():void {
 
         view.btnConfirm.addEventListener(MouseEvent.CLICK, handleChangePasswordConfirmation);
-        view.addEventListener(FlexEvent.SHOW, handleShowchangePassword);
+        view.addEventListener(FlexEvent.SHOW, handleShowChangePassword);
+        view.addEventListener(CloseEvent.CLOSE, handleClose);
 
         _changePasswordValidators = [];
         _changePasswordValidators.push(view.oldPasswordValidator);
         _changePasswordValidators.push(view.newPasswordValidator);
-        handleShowchangePassword(null);
+        handleShowChangePassword(null);
     }
 
     override public function listNotificationInterests():Array {
@@ -81,7 +84,7 @@ public class ChangePasswordMediator extends IocMediator
         }
     }
 
-    public function handleShowchangePassword(event:Event):void {
+    public function handleShowChangePassword(event:Event):void {
         resetPasswordChangeForm();
         view.focusManager.setFocus(view.oldPassword);
     }
@@ -89,12 +92,12 @@ public class ChangePasswordMediator extends IocMediator
     public function handleChangePasswordConfirmation(event:Event):void {
         FormUtility.doValidate(_changePasswordValidators);
         if (FormUtility.validateAll(_changePasswordValidators)) {
-            /* Implement Request/Response Objects and uncomment
-             var changePasswordRequest:ChangePasswordRequest = new ChangePasswordRequest();
-             changePasswordRequest.oldPassword = view.oldPassword.text;
-             changePasswordRequest.newPassword = view.newPassword.text;
-             sendNotification(ApplicationFacade.ChangePassword, changePasswordRequest);
-             */
+            var changePasswordRequest:UpdateUserPasswordRequest = new UpdateUserPasswordRequest();
+            changePasswordRequest.username = _secureContextProxy.currentUser.userName;
+            changePasswordRequest.originalPassword = view.oldPassword.text;
+            changePasswordRequest.newPassword = view.newPassword.text;
+            sendNotification(ApplicationFacade.CHANGE_PASSWORD, changePasswordRequest);
+            closeWindow();
         }
         else {
             sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "Missing or invalid data entered");
@@ -107,15 +110,14 @@ public class ChangePasswordMediator extends IocMediator
 
     public function handlePasswordChangeSuccess():void {
         sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-                "An email with your password has been sent to your account.");
+                "The user password changed succsessfuly.");
     }
 
     public function handlePasswordChangeFailure():void {
         sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                "The user name and/or password you entered are not correct. " +
+                "The old/new password you entered are not correct. " +
                         "Please re-enter to log in again.");
     }
-
 
     public function resetPasswordChangeForm():void {
         view.oldPassword.text = "";
@@ -124,9 +126,24 @@ public class ChangePasswordMediator extends IocMediator
         sendNotification(ApplicationFacade.CLEAR_MSG);
     }
 
+    private function closeWindow():void {
+        view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+    }
+
+    private function handleClose(event:Event):void {
+    }
+
     protected function get view():ChangePasswordView
     {
         return viewComponent as ChangePasswordView;
+    }
+
+    public function get secureContextProxy():SecureContextProxy {
+        return _secureContextProxy;
+    }
+
+    public function set secureContextProxy(value:SecureContextProxy):void {
+        _secureContextProxy = value;
     }
 }
 }

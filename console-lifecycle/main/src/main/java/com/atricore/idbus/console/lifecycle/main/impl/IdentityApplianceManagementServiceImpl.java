@@ -21,14 +21,18 @@
 
 package com.atricore.idbus.console.lifecycle.main.impl;
 
+import com.atricore.idbus.console.activation.main.exception.ActivationException;
 import com.atricore.idbus.console.activation.main.spi.ActivationService;
 import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
 import com.atricore.idbus.console.activation.main.spi.request.ActivateSamplesRequest;
+import com.atricore.idbus.console.activation.main.spi.request.ConfigureAgentRequest;
+import com.atricore.idbus.console.activation.main.spi.request.PlatformSupportedRequest;
 import com.atricore.idbus.console.activation.main.spi.response.ActivateAgentResponse;
 import com.atricore.idbus.console.activation.main.spi.response.ActivateSamplesResponse;
+import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentResponse;
+import com.atricore.idbus.console.activation.main.spi.response.PlatformSupportedResponse;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
-import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceUnit;
 import com.atricore.idbus.console.lifecycle.main.domain.dao.*;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceNotFoundException;
@@ -127,7 +131,8 @@ public class IdentityApplianceManagementServiceImpl implements
         try {
             syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(req.getApplianceId()));
-            appliance = deployAppliance(appliance);
+            appliance = deployAppliance(appliance, req.getConfigureExecEnvs() != null ? req.getConfigureExecEnvs() : true);
+
             if (req.getStartAppliance()) {
                 appliance = startAppliance(appliance);
             }
@@ -320,97 +325,35 @@ public class IdentityApplianceManagementServiceImpl implements
 
     @Transactional
     public ActivateExecEnvResponse activateExecEnv(ActivateExecEnvRequest request) throws IdentityServerException {
-        try {
+        syncAppliances();
 
-            syncAppliances();
-            
+        try {
             ActivateExecEnvResponse response = new ActivateExecEnvResponse();
+            IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
 
             if (logger.isDebugEnabled())
                 logger.debug("Activating Execution Environment for appliance/exec-env " +
-                        request.getApplianceId() + "/" + request.getExecEnvName());
+                        appliance.getId() + "/" + request.getExecEnvName());
 
-            IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
-
-            if (!appliance.getState().equals(IdentityApplianceState.DEPLOYED.toString()) &&
-                    !appliance.getState().equals(IdentityApplianceState.STARTED.toString())) {
-
-                logger.error("Cannot activate execution enviroments for appliance " +
-                        request.getApplianceId() + " in state " + appliance.getState());
-
-                throw new IdentityServerException("Cannot activate execution enviroments for appliance " +
-                        request.getApplianceId() + " in state " + appliance.getState());
-            }
+            if (logger.isTraceEnabled())
+                logger.trace("Looking for Execution Environment in " + appliance.getIdApplianceDefinition().getName());
 
             boolean found = false;
+            ExecutionEnvironment execEnv = null;
+            for (Provider p : appliance.getIdApplianceDefinition().getProviders()) {
 
-            for (IdentityApplianceUnit idau : appliance.getIdApplianceDeployment().getIdaus()) {
+                if (p instanceof ServiceProvider) {
+                    ServiceProvider sp = (ServiceProvider) p;
+                    if (sp.getActivation() == null)
+                        continue;
 
-                if (logger.isTraceEnabled())
-                    logger.trace("Looking for Execution Environment in IDAU " + idau.getName());
+                    execEnv = sp.getActivation().getExecutionEnv();
+                    if (execEnv == null)
+                        continue;
 
-                for (Provider p : idau.getProviders()) {
-
-                    if (p instanceof ServiceProvider) {
-                        ServiceProvider sp = (ServiceProvider) p;
-                        if (sp.getActivation() == null)
-                            continue;
-
-                        ExecutionEnvironment execEnv = sp.getActivation().getExecutionEnv();
-                        if (execEnv == null)
-                            continue;
-
-                        if (execEnv.getName().equals(request.getExecEnvName())) {
-                            found = true;
-
-                            if (!execEnv.isActive() || request.isReactivate()) {
-
-                                String agentCfgLocation = appliance.getIdApplianceDefinition().getNamespace();
-                                agentCfgLocation = agentCfgLocation.replace('.', '/');
-
-                                agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getName();
-                                agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getNamespace() +
-                                        "." + appliance.getIdApplianceDefinition().getName() + ".idau";
-                                agentCfgLocation += "/1.0." + appliance.getIdApplianceDeployment().getDeployedRevision();
-
-                                String agentCfgName = appliance.getIdApplianceDefinition().getNamespace() + "." +
-                                        appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
-                                        appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase() + ".xml";
-
-                                String agentCfg = agentCfgLocation + "/" + agentCfgName;
-
-                                if (logger.isDebugEnabled())
-                                    logger.debug("Activating Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
-
-                                ActivateAgentRequest activationRequest = doMakAgentActivationRequest(execEnv);
-                                activationRequest.setReplaceConfig(request.isReplace());
-                                
-                                activationRequest.setJossoAgentConfigUri(agentCfg);
-                                activationRequest.setReplaceConfig(request.isReplace());
-
-                                ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
-
-                                if (request.isActivateSamples()) {
-
-                                    if (logger.isDebugEnabled())
-                                        logger.debug("Activating Samples in Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
-
-                                    ActivateSamplesRequest samplesActivationRequest =
-                                            doMakAgentSamplesActivationRequest(execEnv);
-
-                                    ActivateSamplesResponse samplesActivationResponse =
-                                            activationService.activateSamples(samplesActivationRequest);
-                                }
-
-                                // Mark activation as activated and save appliance.
-                                execEnv.setActive(true);
-                                identityApplianceDAO.save(appliance);
-
-                            } else {
-                                throw new ExecEnvAlreadyActivated(execEnv);
-                            }
-
-                        }
+                    if (execEnv.getName().equals(request.getExecEnvName())) {
+                        found = true;
+                        break;
                     }
                 }
             }
@@ -419,10 +362,11 @@ public class IdentityApplianceManagementServiceImpl implements
                 throw new IdentityServerException("Execution Environment "+request.getExecEnvName()+" not found in appliance " +
                         request.getApplianceId());
 
-            return response;
+            activateExecEnv(appliance, execEnv, request.isReactivate(), request.isReplace(), request.isActivateSamples());
 
+            return response;
         } catch (Exception e) {
-            throw new IdentityServerException("Cannot activate SP Execution Environment for " +
+            throw new IdentityServerException("Cannot activate Execution Environment for " +
                     request.getExecEnvName() + " : " + e.getMessage(), e);
         }
     }
@@ -514,7 +458,7 @@ public class IdentityApplianceManagementServiceImpl implements
         try {
             syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getIdentityApplianceId()));
-            appliance = identityApplianceDAO.detachCopy(appliance, 7);
+            appliance = identityApplianceDAO.detachCopy(appliance, 9);
             res = new LookupIdentityApplianceByIdResponse();
             res.setIdentityAppliance(appliance);
         } catch (Exception e){
@@ -566,6 +510,7 @@ public class IdentityApplianceManagementServiceImpl implements
         return res;
     }
 
+    @Transactional
     public ListIdentityAppliancesByStateResponse listIdentityAppliancesByState(ListIdentityAppliancesByStateRequest req) throws IdentityServerException {
         syncAppliances();
         throw new UnsupportedOperationException("Not Supported!");
@@ -1000,6 +945,104 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     // -------------------------------------------------< Protected Utils , they need transactional context !>
+
+ protected void configureExecEnv(IdentityAppliance appliance,
+                                                   ExecutionEnvironment execEnv,
+                                                   boolean replaceConfig) throws IdentityServerException {
+
+        try {
+
+
+            String agentCfgLocation = appliance.getIdApplianceDefinition().getNamespace();
+            agentCfgLocation = agentCfgLocation.replace('.', '/');
+
+            agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getName();
+            agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getNamespace() +
+                    "." + appliance.getIdApplianceDefinition().getName() + ".idau";
+            agentCfgLocation += "/1.0." + appliance.getIdApplianceDeployment().getDeployedRevision();
+
+            String agentCfgName = appliance.getIdApplianceDefinition().getNamespace() + "." +
+                    appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
+                    appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase() + ".xml";
+
+            String agentCfg = agentCfgLocation + "/" + agentCfgName;
+
+            if (logger.isDebugEnabled())
+                logger.debug("Activating Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
+
+            ConfigureAgentRequest activationReq = doMakeConfigureAgentRequest(execEnv);
+            activationReq.setJossoAgentConfigUri(agentCfg);
+            activationReq.setReplaceConfig(replaceConfig);
+
+            ConfigureAgentResponse actiationResponse = activationService.configureAgent(activationReq);
+        } catch (ActivationException e) {
+            throw new IdentityServerException(e);
+        }
+
+
+    }
+
+    protected void activateExecEnv(IdentityAppliance appliance,
+                                                   ExecutionEnvironment execEnv,
+                                                   boolean reactivate,
+                                                   boolean replaceConfig,
+                                                   boolean activateSamples) throws IdentityServerException {
+
+
+
+        if (execEnv.isActive() && !reactivate) {
+            throw new ExecEnvAlreadyActivated(execEnv);
+        }
+
+        if (!isActivationSupported(execEnv)) {
+            logger.warn("Unsupported platform for activation in " + execEnv.getName() + " : "  + execEnv.getPlatformId());
+            return;
+        }
+
+        try {
+
+            ActivateAgentRequest activationRequest = doMakeAgentActivationRequest(execEnv);
+            ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
+
+            if (replaceConfig)
+                configureExecEnv(appliance, execEnv, replaceConfig);
+
+            if (activateSamples) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Activating Samples in Execution Environment " + execEnv.getName());
+
+                ActivateSamplesRequest samplesActivationRequest =
+                        doMakeAgentSamplesActivationRequest(execEnv);
+
+                ActivateSamplesResponse samplesActivationResponse =
+                        activationService.activateSamples(samplesActivationRequest);
+            }
+
+            // Mark activation as activated and save appliance.
+            execEnv.setActive(true);
+            identityApplianceDAO.save(appliance);
+        } catch (ActivationException e) {
+            throw new IdentityServerException(e);
+        }
+
+
+    }
+
+    protected boolean isActivationSupported(ExecutionEnvironment execEnv) {
+        try {
+            PlatformSupportedRequest req = new PlatformSupportedRequest();
+            req.setTargetPlatformId(execEnv.getPlatformId());
+
+            PlatformSupportedResponse res = activationService.isSupported(req);
+            return res.isSupported();
+
+
+        } catch (ActivationException e) {
+            logger.error(e.getMessage(), e);
+            return false;
+        }
+    }
     
     protected IdentityAppliance startAppliance(IdentityAppliance appliance) throws IdentityServerException {
         if (logger.isDebugEnabled())
@@ -1073,7 +1116,7 @@ public class IdentityApplianceManagementServiceImpl implements
         }
     }
 
-    protected IdentityAppliance deployAppliance(IdentityAppliance appliance) throws IdentityServerException {
+    protected IdentityAppliance deployAppliance(IdentityAppliance appliance, boolean configureExecEnvs) throws IdentityServerException {
 
         if (logger.isDebugEnabled())
             logger.debug("Deploying Identity Appliance " + appliance.getId());
@@ -1090,6 +1133,13 @@ public class IdentityApplianceManagementServiceImpl implements
         // Install it
         appliance = deployer.deploy(appliance);
 
+        if (configureExecEnvs) {
+            for (ExecutionEnvironment execEnv : appliance.getIdApplianceDefinition().getExecutionEnvironments()) {
+                configureExecEnv(appliance, execEnv, true);
+            }
+        }
+
+
         // Store it
         appliance = identityApplianceDAO.save(appliance);
         return appliance;
@@ -1102,6 +1152,7 @@ public class IdentityApplianceManagementServiceImpl implements
             logger.debug("Building Identity Appliance [deploy:"+deploy+"]" + appliance.getId());
 
         // quick fix (sort providers: identity providers -> binding provider -> service providers -> binding provider -> service providers, ...)
+        /*
         Set<Provider> providers = appliance.getIdApplianceDefinition().getProviders();
         List<Provider> sortedProviders = new ArrayList<Provider>();
         for (Provider provider : providers) {
@@ -1113,35 +1164,18 @@ public class IdentityApplianceManagementServiceImpl implements
         for (Provider provider : providers) {
             if (provider instanceof IdentityProvider) {
                 sortedProviders.add(0, provider);
-            } else if (provider instanceof BindingProvider) {
-                int i = 0;
-                boolean added = false;
-                for (Provider sortedProvider : sortedProviders) {
-                    // TODO RETROFIT  :
-                    /*
-                    if (sortedProvider instanceof ServiceProvider &&
-                            ((ServiceProvider) sortedProvider).getBindingChannel().getTarget().equals(provider)) {
-                        sortedProviders.add(i, provider);
-                        added = true;
-                        break;
-                    }
-                    */
-                    i++;
-                }
-                if (!added) {
-                    sortedProviders.add(provider);
-                }
             }
         }
 
-        // TODO RETROFIT  :appliance.getIdApplianceDefinition().setProviders(sortedProviders);
+        appliance.getIdApplianceDefinition().setProviders(sortedProviders);
+        */
 
         // Build the appliance
         appliance = builder.build(appliance);
 
         // Install it
         if (deploy)
-            appliance = deployAppliance(appliance);
+            appliance = deployAppliance(appliance, false);
 
         // Store it
         appliance = identityApplianceDAO.save(appliance);
@@ -1213,7 +1247,7 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
 
-    protected ActivateAgentRequest doMakAgentActivationRequest(ExecutionEnvironment execEnv ) {
+    protected ActivateAgentRequest doMakeAgentActivationRequest(ExecutionEnvironment execEnv ) {
 
         ActivateAgentRequest req = new ActivateAgentRequest ();
         req.setTarget(execEnv.getInstallUri());
@@ -1230,7 +1264,25 @@ public class IdentityApplianceManagementServiceImpl implements
         return req;
     }
 
-    protected ActivateSamplesRequest doMakAgentSamplesActivationRequest(ExecutionEnvironment execEnv) {
+    protected ConfigureAgentRequest doMakeConfigureAgentRequest(ExecutionEnvironment execEnv ) {
+
+        ConfigureAgentRequest req = new ConfigureAgentRequest();
+        req.setTarget(execEnv.getInstallUri());
+        req.setTargetPlatformId(execEnv.getPlatformId());
+
+        if (execEnv instanceof JBossExecutionEnvironment) {
+            JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) execEnv;
+            req.setJbossInstance(jbExecEnv.getInstance());
+        } else if (execEnv instanceof WeblogicExecutionEnvironment) {
+            WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
+            req.setWeblogicDomain(wlExecEnv.getDomain());
+        } // TODO : Add support for Liferay, JBPortal, Alfresco, PHP, PHPBB, etc ...
+
+        return req;
+    }
+
+
+    protected ActivateSamplesRequest doMakeAgentSamplesActivationRequest(ExecutionEnvironment execEnv) {
 
         ActivateSamplesRequest req = new ActivateSamplesRequest ();
         req.setTarget(execEnv.getInstallUri());

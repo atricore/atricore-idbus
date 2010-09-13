@@ -20,6 +20,10 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="secureContext" ref="secureContextProxy"/>
     </object>
+    <object id="changePasswordCommand" class="com.atricore.idbus.console.main.controller.ChangePasswordCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="secureContext" ref="secureContextProxy"/>
+    </object>
     <object id="uploadCommand" class="com.atricore.idbus.console.main.controller.UploadCommand"/>
     <object id="setupServerCommand" class="com.atricore.idbus.console.main.controller.SetupServerCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -174,9 +178,11 @@
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
 
-    <!--<object id="createActivationCommand"-->
-            <!--class="com.atricore.idbus.console.modeling.main.controller.CreateActivationCommand">-->
-    <!--</object>-->
+    <object id="activateExecEnvironmentCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ActivateExecEnvironmentCommand">
+                <property name="projectProxy" ref="projectProxy"/>
+                <property name="registry" ref="serviceRegistry"/>
+    </object>
 
     <object id="createIdentityLookupCommand"
             class="com.atricore.idbus.console.modeling.main.controller.CreateIdentityLookupCommand">
@@ -192,12 +198,12 @@
     <object id="uploadProgressMediator" class="com.atricore.idbus.console.main.view.upload.UploadProgressMediator"/>
     <object id="processingMediator" class="com.atricore.idbus.console.main.view.progress.ProcessingMediator"/>
     <object id="loginMediator" class="com.atricore.idbus.console.main.view.login.LoginMediator"/>
-    <object id="changePasswordMediator" class="com.atricore.idbus.console.main.view.profile.ChangePasswordMediator"/>
-
+    <object id="changePasswordMediator" class="com.atricore.idbus.console.main.view.profile.ChangePasswordMediator">
+        <property name="secureContextProxy" ref="secureContextProxy"/>
+    </object>
     <object id="setupWizardViewMediator" class="com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator">
         <property name="profileProxy" ref="profileProxy"/>
     </object>
-
     <object id="lifecycleViewMediator" class="com.atricore.idbus.console.lifecycle.LifecycleViewMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
@@ -346,6 +352,7 @@
         <property name="setupWizardMediator" ref="setupWizardViewMediator"/>
         <property name="simpleSSOWizardMediator" ref="simpleSSOWizardViewMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
+        <property name="changePasswordMediator" ref="changePasswordMediator"/>
     </object>
 
     <object id="modelerPopUpManager" class="com.atricore.idbus.console.modeling.main.view.ModelerPopUpManager">
@@ -392,6 +399,7 @@
 
         <!-- Commands wiring -->
         <property name="loginCommand" ref="loginCommand"/>
+        <property name="changePasswordCommand" ref="changePasswordCommand"/>
         <property name="uploadCommand" ref="uploadCommand"/>
         <property name="setupServerCommand" ref="setupServerCommand"/>
         <property name="registerCommand" ref="registerCommand"/>
@@ -427,7 +435,7 @@
         <property name="searchGroupsCommand" ref="searchGroupsCommand"/>
         <property name="searchUsersCommand" ref="searchUsersCommand"/>
         <property name="createIdentityLookupCommand" ref="createIdentityLookupCommand" />
-
+        <property name="activateExecEnvironmentCommand" ref="activateExecEnvironmentCommand" />
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>

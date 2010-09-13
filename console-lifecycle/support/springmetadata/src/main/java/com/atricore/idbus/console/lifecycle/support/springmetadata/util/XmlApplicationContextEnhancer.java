@@ -34,6 +34,7 @@ import java.io.Writer;
  * @author <a href="mailto:gbrigand@josso.org">Gianluca Brigandi</a>
  * @version $Id$
  */
+@Deprecated
 public class XmlApplicationContextEnhancer implements XMLStreamWriter {
     XMLStreamWriter writer;
 

@@ -245,6 +245,7 @@ public class ModelerMediator extends IocMediator {
             ApplicationFacade.SHOW_UPLOAD_PROGRESS,
             ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
             ApplicationFacade.CREATE_ACTIVATION,
+//            ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             LookupIdentityApplianceByIdCommand.SUCCESS,

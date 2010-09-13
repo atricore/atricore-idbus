@@ -24,7 +24,10 @@ import com.atricore.idbus.console.components.CustomViewStack;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
+import com.atricore.idbus.console.modeling.diagram.model.request.ActivateExecutionEnvironmentRequest;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.tomcat.TomcatExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultLookupSection;
@@ -48,8 +51,10 @@ import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
+import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
+import com.atricore.idbus.console.services.dto.IdentityApplianceState;
 import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
@@ -60,7 +65,7 @@ import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
-
+import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
 import flash.events.Event;
@@ -106,6 +111,8 @@ public class PropertySheetMediator extends IocMediator {
     private var _federatedConnectionIDPChannelSection:FederatedConnectionIDPChannelSection;
     private var _jossoActivationCoreSection:JOSSOActivationCoreSection;
     private var _identityLookupCoreSection:IdentityLookupCoreSection;
+    private var _tomcatExecEnvCoreSection:TomcatExecEnvCoreSection;
+    private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
     private var _dirty:Boolean;
 
     protected var _validators : Array;
@@ -184,6 +191,10 @@ public class PropertySheetMediator extends IocMediator {
                     enableJOSSOActivationPropertyTabs();
                 } else if (_currentIdentityApplianceElement is IdentityLookup) {
                     enableIdentityLookupPropertyTabs();
+                } else if (_currentIdentityApplianceElement is ExecutionEnvironment){
+                    if(_currentIdentityApplianceElement is TomcatExecutionEnvironment){
+                        enableTomcatExecEnvPropertyTabs();
+                    }
                 }
                 break;
         }
@@ -1105,7 +1116,7 @@ public class PropertySheetMediator extends IocMediator {
         _externalDbVaultCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalDbVaultCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalDbVaultCorePropertyTabRollOut);
 
-        // Contract Tab
+        // Lookup Tab
         var contractPropertyTab:Group = new Group();
         contractPropertyTab.id = "propertySheetContractSection";
         contractPropertyTab.name = "Lookup";
@@ -1171,21 +1182,19 @@ public class PropertySheetMediator extends IocMediator {
         // if dbIdentityVault is null that means some other element was selected before completing this
         if (dbIdentityVault != null) {
             // bind view
-            //if(dbIdentityVault.userInformationLookup == null){
-                //dbIdentityVault.userInformationLookup = new UserInformationLookup();
-            //}
-
             _externalDbVaultLookupSection.userQuery.text = dbIdentityVault.userQueryString;
             _externalDbVaultLookupSection.rolesQuery.text = dbIdentityVault.rolesQueryString;
             _externalDbVaultLookupSection.credentialsQuery.text = dbIdentityVault.credentialsQueryString;
             _externalDbVaultLookupSection.propertiesQuery.text = dbIdentityVault.userPropertiesQueryString;
             _externalDbVaultLookupSection.credentialsUpdate.text = dbIdentityVault.resetCredentialDml;
+            _externalDbVaultLookupSection.relayCredentialQuery.text = dbIdentityVault.relayCredentialQueryString;
 
             _externalDbVaultLookupSection.userQuery.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultLookupSection.credentialsQuery.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultLookupSection.rolesQuery.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultLookupSection.propertiesQuery.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultLookupSection.credentialsUpdate.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalDbVaultLookupSection.relayCredentialQuery.addEventListener(Event.CHANGE, handleSectionChange);
         }
     }
 
@@ -1200,6 +1209,7 @@ public class PropertySheetMediator extends IocMediator {
             dbIdentityVault.credentialsQueryString =  _externalDbVaultLookupSection.credentialsQuery.text;
             dbIdentityVault.userPropertiesQueryString = _externalDbVaultLookupSection.propertiesQuery.text;
             dbIdentityVault.resetCredentialDml = _externalDbVaultLookupSection.credentialsUpdate.text;
+            dbIdentityVault.relayCredentialQueryString = _externalDbVaultLookupSection.relayCredentialQuery.text;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -1779,6 +1789,103 @@ public class PropertySheetMediator extends IocMediator {
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
+    }
+
+    private function enableTomcatExecEnvPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _tomcatExecEnvCoreSection = new TomcatExecEnvCoreSection();
+        corePropertyTab.addElement(_tomcatExecEnvCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _tomcatExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleTomcatExecEnvCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleTomcatExecEnvCorePropertyTabRollOut);
+
+        // Exec.Environment Activation Tab
+        var execEnvActivationPropertyTab:Group = new Group();
+        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
+        execEnvActivationPropertyTab.name = "Activation";
+        execEnvActivationPropertyTab.width = Number("100%");
+        execEnvActivationPropertyTab.height = Number("100%");
+        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
+
+        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
+        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
+        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
+        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+//        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+
+    }
+
+    private function handleTomcatExecEnvCorePropertyTabCreationComplete(event:Event):void {
+        var tomcatExecEnv:TomcatExecutionEnvironment = projectProxy.currentIdentityApplianceElement as TomcatExecutionEnvironment;
+
+        // bind view
+        _tomcatExecEnvCoreSection.executionEnvironmentName.text = tomcatExecEnv.name;
+        _tomcatExecEnvCoreSection.executionEnvironmentDescription.text = tomcatExecEnv.description;
+        for(var i:int=0; i < _tomcatExecEnvCoreSection.tomcatPlatform.dataProvider.length; i++){
+            if(_tomcatExecEnvCoreSection.tomcatPlatform.dataProvider[i].data == tomcatExecEnv.platformId){
+                _tomcatExecEnvCoreSection.tomcatPlatform.selectedIndex = i;
+            }
+        }
+        _tomcatExecEnvCoreSection.selectedHost.selectedIndex = 0;
+        _tomcatExecEnvCoreSection.homeDirectory.text = tomcatExecEnv.installUri;
+
+        _tomcatExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+        _tomcatExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+        _tomcatExecEnvCoreSection.tomcatPlatform.addEventListener(Event.CHANGE, handleSectionChange);
+        _tomcatExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+        _tomcatExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+
+        _validators = [];
+        _validators.push(_tomcatExecEnvCoreSection.nameValidator);
+        _validators.push(_tomcatExecEnvCoreSection.homeDirValidator);
+    }
+
+    private function handleTomcatExecEnvCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        if (_dirty && validate(true)) {
+             // bind model
+            var tomcatExecEnv:TomcatExecutionEnvironment = projectProxy.currentIdentityApplianceElement as TomcatExecutionEnvironment;
+            tomcatExecEnv.name = _tomcatExecEnvCoreSection.executionEnvironmentName.text;
+            tomcatExecEnv.description = _tomcatExecEnvCoreSection.executionEnvironmentDescription.text;
+            tomcatExecEnv.platformId = _tomcatExecEnvCoreSection.tomcatPlatform.selectedItem.data;
+            tomcatExecEnv.installUri = _tomcatExecEnvCoreSection.homeDirectory.text;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
+
+    private function handleExecEnvActivationPropertyTabCreationComplete(event:Event):void{
+        if(projectProxy.currentIdentityAppliance.state == IdentityApplianceState.DEPLOYED.toString()
+                || projectProxy.currentIdentityAppliance.state == IdentityApplianceState.STARTED.toString()){
+            _executionEnvironmentActivateSection.activate.enabled = true;
+            _executionEnvironmentActivateSection.activate.addEventListener(MouseEvent.CLICK, activateExecutionEnvironment);
+        } else {
+            _executionEnvironmentActivateSection.activate.enabled = false;
+        }
+    }
+
+    private function activateExecutionEnvironment(event:Event):void {
+        //ovo ide u onClick handler za activate Btn
+        var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
+        var activateExecEnvReq:ActivateExecutionEnvironmentRequest = new ActivateExecutionEnvironmentRequest();
+        activateExecEnvReq.reactivate = _executionEnvironmentActivateSection.reactivate.selected;
+        activateExecEnvReq.replaceConfFiles = _executionEnvironmentActivateSection.replaceConfFiles.selected;
+        activateExecEnvReq.executionEnvironment = currentExecEnv;
+        activateExecEnvReq.installSamples = _executionEnvironmentActivateSection.installSamples.selected;
+
+        sendNotification(ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT, activateExecEnvReq);        
     }
 
     protected function enableIdentityLookupPropertyTabs():void {

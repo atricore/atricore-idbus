@@ -19,38 +19,21 @@
  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.lifecycle.main.spi.request;
+package com.atricore.idbus.console.services.spi;
 
+import com.atricore.idbus.console.lifecycle.main.exception.SignOnException;
+import com.atricore.idbus.console.services.spi.request.SignOnRequest;
+import com.atricore.idbus.console.services.spi.request.SignOutRequest;
+import com.atricore.idbus.console.services.spi.response.SignOnResponse;
+import com.atricore.idbus.console.services.spi.response.SignOutResponse;
 
-public class DeployIdentityApplianceRequest extends AbstractManagementRequest {
+/**
+ * @author <a href=mailto:dfisic@atricore.org>Dusan Fisic</a>
+ */
 
-	private String applianceId;
+public interface AjaxService {
 
-    private Boolean configureExecEnvs;
-	
-    private Boolean startAppliance;
+    public String getPspTargetId();
+    public void setPspTargetId(String pspTargetId);
 
-	public String getApplianceId() {
-		return applianceId;
-	}
-
-	public void setApplianceId(String applianceId) {
-		this.applianceId = applianceId;
-	}
-
-	public Boolean getStartAppliance() {
-		return startAppliance;
-	}
-	
-	public void setStartAppliance(Boolean startAppliance) {
-		this.startAppliance = startAppliance;
-	}
-
-    public Boolean getConfigureExecEnvs() {
-        return configureExecEnvs;
-    }
-
-    public void setConfigureExecEnvs(Boolean configureExecEnvs) {
-        this.configureExecEnvs = configureExecEnvs;
-    }
 }

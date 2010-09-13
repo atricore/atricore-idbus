@@ -79,9 +79,14 @@ public class SpringSerializer extends VfsIdProjectResourceSerializer {
                     getClass().getClassLoader());
 
             Marshaller m = jaxbCtx.createMarshaller();
-
+            m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
             // No good ... :(
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            m.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "http://www.springframework.org/schema/beans " +
+                "http://www.springframework.org/schema/beans/spring-beans-2.5.xsd " +
+                "http://www.springframework.org/schema/osgi " +
+                "http://www.springframework.org/schema/osgi/spring-osgi.xsd");
 
             Beans beans = (Beans) resource.getValue();
 
@@ -122,9 +127,7 @@ public class SpringSerializer extends VfsIdProjectResourceSerializer {
 
             os = outputFile.getContent().getOutputStream();
             OutputStreamWriter writer = new OutputStreamWriter(os);
-            XmlApplicationContextEnhancer x = new XmlApplicationContextEnhancer(writer);
-            m.marshal(beans, x);
-            x.flush();
+            m.marshal(beans, os);
             writer.flush();
             writer.close();
 
