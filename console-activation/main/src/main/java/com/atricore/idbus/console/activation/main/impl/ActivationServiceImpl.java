@@ -5,8 +5,10 @@ import com.atricore.idbus.console.activation.main.spi.ActivationService;
 import com.atricore.idbus.console.activation.main.spi.Activator;
 import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
 import com.atricore.idbus.console.activation.main.spi.request.ActivateSamplesRequest;
+import com.atricore.idbus.console.activation.main.spi.request.ConfigureAgentRequest;
 import com.atricore.idbus.console.activation.main.spi.response.ActivateAgentResponse;
 import com.atricore.idbus.console.activation.main.spi.response.ActivateSamplesResponse;
+import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentResponse;
 import org.josso.tooling.gshell.core.support.MessagePrinter;
 import org.josso.tooling.gshell.install.installer.Installer;
 
@@ -38,10 +40,23 @@ public class ActivationServiceImpl implements ActivationService {
         }
     }
 
+    public ConfigureAgentResponse configureAgent(ConfigureAgentRequest request) throws ActivationException {
+        try {
+            ConfigureAgentResponse response = new ConfigureAgentResponse();
+            Activator activator = new AgentConfigActivator(installers, printer, request, response);
+
+            activator.doActivate();
+
+            return response;
+        } catch (Exception e) {
+            throw new ActivationException(e);
+        }
+
+    }
+
     public ActivateSamplesResponse activateSamples(ActivateSamplesRequest request) throws ActivationException {
         try {
             ActivateSamplesResponse response = new ActivateSamplesResponse ();
-
             Activator activator = new SamplesActivator(installers, printer, request, response);
 
             activator.doActivate();

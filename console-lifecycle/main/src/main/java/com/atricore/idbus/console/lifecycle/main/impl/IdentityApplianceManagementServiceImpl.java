@@ -332,85 +332,72 @@ public class IdentityApplianceManagementServiceImpl implements
 
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
 
-            if (!appliance.getState().equals(IdentityApplianceState.DEPLOYED.toString()) &&
-                    !appliance.getState().equals(IdentityApplianceState.STARTED.toString())) {
-
-                logger.error("Cannot activate execution enviroments for appliance " +
-                        request.getApplianceId() + " in state " + appliance.getState());
-
-                throw new IdentityServerException("Cannot activate execution enviroments for appliance " +
-                        request.getApplianceId() + " in state " + appliance.getState());
-            }
-
             boolean found = false;
 
-            for (IdentityApplianceUnit idau : appliance.getIdApplianceDeployment().getIdaus()) {
+            if (logger.isTraceEnabled())
+                logger.trace("Looking for Execution Environment in " + appliance.getIdApplianceDefinition().getName());
 
-                if (logger.isTraceEnabled())
-                    logger.trace("Looking for Execution Environment in IDAU " + idau.getName());
+            for (Provider p : appliance.getIdApplianceDefinition().getProviders()) {
 
-                for (Provider p : idau.getProviders()) {
+                if (p instanceof ServiceProvider) {
+                    ServiceProvider sp = (ServiceProvider) p;
+                    if (sp.getActivation() == null)
+                        continue;
 
-                    if (p instanceof ServiceProvider) {
-                        ServiceProvider sp = (ServiceProvider) p;
-                        if (sp.getActivation() == null)
-                            continue;
+                    ExecutionEnvironment execEnv = sp.getActivation().getExecutionEnv();
+                    if (execEnv == null)
+                        continue;
 
-                        ExecutionEnvironment execEnv = sp.getActivation().getExecutionEnv();
-                        if (execEnv == null)
-                            continue;
+                    if (execEnv.getName().equals(request.getExecEnvName())) {
+                        found = true;
 
-                        if (execEnv.getName().equals(request.getExecEnvName())) {
-                            found = true;
+                        if (!execEnv.isActive() || request.isReactivate()) {
 
-                            if (!execEnv.isActive() || request.isReactivate()) {
+                            String agentCfgLocation = appliance.getIdApplianceDefinition().getNamespace();
+                            agentCfgLocation = agentCfgLocation.replace('.', '/');
 
-                                String agentCfgLocation = appliance.getIdApplianceDefinition().getNamespace();
-                                agentCfgLocation = agentCfgLocation.replace('.', '/');
+                            agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getName();
+                            agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getNamespace() +
+                                    "." + appliance.getIdApplianceDefinition().getName() + ".idau";
+                            agentCfgLocation += "/1.0." + appliance.getIdApplianceDeployment().getDeployedRevision();
 
-                                agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getName();
-                                agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getNamespace() +
-                                        "." + appliance.getIdApplianceDefinition().getName() + ".idau";
-                                agentCfgLocation += "/1.0." + appliance.getIdApplianceDeployment().getDeployedRevision();
+                            String agentCfgName = appliance.getIdApplianceDefinition().getNamespace() + "." +
+                                    appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
+                                    appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase() + ".xml";
 
-                                String agentCfgName = appliance.getIdApplianceDefinition().getNamespace() + "." +
-                                        appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
-                                        appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase() + ".xml";
+                            String agentCfg = agentCfgLocation + "/" + agentCfgName;
 
-                                String agentCfg = agentCfgLocation + "/" + agentCfgName;
+                            if (logger.isDebugEnabled())
+                                logger.debug("Activating Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
+
+                            ActivateAgentRequest activationRequest = doMakAgentActivationRequest(execEnv);
+                            activationRequest.setReplaceConfig(request.isReplace());
+
+                            activationRequest.setJossoAgentConfigUri(agentCfg);
+                            activationRequest.setReplaceConfig(request.isReplace());
+
+                            ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
+
+                            if (request.isActivateSamples()) {
 
                                 if (logger.isDebugEnabled())
-                                    logger.debug("Activating Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
+                                    logger.debug("Activating Samples in Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
 
-                                ActivateAgentRequest activationRequest = doMakAgentActivationRequest(execEnv);
-                                activationRequest.setReplaceConfig(request.isReplace());
-                                
-                                activationRequest.setJossoAgentConfigUri(agentCfg);
-                                activationRequest.setReplaceConfig(request.isReplace());
+                                ActivateSamplesRequest samplesActivationRequest =
+                                        doMakAgentSamplesActivationRequest(execEnv);
 
-                                ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
-
-                                if (request.isActivateSamples()) {
-
-                                    if (logger.isDebugEnabled())
-                                        logger.debug("Activating Samples in Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );
-
-                                    ActivateSamplesRequest samplesActivationRequest =
-                                            doMakAgentSamplesActivationRequest(execEnv);
-
-                                    ActivateSamplesResponse samplesActivationResponse =
-                                            activationService.activateSamples(samplesActivationRequest);
-                                }
-
-                                // Mark activation as activated and save appliance.
-                                execEnv.setActive(true);
-                                identityApplianceDAO.save(appliance);
-
-                            } else {
-                                throw new ExecEnvAlreadyActivated(execEnv);
+                                ActivateSamplesResponse samplesActivationResponse =
+                                        activationService.activateSamples(samplesActivationRequest);
                             }
 
+                            // Mark activation as activated and save appliance.
+                            execEnv.setActive(true);
+                            identityApplianceDAO.save(appliance);
+
+                        } else {
+                            throw new ExecEnvAlreadyActivated(execEnv);
                         }
+
                     }
                 }
             }
