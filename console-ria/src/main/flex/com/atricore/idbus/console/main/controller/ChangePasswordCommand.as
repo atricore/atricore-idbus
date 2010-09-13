@@ -25,7 +25,10 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 
+import com.atricore.idbus.console.services.dto.User;
 import com.atricore.idbus.console.services.spi.request.UpdateUserPasswordRequest;
+
+import com.atricore.idbus.console.services.spi.response.UpdateUserPasswordResponse;
 
 import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
@@ -68,7 +71,13 @@ public class ChangePasswordCommand extends IocSimpleCommand implements IResponde
     }
 
     public function result(data:Object):void {
-        sendNotification(SUCCESS);
+        var chngPassResp:UpdateUserPasswordResponse = data.result as UpdateUserPasswordResponse;
+        var user:User = chngPassResp.user;
+        _secureContext.currentUser = user;
+        if (secureContext.currentUser !=null)
+            sendNotification(SUCCESS);
+        else
+            sendNotification(FAILURE);
     }
 
     public function fault(info:Object):void {

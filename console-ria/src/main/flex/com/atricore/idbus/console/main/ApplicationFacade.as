@@ -77,6 +77,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
     public static const SHOW_SUCCESS_MSG:String = "showSuccessMsg";
     public static const LOGIN:String = "login";
+    public static const CHANGE_PASSWORD:String = "changePassword";
     public static const NAVIGATE:String = "navigate";
     public static const CLEAR_MSG:String = "clearMsg";
     public static const IDENTITY_APPLIANCE_CHANGED:String = "identityApplianceChanged";
@@ -119,6 +120,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const DISPLAY_SEARCH_RESULTS_GROUPS = "displaySearchResultGroups";
     public static const DISPLAY_GROUP_PROPERTIES = "displayGroupProperties";
     public static const DISPLAY_USER_PROPERTIES = "displayUserProperties";
+    public static const DISPLAY_CHANGE_PASSWORD = "displayChangePassword";
     public static const MODELER_VIEW_SELECTED:String = "modelerViewSelected";
     public static const LIFECYCLE_VIEW_SELECTED:String = "lifecycleViewSelected";
     public static const ACCOUNT_VIEW_SELECTED:String = "accountViewSelected";
