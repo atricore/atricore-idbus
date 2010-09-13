@@ -25,6 +25,8 @@ package com.atricore.idbus.console.lifecycle.main.spi.request;
 public class DeployIdentityApplianceRequest extends AbstractManagementRequest {
 
 	private String applianceId;
+
+    private Boolean configureExecEnvs;
 	
     private Boolean startAppliance;
 
@@ -43,4 +45,12 @@ public class DeployIdentityApplianceRequest extends AbstractManagementRequest {
 	public void setStartAppliance(Boolean startAppliance) {
 		this.startAppliance = startAppliance;
 	}
+
+    public Boolean getConfigureExecEnvs() {
+        return configureExecEnvs;
+    }
+
+    public void setConfigureExecEnvs(Boolean configureExecEnvs) {
+        this.configureExecEnvs = configureExecEnvs;
+    }
 }
