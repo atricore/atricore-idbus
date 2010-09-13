@@ -104,6 +104,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _stopIdentityApplianceCommand:IIocCommand;
     private var _disposeIdentityApplianceCommand:IIocCommand;
     private var _loginCommand:IIocCommand;
+    private var _changePasswordCommand:IIocCommand;
     private var _identityApplianceUpdateCommand:IIocCommand;
     private var _identityVaultRemoveCommand:IIocCommand;
     private var _activationRemoveCommand:IIocCommand;
@@ -608,6 +609,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _loginCommand = value;
     }
 
+    public function get changePasswordCommand():IIocCommand {
+        return _changePasswordCommand;
+    }
+
+    public function set changePasswordCommand(value:IIocCommand):void {
+        _changePasswordCommand = value;
+    }
+
     public function get identityApplianceUpdateCommand():IIocCommand {
         return _identityApplianceUpdateCommand;
     }
@@ -792,6 +801,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         // first register commands (some commands are needed for mediator creation/initialization)
         iocFacade.registerCommandByConfigName(ApplicationFacade.SETUP_SERVER, setupServerCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LOGIN, loginCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CHANGE_PASSWORD, changePasswordCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.REGISTER, registerCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, createSimpleSSOIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, identityApplianceCreateCommand.getConfigName());
@@ -911,7 +921,5 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         sendNotification(FAILURE);
 
     }
-
-
 }
 }

@@ -219,6 +219,7 @@
                             oasis.names.tc.spml._2._0.atricore,
                             oasis.names.tc.spml._2._0.wsdl,
                             oasis.names.tc.spml._2._0.search,
+                            oasis.names.tc.spml._2._0.password,
                             org.atricore.idbus.kernel.main.util,
                             org.atricore.idbus.kernel.main.mediation,
                             org.atricore.idbus.capabilities.spmlr2.main,
