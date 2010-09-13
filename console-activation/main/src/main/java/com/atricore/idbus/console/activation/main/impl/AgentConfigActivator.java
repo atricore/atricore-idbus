@@ -3,6 +3,7 @@ package com.atricore.idbus.console.activation.main.impl;
 import com.atricore.idbus.console.activation.main.exception.ActivationException;
 import com.atricore.idbus.console.activation.main.spi.request.AbstractActivationRequest;
 import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentRequest;
+import com.atricore.idbus.console.activation.main.spi.request.ConfigureAgentRequest;
 import com.atricore.idbus.console.activation.main.spi.response.AbstractActivationResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -120,42 +121,29 @@ public class AgentConfigActivator extends ActivatorSupport {
     }
 
     protected void backupAndRemoveOldArtifacts() throws Exception {
-        if (request.isReplaceConfig()) {
-            getInstaller(request).backupAgentConfigurations(false);
-        }
+
     }
 
     protected void installJOSSOAgentConfig() throws Exception {
+        ConfigureAgentRequest ar = (ConfigureAgentRequest) request;
+
         FileObject[] cfgFiles = confDir.getChildren();
         for (int i = 0; i < confDir.getChildren().length; i++) {
             FileObject cfgFile = cfgFiles[i];
             String fileName = cfgFile.getName().getBaseName();
-            getInstaller(request).installConfiguration(createArtifact(confDir.getURL().toString(), JOSSOScope.AGENT, fileName), request.isReplaceConfig());
+            getInstaller(request).installConfiguration(createArtifact(confDir.getURL().toString(), JOSSOScope.AGENT, fileName), ar.isReplaceConfig());
         }
 
-        boolean updateAgentCfg = true;
-        if (request instanceof ActivateAgentRequest) {
-            ActivateAgentRequest ar = (ActivateAgentRequest) request;
-            if (ar.getJossoAgentConfigUri() != null) {
-                FileObject agentCfg = appliancesDir.resolveFile(ar.getJossoAgentConfigUri());
-                if (agentCfg.exists()) {
-                    // Rename file
-
-                    FileObject finalAgentCfg = tmpDir.resolveFile("josso-agent-config.xml");
-                    FileUtil.copyContent(agentCfg, finalAgentCfg);
-                    getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, "josso-agent-config.xml"), request.isReplaceConfig());
-                    finalAgentCfg.delete();
-
-                    // We're installing a generated config
-                    updateAgentCfg = false;
-                }
+        if (ar.getJossoAgentConfigUri() != null) {
+            FileObject agentCfg = appliancesDir.resolveFile(ar.getJossoAgentConfigUri());
+            if (agentCfg.exists()) {
+                // Rename file
+                FileObject finalAgentCfg = tmpDir.resolveFile("josso-agent-config.xml");
+                FileUtil.copyContent(agentCfg, finalAgentCfg);
+                getInstaller(request).installConfiguration(createArtifact(tmpDir.getURL().toString(), JOSSOScope.AGENT, "josso-agent-config.xml"), ar.isReplaceConfig());
+                finalAgentCfg.delete();
             }
-
         }
-
-        if (updateAgentCfg)
-            getInstaller(request).updateAgentConfiguration(request.getIdpHostName(), request.getIdpPort(), request.getIdpType());
     }
-
 
 }

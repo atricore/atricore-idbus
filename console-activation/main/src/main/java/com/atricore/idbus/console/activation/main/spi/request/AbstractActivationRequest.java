@@ -10,7 +10,7 @@ public abstract class AbstractActivationRequest {
     private String idpHostName = "localhost";
     private String idpPort = "8081";
     private String idpType = "atricore-idbus";
-    private boolean replaceConfig = false;
+
     private String jbossInstance = "default";
     private String weblogicDomain = "samples/domains/wl_server";
     private String user;
@@ -58,14 +58,6 @@ public abstract class AbstractActivationRequest {
 
     public void setIdpType(String idpType) {
         this.idpType = idpType;
-    }
-
-    public boolean isReplaceConfig() {
-        return replaceConfig;
-    }
-
-    public void setReplaceConfig(boolean replaceConfig) {
-        this.replaceConfig = replaceConfig;
     }
 
     public String getJbossInstance() {

@@ -22,9 +22,14 @@
 
     <command-bundle xmlns="http://felix.apache.org/karaf/xmlns/shell/v1.0.0">
 
-        <command name="activate/josso-agent">
-            <action class="com.atricore.idbus.console.activation.command.ActiavteAgentCommand"/>
+        <command name="activate/activate">
+            <action class="com.atricore.idbus.console.activation.command.ActiavteExecEnvCommand"/>
         </command>
+
+        <command name="activate/configure">
+            <action class="com.atricore.idbus.console.activation.command.ConfigureExecEnvCommand"/>
+        </command>
+        
     </command-bundle>
 
     <!-- Should be exported by Spring. Reference ID value must match the one used to export the service! -->

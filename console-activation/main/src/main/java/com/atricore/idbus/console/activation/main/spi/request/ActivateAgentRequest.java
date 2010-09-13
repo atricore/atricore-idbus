@@ -5,15 +5,4 @@ package com.atricore.idbus.console.activation.main.spi.request;
  */
 public class ActivateAgentRequest extends AbstractActivationRequest {
 
-    private String jossoAgentConfigUri;
-
-    public String getJossoAgentConfigUri() {
-        return jossoAgentConfigUri;
-    }
-
-    public void setJossoAgentConfigUri(String jossoAgentConfigUri) {
-        this.jossoAgentConfigUri = jossoAgentConfigUri;
-    }
-
-    
 }
