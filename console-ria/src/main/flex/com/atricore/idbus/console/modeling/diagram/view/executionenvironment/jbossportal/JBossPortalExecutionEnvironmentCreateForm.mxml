@@ -41,17 +41,6 @@
         <s:TextInput id="executionEnvironmentDescription" width="300"/>
     </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.applicationPlatform')}:">
-        <s:DropDownList id="platform" width="300" selectedIndex="0">
-            <s:dataProvider>
-                <mx:ArrayCollection>
-                    <fx:Object label="Weblogic 9" data="wl9"/>
-                    <fx:Object label="Weblogic 10" data="wl10"/>
-                </mx:ArrayCollection>
-            </s:dataProvider>
-        </s:DropDownList>
-    </mx:FormItem>
-
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.selectedhost')}:"
             direction="horizontal">
         <s:DropDownList id="selectedHost" width="300" selectedIndex="0">

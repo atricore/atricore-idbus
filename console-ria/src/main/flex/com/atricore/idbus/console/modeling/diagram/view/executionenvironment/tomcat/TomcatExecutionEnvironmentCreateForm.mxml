@@ -42,8 +42,8 @@
         <s:TextInput id="executionEnvironmentDescription" width="300"/>
     </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.tomcat.applicationPlatform')}:">
-        <s:DropDownList id="tomcatPlatform" width="300" selectedIndex="0">
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.applicationPlatform')}:">
+        <s:DropDownList id="platform" width="300" selectedIndex="0">
             <s:dataProvider>
                 <mx:ArrayCollection>
                     <fx:Object label="Apache Tomcat 5.0" data="tc50"/>

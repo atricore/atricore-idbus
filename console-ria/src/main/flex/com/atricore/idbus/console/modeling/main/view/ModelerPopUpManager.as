@@ -31,8 +31,14 @@ import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdent
 import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbossportal.JBossPortalExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbossportal.JBossPortalExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateForm;
@@ -77,6 +83,9 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _jbossExecutionEnvironmentCreateMediator:JBossExecutionEnvironmentCreateMediator;
     private var _weblogicExecutionEnvironmentCreateMediator:WeblogicExecutionEnvironmentCreateMediator;
     private var _tomcatExecutionEnvironmentCreateMediator:TomcatExecutionEnvironmentCreateMediator;
+    private var _jbossPortalExecutionEnvironmentCreateMediator:JBossPortalExecutionEnvironmentCreateMediator;
+    private var _liferayPortalExecutionEnvironmentCreateMediator:LiferayPortalExecutionEnvironmentCreateMediator;
+    private var _wasceExecutionEnvironmentCreateMediator:WASCEExecutionEnvironmentCreateMediator;
     private var _uploadProgressMediator:UploadProgressMediator;
     private var _buildApplianceMediator:BuildApplianceMediator;
     private var _deployApplianceMediator:DeployApplianceMediator;
@@ -95,6 +104,9 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _jbossExecutionEnvironmentCreateForm:JBossExecutionEnvironmentCreateForm;
     private var _weblogicExecutionEnvironmentCreateForm:WeblogicExecutionEnvironmentCreateForm;
     private var _tomcatExecutionEnvironmentCreateForm:TomcatExecutionEnvironmentCreateForm;
+    private var _jbossPortalExecutionEnvironmentCreateForm:JBossPortalExecutionEnvironmentCreateForm;
+    private var _liferayPortalExecutionEnvironmentCreateForm:LiferayPortalExecutionEnvironmentCreateForm;
+    private var _wasceExecutionEnvironmentCreateForm:WASCEExecutionEnvironmentCreateForm;
     private var _manageCertificateForm:ManageCertificateView;
     private var _uploadProgress:UploadProgress;
     private var _buildAppliance:BuildApplianceView;
@@ -225,6 +237,30 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set tomcatExecutionEnvironmentCreateMediator(value:TomcatExecutionEnvironmentCreateMediator):void {
         _tomcatExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get jbossPortalExecutionEnvironmentCreateMediator():JBossPortalExecutionEnvironmentCreateMediator {
+        return _jbossPortalExecutionEnvironmentCreateMediator;
+    }
+
+    public function set jbossPortalExecutionEnvironmentCreateMediator(value:JBossPortalExecutionEnvironmentCreateMediator):void {
+        _jbossPortalExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get liferayPortalExecutionEnvironmentCreateMediator():LiferayPortalExecutionEnvironmentCreateMediator {
+        return _liferayPortalExecutionEnvironmentCreateMediator;
+    }
+
+    public function set liferayPortalExecutionEnvironmentCreateMediator(value:LiferayPortalExecutionEnvironmentCreateMediator):void {
+        _liferayPortalExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get wasceExecutionEnvironmentCreateMediator():WASCEExecutionEnvironmentCreateMediator {
+        return _wasceExecutionEnvironmentCreateMediator;
+    }
+
+    public function set wasceExecutionEnvironmentCreateMediator(value:WASCEExecutionEnvironmentCreateMediator):void {
+        _wasceExecutionEnvironmentCreateMediator = value;
     }
 
     public function get activationCreateMediator():ActivationCreateMediator {
@@ -434,8 +470,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
             createWeblogicExecutionEnvironmentCreateForm();
         }
         _popup.title = "Create Weblogic Execution Environment";
-        _popup.width = 650;
-        _popup.height = 300;
+        _popup.width = 450;
+        _popup.height = 240;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_weblogicExecutionEnvironmentCreateForm);
@@ -472,6 +508,75 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleTomcatExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
         tomcatExecutionEnvironmentCreateMediator.setViewComponent(_tomcatExecutionEnvironmentCreateForm);
         tomcatExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateJBossPortalExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_jbossPortalExecutionEnvironmentCreateForm) {
+            createJBossPortalExecutionEnvironmentCreateForm();
+        }
+        _popup.title = "Create JBoss Portal Execution Environment";
+        _popup.width = 450;
+        _popup.height = 210;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_jbossPortalExecutionEnvironmentCreateForm);
+    }
+
+    private function createJBossPortalExecutionEnvironmentCreateForm():void {
+        _jbossPortalExecutionEnvironmentCreateForm = new JBossPortalExecutionEnvironmentCreateForm();
+        _jbossPortalExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleJBossPortalExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handleJBossPortalExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        jbossPortalExecutionEnvironmentCreateMediator.setViewComponent(_jbossPortalExecutionEnvironmentCreateForm);
+        jbossPortalExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateLiferayPortalExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_liferayPortalExecutionEnvironmentCreateForm) {
+            createLiferayPortalExecutionEnvironmentCreateForm();
+        }
+        _popup.title = "Create Liferay Portal Execution Environment";
+        _popup.width = 450;
+        _popup.height = 210;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_liferayPortalExecutionEnvironmentCreateForm);
+    }
+
+    private function createLiferayPortalExecutionEnvironmentCreateForm():void {
+        _liferayPortalExecutionEnvironmentCreateForm = new LiferayPortalExecutionEnvironmentCreateForm();
+        _liferayPortalExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleLiferayPortalExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handleLiferayPortalExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        liferayPortalExecutionEnvironmentCreateMediator.setViewComponent(_liferayPortalExecutionEnvironmentCreateForm);
+        liferayPortalExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateWASCEExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_wasceExecutionEnvironmentCreateForm) {
+            createWASCEExecutionEnvironmentCreateForm();
+        }
+        _popup.title = "Create WASCE Execution Environment";
+        _popup.width = 450;
+        _popup.height = 210;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_wasceExecutionEnvironmentCreateForm);
+    }
+
+    private function createWASCEExecutionEnvironmentCreateForm():void {
+        _wasceExecutionEnvironmentCreateForm = new WASCEExecutionEnvironmentCreateForm();
+        _wasceExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleWASCEExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handleWASCEExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        wasceExecutionEnvironmentCreateMediator.setViewComponent(_wasceExecutionEnvironmentCreateForm);
+        wasceExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateFederatedConnectionWindow(notification:INotification):void {

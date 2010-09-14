@@ -47,11 +47,14 @@
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnitType;
         import com.atricore.idbus.console.services.dto.IdentityProvider;
         import com.atricore.idbus.console.services.dto.IdentitySource;
+        import com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.LdapIdentitySource;
+        import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.ServiceProvider;
 
         import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
         import com.atricore.idbus.console.services.dto.XmlIdentitySource;
@@ -143,6 +146,12 @@
                                                 _linkIcon = EmbeddedIcons.weblogicEnvironmentIcon;
                                             } else if (obj is TomcatExecutionEnvironment){
                                                 _linkIcon = EmbeddedIcons.tomcatEnvironmentIcon;
+                                            } else if (obj is JBossPortalExecutionEnvironment){
+                                                _linkIcon = EmbeddedIcons.jbossEnvironmentIcon;
+                                            } else if (obj is LiferayExecutionEnvironment){
+                                                _linkIcon = EmbeddedIcons.liferayEnvironmentIcon;
+                                            } else if (obj is WASCEExecutionEnvironment){
+                                                _linkIcon = EmbeddedIcons.websphereEnvironmentIcon;
                                             } else {
                                                 _linkIcon = EmbeddedIcons.executionEnvironmentIcon;
                                             }

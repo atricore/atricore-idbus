@@ -86,7 +86,7 @@ public class TomcatExecutionEnvironmentCreateMediator extends IocFormMediator {
         tomcatExecutionEnvironment.name = view.executionEnvironmentName.text;
         tomcatExecutionEnvironment.description = view.executionEnvironmentDescription.text;
         tomcatExecutionEnvironment.installUri = view.homeDirectory.text;
-        tomcatExecutionEnvironment.platformId = view.tomcatPlatform.selectedItem.data;
+        tomcatExecutionEnvironment.platformId = view.platform.selectedItem.data;
         _newExecutionEnvironment = tomcatExecutionEnvironment;
     }
 

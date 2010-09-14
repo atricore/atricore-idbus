@@ -44,5 +44,6 @@ public class DiagramElementTypes {
     public static const WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE = 20;
     public static const IDENTITY_VAULT_ELEMENT_TYPE = 21;
     public static const XML_IDENTITY_SOURCE_ELEMENT_TYPE = 22;
+    public static const JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT_TYPE = 23;
 }
 }

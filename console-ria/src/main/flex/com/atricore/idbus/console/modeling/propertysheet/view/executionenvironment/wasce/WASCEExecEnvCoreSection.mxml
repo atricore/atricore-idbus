@@ -32,7 +32,7 @@
         <mx:StringValidator id="homeDirValidator" source="{homeDirectory}" required="true" property="text"
                         triggerEvent="click"/>
     </fx:Declarations>
-    
+
     <mx:Form width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" verticalGap="8">
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.name')}:" required="true">
             <s:TextInput id="executionEnvironmentName" width="300"/>
@@ -40,18 +40,6 @@
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.description')}:">
             <s:TextInput id="executionEnvironmentDescription" width="300"/>
-        </mx:FormItem>
-
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.applicationPlatform')}:">
-            <s:DropDownList id="platform" width="300" selectedIndex="0">
-                <s:dataProvider>
-                    <mx:ArrayCollection>
-                        <fx:Object label="Apache Tomcat 5.0" data="tc50"/>
-                        <fx:Object label="Apache Tomcat 5.5" data="tc55"/>
-                        <fx:Object label="Apache Tomcat 6.0" data="tc60"/>
-                    </mx:ArrayCollection>
-                </s:dataProvider>
-            </s:DropDownList>
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.selectedhost')}:"

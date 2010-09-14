@@ -29,13 +29,8 @@ import com.atricore.idbus.console.modeling.palette.model.PaletteDrawer;
 import com.atricore.idbus.console.modeling.palette.model.PaletteEntry;
 import com.atricore.idbus.console.modeling.palette.model.PaletteRoot;
 
-import mx.collections.IList;
-
 import org.puremvc.as3.interfaces.INotification;
-import org.puremvc.as3.patterns.observer.Notification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
-
-import spark.primitives.BitmapImage;
 
 public class PaletteMediator extends IocMediator {
     private var selectedIndex:int;
@@ -115,7 +110,12 @@ public class PaletteMediator extends IocMediator {
                 );
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("Liferay", EmbeddedIcons.liferayEnvironmentMiniIcon, "Liferay Environment Entry", DiagramElementTypes.LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                    new PaletteEntry("JBoss Portal", EmbeddedIcons.jbossEnvironmentMiniIcon, "JBoss Portal Environment Entry", DiagramElementTypes.JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+
+                );
+
+        environmentsPaletteDrawer.add(
+                    new PaletteEntry("Liferay Portal", EmbeddedIcons.liferayEnvironmentMiniIcon, "Liferay Portal Environment Entry", DiagramElementTypes.LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 
@@ -140,7 +140,7 @@ public class PaletteMediator extends IocMediator {
                 );
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("Websphere", EmbeddedIcons.websphereEnvironmentMiniIcon, "Websphere Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                    new PaletteEntry("Websphere CE", EmbeddedIcons.websphereEnvironmentMiniIcon, "Websphere CE Environment Entry", DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 

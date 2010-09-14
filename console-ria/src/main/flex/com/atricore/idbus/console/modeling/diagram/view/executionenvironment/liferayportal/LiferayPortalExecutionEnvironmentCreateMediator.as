@@ -19,12 +19,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic {
+package com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
-import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
 
 import flash.events.MouseEvent;
 
@@ -33,13 +33,13 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator {
+public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
 
-    private var _newExecutionEnvironment:WeblogicExecutionEnvironment;
+    private var _newExecutionEnvironment:LiferayExecutionEnvironment;
 
-    public function WeblogicExecutionEnvironmentCreateMediator(name:String = null, viewComp:WeblogicExecutionEnvironmentCreateForm = null) {
+    public function LiferayPortalExecutionEnvironmentCreateMediator(name:String = null, viewComp:LiferayPortalExecutionEnvironmentCreateForm = null) {
         super(name, viewComp);
     }
 
@@ -50,10 +50,10 @@ public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator 
     public function set projectProxy(value:ProjectProxy):void {
         _projectProxy = value;
     }
-    
+
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.btnOk.removeEventListener(MouseEvent.CLICK, handleWeblogicExecutionEnvironmentSave);
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handleLiferayPortalExecutionEnvironmentSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
         }
 
@@ -63,7 +63,7 @@ public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator 
     }
 
     private function init():void {
-        view.btnOk.addEventListener(MouseEvent.CLICK, handleWeblogicExecutionEnvironmentSave);
+        view.btnOk.addEventListener(MouseEvent.CLICK, handleLiferayPortalExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
         view.selectedHost.enabled = false;
@@ -79,18 +79,18 @@ public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator 
     }
 
     override public function bindModel():void {
-        var executionEnvironment:WeblogicExecutionEnvironment = new WeblogicExecutionEnvironment();
+        var executionEnvironment:LiferayExecutionEnvironment = new LiferayExecutionEnvironment();
         executionEnvironment.name = view.executionEnvironmentName.text;
         executionEnvironment.description = view.executionEnvironmentDescription.text;
         executionEnvironment.installUri = view.homeDirectory.text;
-        executionEnvironment.platformId = view.platform.selectedItem.data;
+        //executionEnvironment.platformId = "";
         _newExecutionEnvironment = executionEnvironment;
     }
 
-    private function handleWeblogicExecutionEnvironmentSave(event:MouseEvent):void {
+    private function handleLiferayPortalExecutionEnvironmentSave(event:MouseEvent):void {
         if (validate(true)) {
             bindModel();
-            if(_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null){
+            if (_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null) {
                 _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
             }
             _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newExecutionEnvironment);
@@ -114,12 +114,13 @@ public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator 
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
-    protected function get view():WeblogicExecutionEnvironmentCreateForm {
-        return viewComponent as WeblogicExecutionEnvironmentCreateForm;
+    protected function get view():LiferayPortalExecutionEnvironmentCreateForm {
+        return viewComponent as LiferayPortalExecutionEnvironmentCreateForm;
     }
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
+        _validators.push(view.homeDirValidator);
     }
 
     override public function listNotificationInterests():Array {

@@ -341,6 +341,30 @@ public class DiagramMediator extends IocMediator {
                             // the corresponding form
                             sendNotification(ApplicationFacade.CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT, cteenv);
                             break;
+                        case DiagramElementTypes.JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                            var cjpeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                    );
+                            _projectProxy.currentIdentityAppliance = _identityAppliance;
+                            // this notification will be grabbed by the modeler mediator which will open
+                            // the corresponding form
+                            sendNotification(ApplicationFacade.CREATE_JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT, cjpeenv);
+                            break;
+                        case DiagramElementTypes.LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                            var clpeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                    );
+                            _projectProxy.currentIdentityAppliance = _identityAppliance;
+                            // this notification will be grabbed by the modeler mediator which will open
+                            // the corresponding form
+                            sendNotification(ApplicationFacade.CREATE_LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT, clpeenv);
+                            break;
+                        case DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                            var cwseenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                    );
+                            _projectProxy.currentIdentityAppliance = _identityAppliance;
+                            // this notification will be grabbed by the modeler mediator which will open
+                            // the corresponding form
+                            sendNotification(ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT, cwseenv);
+                            break;
                     }
 //                }
                 break;

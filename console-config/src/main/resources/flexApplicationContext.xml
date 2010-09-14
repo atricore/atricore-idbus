@@ -260,6 +260,18 @@
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="jbossPortalExecutionEnvironmentCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbossportal.JBossPortalExecutionEnvironmentCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="liferayPortalExecutionEnvironmentCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="wasceExecutionEnvironmentCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="idpChannelCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -371,7 +383,10 @@
         <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator" />
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
         <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator" />
-        <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />        
+        <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />
+        <property name="jbossPortalExecutionEnvironmentCreateMediator" ref="jbossPortalExecutionEnvironmentCreateMediator" />
+        <property name="liferayPortalExecutionEnvironmentCreateMediator" ref="liferayPortalExecutionEnvironmentCreateMediator" />
+        <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
         <property name="activationCreateMediator" ref="activationCreateMediator"/>
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
 
@@ -461,6 +476,9 @@
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
         <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator" />
         <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />
+        <property name="jbossPortalExecutionEnvironmentCreateMediator" ref="jbossPortalExecutionEnvironmentCreateMediator" />
+        <property name="liferayPortalExecutionEnvironmentCreateMediator" ref="liferayPortalExecutionEnvironmentCreateMediator" />
+        <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
         <property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>
         <property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>
         <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>

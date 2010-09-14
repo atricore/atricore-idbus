@@ -27,6 +27,12 @@
         <symbol>com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.propertysheet.PropertySheetMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.DiagramMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbossportal.JBossPortalExecutionEnvironmentCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator
