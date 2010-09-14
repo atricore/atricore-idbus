@@ -1135,7 +1135,13 @@ public class IdentityApplianceManagementServiceImpl implements
 
         if (configureExecEnvs) {
             for (ExecutionEnvironment execEnv : appliance.getIdApplianceDefinition().getExecutionEnvironments()) {
-                configureExecEnv(appliance, execEnv, true);
+
+                if (execEnv.isActive()) {
+                    logger.debug("Execution environment is active, configuring " + execEnv.getName());
+                    configureExecEnv(appliance, execEnv, true);
+                } else {
+                    logger.debug("Execution environment is not active, skip configuration " + execEnv.getName());
+                }
             }
         }
 
@@ -1172,6 +1178,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
         // Build the appliance
         appliance = builder.build(appliance);
+        appliance.setState(IdentityApplianceState.BUILT.toString());
 
         // Install it
         if (deploy)

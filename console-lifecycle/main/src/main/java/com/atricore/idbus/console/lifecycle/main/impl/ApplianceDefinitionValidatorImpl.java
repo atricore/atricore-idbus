@@ -87,17 +87,43 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
 
         validateLocation("SP", node.getLocation(), true);
 
+        int preferred = 0;
+
         for (FederatedConnection fcA : node.getFederatedConnectionsA()) {
+
+            if (fcA.getChannelA() instanceof IdentityProviderChannel) {
+                IdentityProviderChannel c = (IdentityProviderChannel) fcA.getChannelA();
+                if (c.isPreferred())
+                    preferred ++;
+            } else {
+                addError("Federated Connection A does not relate this SP with an IDP : " + fcA.getChannelA().getClass().getSimpleName());
+            }
+
             if (fcA.getRoleA() != node) {
                 addError("Federated Connection A does not point to this provider " + node.getName() + "["+fcA.getRoleA().getName()+"]");
             }
         }
 
         for (FederatedConnection fcB : node.getFederatedConnectionsB()) {
+
+            if (fcB.getChannelB() instanceof IdentityProviderChannel) {
+                IdentityProviderChannel c = (IdentityProviderChannel) fcB.getChannelB();
+                if (c.isPreferred())
+                    preferred ++;
+            } else {
+                addError("Federated Connection B does not relate this SP with an IDP : " + fcB.getChannelB().getClass().getSimpleName());
+            }
+
             if (fcB.getRoleB() != node) {
                 addError("Federated Connection B does not point to this provider " + node.getName() + "["+fcB.getRoleA().getName()+"]");
             }
         }
+
+        if (preferred < 1)
+            addError("No preferred Identity Provider Channel defined for SP " + node.getName());
+
+        if (preferred > 1)
+            addError("Too many Identity Provider Channels defined for SP " + node.getName() + ", found " + preferred);
 
         // TODO !
     }

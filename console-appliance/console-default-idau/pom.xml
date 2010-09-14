@@ -35,7 +35,7 @@
     <artifactId>com.atricore.idbus.console.appliance.console-default-idau</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
-    <name>Atricore Identity Bus Console :: Default Identity Appliance Unit</name>
+    <name>Atricore IDBus Console :: Default Identity Appliance Unit</name>
 
     <properties>
         <felix.plugin.version>2.1.0</felix.plugin.version>

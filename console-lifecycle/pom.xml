@@ -37,7 +37,7 @@
     <artifactId>console-lifecycle</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Atricore Identity Bus Console :: Lifecycle POM</name>
+    <name>Atricore IDBus Console :: Lifecycle POM</name>
 
     <prerequisites>
         <maven>2.0.9</maven>

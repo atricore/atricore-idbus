@@ -10,7 +10,7 @@
 
     <artifactId>console-qa</artifactId>
     <packaging>jar</packaging>
-    <name>Atricore Identity Bus Console :: Quality Assurance (QA)</name>
+    <name>Atricore IDBus Console :: Quality Assurance (QA)</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
