@@ -84,31 +84,35 @@ package com.atricore.idbus.console.main {
         static public var infoIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/ui/user-group-new.png")]
+        [Embed(source="/assets/icons/account/add_group.png")]
         static public var addGroupIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/ui/user-group-delete.png")]
+        [Embed(source="/assets/icons/account/remove_group.png")]
         static public var deleteGroupIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/ui/user-group-properties.png")]
+        [Embed(source="/assets/icons/account/edit_group.png")]
         static public var editGroupIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/ui/list-add-user.png")]
+        [Embed(source="/assets/icons/account/search_group.png")]
+        static public var searchGroupIcon:Class;
+
+        [Bindable]
+        [Embed(source="/assets/icons/account/add_user.png")]
         static public var addUserIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/ui/list-remove-user.png")]
+        [Embed(source="/assets/icons/account/remove_user.png")]
         static public var removeUserIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/ui/user-properties.png")]
+        [Embed(source="/assets/icons/account/edit_user.png")]
         static public var editUserIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/ui/edit-find.png")]
+        [Embed(source="/assets/icons/account/search_user.png")]
         static public var searchUserIcon:Class;
 
         [Bindable]
@@ -160,11 +164,11 @@ package com.atricore.idbus.console.main {
         static public var worldIcon:Class;
         
         [Bindable]
-        [Embed(source="/assets/icons/ui/users_tree_22x22.png")]
+        [Embed(source="/assets/icons/account/search_user.png")]
         static public var usersIcon:Class;
 
         [Bindable]
-        [Embed(source="/assets/icons/ui/user-group-new.png")]
+        [Embed(source="/assets/icons/account/search_group.png")]
         static public var groupsIcon:Class;
 
         [Bindable]
