@@ -190,7 +190,10 @@
               creationComplete="gr_creationComplete(event);">
         <!--creationComplete="img.source = hostComponent.data;">-->
         <!-- layer 8: icon -->
-        <s:BitmapImage id="img" source="{hostComponent.getStyle('iconUp')}" />
+        <s:BitmapImage id="img"
+                       source="{hostComponent.getStyle('iconUp')}"
+                       width="{hostComponent.getStyle('iconWidth')}"
+                       height="{hostComponent.getStyle('iconHeight')}"/>
 
         <!-- layer 9: text -->
         <s:Label id="labelDisplay"

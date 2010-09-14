@@ -33,6 +33,8 @@
             protected function gr_creationComplete(evt:FlexEvent):void {
                 var dataObj:Object = hostComponent.data;
                 img.source = dataObj.icon;
+                img.width = dataObj.iconWidth;
+                img.height = dataObj.iconHeight;
                 labelDisplay.text = dataObj.name;
             }
 

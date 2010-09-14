@@ -49,31 +49,37 @@
         import com.atricore.idbus.console.main.EmbeddedIcons;
 
         public var icon:Class = EmbeddedIcons.usersIcon;
+        public var iconWidth:Number = 22;
+        public var iconHeight:Number = 22;
         ]]>
     </fx:Script>
 
     <s:HGroup id="buttonBar" width="100%" height="5%"
               paddingLeft="15" paddingRight="15" paddingTop="5" paddingBottom="5">
         <components:IconLabelButton id="btnNewUser"
-                               iconUp="@Embed('/assets/icons/ui/user-group-new.png')"
+                               iconUp="{EmbeddedIcons.addUserIcon}"
+                               iconWidth="22"  iconHeight="22"
                                paddingTop="3" paddingLeft="3" isLinkButton="false"
                                skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
                                toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.add.panel.label')}"
                                label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.add.panel.label')}"/>
         <components:IconLabelButton id="btnEditUser" enabled="false"
-                               iconUp="@Embed('/assets/icons/ui/user-properties.png')"
+                               iconUp="{EmbeddedIcons.editUserIcon}"
+                               iconWidth="22"  iconHeight="22"
                                paddingTop="3" paddingLeft="3" isLinkButton="false"
                                skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
                                toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.edit.panel.label')}"
                                label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.edit.panel.label')}"/>
         <components:IconLabelButton id="btnDeleteUser" enabled="false"
-                               iconUp="@Embed('/assets/icons/ui/user-group-delete.png')"
+                               iconUp="{EmbeddedIcons.removeUserIcon}"
+                               iconWidth="22"  iconHeight="22"
                                paddingTop="3" paddingLeft="3" isLinkButton="false"
                                skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
                                toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.delete.panel.label')}"
                                label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.delete.panel.label')}"/>
         <components:IconLabelButton id="btnSearchUser"
-                               iconUp="@Embed('/assets/icons/ui/edit-find.png')"
+                               iconUp="{EmbeddedIcons.searchUserIcon}"
+                               iconWidth="22"  iconHeight="22"
                                paddingTop="3" paddingLeft="3" isLinkButton="false"
                                skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
                                toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.search.panel.label')}"

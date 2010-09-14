@@ -2,49 +2,56 @@ package com.atricore.idbus.console.components {
 import spark.components.Button;
 
 //icons
-	[Style(name="iconUp",type="Class")]
-	[Style(name="iconOver",type="Class")]
-	[Style(name="iconDown",type="Class")]
-	[Style(name="iconDisabled",type="Class")]
-    
-	//paddings
-	[Style(name="paddingLeft",type="Number")]
-	[Style(name="paddingRight",type="Number")]
-	[Style(name="paddingTop",type="Number")]
-	[Style(name="paddingBottom",type="Number")]
-	public class IconLabelButton extends Button
-	{
-        private var _selected:Boolean;
+[Style(name="iconUp",type="Class")]
+[Style(name="iconOver",type="Class")]
+[Style(name="iconDown",type="Class")]
+[Style(name="iconDisabled",type="Class")]
+[Style(name="iconWidth",type="Number")]
+[Style(name="iconHeight",type="Number")]
 
-        private var _isLinkButton:Boolean;
+//paddings
+[Style(name="paddingLeft",type="Number")]
+[Style(name="paddingRight",type="Number")]
+[Style(name="paddingTop",type="Number")]
+[Style(name="paddingBottom",type="Number")]
+public class IconLabelButton extends Button
+{
+    private var _selected:Boolean;
 
-		public function IconLabelButton() {
-			super();
-		}
+    private var _isLinkButton:Boolean;
 
-        public function get selected():Boolean {
-            return _selected;
-        }
+    private var _iconWidth:Number;
 
-        public function set selected(value:Boolean):void {
-            _selected = value;
-        }
+    private var _iconHeight:Number;
 
-        public function get isLinkButton():Boolean {
-            return _isLinkButton;
-        }
 
-        // toggle hand cursor
-        public function set isLinkButton(value:Boolean):void {
-            _isLinkButton = value;
-            if (_isLinkButton) {
-                buttonMode = true;
-                useHandCursor = true;
-            } else {
-                buttonMode = false;
-                useHandCursor = false;
-            }
+    public function IconLabelButton() {
+        super();
+    }
+
+    public function get selected():Boolean {
+        return _selected;
+    }
+
+    public function set selected(value:Boolean):void {
+        _selected = value;
+    }
+
+    public function get isLinkButton():Boolean {
+        return _isLinkButton;
+    }
+
+    // toggle hand cursor
+    public function set isLinkButton(value:Boolean):void {
+        _isLinkButton = value;
+        if (_isLinkButton) {
+            buttonMode = true;
+            useHandCursor = true;
+        } else {
+            buttonMode = false;
+            useHandCursor = false;
         }
     }
+}
 
 }
