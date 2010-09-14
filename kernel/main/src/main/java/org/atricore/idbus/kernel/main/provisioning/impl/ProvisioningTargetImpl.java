@@ -2,6 +2,8 @@ package org.atricore.idbus.kernel.main.provisioning.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
+import org.atricore.idbus.kernel.main.authn.util.Crypt;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
@@ -13,9 +15,9 @@ import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.springframework.beans.BeanUtils;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,6 +33,14 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
     private String description;
     
+    private String hashEncoding;
+    
+    private String hashAlgorithm;
+    
+    private String hashCharset;
+    
+    private int saltLenght;
+    
     private IdentityPartition identityPartition;
 
     public String getName() {
@@ -44,9 +54,41 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public String getDescription() {
         return description;
     }
-
+    
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getHashCharset() {
+        return hashCharset;
+    }
+
+    public void setHashCharset(String hashCharset) {
+        this.hashCharset = hashCharset;
+    }
+
+    public String getHashEncoding() {
+        return hashEncoding;
+    }
+
+    public void setHashEncoding(String hashEncoding) {
+        this.hashEncoding = hashEncoding;
+    }
+
+    public String getHashAlgorithm() {
+        return hashAlgorithm;
+    }
+
+    public void setHashAlgorithm(String hashAlgorithm) {
+        this.hashAlgorithm = hashAlgorithm;
+    }
+
+    public int getSaltLenght() {
+        return saltLenght;
+    }
+
+    public void setSaltLenght(int saltLenght) {
+        this.saltLenght = saltLenght;
     }
 
     public IdentityPartition getIdentityPartition() {
@@ -204,7 +246,9 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             
             User user = new User();
 
-            BeanUtils.copyProperties(userRequest, user, new String[] {"groups"});
+            BeanUtils.copyProperties(userRequest, user, new String[] {"groups", "userPassword"});
+
+            user.setUserPassword(createPasswordHash(userRequest.getUserPassword()));
                 
             Group[] groups = userRequest.getGroups();
             user.setGroups(groups);
@@ -272,7 +316,13 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         try {
             
             User user = userRequest.getUser();
-            user = identityPartition.updateUser(user);
+
+            User oldUser = identityPartition.findUserById(user.getId());
+
+            // Can't modify password using this operation
+            BeanUtils.copyProperties(user, oldUser, new String[] {"groups", "userPassword", "id"});
+            oldUser.setGroups(user.getGroups());
+            user = identityPartition.updateUser(oldUser);
 
             UpdateUserResponse userResponse = new UpdateUserResponse();
             userResponse.setUser(user);
@@ -292,4 +342,118 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         throw new UnsupportedOperationException("Not Implemented yet!");
     }
 
+    public SetPasswordResponse setPassword(SetPasswordRequest setPwdRequest) throws ProvisioningException {
+        try {
+            User user = identityPartition.findUserById(setPwdRequest.getUserId());
+            
+            String currentPwd = createPasswordHash(setPwdRequest.getCurrentPassword());
+            if (!user.getUserPassword().equals(currentPwd)) {
+                throw new ProvisioningException("Provided password is invalid");
+            }
+            
+            String newPwd = createPasswordHash(setPwdRequest.getNewPassword());
+            user.setUserPassword(newPwd);
+            identityPartition.updateUser(user);
+            SetPasswordResponse setPwdResponse = new SetPasswordResponse();
+            
+            return setPwdResponse;
+            
+        } catch (Exception e) {
+            throw new ProvisioningException("Cannot update user password", e);
+        }
+    }
+    
+    protected String createPasswordHash(String password) throws ProvisioningException {
+
+        // If none of this properties are set, do nothing ...
+        if (getHashAlgorithm() == null && getHashEncoding() == null) {
+            // Nothing to do ...
+            return password;
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Creating password hash for [" + password + "] with algorithm/encoding [" + getHashAlgorithm() + "/" + getHashEncoding() + "]");
+
+        // Check for spetial encryption mechanisms, not supported by the JDK
+        /* TODO
+        if ("CRYPT".equalsIgnoreCase(getHashAlgorithm())) {
+            // Get known password
+            String knownPassword = getPassword(getKnownCredentials());
+            String salt = knownPassword != null && knownPassword.length() > 1 ? knownPassword.substring(0, saltLenght) : "";
+
+            return Crypt.crypt(salt, password);
+
+        } */
+
+        byte[] passBytes;
+        String passwordHash = null;
+
+        // convert password to byte data
+        try {
+            if (hashCharset == null)
+                passBytes = password.getBytes();
+            else
+                passBytes = password.getBytes(hashCharset);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("charset " + hashCharset + " not found. Using platform default.");
+            passBytes = password.getBytes();
+        }
+
+        // calculate the hash and apply the encoding.
+        try {
+
+            byte[] hash;
+            // Hash algorithm is optional
+            if (hashAlgorithm != null)
+                hash = getDigest().digest(passBytes);
+            else
+                hash = passBytes;
+
+            // At this point, hashEncoding is required.
+            if ("BASE64".equalsIgnoreCase(hashEncoding)) {
+                passwordHash = CipherUtil.encodeBase64(hash);
+
+            } else if ("HEX".equalsIgnoreCase(hashEncoding)) {
+                passwordHash = CipherUtil.encodeBase16(hash);
+
+            } else if (hashEncoding == null) {
+                logger.error("You must specify a hashEncoding when using hashAlgorithm");
+
+            } else {
+                logger.error("Unsupported hash encoding format " + hashEncoding);
+
+            }
+
+        } catch (Exception e) {
+            logger.error("Password hash calculation failed : \n" + e.getMessage() != null ? e.getMessage() : e.toString(), e);
+        }
+
+        return passwordHash;
+
+    }
+    
+    /**
+     * Only invoke this if algorithm is set.
+     *
+     * @throws ProvisioningException
+     */
+    protected MessageDigest getDigest() throws ProvisioningException {
+
+        MessageDigest digest = null;
+        if (hashAlgorithm != null) {
+
+            try {
+                digest = MessageDigest.getInstance(hashAlgorithm);
+                logger.debug("Using hash algorithm/encoding : " + hashAlgorithm + "/" + hashEncoding);
+            } catch (NoSuchAlgorithmException e) {
+                logger.error("Algorithm not supported : " + hashAlgorithm, e);
+                throw new ProvisioningException(e.getMessage(), e);
+            }
+        }
+
+        return digest;
+
+    }
+    
+    
 }

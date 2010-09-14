@@ -24,8 +24,6 @@ public class UserModifyCommand extends SpmlCommandSupport {
     Long id;
 
     //<--- General Information ---->
-    @Option(name = "-u", aliases = "--username", description = "Username ", required = true, multiValued = false)
-    String userName;
     @Option(name = "-n", aliases = "--name", description = "User first name ", required = false, multiValued = false)
     String firstName;
 
@@ -78,8 +76,6 @@ public class UserModifyCommand extends SpmlCommandSupport {
     Integer daysBeforeExpiration;
 
 //<--- Security Set Password---->
-    @Option(name = "-p", aliases = "--password", description = "User Password", required = false, multiValued = false)
-    String userPassword;
     byte[] userCertificate;
     Boolean automaticallyGeneratePassword;
     Boolean emailNewPasword;

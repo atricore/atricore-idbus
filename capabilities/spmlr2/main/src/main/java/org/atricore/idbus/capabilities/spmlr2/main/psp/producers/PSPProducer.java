@@ -3,6 +3,8 @@ package org.atricore.idbus.capabilities.spmlr2.main.psp.producers;
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
+import oasis.names.tc.spml._2._0.password.ResetPasswordRequestType;
+import oasis.names.tc.spml._2._0.password.SetPasswordRequestType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
 import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
@@ -16,7 +18,6 @@ import org.atricore.idbus.capabilities.spmlr2.main.psp.SpmlR2PSPMediator;
 import org.atricore.idbus.capabilities.spmlr2.main.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
-import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
@@ -32,7 +33,6 @@ import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import javax.xml.bind.JAXBElement;
 import java.util.Iterator;
@@ -76,13 +76,21 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse = doProcessModifyRequest(exchange, (ModifyRequestType) content);
         } else if (content instanceof DeleteRequestType) {
             spmlResponse = doProcessDeleteRequest(exchange, (DeleteRequestType) content);
+        } else if (content instanceof SetPasswordRequestType) {
+            spmlResponse = doProcessSetPassword(exchange, (SetPasswordRequestType) content);
+        } else if (content instanceof ResetPasswordRequestType) {
+            // TODO :
+            logger.error("Unknown SPML Request type : " + content.getClass().getName());
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+            spmlResponse.setError(ErrorCode.UNSUPPORTED_OPERATION);
+
         } else {
 
             // TODO : Send status=failure error= in response ! (use super producer or binding to build error
             // TODO : See SPMPL Section 3.1.2.2 Error (normative)
             logger.error("Unknown SPML Request type : " + content.getClass().getName());
-
             spmlResponse.setStatus(StatusCodeType.FAILURE);
+            spmlResponse.setError(ErrorCode.UNSUPPORTED_OPERATION);
 
         }
 
@@ -496,6 +504,33 @@ public class PSPProducer extends SpmlR2Producer {
         } else {
             throw new UnsupportedOperationException("SPML Request not supported");
         }
+    }
+
+    public ResponseType doProcessSetPassword(CamelMediationExchange exchange, SetPasswordRequestType spmlRequest) {
+
+        ResponseType spmlResponse = new ResponseType();
+        try {
+
+            String currentPwd = spmlRequest.getCurrentPassword();
+            String newPwd = spmlRequest.getPassword();
+
+            SetPasswordRequest req = new SetPasswordRequest();
+
+            req.setUserId(Long.parseLong(spmlRequest.getPsoID().getID()));
+            req.setCurrentPassword(spmlRequest.getCurrentPassword());
+            req.setNewPassword(spmlRequest.getPassword());
+
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+
+            target.setPassword(req);
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+        } catch (ProvisioningException e) {
+            logger.error(e.getMessage(), e);
+            spmlResponse.setStatus(StatusCodeType.FAILURE);
+        }
+
+        return spmlResponse;
     }
 
     public class TargetContainer {

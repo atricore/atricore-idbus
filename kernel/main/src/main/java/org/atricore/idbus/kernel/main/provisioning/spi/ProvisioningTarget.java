@@ -60,5 +60,8 @@ public interface ProvisioningTarget {
     GetUsersByGroupResponse getUsersByGroup(GetUsersByGroupRequest usersByGroupRequest)
     		throws ProvisioningException;
 
+    SetPasswordResponse setPassword(SetPasswordRequest setPwdRequest)
+            throws ProvisioningException;
+
 
 }

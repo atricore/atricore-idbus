@@ -29,6 +29,7 @@ public class UserAddCommand extends SpmlCommandSupport {
     //<--- General Information ---->
     @Option(name = "-u", aliases = "--username", description = "Username ", required = true, multiValued = false)
     String userName;
+    
     @Option(name = "-n", aliases = "--name", description = "User first name ", required = false, multiValued = false)
     String firstName;
 
