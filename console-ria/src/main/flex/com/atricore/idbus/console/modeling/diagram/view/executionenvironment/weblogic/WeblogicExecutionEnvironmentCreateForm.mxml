@@ -31,6 +31,8 @@
                         triggerEvent="click"/>
         <mx:StringValidator id="homeDirValidator" source="{homeDirectory}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
+        <mx:StringValidator id="domainValidator" source="{domain}" required="true" property="text" trigger="{btnOk}"
+                        triggerEvent="click"/>
     </fx:Declarations>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.name')}:" required="true">

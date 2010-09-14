@@ -2255,16 +2255,19 @@ public class PropertySheetMediator extends IocMediator {
         }
         _jbossExecEnvCoreSection.selectedHost.selectedIndex = 0;
         _jbossExecEnvCoreSection.homeDirectory.text = jbossExecEnv.installUri;
+        _jbossExecEnvCoreSection.instance.text = jbossExecEnv.instance;
 
         _jbossExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
         _jbossExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
         _jbossExecEnvCoreSection.platform.addEventListener(Event.CHANGE, handleSectionChange);
         _jbossExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
         _jbossExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+        _jbossExecEnvCoreSection.instance.addEventListener(Event.CHANGE, handleSectionChange);
 
         _validators = [];
         _validators.push(_jbossExecEnvCoreSection.nameValidator);
         _validators.push(_jbossExecEnvCoreSection.homeDirValidator);
+        _validators.push(_jbossExecEnvCoreSection.instanceValidator);
     }
 
     private function handleJbossExecEnvCorePropertyTabRollOut(e:Event):void {
@@ -2276,6 +2279,7 @@ public class PropertySheetMediator extends IocMediator {
             jbossExecEnv.description = _jbossExecEnvCoreSection.executionEnvironmentDescription.text;
             jbossExecEnv.platformId = _jbossExecEnvCoreSection.platform.selectedItem.data;
             jbossExecEnv.installUri = _jbossExecEnvCoreSection.homeDirectory.text;
+            jbossExecEnv.instance = _jbossExecEnvCoreSection.instance.text;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

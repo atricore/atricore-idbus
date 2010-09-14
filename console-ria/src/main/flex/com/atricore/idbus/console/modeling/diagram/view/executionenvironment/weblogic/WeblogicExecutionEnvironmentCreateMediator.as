@@ -122,6 +122,8 @@ public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator 
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
+        _validators.push(view.homeDirValidator);
+        _validators.push(view.domainValidator);
     }
 
     override public function listNotificationInterests():Array {
