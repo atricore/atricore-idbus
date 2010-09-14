@@ -32,7 +32,7 @@
     <!--artifactId>idbus-server-web</artifactId-->
     <artifactId>com.atricore.idbus.console.web</artifactId>
     <packaging>war</packaging>
-    <name>Atricore Identity Bus Console :: Web distribution</name>
+    <name>Atricore IDBus Console :: Web distribution</name>
 
     <build>
         <plugins>
@@ -173,8 +173,6 @@
                         <supportedProjectType>war</supportedProjectType>
                     </supportedProjectTypes>
                     <instructions>
-                        <Bundle-Name>Atricore IDBus :: Application : Server Admin Web distribution</Bundle-Name>
-                        <Bundle-Description>Identity Bus Server Admin Web distribution</Bundle-Description>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-ClassPath>
                             .,

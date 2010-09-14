@@ -1948,16 +1948,19 @@ public class PropertySheetMediator extends IocMediator {
         }
         _weblogicExecEnvCoreSection.selectedHost.selectedIndex = 0;
         _weblogicExecEnvCoreSection.homeDirectory.text = weblogicExecEnv.installUri;
+        _weblogicExecEnvCoreSection.domain.text = weblogicExecEnv.domain;
 
         _weblogicExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
         _weblogicExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
         _weblogicExecEnvCoreSection.platform.addEventListener(Event.CHANGE, handleSectionChange);
         _weblogicExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
         _weblogicExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+        _weblogicExecEnvCoreSection.domain.addEventListener(Event.CHANGE, handleSectionChange);
 
         _validators = [];
         _validators.push(_weblogicExecEnvCoreSection.nameValidator);
         _validators.push(_weblogicExecEnvCoreSection.homeDirValidator);
+        _validators.push(_weblogicExecEnvCoreSection.domainValidator);
     }
 
     private function handleWeblogicExecEnvCorePropertyTabRollOut(e:Event):void {
@@ -1969,6 +1972,7 @@ public class PropertySheetMediator extends IocMediator {
             weblogicExecEnv.description = _weblogicExecEnvCoreSection.executionEnvironmentDescription.text;
             weblogicExecEnv.platformId = _weblogicExecEnvCoreSection.platform.selectedItem.data;
             weblogicExecEnv.installUri = _weblogicExecEnvCoreSection.homeDirectory.text;
+            weblogicExecEnv.domain = _weblogicExecEnvCoreSection.domain.text;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

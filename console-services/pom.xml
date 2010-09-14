@@ -32,7 +32,7 @@
     <!--artifactId>idbus-server-java</artifactId-->
     <artifactId>console-services</artifactId>
     <packaging>jar</packaging>
-    <name>Atricore Identity Bus Console :: AJAX Services</name>
+    <name>Atricore IDBus Console :: AJAX Services</name>
 
 
     <properties>
@@ -350,8 +350,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>Atricore IDBus :: Application : Server AJAX Services</Bundle-Name>
-                        <Bundle-Description>Atricore IDBus :: Application : Server AJAX Services</Bundle-Description>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>com.atricore.idbus.console.services*;version=${pom.version}
                         </Export-Package>

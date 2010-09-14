@@ -33,7 +33,7 @@
 
     <artifactId>com.atricore.idbus.console.lifecycle.main</artifactId>
     <packaging>bundle</packaging>
-    <name>Atricore Identity Bus Console :: Lifecycle</name>
+    <name>Atricore IDBus Console :: Lifecycle</name>
 
     <dependencies>
 

@@ -495,7 +495,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create Weblogic Execution Environment";
         _popup.width = 450;
-        _popup.height = 240;
+        _popup.height = 270;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_weblogicExecutionEnvironmentCreateForm);

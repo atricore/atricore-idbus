@@ -29,7 +29,7 @@
   </parent>
 
   <artifactId>console-config</artifactId>
-  <name>Atricore Identity Bus Console :: Configuration</name>
+  <name>Atricore IDBus Console :: Configuration</name>
   <packaging>pom</packaging>
 
   <build>
