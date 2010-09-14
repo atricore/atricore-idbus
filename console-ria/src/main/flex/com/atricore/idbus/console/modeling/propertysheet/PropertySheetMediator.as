@@ -27,6 +27,7 @@ import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.modeling.diagram.model.request.ActivateExecutionEnvironmentRequest;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jboss.JBossExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jbossportal.JBossPortalExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.liferayportal.LiferayPortalExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.tomcat.TomcatExecEnvCoreSection;
@@ -65,6 +66,7 @@ import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
+import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Location;
@@ -124,6 +126,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _jbossPortalExecEnvCoreSection:JBossPortalExecEnvCoreSection;
     private var _liferayExecEnvCoreSection:LiferayPortalExecEnvCoreSection;
     private var _wasceExecEnvCoreSection:WASCEExecEnvCoreSection;
+    private var _jbossExecEnvCoreSection:JBossExecEnvCoreSection;
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
     private var _dirty:Boolean;
 
@@ -214,6 +217,8 @@ public class PropertySheetMediator extends IocMediator {
                         enableLiferayExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is WASCEExecutionEnvironment) {
                         enableWASCEExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is JbossExecutionEnvironment){
+                        enableJbossExecEnvPropertyTabs();
                     }
                 }
                 break;
@@ -2161,6 +2166,81 @@ public class PropertySheetMediator extends IocMediator {
             wasceExecEnv.description = _wasceExecEnvCoreSection.executionEnvironmentDescription.text;
             wasceExecEnv.platformId = "";
             wasceExecEnv.installUri = _wasceExecEnvCoreSection.homeDirectory.text;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
+
+    /*****JBOSS*****/
+    private function enableJbossExecEnvPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _jbossExecEnvCoreSection = new JBossExecEnvCoreSection();
+        corePropertyTab.addElement(_jbossExecEnvCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _jbossExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleJbossExecEnvCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleJbossExecEnvCorePropertyTabRollOut);
+
+        // Exec.Environment Activation Tab
+        var execEnvActivationPropertyTab:Group = new Group();
+        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
+        execEnvActivationPropertyTab.name = "Activation";
+        execEnvActivationPropertyTab.width = Number("100%");
+        execEnvActivationPropertyTab.height = Number("100%");
+        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
+
+        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
+        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
+        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
+        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+
+    }
+
+    private function handleJbossExecEnvCorePropertyTabCreationComplete(event:Event):void {
+        var jbossExecEnv:JbossExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JbossExecutionEnvironment;
+
+        // bind view
+        _jbossExecEnvCoreSection.executionEnvironmentName.text = jbossExecEnv.name;
+        _jbossExecEnvCoreSection.executionEnvironmentDescription.text = jbossExecEnv.description;
+        for(var i:int=0; i < _jbossExecEnvCoreSection.platform.dataProvider.length; i++){
+            if(_jbossExecEnvCoreSection.platform.dataProvider[i].data == jbossExecEnv.platformId){
+                _jbossExecEnvCoreSection.platform.selectedIndex = i;
+            }
+        }
+        _jbossExecEnvCoreSection.selectedHost.selectedIndex = 0;
+        _jbossExecEnvCoreSection.homeDirectory.text = jbossExecEnv.installUri;
+
+        _jbossExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+        _jbossExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+        _jbossExecEnvCoreSection.platform.addEventListener(Event.CHANGE, handleSectionChange);
+        _jbossExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+        _jbossExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+
+        _validators = [];
+        _validators.push(_jbossExecEnvCoreSection.nameValidator);
+        _validators.push(_jbossExecEnvCoreSection.homeDirValidator);
+    }
+
+    private function handleJbossExecEnvCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        if (_dirty && validate(true)) {
+             // bind model
+            var jbossExecEnv:JbossExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JbossExecutionEnvironment;
+            jbossExecEnv.name = _jbossExecEnvCoreSection.executionEnvironmentName.text;
+            jbossExecEnv.description = _jbossExecEnvCoreSection.executionEnvironmentDescription.text;
+            jbossExecEnv.platformId = _jbossExecEnvCoreSection.platform.selectedItem.data;
+            jbossExecEnv.installUri = _jbossExecEnvCoreSection.homeDirectory.text;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
