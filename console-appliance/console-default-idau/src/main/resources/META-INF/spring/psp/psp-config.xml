@@ -97,6 +97,9 @@
     <!-- ============================================================= -->
     <bean name="pst-default" class="org.atricore.idbus.kernel.main.provisioning.impl.ProvisioningTargetImpl">
         <property name="name" value="pst-default"/>
+        <property name="hashAlgorithm" value="MD5"/>
+        <property name="hashEncoding" value="HEX"/>
+
         <property name="identityPartition" ref="idpart-default"/>
     </bean>
 
