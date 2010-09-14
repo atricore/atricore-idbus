@@ -67,6 +67,10 @@
         <s:TextInput id="homeDirectory" width="300"/>
     </mx:FormItem>
 
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.domain')}:" required="true">
+        <s:TextInput id="domain" width="300"/>
+    </mx:FormItem>
+
     <!-- TODO: create custom panel skin to change controlBarContent style? or use mx:ControlBar? -->
     <s:Panel id="controlBarPanel" width="100%" height="40" borderVisible="false"
             horizontalCenter="0" verticalCenter="0" contentBackgroundAlpha="0" dropShadowVisible="false"
