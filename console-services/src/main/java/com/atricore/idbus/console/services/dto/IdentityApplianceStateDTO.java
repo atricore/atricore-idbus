@@ -28,6 +28,7 @@ package com.atricore.idbus.console.services.dto;
 public enum IdentityApplianceStateDTO {
 
     PROJECTED,
+    BUILT,
     DEPLOYED,
     STARTED,
     DISPOSED;
