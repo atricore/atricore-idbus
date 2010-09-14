@@ -23,6 +23,7 @@ package com.atricore.idbus.console.modeling.browser.model {
 
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.main.view.util.Constants;
+import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.BindingProvider;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
@@ -38,6 +39,7 @@ import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
 
 public class BrowserModelFactory {
 
@@ -123,6 +125,10 @@ public class BrowserModelFactory {
                 execEnvironmentNode.icon = EmbeddedIcons.weblogicEnvironmentMiniIcon;
             } else if(executionEnvironment is TomcatExecutionEnvironment){
                 execEnvironmentNode.icon = EmbeddedIcons.tomcatEnvironmentMiniIcon;                
+            } else if(executionEnvironment is ApacheExecutionEnvironment){
+                execEnvironmentNode.icon = EmbeddedIcons.apacheEnvironmentMiniIcon;
+            }else if(executionEnvironment is WindowsIISExecutionEnvironment){
+                execEnvironmentNode.icon = EmbeddedIcons.windowsEnvironmentMiniIcon;                
             } else {
                 execEnvironmentNode.icon = EmbeddedIcons.executionEnvironmentMiniIcon;
             }

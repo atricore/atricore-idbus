@@ -113,5 +113,7 @@
         <class name="WASCEExecutionEnvironment" table="ATC_WASCE_EXECENV"/>
         <class name="WeblogicExecutionEnvironment" table="ATC_WEBLOGIC_EXECENV"/>
         <class name="XmlIdentitySource" table="ATC_XML_ID_SOURCE"/>
+        <class name="ApacheExecutionEnvironmetn" table="ATC_APACHE_EXECENV"/>
+        <class name="WindowsIISExecutionEnvironmetn" table="ATC_WINDOWS_EXECENV"/>
     </package>
 </orm>

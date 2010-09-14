@@ -27,12 +27,14 @@ import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.modeling.diagram.model.request.ActivateExecutionEnvironmentRequest;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.apache.ApacheExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jboss.JBossExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jbossportal.JBossPortalExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.liferayportal.LiferayPortalExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.tomcat.TomcatExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.wasce.WASCEExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.weblogic.WeblogicExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.windowsiis.WindowsIISExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultLookupSection;
@@ -52,6 +54,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProvider
 import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.xmlidentitysource.XmlIdentitySourceCoreSection;
+import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
@@ -76,6 +79,7 @@ import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
 import flash.events.Event;
@@ -127,6 +131,8 @@ public class PropertySheetMediator extends IocMediator {
     private var _liferayExecEnvCoreSection:LiferayPortalExecEnvCoreSection;
     private var _wasceExecEnvCoreSection:WASCEExecEnvCoreSection;
     private var _jbossExecEnvCoreSection:JBossExecEnvCoreSection;
+    private var _apacheExecEnvCoreSection:ApacheExecEnvCoreSection;
+    private var _windowsIISExecEnvCoreSection:WindowsIISExecEnvCoreSection;
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
     private var _dirty:Boolean;
 
@@ -219,6 +225,10 @@ public class PropertySheetMediator extends IocMediator {
                         enableWASCEExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is JbossExecutionEnvironment){
                         enableJbossExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is ApacheExecutionEnvironment){
+                        enableApacheExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is WindowsIISExecutionEnvironment){
+                        enableWindowsIISExecEnvPropertyTabs();
                     }
                 }
                 break;
@@ -2241,6 +2251,145 @@ public class PropertySheetMediator extends IocMediator {
             jbossExecEnv.description = _jbossExecEnvCoreSection.executionEnvironmentDescription.text;
             jbossExecEnv.platformId = _jbossExecEnvCoreSection.platform.selectedItem.data;
             jbossExecEnv.installUri = _jbossExecEnvCoreSection.homeDirectory.text;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
+
+    /*****APACHE*****/
+    private function enableApacheExecEnvPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _apacheExecEnvCoreSection = new ApacheExecEnvCoreSection();
+        corePropertyTab.addElement(_apacheExecEnvCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _apacheExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleApacheExecEnvCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleApacheExecEnvCorePropertyTabRollOut);
+
+        // Exec.Environment Activation Tab
+        var execEnvActivationPropertyTab:Group = new Group();
+        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
+        execEnvActivationPropertyTab.name = "Activation";
+        execEnvActivationPropertyTab.width = Number("100%");
+        execEnvActivationPropertyTab.height = Number("100%");
+        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
+
+        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
+        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
+        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
+        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+
+    }
+
+    private function handleApacheExecEnvCorePropertyTabCreationComplete(event:Event):void {
+        var apacheExecEnv:ApacheExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ApacheExecutionEnvironment;
+
+        // bind view
+        _apacheExecEnvCoreSection.executionEnvironmentName.text = apacheExecEnv.name;
+        _apacheExecEnvCoreSection.executionEnvironmentDescription.text = apacheExecEnv.description;
+        _apacheExecEnvCoreSection.selectedHost.selectedIndex = 0;
+        _apacheExecEnvCoreSection.homeDirectory.text = apacheExecEnv.installUri;
+
+        _apacheExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+        _apacheExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+        _apacheExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+        _apacheExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+
+        _validators = [];
+        _validators.push(_apacheExecEnvCoreSection.nameValidator);
+        _validators.push(_apacheExecEnvCoreSection.homeDirValidator);
+    }
+
+    private function handleApacheExecEnvCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        if (_dirty && validate(true)) {
+             // bind model
+            var apacheExecEnv:ApacheExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ApacheExecutionEnvironment;
+            apacheExecEnv.name = _apacheExecEnvCoreSection.executionEnvironmentName.text;
+            apacheExecEnv.description = _apacheExecEnvCoreSection.executionEnvironmentDescription.text;
+            //TODO CHECK PLATFORM ID
+            apacheExecEnv.platformId = "apache";
+            apacheExecEnv.installUri = _apacheExecEnvCoreSection.homeDirectory.text;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
+    /*****WINDOWS IIS*****/
+    private function enableWindowsIISExecEnvPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _windowsIISExecEnvCoreSection = new WindowsIISExecEnvCoreSection();
+        corePropertyTab.addElement(_windowsIISExecEnvCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _windowsIISExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleWindowsIISExecEnvCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleWindowsIISExecEnvCorePropertyTabRollOut);
+
+        // Exec.Environment Activation Tab
+        var execEnvActivationPropertyTab:Group = new Group();
+        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
+        execEnvActivationPropertyTab.name = "Activation";
+        execEnvActivationPropertyTab.width = Number("100%");
+        execEnvActivationPropertyTab.height = Number("100%");
+        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
+
+        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
+        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
+        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
+        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+
+    }
+
+    private function handleWindowsIISExecEnvCorePropertyTabCreationComplete(event:Event):void {
+        var windowsIISExecEnv:WindowsIISExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WindowsIISExecutionEnvironment;
+
+        // bind view
+        _windowsIISExecEnvCoreSection.executionEnvironmentName.text = windowsIISExecEnv.name;
+        _windowsIISExecEnvCoreSection.executionEnvironmentDescription.text = windowsIISExecEnv.description;
+        _windowsIISExecEnvCoreSection.selectedHost.selectedIndex = 0;
+        _windowsIISExecEnvCoreSection.homeDirectory.text = windowsIISExecEnv.installUri;
+
+        _windowsIISExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+        _windowsIISExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+        _windowsIISExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+        _windowsIISExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+
+        _validators = [];
+        _validators.push(_windowsIISExecEnvCoreSection.nameValidator);
+        _validators.push(_windowsIISExecEnvCoreSection.homeDirValidator);
+    }
+
+    private function handleWindowsIISExecEnvCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        if (_dirty && validate(true)) {
+             // bind model
+            var windowsIISExecEnv:WindowsIISExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WindowsIISExecutionEnvironment;
+            windowsIISExecEnv.name = _windowsIISExecEnvCoreSection.executionEnvironmentName.text;
+            windowsIISExecEnv.description = _windowsIISExecEnvCoreSection.executionEnvironmentDescription.text;
+            //TODO CHECK PLATFORM ID
+            windowsIISExecEnv.platformId = "iis";
+            windowsIISExecEnv.installUri = _windowsIISExecEnvCoreSection.homeDirectory.text;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

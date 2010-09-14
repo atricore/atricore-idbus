@@ -321,6 +321,14 @@
             <inheritance strategy="new-table"/>
         </class>
 
+        <class name="ApacheExecutionEnvironment" detachable="true">
+            <inheritance strategy="new-table"/>
+        </class>
+
+        <class name="WindowsIISExecutionEnvironment" detachable="true">
+            <inheritance strategy="new-table"/>
+        </class>
+
         <class name="XmlIdentitySource" detachable="true">
             <inheritance strategy="new-table"/>
         </class>

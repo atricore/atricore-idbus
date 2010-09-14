@@ -38,6 +38,7 @@
         import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
         import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
         import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
+        import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.BindingProvider;
         import com.atricore.idbus.console.services.dto.Channel;
         import com.atricore.idbus.console.services.dto.DbIdentitySource;
@@ -57,6 +58,7 @@
         import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
+        import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
         import mx.controls.Alert;
@@ -152,6 +154,10 @@
                                                 _linkIcon = EmbeddedIcons.liferayEnvironmentIcon;
                                             } else if (obj is WASCEExecutionEnvironment){
                                                 _linkIcon = EmbeddedIcons.websphereEnvironmentIcon;
+                                            } else if (obj is ApacheExecutionEnvironment){
+                                                _linkIcon = EmbeddedIcons.apacheEnvironmentIcon;
+                                            } else if (obj is WindowsIISExecutionEnvironment){
+                                                _linkIcon = EmbeddedIcons.windowsEnvironmentIcon;
                                             } else {
                                                 _linkIcon = EmbeddedIcons.executionEnvironmentIcon;
                                             }

@@ -29,6 +29,8 @@ import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCre
 import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbossportal.JBossPortalExecutionEnvironmentCreateForm;
@@ -41,6 +43,8 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.was
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateForm;
@@ -86,6 +90,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _jbossPortalExecutionEnvironmentCreateMediator:JBossPortalExecutionEnvironmentCreateMediator;
     private var _liferayPortalExecutionEnvironmentCreateMediator:LiferayPortalExecutionEnvironmentCreateMediator;
     private var _wasceExecutionEnvironmentCreateMediator:WASCEExecutionEnvironmentCreateMediator;
+    private var _apacheExecutionEnvironmentCreateMediator:ApacheExecutionEnvironmentCreateMediator;
+    private var _windowsIISExecutionEnvironmentCreateMediator:WindowsIISExecutionEnvironmentCreateMediator;
     private var _uploadProgressMediator:UploadProgressMediator;
     private var _buildApplianceMediator:BuildApplianceMediator;
     private var _deployApplianceMediator:DeployApplianceMediator;
@@ -107,6 +113,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _jbossPortalExecutionEnvironmentCreateForm:JBossPortalExecutionEnvironmentCreateForm;
     private var _liferayPortalExecutionEnvironmentCreateForm:LiferayPortalExecutionEnvironmentCreateForm;
     private var _wasceExecutionEnvironmentCreateForm:WASCEExecutionEnvironmentCreateForm;
+    private var _apacheExecutionEnvironmentCreateForm:ApacheExecutionEnvironmentCreateForm;
+    private var _windowsIISExecutionEnvironmentCreateForm:WindowsIISExecutionEnvironmentCreateForm;
     private var _manageCertificateForm:ManageCertificateView;
     private var _uploadProgress:UploadProgress;
     private var _buildAppliance:BuildApplianceView;
@@ -261,6 +269,22 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set wasceExecutionEnvironmentCreateMediator(value:WASCEExecutionEnvironmentCreateMediator):void {
         _wasceExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get windowsIISExecutionEnvironmentCreateMediator():WindowsIISExecutionEnvironmentCreateMediator {
+        return _windowsIISExecutionEnvironmentCreateMediator;
+    }
+
+    public function set windowsIISExecutionEnvironmentCreateMediator(value:WindowsIISExecutionEnvironmentCreateMediator):void {
+        _windowsIISExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get apacheExecutionEnvironmentCreateMediator():ApacheExecutionEnvironmentCreateMediator {
+        return _apacheExecutionEnvironmentCreateMediator;
+    }
+
+    public function set apacheExecutionEnvironmentCreateMediator(value:ApacheExecutionEnvironmentCreateMediator):void {
+        _apacheExecutionEnvironmentCreateMediator = value;
     }
 
     public function get activationCreateMediator():ActivationCreateMediator {
@@ -577,6 +601,52 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleWASCEExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
         wasceExecutionEnvironmentCreateMediator.setViewComponent(_wasceExecutionEnvironmentCreateForm);
         wasceExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateApacheExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_apacheExecutionEnvironmentCreateForm) {
+            createApacheExecutionEnvironmentCreateForm();
+        }
+        _popup.title = "Create Apache Execution Environment";
+        _popup.width = 450;
+        _popup.height = 210;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_apacheExecutionEnvironmentCreateForm);
+    }
+
+    private function createApacheExecutionEnvironmentCreateForm():void {
+        _apacheExecutionEnvironmentCreateForm = new ApacheExecutionEnvironmentCreateForm();
+        _apacheExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleApacheExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handleApacheExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        apacheExecutionEnvironmentCreateMediator.setViewComponent(_apacheExecutionEnvironmentCreateForm);
+        apacheExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateWindowsIISExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        if (!_windowsIISExecutionEnvironmentCreateForm) {
+            createWindowsIISExecutionEnvironmentCreateForm();
+        }
+        _popup.title = "Create Windows IIS Execution Environment";
+        _popup.width = 450;
+        _popup.height = 210;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_windowsIISExecutionEnvironmentCreateForm);
+    }
+
+    private function createWindowsIISExecutionEnvironmentCreateForm():void {
+        _windowsIISExecutionEnvironmentCreateForm = new WindowsIISExecutionEnvironmentCreateForm();
+        _windowsIISExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleWindowsIISExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handleWindowsIISExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        windowsIISExecutionEnvironmentCreateMediator.setViewComponent(_windowsIISExecutionEnvironmentCreateForm);
+        windowsIISExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateFederatedConnectionWindow(notification:INotification):void {

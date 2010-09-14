@@ -72,20 +72,24 @@
             <a>executionEnvironments</a>
             <b>executionEnvironments</b>
             <a-hint>
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.ApacheExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.TomcatExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WeblogicExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.JBossPortalExecutionEnvironment,
                 com.atricore.idbus.console.lifecycle.main.domain.metadata.WASCEExecutionEnvironment,
-                com.atricore.idbus.console.lifecycle.main.domain.metadata.LiferayExecutionEnvironment
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.LiferayExecutionEnvironment,
+                com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIISExecutionEnvironment,
             </a-hint>
             <b-hint>
+                com.atricore.idbus.console.services.dto.ApacheExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.TomcatExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.JbossExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironmentDTO,
                 com.atricore.idbus.console.services.dto.WASCEExecutionEnvironmentDTO,
-                com.atricore.idbus.console.services.dto.LiferayExecutionEnvironmentDTO
+                com.atricore.idbus.console.services.dto.LiferayExecutionEnvironmentDTO,
+                com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironmentDTO
             </b-hint>
         </field>
         <field relationship-type="non-cumulative" remove-orphans="true">
@@ -351,6 +355,16 @@
     <mapping>
         <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.LiferayExecutionEnvironment</class-a>
         <class-b>com.atricore.idbus.console.services.dto.LiferayExecutionEnvironmentDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.ApacheExecutionEnvironment</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.ApacheExecutionEnvironmentDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.idbus.console.lifecycle.main.domain.metadata.WindowsIISExecutionEnvironment</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironmentDTO</class-b>
     </mapping>
 
     <mapping>

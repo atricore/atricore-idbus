@@ -68,6 +68,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _jbossPortalExecutionEnvironmentCreateMediator:IIocMediator;
     private var _liferayPortalExecutionEnvironmentCreateMediator:IIocMediator;
     private var _wasceExecutionEnvironmentCreateMediator:IIocMediator;
+    private var _apacheExecutionEnvironmentCreateMediator:IIocMediator;
+    private var _windowsIISExecutionEnvironmentCreateMediator:IIocMediator;
     private var _uploadProgressMediator:IIocMediator;
     private var _buildApplianceMediator:IIocMediator;
     private var _deployApplianceMediator:IIocMediator;
@@ -299,6 +301,22 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set wasceExecutionEnvironmentCreateMediator(value:IIocMediator):void {
         _wasceExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get apacheExecutionEnvironmentCreateMediator():IIocMediator {
+        return _apacheExecutionEnvironmentCreateMediator;
+    }
+
+    public function set apacheExecutionEnvironmentCreateMediator(value:IIocMediator):void {
+        _apacheExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get windowsIISExecutionEnvironmentCreateMediator():IIocMediator {
+        return _windowsIISExecutionEnvironmentCreateMediator;
+    }
+
+    public function set windowsIISExecutionEnvironmentCreateMediator(value:IIocMediator):void {
+        _windowsIISExecutionEnvironmentCreateMediator = value;
     }
 
     public function get uploadProgressMediator():IIocMediator {
@@ -928,6 +946,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(jbossPortalExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(liferayPortalExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(wasceExecutionEnvironmentCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(apacheExecutionEnvironmentCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(windowsIISExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(uploadProgressMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(buildApplianceMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(deployApplianceMediator.getConfigName());

@@ -365,6 +365,22 @@ public class DiagramMediator extends IocMediator {
                             // the corresponding form
                             sendNotification(ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT, cwseenv);
                             break;
+                        case DiagramElementTypes.APACHE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                            var caeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                    );
+                            _projectProxy.currentIdentityAppliance = _identityAppliance;
+                            // this notification will be grabbed by the modeler mediator which will open
+                            // the corresponding form
+                            sendNotification(ApplicationFacade.CREATE_APACHE_EXECUTION_ENVIRONMENT_ELEMENT, caeenv);
+                            break;
+                        case DiagramElementTypes.WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                            var cwiiseenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                    );
+                            _projectProxy.currentIdentityAppliance = _identityAppliance;
+                            // this notification will be grabbed by the modeler mediator which will open
+                            // the corresponding form
+                            sendNotification(ApplicationFacade.CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT, cwiiseenv);
+                            break;
                     }
 //                }
                 break;
