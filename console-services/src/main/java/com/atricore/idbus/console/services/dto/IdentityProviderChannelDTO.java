@@ -25,6 +25,8 @@ public class IdentityProviderChannelDTO extends FederatedChannelDTO {
 
 	private static final long serialVersionUID = 8276649486690667445L;
 
+    private boolean preferred;
+
     private AccountLinkagePolicyDTO accountLinkagePolicy;
 
     // RFU
@@ -55,5 +57,13 @@ public class IdentityProviderChannelDTO extends FederatedChannelDTO {
 
     public void setAuthenticationMechanism(AuthenticationMechanismDTO authenticationMechanism) {
         this.authenticationMechanism = authenticationMechanism;
-    }  
+    }
+
+    public boolean isPreferred() {
+        return preferred;
+    }
+
+    public void setPreferred(boolean preferred) {
+        this.preferred = preferred;
+    }
 }

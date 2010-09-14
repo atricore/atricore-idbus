@@ -39,6 +39,9 @@
                            paddingBottom="5">
         <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
                  verticalGap="8">
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.preferredidpchannel')}:" labelWidth="235">
+                     <s:CheckBox id="preferredIDPChannel"/>
+                </mx:FormItem>            
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.useinheritedspsettings')}:" labelWidth="235">
                      <s:CheckBox id="useInheritedSPSettings"/>
                 </mx:FormItem>

@@ -51,6 +51,9 @@
         <!-- IDP CHANNEL TAB -->
         <s:NavigatorContent id="idpChannelTab" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.idpchannel')}">
             <s:VGroup width="100%" height="100%">
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.preferredidpchannel')}:" labelWidth="235">
+                     <s:CheckBox id="preferredIDPChannel"/>
+                </mx:FormItem>
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.useinheritedspsettings')}:" labelWidth="235">
                      <s:CheckBox id="useInheritedSPSettings"/>
                 </mx:FormItem>

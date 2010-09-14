@@ -3,6 +3,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 
+import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.ActivateExecutionEnvironmentRequest;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
@@ -57,6 +58,8 @@ public class ActivateExecEnvironmentCommand extends IocSimpleCommand implements 
         req.activateSamples = activateExecutionEnvRequest.installSamples;
         req.replace = activateExecutionEnvRequest.replaceConfFiles;
 
+        sendNotification(ProcessingMediator.START, "Activating execution environment...");
+
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
 
         var call:Object = service.activateExecEnv(req);
@@ -67,11 +70,17 @@ public class ActivateExecEnvironmentCommand extends IocSimpleCommand implements 
         var fault:Fault = (info as FaultEvent).fault;
         var msg:String = fault.faultString.substring((fault.faultString.indexOf('.') + 1), fault.faultString.length);
         trace(msg);
+        sendNotification(ProcessingMediator.STOP);
+        sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+            "Execution environment activation failed.");
         sendNotification(FAILURE, msg);
     }
 
     public function result(data:Object):void {
         var resp:ActivateExecEnvResponse = data.result as ActivateExecEnvResponse;
+        sendNotification(ProcessingMediator.STOP);
+        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                        "Execution environment successfully activated.");
         sendNotification(SUCCESS);
     }
 }

@@ -183,6 +183,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
         view.federatedConnectionDescription.text = "";
 
         //RESET IDP CHANNEL
+        view.preferredIDPChannel.selected = false;
         view.useInheritedSPSettings.selected = false;
 
         view.samlProfileSSOCheck.selected = false;
@@ -231,6 +232,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
         //IDP CHANNEL
         var idpChannel:IdentityProviderChannel = new IdentityProviderChannel();
+        idpChannel.preferred = view.preferredIDPChannel.selected;
 
         if(!view.useInheritedSPSettings.selected){
             idpChannel.overrideProviderSetup = true;
@@ -328,6 +330,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             bindModel();
             _federatedConnection.roleA = _roleA;
             _federatedConnection.roleB = _roleB;
+
+            //TODO if idpchannel is preferred, go through all the idp channels in a SP and deselect preferred
 
             if(_roleA.federatedConnectionsA == null){
                _roleA.federatedConnectionsA = new ArrayCollection(); 

@@ -1866,6 +1866,10 @@ public class PropertySheetMediator extends IocMediator {
         // bind view
         _tomcatExecEnvCoreSection.executionEnvironmentName.text = tomcatExecEnv.name;
         _tomcatExecEnvCoreSection.executionEnvironmentDescription.text = tomcatExecEnv.description;
+
+        _tomcatExecEnvCoreSection.selectedHost.selectedIndex = 0;
+        _tomcatExecEnvCoreSection.selectedHost.enabled = false;
+
         for(var i:int=0; i < _tomcatExecEnvCoreSection.platform.dataProvider.length; i++){
             if(_tomcatExecEnvCoreSection.platform.dataProvider[i].data == tomcatExecEnv.platformId){
                 _tomcatExecEnvCoreSection.platform.selectedIndex = i;
@@ -1941,6 +1945,10 @@ public class PropertySheetMediator extends IocMediator {
         // bind view
         _weblogicExecEnvCoreSection.executionEnvironmentName.text = weblogicExecEnv.name;
         _weblogicExecEnvCoreSection.executionEnvironmentDescription.text = weblogicExecEnv.description;
+
+        _weblogicExecEnvCoreSection.selectedHost.selectedIndex = 0;
+        _weblogicExecEnvCoreSection.selectedHost.enabled = false;
+
         for (var i:int=0; i < _weblogicExecEnvCoreSection.platform.dataProvider.length; i++){
             if (_weblogicExecEnvCoreSection.platform.dataProvider[i].data == weblogicExecEnv.platformId) {
                 _weblogicExecEnvCoreSection.platform.selectedIndex = i;
@@ -2023,6 +2031,9 @@ public class PropertySheetMediator extends IocMediator {
         _jbossPortalExecEnvCoreSection.selectedHost.selectedIndex = 0;
         _jbossPortalExecEnvCoreSection.homeDirectory.text = jbossPortalExecEnv.installUri;
 
+        _jbossPortalExecEnvCoreSection.selectedHost.selectedIndex = 0;
+        _jbossPortalExecEnvCoreSection.selectedHost.enabled = false;
+
         _jbossPortalExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
         _jbossPortalExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
         _jbossPortalExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
@@ -2091,6 +2102,9 @@ public class PropertySheetMediator extends IocMediator {
         _liferayExecEnvCoreSection.executionEnvironmentDescription.text = liferayExecEnv.description;
         _liferayExecEnvCoreSection.selectedHost.selectedIndex = 0;
         _liferayExecEnvCoreSection.homeDirectory.text = liferayExecEnv.installUri;
+
+        _liferayExecEnvCoreSection.selectedHost.selectedIndex = 0;
+        _liferayExecEnvCoreSection.selectedHost.enabled = false;
 
         _liferayExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
         _liferayExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -2161,6 +2175,9 @@ public class PropertySheetMediator extends IocMediator {
         _wasceExecEnvCoreSection.selectedHost.selectedIndex = 0;
         _wasceExecEnvCoreSection.homeDirectory.text = wasceExecEnv.installUri;
 
+        _wasceExecEnvCoreSection.selectedHost.selectedIndex = 0;
+        _wasceExecEnvCoreSection.selectedHost.enabled = false;
+
         _wasceExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
         _wasceExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
         _wasceExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
@@ -2227,6 +2244,10 @@ public class PropertySheetMediator extends IocMediator {
         // bind view
         _jbossExecEnvCoreSection.executionEnvironmentName.text = jbossExecEnv.name;
         _jbossExecEnvCoreSection.executionEnvironmentDescription.text = jbossExecEnv.description;
+
+        _jbossExecEnvCoreSection.selectedHost.selectedIndex = 0;
+        _jbossExecEnvCoreSection.selectedHost.enabled = false;
+
         for(var i:int=0; i < _jbossExecEnvCoreSection.platform.dataProvider.length; i++){
             if(_jbossExecEnvCoreSection.platform.dataProvider[i].data == jbossExecEnv.platformId){
                 _jbossExecEnvCoreSection.platform.selectedIndex = i;
@@ -2305,6 +2326,9 @@ public class PropertySheetMediator extends IocMediator {
         _apacheExecEnvCoreSection.selectedHost.selectedIndex = 0;
         _apacheExecEnvCoreSection.homeDirectory.text = apacheExecEnv.installUri;
 
+        _apacheExecEnvCoreSection.selectedHost.selectedIndex = 0;
+        _apacheExecEnvCoreSection.selectedHost.enabled = false;
+
         _apacheExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
         _apacheExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
         _apacheExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
@@ -2373,6 +2397,9 @@ public class PropertySheetMediator extends IocMediator {
         _windowsIISExecEnvCoreSection.executionEnvironmentDescription.text = windowsIISExecEnv.description;
         _windowsIISExecEnvCoreSection.selectedHost.selectedIndex = 0;
         _windowsIISExecEnvCoreSection.homeDirectory.text = windowsIISExecEnv.installUri;
+
+        _windowsIISExecEnvCoreSection.selectedHost.selectedIndex = 0;
+        _windowsIISExecEnvCoreSection.selectedHost.enabled = false;
 
         _windowsIISExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
         _windowsIISExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
