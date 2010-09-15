@@ -1557,29 +1557,29 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.useInheritedIDPSettings.addEventListener(Event.CHANGE, handleUseInheritedIDPSettingsChange);
             _federatedConnectionSPChannelSection.useInheritedIDPSettings.selected = !spChannel.overrideProviderSetup;
             handleUseInheritedIDPSettingsChange(null);
-            
-            for (var j:int = 0; j < spChannel.activeBindings.length; j ++) {
-                var tmpBinding:Binding = spChannel.activeBindings.getItemAt(j) as Binding;
-                if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
-                    _federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.selected = true;
+
+            if(spChannel.overrideProviderSetup){
+                for each (var tmpBinding:Binding in spChannel.activeBindings) {
+                    if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
+                        _federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.selected = true;
+                    }
+                    if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
+                        _federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.selected = true;
+                    }
+                    if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
+                        _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.selected = true;
+                    }
+                    if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
+                        _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.selected = true;
+                    }
                 }
-                if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
-                    _federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.selected = true;
-                }
-                if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
-                    _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.selected = true;
-                }
-                if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
-                    _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.selected = true;
-                }
-            }
-            for (j = 0; j < spChannel.activeProfiles.length; j++) {
-                var tmpProfile:Profile = spChannel.activeProfiles.getItemAt(j) as Profile;
-                if (tmpProfile.name == Profile.SSO.name) {
-                    _federatedConnectionSPChannelSection.spChannelSamlProfileSSOCheck.selected = true;
-                }
-                if (tmpProfile.name == Profile.SSO_SLO.name) {
-                    _federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.selected = true;
+                for each(var tmpProfile:Profile in spChannel.activeProfiles) {
+                    if (tmpProfile.name == Profile.SSO.name) {
+                        _federatedConnectionSPChannelSection.spChannelSamlProfileSSOCheck.selected = true;
+                    }
+                    if (tmpProfile.name == Profile.SSO_SLO.name) {
+                        _federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.selected = true;
+                    }
                 }
             }
 
@@ -1649,31 +1649,32 @@ public class PropertySheetMediator extends IocMediator {
 
             if (idpChannel != null) {
                 _federatedConnectionIDPChannelSection.useInheritedSPSettings.addEventListener(Event.CHANGE, handleUseInheritedSPSettingsChange);
+                _federatedConnectionIDPChannelSection.preferredIDPChannel.selected = idpChannel.preferred;
                 _federatedConnectionIDPChannelSection.useInheritedSPSettings.selected = !idpChannel.overrideProviderSetup;
                 handleUseInheritedSPSettingsChange(null);
 
-                for (var j:int = 0; j < idpChannel.activeBindings.length; j ++) {
-                    var tmpBinding:Binding = idpChannel.activeBindings.getItemAt(j) as Binding;
-                    if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
-                        _federatedConnectionIDPChannelSection.samlBindingHttpPostCheck.selected = true;
+                if(idpChannel.overrideProviderSetup){
+                    for each(var tmpBinding:Binding in idpChannel.activeBindings) {
+                        if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
+                            _federatedConnectionIDPChannelSection.samlBindingHttpPostCheck.selected = true;
+                        }
+                        if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
+                            _federatedConnectionIDPChannelSection.samlBindingHttpRedirectCheck.selected = true;
+                        }
+                        if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
+                            _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.selected = true;
+                        }
+                        if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
+                            _federatedConnectionIDPChannelSection.samlBindingSoapCheck.selected = true;
+                        }
                     }
-                    if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
-                        _federatedConnectionIDPChannelSection.samlBindingHttpRedirectCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
-                        _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
-                        _federatedConnectionIDPChannelSection.samlBindingSoapCheck.selected = true;
-                    }
-                }
-                for (j = 0; j < idpChannel.activeProfiles.length; j++) {
-                    var tmpProfile:Profile = idpChannel.activeProfiles.getItemAt(j) as Profile;
-                    if (tmpProfile.name == Profile.SSO.name) {
-                        _federatedConnectionIDPChannelSection.samlProfileSSOCheck.selected = true;
-                    }
-                    if (tmpProfile.name == Profile.SSO_SLO.name) {
-                        _federatedConnectionIDPChannelSection.samlProfileSLOCheck.selected = true;
+                    for each(var tmpProfile:Profile in idpChannel.activeProfiles) {
+                        if (tmpProfile.name == Profile.SSO.name) {
+                            _federatedConnectionIDPChannelSection.samlProfileSSOCheck.selected = true;
+                        }
+                        if (tmpProfile.name == Profile.SSO_SLO.name) {
+                            _federatedConnectionIDPChannelSection.samlProfileSLOCheck.selected = true;
+                        }
                     }
                 }
             }
@@ -1690,15 +1691,32 @@ public class PropertySheetMediator extends IocMediator {
         if (_dirty) {
             // bind model
             var idpChannel:IdentityProviderChannel;
-
-            var idpChannel:IdentityProviderChannel;
+            var sp:ServiceProvider;
 
             var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
             if(connection.channelA is IdentityProviderChannel){
                 idpChannel = connection.channelA as IdentityProviderChannel;
+                sp = connection.roleA as ServiceProvider;
             } else if (connection.channelB is IdentityProviderChannel){
                 idpChannel = connection.channelB as IdentityProviderChannel;
+                sp = connection.roleB as ServiceProvider;
             }
+
+            idpChannel.preferred = _federatedConnectionIDPChannelSection.preferredIDPChannel.selected;
+            if(idpChannel.preferred){
+                //if idpchannel is preferred, go through all the idp channels in a SP and deselect previously preferred
+                for each(var conn:FederatedConnection in sp.federatedConnectionsA){
+                    if(conn.channelA != null && conn.channelA != idpChannel){
+                        (conn.channelA as IdentityProviderChannel).preferred = false;
+                    }
+                }
+                for each(conn in sp.federatedConnectionsB){
+                    if(conn.channelB != null && conn.channelB != idpChannel){
+                        (conn.channelB as IdentityProviderChannel).preferred = false;
+                    }
+                }
+            }
+
 
             idpChannel.overrideProviderSetup = !_federatedConnectionIDPChannelSection.useInheritedSPSettings.selected;
 
@@ -2564,8 +2582,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.enabled = false;
             _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.enabled = false;
 
-            _federatedConnectionSPChannelSection.signAuthAssertionCheck.enabled = false;
-            _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.enabled = false;
+//            _federatedConnectionSPChannelSection.signAuthAssertionCheck.enabled = false;
+//            _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.enabled = false;
             _federatedConnectionSPChannelSection.spChannelUserInfoLookupCombo.enabled = false;
             _federatedConnectionSPChannelSection.spChannelAuthContractCombo.enabled = false;
             _federatedConnectionSPChannelSection.spChannelAuthMechanismCombo.enabled = false;
@@ -2579,8 +2597,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.enabled = true;
             _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.enabled = true;
 
-            _federatedConnectionSPChannelSection.signAuthAssertionCheck.enabled = true;
-            _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.enabled = true;
+//            _federatedConnectionSPChannelSection.signAuthAssertionCheck.enabled = true;
+//            _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.enabled = true;
             _federatedConnectionSPChannelSection.spChannelUserInfoLookupCombo.enabled = true;
             _federatedConnectionSPChannelSection.spChannelAuthContractCombo.enabled = true;
             _federatedConnectionSPChannelSection.spChannelAuthMechanismCombo.enabled = true;
@@ -2599,8 +2617,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.enabled = false;
             _federatedConnectionIDPChannelSection.samlBindingSoapCheck.enabled = false;
 
-            _federatedConnectionIDPChannelSection.signAuthRequestCheck.enabled = false;
-            _federatedConnectionIDPChannelSection.encryptAuthRequestCheck.enabled = false;
+//            _federatedConnectionIDPChannelSection.signAuthRequestCheck.enabled = false;
+//            _federatedConnectionIDPChannelSection.encryptAuthRequestCheck.enabled = false;
 
             _federatedConnectionIDPChannelSection.userInfoLookupCombo.enabled = false;
             _federatedConnectionIDPChannelSection.authMechanismCombo.enabled = false;
@@ -2617,8 +2635,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.enabled = true;
             _federatedConnectionIDPChannelSection.samlBindingSoapCheck.enabled = true;
 
-            _federatedConnectionIDPChannelSection.signAuthRequestCheck.enabled = true;
-            _federatedConnectionIDPChannelSection.encryptAuthRequestCheck.enabled = true;
+//            _federatedConnectionIDPChannelSection.signAuthRequestCheck.enabled = true;
+//            _federatedConnectionIDPChannelSection.encryptAuthRequestCheck.enabled = true;
 
             _federatedConnectionIDPChannelSection.userInfoLookupCombo.enabled = true;
             _federatedConnectionIDPChannelSection.authMechanismCombo.enabled = true;

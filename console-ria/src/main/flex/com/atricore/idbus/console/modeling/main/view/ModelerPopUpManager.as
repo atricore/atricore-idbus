@@ -653,6 +653,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         if (!_federatedConnectionCreateForm) {
             createFederatedConnectionCreateForm();
+        } else {
+            federatedConnectionCreateMediator.handleNotification(_lastWindowNotification);
         }
         _popup.title = "Create Federated Connection";
         _popup.width = 680;

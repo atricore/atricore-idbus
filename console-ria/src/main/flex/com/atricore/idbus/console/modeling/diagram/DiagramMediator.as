@@ -507,7 +507,7 @@ public class DiagramMediator extends IocMediator {
                 for (var i:int = 0; i < identityApplianceDefinition.providers.length; i++) {
                     var provider:Provider = identityApplianceDefinition.providers[i];
                     var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, null, true, Constants.PROVIDER_DEEP);
-                    providerNodes[provider.id] = providerGraphNode;
+                    providerNodes[provider] = providerGraphNode;
                         var provider:Provider = identityApplianceDefinition.providers[i];
                         if (provider is FederatedProvider) {
                             var locProv:FederatedProvider = provider as FederatedProvider;
@@ -555,15 +555,15 @@ public class DiagramMediator extends IocMediator {
                     if(identityApplianceDefinition.providers[j] is FederatedProvider){
                         var fedProvider:FederatedProvider = identityApplianceDefinition.providers[j] as FederatedProvider;
                         for each (var fedConnA:FederatedConnection in fedProvider.federatedConnectionsA){
-                            var graphNodeRoleA:IVisualNode = providerNodes[fedProvider.id];
-                            var graphNodeRoleB:IVisualNode = providerNodes[fedConnA.roleB.id];                            
+                            var graphNodeRoleA:IVisualNode = providerNodes[fedProvider];
+                            var graphNodeRoleB:IVisualNode = providerNodes[fedConnA.roleB];                            
                             if(!DiagramUtil.nodeLinkExists(graphNodeRoleA.node, graphNodeRoleB.node)){ //avoid double linking
                                 GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB, fedConnA);
                             }
                         }
                         for each (var fedConnB:FederatedConnection in fedProvider.federatedConnectionsB){
-                            var graphNodeRoleA:IVisualNode = providerNodes[fedConnB.roleA.id];
-                            var graphNodeRoleB:IVisualNode = providerNodes[fedProvider.id];                           
+                            var graphNodeRoleA:IVisualNode = providerNodes[fedConnB.roleA];
+                            var graphNodeRoleB:IVisualNode = providerNodes[fedProvider];                           
                             if(!DiagramUtil.nodeLinkExists(graphNodeRoleA.node, graphNodeRoleB.node)){ //avoid double linking
                                 GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB, fedConnB);
                             }
