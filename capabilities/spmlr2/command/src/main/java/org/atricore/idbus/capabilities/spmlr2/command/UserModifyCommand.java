@@ -78,7 +78,7 @@ public class UserModifyCommand extends SpmlCommandSupport {
 //<--- Security Set Password---->
     byte[] userCertificate;
     Boolean automaticallyGeneratePassword;
-    Boolean emailNewPasword;
+1    Boolean emailNewPasword;
 
 //<--- Groups Membership ---->
     @Option(name = "-g", aliases = "--group", description = "User group names", required = false, multiValued = true)
