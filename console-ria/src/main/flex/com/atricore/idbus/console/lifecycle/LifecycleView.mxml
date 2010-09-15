@@ -28,11 +28,11 @@
 
     <mx:HDividedBox width="100%" height="100%" paddingRight="0">
 
-        <s:VGroup width="30%" height="100%">
+        <s:VGroup width="30%" height="100%" paddingLeft="10" paddingBottom="10" paddingTop="10">
             <s:HGroup width="100%" verticalAlign="bottom">
                 <s:Label width="200" text="Saved" styleName="h3"/>
-                <mx:Spacer width="100%"/>
-                <s:Button id="btnApplianceCreate" label="Create" enabled="false"/>
+                <!--mx:Spacer width="100%"/>
+                <s:Button id="btnApplianceCreate" label="Create" enabled="false"/-->
             </s:HGroup>
             <comp:CustomDataGrid id="grdSavedAppliances" width="100%" height="100%"
                                  dragEnabled="true" allowMultipleSelection="false" sortExpertMode="true"
@@ -83,13 +83,13 @@
             </comp:CustomDataGrid>
         </s:VGroup>
 
-        <s:VGroup width="30%" height="100%">
+        <s:VGroup width="30%" height="100%" paddingBottom="10" paddingTop="10">
             <s:HGroup width="100%" verticalAlign="bottom">
                 <s:Label width="200" text="Compiled" styleName="h3"/>
-                <mx:Spacer width="100%"/>
+                <!--mx:Spacer width="100%"/>
                 <s:DropDownList id="cboCompiledIdentityAppliances" prompt="Rebuild All"
                              width="150"
-                             labelField="title" enabled="true"/>
+                             labelField="title" enabled="true"/-->
             </s:HGroup>
             <comp:CustomDataGrid id="grdCompiledAppliances" width="100%" height="100%"
                                  dragEnabled="true" allowMultipleSelection="true" sortExpertMode="true"
@@ -140,13 +140,13 @@
             </comp:CustomDataGrid>
         </s:VGroup>
 
-        <s:VGroup width="30%" height="100%">
+        <s:VGroup width="30%" height="100%" paddingBottom="10" paddingTop="10">
             <s:HGroup width="100%" verticalAlign="bottom">
                 <s:Label width="200" text="Deployed" styleName="h3"/>
-                <mx:Spacer width="100%"/>
+                <!--mx:Spacer width="100%"/>
                 <s:DropDownList id="cboDeployedIdentityAppliances" prompt="Redeploy All"
                              width="150"
-                             labelField="title" enabled="true"/>
+                             labelField="title" enabled="true"/-->
             </s:HGroup>
 
             <comp:CustomDataGrid id="grdDeployedAppliances" width="100%" height="100%"
@@ -212,13 +212,13 @@
             </comp:CustomDataGrid>
         </s:VGroup>
 
-        <s:VGroup width="30%" height="100%">
+        <s:VGroup width="30%" height="100%" paddingRight="10" paddingBottom="10" paddingTop="10">
             <s:HGroup width="100%" verticalAlign="bottom">
                 <s:Label width="200" text="Disposed" styleName="h3"/>
-                <mx:Spacer width="100%"/>
+                <!--mx:Spacer width="100%"/>
                 <s:DropDownList id="cboDisposedIdentityAppliances" prompt="Remove All"
                              width="150"
-                             labelField="title" enabled="true"/>
+                             labelField="title" enabled="true"/-->
             </s:HGroup>
 
             <comp:CustomDataGrid id="grdDisposedAppliances" width="100%" height="100%"
