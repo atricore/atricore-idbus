@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.modeling.propertysheet {
 import com.atricore.idbus.console.components.CustomViewStack;
+import com.atricore.idbus.console.components.ListItemValueObject;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
@@ -55,6 +56,8 @@ import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChanne
 import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.xmlidentitysource.XmlIdentitySourceCoreSection;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
+import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
@@ -406,6 +409,35 @@ public class PropertySheetMediator extends IocMediator {
             _ipCoreSection.idpLocationContext.text = "/" + identityProvider.location.context + "/";
             _ipCoreSection.idpLocationPath.text = identityProvider.location.uri;
 
+            for each(var authMech:AuthenticationMechanism in identityProvider.authenticationMechanisms){
+                if(authMech is BasicAuthentication){
+                    var liv:ListItemValueObject = _ipCoreSection.authMechanismColl.getItemAt(0) as ListItemValueObject;
+                    liv.isSelected = true;
+                }
+                //TODO ADD OTHER AUTH MECHANISMS
+            }
+
+//            for each(var liv:ListItemValueObject in  _ipCoreSection.authMechanismCombo.dataProvider){
+//                if(liv.isSelected){
+//                    if(identityProvider.authenticationMechanisms == null){
+//                        identityProvider.authenticationMechanisms = new ArrayCollection();
+//                    }
+//                    switch(liv.name){
+//                        case "basic":
+//                            var basicAuth:BasicAuthentication = new BasicAuthentication();
+//                            basicAuth.name = identityProvider.name + "-basic-authn";
+//                            //TODO MAKE CONFIGURABLE
+//                            basicAuth.hashAlgorithm = "MD5";
+//                            basicAuth.hashEncoding = "HEX";
+//                            basicAuth.ignoreUsernameCase = false;
+//                            identityProvider.authenticationMechanisms.addItem(basicAuth);
+//                            break;
+//                        case "strong":
+//                            break;
+//                    }
+//                }
+//            }
+
             _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
@@ -440,11 +472,30 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.location.context = _ipCoreSection.idpLocationContext.text.substring(1,
                     _ipCoreSection.idpLocationContext.text.length - 1);
             identityProvider.location.uri = _ipCoreSection.idpLocationPath.text;
+
+            for each(var liv:ListItemValueObject in  _ipCoreSection.authMechanismCombo.dataProvider){
+                if(liv.isSelected){
+                    if(identityProvider.authenticationMechanisms == null){
+                        identityProvider.authenticationMechanisms = new ArrayCollection();
+                    }
+                    switch(liv.name){
+                        case "basic":
+                            var basicAuth:BasicAuthentication = new BasicAuthentication();
+                            basicAuth.name = identityProvider.name + "-basic-authn";
+                            //TODO MAKE CONFIGURABLE
+                            basicAuth.hashAlgorithm = "MD5";
+                            basicAuth.hashEncoding = "HEX";
+                            basicAuth.ignoreUsernameCase = false;
+                            identityProvider.authenticationMechanisms.addItem(basicAuth);
+                            break;
+                        case "strong":
+                            break;
+                    }
+                }
+            }
             
             // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
-            //userInformationLookup
             //authenticationContract
-            //authenticationMechanism
             //authenticationAssertionEmissionPolicy
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -575,7 +626,7 @@ public class PropertySheetMediator extends IocMediator {
             _spCoreSection.spLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
             _spCoreSection.spLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
             _spCoreSection.spLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
-            _spCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
+//            _spCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
 
             _validators = [];
             _validators.push(_spCoreSection.nameValidator);
@@ -603,9 +654,7 @@ public class PropertySheetMediator extends IocMediator {
             serviceProvider.location.uri = _spCoreSection.spLocationPath.text;
             
             // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
-            //userInformationLookup
             //authenticationContract
-            //authenticationMechanism
             //authenticationAssertionEmissionPolicy
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);

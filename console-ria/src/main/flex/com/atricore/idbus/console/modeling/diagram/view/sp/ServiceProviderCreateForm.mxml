@@ -27,13 +27,6 @@
          defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
 
     <fx:Declarations>
-        <mx:ArrayCollection id="authMechanismColl">
-            <utils:ListItemValueObject label="Form-Based Basic" isSelected="false" />
-            <utils:ListItemValueObject label="Strong (Digital Sertificate)" isSelected="false" />
-            <utils:ListItemValueObject label="Windows (NTLM)" isSelected="false" />
-            <utils:ListItemValueObject label="Remember Me" isSelected="false" />
-        </mx:ArrayCollection>
-
         <mx:StringValidator id="nameValidator" source="{serviceProvName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
         <mx:NumberValidator id="portValidator" source="{spLocationPort}" required="false" property="text"
@@ -84,33 +77,17 @@
                  label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
     </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:">
-        <s:CheckBox id="signAuthRequestCheck"/>
-    </mx:FormItem>
+    <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:">-->
+        <!--<s:CheckBox id="signAuthRequestCheck"/>-->
+    <!--</mx:FormItem>-->
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:">
-        <s:CheckBox id="encryptAuthRequestCheck"/>
-    </mx:FormItem>
+    <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:">-->
+        <!--<s:CheckBox id="encryptAuthRequestCheck"/>-->
+    <!--</mx:FormItem>-->
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.user.information.lookup')}:">
-        <s:DropDownList id="userInfoLookupCombo" labelField="name" width="180" selectedIndex="0"/>
-    </mx:FormItem>
-
-    <s:HGroup width="100%" horizontalAlign="left">
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.mechanism')}:" labelWidth="185">
-            <s:List id="authMechanismCombo"
-                           dataProvider="{authMechanismColl}"
-                           itemRenderer="com.atricore.idbus.console.components.CheckBoxItemRenderer"
-                           alternatingItemColors="[#EEEEEE, white]"
-                           width="200">
-                <s:layout>
-                    <s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedRowCount="4" />
-                </s:layout>
-            </s:List>
-        </mx:FormItem>
-        <s:Button id="configureAuthMechanism"
-           label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
-    </s:HGroup>
+    <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.user.information.lookup')}:">-->
+        <!--<s:DropDownList id="userInfoLookupCombo" labelField="name" width="180" selectedIndex="0"/>-->
+    <!--</mx:FormItem>-->
 
     <s:HGroup width="100%">
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:" labelWidth="185">
