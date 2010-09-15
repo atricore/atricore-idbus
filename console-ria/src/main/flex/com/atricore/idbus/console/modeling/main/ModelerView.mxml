@@ -43,8 +43,8 @@
 
     <fx:Declarations>
         <mx:ArrayCollection id="applianceStyleCollection">
-            <fx:Object label="None (Advanced mode)" data="Advanced"/>
-            <fx:Object label="Simple SSO" data="SimpleSSO"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'action.new.emptyAppliance')}" data="Advanced"/>
+            <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'action.new.federatedSSO')}" data="SimpleSSO"/>
         </mx:ArrayCollection>
     </fx:Declarations>
 

@@ -123,7 +123,7 @@
                 <modeler:ModelerView id="modelerView" name="Modeler"/>
                 <lifecycle:LifecycleView id="lifecycleView" name="Lifecycle"/>
                 <account:AccountManagementView id="accountManagementView" name="Account"/>
-                <setup:SetupView id="setupView" name="Setup"/>
+                <!--setup:SetupView id="setupView" name="Setup"/-->
                 <!--<s:Group width="95%" height="95%" name="Setup">-->
                 <!--<s:Label text="Setup"/>-->
                 <!--<s:BitmapImage id="icon" source="{EmbeddedIcons.setupMiniIcon}" />-->

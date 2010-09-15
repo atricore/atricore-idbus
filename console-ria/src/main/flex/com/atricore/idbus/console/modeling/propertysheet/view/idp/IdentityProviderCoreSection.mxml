@@ -28,6 +28,12 @@
          paddingRight="5" paddingTop="5" paddingBottom="5">
 
     <fx:Declarations>
+        <mx:ArrayCollection id="authMechanismColl">
+            <utils:ListItemValueObject label="Form-Based Basic" name="basic" isSelected="false" />
+            <utils:ListItemValueObject label="Strong (Digital Sertificate)" name="strong" isSelected="false" />
+            <utils:ListItemValueObject label="Windows (NTLM)" isSelected="false" name="ntlm" />
+            <utils:ListItemValueObject label="Remember Me" isSelected="false" name="rememberme" />
+        </mx:ArrayCollection>        
         <mx:StringValidator id="nameValidator" source="{identityProviderName}" required="true" property="text"/>
         <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
@@ -84,10 +90,25 @@
                 <s:DropDownList id="authContractCombo" labelField="name" width="200" selectedIndex="0"/>
             </mx:FormItem>
 
-            <mx:FormItem
-                    label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.mechanism')}:">
-                <s:DropDownList id="authMechanismCombo" labelField="name" width="200" selectedIndex="0"/>
-            </mx:FormItem>
+            <!--<mx:FormItem-->
+                    <!--label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.mechanism')}:">-->
+                <!--<s:DropDownList id="authMechanismCombo" labelField="name" width="200" selectedIndex="0"/>-->
+            <!--</mx:FormItem>-->
+            <s:HGroup width="100%">
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.mechanism')}:" labelWidth="230">
+                    <s:List id="authMechanismCombo"
+                                   dataProvider="{authMechanismColl}"
+                                   itemRenderer="com.atricore.idbus.console.components.CheckBoxItemRenderer"
+                                   alternatingItemColors="[#EEEEEE, white]"
+                                   width="200">
+                        <s:layout>
+                           <s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedRowCount="4" />
+                       </s:layout>
+                    </s:List>
+                </mx:FormItem>
+                <s:Button id="configureAuthMechanism"
+                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
+            </s:HGroup>
 
             <mx:FormItem
                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:">

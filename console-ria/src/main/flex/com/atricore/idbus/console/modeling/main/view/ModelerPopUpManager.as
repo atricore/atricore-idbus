@@ -517,8 +517,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
             createTomcatExecutionEnvironmentCreateForm();
         }
         _popup.title = "Create Tomcat Execution Environment";
-        _popup.width = 650;
-        _popup.height = 300;
+        _popup.width = 450;
+        _popup.height = 240;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_tomcatExecutionEnvironmentCreateForm);
@@ -653,6 +653,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         if (!_federatedConnectionCreateForm) {
             createFederatedConnectionCreateForm();
+        } else {
+            federatedConnectionCreateMediator.handleNotification(_lastWindowNotification);
         }
         _popup.title = "Create Federated Connection";
         _popup.width = 680;
@@ -702,8 +704,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
             createJBossExecutionEnvironmentCreateForm();
         }
         _popup.title = "Create JBoss Execution Environment";
-        _popup.width = 650;
-        _popup.height = 300;
+        _popup.width = 450;
+        _popup.height = 270;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_jbossExecutionEnvironmentCreateForm);

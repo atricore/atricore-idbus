@@ -239,40 +239,36 @@ public class DiagramMediator extends IocMediator {
 
 
                             break;
-                        case DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE:
-                            // assert that source end is an Identity Appliance
-                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is ServiceProvider) {
-                                var ownerServiceProvider:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
-
-                                var cidpc:CreateIdpChannelElementRequest = new CreateIdpChannelElementRequest(
-                                        ownerServiceProvider,
-                                        _currentlySelectedNode.stringid
-                                        );
-                                _projectProxy.currentIdentityApplianceElementOwner = ownerServiceProvider;
-                                // this notification will be grabbed by the modeler mediator which will open
-                                // the corresponding form
-                                sendNotification(ApplicationFacade.CREATE_IDP_CHANNEL_ELEMENT, cidpc);
-                            }
-
-
-                            break;
-                        case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
-                            // assert that source end is an Identity Appliance
-                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is IdentityProvider) {
-                                var ownerIdentityProvider:IdentityProvider = _currentlySelectedNode.data as IdentityProvider;
-
-                                var csdpc:CreateSpChannelElementRequest = new CreateSpChannelElementRequest(
-                                        ownerIdentityProvider,
-                                        _currentlySelectedNode.stringid
-                                        );
-                                _projectProxy.currentIdentityApplianceElementOwner = ownerIdentityProvider;
-                                // this notification will be grabbed by the modeler mediator which will open
-                                // the corresponding form
-                                sendNotification(ApplicationFacade.CREATE_SP_CHANNEL_ELEMENT, csdpc);
-                            }
-
-
-                            break;
+//                        case DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE:
+//                            // assert that source end is an Identity Appliance
+//                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is ServiceProvider) {
+//                                var ownerServiceProvider:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
+//
+//                                var cidpc:CreateIdpChannelElementRequest = new CreateIdpChannelElementRequest(
+//                                        ownerServiceProvider,
+//                                        _currentlySelectedNode.stringid
+//                                        );
+//                                _projectProxy.currentIdentityApplianceElementOwner = ownerServiceProvider;
+//                                // this notification will be grabbed by the modeler mediator which will open
+//                                // the corresponding form
+//                                sendNotification(ApplicationFacade.CREATE_IDP_CHANNEL_ELEMENT, cidpc);
+//                            }
+//                            break;
+//                        case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
+//                            // assert that source end is an Identity Appliance
+//                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is IdentityProvider) {
+//                                var ownerIdentityProvider:IdentityProvider = _currentlySelectedNode.data as IdentityProvider;
+//
+//                                var csdpc:CreateSpChannelElementRequest = new CreateSpChannelElementRequest(
+//                                        ownerIdentityProvider,
+//                                        _currentlySelectedNode.stringid
+//                                        );
+//                                _projectProxy.currentIdentityApplianceElementOwner = ownerIdentityProvider;
+//                                // this notification will be grabbed by the modeler mediator which will open
+//                                // the corresponding form
+//                                sendNotification(ApplicationFacade.CREATE_SP_CHANNEL_ELEMENT, csdpc);
+//                            }
+//                            break;
                         case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                             ownerIdentityAppliance = _identityAppliance;
 
@@ -421,24 +417,24 @@ public class DiagramMediator extends IocMediator {
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT, rsp);
                             break;
-                        case DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE:
-                            var idpChannel:IdentityProviderChannel = _currentlySelectedNode.data as IdentityProviderChannel;
-
-                            var ridpc:RemoveIdpChannelElementRequest = new RemoveIdpChannelElementRequest(idpChannel);
-
-                            // this notification will be grabbed by the modeler mediator which will invoke
-                            // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT, ridpc);
-                            break;
-                        case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
-                            var spChannel:ServiceProviderChannel = _currentlySelectedNode.data as ServiceProviderChannel;
-
-                            var rspc:RemoveSpChannelElementRequest = new RemoveSpChannelElementRequest(spChannel);
-
-                            // this notification will be grabbed by the modeler mediator which will invoke
-                            // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT, rspc);
-                            break;
+//                        case DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE:
+//                            var idpChannel:IdentityProviderChannel = _currentlySelectedNode.data as IdentityProviderChannel;
+//
+//                            var ridpc:RemoveIdpChannelElementRequest = new RemoveIdpChannelElementRequest(idpChannel);
+//
+//                            // this notification will be grabbed by the modeler mediator which will invoke
+//                            // the corresponding command for processing the removal operation.
+//                            sendNotification(ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT, ridpc);
+//                            break;
+//                        case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
+//                            var spChannel:ServiceProviderChannel = _currentlySelectedNode.data as ServiceProviderChannel;
+//
+//                            var rspc:RemoveSpChannelElementRequest = new RemoveSpChannelElementRequest(spChannel);
+//
+//                            // this notification will be grabbed by the modeler mediator which will invoke
+//                            // the corresponding command for processing the removal operation.
+//                            sendNotification(ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT, rspc);
+//                            break;
                         case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
                             var identityVault:DbIdentitySource = _currentlySelectedNode.data as DbIdentitySource;
 
@@ -507,7 +503,7 @@ public class DiagramMediator extends IocMediator {
                 for (var i:int = 0; i < identityApplianceDefinition.providers.length; i++) {
                     var provider:Provider = identityApplianceDefinition.providers[i];
                     var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, null, true, Constants.PROVIDER_DEEP);
-                    providerNodes[provider.id] = providerGraphNode;
+                    providerNodes[provider] = providerGraphNode;
                         var provider:Provider = identityApplianceDefinition.providers[i];
                         if (provider is FederatedProvider) {
                             var locProv:FederatedProvider = provider as FederatedProvider;
@@ -555,15 +551,15 @@ public class DiagramMediator extends IocMediator {
                     if(identityApplianceDefinition.providers[j] is FederatedProvider){
                         var fedProvider:FederatedProvider = identityApplianceDefinition.providers[j] as FederatedProvider;
                         for each (var fedConnA:FederatedConnection in fedProvider.federatedConnectionsA){
-                            var graphNodeRoleA:IVisualNode = providerNodes[fedProvider.id];
-                            var graphNodeRoleB:IVisualNode = providerNodes[fedConnA.roleB.id];                            
+                            var graphNodeRoleA:IVisualNode = providerNodes[fedProvider];
+                            var graphNodeRoleB:IVisualNode = providerNodes[fedConnA.roleB];                            
                             if(!DiagramUtil.nodeLinkExists(graphNodeRoleA.node, graphNodeRoleB.node)){ //avoid double linking
                                 GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB, fedConnA);
                             }
                         }
                         for each (var fedConnB:FederatedConnection in fedProvider.federatedConnectionsB){
-                            var graphNodeRoleA:IVisualNode = providerNodes[fedConnB.roleA.id];
-                            var graphNodeRoleB:IVisualNode = providerNodes[fedProvider.id];                           
+                            var graphNodeRoleA:IVisualNode = providerNodes[fedConnB.roleA];
+                            var graphNodeRoleB:IVisualNode = providerNodes[fedProvider];                           
                             if(!DiagramUtil.nodeLinkExists(graphNodeRoleA.node, graphNodeRoleB.node)){ //avoid double linking
                                 GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB, fedConnB);
                             }
@@ -644,12 +640,12 @@ public class DiagramMediator extends IocMediator {
             if (node.data is ServiceProvider){
                 elementType = DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE;
             } else
-            if(node.data is IdentityProviderChannel){
-                elementType = DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE;
-            } else
-            if(node.data is ServiceProviderChannel){
-                elementType = DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE;
-            } else
+//            if(node.data is IdentityProviderChannel){
+//                elementType = DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE;
+//            } else
+//            if(node.data is ServiceProviderChannel){
+//                elementType = DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE;
+//            } else
             if(node.data is DbIdentitySource){
                 elementType = DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE;
             }

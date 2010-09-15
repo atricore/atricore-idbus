@@ -70,13 +70,13 @@
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
                 </mx:FormItem>
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:" labelWidth="235">
-                    <s:CheckBox id="signAuthRequestCheck"/>
-                </mx:FormItem>
+                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:" labelWidth="235">-->
+                    <!--<s:CheckBox id="signAuthRequestCheck"/>-->
+                <!--</mx:FormItem>-->
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:" labelWidth="235">
-                    <s:CheckBox id="encryptAuthRequestCheck"/>
-                </mx:FormItem>
+                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:" labelWidth="235">-->
+                    <!--<s:CheckBox id="encryptAuthRequestCheck"/>-->
+                <!--</mx:FormItem>-->
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.user.information.lookup')}:" labelWidth="235">
                     <s:DropDownList id="userInfoLookupCombo" labelField="name" width="180" selectedIndex="0"/>
@@ -133,13 +133,13 @@
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
                 </mx:FormItem>
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:" labelWidth="235">
-                    <s:CheckBox id="signAuthAssertionCheck"/>
-                </mx:FormItem>
+                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:" labelWidth="235">-->
+                    <!--<s:CheckBox id="signAuthAssertionCheck"/>-->
+                <!--</mx:FormItem>-->
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:" labelWidth="235">
-                    <s:CheckBox id="encryptAuthAssertionCheck"/>
-                </mx:FormItem>
+                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:" labelWidth="235">-->
+                    <!--<s:CheckBox id="encryptAuthAssertionCheck"/>-->
+                <!--</mx:FormItem>-->
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.user.information.lookup')}:" labelWidth="235">
                     <s:DropDownList id="spChannelUserInfoLookupCombo" labelField="name" selectedIndex="0" width="180"/>

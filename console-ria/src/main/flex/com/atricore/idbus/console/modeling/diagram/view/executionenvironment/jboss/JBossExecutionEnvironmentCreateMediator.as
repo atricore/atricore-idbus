@@ -78,6 +78,7 @@ public class JBossExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.executionEnvironmentDescription.text = "";
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
+        view.instance.text = "";
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -90,7 +91,8 @@ public class JBossExecutionEnvironmentCreateMediator extends IocFormMediator {
         jbossExecutionEnvironment.description = view.executionEnvironmentDescription.text;
         jbossExecutionEnvironment.installUri = view.homeDirectory.text;
         jbossExecutionEnvironment.platformId = view.platform.selectedItem.data;
-
+        jbossExecutionEnvironment.instance = view.instance.text;
+        
         _newExecutionEnvironment = jbossExecutionEnvironment;
     }
 
@@ -130,6 +132,7 @@ public class JBossExecutionEnvironmentCreateMediator extends IocFormMediator {
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
         _validators.push(view.homeDirValidator);
+        _validators.push(view.instanceValidator);
     }
 
 

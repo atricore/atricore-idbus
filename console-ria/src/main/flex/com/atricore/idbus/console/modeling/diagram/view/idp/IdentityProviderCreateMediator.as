@@ -20,10 +20,12 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.idp {
+import com.atricore.idbus.console.components.ListItemValueObject;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
+import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.Location;
@@ -88,6 +90,10 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.samlProfileSSOCheck.selected = false;
         view.samlProfileSLOCheck.selected = false;
 
+        for each(var liv:ListItemValueObject in  view.authMechanismCombo.dataProvider){
+            liv.isSelected = false;
+        }
+
         FormUtility.clearValidationErrors(_validators);
     }
 
@@ -131,10 +137,29 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
             identityProvider.activeProfiles.addItem(Profile.SSO_SLO);
         }
 
+        for each(var liv:ListItemValueObject in  view.authMechanismCombo.dataProvider){
+            if(liv.isSelected){
+                if(identityProvider.authenticationMechanisms == null){
+                    identityProvider.authenticationMechanisms = new ArrayCollection();
+                }
+                switch(liv.name){
+                    case "basic":
+                        var basicAuth:BasicAuthentication = new BasicAuthentication();
+                        basicAuth.name = identityProvider.name + "-basic-authn";
+                        //TODO MAKE CONFIGURABLE
+                        basicAuth.hashAlgorithm = "MD5";
+                        basicAuth.hashEncoding = "HEX";
+                        basicAuth.ignoreUsernameCase = false;
+                        identityProvider.authenticationMechanisms.addItem(basicAuth);
+                        break;
+                    case "strong":
+                        break;
+                }
+            }
+        }
+
         // TODO save remaining fields
-        //userInformationLookup
         //authenticationContract
-        //authenticationMechanism
         //authenticationAssertionEmissionPolicy
 
         _newIdentityProvider = identityProvider;

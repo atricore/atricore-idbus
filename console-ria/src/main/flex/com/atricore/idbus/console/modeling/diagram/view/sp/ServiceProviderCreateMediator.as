@@ -80,18 +80,14 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         view.spLocationPort.text = "";
         view.spLocationContext.text = "";
         view.spLocationPath.text = "";
-        view.signAuthRequestCheck.selected = false;
-        view.encryptAuthRequestCheck.selected = false;
+//        view.signAuthRequestCheck.selected = false;
+//        view.encryptAuthRequestCheck.selected = false;
         view.samlBindingHttpPostCheck.selected = false;
         view.samlBindingArtifactCheck.selected = false;
         view.samlBindingHttpRedirectCheck.selected = false;
         view.samlBindingSoapCheck.selected = false;
         view.samlProfileSSOCheck.selected = false;
-        view.samlProfileSLOCheck.selected = false;
-
-        for each(var liv:ListItemValueObject in  view.authMechanismCombo.dataProvider){
-            liv.isSelected = false;
-        }        
+        view.samlProfileSLOCheck.selected = false;     
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -137,9 +133,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         }
         
         // TODO save remaining fields
-        //userInformationLookup
         //authenticationContract
-        //authenticationMechanism
         //authenticationAssertionEmissionPolicy
 
         _newServiceProvider = serviceProvider;

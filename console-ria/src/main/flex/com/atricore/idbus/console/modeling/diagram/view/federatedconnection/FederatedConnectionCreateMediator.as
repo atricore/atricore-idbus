@@ -114,8 +114,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.samlBindingArtifactCheck.enabled = false;
             view.samlBindingSoapCheck.enabled = false;
             
-            view.signAuthRequestCheck.enabled = false;
-            view.encryptAuthRequestCheck.enabled = false;
+//            view.signAuthRequestCheck.enabled = false;
+//            view.encryptAuthRequestCheck.enabled = false;
 
             view.userInfoLookupCombo.enabled = false;
             view.authMechanismCombo.enabled = false;
@@ -132,8 +132,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.samlBindingArtifactCheck.enabled = true;
             view.samlBindingSoapCheck.enabled = true;
 
-            view.signAuthRequestCheck.enabled = true;
-            view.encryptAuthRequestCheck.enabled = true;
+//            view.signAuthRequestCheck.enabled = true;
+//            view.encryptAuthRequestCheck.enabled = true;
 
             view.userInfoLookupCombo.enabled = true;
             view.authMechanismCombo.enabled = true;
@@ -154,8 +154,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.spChannelSamlBindingArtifactCheck.enabled = false;
             view.spChannelSamlBindingSoapCheck.enabled = false;
 
-            view.signAuthAssertionCheck.enabled = false;
-            view.encryptAuthAssertionCheck.enabled = false;
+//            view.signAuthAssertionCheck.enabled = false;
+//            view.encryptAuthAssertionCheck.enabled = false;
             view.spChannelUserInfoLookupCombo.enabled = false;
             view.spChannelAuthContractCombo.enabled = false;
             view.spChannelAuthMechanismCombo.enabled = false;
@@ -169,8 +169,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.spChannelSamlBindingArtifactCheck.enabled = true;
             view.spChannelSamlBindingSoapCheck.enabled = true;
 
-            view.signAuthAssertionCheck.enabled = true;
-            view.encryptAuthAssertionCheck.enabled = true;
+//            view.signAuthAssertionCheck.enabled = true;
+//            view.encryptAuthAssertionCheck.enabled = true;
             view.spChannelUserInfoLookupCombo.enabled = true;
             view.spChannelAuthContractCombo.enabled = true;
             view.spChannelAuthMechanismCombo.enabled = true;
@@ -182,9 +182,12 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
         view.federatedConnectionName.text = "";
         view.federatedConnectionDescription.text = "";
 
+        view.channelNavigator.selectedIndex = 0;
+
         //RESET IDP CHANNEL
         view.preferredIDPChannel.selected = false;
         view.useInheritedSPSettings.selected = false;
+        handleInheritedSpChkboxChanged(null);
 
         view.samlProfileSSOCheck.selected = false;
         view.samlProfileSLOCheck.selected = false;
@@ -194,8 +197,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
         view.samlBindingArtifactCheck.selected = false;
         view.samlBindingSoapCheck.selected = false;
 
-        view.signAuthRequestCheck.selected = false;
-        view.encryptAuthRequestCheck.selected = false;
+//        view.signAuthRequestCheck.selected = false;
+//        view.encryptAuthRequestCheck.selected = false;
 
         view.userInfoLookupCombo.selectedIndex = 0;
         for each(var obj:ListItemValueObject in view.authMechanismCombo.dataProvider){
@@ -205,20 +208,25 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
         view.accountLinkagePolicyCombo.selectedIndex = 0;
 
         //RESET SP CHANNEL
-        view.spChannelSamlProfileSSOCheck.selected = false;
-        view.spChannelSamlProfileSLOCheck.selected = false;
+        //if any checkbox is null means that the SP channel tab is not initialized
+        if(view.spChannelSamlProfileSSOCheck != null){
+            view.useInheritedIDPSettings.selected = false;
+            handleInheritedIdpChkboxChanged(null);
+            view.spChannelSamlProfileSSOCheck.selected = false;
+            view.spChannelSamlProfileSLOCheck.selected = false;
 
-        view.spChannelSamlBindingHttpPostCheck.selected = false;
-        view.spChannelSamlBindingHttpRedirectCheck.selected = false;
-        view.spChannelSamlBindingArtifactCheck.selected = false;
-        view.spChannelSamlBindingSoapCheck.selected = false;
+            view.spChannelSamlBindingHttpPostCheck.selected = false;
+            view.spChannelSamlBindingHttpRedirectCheck.selected = false;
+            view.spChannelSamlBindingArtifactCheck.selected = false;
+            view.spChannelSamlBindingSoapCheck.selected = false;
 
-        view.signAuthAssertionCheck.selected = false;
-        view.encryptAuthAssertionCheck.selected = false;
-        view.spChannelUserInfoLookupCombo.selectedIndex = 0;
-        view.spChannelAuthContractCombo.selectedIndex = 0;
-        view.spChannelAuthMechanismCombo.selectedIndex = 0;
-        view.spChannelAuthAssertionEmissionPolicyCombo.selectedIndex = 0;
+//            view.signAuthAssertionCheck.selected = false;
+//            view.encryptAuthAssertionCheck.selected = false;
+            view.spChannelUserInfoLookupCombo.selectedIndex = 0;
+            view.spChannelAuthContractCombo.selectedIndex = 0;
+            view.spChannelAuthMechanismCombo.selectedIndex = 0;
+            view.spChannelAuthAssertionEmissionPolicyCombo.selectedIndex = 0;
+        }
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -305,6 +313,25 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
         }
 
         if(_roleA is ServiceProvider && _roleB is IdentityProvider){
+            if(idpChannel.preferred){
+                //if idpchannel is preferred, go through all the idp channels in a SP and deselect previously preferred
+                for each(var conn:FederatedConnection in _roleA.federatedConnectionsA){
+                    if(conn.channelA != null){
+                        (conn.channelA as IdentityProviderChannel).preferred = false;
+                    }
+                }
+                for each(conn in _roleA.federatedConnectionsB){
+                    if(conn.channelB != null){
+                        (conn.channelB as IdentityProviderChannel).preferred = false;
+                    }
+                }
+            } else {
+                if((_roleA.federatedConnectionsA == null || _roleA.federatedConnectionsA.length == 0)
+                        && (_roleA.federatedConnectionsB == null || _roleA.federatedConnectionsB.length == 0)){
+                    //in case this is the only IDP Channel for that SP, force it to be preferred
+                    idpChannel.preferred = true;
+                }
+            }
             idpChannel.name = _roleA.name + "-to-" + _roleB.name;
             idpChannel.connectionA = federatedConnection;
             federatedConnection.channelA = idpChannel;
@@ -313,6 +340,25 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             spChannel.connectionB = federatedConnection;
             federatedConnection.channelB = spChannel;
         } else if(_roleA is IdentityProvider && _roleB is ServiceProvider){
+            if(idpChannel.preferred){
+                //if idpchannel is preferred, go through all the idp channels in a SP and deselect previously preferred
+                for each(conn in _roleB.federatedConnectionsA){
+                    if(conn.channelA != null){
+                        (conn.channelA as IdentityProviderChannel).preferred = false;
+                    }
+                }
+                for each(conn in _roleB.federatedConnectionsB){
+                    if(conn.channelB != null){
+                        (conn.channelB as IdentityProviderChannel).preferred = false;
+                    }
+                }
+            } else {
+                if((_roleB.federatedConnectionsA == null || _roleB.federatedConnectionsA.length == 0)
+                        && (_roleB.federatedConnectionsB == null || _roleB.federatedConnectionsB.length == 0)){
+                    //in case this is the only IDP Channel for that SP, force it to be preferred
+                    idpChannel.preferred = true;
+                }
+            }
             idpChannel.name = _roleB.name + "-to-" + _roleA.name;
             idpChannel.connectionB = federatedConnection;
             federatedConnection.channelB = idpChannel;
@@ -330,8 +376,6 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             bindModel();
             _federatedConnection.roleA = _roleA;
             _federatedConnection.roleB = _roleB;
-
-            //TODO if idpchannel is preferred, go through all the idp channels in a SP and deselect preferred
 
             if(_roleA.federatedConnectionsA == null){
                _roleA.federatedConnectionsA = new ArrayCollection(); 

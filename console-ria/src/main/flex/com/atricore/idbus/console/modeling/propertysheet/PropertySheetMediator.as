@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.modeling.propertysheet {
 import com.atricore.idbus.console.components.CustomViewStack;
+import com.atricore.idbus.console.components.ListItemValueObject;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
@@ -55,6 +56,8 @@ import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChanne
 import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.xmlidentitysource.XmlIdentitySourceCoreSection;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
+import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
@@ -406,6 +409,35 @@ public class PropertySheetMediator extends IocMediator {
             _ipCoreSection.idpLocationContext.text = "/" + identityProvider.location.context + "/";
             _ipCoreSection.idpLocationPath.text = identityProvider.location.uri;
 
+            for each(var authMech:AuthenticationMechanism in identityProvider.authenticationMechanisms){
+                if(authMech is BasicAuthentication){
+                    var liv:ListItemValueObject = _ipCoreSection.authMechanismColl.getItemAt(0) as ListItemValueObject;
+                    liv.isSelected = true;
+                }
+                //TODO ADD OTHER AUTH MECHANISMS
+            }
+
+//            for each(var liv:ListItemValueObject in  _ipCoreSection.authMechanismCombo.dataProvider){
+//                if(liv.isSelected){
+//                    if(identityProvider.authenticationMechanisms == null){
+//                        identityProvider.authenticationMechanisms = new ArrayCollection();
+//                    }
+//                    switch(liv.name){
+//                        case "basic":
+//                            var basicAuth:BasicAuthentication = new BasicAuthentication();
+//                            basicAuth.name = identityProvider.name + "-basic-authn";
+//                            //TODO MAKE CONFIGURABLE
+//                            basicAuth.hashAlgorithm = "MD5";
+//                            basicAuth.hashEncoding = "HEX";
+//                            basicAuth.ignoreUsernameCase = false;
+//                            identityProvider.authenticationMechanisms.addItem(basicAuth);
+//                            break;
+//                        case "strong":
+//                            break;
+//                    }
+//                }
+//            }
+
             _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
@@ -440,11 +472,30 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.location.context = _ipCoreSection.idpLocationContext.text.substring(1,
                     _ipCoreSection.idpLocationContext.text.length - 1);
             identityProvider.location.uri = _ipCoreSection.idpLocationPath.text;
+
+            for each(var liv:ListItemValueObject in  _ipCoreSection.authMechanismCombo.dataProvider){
+                if(liv.isSelected){
+                    if(identityProvider.authenticationMechanisms == null){
+                        identityProvider.authenticationMechanisms = new ArrayCollection();
+                    }
+                    switch(liv.name){
+                        case "basic":
+                            var basicAuth:BasicAuthentication = new BasicAuthentication();
+                            basicAuth.name = identityProvider.name + "-basic-authn";
+                            //TODO MAKE CONFIGURABLE
+                            basicAuth.hashAlgorithm = "MD5";
+                            basicAuth.hashEncoding = "HEX";
+                            basicAuth.ignoreUsernameCase = false;
+                            identityProvider.authenticationMechanisms.addItem(basicAuth);
+                            break;
+                        case "strong":
+                            break;
+                    }
+                }
+            }
             
             // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
-            //userInformationLookup
             //authenticationContract
-            //authenticationMechanism
             //authenticationAssertionEmissionPolicy
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -575,7 +626,7 @@ public class PropertySheetMediator extends IocMediator {
             _spCoreSection.spLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
             _spCoreSection.spLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
             _spCoreSection.spLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
-            _spCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
+//            _spCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
 
             _validators = [];
             _validators.push(_spCoreSection.nameValidator);
@@ -603,9 +654,7 @@ public class PropertySheetMediator extends IocMediator {
             serviceProvider.location.uri = _spCoreSection.spLocationPath.text;
             
             // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
-            //userInformationLookup
             //authenticationContract
-            //authenticationMechanism
             //authenticationAssertionEmissionPolicy
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -1557,29 +1606,29 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.useInheritedIDPSettings.addEventListener(Event.CHANGE, handleUseInheritedIDPSettingsChange);
             _federatedConnectionSPChannelSection.useInheritedIDPSettings.selected = !spChannel.overrideProviderSetup;
             handleUseInheritedIDPSettingsChange(null);
-            
-            for (var j:int = 0; j < spChannel.activeBindings.length; j ++) {
-                var tmpBinding:Binding = spChannel.activeBindings.getItemAt(j) as Binding;
-                if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
-                    _federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.selected = true;
+
+            if(spChannel.overrideProviderSetup){
+                for each (var tmpBinding:Binding in spChannel.activeBindings) {
+                    if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
+                        _federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.selected = true;
+                    }
+                    if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
+                        _federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.selected = true;
+                    }
+                    if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
+                        _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.selected = true;
+                    }
+                    if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
+                        _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.selected = true;
+                    }
                 }
-                if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
-                    _federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.selected = true;
-                }
-                if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
-                    _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.selected = true;
-                }
-                if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
-                    _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.selected = true;
-                }
-            }
-            for (j = 0; j < spChannel.activeProfiles.length; j++) {
-                var tmpProfile:Profile = spChannel.activeProfiles.getItemAt(j) as Profile;
-                if (tmpProfile.name == Profile.SSO.name) {
-                    _federatedConnectionSPChannelSection.spChannelSamlProfileSSOCheck.selected = true;
-                }
-                if (tmpProfile.name == Profile.SSO_SLO.name) {
-                    _federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.selected = true;
+                for each(var tmpProfile:Profile in spChannel.activeProfiles) {
+                    if (tmpProfile.name == Profile.SSO.name) {
+                        _federatedConnectionSPChannelSection.spChannelSamlProfileSSOCheck.selected = true;
+                    }
+                    if (tmpProfile.name == Profile.SSO_SLO.name) {
+                        _federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.selected = true;
+                    }
                 }
             }
 
@@ -1649,31 +1698,32 @@ public class PropertySheetMediator extends IocMediator {
 
             if (idpChannel != null) {
                 _federatedConnectionIDPChannelSection.useInheritedSPSettings.addEventListener(Event.CHANGE, handleUseInheritedSPSettingsChange);
+                _federatedConnectionIDPChannelSection.preferredIDPChannel.selected = idpChannel.preferred;
                 _federatedConnectionIDPChannelSection.useInheritedSPSettings.selected = !idpChannel.overrideProviderSetup;
                 handleUseInheritedSPSettingsChange(null);
 
-                for (var j:int = 0; j < idpChannel.activeBindings.length; j ++) {
-                    var tmpBinding:Binding = idpChannel.activeBindings.getItemAt(j) as Binding;
-                    if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
-                        _federatedConnectionIDPChannelSection.samlBindingHttpPostCheck.selected = true;
+                if(idpChannel.overrideProviderSetup){
+                    for each(var tmpBinding:Binding in idpChannel.activeBindings) {
+                        if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
+                            _federatedConnectionIDPChannelSection.samlBindingHttpPostCheck.selected = true;
+                        }
+                        if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
+                            _federatedConnectionIDPChannelSection.samlBindingHttpRedirectCheck.selected = true;
+                        }
+                        if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
+                            _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.selected = true;
+                        }
+                        if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
+                            _federatedConnectionIDPChannelSection.samlBindingSoapCheck.selected = true;
+                        }
                     }
-                    if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
-                        _federatedConnectionIDPChannelSection.samlBindingHttpRedirectCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
-                        _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
-                        _federatedConnectionIDPChannelSection.samlBindingSoapCheck.selected = true;
-                    }
-                }
-                for (j = 0; j < idpChannel.activeProfiles.length; j++) {
-                    var tmpProfile:Profile = idpChannel.activeProfiles.getItemAt(j) as Profile;
-                    if (tmpProfile.name == Profile.SSO.name) {
-                        _federatedConnectionIDPChannelSection.samlProfileSSOCheck.selected = true;
-                    }
-                    if (tmpProfile.name == Profile.SSO_SLO.name) {
-                        _federatedConnectionIDPChannelSection.samlProfileSLOCheck.selected = true;
+                    for each(var tmpProfile:Profile in idpChannel.activeProfiles) {
+                        if (tmpProfile.name == Profile.SSO.name) {
+                            _federatedConnectionIDPChannelSection.samlProfileSSOCheck.selected = true;
+                        }
+                        if (tmpProfile.name == Profile.SSO_SLO.name) {
+                            _federatedConnectionIDPChannelSection.samlProfileSLOCheck.selected = true;
+                        }
                     }
                 }
             }
@@ -1690,15 +1740,32 @@ public class PropertySheetMediator extends IocMediator {
         if (_dirty) {
             // bind model
             var idpChannel:IdentityProviderChannel;
-
-            var idpChannel:IdentityProviderChannel;
+            var sp:ServiceProvider;
 
             var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
             if(connection.channelA is IdentityProviderChannel){
                 idpChannel = connection.channelA as IdentityProviderChannel;
+                sp = connection.roleA as ServiceProvider;
             } else if (connection.channelB is IdentityProviderChannel){
                 idpChannel = connection.channelB as IdentityProviderChannel;
+                sp = connection.roleB as ServiceProvider;
             }
+
+            idpChannel.preferred = _federatedConnectionIDPChannelSection.preferredIDPChannel.selected;
+            if(idpChannel.preferred){
+                //if idpchannel is preferred, go through all the idp channels in a SP and deselect previously preferred
+                for each(var conn:FederatedConnection in sp.federatedConnectionsA){
+                    if(conn.channelA != null && conn.channelA != idpChannel){
+                        (conn.channelA as IdentityProviderChannel).preferred = false;
+                    }
+                }
+                for each(conn in sp.federatedConnectionsB){
+                    if(conn.channelB != null && conn.channelB != idpChannel){
+                        (conn.channelB as IdentityProviderChannel).preferred = false;
+                    }
+                }
+            }
+
 
             idpChannel.overrideProviderSetup = !_federatedConnectionIDPChannelSection.useInheritedSPSettings.selected;
 
@@ -2255,16 +2322,19 @@ public class PropertySheetMediator extends IocMediator {
         }
         _jbossExecEnvCoreSection.selectedHost.selectedIndex = 0;
         _jbossExecEnvCoreSection.homeDirectory.text = jbossExecEnv.installUri;
+        _jbossExecEnvCoreSection.instance.text = jbossExecEnv.instance;
 
         _jbossExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
         _jbossExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
         _jbossExecEnvCoreSection.platform.addEventListener(Event.CHANGE, handleSectionChange);
         _jbossExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
         _jbossExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+        _jbossExecEnvCoreSection.instance.addEventListener(Event.CHANGE, handleSectionChange);
 
         _validators = [];
         _validators.push(_jbossExecEnvCoreSection.nameValidator);
         _validators.push(_jbossExecEnvCoreSection.homeDirValidator);
+        _validators.push(_jbossExecEnvCoreSection.instanceValidator);
     }
 
     private function handleJbossExecEnvCorePropertyTabRollOut(e:Event):void {
@@ -2276,6 +2346,7 @@ public class PropertySheetMediator extends IocMediator {
             jbossExecEnv.description = _jbossExecEnvCoreSection.executionEnvironmentDescription.text;
             jbossExecEnv.platformId = _jbossExecEnvCoreSection.platform.selectedItem.data;
             jbossExecEnv.installUri = _jbossExecEnvCoreSection.homeDirectory.text;
+            jbossExecEnv.instance = _jbossExecEnvCoreSection.instance.text;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -2560,8 +2631,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.enabled = false;
             _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.enabled = false;
 
-            _federatedConnectionSPChannelSection.signAuthAssertionCheck.enabled = false;
-            _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.enabled = false;
+//            _federatedConnectionSPChannelSection.signAuthAssertionCheck.enabled = false;
+//            _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.enabled = false;
             _federatedConnectionSPChannelSection.spChannelUserInfoLookupCombo.enabled = false;
             _federatedConnectionSPChannelSection.spChannelAuthContractCombo.enabled = false;
             _federatedConnectionSPChannelSection.spChannelAuthMechanismCombo.enabled = false;
@@ -2575,8 +2646,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.enabled = true;
             _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.enabled = true;
 
-            _federatedConnectionSPChannelSection.signAuthAssertionCheck.enabled = true;
-            _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.enabled = true;
+//            _federatedConnectionSPChannelSection.signAuthAssertionCheck.enabled = true;
+//            _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.enabled = true;
             _federatedConnectionSPChannelSection.spChannelUserInfoLookupCombo.enabled = true;
             _federatedConnectionSPChannelSection.spChannelAuthContractCombo.enabled = true;
             _federatedConnectionSPChannelSection.spChannelAuthMechanismCombo.enabled = true;
@@ -2595,8 +2666,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.enabled = false;
             _federatedConnectionIDPChannelSection.samlBindingSoapCheck.enabled = false;
 
-            _federatedConnectionIDPChannelSection.signAuthRequestCheck.enabled = false;
-            _federatedConnectionIDPChannelSection.encryptAuthRequestCheck.enabled = false;
+//            _federatedConnectionIDPChannelSection.signAuthRequestCheck.enabled = false;
+//            _federatedConnectionIDPChannelSection.encryptAuthRequestCheck.enabled = false;
 
             _federatedConnectionIDPChannelSection.userInfoLookupCombo.enabled = false;
             _federatedConnectionIDPChannelSection.authMechanismCombo.enabled = false;
@@ -2613,8 +2684,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.enabled = true;
             _federatedConnectionIDPChannelSection.samlBindingSoapCheck.enabled = true;
 
-            _federatedConnectionIDPChannelSection.signAuthRequestCheck.enabled = true;
-            _federatedConnectionIDPChannelSection.encryptAuthRequestCheck.enabled = true;
+//            _federatedConnectionIDPChannelSection.signAuthRequestCheck.enabled = true;
+//            _federatedConnectionIDPChannelSection.encryptAuthRequestCheck.enabled = true;
 
             _federatedConnectionIDPChannelSection.userInfoLookupCombo.enabled = true;
             _federatedConnectionIDPChannelSection.authMechanismCombo.enabled = true;
