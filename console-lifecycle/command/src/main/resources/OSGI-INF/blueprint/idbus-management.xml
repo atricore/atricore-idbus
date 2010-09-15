@@ -56,8 +56,8 @@
             </completers>
         </command>
 
-        <command name="appliance/disponse">
-            <action class="com.atricore.idbus.console.lifecycle.command.DisponseApplianceCommand"/>
+        <command name="appliance/dispose">
+            <action class="com.atricore.idbus.console.lifecycle.command.DisposeApplianceCommand"/>
             <completers>
                 <ref component-id="undeployApplianceCompleter" />
             </completers>

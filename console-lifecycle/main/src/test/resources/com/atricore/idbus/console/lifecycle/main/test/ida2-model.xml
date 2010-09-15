@@ -36,7 +36,7 @@
     <!-- =========================================== -->
     <bean name="idApplianceDef1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition">
 
-        <property name="name" value="iDA2"/>
+        <property name="name" value="ida2"/>
         <property name="displayName" value="Sample Federation w/ Provisioning"/>
         <property name="namespace" value="com.mycompany.example"/>
         <property name="description" value="This is a sample to test Identity Bus deployment facilities."/>
@@ -45,8 +45,8 @@
                 <property name="protocol" value="http"/>
                 <property name="host" value="localhost"/>
                 <property name="port" value="8081"/>
-                <property name="context" value="/IDBUS"/>
-                <property name="uri" value="/IDA2"/>
+                <property name="context" value="IDBUS"/>
+                <property name="uri" value="IDA2"/>
             </bean>
         </property>
 
@@ -106,8 +106,8 @@
                 <property name="protocol" value="http"/>
                 <property name="host" value="localhost"/>
                 <property name="port" value="8081"/>
-                <property name="context" value="/IDBUS"/>
-                <property name="uri" value="/IDA2/IDP1"/>
+                <property name="context" value="IDBUS"/>
+                <property name="uri" value="IDA2/IDP1"/>
             </bean>
         </property>
         
@@ -133,7 +133,7 @@
                         <property name="store">
                             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
                                 <property name="name" value="idp1-keystore"/>
-                                <property name="value" value="/tmp/iDA2/keystore.jks"/>
+                                <property name="value" value="/tmp/ida2/keystore.jks"/>
                             </bean>
                         </property>
 					</bean>
@@ -148,7 +148,7 @@
                         <property name="store">
                             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
                                 <property name="name" value="idp1-keystore"/>
-                                <property name="value" value="/tmp/iDA2/keystore.jks"/>
+                                <property name="value" value="/tmp/ida2/keystore.jks"/>
                             </bean>
                         </property>
 					</bean>
@@ -187,8 +187,8 @@
                 <property name="protocol" value="http"/>
                 <property name="host" value="localhost"/>
                 <property name="port" value="8081"/>
-                <property name="context" value="/IDBUS"/>
-                <property name="uri" value="/IDA2/SP1"/> 
+                <property name="context" value="IDBUS"/>
+                <property name="uri" value="IDA2/SP1"/> 
             </bean>
         </property>
 
@@ -212,7 +212,7 @@
                         <property name="store">
                             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
                                 <property name="name" value="sp1-keystore"/>
-                                <property name="value" value="/tmp/iDA2/keystore.jks"/>
+                                <property name="value" value="/tmp/ida2/keystore.jks"/>
                             </bean>
                         </property>
 
@@ -231,7 +231,7 @@
                         <property name="store">
                             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
                                 <property name="name" value="sp1-keystore"/>
-                                <property name="value" value="/tmp/iDA2/keystore.jks"/>
+                                <property name="value" value="/tmp/ida2/keystore.jks"/>
                             </bean>
                         </property>
 
@@ -307,7 +307,7 @@
         <property name="platformId" value="tc60"/>
         <property name="displayName" value="Execution Environment One"/>
         <property name="description" value="Test Execution Environment One"/>
-        <property name="installUri" value="/tmp/iDA2/apache-tomcat-6.0.29"/>
+        <property name="installUri" value="/tmp/ida2/apache-tomcat-6.0.29"/>
         <property name="activations">
             <set>
                 <ref bean="sp1-josso"/>

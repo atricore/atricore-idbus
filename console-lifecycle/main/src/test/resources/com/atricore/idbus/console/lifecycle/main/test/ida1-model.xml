@@ -45,8 +45,8 @@
                 <property name="protocol" value="http"/>
                 <property name="host" value="localhost"/>
                 <property name="port" value="8081"/>
-                <property name="context" value="/IDBUS"/>
-                <property name="uri" value="/IDA1"/>
+                <property name="context" value="IDBUS"/>
+                <property name="uri" value="IDA1"/>
             </bean>
         </property>
 
@@ -106,8 +106,8 @@
                 <property name="protocol" value="http"/>
                 <property name="host" value="localhost"/>
                 <property name="port" value="8081"/>
-                <property name="context" value="/IDBUS"/>
-                <property name="uri" value="/IDA1/IDP1"/>
+                <property name="context" value="IDBUS"/>
+                <property name="uri" value="IDA1/IDP1"/>
             </bean>
         </property>
 
@@ -187,8 +187,8 @@
                 <property name="protocol" value="http"/>
                 <property name="host" value="localhost"/>
                 <property name="port" value="8081"/>
-                <property name="context" value="/IDBUS"/>
-                <property name="uri" value="/IDA1/SP1"/>
+                <property name="context" value="IDBUS"/>
+                <property name="uri" value="IDA1/SP1"/>
             </bean>
         </property>
 

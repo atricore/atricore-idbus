@@ -10,7 +10,7 @@ import org.apache.felix.gogo.commands.Command;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "appliance", name = "displose", description = "Dispose Identity Appliance")
+@Command(scope = "appliance", name = "dispose", description = "Dispose Identity Appliance")
 public class DisposeApplianceCommand extends ManagementCommandSupport {
 
     @Argument(index = 0, name = "id", description = "The id of the identity appliance", required = true, multiValued = false)

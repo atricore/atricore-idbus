@@ -1314,7 +1314,7 @@ public class IdentityApplianceManagementServiceImpl implements
                         appliance = identityApplianceDAO.save(appliance);
 
                         logger.debug("Automatically Starting appliance ... " + appliance.getId());
-                        this.startAppliance(appliance);
+                        this.deployAppliance(appliance, false);
 
                     }
 
