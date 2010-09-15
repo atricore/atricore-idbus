@@ -38,7 +38,7 @@
         <mx:NumberValidator id="portValidator" source="{spLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{spLocationDomain}" required="true" property="text"/>
-        <utils:URLPartValidator id="pathValidator" source="{spLocationPath}" required="false" property="text"/>
+        <utils:URLMultipartValidator id="pathValidator" source="{spLocationPath}" required="false" property="text"/>
     </fx:Declarations>
 
     <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.endpoint')}" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
@@ -69,7 +69,7 @@
                 <s:TextInput id="spLocationDomain" width="150"/>
                 <s:Label text=":" width="10" paddingTop="5"/>
                 <s:TextInput id="spLocationPort" width="40"/>
-                <s:Label id="spLocationContext" text="/idbus/" width="45" paddingTop="5"/>
+                <s:Label id="spLocationContext" text="/idbus/" width="50" paddingTop="5"/>
                 <s:TextInput id="spLocationPath" width="180"/>
             </mx:FormItem>
         </mx:Form>

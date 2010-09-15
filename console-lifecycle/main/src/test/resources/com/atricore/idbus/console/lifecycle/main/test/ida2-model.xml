@@ -44,8 +44,8 @@
                 <property name="protocol" value="http"/>
                 <property name="host" value="localhost"/>
                 <property name="port" value="8081"/>
-                <property name="context" value="/IDBUS"/>
-                <property name="uri" value="/IDA2"/>
+                <property name="context" value="IDBUS"/>
+                <property name="uri" value="IDA2"/>
             </bean>
         </property>
 
@@ -105,8 +105,8 @@
                 <property name="protocol" value="http"/>
                 <property name="host" value="localhost"/>
                 <property name="port" value="8081"/>
-                <property name="context" value="/IDBUS"/>
-                <property name="uri" value="/IDA2/IDP1"/>
+                <property name="context" value="IDBUS"/>
+                <property name="uri" value="IDA2/IDP1"/>
             </bean>
         </property>
         
@@ -186,8 +186,8 @@
                 <property name="protocol" value="http"/>
                 <property name="host" value="localhost"/>
                 <property name="port" value="8081"/>
-                <property name="context" value="/IDBUS"/>
-                <property name="uri" value="/IDA2/SP1"/> 
+                <property name="context" value="IDBUS"/>
+                <property name="uri" value="IDA2/SP1"/>
             </bean>
         </property>
 
@@ -318,9 +318,9 @@
         <property name="name" value="idsource1"/>
         <property name="displayName" value="Identity Source One"/>
         <property name="description" value="Test Identity Source One"/>
-        <property name="idau" value="default-idau"/>
-        <property name="psp" value="default-psp"/>
-        <property name="pspTarget" value="default-pspTarget"/>
+        <property name="idau" value="idau-default"/>
+        <property name="psp" value="psp-default"/>
+        <property name="pspTarget" value="pst-default"/>
     </bean>
 
     <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer" id="customEditorConfigurer">

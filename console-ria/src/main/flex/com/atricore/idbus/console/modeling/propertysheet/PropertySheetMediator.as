@@ -278,7 +278,8 @@ public class PropertySheetMediator extends IocMediator {
             }
         }
         _iaCoreSection.applianceLocationDomain.text = location.host;
-        _iaCoreSection.applianceLocationPort.text = location.port.toString();
+        _iaCoreSection.applianceLocationPort.text = location.port.toString() != "0" ?
+                location.port.toString() : "";
         _iaCoreSection.applianceLocationPath.text = location.context;
 
         _iaCoreSection.applianceName.addEventListener(Event.CHANGE, handleSectionChange);
@@ -405,7 +406,8 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
             _ipCoreSection.idpLocationDomain.text = identityProvider.location.host;
-            _ipCoreSection.idpLocationPort.text = identityProvider.location.port.toString();
+            _ipCoreSection.idpLocationPort.text = identityProvider.location.port.toString() != "0" ?
+                    identityProvider.location.port.toString() : "";
             _ipCoreSection.idpLocationContext.text = "/" + identityProvider.location.context + "/";
             _ipCoreSection.idpLocationPath.text = identityProvider.location.uri;
 
@@ -615,7 +617,8 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
             _spCoreSection.spLocationDomain.text = serviceProvider.location.host;
-            _spCoreSection.spLocationPort.text = serviceProvider.location.port.toString();
+            _spCoreSection.spLocationPort.text = serviceProvider.location.port.toString() != "0" ?
+                    serviceProvider.location.port.toString() : "";
             _spCoreSection.spLocationContext.text = "/" + serviceProvider.location.context + "/";
             _spCoreSection.spLocationPath.text = serviceProvider.location.uri;
 
@@ -1833,7 +1836,8 @@ public class PropertySheetMediator extends IocMediator {
             }
         }
         _jossoActivationCoreSection.partnerAppLocationDomain.text = location.host;
-        _jossoActivationCoreSection.partnerAppLocationPort.text = location.port.toString();
+        _jossoActivationCoreSection.partnerAppLocationPort.text = location.port.toString() != "0" ?
+                location.port.toString() : "";
         _jossoActivationCoreSection.partnerAppLocationPath.text = location.context;
 
         var ignoredWebResources:String = "";
