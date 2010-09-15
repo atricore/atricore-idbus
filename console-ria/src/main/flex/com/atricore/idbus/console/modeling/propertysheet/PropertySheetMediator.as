@@ -269,6 +269,7 @@ public class PropertySheetMediator extends IocMediator {
         // bind view
         _iaCoreSection.applianceName.text = identityAppliance.idApplianceDefinition.name;
         _iaCoreSection.applianceDescription.text = identityAppliance.idApplianceDefinition.description;
+        _iaCoreSection.applianceNamespace.text = identityAppliance.idApplianceDefinition.namespace;
 
         var location:Location = identityAppliance.idApplianceDefinition.location;
         for (var i:int = 0; i < _iaCoreSection.applianceLocationProtocol.dataProvider.length; i++) {
@@ -284,6 +285,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _iaCoreSection.applianceName.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceDescription.addEventListener(Event.CHANGE, handleSectionChange);
+        _iaCoreSection.applianceNamespace.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
@@ -294,6 +296,7 @@ public class PropertySheetMediator extends IocMediator {
         _validators.push(_iaCoreSection.portValidator);
         _validators.push(_iaCoreSection.domainValidator);
         _validators.push(_iaCoreSection.pathValidator);
+        _validators.push(_iaCoreSection.namespaceValidator);
     }
 
     private function handleIdentityApplianceCorePropertyTabRollOut(e:Event):void {
@@ -306,6 +309,7 @@ public class PropertySheetMediator extends IocMediator {
 
             identityAppliance.idApplianceDefinition.name = _iaCoreSection.applianceName.text;
             identityAppliance.idApplianceDefinition.description = _iaCoreSection.applianceDescription.text;
+            identityAppliance.idApplianceDefinition.namespace = _iaCoreSection.applianceNamespace.text;
             identityAppliance.idApplianceDefinition.location.protocol = _iaCoreSection.applianceLocationProtocol.selectedItem.label;
             identityAppliance.idApplianceDefinition.location.host = _iaCoreSection.applianceLocationDomain.text;
             identityAppliance.idApplianceDefinition.location.port = parseInt(_iaCoreSection.applianceLocationPort.text);

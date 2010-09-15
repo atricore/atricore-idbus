@@ -632,7 +632,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
     private ProviderDTO createIdentityProvider(IdentityApplianceDefinitionDTO iad) {
         IdentityProviderDTO idp = new IdentityProviderDTO();
-        idp.setName(iad.getName() + " idp");
+        idp.setName(createUrlSafeString(iad.getName()) + "-idp");
         idp.setIdentityAppliance(iad);
 
         ServiceProviderChannelDTO spChannel = new ServiceProviderChannelDTO();

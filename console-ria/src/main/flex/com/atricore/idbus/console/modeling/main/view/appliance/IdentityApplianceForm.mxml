@@ -36,6 +36,8 @@
                             trigger="{btnSave}" triggerEvent="click"/>
         <utils:URLPartValidator id="pathValidator" source="{applianceLocationPath}" required="false" property="text"
                         trigger="{btnSave}" triggerEvent="click"/>
+        <utils:NamespaceValidator id="namespaceValidator" source="{applianceNamespace}" required="true" property="text" trigger="{btnSave}"
+                            triggerEvent="click"/>
     </fx:Declarations>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.name')}:" required="true">
@@ -46,9 +48,13 @@
         <s:TextArea id="applianceDescription" height="80"/>
     </mx:FormItem>
 
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.namespace')}:" required="true">
+        <s:TextInput id="applianceNamespace" width="245"/>
+    </mx:FormItem>
+
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.form.applianceLocation')}:"
                  direction="horizontal" required="true">
-        <s:DropDownList id="applianceLocationProtocol">
+        <s:DropDownList id="applianceLocationProtocol" width="70" selectedIndex="0">
             <mx:ArrayCollection>
                 <fx:Object label="http" data="http"/>
                 <fx:Object label="https" data="https"/>
