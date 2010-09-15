@@ -32,7 +32,7 @@
     <!--artifactId>idbus-server-java</artifactId-->
     <artifactId>console-services</artifactId>
     <packaging>jar</packaging>
-    <name>Atricore IDBus Console :: AJAX Services</name>
+    <name>Atricore Console :: AJAX Services</name>
 
 
     <properties>

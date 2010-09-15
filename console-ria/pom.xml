@@ -33,7 +33,7 @@
 
     <artifactId>console-ria</artifactId>
     <packaging>swf</packaging>
-    <name>Atricore IDBus Console :: Server Rich Internet Application (RIA)</name>
+    <name>Atricore Console :: Server Rich Internet Application (RIA)</name>
 
     <build>
         <sourceDirectory>src/main/flex</sourceDirectory>
