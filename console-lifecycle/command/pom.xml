@@ -30,7 +30,7 @@
     <artifactId>com.atricore.idbus.console.lifecycle.command</artifactId>
     <packaging>bundle</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>Atricore IDBus Console :: Lifecycle Commands</name>
+    <name>Atricore Console :: Lifecycle Commands</name>
 
     <description>
         Provides the Management Shell integration

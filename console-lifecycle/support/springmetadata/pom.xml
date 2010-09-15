@@ -32,7 +32,7 @@
     <!--artifactId>idbus-server-springmetadata</artifactId-->
     <artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>
     <packaging>jar</packaging>
-    <name>Atricore IDBus Console :: Lifecycle Spring MD</name>
+    <name>Atricore Console :: Lifecycle Spring MD</name>
 
     <properties>
         <spring.version>2.5.6.SEC01</spring.version>

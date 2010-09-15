@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
@@ -11,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
 import org.w3._2000._09.xmldsig_.X509DataType;
 import org.w3._2001._04.xmlenc_.EncryptionMethodType;
@@ -30,6 +32,10 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
     private static final Log logger = LogFactory.getLog(SamlR2IdPTransformer.class);
 
     private String baseSrcPath = "/org/atricore/idbus/examples/simplefederation/idau/";
+
+    private UUIDGenerator idGenerator = new UUIDGenerator();
+
+    private Keystore sampleKeystore;
 
     @Override
     public boolean accept(TransformEvent event) {
@@ -59,12 +65,14 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
         EntityDescriptorType entityDescriptor = new EntityDescriptorType();
-        entityDescriptor.setID("id9uvH6lD7oa2zwey0JzQcpzJrKXY");
+        // TODO : Take ID from provider entityId attribute (To be created)
+        entityDescriptor.setID(idGenerator.generateId());
         entityDescriptor.setEntityID(resolveLocationUrl(provider) + "/SAML2/MD");
 
         // AttributeAuthorityDescriptor
         AuthnAuthorityDescriptorType attributeAuthorityDescriptor = new AuthnAuthorityDescriptorType();
-        attributeAuthorityDescriptor.setID("idwGpHRH6meLr2hJ0Ko6fkMtSJ330");
+        // TODO : Take ID from provider entityId attribute (To be created)
+        attributeAuthorityDescriptor.setID(idGenerator.generateId());
         attributeAuthorityDescriptor.getProtocolSupportEnumeration().add("urn:oasis:names:tc:SAML:2.0:protocol");
 
         // authority signing key descriptor
@@ -73,16 +81,38 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
         KeyInfoType authoritySigningKeyInfo = new KeyInfoType();
         X509DataType authoritySigningX509Data = new X509DataType();
         String authoritySigningCertificate = ""; // TODO
-        if (cfg != null && cfg.getSigner() != null) {
+
+        Keystore signKs = null;
+        Keystore encryptKs = null;
+
+        if (cfg != null) {
+
+            signKs = cfg.getSigner();
+
+            if (signKs == null && cfg.isUseSampleStore()) {
+                logger.warn("Using Sample keystore for signing : " + cfg.getName());
+                signKs = sampleKeystore;
+            }
+
+            encryptKs = cfg.getEncrypter();
+            if (encryptKs == null && cfg.isUseSampleStore()) {
+                logger.warn("Using Sample keystore for encryption : " + cfg.getName());
+                encryptKs = sampleKeystore;
+            }
+
+        }
+            
+        if (signKs != null) {
             try {
-                byte[] keystore = cfg.getSigner().getStore().getValue();
+
+                byte[] keystore = signKs.getStore().getValue();
                 if (logger.isTraceEnabled())
-                    logger.trace("Keystore [" + cfg.getSigner().getStore().getName() + "] length " + keystore.length);
+                    logger.trace("Keystore [" + signKs.getStore().getName() + "] length " + keystore.length);
 
-                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(cfg.getSigner().getType()) ? "PKCS12" : "JKS");
-                ks.load(new ByteArrayInputStream(keystore), cfg.getSigner().getPassword().toCharArray());
+                KeyStore jks = KeyStore.getInstance("PKCS#12".equals(signKs.getType()) ? "PKCS12" : "JKS");
+                jks.load(new ByteArrayInputStream(keystore), signKs.getPassword().toCharArray());
 
-                Certificate signerCertificate = ks.getCertificate(cfg.getSigner().getCertificateAlias());
+                Certificate signerCertificate = jks.getCertificate(signKs.getCertificateAlias());
                 StringWriter writer = new StringWriter();
                 CipherUtil.writeBase64Encoded(writer, signerCertificate.getEncoded());
                 authoritySigningCertificate = writer.toString();
@@ -90,6 +120,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
                 throw new TransformException(e);
             }
         }
+
         JAXBElement jaxbAuthoritySigningX509Certificate = new JAXBElement(
                 new QName("http://www.w3.org/2000/09/xmldsig#", "X509Certificate"),
                 authoritySigningCertificate.getClass(), authoritySigningCertificate);
@@ -110,16 +141,17 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
         KeyInfoType authorityEncryptionKeyInfo = new KeyInfoType();
         X509DataType authorityEncryptionX509Data = new X509DataType();
         String authorityEncryptionCertificate = ""; // TODO
-        if (cfg != null && cfg.getEncrypter() != null) {
+        if (encryptKs != null) {
+
             try {
-                byte[] keystore = cfg.getEncrypter().getStore().getValue();
+                byte[] keystore = encryptKs.getStore().getValue();
                 if (logger.isTraceEnabled())
-                    logger.trace("Keystore [" + cfg.getEncrypter().getStore().getName() + "] length " + keystore.length);
+                    logger.trace("Keystore [" + encryptKs.getStore().getName() + "] length " + keystore.length);
 
-                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(cfg.getEncrypter().getType()) ? "PKCS12" : "JKS");
-                ks.load(new ByteArrayInputStream(keystore), cfg.getEncrypter().getPassword().toCharArray());
+                KeyStore jks = KeyStore.getInstance("PKCS#12".equals(encryptKs.getType()) ? "PKCS12" : "JKS");
+                jks.load(new ByteArrayInputStream(keystore), encryptKs.getPassword().toCharArray());
 
-                Certificate encrypterCertificate = ks.getCertificate(cfg.getEncrypter().getCertificateAlias());
+                Certificate encrypterCertificate = jks.getCertificate(encryptKs.getCertificateAlias());
                 StringWriter writer = new StringWriter();
                 CipherUtil.writeBase64Encoded(writer, encrypterCertificate.getEncoded());
                 authorityEncryptionCertificate = writer.toString();
@@ -172,12 +204,12 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
         KeyInfoType signingKeyInfo = new KeyInfoType();
         X509DataType signingX509Data = new X509DataType();
         String signingCertificate = "";
-        if (cfg != null && cfg.getSigner() != null) {
+        if (signKs != null) {
             try {
-                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(cfg.getSigner().getType()) ? "PKCS12" : "JKS");
-                byte[] keystore = cfg.getSigner().getStore().getValue();
-                ks.load(new ByteArrayInputStream(keystore), cfg.getSigner().getPassword().toCharArray());
-                Certificate signerCertificate = ks.getCertificate(cfg.getSigner().getCertificateAlias());
+                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(signKs.getType()) ? "PKCS12" : "JKS");
+                byte[] keystore = signKs.getStore().getValue();
+                ks.load(new ByteArrayInputStream(keystore), signKs.getPassword().toCharArray());
+                Certificate signerCertificate = ks.getCertificate(signKs.getCertificateAlias());
                 StringWriter writer = new StringWriter();
                 CipherUtil.writeBase64Encoded(writer, signerCertificate.getEncoded());
                 signingCertificate = writer.toString();
@@ -205,12 +237,12 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
         KeyInfoType encryptionKeyInfo = new KeyInfoType();
         X509DataType encryptionX509Data = new X509DataType();
         String encryptionCertificate = "";
-        if (cfg != null && cfg.getEncrypter() != null) {
+        if (encryptKs != null) {
             try {
-                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(cfg.getEncrypter().getType()) ? "PKCS12" : "JKS");
-                byte[] keystore = cfg.getEncrypter().getStore().getValue();
-                ks.load(new ByteArrayInputStream(keystore), cfg.getEncrypter().getPassword().toCharArray());
-                Certificate encrypterCertificate = ks.getCertificate(cfg.getEncrypter().getCertificateAlias());
+                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(encryptKs.getType()) ? "PKCS12" : "JKS");
+                byte[] keystore = encryptKs.getStore().getValue();
+                ks.load(new ByteArrayInputStream(keystore), encryptKs.getPassword().toCharArray());
+                Certificate encrypterCertificate = ks.getCertificate(encryptKs.getCertificateAlias());
                 StringWriter writer = new StringWriter();
                 CipherUtil.writeBase64Encoded(writer, encrypterCertificate.getEncoded());
                 encryptionCertificate = writer.toString();
@@ -326,5 +358,13 @@ public class SamlR2IdPTransformer extends AbstractTransformer {
         entityDescriptor.getContactPerson().add(contactPerson);
 
         return entityDescriptor;
+    }
+
+    public Keystore getSampleKeystore() {
+        return sampleKeystore;
+    }
+
+    public void setSampleKeystore(Keystore sampleKeystore) {
+        this.sampleKeystore = sampleKeystore;
     }
 }

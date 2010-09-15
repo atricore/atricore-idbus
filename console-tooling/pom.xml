@@ -34,7 +34,7 @@
     <groupId>com.atricore.idbus.console</groupId>
     <artifactId>console-tooling</artifactId>
     <packaging>jar</packaging>
-    <name>Atricore IDBus Console :: Tooling </name>
+    <name>Atricore Console :: Tooling </name>
 
     <dependencies>
 

@@ -37,6 +37,9 @@
 
     <bean id="svc" class="com.atricore.idbus.console.lifecycle.main.impl.IdentityApplianceManagementServiceImpl">
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
+        <property name="identityApplianceDeploymentDAO" ref="identityApplianceDeploymentDAO"/>
+        <property name="identityApplianceDefinitionDAO" ref="identityApplianceDefinitionDAO"/>
+        <property name="federatedConnectionDAO" ref="federatedConnectionDAO"/>
     </bean>
 
     <bean name="derby-network" class="org.atricore.idbus.bundles.apache.derby.OsgiNetworkServerControl" scope="singleton">
@@ -65,9 +68,22 @@
         <property name="persistenceManagerFactory" ref="pmfProxy"/>
     </bean>
 
+    <bean id="identityApplianceDeploymentDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityApplianceDeploymentDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="identityApplianceDefinitionDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityApplianceDefinitionDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="federatedConnectionDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.FederatedConnectionDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
     <bean id="identityApplianceDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityApplianceDAOImpl">
         <property name="persistenceManagerFactory" ref="pmfProxy"/>
     </bean>
+
 
     <bean name="jdoProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="location" value="classpath:datanucleus-tests.properties" />

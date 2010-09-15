@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider;
@@ -12,6 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
 import org.w3._2000._09.xmldsig_.X509DataType;
 import org.w3._2001._04.xmlenc_.EncryptionMethodType;
@@ -31,6 +33,10 @@ public class SamlR2SPTransformer extends AbstractTransformer {
     private static final Log logger = LogFactory.getLog(SamlR2SPTransformer.class);
 
     private String baseSrcPath = "/org/atricore/idbus/examples/simplefederation/idau/";
+
+    private UUIDGenerator idGenerator = new UUIDGenerator();
+
+    private Keystore sampleKeystore;
 
     @Override
     public boolean accept(TransformEvent event) {
@@ -61,12 +67,14 @@ public class SamlR2SPTransformer extends AbstractTransformer {
         Location location = provider.getLocation();
 
         EntityDescriptorType entityDescriptor = new EntityDescriptorType();
-        entityDescriptor.setID("id9uvH6lD7oa2zwey0JzQcpzJrKXY");
+        // TODO : Take ID from provider entityId attribute (To be created)
+        entityDescriptor.setID(idGenerator.generateId());
         entityDescriptor.setEntityID(resolveLocationUrl(location) + "/SAML2/MD");
 
         // SPSSODescriptor
         SPSSODescriptorType spSSODescriptor = new SPSSODescriptorType();
-        spSSODescriptor.setID("idsiTQt8tvgZMyPbRy0I81GDTSncM");
+        // TODO : Take ID from provider entityId attribute (To be created)
+        spSSODescriptor.setID(idGenerator.generateId());
         spSSODescriptor.getProtocolSupportEnumeration().add("urn:oasis:names:tc:SAML:2.0:protocol");
 
         // signing key descriptor
@@ -75,12 +83,33 @@ public class SamlR2SPTransformer extends AbstractTransformer {
         KeyInfoType signingKeyInfo = new KeyInfoType();
         X509DataType signingX509Data = new X509DataType();
         String signingCertificate = "";
-        if (cfg != null && cfg.getSigner() != null) {
+
+        Keystore signKs = null;
+        Keystore encryptKs = null;
+
+        if (cfg != null) {
+
+            signKs = cfg.getSigner();
+
+            if (signKs == null && cfg.isUseSampleStore()) {
+                logger.warn("Using Sample keystore for signing : " + cfg.getName());
+                signKs = sampleKeystore;
+            }
+
+            encryptKs = cfg.getEncrypter();
+            if (encryptKs == null && cfg.isUseSampleStore()) {
+                logger.warn("Using Sample keystore for encryption : " + cfg.getName());
+                encryptKs = sampleKeystore;
+            }
+
+        }
+
+        if (signKs != null) {
             try {
-                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(cfg.getSigner().getType()) ? "PKCS12" : "JKS");
-                byte[] keystore = cfg.getSigner().getStore().getValue();
-                ks.load(new ByteArrayInputStream(keystore), cfg.getSigner().getPassword().toCharArray());
-                Certificate signerCertificate = ks.getCertificate(cfg.getSigner().getCertificateAlias());
+                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(signKs.getType()) ? "PKCS12" : "JKS");
+                byte[] keystore = signKs.getStore().getValue();
+                ks.load(new ByteArrayInputStream(keystore), signKs.getPassword().toCharArray());
+                Certificate signerCertificate = ks.getCertificate(signKs.getCertificateAlias());
                 StringWriter writer = new StringWriter();
                 CipherUtil.writeBase64Encoded(writer, signerCertificate.getEncoded());
                 signingCertificate = writer.toString();
@@ -108,12 +137,12 @@ public class SamlR2SPTransformer extends AbstractTransformer {
         KeyInfoType encryptionKeyInfo = new KeyInfoType();
         X509DataType encryptionX509Data = new X509DataType();
         String encryptionCertificate = "";
-        if (cfg != null && cfg.getEncrypter() != null) {
+        if (encryptKs != null) {
             try {
-                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(cfg.getEncrypter().getType()) ? "PKCS12" : "JKS");
-                byte[] keystore = cfg.getEncrypter().getStore().getValue();
-                ks.load(new ByteArrayInputStream(keystore), cfg.getEncrypter().getPassword().toCharArray());
-                Certificate encrypterCertificate = ks.getCertificate(cfg.getEncrypter().getCertificateAlias());
+                KeyStore ks = KeyStore.getInstance("PKCS#12".equals(encryptKs.getType()) ? "PKCS12" : "JKS");
+                byte[] keystore = encryptKs.getStore().getValue();
+                ks.load(new ByteArrayInputStream(keystore), encryptKs.getPassword().toCharArray());
+                Certificate encrypterCertificate = ks.getCertificate(encryptKs.getCertificateAlias());
                 StringWriter writer = new StringWriter();
                 CipherUtil.writeBase64Encoded(writer, encrypterCertificate.getEncoded());
                 encryptionCertificate = writer.toString();
@@ -216,5 +245,13 @@ public class SamlR2SPTransformer extends AbstractTransformer {
         entityDescriptor.getContactPerson().add(contactPerson);
 
         return entityDescriptor;
+    }
+
+    public Keystore getSampleKeystore() {
+        return sampleKeystore;
+    }
+
+    public void setSampleKeystore(Keystore sampleKeystore) {
+        this.sampleKeystore = sampleKeystore;
     }
 }

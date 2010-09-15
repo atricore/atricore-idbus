@@ -56,6 +56,22 @@
             </completers>
         </command>
 
+        <command name="appliance/disponse">
+            <action class="com.atricore.idbus.console.lifecycle.command.DisponseApplianceCommand"/>
+            <completers>
+                <ref component-id="undeployApplianceCompleter" />
+            </completers>
+        </command>
+
+
+        <command name="appliance/remove">
+            <action class="com.atricore.idbus.console.lifecycle.command.RemoveApplianceCommand"/>
+            <completers>
+                <ref component-id="undeployApplianceCompleter" />
+            </completers>
+        </command>
+
+
         <command name="appliance/start">
             <action class="com.atricore.idbus.console.lifecycle.command.StartApplianceCommand"/>
             <completers>

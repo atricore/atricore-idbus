@@ -116,6 +116,19 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;  
     }
 
+    public void arrive(XmlIdentitySource node) throws Exception {
+
+    }
+
+    public Object[] leave(XmlIdentitySource node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(XmlIdentitySource node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+
     public void arrive(JOSSOActivation node) throws Exception {
         
     }

@@ -109,11 +109,11 @@
             <field name="authenticationMechanisms" table="ATC_SP_AUTHN_MECHANISM"/>
         </class>
         <class name="ServiceProviderChannel" table="ATC_SP_CHANNEL"/>
-        <class name="TomcatExecutionEnvironmetn" table="ATC_TOMCAT_EXECENV"/>
+        <class name="TomcatExecutionEnvironment" table="ATC_TOMCAT_EXECENV"/>
         <class name="WASCEExecutionEnvironment" table="ATC_WASCE_EXECENV"/>
         <class name="WeblogicExecutionEnvironment" table="ATC_WEBLOGIC_EXECENV"/>
         <class name="XmlIdentitySource" table="ATC_XML_ID_SOURCE"/>
-        <class name="ApacheExecutionEnvironmetn" table="ATC_APACHE_EXECENV"/>
-        <class name="WindowsIISExecutionEnvironmetn" table="ATC_WINDOWS_EXECENV"/>
+        <class name="ApacheExecutionEnvironment" table="ATC_APACHE_EXECENV"/>
+        <class name="WindowsIISExecutionEnvironment" table="ATC_WINDOWS_EXECENV"/>
     </package>
 </orm>

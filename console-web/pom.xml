@@ -32,7 +32,7 @@
     <!--artifactId>idbus-server-web</artifactId-->
     <artifactId>com.atricore.idbus.console.web</artifactId>
     <packaging>war</packaging>
-    <name>Atricore IDBus Console :: Web distribution</name>
+    <name>Atricore Console :: Web distribution</name>
 
     <build>
         <plugins>

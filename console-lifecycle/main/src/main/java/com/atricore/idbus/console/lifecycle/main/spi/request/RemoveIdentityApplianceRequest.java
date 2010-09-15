@@ -8,13 +8,13 @@ import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 
 public class RemoveIdentityApplianceRequest extends AbstractManagementRequest {
 
-    private IdentityAppliance identityAppliance;
+    private String applianceId;
 
-    public IdentityAppliance getIdentityAppliance() {
-        return identityAppliance;
+    public String getApplianceId() {
+        return applianceId;
     }
 
-    public void setIdentityAppliance(IdentityAppliance identityAppliance) {
-        this.identityAppliance = identityAppliance;
+    public void setApplianceId(String applianceId) {
+        this.applianceId = applianceId;
     }
 }

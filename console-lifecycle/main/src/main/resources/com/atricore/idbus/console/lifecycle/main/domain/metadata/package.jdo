@@ -166,8 +166,8 @@
         
         <class name="IdentityLookup" detachable="true">
             <inheritance strategy="new-table"/>
-            <field name="identitySource" default-fetch-group="true"/>
-            <field name="provider" default-fetch-group="true"  />
+            <field name="identitySource" default-fetch-group="true" delete-action="null"/>
+            <field name="provider" default-fetch-group="true"  delete-action="null"/>
         </class>
 
         <class name="IdentityProvider" detachable="true">
@@ -176,10 +176,9 @@
             <field name="authenticationContract" default-fetch-group="true" />
             <field name="emissionPolicy" default-fetch-group="true" />
 
-            <field name="authenticationMechanisms" default-fetch-group="true" persistence-modifier="persistent">
+            <field name="authenticationMechanisms" default-fetch-group="true" persistence-modifier="persistent" >
                 <join delete-action="cascade"/>
             </field>
-
         </class>
 
         <class name="IdentityProviderChannel" detachable="true">
@@ -212,7 +211,7 @@
 
         <class name="JOSSOActivation" detachable="true">
             <inheritance strategy="new-table"/>
-            <field name="partnerAppLocation" default-fetch-group="true"/>
+            <field name="partnerAppLocation" default-fetch-group="true" dependent="true"/>
             <field name="ignoredWebResources" default-fetch-group="true"/>
         </class>
 
@@ -294,7 +293,7 @@
             <field name="accountLinkagePolicy" default-fetch-group="true" />
             <field name="authenticationContract" default-fetch-group="true" />
 
-            <field name="authenticationMechanisms" default-fetch-group="true" persistence-modifier="persistent">
+            <field name="authenticationMechanisms" default-fetch-group="true" persistence-modifier="persistent" >
                 <join delete-action="cascade"/>
             </field>
         </class>

@@ -32,7 +32,7 @@
     <artifactId>console-lib</artifactId>
     <packaging>swc</packaging>
 
-    <name>Atricore IDBus Console :: Server Libraries</name>
+    <name>Atricore Console :: Server Libraries</name>
 
     <build>
         <sourceDirectory>src/main/flex</sourceDirectory>

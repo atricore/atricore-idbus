@@ -32,6 +32,7 @@ import com.atricore.idbus.console.activation.main.spi.response.ActivateSamplesRe
 import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentResponse;
 import com.atricore.idbus.console.activation.main.spi.response.PlatformSupportedResponse;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.dao.*;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
@@ -75,7 +76,11 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private IdentityApplianceDefinitionDAO identityApplianceDefinitionDAO;
 
+    private IdentityApplianceDeploymentDAO identityApplianceDeploymentDAO;
+
     private IdentitySourceDAO identitySourceDAO;
+
+    private FederatedConnectionDAO federatedConnectionDAO;
 
     private UserInformationLookupDAO userInformationLookupDAO;
 
@@ -406,9 +411,11 @@ public class IdentityApplianceManagementServiceImpl implements
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
             if (logger.isTraceEnabled())
                 logger.trace("Adding appliance " + applianceDef.getName());
-            
+
             applianceDef.setRevision(1);
             applianceDef.setLastModification(new Date());
+
+            appliance.setState(IdentityApplianceState.PROJECTED.toString());
 
             if (appliance.getIdApplianceDeployment() != null) {
                 logger.warn("New appliances should not have deployment information!");
@@ -437,14 +444,28 @@ public class IdentityApplianceManagementServiceImpl implements
 
             syncAppliances();
             IdentityAppliance appliance = request.getAppliance();
+
+            if (appliance.getId() < 1) {
+                throw new IdentityServerException("Appliance instance has invalid ID " + appliance.getId() + ", is it new ?" );
+            }
+
+
+            // Make sure that the appliance exists!
+            if (!identityApplianceDAO.exists(appliance.getId()))
+                throw new ApplianceNotFoundException(appliance.getId());
+
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
             applianceDef.setLastModification(new Date());
             applianceDef.setRevision(applianceDef.getRevision() + 1);
+
+
 
             appliance = identityApplianceDAO.save(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, 7);
 
             res = new UpdateIdentityApplianceResponse(appliance);
+
+
         } catch (Exception e){
 	        logger.error("Error updating identity appliance", e);
 	        throw new IdentityServerException(e);
@@ -472,17 +493,12 @@ public class IdentityApplianceManagementServiceImpl implements
     public RemoveIdentityApplianceResponse removeIdentityAppliance(RemoveIdentityApplianceRequest req) throws IdentityServerException{
         try {
             syncAppliances();
-            //First delete deployment data to prevent reference error when deleting providers
-            IdentityAppliance appliance = req.getIdentityAppliance();
-            appliance.setIdApplianceDeployment(null);
-            appliance = identityApplianceDAO.save(appliance);
-            
-            //Next, delete providers (and channels with them) to prevent reference error when performing cascade-delete on vaults (while deleting appliance)
-            appliance.getIdApplianceDefinition().setProviders(null);
-            appliance = identityApplianceDAO.save(appliance);
+            if (!identityApplianceDAO.exists(Long.parseLong(req.getApplianceId())))
+                throw new ApplianceNotFoundException(Long.parseLong(req.getApplianceId()));
 
-            //After that delete the appliance
-            this.remove(appliance);
+            IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(req.getApplianceId()));
+            removeAppliance(appliance);
+
             RemoveIdentityApplianceResponse res = new RemoveIdentityApplianceResponse();
             return res;
         } catch (Exception e){
@@ -856,6 +872,14 @@ public class IdentityApplianceManagementServiceImpl implements
         this.identityApplianceDefinitionDAO = identityApplianceDefinitionDAO;
     }
 
+    public IdentityApplianceDeploymentDAO getIdentityApplianceDeploymentDAO() {
+        return identityApplianceDeploymentDAO;
+    }
+
+    public void setIdentityApplianceDeploymentDAO(IdentityApplianceDeploymentDAO identityApplianceDeploymentDAO) {
+        this.identityApplianceDeploymentDAO = identityApplianceDeploymentDAO;
+    }
+
     public IdentitySourceDAO getIdentitySourceDAO() {
         return identitySourceDAO;
     }
@@ -870,6 +894,14 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setUserInformationLookupDAO(UserInformationLookupDAO userInformationLookupDAO) {
         this.userInformationLookupDAO = userInformationLookupDAO;
+    }
+
+    public FederatedConnectionDAO getFederatedConnectionDAO() {
+        return federatedConnectionDAO;
+    }
+
+    public void setFederatedConnectionDAO(FederatedConnectionDAO federatedConnectionDAO) {
+        this.federatedConnectionDAO = federatedConnectionDAO;
     }
 
     public AccountLinkagePolicyDAO getAccountLinkagePolicyDAO() {
@@ -1082,7 +1114,6 @@ public class IdentityApplianceManagementServiceImpl implements
         if (logger.isDebugEnabled())
             logger.debug("Undeploying Identity Appliance " + appliance.getId());
 
-
         if (appliance.getState().equals(IdentityApplianceState.STARTED.toString()))
             appliance = stopAppliance(appliance);
 
@@ -1099,21 +1130,63 @@ public class IdentityApplianceManagementServiceImpl implements
         if (logger.isDebugEnabled())
             logger.debug("Disposing Identity Appliance " + appliance.getId());
 
-        appliance = undeployAppliance(appliance);
+        if (appliance.getState().equals(IdentityApplianceState.STARTED.toString()))
+            appliance = stopAppliance(appliance);
+
+        if (appliance.getState().equals(IdentityApplianceState.DEPLOYED.toString()))
+            appliance = undeployAppliance(appliance);
+
         appliance.setState(IdentityApplianceState.DISPOSED.toString());
         appliance = identityApplianceDAO.save(appliance);
 
         return appliance;
     }
 
-    protected void remove(IdentityAppliance appliance) throws IdentityServerException {
+    protected void removeAppliance(IdentityAppliance appliance) throws IdentityServerException {
+
         try {
-        	logger.debug("Deleting identity appliance with id: " + appliance.getId());
+            if (logger.isDebugEnabled())
+                logger.debug("Deleting Identity Appliance " + appliance.getId());
+
+            if (!appliance.getState().equals(IdentityApplianceState.DISPOSED.toString()))
+                throw new IllegalStateException("Appliance in state " + appliance.getState() + " cannot be deleted");
+
+            IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
+            IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
+
+            if (applianceDep != null)
+                identityApplianceDeploymentDAO.delete(applianceDep.getId());
+
+            appliance.setIdApplianceDeployment(null);
+
+            Set<Long> fcIds = new HashSet<Long>();
+            for (Provider p : applianceDef.getProviders()) {
+
+                if (p instanceof FederatedProvider) {
+                    FederatedProvider fp = (FederatedProvider) p;
+                    for (FederatedConnection fcA : fp.getFederatedConnectionsA()) {
+                        fcIds.add(fcA.getId());
+                    }
+
+                    for (FederatedConnection fcB : fp.getFederatedConnectionsB()) {
+                        fcIds.add(fcB.getId());
+                    }
+                    fp.getFederatedConnectionsA().clear();
+                    fp.getFederatedConnectionsB().clear();
+                }
+            }
+
+            for (Long id : fcIds) {
+                federatedConnectionDAO.delete(id);
+            }
+
             identityApplianceDAO.delete(appliance.getId());
-        } catch (Exception e){
-            logger.error("Error removing a Identity Appliance",e);
-            throw new IdentityServerException(e);
+
+        } catch (Exception e) {
+            logger.error("Cannot delete identity appliance " + appliance.getId());
+            throw new IdentityServerException("Cannot delete identity appliance " + appliance.getId() + " : " + e.getMessage(), e);
         }
+
     }
 
     protected IdentityAppliance deployAppliance(IdentityAppliance appliance, boolean configureExecEnvs) throws IdentityServerException {

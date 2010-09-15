@@ -40,7 +40,7 @@
 
         <class name="IdentityApplianceUnit" detachable="true">
             <field name="id" value-strategy="native" primary-key="true"/>
-            <field name="providers" default-fetch-group="true">
+            <field name="providers" default-fetch-group="true" delete-action="none">
                 <join/>
             </field>                
         </class>
