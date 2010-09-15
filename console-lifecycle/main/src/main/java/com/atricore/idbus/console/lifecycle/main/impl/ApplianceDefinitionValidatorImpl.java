@@ -77,6 +77,13 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
             }
         }
 
+        if (node.getAuthenticationMechanisms() == null || node.getAuthenticationMechanisms().size() < 1) {
+            addError("Serivce Provider needs at least one Authentication Mechanism");
+        }
+
+        if (node.getIdentityLookup() == null)
+            addError("Serivce Provider needs an Indentity Lookup connection");
+
         // TODO !
     }
 
@@ -166,6 +173,10 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
             }
         }
 
+        if (node.getIdentitySource() == null) {
+            addError("Identity Lookup " + node.getName() + " Identity Source cannot be null");
+        }
+
     }
 
     @Override
@@ -228,15 +239,30 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
         // TODO !
     }
 
-    /*
     @Override
-    public void arrive(XMLIdentitySource node) throws Exception {
+    public void arrive(XmlIdentitySource node) throws Exception {
         validateDisplayName("XML Identity Source name" , node.getName());
         validateDisplayName("XML Identity Source display name" , node.getDisplayName());
 
-        // TODO !
+        if (node.getXmlUrl() == null)
+            addError("XML Idenity Source must define a XML Url");
     }
-    */
+
+
+    @Override
+    public void arrive(ServiceProviderChannel node) throws Exception {
+        if (node.isOverrideProviderSetup())
+            validateLocation("Serivce Provider channel ", node.getLocation());
+    }
+
+    @Override
+    public void arrive(IdentityProviderChannel node) throws Exception {
+        if (node.isOverrideProviderSetup())
+            validateLocation("Identity Provider channel ", node.getLocation());
+    }
+
+
+
 
     // ---------------------------------------------------------------------
     // UTILS
@@ -307,9 +333,24 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
 
         if (location.getContext() == null)
             addError(propertyName + " location context cannot be null");
+        else {
+            if (location.getContext().startsWith("/"))
+                addError(propertyName + " location context must be relative (do not start it with '/'");
 
-        if (validateUri && location.getUri() == null)
-            addError(propertyName +" location URI cannot be null");
+            if (location.getContext().lastIndexOf("/") > 1)
+                addError(propertyName + " location context must not be a path (do not use '/')");
+
+        }
+
+        if (validateUri) {
+            if (location.getUri() == null)
+                addError(propertyName + " location URI cannot be null");
+            else if (location.getUri().startsWith("/"))
+                addError(propertyName + " location URI must be relative (do not start it with '/'");
+        }
+
+
+
 
     }
 

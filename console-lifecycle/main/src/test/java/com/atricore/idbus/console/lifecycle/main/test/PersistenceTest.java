@@ -26,7 +26,13 @@ import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeploym
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
 import com.atricore.idbus.console.lifecycle.main.spi.request.AddIdentityApplianceRequest;
+import com.atricore.idbus.console.lifecycle.main.spi.request.DisposeIdentityApplianceRequest;
+import com.atricore.idbus.console.lifecycle.main.spi.request.RemoveIdentityApplianceRequest;
+import com.atricore.idbus.console.lifecycle.main.spi.request.UpdateIdentityApplianceRequest;
 import com.atricore.idbus.console.lifecycle.main.spi.response.AddIdentityApplianceResponse;
+import com.atricore.idbus.console.lifecycle.main.spi.response.DisposeIdentityApplianceResponse;
+import com.atricore.idbus.console.lifecycle.main.spi.response.RemoveIdentityApplianceResponse;
+import com.atricore.idbus.console.lifecycle.main.spi.response.UpdateIdentityApplianceResponse;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -78,8 +84,8 @@ public class PersistenceTest {
     public void tearDownTest() {
     }
 
-    @Test
-    public void testPersistApliance() throws Exception{
+    //@Test
+    public void testAddAppliance() throws Exception{
 
         IdentityAppliance ida1 = newApplianceInstance("ida1");
 
@@ -94,6 +100,58 @@ public class PersistenceTest {
         // Let's check that we get what we sent !
         assertAppliancesAreEqual(ida1, ida1Test, true);
     }
+
+    //@Test
+    public void testUpdaetAppliance() throws Exception {
+        IdentityAppliance ida1 = newApplianceInstance("ida1");
+
+        AddIdentityApplianceRequest addReq = new AddIdentityApplianceRequest();
+        addReq.setIdentityAppliance(ida1);
+
+        AddIdentityApplianceResponse addRes =  svc.addIdentityAppliance(addReq);
+        IdentityAppliance ida1Test = addRes.getAppliance();
+
+        ida1 = newApplianceInstance("ida1");
+
+        UpdateIdentityApplianceRequest updReq = new UpdateIdentityApplianceRequest();
+        updReq.setAppliance(ida1Test);
+
+        UpdateIdentityApplianceResponse updRes = svc.updateIdentityAppliance(updReq);
+        ida1Test = updRes.getAppliance();
+
+        // Let's check that we get what we sent !
+        assertAppliancesAreEqual(ida1, ida1Test, true);
+
+    }
+
+    @Test
+    public void testDeleteAppliance() throws Exception{
+
+        IdentityAppliance ida1 = newApplianceInstance("ida1");
+
+        AddIdentityApplianceRequest req = new AddIdentityApplianceRequest();
+        req.setIdentityAppliance(ida1);
+
+        AddIdentityApplianceResponse res =  svc.addIdentityAppliance(req);
+        IdentityAppliance ida1Test = res.getAppliance();
+
+        ida1 = newApplianceInstance("ida1");
+
+        // Let's check that we get what we sent !
+        assertAppliancesAreEqual(ida1, ida1Test, true);
+
+
+        DisposeIdentityApplianceRequest disposeReq = new DisposeIdentityApplianceRequest();
+        disposeReq.setId(ida1Test.getId() + "");
+        DisposeIdentityApplianceResponse disposeRes = svc.disposeIdentityAppliance(disposeReq);
+
+        RemoveIdentityApplianceRequest removeReq = new RemoveIdentityApplianceRequest();
+        removeReq.setApplianceId(ida1Test.getId() + "");
+
+        RemoveIdentityApplianceResponse removeRes = svc.removeIdentityAppliance(removeReq);
+
+    }
+
 
     /*
     @Test
@@ -475,7 +533,9 @@ public class PersistenceTest {
         TestCase.assertEquals(dbOriginal.getName(), dbTest.getName());
         TestCase.assertEquals(dbOriginal.getAdmin(), dbTest.getAdmin());
         TestCase.assertEquals(dbOriginal.getPassword(), dbTest.getPassword());
-        TestCase.assertEquals(dbOriginal.getPort(), dbTest.getPort());
+        TestCase.assertEquals(dbOriginal.getConnectionUrl(), dbTest.getConnectionUrl());
+
+        // TODO : Queries
     }
 
     protected void assertConfigsAreEqual(ProviderConfig original, ProviderConfig test, boolean ignoreIds) {

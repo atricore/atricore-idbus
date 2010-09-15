@@ -10,6 +10,7 @@ public class SamlR2ProviderConfig extends AbstractProviderConfig {
 
     private Keystore encrypter;
     private static final long serialVersionUID = 8401310209898123598L;
+    private boolean useSampleStore;
 
     public Keystore getSigner() {
         return signer;
@@ -25,5 +26,9 @@ public class SamlR2ProviderConfig extends AbstractProviderConfig {
 
     public void setEncrypter(Keystore encrypter) {
         this.encrypter = encrypter;
+    }
+
+    public boolean isUseSampleStore() {
+        return useSampleStore;
     }
 }

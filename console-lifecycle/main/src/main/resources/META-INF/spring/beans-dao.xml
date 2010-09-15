@@ -152,4 +152,9 @@
         <property name="persistenceManagerFactory" ref="pmfProxy"/>
     </bean>
 
+    <bean id="federatedConnectionDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.FederatedConnectionDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+
 </beans>

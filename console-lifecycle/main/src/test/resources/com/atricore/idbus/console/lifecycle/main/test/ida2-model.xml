@@ -24,6 +24,7 @@
 
     <bean name="ida1" class="com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance" scope="prototype">
         <property name="idApplianceDefinition" ref="idApplianceDef1"/>
+        <property name="state" value="PROJECTED"/>
     </bean>
 
     <!-- =========================================== -->
