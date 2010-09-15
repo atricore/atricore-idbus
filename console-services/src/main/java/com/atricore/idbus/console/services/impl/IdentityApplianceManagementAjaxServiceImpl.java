@@ -330,23 +330,11 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest beLookupReq =
                 new  com.atricore.idbus.console.lifecycle.main.spi.request.LookupIdentityApplianceByIdRequest();
 
-        beLookupReq.setIdentityApplianceId(new Long(req.getIdentityAppliance().getId()).toString());
-
-        com.atricore.idbus.console.lifecycle.main.spi.response.LookupIdentityApplianceByIdResponse beLookupRes =
-                null;
-        try {
-            beLookupRes = idApplianceManagementService.lookupIdentityApplianceById(beLookupReq);
-        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
-            throw new IdentityServerException(e);
-        }
-
-        IdentityAppliance foundAppliance = beLookupRes.getIdentityAppliance();
-
         //Prepare Request object for calling BE updateIdentityAppliance method
         com.atricore.idbus.console.lifecycle.main.spi.request.RemoveIdentityApplianceRequest beReq =
                 new com.atricore.idbus.console.lifecycle.main.spi.request.RemoveIdentityApplianceRequest();
 
-        beReq.setIdentityAppliance(foundAppliance);
+        beReq.setApplianceId(new Long(req.getIdentityAppliance().getId()).toString());
 
         com.atricore.idbus.console.lifecycle.main.spi.response.RemoveIdentityApplianceResponse beRes = null;
         try {
