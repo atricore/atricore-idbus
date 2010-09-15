@@ -36,6 +36,8 @@ public class SpmlR2ServiceListener {
 
                 if (svc instanceof UserProvisioningAjaxService)
                     ((UserProvisioningAjaxServiceImpl)svc).setSpmlService(spml);
+                else if (svc instanceof SignOnAjaxServiceImpl)
+                    ((SignOnAjaxServiceImpl)svc).setSpmlService(spml);
                 else if (svc instanceof ProfileManagementAjaxServiceImpl)
                     ((ProfileManagementAjaxServiceImpl)svc).setSpmlService(spml);
             }
@@ -53,6 +55,8 @@ public class SpmlR2ServiceListener {
 
                 if (svc instanceof UserProvisioningAjaxService)
                     ((UserProvisioningAjaxServiceImpl)svc).setSpmlService(null);
+                else if (svc instanceof SignOnAjaxServiceImpl)
+                    ((SignOnAjaxServiceImpl)svc).setSpmlService(null);
                 else if (svc instanceof ProfileManagementAjaxServiceImpl)
                     ((ProfileManagementAjaxServiceImpl)svc).setSpmlService(null);
             }

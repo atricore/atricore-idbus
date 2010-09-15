@@ -85,7 +85,7 @@ public class ApplicationMediator extends IocMediator {
     }
 
     public function set accountManagementMediator(value:IIocMediator):void {
-          _accountManagementMediator = value;
+        _accountManagementMediator = value;
     }
 
     public function get popupManager():ConsolePopUpManager {
@@ -235,12 +235,13 @@ public class ApplicationMediator extends IocMediator {
 
         app.stackButtonBar.addEventListener(IndexChangeEvent.CHANGE, handleStackChange);
         app.stackButtonBar.selectedIndex = 0;
-        app.userActionMenuBar.dataProvider.source[0].@label = _secureContextProxy.currentUser.userName;
+        if (_secureContextProxy.currentUser != null)
+            app.userActionMenuBar.dataProvider.source[0].@label = _secureContextProxy.currentUser.commonName;
         app.userActionMenuBar.addEventListener(MenuEvent.ITEM_CLICK, handleUserMenuAction)
     }
 
     public function logout():void {
-       _secureContextProxy.logout();
+        _secureContextProxy.logout();
         // TODO: cleanup proxyies holding for instance appliance state
     }
 

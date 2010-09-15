@@ -77,10 +77,14 @@ public class LoginCommand extends IocSimpleCommand implements IResponder
         var signOnResponse:SignOnResponse = data.result as SignOnResponse;
         var user:User = signOnResponse.authenticatedUser;
         secureContext.currentUser = user;
+        /*
         if (secureContext.currentUser !=null)
             sendNotification(SUCCESS);
         else
             sendNotification(FAILURE);
+        */
+        sendNotification(SUCCESS);
+
     }
 
     public function fault(info:Object):void {
