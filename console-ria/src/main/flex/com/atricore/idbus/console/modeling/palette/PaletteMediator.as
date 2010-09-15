@@ -75,14 +75,6 @@ public class PaletteMediator extends IocMediator {
                     new PaletteEntry("Service Provider", EmbeddedIcons.spMiniIcon, "Service Provider Entry", DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE)
 
                 );
-        saml2PaletteDrawer.add(
-                    new PaletteEntry("IDP Channel", EmbeddedIcons.idpChannelMiniIcon, "Identity Provider Channel Entry", DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE)
-
-                );
-        saml2PaletteDrawer.add(
-                    new PaletteEntry("SP Channel", EmbeddedIcons.spChannelMiniIcon, "Service Provider Channel Entry", DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE)
-
-                );
 
         var pr:PaletteRoot  = new PaletteRoot("Identity Appliance Modeler Palette", null, null);
         pr.add(saml2PaletteDrawer);

@@ -12,9 +12,13 @@
                 chkBox.selected = data.isSelected;
                 chkBox.label = data.label;
             }
+
+        protected function chkBoxClicked(event:Event):void {
+            data.isSelected = chkBox.selected;
+        }
         ]]>
     </fx:Script>
 
-    <s:CheckBox id="chkBox" left="3" right="3" top="5" bottom="5" />
+    <s:CheckBox id="chkBox" left="3" right="3" top="5" bottom="5" change="chkBoxClicked(event)" />
 
 </s:ItemRenderer>
