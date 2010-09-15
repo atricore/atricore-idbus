@@ -13,7 +13,6 @@ import com.atricore.idbus.console.services.spi.response.SignOutResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
-import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -78,7 +77,7 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService {
         this.usrProvService = usrProvService;
     }
 
-    protected String createPasswordHash(String password) throws ProvisioningException {
+    protected String createPasswordHash(String password) throws SignOnException {
 
         // If none of this properties are set, do nothing ...
         if (getHashAlgorithm() == null && getHashEncoding() == null) {
@@ -150,9 +149,9 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService {
     /**
      * Only invoke this if algorithm is set.
      *
-     * @throws ProvisioningException
+     * @throws SignOnException
      */
-    protected MessageDigest getDigest() throws ProvisioningException {
+    protected MessageDigest getDigest() throws SignOnException {
 
         MessageDigest digest = null;
         if (hashAlgorithm != null) {
@@ -162,7 +161,7 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService {
                 logger.debug("Using hash algorithm/encoding : " + hashAlgorithm + "/" + hashEncoding);
             } catch (NoSuchAlgorithmException e) {
                 logger.error("Algorithm not supported : " + hashAlgorithm, e);
-                throw new ProvisioningException(e.getMessage(), e);
+                throw new SignOnException(e.getMessage(), e);
             }
         }
 
