@@ -238,6 +238,7 @@ public class ApplicationMediator extends IocMediator {
         if (_secureContextProxy.currentUser != null)
             app.userActionMenuBar.dataProvider.source[0].@label = _secureContextProxy.currentUser.commonName;
         app.userActionMenuBar.addEventListener(MenuEvent.ITEM_CLICK, handleUserMenuAction)
+        sendNotification(ApplicationFacade.CLEAR_MSG);
     }
 
     public function logout():void {

@@ -31,14 +31,10 @@
         <mx:StringValidator id="usernameUserValidator" source="{userUsername}" required="true" property="text"/>
         <mx:StringValidator id="firstnameUserValidator" source="{userFirstName}" required="true" property="text"/>
         <mx:StringValidator id="lastnameUserValidator" source="{userLastName}" required="true" property="text"/>
-
-        <mx:StringValidator id="passwordUserValidator" source="{userPassword}" minLength="8" property="text"/>
-        <mx:StringValidator id="retypePasswordUserValidator" source="{userRetypePassword}" minLength="8" property="text"/>
-
+        <utils:PasswordValidator id="pwvPasswords" required="true" source="{userPassword}" property="text"
+                                 confirmationSource="{userRetypePassword}" confirmationProperty="text"/>
         <mx:EmailValidator id="userEmailValidator" source="{userEmail}" property="text" required="false"/>
-
     </fx:Declarations>
-
 
     <mx:TabNavigator id="tabNav" width="500" height="385">
 
