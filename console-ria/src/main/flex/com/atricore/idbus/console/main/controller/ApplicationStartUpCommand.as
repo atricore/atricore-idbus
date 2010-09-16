@@ -52,7 +52,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _diagramMediator:IIocMediator;
     private var _paletteMediator:IIocMediator;
     private var _propertySheetMediator:IIocMediator;
-    private var _identityApplianceMediator:IIocMediator;
+    private var _identityApplianceWizardMediator:IIocMediator;
     private var _manageCertificateMediator:IIocMediator;
     private var _identityProviderCreateMediator:IIocMediator;
     private var _serviceProviderCreateMediator:IIocMediator;
@@ -175,12 +175,12 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _propertySheetMediator = value;
     }
 
-    public function get identityApplianceMediator():IIocMediator {
-        return _identityApplianceMediator;
+    public function get identityApplianceWizardMediator():IIocMediator {
+        return _identityApplianceWizardMediator;
     }
 
-    public function set identityApplianceMediator(value:IIocMediator):void {
-        _identityApplianceMediator = value;
+    public function set identityApplianceWizardMediator(value:IIocMediator):void {
+        _identityApplianceWizardMediator = value;
     }
 
     public function get manageCertificateMediator():IIocMediator {
@@ -930,7 +930,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         // register mediators for popup managers - popup managers will wire the corresponding view to it
         iocFacade.registerMediatorByConfigName(setupWizardViewMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(simpleSSOWizardViewMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(identityApplianceMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(identityApplianceWizardMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(manageCertificateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(identityProviderCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(serviceProviderCreateMediator.getConfigName());

@@ -112,12 +112,13 @@ public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxSe
             setPassReqType.setPassword(updatePasswordRequest.getNewPassword());
 
             ResponseType resp = spmlService.spmlSetPasswordRequest(setPassReqType);
+            UpdateUserPasswordResponse response = new UpdateUserPasswordResponse();
             StatusCodeType status = resp.getStatus();
             logger.trace("Update password for user " + updatePasswordRequest.getUsername()+ " return status code " + status.value());
-
-            UpdateUserPasswordResponse response = new UpdateUserPasswordResponse();
-            retUser.setUserPassword(updatePasswordRequest.getNewPassword());
-            response.setUser(retUser);
+            if (status.value().equals("failure"))
+                response.setUser(null);
+            else
+                response.setUser(retUser);
             return response;
 
         } catch (Exception e) {

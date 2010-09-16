@@ -217,11 +217,8 @@
     </object>
     <object id="simpleSSOWizardViewMediator"
             class="com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator"/>
-    <object id="identityApplianceMediator"
-            class="com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator">
-        <property name="projectProxy" ref="projectProxy"/>
-        <property name="keystoreProxy" ref="keystoreProxy"/>
-    </object>
+    <object id="identityApplianceWizardMediator"
+            class="com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator"/>
     <object id="propertySheetMediator" class="com.atricore.idbus.console.modeling.propertysheet.PropertySheetMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
@@ -368,7 +365,7 @@
 
     <!-- support components -->
     <object id="consolePopUpManager" class="com.atricore.idbus.console.main.ConsolePopUpManager">
-        <property name="identityApplianceMediator" ref="identityApplianceMediator"/>
+        <property name="identityApplianceWizardMediator" ref="identityApplianceWizardMediator"/>
         <property name="setupWizardMediator" ref="setupWizardViewMediator"/>
         <property name="simpleSSOWizardMediator" ref="simpleSSOWizardViewMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
@@ -475,7 +472,7 @@
         <property name="buildApplianceMediator" ref="buildApplianceMediator"/>
         <property name="deployApplianceMediator" ref="deployApplianceMediator"/>
         <property name="simpleSSOWizardViewMediator" ref="simpleSSOWizardViewMediator"/>
-        <property name="identityApplianceMediator" ref="identityApplianceMediator"/>
+        <property name="identityApplianceWizardMediator" ref="identityApplianceWizardMediator"/>
         <property name="propertySheetMediator" ref="propertySheetMediator"/>
         <property name="diagramMediator" ref="diagramMediator"/>
         <property name="identityProviderCreateMediator" ref="identityProviderCreateMediator"/>

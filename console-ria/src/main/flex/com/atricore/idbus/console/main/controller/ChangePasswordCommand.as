@@ -72,10 +72,11 @@ public class ChangePasswordCommand extends IocSimpleCommand implements IResponde
 
     public function result(data:Object):void {
         var chngPassResp:UpdateUserPasswordResponse = data.result as UpdateUserPasswordResponse;
-        var user:User = chngPassResp.user;
-        _secureContext.currentUser = user;
-        if (secureContext.currentUser !=null)
+
+        if (chngPassResp.user !=null) {
+            _secureContext.currentUser = chngPassResp.user;
             sendNotification(SUCCESS);
+        }
         else
             sendNotification(FAILURE);
     }
