@@ -91,8 +91,7 @@ public class AddUserMediator extends IocFormMediator
 
     override public function registerValidators():void {
         _validators.push(view.usernameUserValidator);
-        _validators.push(view.passwordUserValidator);
-        _validators.push(view.retypePasswordUserValidator);
+        _validators.push(view.pwvPasswords);
         _validators.push(view.firstnameUserValidator);
         _validators.push(view.lastnameUserValidator);
         _validators.push(view.userEmailValidator);
