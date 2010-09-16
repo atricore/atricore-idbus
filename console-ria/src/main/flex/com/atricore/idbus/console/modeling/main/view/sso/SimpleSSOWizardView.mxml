@@ -26,7 +26,7 @@
         xmlns:fx="http://ns.adobe.com/mxml/2009"
         xmlns:s="library://ns.adobe.com/flex/spark"
         xmlns:ssowizardsteps="com.atricore.idbus.console.modeling.main.view.sso.*"
-        title="New Simple SSO Identity Appliance"
+        title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.title')}"
         showSummaryStep="true">
 
         <steps>
