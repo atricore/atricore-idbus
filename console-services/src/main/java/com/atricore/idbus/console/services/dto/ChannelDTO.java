@@ -39,8 +39,6 @@ public class ChannelDTO implements Serializable {
 
     private List<ProfileDTO> activeProfiles = new ArrayList<ProfileDTO>();
 
-    private ProviderDTO target;
-
     public long getId() {
         return id;
     }
@@ -65,15 +63,6 @@ public class ChannelDTO implements Serializable {
 		this.location = location;
 	}
 
-    public ProviderDTO getTarget() {
-        return target;
-    }
-
-    public void setTarget(ProviderDTO target) {
-        this.target = target;
-    }
-
-    
 	public List<BindingDTO> getActiveBindings() {
 		if(activeBindings == null){
 			activeBindings = new ArrayList<BindingDTO>();

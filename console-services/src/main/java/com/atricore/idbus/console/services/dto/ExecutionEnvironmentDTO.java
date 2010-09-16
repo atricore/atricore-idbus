@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.services.dto;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -53,6 +54,9 @@ public class ExecutionEnvironmentDTO implements Serializable {
     }
 
     public Set<ActivationDTO> getActivations() {
+        if(activations == null){
+            activations = new HashSet<ActivationDTO>();
+        }
         return activations;
     }
 

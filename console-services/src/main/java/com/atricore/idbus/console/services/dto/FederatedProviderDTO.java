@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.services.dto;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -14,6 +15,9 @@ public class FederatedProviderDTO extends ProviderDTO {
     private Set<FederatedConnectionDTO> federatedConnectionsB;
 
     public Set<FederatedConnectionDTO> getFederatedConnectionsA() {
+        if(federatedConnectionsA == null){
+            federatedConnectionsA = new HashSet<FederatedConnectionDTO>();
+        }
         return federatedConnectionsA;
     }
 
@@ -22,6 +26,9 @@ public class FederatedProviderDTO extends ProviderDTO {
     }
 
     public Set<FederatedConnectionDTO> getFederatedConnectionsB() {
+        if(federatedConnectionsB == null){
+            federatedConnectionsB = new HashSet<FederatedConnectionDTO>();
+        }
         return federatedConnectionsB;
     }
 

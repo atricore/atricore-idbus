@@ -22,10 +22,7 @@
 package com.atricore.idbus.console.services.dto;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Author: Dejan Maric
@@ -179,6 +176,9 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
     }
 
     public Set<ExecutionEnvironmentDTO> getExecutionEnvironments() {
+        if(executionEnvironments == null){
+            executionEnvironments = new HashSet<ExecutionEnvironmentDTO>();
+        }
         return executionEnvironments;
     }
 

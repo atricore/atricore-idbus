@@ -640,12 +640,6 @@ public class DiagramMediator extends IocMediator {
             if (node.data is ServiceProvider){
                 elementType = DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE;
             } else
-//            if(node.data is IdentityProviderChannel){
-//                elementType = DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE;
-//            } else
-//            if(node.data is ServiceProviderChannel){
-//                elementType = DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE;
-//            } else
             if(node.data is DbIdentitySource){
                 elementType = DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE;
             }

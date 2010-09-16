@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.services.dto;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class IdentityProviderDTO extends FederatedProviderDTO {
@@ -93,6 +94,9 @@ public class IdentityProviderDTO extends FederatedProviderDTO {
     }
 
     public Set<AuthenticationMechanismDTO> getAuthenticationMechanisms() {
+        if(authenticationMechanisms == null){
+            authenticationMechanisms = new HashSet<AuthenticationMechanismDTO>();
+        }
         return authenticationMechanisms;
     }
 
