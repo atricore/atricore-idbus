@@ -5,6 +5,8 @@ import java.io.Serializable;
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
+ *
+ * @deprecated
  */
 public class IdentityServer implements Serializable {
 

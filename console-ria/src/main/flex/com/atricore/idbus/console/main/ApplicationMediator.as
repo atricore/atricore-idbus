@@ -27,7 +27,7 @@ import com.atricore.idbus.console.main.controller.SetupServerCommand;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
-import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator;
+import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 
 import flash.events.Event;
@@ -157,7 +157,7 @@ public class ApplicationMediator extends IocMediator {
             LoginCommand.SUCCESS,
             SetupWizardViewMediator.RUN,
             SimpleSSOWizardViewMediator.RUN,
-            IdentityApplianceMediator.CREATE,
+            IdentityApplianceWizardViewMediator.RUN,
             ApplicationFacade.DISPLAY_APPLIANCE_MODELER,
             ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE,
             ApplicationFacade.DISPLAY_CHANGE_PASSWORD,
@@ -177,7 +177,7 @@ public class ApplicationMediator extends IocMediator {
             case SimpleSSOWizardViewMediator.RUN:
                 popupManager.showSimpleSSOWizardWindow(notification);
                 break;
-            case IdentityApplianceMediator.CREATE:
+            case IdentityApplianceWizardViewMediator.RUN:
                 popupManager.showCreateIdentityApplianceWindow(notification);
                 break;
             case SetupServerCommand.SUCCESS:
@@ -238,6 +238,7 @@ public class ApplicationMediator extends IocMediator {
         if (_secureContextProxy.currentUser != null)
             app.userActionMenuBar.dataProvider.source[0].@label = _secureContextProxy.currentUser.commonName;
         app.userActionMenuBar.addEventListener(MenuEvent.ITEM_CLICK, handleUserMenuAction)
+        sendNotification(ApplicationFacade.CLEAR_MSG);
     }
 
     public function logout():void {

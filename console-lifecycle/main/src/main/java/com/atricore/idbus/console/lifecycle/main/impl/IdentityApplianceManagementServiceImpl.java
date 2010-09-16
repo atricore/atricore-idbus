@@ -100,7 +100,9 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private boolean alreadySynchronizededAppliances = false;
 
-    private boolean enableValidation = true;
+    private boolean validateAppliances = true;
+
+    private boolean enableDebugValidation = false;
 
     public void afterPropertiesSet() throws Exception {
 
@@ -252,8 +254,7 @@ public class IdentityApplianceManagementServiceImpl implements
             if (applianceDef == null)
                 throw new IdentityServerException("Appliance must contain an Appliance Definition");
 
-            if (isValidateAppliances())
-                validator.validate(appliance);
+            validateAppliance(appliance);
 
             if (logger.isDebugEnabled())
                     logger.debug("Received Identity Appliance Definition : [" +
@@ -275,6 +276,8 @@ public class IdentityApplianceManagementServiceImpl implements
 
             if (logger.isTraceEnabled())
                 logger.trace("Created Identity Appliance " + appliance.getId());
+
+            debugAppliance(appliance);
 
             // 4. Return the appliance
             ImportApplianceDefinitionResponse response = new ImportApplianceDefinitionResponse();
@@ -319,6 +322,8 @@ public class IdentityApplianceManagementServiceImpl implements
             }
 
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
+            debugAppliance(appliance);
+
             ManageIdentityApplianceLifeCycleResponse response = new ManageIdentityApplianceLifeCycleResponse(req.getAction(), appliance);
             response.setStatusCode(StatusCode.STS_OK);
             return response;
@@ -369,6 +374,8 @@ public class IdentityApplianceManagementServiceImpl implements
 
             activateExecEnv(appliance, execEnv, request.isReactivate(), request.isReplace(), request.isActivateSamples());
 
+            debugAppliance(appliance);
+
             return response;
         } catch (Exception e) {
             throw new IdentityServerException("Cannot activate Execution Environment for " +
@@ -414,7 +421,6 @@ public class IdentityApplianceManagementServiceImpl implements
 
             applianceDef.setRevision(1);
             applianceDef.setLastModification(new Date());
-
             appliance.setState(IdentityApplianceState.PROJECTED.toString());
 
             if (appliance.getIdApplianceDeployment() != null) {
@@ -422,9 +428,13 @@ public class IdentityApplianceManagementServiceImpl implements
                 appliance.setIdApplianceDeployment(null);
             }
 
+            validateAppliance(appliance);
+
             appliance = identityApplianceDAO.save(appliance);
             if (logger.isTraceEnabled())
                 logger.trace("Added appliance " + appliance.getIdApplianceDefinition().getName() + " with ID:" + appliance.getId());
+
+            debugAppliance(appliance);
 
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
 
@@ -458,10 +468,12 @@ public class IdentityApplianceManagementServiceImpl implements
             applianceDef.setLastModification(new Date());
             applianceDef.setRevision(applianceDef.getRevision() + 1);
 
-
+            validateAppliance(appliance);
 
             appliance = identityApplianceDAO.save(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
+
+            debugAppliance(appliance);
 
             res = new UpdateIdentityApplianceResponse(appliance);
 
@@ -961,11 +973,19 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     public boolean isValidateAppliances() {
-        return enableValidation;
+        return validateAppliances;
     }
 
     public void setValidateAppliances(boolean enableValidation) {
-        this.enableValidation = enableValidation;
+        this.validateAppliances = enableValidation;
+    }
+
+    public boolean isEnableDebugValidation() {
+        return enableDebugValidation;
+    }
+
+    public void setEnableDebugValidation(boolean enableDebugValidation) {
+        this.enableDebugValidation = enableDebugValidation;
     }
 
     public ActivationService getActivationService() {
@@ -978,7 +998,49 @@ public class IdentityApplianceManagementServiceImpl implements
 
     // -------------------------------------------------< Protected Utils , they need transactional context !>
 
- protected void configureExecEnv(IdentityAppliance appliance,
+    protected void validateAppliance(IdentityAppliance appliance) throws ApplianceValidationException {
+
+        if (!isValidateAppliances())
+            return;
+
+        try{
+            validator.validate(appliance);
+        } catch (ApplianceValidationException e) {
+
+            logger.error(e.getMessage());
+            for (ValidationError ve : e.getErrors()) {
+                logger.error(e.getMessage());
+            }
+
+            throw e;
+        }
+    }
+
+    protected void debugAppliance(IdentityAppliance appliance) {
+
+        if (!isEnableDebugValidation())
+            return ;
+
+
+        try {
+            validateAppliance(appliance);
+            logger.debug("Appliance " + appliance.getId() + " is valid");
+
+        } catch (ApplianceValidationException e) {
+            logger.error(e.getMessage(), e);
+
+            for (ValidationError err : e.getErrors()) {
+                if (err.getError() != null)
+                    logger.debug(err.getMsg(), err.getError());
+                else
+                    logger.debug(err.getMsg());
+            }
+        }
+
+
+    }
+
+    protected void configureExecEnv(IdentityAppliance appliance,
                                                    ExecutionEnvironment execEnv,
                                                    boolean replaceConfig) throws IdentityServerException {
 
@@ -1200,7 +1262,8 @@ public class IdentityApplianceManagementServiceImpl implements
         if (appliance.getState().equals(IdentityApplianceState.DEPLOYED.toString()))
             appliance = undeployAppliance(appliance);
 
-        if (appliance.getIdApplianceDeployment() == null)
+        if (appliance.getState().equals(IdentityApplianceState.PROJECTED.toString()) ||
+                appliance.getIdApplianceDeployment() == null)
             appliance = buildAppliance(appliance, false);
 
         // Install it
@@ -1293,7 +1356,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
                     } else if (!deployer.isStarted(appliance)) {
 
-                        // STARTED in DB but not STARTED in OSGI --> DEPLOYED
+                        // STARTED in DB but not STARTED in OSGI --> BUILT
                         appliance.setState(IdentityApplianceState.DEPLOYED.toString());
                         if (logger.isDebugEnabled())
                             logger.debug("Synchronizing Appliance state : DEPLOYED " + appliance.getId());

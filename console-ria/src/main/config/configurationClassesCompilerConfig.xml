@@ -24,7 +24,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator</symbol>
-        <symbol>com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.propertysheet.PropertySheetMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.DiagramMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateMediator</symbol>
