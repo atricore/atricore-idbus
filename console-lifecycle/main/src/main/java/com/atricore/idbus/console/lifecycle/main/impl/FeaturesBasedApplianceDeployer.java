@@ -108,7 +108,6 @@ public class FeaturesBasedApplianceDeployer implements ApplianceDeployer, Bundle
                 throw new IdentityServerException("Features Service is unavailable. (no service)");
             }
 
-
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
 
             if (!appliance.getState().equals(IdentityApplianceState.BUILT.toString()))

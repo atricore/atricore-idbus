@@ -92,6 +92,13 @@
             </action>
         </command>
 
+        <command name="appliance/modify">
+            <action class="com.atricore.idbus.console.lifecycle.command.ModifyApplianceCommand">
+                <property name="printer" ref="appliancePrinter"/>
+            </action>
+        </command>
+
+
         <command name="appliance/validate">
             <action class="com.atricore.idbus.console.lifecycle.command.ValidateApplianceCommand">
                 <property name="printer" ref="appliancePrinter"/>

@@ -17,7 +17,7 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
 
     public void print(IdentityAppliance appliance) {
         StringBuilder sb = new StringBuilder();
-        sb.append("  ID      Name           State       Revision        Display Name\n");
+        sb.append("\u001B[1m  ID      Name           State       Revision        Display Name\u001B[0m\n");
         sb.append("                                   Last/Deployed\n");
 
         printDetails(appliance, sb, true);
@@ -80,8 +80,6 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
         IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
         IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
 
-        // TODO : Build a line, using proper format and information (id, description, state, version, ... ?).
-        // TODO : padd ids and states!
         sb.append("[");
         sb.append(getIdString(appliance));
         sb.append("]  [");
@@ -114,48 +112,106 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
     }
 
     protected void printApplianceDefinition(StringBuilder sb, IdentityApplianceDefinition applianceDef) {
+
+        sb.append("\u001B[1m  Defined   \u001B[0m");
         sb.append("\n");
-        sb.append("     Defined  : (Rev. ");
+        sb.append("\u001B[1m    Revision   : \u001B[0m");
         sb.append(getRevisionString(applianceDef.getRevision()));
-        sb.append(")");
+        sb.append("\n");
+
+        sb.append("\u001B[1m    Namespace  : \u001B[0m");
+        sb.append(applianceDef.getNamespace());
+        sb.append("\n");
+
+        sb.append("\u001B[1m    Location   : \u001B[0m");
+        sb.append(getLocationString(applianceDef.getLocation()));
+        sb.append("\n");
+
 
         if (applianceDef.getProviders() != null) {
+            sb.append("\u001B[1m    Providers  : \u001B[0m");
+            sb.append(applianceDef.getProviders().size());
             sb.append("\n");
-            sb.append("       Providers  : ");
+
             for (Provider p : applianceDef.getProviders()) {
-                sb.append("\n");
                 sb.append("          ");
                 sb.append(getNameString(p));
                 sb.append(getLocationString(p));
+
+                if (p instanceof ServiceProvider) {
+                    ServiceProvider sp = (ServiceProvider) p;
+                    if (sp.getActivation() != null ) {
+
+                        ExecutionEnvironment execEnv = sp.getActivation().getExecutionEnv();
+                        sb.append("\n");
+                        sb.append("            ");
+                        sb.append(getNameString(execEnv.getName(), 10));
+
+                        if (sp.getActivation() instanceof JOSSOActivation) {
+
+                            JOSSOActivation jossoActivation = (JOSSOActivation) sp.getActivation();
+                            sb.append(getNameString(jossoActivation.getPartnerAppId()));
+                            sb.append(" JOSSO ");
+                            sb.append(execEnv.getPlatformId());
+                            sb.append(" ");
+                            sb.append(getLocationString(jossoActivation.getPartnerAppLocation()));
+                            sb.append(" [");
+                            sb.append(execEnv.isActive() ? "\u001B[32mACTIVATED\u001B[0m" : "\u001B[31mNOT ACTIVATED\u001B[0m");
+                            sb.append("] ");
+
+                        } else {
+                            sb.append(execEnv.getPlatformId());
+                            sb.append(" [");
+                            sb.append(execEnv.isActive() ? "\u001B[32mACTIVATED\u001B[0m" : "\u001B[31mNOT ACTIVATED\u001B[0m");
+                            sb.append("]");
+                        }
+                    }
+
+                } else if (p instanceof IdentityProvider) {
+                    IdentityProvider idp = (IdentityProvider) p;
+                    if (idp.getIdentityLookup() != null) {
+                        IdentityLookup idl = idp.getIdentityLookup();
+                        sb.append("\n");
+                        sb.append("            ");
+                        sb.append(getNameString(idl.getIdentitySource().getName(), 10));
+                    }
+                }
+                sb.append("\n");
             }
         }
 
         if (applianceDef.getExecutionEnvironments() != null) {
+            sb.append("\u001B[1m    Exec. Envs : \u001B[0m");
+            sb.append(applianceDef.getExecutionEnvironments().size());
             sb.append("\n");
-            sb.append("       Exec. Envs : ");
+
             for (ExecutionEnvironment ex : applianceDef.getExecutionEnvironments()) {
                 // TODO : Create printExecEnv method
-                sb.append("\n");
                 sb.append("          ");
                 sb.append(getNameString(ex));
+                sb.append("[");
+                sb.append(ex.getPlatformId());
+                sb.append("]");
                 sb.append(ex.getInstallUri());
                 if (ex.isActive()) {
-                    sb.append(" (");
-                    sb.append("activated");
-                    sb.append(")");
+                    sb.append(" [");
+                    sb.append("\u001B[32mACTIVATED\u001B[0m");
+                    sb.append("]");
                 }
+                sb.append("\n");
+
             }
         }
 
         if (applianceDef.getIdentitySources() != null) {
+            sb.append("\u001B[1m    ID Sources : \u001B[0m");
+            sb.append(applianceDef.getIdentitySources().size());
             sb.append("\n");
-            sb.append("       ID Sources : ");
             for (IdentitySource is : applianceDef.getIdentitySources()) {
-                // TODO : Create printIdsource method
-                sb.append("\n");
                 sb.append("          ");
                 sb.append(getNameString(is));
                 sb.append(is.getClass().getSimpleName());
+                sb.append("\n");
 
             }
 
@@ -163,11 +219,23 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
     }
 
     protected void printApplianceDeployment(StringBuilder sb, IdentityApplianceDeployment applianceDep) {
+
+        sb.append("\u001B[1m  Deployed  \u001B[0m");
         sb.append("\n");
-        sb.append("     Deployed : (Rev. ");
+
+        sb.append("\u001B[1m    Revision   : \u001B[0m");
         sb.append(getRevisionString(applianceDep.getDeployedRevision()));
-        sb.append(") at ");
-        sb.append(applianceDep.getDeploymentTime().toString());
+        sb.append("\n");
+
+        sb.append("\u001B[1m    Time       : \u001B[0m");
+        if (applianceDep.getDeploymentTime() != null) {
+            sb.append(applianceDep.getDeploymentTime().toString());
+        }
+        sb.append("\n");
+
+        sb.append("\u001B[1m    Units      : \u001B[0m");
+        sb.append(applianceDep.getIdaus().size());
+        sb.append("\n");
 
         for (IdentityApplianceUnit idau : applianceDep.getIdaus()) {
             printIdauString(sb, idau);
@@ -175,67 +243,63 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
     }
 
     protected void printIdauString(StringBuilder sb, IdentityApplianceUnit idau) {
-        sb.append("\n");
-        sb.append("        ");
+
+        sb.append("\u001B[1m    Unit       : \u001B[0m");
         sb.append(getNameString(idau));
         sb.append(" ");
         sb.append(getVersionString(idau));
         sb.append(" (");
         sb.append(idau.getType());
         sb.append(")");
+        sb.append("\n");
+
+        sb.append("\u001B[1m      Providers: \u001B[0m");
+        sb.append(idau.getProviders().size());
+        sb.append("\n");
 
         for (Provider p : idau.getProviders()) {
-            sb.append("\n");
             sb.append("          ");
             sb.append(getNameString(p));
-            sb.append(":");
             sb.append(getLocationString(p));
+            sb.append("\n");
         }
 
     }
 
 
     protected String getStateString(IdentityAppliance appliance) {
-
-        String state = appliance.getState();
-        while (state.length() < 10) {
-            state = state + " ";
-        }
-        return state;
-
+        return getNameString(appliance.getState(), 10);
     }
 
     protected String getNameString(IdentityAppliance appliance) {
-        String name = appliance.getIdApplianceDefinition().getName();
-        while (name.length() < 12) {
-            name = name + " ";
-        }
-        return name;
+        return getNameString(appliance.getIdApplianceDefinition().getName());
     }
 
     protected String getNameString(IdentitySource is) {
-        String name = is.getName();
-        while (name.length() < 12) {
-            name = name + " ";
-        }
-        return name;
+        return getNameString(is.getName());
     }
 
 
     protected String getNameString(Provider p) {
-        String name = p.getName();
-        while (name.length() < 12) {
+        return getNameString(p.getName());
+    }
+
+    protected String getNameString(String n) {
+        return getNameString(n, 12);
+    }
+
+    protected String getNameString(String n, int length) {
+        String name = n;
+        while (name.length() < length) {
             name = name + " ";
         }
         return name;
     }
 
+
+
     protected String getNameString(ExecutionEnvironment ex) {
-        String name = ex.getName();
-        while (name.length() < 12) {
-            name = name + " ";
-        }
-        return name;
+        return getNameString(ex.getName());
     }
 
     protected String getDisplayNameString(ExecutionEnvironment ex) {
