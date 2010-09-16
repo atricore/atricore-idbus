@@ -24,6 +24,7 @@ package com.atricore.idbus.console.main.view.upload
 import com.atricore.idbus.console.main.ApplicationFacade;
 
 import flash.events.Event;
+import flash.events.MouseEvent;
 import flash.net.FileReference;
 
 import mx.events.CloseEvent;
@@ -46,8 +47,9 @@ public class UploadProgressMediator extends IocMediator
 
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.btnCancel.removeEventListener("click", onUploadBtnCancel);
-            view.btnFinish.removeEventListener("click", onUploadBtnFinish);
+            view.btnCancelFinish.removeEventListener(MouseEvent.CLICK, onUploadBtnCancelFinish);
+            //view.btnCancel.removeEventListener("click", onUploadBtnCancel);
+            //view.btnFinish.removeEventListener("click", onUploadBtnFinish);
         }
 
         init();
@@ -57,8 +59,9 @@ public class UploadProgressMediator extends IocMediator
 
     private function init():void {
         if (view != null) {
-            view.btnCancel.addEventListener("click", onUploadBtnCancel);
-            view.btnFinish.addEventListener("click", onUploadBtnFinish);
+            view.btnCancelFinish.addEventListener(MouseEvent.CLICK, onUploadBtnCancelFinish);
+            //view.btnCancel.addEventListener("click", onUploadBtnCancel);
+            //view.btnFinish.addEventListener("click", onUploadBtnFinish);
         }
     }
 
@@ -83,18 +86,30 @@ public class UploadProgressMediator extends IocMediator
                 view.progBar.label = numPerc + "%";
                 view.progBar.validateNow();
                 if (numPerc > 90) {
-                    view.btnCancel.enabled = false;
+                    view.btnCancelFinish.enabled = false;
+                    //view.btnCancel.enabled = false;
                 } else {
-                    view.btnCancel.enabled = true;
+                    view.btnCancelFinish.enabled = true;
+                    //view.btnCancel.enabled = true;
                 }
                 break;
             case UPLOAD_COMPLETED:
-                view.btnCancel.visible = false;
-                view.btnFinish.visible = true;
+                view.btnCancelFinish.label = "Finish";
+                view.btnCancelFinish.enabled = true;
+                //view.btnCancel.visible = false;
+                //view.btnFinish.visible = true;
                 break;
         }
     }
 
+    private function onUploadBtnCancelFinish(event:Event):void {
+        closeWindow();
+        if (view.btnCancelFinish.label == "Cancel") {
+            //_fileRef.cancel();
+            sendNotification(UPLOAD_CANCELED);
+        }
+    }
+/*
     private function onUploadBtnFinish(event:Event):void {
         closeWindow();
     }
@@ -104,7 +119,7 @@ public class UploadProgressMediator extends IocMediator
         //_fileRef.cancel();
         sendNotification(UPLOAD_CANCELED);
     }
-
+*/
     private function closeWindow():void {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }

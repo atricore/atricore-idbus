@@ -745,7 +745,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         createUploadProgressWindow();
         _progress.title = "File upload";
         _progress.width = 300;
-        _progress.height = 170;
+        _progress.height = 140;
         //_progress.x = (_popupParent.width / 2) - 225;
         //_progress.y = 80;
         showProgress(_uploadProgress);
