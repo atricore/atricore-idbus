@@ -28,16 +28,23 @@
          paddingRight="5" paddingTop="5" paddingBottom="5">
 
     <fx:Declarations>
-        <mx:ArrayCollection id="authMechanismColl">
+        <!--mx:ArrayCollection id="authMechanismColl">
             <utils:ListItemValueObject label="Form-Based Basic" name="basic" isSelected="false" />
             <utils:ListItemValueObject label="Strong (Digital Sertificate)" name="strong" isSelected="false" />
             <utils:ListItemValueObject label="Windows (NTLM)" isSelected="false" name="ntlm" />
             <utils:ListItemValueObject label="Remember Me" isSelected="false" name="rememberme" />
-        </mx:ArrayCollection>        
+        </mx:ArrayCollection-->
+        <mx:ArrayCollection id="authMechanismColl">
+            <fx:Object label="Simple Authentication" data="basic"/>
+            <fx:Object label="Strong (Digital Sertificate)" data="strong"/>
+            <fx:Object label="Windows (NTLM)" data="ntlm"/>
+            <fx:Object label="Remember Me" data="rememberme"/>
+        </mx:ArrayCollection>
         <mx:StringValidator id="nameValidator" source="{identityProviderName}" required="true" property="text"/>
         <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{idpLocationDomain}" required="true" property="text" />
+        <utils:URLPartValidator id="contextValidator" source="{idpLocationContext}" required="true" property="text"/>
         <utils:URLMultipartValidator id="pathValidator" source="{idpLocationPath}" required="false" property="text"/>
     </fx:Declarations>
     
@@ -66,11 +73,13 @@
                     </s:dataProvider>
                 </s:DropDownList>
                 <s:Label text="://" width="15" paddingTop="5"/>
-                <s:TextInput id="idpLocationDomain" width="150"/>
+                <s:TextInput id="idpLocationDomain" width="130"/>
                 <s:Label text=":" width="10" paddingTop="5"/>
                 <s:TextInput id="idpLocationPort" width="40"/>
-                <s:Label id="idpLocationContext" text="/idbus/" width="50" paddingTop="5"/>
-                <s:TextInput id="idpLocationPath" width="180"/>
+                <s:Label text="/" width="10" paddingTop="5"/>
+                <s:TextInput id="idpLocationContext" width="100"/>
+                <s:Label text="/" width="10" paddingTop="5"/>
+                <s:TextInput id="idpLocationPath" width="130"/>
             </mx:FormItem>
 
         </mx:Form>
@@ -87,7 +96,13 @@
             </mx:FormItem>
 
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:">
-                <s:DropDownList id="authContractCombo" labelField="name" width="200" selectedIndex="0"/>
+                <s:DropDownList id="authContractCombo" labelField="name" width="200" selectedIndex="0">
+                    <s:dataProvider>
+                        <mx:ArrayCollection>
+                            <fx:Object name="Default" data="default"/>
+                        </mx:ArrayCollection>
+                    </s:dataProvider>
+                </s:DropDownList>
             </mx:FormItem>
 
             <!--<mx:FormItem-->
@@ -96,7 +111,12 @@
             <!--</mx:FormItem>-->
             <s:HGroup width="100%">
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.mechanism')}:" labelWidth="230">
-                    <s:List id="authMechanismCombo"
+                    <s:DropDownList id="authMechanismCombo"
+                            dataProvider="{authMechanismColl}"
+                            selectedIndex="0"
+                            width="200"
+                            enabled="false"/>
+                    <!--s:List id="authMechanismCombo"
                                    dataProvider="{authMechanismColl}"
                                    itemRenderer="com.atricore.idbus.console.components.CheckBoxItemRenderer"
                                    alternatingItemColors="[#EEEEEE, white]"
@@ -104,15 +124,21 @@
                         <s:layout>
                            <s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedRowCount="4" />
                        </s:layout>
-                    </s:List>
+                    </s:List-->
                 </mx:FormItem>
-                <s:Button id="configureAuthMechanism"
-                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
+                <!--s:Button id="configureAuthMechanism"
+                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/-->
             </s:HGroup>
 
             <mx:FormItem
                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:">
-                <s:DropDownList id="authAssertionEmissionPolicyCombo" labelField="name" width="200" selectedIndex="0"/>
+                <s:DropDownList id="authAssertionEmissionPolicyCombo" labelField="name" width="200" selectedIndex="0">
+                    <s:dataProvider>
+                        <mx:ArrayCollection>
+                            <fx:Object name="Default" data="default"/>
+                        </mx:ArrayCollection>
+                    </s:dataProvider>
+                </s:DropDownList>
             </mx:FormItem>
         </mx:Form>
     </utils:TitledBorderBox>

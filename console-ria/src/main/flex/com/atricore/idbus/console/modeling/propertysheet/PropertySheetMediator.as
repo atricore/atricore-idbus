@@ -21,7 +21,6 @@
 
 package com.atricore.idbus.console.modeling.propertysheet {
 import com.atricore.idbus.console.components.CustomViewStack;
-import com.atricore.idbus.console.components.ListItemValueObject;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
@@ -43,6 +42,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnectio
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionSPChannelSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.identitylookup.IdentityLookupCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.identityvault.EmbeddedDBIdentityVaultCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.idp.BasicAuthenticationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idpchannel.IDPChannelContractSection;
@@ -137,6 +137,8 @@ public class PropertySheetMediator extends IocMediator {
     private var _apacheExecEnvCoreSection:ApacheExecEnvCoreSection;
     private var _windowsIISExecEnvCoreSection:WindowsIISExecEnvCoreSection;
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
+    private var _authenticationPropertyTab:Group;
+    private var _basicAuthenticationSection:BasicAuthenticationSection;
     private var _dirty:Boolean;
 
     protected var _validators : Array;
@@ -172,6 +174,9 @@ public class PropertySheetMediator extends IocMediator {
 
     private function stackChanged(event:IndexChangeEvent):void {
         _propertySheetsViewStack.selectedIndex = _tabbedPropertiesTabBar.selectedIndex;
+        if (_tabbedPropertiesTabBar.selectedItem.name == "Authentication") {
+            handleAuthenticationTabClick();
+        }
     }
 
     override public function listNotificationInterests():Array {
@@ -356,6 +361,16 @@ public class PropertySheetMediator extends IocMediator {
         _propertySheetsViewStack.addNewChild(contractPropertyTab);
         _ipContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityProviderContractPropertyTabCreationComplete);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityProviderContractPropertyTabRollOut);
+
+        // Authentication Tab
+        _authenticationPropertyTab = new Group();
+        _authenticationPropertyTab.id = "propertySheetAuthenticationSection";
+        _authenticationPropertyTab.name = "Authentication";
+        _authenticationPropertyTab.width = Number("100%");
+        _authenticationPropertyTab.height = Number("100%");
+        _authenticationPropertyTab.setStyle("borderStyle", "solid");
+
+        _propertySheetsViewStack.addNewChild(_authenticationPropertyTab);
     }
 
     protected function enableServiceProviderPropertyTabs():void {
@@ -407,7 +422,7 @@ public class PropertySheetMediator extends IocMediator {
             //TODO
 
             for (var i:int = 0; i < _ipCoreSection.idpLocationProtocol.dataProvider.length; i++) {
-                if (identityProvider.location != null && _ipCoreSection.idpLocationProtocol.dataProvider[i].label == identityProvider.location.protocol) {
+                if (identityProvider.location != null && _ipCoreSection.idpLocationProtocol.dataProvider[i].data == identityProvider.location.protocol) {
                     _ipCoreSection.idpLocationProtocol.selectedIndex = i;
                     break;
                 }
@@ -415,9 +430,10 @@ public class PropertySheetMediator extends IocMediator {
             _ipCoreSection.idpLocationDomain.text = identityProvider.location.host;
             _ipCoreSection.idpLocationPort.text = identityProvider.location.port.toString() != "0" ?
                     identityProvider.location.port.toString() : "";
-            _ipCoreSection.idpLocationContext.text = "/" + identityProvider.location.context + "/";
+            _ipCoreSection.idpLocationContext.text = identityProvider.location.context;
             _ipCoreSection.idpLocationPath.text = identityProvider.location.uri;
 
+            /*
             for each(var authMech:AuthenticationMechanism in identityProvider.authenticationMechanisms){
                 if(authMech is BasicAuthentication){
                     var liv:ListItemValueObject = _ipCoreSection.authMechanismColl.getItemAt(0) as ListItemValueObject;
@@ -446,7 +462,7 @@ public class PropertySheetMediator extends IocMediator {
 //                    }
 //                }
 //            }
-
+            */
             _ipCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
             _ipCoreSection.idpLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
@@ -460,6 +476,7 @@ public class PropertySheetMediator extends IocMediator {
             _validators.push(_ipCoreSection.nameValidator);
             _validators.push(_ipCoreSection.portValidator);
             _validators.push(_ipCoreSection.domainValidator);
+            _validators.push(_ipCoreSection.contextValidator);
             _validators.push(_ipCoreSection.pathValidator);
         }
     }
@@ -478,10 +495,11 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.location.protocol = _ipCoreSection.idpLocationProtocol.labelDisplay.text;
             identityProvider.location.host = _ipCoreSection.idpLocationDomain.text;
             identityProvider.location.port = parseInt(_ipCoreSection.idpLocationPort.text);
-            identityProvider.location.context = _ipCoreSection.idpLocationContext.text.substring(1,
-                    _ipCoreSection.idpLocationContext.text.length - 1);
+            identityProvider.location.context = _ipCoreSection.idpLocationContext.text;
             identityProvider.location.uri = _ipCoreSection.idpLocationPath.text;
 
+            // For now only Basic Authentication is enabled. Modification is done through "Authentication" tab
+            /*
             for each(var liv:ListItemValueObject in  _ipCoreSection.authMechanismCombo.dataProvider){
                 if(liv.isSelected){
                     if(identityProvider.authenticationMechanisms == null){
@@ -491,7 +509,6 @@ public class PropertySheetMediator extends IocMediator {
                         case "basic":
                             var basicAuth:BasicAuthentication = new BasicAuthentication();
                             basicAuth.name = identityProvider.name + "-basic-authn";
-                            //TODO MAKE CONFIGURABLE
                             basicAuth.hashAlgorithm = "MD5";
                             basicAuth.hashEncoding = "HEX";
                             basicAuth.ignoreUsernameCase = false;
@@ -502,8 +519,9 @@ public class PropertySheetMediator extends IocMediator {
                     }
                 }
             }
-            
-            // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
+            */
+
+            // For now only "Default" contract and emission policy exists and there's no need for modification.
             //authenticationContract
             //authenticationAssertionEmissionPolicy
 
@@ -602,6 +620,85 @@ public class PropertySheetMediator extends IocMediator {
 
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
+        }
+    }
+
+    private function handleAuthenticationTabClick():void {
+        if (_ipCoreSection.authMechanismCombo.selectedItem.data == "basic") {
+            _basicAuthenticationSection = new BasicAuthenticationSection();
+            _authenticationPropertyTab.addElement(_basicAuthenticationSection);
+
+            _basicAuthenticationSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleBasicAuthenticationPropertyTabCreationComplete);
+            _authenticationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleBasicAuthenticationPropertyTabRollOut);
+        }
+    }
+
+    private function handleBasicAuthenticationPropertyTabCreationComplete(event:Event):void {
+        var identityProvider:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+
+        // if identityProvider is null that means some other element was selected before completing this
+        if (identityProvider != null) {
+            // bind view
+
+            // find basic authentication
+            var basicAuthentication:BasicAuthentication = null;
+            for each (var authMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                if (authMechanism is BasicAuthentication) {
+                    basicAuthentication = authMechanism as BasicAuthentication;
+                }
+            }
+
+            if (basicAuthentication != null) {
+                _basicAuthenticationSection.authName.text = basicAuthentication.name;
+                for (var i:int = 0; i < _basicAuthenticationSection.hashAlgorithm.dataProvider.length; i++) {
+                    if (_basicAuthenticationSection.hashAlgorithm.dataProvider[i].data == basicAuthentication.hashAlgorithm) {
+                        _basicAuthenticationSection.hashAlgorithm.selectedIndex = i;
+                        break;
+                    }
+                }
+                for (var i:int = 0; i < _basicAuthenticationSection.hashEncoding.dataProvider.length; i++) {
+                    if (_basicAuthenticationSection.hashEncoding.dataProvider[i].data == basicAuthentication.hashEncoding) {
+                        _basicAuthenticationSection.hashEncoding.selectedIndex = i;
+                        break;
+                    }
+                }
+                _basicAuthenticationSection.ignoreUsernameCase.selected = basicAuthentication.ignoreUsernameCase;
+
+                _basicAuthenticationSection.authName.addEventListener(Event.CHANGE, handleSectionChange);
+                _basicAuthenticationSection.hashAlgorithm.addEventListener(Event.CHANGE, handleSectionChange);
+                _basicAuthenticationSection.hashEncoding.addEventListener(Event.CHANGE, handleSectionChange);
+                _basicAuthenticationSection.ignoreUsernameCase.addEventListener(Event.CHANGE, handleSectionChange);
+
+                //clear all existing validators and add basic auth. section validators
+                _validators = [];
+                _validators.push(_basicAuthenticationSection.nameValidator);
+            }
+        }
+    }
+
+    private function handleBasicAuthenticationPropertyTabRollOut(event:Event):void {
+        if (_dirty && validate(true)) {
+            // bind model
+            var identityProvider:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+
+            // find basic authentication
+            var basicAuthentication:BasicAuthentication = null;
+            for each (var authMechanism:AuthenticationMechanism in identityProvider.authenticationMechanisms) {
+                if (authMechanism is BasicAuthentication) {
+                    basicAuthentication = authMechanism as BasicAuthentication;
+                }
+            }
+
+            if (basicAuthentication != null) {
+                basicAuthentication.name = _basicAuthenticationSection.authName.text;
+                basicAuthentication.hashAlgorithm = _basicAuthenticationSection.hashAlgorithm.selectedItem.data;
+                basicAuthentication.hashEncoding = _basicAuthenticationSection.hashEncoding.selectedItem.data;
+                basicAuthentication.ignoreUsernameCase = _basicAuthenticationSection.ignoreUsernameCase.selected;
+
+                sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+                _dirty = false;
+            }
         }
     }
 

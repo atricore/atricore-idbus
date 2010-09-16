@@ -307,12 +307,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         if (!_identityProviderCreateForm) {
             createIdentityProviderCreateForm();
+        } else {
+            identityProviderMediator.initLocation();
         }
-        _popup.title = "Create Identity Provider";
+        _popup.title = "New Identity Provider Definition";
         _popup.width = 690;
-        _popup.height = 510;
+        _popup.height = 380;
         _popup.x = (_popupParent.width / 2) - 225;
-        _popup.y = 80;        
+        _popup.y = 80;
         showPopup(_identityProviderCreateForm);
         //on show call bindForm()
     }

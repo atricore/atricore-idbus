@@ -20,19 +20,6 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<!--
-  User: cdbirge
-  Date: Oct 6, 2009
-  Time: 5:55:29 PM
-  email: cbirge@atricore.org
--->
-<!--<mx:VBox width="100%" height="100%"-->
-         <!--xmlns:mx="http://www.adobe.com/2006/mxml"-->
-         <!--xmlns:utils="com.atricore.idbus.console.components.*"-->
-         <!--xmlns:components="com.atricore.idbus.console.components.*">-->
-
-
-    <!--<utils:ValidatingForm id="identityProvForm" width="100%" height="100%" defaultButton="{btnOk}">-->
 <mx:Form xmlns:mx="library://ns.adobe.com/flex/mx"
          xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
@@ -40,18 +27,26 @@
          defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
 
     <fx:Declarations>
-        <mx:ArrayCollection id="authMechanismColl">
-            <utils:ListItemValueObject label="Form-Based Basic" name="basic" isSelected="false" />
+        <!--mx:ArrayCollection id="authMechanismColl">
+            <utils:ListItemValueObject label="Simple Authentication" name="basic" isSelected="false" />
             <utils:ListItemValueObject label="Strong (Digital Sertificate)" name="strong" isSelected="false" />
             <utils:ListItemValueObject label="Windows (NTLM)" name="ntlm" isSelected="false" />
             <utils:ListItemValueObject label="Remember Me" name="rememberme" isSelected="false" />
-        </mx:ArrayCollection>        
+        </mx:ArrayCollection-->
+        <mx:ArrayCollection id="authMechanismColl">
+            <fx:Object label="Simple Authentication" data="basic"/>
+            <fx:Object label="Strong (Digital Sertificate)" data="strong"/>
+            <fx:Object label="Windows (NTLM)" data="ntlm"/>
+            <fx:Object label="Remember Me" data="rememberme"/>
+        </mx:ArrayCollection>
         <mx:StringValidator id="nameValidator" source="{identityProviderName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
         <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{idpLocationDomain}" required="true" property="text"
+                        trigger="{btnOk}" triggerEvent="click"/>
+        <utils:URLPartValidator id="contextValidator" source="{idpLocationContext}" required="true" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
         <utils:URLMultipartValidator id="pathValidator" source="{idpLocationPath}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
@@ -76,20 +71,22 @@
             </s:dataProvider>
         </s:DropDownList>
         <s:Label text="://" width="15" paddingTop="5"/>
-        <s:TextInput id="idpLocationDomain" width="150"/>
+        <s:TextInput id="idpLocationDomain" width="130"/>
         <s:Label text=":" width="10" paddingTop="5"/>
         <s:TextInput id="idpLocationPort" width="40"/>
-        <s:Label id="idpLocationContext" text="/idbus/" width="45" paddingTop="5"/>
-        <s:TextInput id="idpLocationPath" width="180"/>
+        <s:Label text="/" width="10" paddingTop="5"/>
+        <s:TextInput id="idpLocationContext" width="100"/>
+        <s:Label text="/" width="10" paddingTop="5"/>
+        <s:TextInput id="idpLocationPath" width="130"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:" direction="horizontal">
-        <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}"/>
-        <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}"/>
+        <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}" selected="true"/>
+        <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}" selected="true"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:" direction="horizontal">
-        <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}"/>
+        <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}" selected="true"/>
         <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
         <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
         <s:CheckBox id="samlBindingSoapCheck"
@@ -97,7 +94,7 @@
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:">
-        <s:CheckBox id="signAuthAssertionCheck"/>
+        <s:CheckBox id="signAuthAssertionCheck" selected="true"/>
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:">
@@ -109,12 +106,23 @@
     <!--</mx:FormItem>-->
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:">
-        <s:DropDownList id="authContractCombo"  labelField="name" selectedIndex="0" width="180"/>
+        <s:DropDownList id="authContract" labelField="name" selectedIndex="0" width="200">
+            <s:dataProvider>
+                <mx:ArrayCollection>
+                    <fx:Object name="Default" data="default"/>
+                </mx:ArrayCollection>
+            </s:dataProvider>
+        </s:DropDownList>
     </mx:FormItem>
 
     <s:HGroup width="100%" horizontalAlign="left">
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.mechanism')}:" labelWidth="230">
-            <s:List id="authMechanismCombo"
+            <s:DropDownList id="authMechanism"
+                            dataProvider="{authMechanismColl}"
+                            selectedIndex="0"
+                            width="200"
+                            enabled="false"/>
+            <!--s:List id="authMechanismCombo"
                            dataProvider="{authMechanismColl}"
                            itemRenderer="com.atricore.idbus.console.components.CheckBoxItemRenderer"
                            alternatingItemColors="[#EEEEEE, white]"
@@ -122,17 +130,21 @@
                 <s:layout>
                     <s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedRowCount="4" />
                 </s:layout>
-            </s:List>
+            </s:List-->
         </mx:FormItem>
-        <s:Button id="configureAuthMechanism"
-           label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
+        <!--s:Button id="configureAuthMechanism"
+           label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/-->
     </s:HGroup>    
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:">
-        <s:DropDownList id="authAssertionEmissionPolicyCombo" labelField="name" selectedIndex="0" width="180"/>
+        <s:DropDownList id="authAssertionEmissionPolicy" labelField="name" selectedIndex="0" width="200">
+            <s:dataProvider>
+                <mx:ArrayCollection>
+                    <fx:Object name="Default" data="default"/>
+                </mx:ArrayCollection>
+            </s:dataProvider>
+        </s:DropDownList>
     </mx:FormItem>
-
-    <!--</utils:ValidatingForm>-->
 
     <!-- TODO: create custom panel skin to change controlBarContent style? or use mx:ControlBar? -->
     <s:Panel id="controlBarPanel" width="100%" height="40" borderVisible="false"
@@ -147,4 +159,3 @@
         </s:controlBarLayout>
     </s:Panel>
 </mx:Form>
-<!--</mx:VBox>-->

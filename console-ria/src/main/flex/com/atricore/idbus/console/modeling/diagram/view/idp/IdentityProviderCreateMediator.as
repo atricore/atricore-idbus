@@ -20,17 +20,17 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.idp {
-import com.atricore.idbus.console.components.ListItemValueObject;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
+import com.atricore.idbus.console.services.dto.AuthenticationAssertionEmissionPolicy;
+import com.atricore.idbus.console.services.dto.AuthenticationContract;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.Profile;
-import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 
 import flash.events.MouseEvent;
 
@@ -71,6 +71,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleIdentityProviderSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+
+        initLocation();
     }
 
     private function resetForm():void {
@@ -79,22 +81,39 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.idpLocationProtocol.selectedIndex = 0;
         view.idpLocationDomain.text = "";
         view.idpLocationPort.text = "";
-        view.idpLocationContext.text = "/idbus/";
+        view.idpLocationContext.text = "";
         view.idpLocationPath.text = "";
-        view.signAuthAssertionCheck.selected = false;
+        view.signAuthAssertionCheck.selected = true;
         view.encryptAuthAssertionCheck.selected = false;
-        view.samlBindingHttpPostCheck.selected = false;
+        view.samlBindingHttpPostCheck.selected = true;
         view.samlBindingArtifactCheck.selected = false;
         view.samlBindingHttpRedirectCheck.selected = false;
         view.samlBindingSoapCheck.selected = false;
-        view.samlProfileSSOCheck.selected = false;
-        view.samlProfileSLOCheck.selected = false;
+        view.samlProfileSSOCheck.selected = true;
+        view.samlProfileSLOCheck.selected = true;
+        view.authContract.selectedIndex = 0;
+        view.authAssertionEmissionPolicy.selectedIndex = 0;
 
-        for each(var liv:ListItemValueObject in  view.authMechanismCombo.dataProvider){
+        /*for each(var liv:ListItemValueObject in  view.authMechanism.dataProvider){
             liv.isSelected = false;
-        }
+        }*/
 
         FormUtility.clearValidationErrors(_validators);
+    }
+
+    public function initLocation():void {
+        // set location
+        var location:Location = _projectProxy.currentIdentityAppliance.idApplianceDefinition.location;
+        for (var i:int = 0; i < view.idpLocationProtocol.dataProvider.length; i++) {
+            if (location.protocol == view.idpLocationProtocol.dataProvider[i].data) {
+                view.idpLocationProtocol.selectedIndex = i;
+                break;
+            }
+        }
+        view.idpLocationDomain.text = location.host;
+        view.idpLocationPort.text = location.port.toString() != "0" ? location.port.toString() : "";
+        view.idpLocationContext.text = location.context;
+        view.idpLocationPath.text = location.uri;
     }
 
     override public function bindModel():void {
@@ -108,7 +127,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         loc.protocol = view.idpLocationProtocol.labelDisplay.text;
         loc.host = view.idpLocationDomain.text;
         loc.port = parseInt(view.idpLocationPort.text);
-        loc.context = "idbus";
+        loc.context = view.idpLocationContext.text;
         loc.uri = view.idpLocationPath.text;
         identityProvider.location = loc;
 
@@ -137,7 +156,20 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
             identityProvider.activeProfiles.addItem(Profile.SSO_SLO);
         }
 
-        for each(var liv:ListItemValueObject in  view.authMechanismCombo.dataProvider){
+        if (identityProvider.authenticationMechanisms == null) {
+            identityProvider.authenticationMechanisms = new ArrayCollection();
+        }
+
+        if (view.authMechanism.selectedItem.data == "basic") {
+            var basicAuth:BasicAuthentication = new BasicAuthentication();
+            basicAuth.name = identityProvider.name.replace(/\s+/g, "-").toLowerCase() + "-basic-authn";
+            basicAuth.hashAlgorithm = "MD5";
+            basicAuth.hashEncoding = "HEX";
+            basicAuth.ignoreUsernameCase = false;
+            identityProvider.authenticationMechanisms.addItem(basicAuth);
+        }
+/*
+        for each(var liv:ListItemValueObject in  view.authMechanism.dataProvider){
             if(liv.isSelected){
                 if(identityProvider.authenticationMechanisms == null){
                     identityProvider.authenticationMechanisms = new ArrayCollection();
@@ -157,10 +189,18 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
                 }
             }
         }
+*/
+        if (view.authContract.selectedItem.data == "default") {
+            var authContract:AuthenticationContract = new AuthenticationContract();
+            authContract.name = "Default";
+            identityProvider.authenticationContract = authContract;
+        }
 
-        // TODO save remaining fields
-        //authenticationContract
-        //authenticationAssertionEmissionPolicy
+        if (view.authAssertionEmissionPolicy.selectedItem.data == "default") {
+            var authAssertionEmissionPolicy:AuthenticationAssertionEmissionPolicy = new AuthenticationAssertionEmissionPolicy();
+            authAssertionEmissionPolicy.name = "Default";
+            identityProvider.emissionPolicy = authAssertionEmissionPolicy;
+        }
 
         _newIdentityProvider = identityProvider;
     }
@@ -199,6 +239,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         _validators.push(view.nameValidator);
         _validators.push(view.portValidator);
         _validators.push(view.domainValidator);
+        _validators.push(view.contextValidator);
         _validators.push(view.pathValidator);
     }
 
