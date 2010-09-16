@@ -200,7 +200,6 @@
         <dependency>
             <groupId>net.sf.dozer</groupId>
             <artifactId>dozer</artifactId>
-            <version>5.2.2</version>
             <scope>test</scope>
         </dependency>
         
