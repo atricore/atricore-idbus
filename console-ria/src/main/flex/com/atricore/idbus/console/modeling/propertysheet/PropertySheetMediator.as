@@ -281,7 +281,8 @@ public class PropertySheetMediator extends IocMediator {
         _iaCoreSection.applianceLocationDomain.text = location.host;
         _iaCoreSection.applianceLocationPort.text = location.port.toString() != "0" ?
                 location.port.toString() : "";
-        _iaCoreSection.applianceLocationPath.text = location.context;
+        _iaCoreSection.applianceLocationContext.text = location.context;
+        _iaCoreSection.applianceLocationPath.text = location.uri;
 
         _iaCoreSection.applianceName.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -289,6 +290,7 @@ public class PropertySheetMediator extends IocMediator {
         _iaCoreSection.applianceLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
+        _iaCoreSection.applianceLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
 
         _validators = [];
@@ -313,7 +315,8 @@ public class PropertySheetMediator extends IocMediator {
             identityAppliance.idApplianceDefinition.location.protocol = _iaCoreSection.applianceLocationProtocol.selectedItem.label;
             identityAppliance.idApplianceDefinition.location.host = _iaCoreSection.applianceLocationDomain.text;
             identityAppliance.idApplianceDefinition.location.port = parseInt(_iaCoreSection.applianceLocationPort.text);
-            identityAppliance.idApplianceDefinition.location.context = _iaCoreSection.applianceLocationPath.text;
+            identityAppliance.idApplianceDefinition.location.context = _iaCoreSection.applianceLocationContext.text;
+            identityAppliance.idApplianceDefinition.location.uri = _iaCoreSection.applianceLocationPath.text;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;

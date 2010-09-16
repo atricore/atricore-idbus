@@ -36,7 +36,7 @@ import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceList
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
 import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand;
 import com.atricore.idbus.console.modeling.main.view.*;
-import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator;
+import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
@@ -187,7 +187,7 @@ public class ModelerMediator extends IocMediator {
     private function handleNewClick(event:MouseEvent):void {
         trace("New Button Click: " + event);
         if (view.applianceStyle.selectedItem.data == "Advanced") {
-            sendNotification(IdentityApplianceMediator.CREATE);
+            sendNotification(IdentityApplianceWizardViewMediator.RUN);
         } else if (view.applianceStyle.selectedItem.data == "SimpleSSO") {
             sendNotification(SimpleSSOWizardViewMediator.RUN);
         }

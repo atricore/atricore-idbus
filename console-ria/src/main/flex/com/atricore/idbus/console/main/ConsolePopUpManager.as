@@ -24,8 +24,8 @@ import com.atricore.idbus.console.main.view.profile.ChangePasswordMediator;
 import com.atricore.idbus.console.main.view.profile.ChangePasswordView;
 import com.atricore.idbus.console.main.view.setup.SetupWizardView;
 import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
-import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceForm;
-import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceMediator;
+import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardView;
+import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardView;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 
@@ -39,12 +39,12 @@ public class ConsolePopUpManager extends BasePopUpManager {
 
     private var _setupWizardMediator:SetupWizardViewMediator;
     private var _simpleSSOWizardMediator:SimpleSSOWizardViewMediator;
-    private var _identityApplianceMediator:IdentityApplianceMediator;
+    private var _identityApplianceWizardMediator:IdentityApplianceWizardViewMediator;
     private var _changePasswordMediator:ChangePasswordMediator;
 
     protected var _setupWizardView:SetupWizardView;
     protected var _simpleSSOWizardView:SimpleSSOWizardView;
-    protected var _identityApplianceForm:IdentityApplianceForm;
+    protected var _identityApplianceWizardView:IdentityApplianceWizardView;
     protected var _changePasswordForm:ChangePasswordView;
 
 
@@ -71,12 +71,12 @@ public class ConsolePopUpManager extends BasePopUpManager {
         _simpleSSOWizardMediator = value;
     }
 
-    public function get identityApplianceMediator():IdentityApplianceMediator {
-        return _identityApplianceMediator;
+    public function get identityApplianceWizardMediator():IdentityApplianceWizardViewMediator {
+        return _identityApplianceWizardMediator;
     }
 
-    public function set identityApplianceMediator(value:IdentityApplianceMediator):void {
-        _identityApplianceMediator = value;
+    public function set identityApplianceWizardMediator(value:IdentityApplianceWizardViewMediator):void {
+        _identityApplianceWizardMediator = value;
     }
 
     public function get changePasswordMediator():ChangePasswordMediator {
@@ -121,23 +121,18 @@ public class ConsolePopUpManager extends BasePopUpManager {
 
     public function showCreateIdentityApplianceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        createIdentityApplianceForm();
-        _popup.title = "Identity Appliance";
-        _popup.width = 650;
-        _popup.height = 410;
-        //_popup.x = (_popupParent.width / 2) - 225;
-        //_popup.y = 80;
-        showPopup(_identityApplianceForm);
+        createIdentityApplianceWizardView();
+        showWizard(_identityApplianceWizardView);
     }
 
-    private function createIdentityApplianceForm():void {
-        _identityApplianceForm = new IdentityApplianceForm();
-        _identityApplianceForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityApplianceFormCreated);
+    private function createIdentityApplianceWizardView():void {
+        _identityApplianceWizardView = new IdentityApplianceWizardView();
+        _identityApplianceWizardView.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityApplianceWizardViewCreated);
     }
 
-    private function handleIdentityApplianceFormCreated(event:FlexEvent):void {
-        identityApplianceMediator.setViewComponent(_identityApplianceForm);
-        identityApplianceMediator.handleNotification(_lastWindowNotification);
+    private function handleIdentityApplianceWizardViewCreated(event:FlexEvent):void {
+        identityApplianceWizardMediator.setViewComponent(_identityApplianceWizardView);
+        identityApplianceWizardMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showChangePasswordWindow(notification:INotification):void {

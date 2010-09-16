@@ -162,7 +162,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         _processingStarted = true;
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 
-        sendNotification(ProcessingMediator.START);
+        sendNotification(ProcessingMediator.START, "Saving Identity Appliance ...");
 
         var identityAppliance:IdentityAppliance = _wizardDataModel.applianceData;
         var identityApplianceDefinition:IdentityApplianceDefinition = identityAppliance.idApplianceDefinition;
