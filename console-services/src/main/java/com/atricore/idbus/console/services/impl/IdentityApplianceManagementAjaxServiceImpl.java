@@ -159,7 +159,6 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
     }
 
     public ActivateExecEnvResponse activateExecEnv(ActivateExecEnvRequest req) throws IdentityServerException {
-//        throw new UnsupportedOperationException("NOT IMPLEMENTED");
         com.atricore.idbus.console.lifecycle.main.spi.request.ActivateExecEnvRequest beReq =
                 dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ActivateExecEnvRequest.class);
 
@@ -176,19 +175,6 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             throws IdentityServerException {
 
         IdentityApplianceDefinitionDTO iad = req.getIdentityApplianceDefinition();
-
-        iad.getProviders().add(createIdentityProvider(iad));
-
-        // create josso activations
-        // providers that are currently in providers list are service providers
-        for (ProviderDTO sp : iad.getProviders()) {
-            if (sp.getRole().equals(ProviderRoleDTO.SSOServiceProvider)) {
-                createJOSSOActivation(iad, (ServiceProviderDTO)sp);
-            }
-        }
-
-        //TODO set Locations for all objects
-        //TODO add bindings and profiles to channels
 
         IdentityApplianceDTO idAppliance = new IdentityApplianceDTO();
         idAppliance.setIdApplianceDefinition(iad);
@@ -213,6 +199,26 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         }
         AddIdentityApplianceResponse res = dozerMapper.map(beRes, AddIdentityApplianceResponse.class);
         idAppliance = res.getAppliance();
+
+        iad = idAppliance.getIdApplianceDefinition();
+        
+        IdentityProviderDTO idp = createIdentityProvider(iad);
+
+        // create josso activations and federated connections
+        // providers that are currently in providers list are service providers
+        for (ProviderDTO sp : iad.getProviders()) {
+            if (sp.getRole().equals(ProviderRoleDTO.SSOServiceProvider)) {
+                createJOSSOActivation(iad, (ServiceProviderDTO)sp);
+                createFederatedConnection(idp, (ServiceProviderDTO)sp);
+            }
+        }
+
+        iad.getProviders().add(idp);
+
+        //connect all providers with created identity vault/source
+        for (ProviderDTO tmpProvider : iad.getProviders()) {
+            createIdentityLookup(iad, tmpProvider);
+        }
 
         for (ProviderDTO p : idAppliance.getIdApplianceDefinition().getProviders()) {
             if (p instanceof ServiceProviderDTO) {
@@ -597,55 +603,84 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         location.setContext(iad.getLocation().getContext());
         location.setUri(createUrlSafeString(sp.getName() + "-sp"));
         
-        sp.getActiveBindings().add(BindingDTO.SSO_ARTIFACT);
-        sp.getActiveBindings().add(BindingDTO.SSO_REDIRECT);
+//        sp.getActiveBindings().add(BindingDTO.SSO_ARTIFACT);
+//        sp.getActiveBindings().add(BindingDTO.SSO_REDIRECT);
+        sp.getActiveBindings().add(BindingDTO.SAMLR2_ARTIFACT);
+        sp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_REDIRECT);
+        sp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_POST);
+        sp.getActiveBindings().add(BindingDTO.SAMLR2_SOAP);
 
         sp.getActiveProfiles().add(ProfileDTO.SSO);
         sp.getActiveProfiles().add(ProfileDTO.SSO_SLO);
 
-        IdentityProviderChannelDTO idpChannel = new IdentityProviderChannelDTO();
-        idpChannel.setName(sp.getName() + " to idp default channel");
-        idpChannel.setTarget(sp);
-
-        LocationDTO idpLocation = new LocationDTO();
-        idpLocation.setProtocol(iad.getLocation().getProtocol());
-        idpLocation.setHost(iad.getLocation().getHost());
-        idpLocation.setPort(iad.getLocation().getPort());
-        idpLocation.setContext(iad.getLocation().getContext());
-        idpLocation.setUri(createUrlSafeString(sp.getName()) + "/SAML2");
-        idpChannel.setLocation(idpLocation);
-
-        idpChannel.getActiveBindings().add(BindingDTO.SAMLR2_ARTIFACT);
-        idpChannel.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_REDIRECT);
-
-        idpChannel.getActiveProfiles().add(ProfileDTO.SSO);
-        idpChannel.getActiveProfiles().add(ProfileDTO.SSO_SLO);
-
-//        sp.setDefaultChannel(idpChannel);
+        //TODO CHECK IF LOCATION IS NEEDED
+//        LocationDTO idpLocation = new LocationDTO();
+//        idpLocation.setProtocol(iad.getLocation().getProtocol());
+//        idpLocation.setHost(iad.getLocation().getHost());
+//        idpLocation.setPort(iad.getLocation().getPort());
+//        idpLocation.setContext(iad.getLocation().getContext());
+//        idpLocation.setUri(createUrlSafeString(sp.getName()) + "/SAML2");
+//        idpChannel.setLocation(idpLocation);
 
         SamlR2ProviderConfigDTO spSamlConfig = new SamlR2ProviderConfigDTO();
-        spSamlConfig.setName(sp.getName() + " samlr2 config");
+        spSamlConfig.setName(sp.getName() + "-samlr2-config");
+        spSamlConfig.setDescription("SAMLR2 " + sp.getName() + "Configuration");
         spSamlConfig.setSigner(iad.getKeystore());
         spSamlConfig.setEncrypter(iad.getKeystore());
         sp.setConfig(spSamlConfig);
     }
 
-    private ProviderDTO createIdentityProvider(IdentityApplianceDefinitionDTO iad) {
+    private void createFederatedConnection(IdentityProviderDTO idp, ServiceProviderDTO sp){
+        IdentityProviderChannelDTO idpChannel = new IdentityProviderChannelDTO();
+        idpChannel.setName(sp.getName() + "-default-channel");
+        idpChannel.setDescription(sp.getName() + " Default Channel");
+        idpChannel.setOverrideProviderSetup(false);
+        idpChannel.setPreferred(true);
+
+        ServiceProviderChannelDTO spChannel = new ServiceProviderChannelDTO();
+        spChannel.setName(idp.getName() + "-default-channel");
+        spChannel.setDescription(sp.getName() + " Default Channel");
+        spChannel.setOverrideProviderSetup(false);
+
+        FederatedConnectionDTO fedConnection = new FederatedConnectionDTO();
+        fedConnection.setName(idp.getName() + "-" + sp.getName() + "-fed");
+        //SETTING ROLE A
+        fedConnection.setRoleA(idp);
+        fedConnection.setChannelA(spChannel);
+        idp.getFederatedConnectionsA().add(fedConnection);
+
+        //SETTING ROLE B
+        fedConnection.setRoleB(sp);        
+        fedConnection.setChannelB(idpChannel);
+        sp.getFederatedConnectionsB().add(fedConnection);
+    }
+
+    private void createIdentityLookup(IdentityApplianceDefinitionDTO iad, ProviderDTO provider){
+        for(IdentitySourceDTO is : iad.getIdentitySources()){            
+            IdentityLookupDTO idLookup = new IdentityLookupDTO();
+            idLookup.setName(provider.getName() + "-idlookup");
+            idLookup.setDescription(provider.getName() + " Identity Lookup Definition");
+
+            //set provider and lookup
+            idLookup.setProvider(provider);
+            provider.setIdentityLookup(idLookup);
+            //set IdentitySource and lookup
+            idLookup.setIdentitySource(is);
+        }
+    }
+
+    private IdentityProviderDTO createIdentityProvider(IdentityApplianceDefinitionDTO iad) {
         IdentityProviderDTO idp = new IdentityProviderDTO();
         idp.setName(createUrlSafeString(iad.getName()) + "-idp");
         idp.setIdentityAppliance(iad);
 
-        ServiceProviderChannelDTO spChannel = new ServiceProviderChannelDTO();
-        spChannel.setName(idp.getName() + " to sp default channel");
-        spChannel.setTarget(idp);
+        idp.getActiveBindings().add(BindingDTO.SAMLR2_ARTIFACT);
+        idp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_REDIRECT);
+        idp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_POST);
+        idp.getActiveBindings().add(BindingDTO.SAMLR2_SOAP);
 
-        spChannel.getActiveBindings().add(BindingDTO.SAMLR2_ARTIFACT);
-        spChannel.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_REDIRECT);
-        spChannel.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_POST);
-        spChannel.getActiveBindings().add(BindingDTO.SAMLR2_SOAP);
-
-        spChannel.getActiveProfiles().add(ProfileDTO.SSO);
-        spChannel.getActiveProfiles().add(ProfileDTO.SSO_SLO);
+        idp.getActiveProfiles().add(ProfileDTO.SSO);
+        idp.getActiveProfiles().add(ProfileDTO.SSO_SLO);
 
         LocationDTO idpLocation = new LocationDTO();
         idpLocation.setProtocol(iad.getLocation().getProtocol());
@@ -655,32 +690,23 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idpLocation.setUri(createUrlSafeString(idp.getName()));
         idp.setLocation(idpLocation);
 
-        LocationDTO spChannelLocation = new LocationDTO();
-        spChannelLocation.setProtocol(iad.getLocation().getProtocol());
-        spChannelLocation.setHost(iad.getLocation().getHost());
-        spChannelLocation.setPort(iad.getLocation().getPort());
-        spChannelLocation.setContext(iad.getLocation().getContext());
-        spChannelLocation.setUri(createUrlSafeString(idp.getName()));
-        spChannel.setLocation(spChannelLocation);
-
-        //simple sso wizard creates only one vault
-//        spChannel.setIdentityVault(iad.getIdentityVaults().get(0));
-
-//        idp.setDefaultChannel(spChannel);
-
         SamlR2ProviderConfigDTO idpSamlConfig = new SamlR2ProviderConfigDTO();
-        idpSamlConfig.setName(idp.getName() + " samlr2 config");
+        idpSamlConfig.setName(idp.getName() + "-samlr2-config");
+        idpSamlConfig.setDescription("SAMLR2 " + idp.getName() + "Configuration");
         idpSamlConfig.setSigner(iad.getKeystore());
         idpSamlConfig.setEncrypter(iad.getKeystore());
         idp.setConfig(idpSamlConfig);
 
-        Set<AuthenticationMechanismDTO> authMechanisms = new HashSet<AuthenticationMechanismDTO>();
+        if(idp.getAuthenticationMechanisms() == null){
+            idp.setAuthenticationMechanisms(new HashSet<AuthenticationMechanismDTO>());
+        }
         BasicAuthenticationDTO authMechanism = new BasicAuthenticationDTO();
+        authMechanism.setName(idp.getName() + "-basic-authn");
         authMechanism.setHashAlgorithm("MD5");
         authMechanism.setHashEncoding("HEX");
         authMechanism.setIgnoreUsernameCase(false);
-        authMechanisms.add(authMechanism);
-        idp.setAuthenticationMechanisms(authMechanisms);
+        
+        idp.getAuthenticationMechanisms().add(authMechanism);
 
         return idp;
     }
