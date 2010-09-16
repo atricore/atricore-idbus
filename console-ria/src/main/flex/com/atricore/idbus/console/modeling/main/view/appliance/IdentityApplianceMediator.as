@@ -95,6 +95,7 @@ public class IdentityApplianceMediator extends IocFormMediator
         _validators.push(view.portValidator);
         _validators.push(view.domainValidator);
         _validators.push(view.pathValidator);
+        _validators.push(view.namespaceValidator);
     }
 
     override public function listNotificationInterests():Array {
@@ -140,10 +141,10 @@ public class IdentityApplianceMediator extends IocFormMediator
     override public function bindForm():void {
         view.applianceName.text = "";
         view.applianceDescription.text = "";
+        view.applianceNamespace.text = "";
         view.applianceLocationProtocol.selectedIndex = 0;
         view.applianceLocationDomain.text = "";
         view.applianceLocationPort.text = "";
-
         view.applianceLocationPath.text  = "";
 
         FormUtility.clearValidationErrors(_validators);
@@ -154,6 +155,7 @@ public class IdentityApplianceMediator extends IocFormMediator
         var idApplianceDef:IdentityApplianceDefinition = new IdentityApplianceDefinition();
         idApplianceDef.name = view.applianceName.text;
         idApplianceDef.description = view.applianceDescription.text;
+        idApplianceDef.namespace = view.applianceNamespace.text;
         var location:Location = new Location();
         location.protocol = view.applianceLocationProtocol.selectedItem.data;
         location.host = view.applianceLocationDomain.text;

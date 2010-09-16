@@ -2,6 +2,7 @@ package com.atricore.idbus.console.services.impl;
 
 import com.atricore.idbus.console.lifecycle.main.exception.SignOnException;
 import com.atricore.idbus.console.services.dto.UserDTO;
+import com.atricore.idbus.console.services.spi.SpmlAjaxClient;
 import com.atricore.idbus.console.services.spi.SignOnAjaxService;
 import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
 import com.atricore.idbus.console.services.spi.request.FindUserByUsernameRequest;
@@ -12,25 +13,27 @@ import com.atricore.idbus.console.services.spi.response.SignOnResponse;
 import com.atricore.idbus.console.services.spi.response.SignOutResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
-
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 /**
+ * TODO : In future versions, authentication context must be provided by a built in SSO appliance unit
+ *
  * Author: Dusan Fisic
  */
 public class SignOnAjaxServiceImpl implements SignOnAjaxService {
 
     private static Log logger = LogFactory.getLog(SignOnAjaxServiceImpl.class);
 
+    private UUIDGenerator uuidGenerator = new UUIDGenerator();
     private UserProvisioningAjaxService usrProvService;
 
     private String hashEncoding  = "HEX";
-
     private String hashAlgorithm = "MD5";
-
     private String hashCharset = null;
 
     public SignOnResponse signOn(SignOnRequest signOnRequest) throws SignOnException {
@@ -46,13 +49,13 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService {
                 response.setAuthenticatedUser(retUser);
             }
             if (retUser == null && logger.isTraceEnabled())
-                 logger.trace("Unknown user with username: " + signOnRequest.getUsername() );
+                logger.trace("Unknown user with username: " + signOnRequest.getUsername() );
 
             return response;
         }
         catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new SignOnException("Error finding user with username: " + userRequest.getUsername() + " : " + e.getMessage(), e);
+            throw new SignOnException("Wrong credentials for user : " + userRequest.getUsername() + " : " + e.getMessage(), e);
         }
     }
 
@@ -60,7 +63,7 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService {
         FindUserByUsernameRequest userRequest = new FindUserByUsernameRequest();
         try{
             SignOutResponse response = new SignOutResponse();
-           
+
             return response;
         }
         catch (Exception e) {

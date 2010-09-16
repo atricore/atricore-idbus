@@ -23,7 +23,7 @@ package com.atricore.idbus.console.services.impl;
 
 import com.atricore.idbus.console.lifecycle.main.exception.UserNotFoundException;
 import com.atricore.idbus.console.services.dto.UserDTO;
-import com.atricore.idbus.console.services.spi.AjaxService;
+import com.atricore.idbus.console.services.spi.SpmlAjaxClient;
 import com.atricore.idbus.console.services.spi.IdentityServerException;
 import com.atricore.idbus.console.services.spi.ProfileManagementAjaxService;
 import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
@@ -42,7 +42,7 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 /**
  * Author: Dusan Fisic
  */
-public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxService, AjaxService {
+public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxService, SpmlAjaxClient {
     private static Log logger = LogFactory.getLog(ProfileManagementAjaxServiceImpl.class);
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();

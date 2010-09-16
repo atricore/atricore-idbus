@@ -269,6 +269,7 @@ public class PropertySheetMediator extends IocMediator {
         // bind view
         _iaCoreSection.applianceName.text = identityAppliance.idApplianceDefinition.name;
         _iaCoreSection.applianceDescription.text = identityAppliance.idApplianceDefinition.description;
+        _iaCoreSection.applianceNamespace.text = identityAppliance.idApplianceDefinition.namespace;
 
         var location:Location = identityAppliance.idApplianceDefinition.location;
         for (var i:int = 0; i < _iaCoreSection.applianceLocationProtocol.dataProvider.length; i++) {
@@ -278,11 +279,13 @@ public class PropertySheetMediator extends IocMediator {
             }
         }
         _iaCoreSection.applianceLocationDomain.text = location.host;
-        _iaCoreSection.applianceLocationPort.text = location.port.toString();
+        _iaCoreSection.applianceLocationPort.text = location.port.toString() != "0" ?
+                location.port.toString() : "";
         _iaCoreSection.applianceLocationPath.text = location.context;
 
         _iaCoreSection.applianceName.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceDescription.addEventListener(Event.CHANGE, handleSectionChange);
+        _iaCoreSection.applianceNamespace.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
         _iaCoreSection.applianceLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
@@ -293,6 +296,7 @@ public class PropertySheetMediator extends IocMediator {
         _validators.push(_iaCoreSection.portValidator);
         _validators.push(_iaCoreSection.domainValidator);
         _validators.push(_iaCoreSection.pathValidator);
+        _validators.push(_iaCoreSection.namespaceValidator);
     }
 
     private function handleIdentityApplianceCorePropertyTabRollOut(e:Event):void {
@@ -305,6 +309,7 @@ public class PropertySheetMediator extends IocMediator {
 
             identityAppliance.idApplianceDefinition.name = _iaCoreSection.applianceName.text;
             identityAppliance.idApplianceDefinition.description = _iaCoreSection.applianceDescription.text;
+            identityAppliance.idApplianceDefinition.namespace = _iaCoreSection.applianceNamespace.text;
             identityAppliance.idApplianceDefinition.location.protocol = _iaCoreSection.applianceLocationProtocol.selectedItem.label;
             identityAppliance.idApplianceDefinition.location.host = _iaCoreSection.applianceLocationDomain.text;
             identityAppliance.idApplianceDefinition.location.port = parseInt(_iaCoreSection.applianceLocationPort.text);
@@ -405,7 +410,8 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
             _ipCoreSection.idpLocationDomain.text = identityProvider.location.host;
-            _ipCoreSection.idpLocationPort.text = identityProvider.location.port.toString();
+            _ipCoreSection.idpLocationPort.text = identityProvider.location.port.toString() != "0" ?
+                    identityProvider.location.port.toString() : "";
             _ipCoreSection.idpLocationContext.text = "/" + identityProvider.location.context + "/";
             _ipCoreSection.idpLocationPath.text = identityProvider.location.uri;
 
@@ -615,7 +621,8 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
             _spCoreSection.spLocationDomain.text = serviceProvider.location.host;
-            _spCoreSection.spLocationPort.text = serviceProvider.location.port.toString();
+            _spCoreSection.spLocationPort.text = serviceProvider.location.port.toString() != "0" ?
+                    serviceProvider.location.port.toString() : "";
             _spCoreSection.spLocationContext.text = "/" + serviceProvider.location.context + "/";
             _spCoreSection.spLocationPath.text = serviceProvider.location.uri;
 
@@ -1833,7 +1840,8 @@ public class PropertySheetMediator extends IocMediator {
             }
         }
         _jossoActivationCoreSection.partnerAppLocationDomain.text = location.host;
-        _jossoActivationCoreSection.partnerAppLocationPort.text = location.port.toString();
+        _jossoActivationCoreSection.partnerAppLocationPort.text = location.port.toString() != "0" ?
+                location.port.toString() : "";
         _jossoActivationCoreSection.partnerAppLocationPath.text = location.context;
 
         var ignoredWebResources:String = "";

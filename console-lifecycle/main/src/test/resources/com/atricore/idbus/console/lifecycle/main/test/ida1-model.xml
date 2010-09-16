@@ -319,9 +319,9 @@
         <property name="name" value="idsource1"/>
         <property name="displayName" value="Identity Source One"/>
         <property name="description" value="Test Identity Source One"/>
-        <property name="idau" value="default-idau"/>
-        <property name="psp" value="default-psp"/>
-        <property name="pspTarget" value="default-pspTarget"/>
+        <property name="idau" value="idau-default"/>
+        <property name="psp" value="psp-default"/>
+        <property name="pspTarget" value="pst-default"/>
     </bean>
 
     <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer" id="customEditorConfigurer">

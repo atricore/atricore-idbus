@@ -36,7 +36,7 @@
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{spChannelLocationDomain}" required="true" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
-        <utils:URLPartValidator id="pathValidator" source="{spChannelLocationPath}" required="false" property="text"
+        <utils:URLMultipartValidator id="pathValidator" source="{spChannelLocationPath}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
     </fx:Declarations>
 

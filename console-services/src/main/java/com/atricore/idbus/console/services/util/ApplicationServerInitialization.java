@@ -53,6 +53,7 @@ public class ApplicationServerInitialization {
 
     private String adminUsername;
     private String adminPassword;
+    private String adminFullName;
 
     private GroupDTO adminGroup;
     private UserDTO adminUser;
@@ -98,7 +99,8 @@ public class ApplicationServerInitialization {
                 addUserRequest.setUserName(adminUsername);
                 addUserRequest.setUserPassword(adminPassword);
                 addUserRequest.setFirstName(adminGroupName);
-                addUserRequest.setGivenName(adminGroupDescription);
+                addUserRequest.setGivenName(adminFullName);
+                addUserRequest.setCommonName(adminFullName);
                 addUserRequest.setAccountDisabled(false);
                 addUserRequest.setAllowUserToChangePassword(true);
                 GroupDTO[] groups = new GroupDTO[1];
@@ -147,6 +149,15 @@ public class ApplicationServerInitialization {
     public void setAdminGroupDescription(String adminGroupDescription) {
         this.adminGroupDescription = adminGroupDescription;
     }
+
+    public String getAdminFullName() {
+        return adminFullName;
+    }
+
+    public void setAdminFullName(String adminFullName) {
+        this.adminFullName = adminFullName;
+    }
+
 
     public UserProvisioningAjaxService getUsrProvService() {
         return usrProvService;

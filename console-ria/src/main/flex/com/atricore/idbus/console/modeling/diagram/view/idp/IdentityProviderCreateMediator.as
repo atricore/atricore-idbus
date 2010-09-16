@@ -79,7 +79,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.idpLocationProtocol.selectedIndex = 0;
         view.idpLocationDomain.text = "";
         view.idpLocationPort.text = "";
-        view.idpLocationContext.text = "";
+        view.idpLocationContext.text = "/idbus/";
         view.idpLocationPath.text = "";
         view.signAuthAssertionCheck.selected = false;
         view.encryptAuthAssertionCheck.selected = false;
@@ -108,7 +108,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         loc.protocol = view.idpLocationProtocol.labelDisplay.text;
         loc.host = view.idpLocationDomain.text;
         loc.port = parseInt(view.idpLocationPort.text);
-        loc.context = view.idpLocationContext.text;
+        loc.context = "idbus";
         loc.uri = view.idpLocationPath.text;
         identityProvider.location = loc;
 

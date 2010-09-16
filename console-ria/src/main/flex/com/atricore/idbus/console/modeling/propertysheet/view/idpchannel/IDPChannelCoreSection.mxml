@@ -39,7 +39,7 @@
                         minValue="1" maxValue="65535"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{idpChannelLocationDomain}" required="true" property="text"/>
-        <utils:URLPartValidator id="pathValidator" source="{idpChannelLocationPath}" required="false" property="text"/>
+        <utils:URLMultipartValidator id="pathValidator" source="{idpChannelLocationPath}" required="false" property="text"/>
     </fx:Declarations>
 
     <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProvChannel.endpoint')}" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"

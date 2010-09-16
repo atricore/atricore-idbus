@@ -65,7 +65,7 @@ public class PaletteMediator extends IocMediator {
     private function init():void {
 
         // bind view to palette model
-        var saml2PaletteDrawer:PaletteDrawer = new PaletteDrawer("SAML 2", null, null);
+        var saml2PaletteDrawer:PaletteDrawer = new PaletteDrawer("Internet SSO (SAML2)", null, null);
 
         saml2PaletteDrawer.add(
                     new PaletteEntry("Identity Provider", EmbeddedIcons.idpMiniIcon, "Identity Provider Entry", DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE)

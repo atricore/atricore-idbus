@@ -136,7 +136,7 @@ public class ModelerMediator extends IocMediator {
             view.btnNew.removeEventListener(MouseEvent.CLICK, handleNewClick);
             view.btnOpen.removeEventListener(MouseEvent.CLICK, handleOpenClick);
             view.btnSave.removeEventListener(MouseEvent.CLICK, handleSaveClick);
-            view.btnLifecycle.removeEventListener(MouseEvent.CLICK, handleLifecycleClick);
+            //view.btnLifecycle.removeEventListener(MouseEvent.CLICK, handleLifecycleClick);
         }
 
         //this is not working for first viewStack child?
@@ -157,7 +157,7 @@ public class ModelerMediator extends IocMediator {
         view.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
         view.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
         view.btnSave.addEventListener(MouseEvent.CLICK, handleSaveClick);
-        view.btnLifecycle.addEventListener(MouseEvent.CLICK, handleLifecycleClick);
+        //view.btnLifecycle.addEventListener(MouseEvent.CLICK, handleLifecycleClick);
 
         view.appliances.labelFunction = applianceListLabelFunc;
         view.btnSave.enabled = false;
@@ -173,9 +173,9 @@ public class ModelerMediator extends IocMediator {
             if (projectProxy.currentIdentityAppliance != null) {
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 enableIdentityApplianceActionButtons();
-            } else {
+            }/* else {
                 view.btnLifecycle.enabled = false;
-            }
+            }*/
             // TODO: delete IF condition (fetch list every time modeler is opened)?
             if (projectProxy.identityApplianceList == null) {
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
@@ -386,7 +386,7 @@ public class ModelerMediator extends IocMediator {
                 break;
             case LookupIdentityApplianceByIdCommand.SUCCESS:
                 view.btnSave.enabled = false;
-                view.btnLifecycle.enabled = false;
+                //view.btnLifecycle.enabled = false;
                 enableIdentityApplianceActionButtons();
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
@@ -430,9 +430,9 @@ public class ModelerMediator extends IocMediator {
 
     private function enableIdentityApplianceActionButtons():void {
         var appliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
-        if (appliance != null && appliance.idApplianceDeployment == null) {
+        /*if (appliance != null && appliance.idApplianceDeployment == null) {
             view.btnLifecycle.enabled = true;
-        }
+        }*/
     }
 
     private function applianceListLabelFunc(item:Object):String {

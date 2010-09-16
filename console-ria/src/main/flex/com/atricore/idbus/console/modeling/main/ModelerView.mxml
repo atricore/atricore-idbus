@@ -68,9 +68,9 @@
                     <s:DropDownList id="applianceStyle" labelField="label" selectedIndex="0" width="228" height="24"
                                     dataProvider="{applianceStyleCollection}" />
 
-                    <comp:IconLabelButton id="btnLifecycle" isLinkButton="false" toolTip="Lifecycle" label="Lifecycle"
+                    <!--comp:IconLabelButton id="btnLifecycle" isLinkButton="false" toolTip="Lifecycle" label="Lifecycle"
                                           iconUp="{EmbeddedIcons.lifecycleMiniIcon}"
-                                          skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin" />
+                                          skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin" /-->
 
                     <comp:IconLabelButton id="btnOpen" isLinkButton="false"
                                           iconUp="{EmbeddedIcons.openApplianceMiniIcon}"
