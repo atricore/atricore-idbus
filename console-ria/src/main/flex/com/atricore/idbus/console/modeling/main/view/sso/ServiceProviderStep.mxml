@@ -36,11 +36,14 @@
 
             import com.atricore.idbus.console.services.dto.Location;
             import com.atricore.idbus.console.services.dto.ServiceProvider;
+            import com.atricore.idbus.console.services.dto.JOSSOActivation;
+            import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
+            import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 
             [Bindable]
             private var validators:Array;
 
-            private var labelWidth:Number = 120;
+            private var labelWidth:Number = 165;
 
             private var lastSPCreated:Boolean;
 
@@ -79,7 +82,8 @@
                     validators.push(portValidator);
                     validators.push(domainValidator);
                     validators.push(contextPathValidator);
-                    //validators.push(pathValidator);
+                    validators.push(partnerAppIdValidator);
+                    validators.push(homeDirValidator);
                 }
             }
 
@@ -92,15 +96,38 @@
             private function addSPToArray():void {
                 var sp:ServiceProvider = new ServiceProvider();
                 sp.name = jossoSPName.text;
+
+                // temporary location
+                var spLoc = new Location();
+                spLoc.protocol = "";
+                spLoc.host = "";
+                spLoc.port = 80;
+                spLoc.context = "";
+                spLoc.uri = "";
+                sp.location = spLoc;
+
+
+                sp.activation = new JOSSOActivation();
+                sp.activation.name = sp.name + "-josso";
                 var loc:Location = new Location();
-                loc.protocol = spLocationProtocol.labelDisplay.text;
-                loc.host = spLocationDomain.text;
-                loc.port = parseInt(spLocationPort.text);
-                loc.context = spLocationContext.text;
-                //loc.uri = spLocationPath.text;
-                sp.location = loc;
-                // temporary save application platform in description field
-                sp.description = jossoSPPlatform.selectedItem.@data;
+                loc.protocol = partnerappLocationProtocol.labelDisplay.text;
+                loc.host = partnerappLocationDomain.text;
+                loc.port = parseInt(partnerappLocationPort.text);
+                loc.context = partnerappLocationContext.text;
+                loc.uri = "";
+
+                (sp.activation as JOSSOActivation).partnerAppLocation = loc;
+                (sp.activation as JOSSOActivation).partnerAppId = partnerAppId.text;
+
+                if(jossoSPPlatform.selectedItem.@data.indexOf("jb") == 0){
+                    sp.activation.executionEnv = new JbossExecutionEnvironment();
+                } else if (jossoSPPlatform.selectedItem.@data.indexOf("tc") == 0){
+                    sp.activation.executionEnv = new TomcatExecutionEnvironment();
+                }
+                sp.activation.executionEnv.name = partnerappLocationProtocol.labelDisplay.text + "-execenv";
+                sp.activation.executionEnv.installUri = homeDir.text;
+
+                sp.activation.executionEnv.platformId = jossoSPPlatform.selectedItem.@data;
                 serviceProviderArray.push(sp);
             }
 
@@ -127,27 +154,27 @@
                 jossoSPName.errorString = ""; //prevents validation error from occurring
                 jossoSPPlatform.selectedIndex = 0;
 
-                spLocationDomain.text = "";
-                spLocationDomain.errorString = "";//prevents validation error from occurring
-                spLocationPort.text = "";
-                spLocationContext.text = "";
-                spLocationContext.errorString = "";
+                partnerappLocationDomain.text = "";
+                partnerappLocationDomain.errorString = "";//prevents validation error from occurring
+                partnerappLocationPort.text = "";
+                partnerappLocationContext.text = "";
+                partnerappLocationContext.errorString = "";
                 //spLocationPath.text = "";
                 //spLocationPath.errorString = "";
-                spLocationLbl.text = "";
-                spLocationProtocol.selectedIndex = 0;
+//                spLocationLbl.text = "";
+                partnerappLocationProtocol.selectedIndex = 0;
             }
 
             private function changeSPLocationLabel(event:Event):void {
-                var port:String = ( spLocationPort.text == "" ? "" : ":" + spLocationPort.text );
-                spLocationLbl.text = "[ " + composeLocation() + " ]";
+//                var port:String = ( partnerappLocationPort.text == "" ? "" : ":" + partnerappLocationPort.text );
+//                spLocationLbl.text = "[ " + composeLocation() + " ]";
                 handleFormChange(event);
             }
 
             private function composeLocation():String {
-                var port:String = ( spLocationPort.text == "" ? "" : ":" + spLocationPort.text );
-                return spLocationProtocol.labelDisplay.text + '://' + spLocationDomain.text + port + '/' +
-                        spLocationContext.text;
+                var port:String = ( partnerappLocationPort.text == "" ? "" : ":" + partnerappLocationPort.text );
+                return partnerappLocationProtocol.labelDisplay.text + '://' + partnerappLocationDomain.text + port + '/' +
+                       partnerappLocationContext.text;
             }
         ]]>
     </fx:Script>
@@ -155,12 +182,14 @@
     <fx:Declarations>
         <mx:StringValidator id="nameValidator" source="{jossoSPName}" required="true" property="text"/>
         <!--<mx:StringValidator id="domainValidator" source="{spLocationDomain}" required="true" property="text"/>-->
-        <mx:NumberValidator id="portValidator" source="{spLocationPort}" required="false" property="text"
+        <mx:NumberValidator id="portValidator" source="{partnerappLocationPort}" required="false" property="text"
             minValue="1" maxValue="65535"
             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.portValidationError')}"/>
-        <utils:URLPartValidator id="domainValidator" source="{spLocationDomain}" required="true" property="text" />
-        <utils:URLPartValidator id="contextPathValidator" source="{spLocationContext}" required="false" property="text" />
-        <!--utils:URLMultipartValidator id="pathValidator" source="{spLocationPath}" required="false" property="text" /-->
+        <utils:URLPartValidator id="domainValidator" source="{partnerappLocationDomain}" required="true" property="text" />
+        <!--<utils:URLPartValidator id="contextPathValidator" source="{partnerappLocationContext}" required="false" property="text" />-->
+        <utils:URLMultipartValidator id="contextPathValidator" source="{partnerappLocationContext}" required="false" property="text" />
+        <mx:StringValidator id="partnerAppIdValidator" source="{partnerAppId}" required="true" property="text"/>
+        <mx:StringValidator id="homeDirValidator" source="{homeDir}" required="true" property="text"/>
 
         <fx:XML id="platforms" source="/com/atricore/idbus/console/modeling/view/platformList.xml" />
         <mx:XMLListCollection id="platformList" source="{platforms.children()}" />
@@ -184,41 +213,43 @@
                 </s:HGroup>
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.jossoSPName')}:"
                              required="true" paddingRight="4">
-                    <s:TextInput id="jossoSPName" width="422" change="handleFormChange(event);"/>
+                    <s:TextInput id="jossoSPName" width="388" change="handleFormChange(event);"/>
                 </mx:FormItem>
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.applicationPlatform')}:">
                     <s:DropDownList id="jossoSPPlatform" width="302"
                             dataProvider="{platformList}" labelField="@label" selectedIndex="0"/>
                 </mx:FormItem>
-                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.applicationLocation')}:" required="true">-->
-                    <!--<mx:TextInput id="jossoSPLocation" width="300" change="handleFormChange(event);"/>-->
-                <!--</mx:FormItem>-->
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.partnerappid')}:"
+                             required="true" paddingRight="4">
+                    <s:TextInput id="partnerAppId" width="388" change="handleFormChange(event);"/>
+                </mx:FormItem>
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.applicationLocation')}:"
                         direction="horizontal" labelWidth="{labelWidth}" required="true">
-                    <s:DropDownList id="spLocationProtocol" change="{changeSPLocationLabel(event);}" width="70" selectedIndex="0">
+                    <s:DropDownList id="partnerappLocationProtocol" change="{changeSPLocationLabel(event);}" width="70" selectedIndex="0">
                         <mx:ArrayCollection>
                             <fx:Object label="http" data="http"/>
                             <fx:Object label="https" data="https"/>
                         </mx:ArrayCollection>
                     </s:DropDownList>
                     <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
-                    <s:TextInput id="spLocationDomain" width="150" change="changeSPLocationLabel(event);"/>
-                            <!--focusIn="clearDefaultValue(event);" focusOut="setDefaultValueIfEmpty(event)"/>-->
+                    <s:TextInput id="partnerappLocationDomain" width="130" change="changeSPLocationLabel(event);"/>
                     <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
-                    <s:TextInput id="spLocationPort" width="40" change="changeSPLocationLabel(event);" />
+                    <s:TextInput id="partnerappLocationPort" width="40" change="changeSPLocationLabel(event);" />
                     <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
-                    <s:TextInput id="spLocationContext" width="70" change="changeSPLocationLabel(event);" />
-                    <!--mx:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
-                    <mx:TextInput id="spLocationPath" width="100" change="changeSPLocationLabel(event);" /-->
+                    <s:TextInput id="partnerappLocationContext" width="87" change="changeSPLocationLabel(event);" />
                 </mx:FormItem>
 
-                <s:Label id="spLocationLbl" paddingLeft="130" fontWeight="bold" />
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.homeDir')}:"
+                             required="true" paddingRight="4">
+                    <s:TextInput id="homeDir" width="388" change="handleFormChange(event);"/>
+                </mx:FormItem>
 
 
-                <mx:Spacer height="20" />
+                <mx:Spacer height="10" />
                 <s:HGroup>
-                    <mx:Spacer width="{labelWidth}"/>
+                    <mx:Spacer width="{labelWidth + 8}"/>
                     <s:Button id="newSPProvider" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.addNewSPProvider')}"
                            click="addNewSPProvider()" enabled="{isValid}"/>
                 </s:HGroup>

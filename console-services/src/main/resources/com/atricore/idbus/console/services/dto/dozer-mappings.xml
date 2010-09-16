@@ -116,12 +116,12 @@
         <field>
             <a>config</a>
             <b>config</b>
-              <a-hint>
+            <a-hint>
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.JossoBPConfig,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2IDPConfig,
                   com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2SPConfig
-              </a-hint>
+            </a-hint>
             <b-hint>
                   com.atricore.idbus.console.services.dto.JossoBPConfigDTO,
                   com.atricore.idbus.console.services.dto.SamlR2ProviderConfigDTO,
@@ -286,6 +286,12 @@
         <field>
             <a>encrypter</a>
             <b>encrypter</b>
+            <a-hint>com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore</a-hint>
+            <b-hint>com.atricore.idbus.console.services.dto.KeystoreDTO</b-hint>
+        </field>
+        <field>
+            <a>signer</a>
+            <b>signer</b>
             <a-hint>com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore</a-hint>
             <b-hint>com.atricore.idbus.console.services.dto.KeystoreDTO</b-hint>
         </field>
@@ -506,6 +512,16 @@
         <field relationship-type="non-cumulative" remove-orphans="true">
             <a>ignoredWebResources</a>
             <b>ignoredWebResources</b>
+        </field>
+        <field>
+            <a>sp</a>
+            <b>sp</b>
+            <a-hint>
+                  com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider
+            </a-hint>
+            <b-hint>
+                  com.atricore.idbus.console.services.dto.ServiceProviderDTO
+            </b-hint>
         </field>
     </mapping>
 
