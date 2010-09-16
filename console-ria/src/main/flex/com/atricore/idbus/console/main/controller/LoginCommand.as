@@ -40,7 +40,7 @@ public class LoginCommand extends IocSimpleCommand implements IResponder
 {
     public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.LoginCommand.SUCCESS";
     public static const FAILURE:String = "com.atricore.idbus.console.main.controller.LoginCommand.FAILURE";
-    
+
     private var _registry:ServiceRegistry;
     private var _secureContext:SecureContextProxy;
 
@@ -77,14 +77,11 @@ public class LoginCommand extends IocSimpleCommand implements IResponder
         var signOnResponse:SignOnResponse = data.result as SignOnResponse;
         var user:User = signOnResponse.authenticatedUser;
         secureContext.currentUser = user;
-        /*
+
         if (secureContext.currentUser !=null)
             sendNotification(SUCCESS);
         else
             sendNotification(FAILURE);
-        */
-        sendNotification(SUCCESS);
-
     }
 
     public function fault(info:Object):void {

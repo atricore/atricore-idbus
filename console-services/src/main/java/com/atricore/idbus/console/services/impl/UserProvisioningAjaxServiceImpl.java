@@ -25,7 +25,7 @@ import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundExceptio
 import com.atricore.idbus.console.lifecycle.main.exception.UserProvisioningAjaxException;
 import com.atricore.idbus.console.services.dto.GroupDTO;
 import com.atricore.idbus.console.services.dto.UserDTO;
-import com.atricore.idbus.console.services.spi.AjaxService;
+import com.atricore.idbus.console.services.spi.SpmlAjaxClient;
 import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
@@ -53,7 +53,7 @@ import java.util.List;
 /**
  * Author: Dusan Fisic
  */
-public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxService, InitializingBean, AjaxService {
+public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxService, InitializingBean, SpmlAjaxClient {
     private static Log logger = LogFactory.getLog(UserProvisioningAjaxServiceImpl.class);
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();

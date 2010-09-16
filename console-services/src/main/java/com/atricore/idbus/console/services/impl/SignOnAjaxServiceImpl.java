@@ -2,7 +2,7 @@ package com.atricore.idbus.console.services.impl;
 
 import com.atricore.idbus.console.lifecycle.main.exception.SignOnException;
 import com.atricore.idbus.console.services.dto.UserDTO;
-import com.atricore.idbus.console.services.spi.AjaxService;
+import com.atricore.idbus.console.services.spi.SpmlAjaxClient;
 import com.atricore.idbus.console.services.spi.SignOnAjaxService;
 import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
 import com.atricore.idbus.console.services.spi.request.FindUserByUsernameRequest;
@@ -11,27 +11,30 @@ import com.atricore.idbus.console.services.spi.request.SignOutRequest;
 import com.atricore.idbus.console.services.spi.response.FindUserByUsernameResponse;
 import com.atricore.idbus.console.services.spi.response.SignOnResponse;
 import com.atricore.idbus.console.services.spi.response.SignOutResponse;
-import oasis.names.tc.spml._2._0.PSOIdentifierType;
-import oasis.names.tc.spml._2._0.StatusCodeType;
-import oasis.names.tc.spml._2._0.password.ValidatePasswordRequestType;
-import oasis.names.tc.spml._2._0.password.ValidatePasswordResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client;
+import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 /**
+ * TODO : In future versions, authentication context must be provided by a built in SSO appliance unit
+ *
  * Author: Dusan Fisic
  */
-public class SignOnAjaxServiceImpl implements SignOnAjaxService, AjaxService {
+public class SignOnAjaxServiceImpl implements SignOnAjaxService {
+
     private static Log logger = LogFactory.getLog(SignOnAjaxServiceImpl.class);
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
     private UserProvisioningAjaxService usrProvService;
 
-    private SpmlR2Client spmlService;
-    private String pspTargetId;
+    private String hashEncoding  = "HEX";
+    private String hashAlgorithm = "MD5";
+    private String hashCharset = null;
 
     public SignOnResponse signOn(SignOnRequest signOnRequest) throws SignOnException {
         FindUserByUsernameRequest userRequest = new FindUserByUsernameRequest();
@@ -39,22 +42,11 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService, AjaxService {
 
         try{
             SignOnResponse response = new SignOnResponse();
-            FindUserByUsernameResponse finsResp = usrProvService.findUserByUsername(userRequest);
-            UserDTO retUser = finsResp.getUser();
-            if (retUser != null) {
-                PSOIdentifierType psoUserId = new PSOIdentifierType();
-                psoUserId.setTargetID(pspTargetId);
-                psoUserId.setID(retUser.getId() + "");
-                psoUserId.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
-
-                ValidatePasswordRequestType validatePass = new ValidatePasswordRequestType();
-                validatePass.setRequestID(uuidGenerator.generateId());
-                validatePass.setPsoID(psoUserId);
-                validatePass.setPassword(signOnRequest.getPassword());
-
-                ValidatePasswordResponseType resp = spmlService.spmlValidatePasswordRequest(validatePass);
-                if (resp.getStatus() == StatusCodeType.SUCCESS)
-                    response.setAuthenticatedUser(retUser);
+            FindUserByUsernameResponse resp = usrProvService.findUserByUsername(userRequest);
+            UserDTO retUser = resp.getUser();
+            if (retUser != null &&
+                    retUser.getUserPassword().equals(createPasswordHash(signOnRequest.getPassword()))) {
+                response.setAuthenticatedUser(retUser);
             }
             if (retUser == null && logger.isTraceEnabled())
                 logger.trace("Unknown user with username: " + signOnRequest.getUsername() );
@@ -88,22 +80,119 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService, AjaxService {
         this.usrProvService = usrProvService;
     }
 
-    public String getPspTargetId() {
-        return pspTargetId;
+    protected String createPasswordHash(String password) throws SignOnException {
+
+        // If none of this properties are set, do nothing ...
+        if (getHashAlgorithm() == null && getHashEncoding() == null) {
+            // Nothing to do ...
+            return password;
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Creating password hash for [" + password + "] with algorithm/encoding [" + getHashAlgorithm() + "/" + getHashEncoding() + "]");
+
+        // Check for spetial encryption mechanisms, not supported by the JDK
+        /* TODO
+        if ("CRYPT".equalsIgnoreCase(getHashAlgorithm())) {
+            // Get known password
+            String knownPassword = getPassword(getKnownCredentials());
+            String salt = knownPassword != null && knownPassword.length() > 1 ? knownPassword.substring(0, saltLenght) : "";
+
+            return Crypt.crypt(salt, password);
+
+        } */
+
+        byte[] passBytes;
+        String passwordHash = null;
+
+        // convert password to byte data
+        try {
+            if (hashCharset == null)
+                passBytes = password.getBytes();
+            else
+                passBytes = password.getBytes(hashCharset);
+        } catch (UnsupportedEncodingException e) {
+            logger.error("charset " + hashCharset + " not found. Using platform default.");
+            passBytes = password.getBytes();
+        }
+
+        // calculate the hash and apply the encoding.
+        try {
+
+            byte[] hash;
+            // Hash algorithm is optional
+            if (hashAlgorithm != null)
+                hash = getDigest().digest(passBytes);
+            else
+                hash = passBytes;
+
+            // At this point, hashEncoding is required.
+            if ("BASE64".equalsIgnoreCase(hashEncoding)) {
+                passwordHash = CipherUtil.encodeBase64(hash);
+
+            } else if ("HEX".equalsIgnoreCase(hashEncoding)) {
+                passwordHash = CipherUtil.encodeBase16(hash);
+
+            } else if (hashEncoding == null) {
+                logger.error("You must specify a hashEncoding when using hashAlgorithm");
+
+            } else {
+                logger.error("Unsupported hash encoding format " + hashEncoding);
+
+            }
+
+        } catch (Exception e) {
+            logger.error("Password hash calculation failed : \n" + e.getMessage() != null ? e.getMessage() : e.toString(), e);
+        }
+
+        return passwordHash;
+
     }
 
-    public void setPspTargetId(String pspTargetId) {
-        this.pspTargetId = pspTargetId;
+    /**
+     * Only invoke this if algorithm is set.
+     *
+     * @throws SignOnException
+     */
+    protected MessageDigest getDigest() throws SignOnException {
+
+        MessageDigest digest = null;
+        if (hashAlgorithm != null) {
+
+            try {
+                digest = MessageDigest.getInstance(hashAlgorithm);
+                logger.debug("Using hash algorithm/encoding : " + hashAlgorithm + "/" + hashEncoding);
+            } catch (NoSuchAlgorithmException e) {
+                logger.error("Algorithm not supported : " + hashAlgorithm, e);
+                throw new SignOnException(e.getMessage(), e);
+            }
+        }
+
+        return digest;
+
     }
 
-    public SpmlR2Client getSpmlService() {
-        return spmlService;
+    public String getHashEncoding() {
+        return hashEncoding;
     }
 
-    public void setSpmlService(SpmlR2Client spmlService) {
-        this.spmlService = spmlService;
+    public void setHashEncoding(String hashEncoding) {
+        this.hashEncoding = hashEncoding;
     }
 
+    public String getHashAlgorithm() {
+        return hashAlgorithm;
+    }
 
+    public void setHashAlgorithm(String hashAlgorithm) {
+        this.hashAlgorithm = hashAlgorithm;
+    }
 
+    public String getHashCharset() {
+        return hashCharset;
+    }
+
+    public void setHashCharset(String hashCharset) {
+        this.hashCharset = hashCharset;
+    }
 }

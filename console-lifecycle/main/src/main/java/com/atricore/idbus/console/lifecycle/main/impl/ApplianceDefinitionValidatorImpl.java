@@ -335,7 +335,7 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
             addError(propertyName + " location context cannot be null");
         else {
             if (location.getContext().startsWith("/"))
-                addError(propertyName + " location context must be relative (do not start it with '/'");
+                addError(propertyName + " location context must be relative (do not start it with '/')");
 
             if (location.getContext().lastIndexOf("/") > 1)
                 addError(propertyName + " location context must not be a path (do not use '/')");
@@ -346,7 +346,7 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
             if (location.getUri() == null)
                 addError(propertyName + " location URI cannot be null");
             else if (location.getUri().startsWith("/"))
-                addError(propertyName + " location URI must be relative (do not start it with '/'");
+                addError(propertyName + " location URI must be relative (do not start it with '/')");
         }
 
 

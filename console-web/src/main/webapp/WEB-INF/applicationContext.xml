@@ -27,7 +27,6 @@
         <property name="services">
             <list>
                 <ref bean="userProvisioningAjaxServiceBean"/>
-                <ref bean="signOnAjaxServiceBean"/>
                 <ref bean="profileManagementAjaxServiceBean"/>
             </list>
         </property>
@@ -73,7 +72,6 @@
 
     <bean id="signOnAjaxServiceBean" class="com.atricore.idbus.console.services.impl.SignOnAjaxServiceImpl">
         <property name="usrProvService" ref="userProvisioningAjaxServiceBean" />
-        <property name="pspTargetId" value="pst-default" />
     </bean>
 
     <bean id="profileManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ProfileManagementAjaxServiceImpl">

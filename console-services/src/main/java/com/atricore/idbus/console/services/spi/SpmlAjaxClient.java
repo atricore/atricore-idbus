@@ -26,14 +26,17 @@ import com.atricore.idbus.console.services.spi.request.SignOnRequest;
 import com.atricore.idbus.console.services.spi.request.SignOutRequest;
 import com.atricore.idbus.console.services.spi.response.SignOnResponse;
 import com.atricore.idbus.console.services.spi.response.SignOutResponse;
+import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client;
 
 /**
  * @author <a href=mailto:dfisic@atricore.org>Dusan Fisic</a>
  */
 
-public interface AjaxService {
+public interface SpmlAjaxClient {
 
-    public String getPspTargetId();
-    public void setPspTargetId(String pspTargetId);
+    String getPspTargetId();
 
+    void setPspTargetId(String pspTargetId);
+
+    void setSpmlService(SpmlR2Client svc);
 }

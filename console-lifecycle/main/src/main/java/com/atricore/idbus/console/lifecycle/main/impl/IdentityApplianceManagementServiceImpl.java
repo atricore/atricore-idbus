@@ -461,7 +461,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
 
             appliance = identityApplianceDAO.save(appliance);
-            appliance = identityApplianceDAO.detachCopy(appliance, 7);
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
 
             res = new UpdateIdentityApplianceResponse(appliance);
 
@@ -479,7 +479,7 @@ public class IdentityApplianceManagementServiceImpl implements
         try {
             syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getIdentityApplianceId()));
-            appliance = identityApplianceDAO.detachCopy(appliance, 9);
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             res = new LookupIdentityApplianceByIdResponse();
             res.setIdentityAppliance(appliance);
         } catch (Exception e){
@@ -1314,7 +1314,7 @@ public class IdentityApplianceManagementServiceImpl implements
                         appliance = identityApplianceDAO.save(appliance);
 
                         logger.debug("Automatically Starting appliance ... " + appliance.getId());
-                        this.startAppliance(appliance);
+                        this.deployAppliance(appliance, false);
 
                     }
 
