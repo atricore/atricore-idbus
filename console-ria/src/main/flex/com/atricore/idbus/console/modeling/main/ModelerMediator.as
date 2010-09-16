@@ -46,6 +46,8 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceState;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.controls.Alert;
+import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -170,6 +172,7 @@ public class ModelerMediator extends IocMediator {
     public function init():void {
         if (_created) {
             sendNotification(ApplicationFacade.CLEAR_MSG);
+            view.btnSave.enabled = false;
             if (projectProxy.currentIdentityAppliance != null) {
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 enableIdentityApplianceActionButtons();
@@ -183,9 +186,28 @@ public class ModelerMediator extends IocMediator {
         }
     }
 
-
     private function handleNewClick(event:MouseEvent):void {
         trace("New Button Click: " + event);
+        if (view.btnSave.enabled) {
+            var buttonWidth:Number = Alert.buttonWidth;
+            Alert.buttonWidth = 80;
+            Alert.okLabel = "Continue";
+            Alert.show("There are unsaved changes which will be lost in case you choose to continue.",
+                    "Confirm", Alert.OK | Alert.CANCEL, null, newApplianceConfirmed, null, Alert.OK);
+            Alert.buttonWidth = buttonWidth;
+            Alert.yesLabel = "OK";
+        } else {
+            openNewApplianceWizard();
+        }
+    }
+
+    private function newApplianceConfirmed(event:CloseEvent):void {
+        if (event.detail == Alert.OK) {
+            openNewApplianceWizard();
+        }
+    }
+    
+    private function openNewApplianceWizard():void {
         if (view.applianceStyle.selectedItem.data == "Advanced") {
             sendNotification(IdentityApplianceWizardViewMediator.RUN);
         } else if (view.applianceStyle.selectedItem.data == "SimpleSSO") {
