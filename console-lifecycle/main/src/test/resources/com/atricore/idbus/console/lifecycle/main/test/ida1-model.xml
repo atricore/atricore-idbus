@@ -123,6 +123,7 @@
             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig">
                 <property name="name" value="idp1-samlr2-config"/>
                 <property name="description" value="SamlR2 IdP1 Configuraiton"/>
+
                 <property name="signer">
 					<bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore">
 						<property name="type" value="JKS"/>

@@ -69,6 +69,8 @@
         <property name="activationService" ref="activationService"/>
         <property name="builder" ref="applianceBuilder"/>
         <property name="deployer" ref="applianceDeployer"/>
+        <property name="marshaller" ref="applianceMarshaller"/>
+
         <!-- DAO's -->
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
         <property name="identityApplianceDefinitionDAO" ref="identityApplianceDefinitionDAO"/>
@@ -97,6 +99,12 @@
 
     <bean id="applianceDeployer" class="com.atricore.idbus.console.lifecycle.main.impl.FeaturesBasedApplianceDeployer">
         <!--property name="featuresService" ref="featuresService"/-->
+    </bean>
+
+    <bean id="applianceMarshaller" class="com.atricore.idbus.console.lifecycle.main.impl.ApplianceSpringMarshaller">
+        <property name="walker" >
+            <bean class="com.atricore.idbus.console.lifecycle.main.transform.ReflexiveIdentityApplianceDefinitionWalker"/>
+        </property>
     </bean>
 
     <!--

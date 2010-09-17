@@ -32,7 +32,6 @@ public class ImportApplianceDefinitionCommand extends ManagementCommandSupport {
 
 
         FileSystemManager fs = VFS.getManager();
-
         FileObject inputFile = fs.resolveFile("file://" + input);
         if (!inputFile.exists())
             throw new FileNotFoundException(inputFile.getURL().toExternalForm());

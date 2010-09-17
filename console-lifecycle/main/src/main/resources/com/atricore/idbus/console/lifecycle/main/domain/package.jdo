@@ -17,10 +17,11 @@
   ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
+
 <jdo xmlns="http://java.sun.com/xml/ns/jdo/jdo"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:schemaLocation="http://java.sun.com/xml/ns/jdo/jdo
-        http://java.sun.com/xml/ns/jdo/jdo_2_0.xsd">
+        http://java.sun.com/xml/ns/jdo/jdo_2_3.xsd">
     
     <package name="com.atricore.idbus.console.lifecycle.main.domain">
 
