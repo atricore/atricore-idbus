@@ -31,4 +31,8 @@ public class SamlR2ProviderConfig extends AbstractProviderConfig {
     public boolean isUseSampleStore() {
         return useSampleStore;
     }
+
+    public void setUseSampleStore(boolean useSampleStore) {
+        this.useSampleStore = useSampleStore;
+    }
 }

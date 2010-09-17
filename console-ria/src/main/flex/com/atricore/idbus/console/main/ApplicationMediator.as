@@ -21,7 +21,9 @@
 
 package com.atricore.idbus.console.main
 {
+import com.atricore.idbus.console.branding.AtricoreConsolePreloader;
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
+import com.atricore.idbus.console.main.controller.NotFirstRunCommand;
 import com.atricore.idbus.console.main.controller.LoginCommand;
 import com.atricore.idbus.console.main.controller.SetupServerCommand;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
@@ -118,6 +120,7 @@ public class ApplicationMediator extends IocMediator {
 
 
     public function init():void {
+        sendNotification(ApplicationFacade.NOT_FIRST_RUN);
         popupManager.init(iocFacade, app);
         app.addEventListener(FlexEvent.SHOW, handleShowConsole);
     }
@@ -154,6 +157,8 @@ public class ApplicationMediator extends IocMediator {
             ApplicationStartUpCommand.FAILURE,
             SetupServerCommand.SUCCESS,
             SetupServerCommand.FAILURE,
+            NotFirstRunCommand.SUCCESS,
+            NotFirstRunCommand.FAILURE,
             LoginCommand.SUCCESS,
             SetupWizardViewMediator.RUN,
             SimpleSSOWizardViewMediator.RUN,
@@ -183,6 +188,12 @@ public class ApplicationMediator extends IocMediator {
             case SetupServerCommand.SUCCESS:
                 break;
             case SetupServerCommand.FAILURE:
+                break;
+            case NotFirstRunCommand.SUCCESS:
+                break;
+            case NotFirstRunCommand.FAILURE:
+                app.preloader = new AtricoreConsolePreloader();
+                app.preloader.visible = true;
                 break;
             case LoginCommand.SUCCESS:
                 app.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, switchedMode);

@@ -24,6 +24,9 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="secureContext" ref="secureContextProxy"/>
     </object>
+    <object id="notFirstRunCommand" class="com.atricore.idbus.console.main.controller.NotFirstRunCommand">
+        <property name="registry" ref="serviceRegistry"/>
+    </object>
     <object id="uploadCommand" class="com.atricore.idbus.console.main.controller.UploadCommand"/>
     <object id="setupServerCommand" class="com.atricore.idbus.console.main.controller.SetupServerCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -180,13 +183,13 @@
 
     <object id="activateExecEnvironmentCommand"
             class="com.atricore.idbus.console.modeling.main.controller.ActivateExecEnvironmentCommand">
-                <property name="projectProxy" ref="projectProxy"/>
-                <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+        <property name="registry" ref="serviceRegistry"/>
     </object>
 
     <object id="createIdentityLookupCommand"
             class="com.atricore.idbus.console.modeling.main.controller.CreateIdentityLookupCommand">
-                <property name="projectProxy" ref="projectProxy"/>
+        <property name="projectProxy" ref="projectProxy"/>
     </object>
 
     <!-- Mediators -->
@@ -422,6 +425,7 @@
         <!-- Commands wiring -->
         <property name="loginCommand" ref="loginCommand"/>
         <property name="changePasswordCommand" ref="changePasswordCommand"/>
+        <property name="notFirstRunCommand" ref="notFirstRunCommand"/>
         <property name="uploadCommand" ref="uploadCommand"/>
         <property name="setupServerCommand" ref="setupServerCommand"/>
         <property name="registerCommand" ref="registerCommand"/>
@@ -442,7 +446,7 @@
         <property name="identityProviderRemoveCommand" ref="identityProviderRemoveCommand"/>
         <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
         <property name="identityLookupRemoveCommand" ref="identityLookupRemoveCommand"/>
-        <property name="federatedConnectionRemoveCommand" ref="federatedConnectionRemoveCommand"/>        
+        <property name="federatedConnectionRemoveCommand" ref="federatedConnectionRemoveCommand"/>
         <property name="createSimpleSSOSetupCommand" ref="createSimpleSSOSetupCommand"/>
         <property name="buildIdentityApplianceCommand" ref="buildIdentityApplianceCommand"/>
         <property name="lookupIdentityApplianceByIdCommand" ref="lookupIdentityApplianceByIdCommand"/>

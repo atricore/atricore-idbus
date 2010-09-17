@@ -200,8 +200,12 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idAppliance = res.getAppliance();
 
         iad = idAppliance.getIdApplianceDefinition();
-        
-        IdentityProviderDTO idp = createIdentityProvider(iad);
+        SamlR2ProviderConfigDTO config = null;
+        //// providers that are currently in providers list are service providers and if they have config set, thay all have the same config object
+        if(iad.getProviders() != null && iad.getProviders().size() > 0){
+            config = (SamlR2ProviderConfigDTO)iad.getProviders().get(0).getConfig();
+        }
+        IdentityProviderDTO idp = createIdentityProvider(iad, config);
 
         // create josso activations and federated connections
         // providers that are currently in providers list are service providers
@@ -619,11 +623,16 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 //        idpLocation.setUri(createUrlSafeString(sp.getName()) + "/SAML2");
 //        idpChannel.setLocation(idpLocation);
 
-        SamlR2ProviderConfigDTO spSamlConfig = new SamlR2ProviderConfigDTO();
+        SamlR2ProviderConfigDTO spSamlConfig = (SamlR2ProviderConfigDTO)sp.getConfig();
+        if(spSamlConfig == null){
+            spSamlConfig = new SamlR2ProviderConfigDTO();
+        }
         spSamlConfig.setName(sp.getName() + "-samlr2-config");
         spSamlConfig.setDescription("SAMLR2 " + sp.getName() + "Configuration");
-        spSamlConfig.setSigner(iad.getKeystore());
-        spSamlConfig.setEncrypter(iad.getKeystore());
+        if(!spSamlConfig.isUseSampleStore()){
+            spSamlConfig.setSigner(iad.getKeystore());
+            spSamlConfig.setEncrypter(iad.getKeystore());
+        }
         sp.setConfig(spSamlConfig);
     }
 
@@ -666,7 +675,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         }
     }
 
-    private IdentityProviderDTO createIdentityProvider(IdentityApplianceDefinitionDTO iad) {
+    private IdentityProviderDTO createIdentityProvider(IdentityApplianceDefinitionDTO iad, SamlR2ProviderConfigDTO config) {
         IdentityProviderDTO idp = new IdentityProviderDTO();
         idp.setName(createUrlSafeString(iad.getName()) + "-idp");
         idp.setIdentityAppliance(iad);
@@ -687,11 +696,17 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idpLocation.setUri(iad.getLocation().getUri() + "/" + createUrlSafeString(idp.getName()).toUpperCase());
         idp.setLocation(idpLocation);
 
-        SamlR2ProviderConfigDTO idpSamlConfig = new SamlR2ProviderConfigDTO();
+//        SamlR2ProviderConfigDTO idpSamlConfig = new SamlR2ProviderConfigDTO();
+        SamlR2ProviderConfigDTO idpSamlConfig = config;
+        if(idpSamlConfig == null){
+            idpSamlConfig = new SamlR2ProviderConfigDTO();
+        }
         idpSamlConfig.setName(idp.getName() + "-samlr2-config");
         idpSamlConfig.setDescription("SAMLR2 " + idp.getName() + "Configuration");
-        idpSamlConfig.setSigner(iad.getKeystore());
-        idpSamlConfig.setEncrypter(iad.getKeystore());
+        if(!idpSamlConfig.isUseSampleStore()){
+            idpSamlConfig.setSigner(iad.getKeystore());
+            idpSamlConfig.setEncrypter(iad.getKeystore());
+        }
         idp.setConfig(idpSamlConfig);
 
         if(idp.getAuthenticationMechanisms() == null){

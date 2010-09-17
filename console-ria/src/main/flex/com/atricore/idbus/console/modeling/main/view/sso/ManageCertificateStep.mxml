@@ -34,6 +34,7 @@
 
             import com.atricore.idbus.console.services.dto.Keystore;
             import com.atricore.idbus.console.services.dto.Resource;
+            import com.atricore.idbus.console.services.dto.SamlR2ProviderConfig;
 
             import mx.events.ItemClickEvent;
 
@@ -60,6 +61,7 @@
             private var readableDecisionArray:Array;
 
             override public function get stepDecision():* {
+                var obj:Object = new Object();
                 if (uploadKeystore.selected) {
                     var keystore:Keystore = new Keystore();
                     keystore.certificateAlias = certificateAlias.text;
@@ -70,10 +72,26 @@
                     var resource:Resource = new Resource();
                     resource.id = Number(resourceId);
                     keystore.store = resource;
-                    return keystore;
+                    obj.keystore = keystore;
+
+                    obj.config = new SamlR2ProviderConfig();
+                    obj.config.name = "tmp-name";
+                    obj.config.signer = keystore;
+                    obj.config.encrypter = keystore;
+                    obj.config.useSampleStore = false;                    
                 } else {
-                    return null;
+                    obj.keystore = null;
+                    obj.config = null;
                 }
+                
+                if(useDefaultKeystore.selected){
+                    obj.config = new SamlR2ProviderConfig();
+                    obj.config.name = "tmp-name";
+                    obj.config.signer = null;
+                    obj.config.encrypter = null;
+                    obj.config.useSampleStore = true;
+                }
+                return obj;
             }
 
             override public function get readableStepDecision():String {

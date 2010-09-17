@@ -78,6 +78,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const SHOW_SUCCESS_MSG:String = "showSuccessMsg";
     public static const LOGIN:String = "login";
     public static const CHANGE_PASSWORD:String = "changePassword";
+    public static const NOT_FIRST_RUN:String = "notFirstRun";
     public static const NAVIGATE:String = "navigate";
     public static const CLEAR_MSG:String = "clearMsg";
     public static const IDENTITY_APPLIANCE_CHANGED:String = "identityApplianceChanged";
