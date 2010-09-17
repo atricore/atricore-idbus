@@ -28,13 +28,19 @@
          defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
 
     <fx:Declarations>
+        <!--<mx:ArrayCollection id="authMechanismColl">-->
+            <!--<utils:ListItemValueObject label="Form-Based Basic" name="basic" isSelected="false" />-->
+            <!--<utils:ListItemValueObject label="Strong (Digital Sertificate)" name="strong" isSelected="false" />-->
+            <!--<utils:ListItemValueObject label="Windows (NTLM)" name="ntlm" isSelected="false" />-->
+            <!--<utils:ListItemValueObject label="Remember Me" name="rememberme" isSelected="false" />-->
+        <!--</mx:ArrayCollection>-->
         <mx:ArrayCollection id="authMechanismColl">
-            <utils:ListItemValueObject label="Form-Based Basic" name="basic" isSelected="false" />
-            <utils:ListItemValueObject label="Strong (Digital Sertificate)" name="strong" isSelected="false" />
-            <utils:ListItemValueObject label="Windows (NTLM)" name="ntlm" isSelected="false" />
-            <utils:ListItemValueObject label="Remember Me" name="rememberme" isSelected="false" />
+            <fx:Object label="Simple Authentication" data="basic"/>
+            <fx:Object label="Strong (Digital Sertificate)" data="strong"/>
+            <fx:Object label="Windows (NTLM)" data="ntlm"/>
+            <fx:Object label="Remember Me" data="rememberme"/>
         </mx:ArrayCollection>
-        
+
         <utils:NameValidator id="nameValidator" source="{federatedConnectionName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
     </fx:Declarations>
@@ -49,7 +55,7 @@
 
     <mx:TabNavigator id="channelNavigator" borderStyle="solid" width="100%" height="370">
         <!-- IDP CHANNEL TAB -->
-        <s:NavigatorContent id="idpChannelTab" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.idpchannel')}">
+        <s:NavigatorContent id="idpChannelTab" icon="{EmbeddedIcons.idpChannelMiniIcon}" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.idpchannel')}">
             <s:VGroup width="100%" height="100%">
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.useinheritedspsettings')}:" labelWidth="235">
                      <s:CheckBox id="useInheritedSPSettings"/>
@@ -77,17 +83,29 @@
 
                 <s:HGroup width="100%">
                     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:" labelWidth="235">
-                        <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0"/>
+                        <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0">
+                            <mx:ArrayCollection>
+                                <fx:Object name="Use Theirs" data="theirs"/>
+                                <fx:Object name="Use Ours" data="ours"/>
+                                <fx:Object name="Aggregate" data="aggregate"/>
+                            </mx:ArrayCollection>
+                        </s:DropDownList>
                     </mx:FormItem>
                     <s:Button id="configureAccLinkagePolicy"
                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
                 </s:HGroup>
 
-                <s:HGroup width="100%">
-                    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.contract')}:" labelWidth="235">
-                        <s:DropDownList id="authContractCombo" width="200" labelField="name" selectedIndex="0"/>
-                    </mx:FormItem>
-                </s:HGroup>
+                <!--<s:HGroup width="100%">-->
+                    <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.contract')}:" labelWidth="235">-->
+                        <!--<s:DropDownList id="authContractCombo" width="200" labelField="name" selectedIndex="0" enabled="false">-->
+                            <!--<s:dataProvider>-->
+                                <!--<mx:ArrayCollection>-->
+                                    <!--<fx:Object name="Default" data="default"/>-->
+                                <!--</mx:ArrayCollection>-->
+                            <!--</s:dataProvider>-->
+                        <!--</s:DropDownList>-->
+                    <!--</mx:FormItem>-->
+                <!--</s:HGroup>-->
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.preferredidpchannel')}:" labelWidth="235">
                      <s:CheckBox id="preferredIDPChannel"/>
@@ -96,7 +114,7 @@
         </s:NavigatorContent>
         
         <!-- SP CHANNEL TAB -->
-        <s:NavigatorContent id="spChannelTab" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.spchannel')}">
+        <s:NavigatorContent icon="{EmbeddedIcons.spChannelMiniIcon}" id="spChannelTab" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.spchannel')}">
             <s:VGroup width="100%" height="100%">
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.useinheritedidpsettings')}:" labelWidth="235">
                      <s:CheckBox id="useInheritedIDPSettings"/>
@@ -127,14 +145,20 @@
                 <!--</mx:FormItem>-->
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:" labelWidth="235">
-                    <s:DropDownList id="spChannelAuthContractCombo"  labelField="name" selectedIndex="0" width="180"/>
+                    <s:DropDownList id="spChannelAuthContractCombo"  labelField="name" selectedIndex="0" width="180" enabled="false">
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object name="Default" data="default"/>
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
+                    </s:DropDownList>
                 </mx:FormItem>
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.mechanism')}:" labelWidth="230">
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.mechanism')}:" labelWidth="235">
                     <s:DropDownList id="spChannelAuthMechanism"
                                     dataProvider="{authMechanismColl}"
                                     selectedIndex="0"
-                                    width="200"
+                                    width="180"
                                     enabled="false"/>
                 </mx:FormItem>
 
@@ -163,5 +187,8 @@
             <s:HorizontalLayout horizontalAlign="center"/>
         </s:controlBarLayout>
     </s:Panel>
+    <fx:Script><![CDATA[
+        import com.atricore.idbus.console.main.EmbeddedIcons;
+        ]]></fx:Script>
 </mx:Form>
 <!--</mx:VBox>-->

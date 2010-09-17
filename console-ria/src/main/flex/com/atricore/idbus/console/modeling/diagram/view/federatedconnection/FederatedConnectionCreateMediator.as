@@ -232,7 +232,6 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 //        for each(var obj:ListItemValueObject in view.authMechanismCombo.dataProvider){
 //            obj.isSelected = false;
 //        }
-        view.authContractCombo.selectedIndex = 0;
         view.accountLinkagePolicyCombo.selectedIndex = 0;
 
         //RESET SP CHANNEL
@@ -478,7 +477,6 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
 //            view.authMechanism.enabled = false;
 //            view.configureAuthMechanism.enabled = false;
-            view.authContractCombo.enabled = false;
             view.accountLinkagePolicyCombo.enabled = false;
             view.configureAccLinkagePolicy.enabled = false;
         } else {
@@ -495,7 +493,6 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
 //            view.authMechanism.enabled = true;
 //            view.configureAuthMechanism.enabled = true;
-            view.authContractCombo.enabled = true;
             view.accountLinkagePolicyCombo.enabled = true;
             view.configureAccLinkagePolicy.enabled = true;
         }
