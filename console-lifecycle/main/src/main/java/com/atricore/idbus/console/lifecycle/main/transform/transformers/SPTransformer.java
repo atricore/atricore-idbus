@@ -35,6 +35,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLo
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,9 +48,30 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SPTransformer extends AbstractTransformer {
+public class SPTransformer extends AbstractTransformer implements InitializingBean {
     
     private static final Log logger = LogFactory.getLog(IdPLocalTransformer.class);
+
+    private Keystore sampleKeystore;
+
+    public void afterPropertiesSet() throws Exception {
+
+        if (sampleKeystore.getStore() != null &&
+                (sampleKeystore.getStore().getValue() == null ||
+                sampleKeystore.getStore().getValue().length == 0)) {
+            resolveResource(sampleKeystore.getStore());
+        }
+
+        if (sampleKeystore.getStore() == null &&
+            sampleKeystore.getStore().getValue() == null ||
+                sampleKeystore.getStore().getValue().length == 0) {
+            logger.debug("Sample Keystore invalid or not found!");
+        } else {
+            logger.debug("Sample Keystore size " + sampleKeystore.getStore());
+        }
+
+    }
+
 
     @Override
     public boolean accept(TransformEvent event) {
@@ -194,33 +216,51 @@ public class SPTransformer extends AbstractTransformer {
 
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
 
+        Keystore signKs = null;
+        Keystore encryptKs = null;
+
+        if (cfg != null) {
+            signKs = cfg.getSigner();
+            if (signKs == null && cfg.isUseSampleStore()) {
+                logger.warn("Using Sample keystore for signing : " + cfg.getName());
+                signKs = sampleKeystore;
+            }
+
+            encryptKs = cfg.getEncrypter();
+            if (encryptKs == null && cfg.isUseSampleStore()) {
+                logger.warn("Using Sample keystore for encryption : " + cfg.getName());
+                encryptKs = sampleKeystore;
+            }
+        }
+
+
         // ----------------------------------------
         // Signer
         // ----------------------------------------
-        if (cfg != null && cfg.getSigner() != null) {
+        if (signKs != null) {
 
-            String signerResourceFileName = cfg.getSigner().getStore().getName() + "." +
-                    ("PKCS#12".equalsIgnoreCase(cfg.getSigner().getType()) ? "pkcs12" : "jks");
+            String signerResourceFileName = signKs.getStore().getName() + "." +
+                    ("PKCS#12".equalsIgnoreCase(signKs.getType()) ? "pkcs12" : "jks");
 
             IdProjectResource<byte[]> signerResource = new IdProjectResource<byte[]>(idGen.generateId(),
                     idauPath + sp.getName() + "/", signerResourceFileName,
-                    "binary", cfg.getSigner().getStore().getValue());
+                    "binary", signKs.getStore().getValue());
             signerResource.setClassifier("byte");
 
             Bean signer = newBean(spBeans, sp.getName() + "-samlr2-signer", JSR105SamlR2SignerImpl.class);
             signer.setInitMethod("init");
 
             Description signerDescr = new Description();
-            signerDescr.getContent().add(cfg.getSigner().getDisplayName());
+            signerDescr.getContent().add(signKs.getDisplayName());
             signer.setDescription(signerDescr);
 
             Bean keyResolver = newAnonymousBean(SamlR2KeystoreKeyResolver.class);
-            setPropertyValue(keyResolver, "keystoreType", cfg.getSigner().getType());
+            setPropertyValue(keyResolver, "keystoreType", signKs.getType());
             setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + sp.getName() + "/" + signerResourceFileName);
-            setPropertyValue(keyResolver, "keystorePass", cfg.getSigner().getPassword());
-            setPropertyValue(keyResolver, "privateKeyAlias", cfg.getSigner().getPrivateKeyName());
-            setPropertyValue(keyResolver, "privateKeyPass", cfg.getSigner().getPrivateKeyPassword());
-            setPropertyValue(keyResolver, "certificateAlias", cfg.getSigner().getCertificateAlias());
+            setPropertyValue(keyResolver, "keystorePass", signKs.getPassword());
+            setPropertyValue(keyResolver, "privateKeyAlias", signKs.getPrivateKeyName());
+            setPropertyValue(keyResolver, "privateKeyPass", signKs.getPrivateKeyPassword());
+            setPropertyValue(keyResolver, "certificateAlias", signKs.getCertificateAlias());
 
             setPropertyBean(signer, "keyResolver", keyResolver);
             setPropertyBean(spMediator, "signer", signer);
@@ -229,19 +269,21 @@ public class SPTransformer extends AbstractTransformer {
 
             // signer
             setPropertyRef(spMediator, "signer", signer.getName());
+        } else {
+            throw new TransformException("No Signer defined for " + sp.getName());
         }
 
         // ----------------------------------------
         // Encrypter
         // ----------------------------------------
-        if (cfg != null && cfg.getEncrypter() != null) {
+        if (encryptKs != null) {
 
-            String encrypterResourceFileName = cfg.getSigner().getStore().getName() + "." +
-                    ("PKCS#12".equalsIgnoreCase(cfg.getSigner().getType()) ? "pkcs12" : "jks");
+            String encrypterResourceFileName = encryptKs.getStore().getName() + "." +
+                    ("PKCS#12".equalsIgnoreCase(encryptKs.getType()) ? "pkcs12" : "jks");
 
             IdProjectResource<byte[]> encrypterResource = new IdProjectResource<byte[]>(idGen.generateId(),
                     idauPath + sp.getName() + "/", encrypterResourceFileName,
-                    "binary", cfg.getSigner().getStore().getValue());
+                    "binary", encryptKs.getStore().getValue());
             encrypterResource.setClassifier("byte");
 
             Bean encrypter = newBean(spBeans, sp.getName() + "-samlr2-encrypter", XmlSecurityEncrypterImpl.class);
@@ -250,12 +292,12 @@ public class SPTransformer extends AbstractTransformer {
             setPropertyValue(encrypter, "kekAlgorithmURI", "http://www.w3.org/2001/04/xmlenc#rsa-1_5");
 
             Bean keyResolver = newAnonymousBean(SamlR2KeystoreKeyResolver.class);
-            setPropertyValue(keyResolver, "keystoreType", cfg.getEncrypter().getType());
+            setPropertyValue(keyResolver, "keystoreType", encryptKs.getType());
             setPropertyValue(keyResolver, "keystoreFile", "classpath:" + idauPath + sp.getName() + "/" + encrypterResourceFileName);
-            setPropertyValue(keyResolver, "keystorePass", cfg.getEncrypter().getPassword());
-            setPropertyValue(keyResolver, "privateKeyAlias", cfg.getEncrypter().getPrivateKeyName());
-            setPropertyValue(keyResolver, "privateKeyPass", cfg.getEncrypter().getPrivateKeyPassword());
-            setPropertyValue(keyResolver, "certificateAlias", cfg.getEncrypter().getCertificateAlias());
+            setPropertyValue(keyResolver, "keystorePass", encryptKs.getPassword());
+            setPropertyValue(keyResolver, "privateKeyAlias", encryptKs.getPrivateKeyName());
+            setPropertyValue(keyResolver, "privateKeyPass", encryptKs.getPrivateKeyPassword());
+            setPropertyValue(keyResolver, "certificateAlias", encryptKs.getCertificateAlias());
 
             setPropertyBean(encrypter, "keyResolver", keyResolver);
             setPropertyBean(spMediator, "encrypter", encrypter);
@@ -264,7 +306,10 @@ public class SPTransformer extends AbstractTransformer {
 
             // encrypter
             setPropertyRef(spMediator, "encrypter", encrypter.getName());
+        } else {
+            throw new TransformException("No Encrypter defined for " + sp.getName());
         }
+
 
         
         Bean spMd = newBean(spBeans, sp.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
@@ -423,5 +468,13 @@ public class SPTransformer extends AbstractTransformer {
         module.addResource(rBeans);
 
         return rBeans;
+    }
+
+    public Keystore getSampleKeystore() {
+        return sampleKeystore;
+    }
+
+    public void setSampleKeystore(Keystore sampleKeystore) {
+        this.sampleKeystore = sampleKeystore;
     }
 }

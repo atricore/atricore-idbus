@@ -169,9 +169,7 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         Keystore encryptKs = null;
 
         if (cfg != null) {
-
             signKs = cfg.getSigner();
-
             if (signKs == null && cfg.isUseSampleStore()) {
                 logger.warn("Using Sample keystore for signing : " + cfg.getName());
                 signKs = sampleKeystore;
@@ -182,9 +180,7 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
                 logger.warn("Using Sample keystore for encryption : " + cfg.getName());
                 encryptKs = sampleKeystore;
             }
-
         }
-
 
         // ----------------------------------------
         // Signer
@@ -223,6 +219,8 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
 
             // signer
             setPropertyRef(idpMediator, "signer", signer.getName());
+        } else {
+            throw new TransformException("No Signer defined for " + provider.getName());
         }
 
         // ----------------------------------------
@@ -258,6 +256,8 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
 
             // encrypter
             setPropertyRef(idpMediator, "encrypter", encrypter.getName());
+        } else {
+            throw new TransformException("No Encrypter defined for " + provider.getName());
         }
 
         Bean idpMd = newBean(idpBeans, idpBean.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);

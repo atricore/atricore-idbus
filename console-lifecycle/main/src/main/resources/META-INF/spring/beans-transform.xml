@@ -52,7 +52,9 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.STSTransformer"/>
 
     <bean name="spTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer">
+        <property name="sampleKeystore" ref="sampleKeystore"/>
+    </bean>
 
     <bean name="spFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">

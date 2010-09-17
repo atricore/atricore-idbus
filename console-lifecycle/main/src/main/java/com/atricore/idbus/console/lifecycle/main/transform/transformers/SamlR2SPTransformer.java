@@ -135,7 +135,10 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
             } catch (Exception e) {
                 throw new TransformException(e);
             }
+        } else {
+            throw new TransformException("No Signer defined for " + provider.getName());
         }
+
         JAXBElement jaxbSigningX509Certificate = new JAXBElement(
                                     new QName("http://www.w3.org/2000/09/xmldsig#", "X509Certificate"),
                                     signingCertificate.getClass(), signingCertificate);
@@ -168,6 +171,8 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
             } catch (Exception e) {
                 throw new TransformException(e);
             }
+        } else {
+            throw new TransformException("No Encrypter defined for " + provider.getName());
         }
         JAXBElement jaxbEncryptionX509Certificate = new JAXBElement(
                                     new QName("http://www.w3.org/2000/09/xmldsig#", "X509Certificate"),
