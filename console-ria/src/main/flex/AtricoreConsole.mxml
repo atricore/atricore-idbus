@@ -31,7 +31,6 @@
                xmlns:account="com.atricore.idbus.console.account.main.*"
                xmlns:setup="com.atricore.idbus.console.setup.*"
                height="100%" width="100%" minWidth="955" minHeight="600"
-               preloader="com.atricore.idbus.console.branding.AtricoreConsolePreloader"
                creationComplete="onCreationComplete()">
     <s:layout>
         <s:BasicLayout/>
