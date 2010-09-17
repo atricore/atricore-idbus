@@ -46,9 +46,9 @@
         <s:DropDownList id="platform" width="300" selectedIndex="0">
             <s:dataProvider>
                 <mx:ArrayCollection>
-                    <fx:Object label="Apache Tomcat 5.0" data="tc50"/>
-                    <fx:Object label="Apache Tomcat 5.5" data="tc55"/>
-                    <fx:Object label="Apache Tomcat 6.0" data="tc60"/>
+                    <fx:Object label="5.0" data="tc50"/>
+                    <fx:Object label="5.5" data="tc55"/>
+                    <fx:Object label="6.0" data="tc60"/>
                 </mx:ArrayCollection>
             </s:dataProvider>
         </s:DropDownList>

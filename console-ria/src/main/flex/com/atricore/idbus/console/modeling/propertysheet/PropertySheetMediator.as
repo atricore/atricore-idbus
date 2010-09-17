@@ -259,7 +259,7 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.addElement(_iaCoreSection);
         _propertySheetsViewStack.addNewChild(corePropertyTab);
         _tabbedPropertiesTabBar.selectedIndex = 0;
-        
+
         _iaCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityApplianceCorePropertyTabRollOut);
 
@@ -759,7 +759,7 @@ public class PropertySheetMediator extends IocMediator {
             serviceProvider.location.context = _spCoreSection.spLocationContext.text.substring(1,
                     _spCoreSection.spLocationContext.text.length - 1);
             serviceProvider.location.uri = _spCoreSection.spLocationPath.text;
-            
+
             // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
             //authenticationContract
             //authenticationAssertionEmissionPolicy
@@ -780,7 +780,7 @@ public class PropertySheetMediator extends IocMediator {
         if (serviceProvider != null) {
             //_spContractSection.signAuthRequestCheck.selected = serviceProvider.signAuthenticationAssertions;
             //_spContractSection.encryptAuthRequestCheck.selected = serviceProvider.encryptAuthenticationAssertions;
-    
+
             for (var j:int = 0; j < serviceProvider.activeBindings.length; j ++) {
                 var tmpBinding:Binding = serviceProvider.activeBindings.getItemAt(j) as Binding;
                 if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
@@ -1260,7 +1260,7 @@ public class PropertySheetMediator extends IocMediator {
             _embeddedDbVaultCoreSection.idau.addEventListener(Event.CHANGE, handleSectionChange);
             _embeddedDbVaultCoreSection.psp.addEventListener(Event.CHANGE, handleSectionChange);
             _embeddedDbVaultCoreSection.pspTarget.addEventListener(Event.CHANGE, handleSectionChange);
-            
+
             _validators = [];
             _validators.push(_embeddedDbVaultCoreSection.nameValidator);
             _validators.push(_embeddedDbVaultCoreSection.idauValidator);
@@ -1280,7 +1280,7 @@ public class PropertySheetMediator extends IocMediator {
             dbIdentityVault.idau = _embeddedDbVaultCoreSection.idau.text;
             dbIdentityVault.psp = _embeddedDbVaultCoreSection.psp.text;
             dbIdentityVault.pspTarget = _embeddedDbVaultCoreSection.pspTarget.text;
-            
+
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
@@ -1530,7 +1530,7 @@ public class PropertySheetMediator extends IocMediator {
             _ldapIdentitySourceLookupSection.credentialQueryString.addEventListener(Event.CHANGE, handleSectionChange);
             _ldapIdentitySourceLookupSection.updateableCredentialAttribute.addEventListener(Event.CHANGE, handleSectionChange);
             _ldapIdentitySourceLookupSection.userPropertiesQueryString.addEventListener(Event.CHANGE, handleSectionChange);
-            
+
             _validators = [];
             _validators.push(_ldapIdentitySourceLookupSection.usersCtxDNValidator);
             _validators.push(_ldapIdentitySourceLookupSection.principalUidAttributeIDValidator);
@@ -1614,7 +1614,7 @@ public class PropertySheetMediator extends IocMediator {
             xmlIdentitySource.name = _xmlIdentitySourceCoreSection.userRepositoryName.text;
             xmlIdentitySource.description = _xmlIdentitySourceCoreSection.description.text;
             xmlIdentitySource.xmlUrl = _xmlIdentitySourceCoreSection.xmlUrl.text;
-            
+
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
@@ -1623,7 +1623,7 @@ public class PropertySheetMediator extends IocMediator {
 
     protected function enableFederatedConnectionPropertyTabs():void {
         _propertySheetsViewStack.removeAllChildren();
-        
+
         // Core Tab
         var corePropertyTab:Group = new Group();
         corePropertyTab.id = "propertySheetCoreSection";
@@ -1678,7 +1678,7 @@ public class PropertySheetMediator extends IocMediator {
 
         _federatedConnectionCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
         _federatedConnectionCoreSection.connectionDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        
+
         _validators = [];
         _validators.push(_federatedConnectionCoreSection.nameValidator);
     }
@@ -1688,7 +1688,7 @@ public class PropertySheetMediator extends IocMediator {
         if (_dirty && validate(true)) {
              // bind model
             var connection:Connection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
-            
+
             connection.name = _federatedConnectionCoreSection.connectionName.text;
             connection.description = _federatedConnectionCoreSection.connectionDescription.text;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -1752,7 +1752,7 @@ public class PropertySheetMediator extends IocMediator {
     private function handleFederatedConnectionSpChannelPropertyTabRollOut(event:Event):void {
         if (_dirty) {
             var spChannel:ServiceProviderChannel;
-            
+
             var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
             if(connection.channelA is ServiceProviderChannel){
                 spChannel = connection.channelA as ServiceProviderChannel;
@@ -1902,7 +1902,7 @@ public class PropertySheetMediator extends IocMediator {
 
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
-        }        
+        }
     }
 
     protected function enableJOSSOActivationPropertyTabs():void {
@@ -2030,8 +2030,8 @@ public class PropertySheetMediator extends IocMediator {
         _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
         execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
         _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
-//        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+        //_executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
 
     }
 
@@ -2109,8 +2109,8 @@ public class PropertySheetMediator extends IocMediator {
         _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
         execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
         _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
-//        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+        //_executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
 
     }
 
@@ -2192,8 +2192,8 @@ public class PropertySheetMediator extends IocMediator {
         _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
         execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
         _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
-//        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+        //_executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
 
     }
 
@@ -2264,8 +2264,8 @@ public class PropertySheetMediator extends IocMediator {
         _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
         execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
         _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
-//        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+        //_executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
 
     }
 
@@ -2336,8 +2336,8 @@ public class PropertySheetMediator extends IocMediator {
         _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
         execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
         _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
-//        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+        //_executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
 
     }
 
@@ -2409,7 +2409,8 @@ public class PropertySheetMediator extends IocMediator {
         _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
         execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
         _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        //_executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
 
     }
 
@@ -2492,7 +2493,8 @@ public class PropertySheetMediator extends IocMediator {
         _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
         execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
         _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        //_executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
 
     }
 
@@ -2564,7 +2566,8 @@ public class PropertySheetMediator extends IocMediator {
         _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
         execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
         _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        //_executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
 
     }
 
@@ -2607,13 +2610,11 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function handleExecEnvActivationPropertyTabCreationComplete(event:Event):void{
+    private function handleExecEnvActivationPropertyTabRollOut(event:Event):void{
         if(projectProxy.currentIdentityAppliance.state == IdentityApplianceState.DEPLOYED.toString()
                 || projectProxy.currentIdentityAppliance.state == IdentityApplianceState.STARTED.toString()){
-            _executionEnvironmentActivateSection.activate.enabled = true;
-            _executionEnvironmentActivateSection.activate.addEventListener(MouseEvent.CLICK, activateExecutionEnvironment);
-        } else {
-            _executionEnvironmentActivateSection.activate.enabled = false;
+            activateExecutionEnvironment(event);
+
         }
     }
 
@@ -2626,7 +2627,7 @@ public class PropertySheetMediator extends IocMediator {
         activateExecEnvReq.executionEnvironment = currentExecEnv;
         activateExecEnvReq.installSamples = _executionEnvironmentActivateSection.installSamples.selected;
 
-        sendNotification(ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT, activateExecEnvReq);        
+        sendNotification(ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT, activateExecEnvReq);
     }
 
     protected function enableIdentityLookupPropertyTabs():void {
@@ -2690,7 +2691,7 @@ public class PropertySheetMediator extends IocMediator {
     private function handleSectionChange(event:Event) {
         _dirty = true;
     }
-    
+
     protected function get view():PropertySheetView
     {
         return viewComponent as PropertySheetView;

@@ -40,8 +40,5 @@
             <s:CheckBox id="installSamples" />
         </mx:FormItem>
 
-        <s:Button id="activate"
-           label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.activation.activate')}"/>        
-
     </mx:Form>
 </s:Group>
