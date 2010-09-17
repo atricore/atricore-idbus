@@ -180,7 +180,7 @@
     </fx:Script>
 
     <fx:Declarations>
-        <mx:StringValidator id="nameValidator" source="{jossoSPName}" required="true" property="text"/>
+        <utils:NameValidator id="nameValidator" source="{jossoSPName}" required="true" property="text"/>
         <!--<mx:StringValidator id="domainValidator" source="{spLocationDomain}" required="true" property="text"/>-->
         <mx:NumberValidator id="portValidator" source="{partnerappLocationPort}" required="false" property="text"
             minValue="1" maxValue="65535"
@@ -188,7 +188,7 @@
         <utils:URLPartValidator id="domainValidator" source="{partnerappLocationDomain}" required="true" property="text" />
         <!--<utils:URLPartValidator id="contextPathValidator" source="{partnerappLocationContext}" required="false" property="text" />-->
         <utils:URLMultipartValidator id="contextPathValidator" source="{partnerappLocationContext}" required="false" property="text" />
-        <mx:StringValidator id="partnerAppIdValidator" source="{partnerAppId}" required="true" property="text"/>
+        <utils:NameValidator id="partnerAppIdValidator" source="{partnerAppId}" required="true" property="text"/>
         <mx:StringValidator id="homeDirValidator" source="{homeDir}" required="true" property="text"/>
 
         <fx:XML id="platforms" source="/com/atricore/idbus/console/modeling/view/platformList.xml" />

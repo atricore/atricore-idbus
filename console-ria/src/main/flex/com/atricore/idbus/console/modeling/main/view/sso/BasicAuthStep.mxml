@@ -122,7 +122,7 @@
         ]]>
     </fx:Script>
     <fx:Declarations>
-        <mx:StringValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"/>
+        <utils:NameValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"/>
         <s:RadioButtonGroup id="repositoryType" itemClick="handleFormChange(event);"/>
     </fx:Declarations>
 

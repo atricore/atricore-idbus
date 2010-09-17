@@ -27,7 +27,7 @@
          paddingRight="5" paddingTop="5" paddingBottom="5">
 
     <fx:Declarations>
-        <mx:StringValidator id="nameValidator" source="{serviceProvChannelName}" required="true" property="text"/>
+        <utils:NameValidator id="nameValidator" source="{serviceProvChannelName}" required="true" property="text"/>
         <mx:NumberValidator id="portValidator" source="{spChannelLocationPort}" required="false" property="text"
                         minValue="1" maxValue="65535"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>

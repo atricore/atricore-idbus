@@ -29,7 +29,7 @@
          defaultButton="{btnOk}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
 
     <fx:Declarations>
-        <mx:StringValidator id="nameValidator" source="{serviceProvChannelName}" required="true" property="text" trigger="{btnOk}"
+        <utils:NameValidator id="nameValidator" source="{serviceProvChannelName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
         <mx:NumberValidator id="portValidator" source="{spChannelLocationPort}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"

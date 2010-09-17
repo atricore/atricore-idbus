@@ -27,7 +27,7 @@
          width="100%" height="100%">
 
     <fx:Declarations>
-        <mx:StringValidator id="nameValidator" source="{connectionName}" required="true" property="text"/>
+        <utils:NameValidator id="nameValidator" source="{connectionName}" required="true" property="text"/>
         <utils:URLPartValidator id="domainValidator" source="{partnerAppLocationDomain}" required="true" property="text"/>
         <utils:URLPartValidator id="pathValidator" source="{partnerAppLocationPath}" required="false" property="text"/>
         <mx:NumberValidator id="portValidator" source="{partnerAppLocationPort}" required="false" property="text"

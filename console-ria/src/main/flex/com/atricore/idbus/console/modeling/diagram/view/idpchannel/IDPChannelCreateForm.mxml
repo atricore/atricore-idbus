@@ -34,7 +34,7 @@
             <utils:ListItemValueObject label="Remember Me" isSelected="false" />
         </mx:ArrayCollection>
 
-        <mx:StringValidator id="nameValidator" source="{identityProvChannelName}" required="true" property="text" trigger="{btnOk}"
+        <utils:NameValidator id="nameValidator" source="{identityProvChannelName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
         <mx:NumberValidator id="portValidator" source="{idpChannelLocationPort}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"

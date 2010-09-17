@@ -45,7 +45,7 @@ public class CreateIdentityLookupCommand extends IocSimpleCommand implements IRe
 
         if(index > -1){
             var identityLookup:IdentityLookup = new IdentityLookup();
-            identityLookup.name = car.provider.name + "-" + car.identitySource.name + " idLookup";
+            identityLookup.name = car.provider.name + "-" + car.identitySource.name + "-idlookup";
             identityLookup.provider = provider;
             identityLookup.identitySource = _projectProxy.currentIdentityAppliance.idApplianceDefinition.identitySources[index];
             provider.identityLookup = identityLookup;

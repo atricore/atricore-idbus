@@ -27,7 +27,7 @@
          paddingRight="5" paddingTop="5" paddingBottom="5">
 
     <fx:Declarations>
-        <mx:StringValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"/>
+        <utils:NameValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"/>
         <mx:StringValidator id="xmlValidator" source="{xmlUrl}" required="true" property="text"/>
     </fx:Declarations>
 

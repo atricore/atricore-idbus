@@ -35,7 +35,7 @@
     </fx:Style>
     
     <fx:Declarations>
-        <mx:StringValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"
+        <utils:NameValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"
                 trigger="{btnOk}" triggerEvent="click"/>
         <mx:StringValidator id="driverNameValidator" source="{driverName}" required="true" property="text"
                 trigger="{btnOk}" triggerEvent="click"/>

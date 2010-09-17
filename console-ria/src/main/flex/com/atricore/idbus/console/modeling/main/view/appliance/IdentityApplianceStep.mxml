@@ -107,7 +107,7 @@
     </fx:Script>
 
     <fx:Declarations>
-        <mx:StringValidator id="nameValidator" source="{applianceName}" required="true" property="text"/>
+        <utils:NameValidator id="nameValidator" source="{applianceName}" required="true" property="text"/>
         <mx:NumberValidator id="portValidator" source="{applianceLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{applianceLocationDomain}" required="true" property="text"/>

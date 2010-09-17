@@ -40,7 +40,7 @@
             <fx:Object label="Windows (NTLM)" data="ntlm"/>
             <fx:Object label="Remember Me" data="rememberme"/>
         </mx:ArrayCollection>
-        <mx:StringValidator id="nameValidator" source="{identityProviderName}" required="true" property="text"/>
+        <utils:NameValidator id="nameValidator" source="{identityProviderName}" required="true" property="text"/>
         <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{idpLocationDomain}" required="true" property="text" />

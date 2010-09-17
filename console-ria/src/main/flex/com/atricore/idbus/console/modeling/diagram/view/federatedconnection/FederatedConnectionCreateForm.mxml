@@ -35,7 +35,7 @@
             <utils:ListItemValueObject label="Remember Me" name="rememberme" isSelected="false" />
         </mx:ArrayCollection>
         
-        <mx:StringValidator id="nameValidator" source="{federatedConnectionName}" required="true" property="text" trigger="{btnOk}"
+        <utils:NameValidator id="nameValidator" source="{federatedConnectionName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
     </fx:Declarations>
     
