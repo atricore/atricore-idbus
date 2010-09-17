@@ -295,6 +295,10 @@
             <a-hint>com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore</a-hint>
             <b-hint>com.atricore.idbus.console.services.dto.KeystoreDTO</b-hint>
         </field>
+        <field>
+            <a>useSampleStore</a>
+            <b>useSampleStore</b>
+        </field>
     </mapping>
 
     <mapping>

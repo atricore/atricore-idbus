@@ -33,6 +33,7 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.Keystore;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
+import com.atricore.idbus.console.services.dto.SamlR2ProviderConfig;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
@@ -169,14 +170,19 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         identityApplianceDefinition.identitySources = new ArrayCollection();
         identityApplianceDefinition.identitySources.addItem(createIdentityVault());
 
+        var keystore:Keystore = _wizardDataModel.certificateData.keystore as Keystore;
+        identityApplianceDefinition.keystore = keystore;
+
+        var config:SamlR2ProviderConfig = _wizardDataModel.certificateData.config as SamlR2ProviderConfig;
+
         identityApplianceDefinition.providers = new ArrayCollection();
         for (var i:int = 0; i < _wizardDataModel.spData.length; i++) {
             var sp:ServiceProvider = _wizardDataModel.spData[i] as ServiceProvider;
+            sp.config = config;
             identityApplianceDefinition.providers.addItem(sp);
         }
 
-        var keystore:Keystore = _wizardDataModel.certificateData;
-        identityApplianceDefinition.keystore = keystore;
+
 
         sendNotification(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);
     }

@@ -32,6 +32,7 @@ public class SamlR2ProviderConfigDTO extends AbstractProviderConfigDTO {
 
     private KeystoreDTO encrypter;
     private static final long serialVersionUID = 8401310209898123598L;
+    private boolean useSampleStore;
 
     public KeystoreDTO getSigner() {
         return signer;
@@ -47,5 +48,13 @@ public class SamlR2ProviderConfigDTO extends AbstractProviderConfigDTO {
 
     public void setEncrypter(KeystoreDTO encrypter) {
         this.encrypter = encrypter;
+    }
+
+    public boolean isUseSampleStore() {
+        return useSampleStore;
+    }
+
+    public void setUseSampleStore(boolean useSampleStore) {
+        this.useSampleStore = useSampleStore;
     }
 }
