@@ -10,6 +10,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -46,6 +47,9 @@ public class JDOGroupDAOImpl extends GenericDAOImpl<JDOGroup, Long> implements J
 
         JDOUser user = users.iterator().next();
 
-        return Arrays.asList(user.getGroups());
+        if (user.getGroups() != null)
+            return Arrays.asList(user.getGroups());
+
+        return new ArrayList<JDOGroup>();
     }
 }
