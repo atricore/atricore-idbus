@@ -2774,8 +2774,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.enabled = false;
             _federatedConnectionIDPChannelSection.samlBindingSoapCheck.enabled = false;
 
-//            _federatedConnectionIDPChannelSection.signAuthRequestCheck.enabled = false;
-//            _federatedConnectionIDPChannelSection.encryptAuthRequestCheck.enabled = false;
+            _federatedConnectionIDPChannelSection.signAuthRequestCheck.enabled = false;
+            _federatedConnectionIDPChannelSection.encryptAuthRequestCheck.enabled = false;
 
             _federatedConnectionIDPChannelSection.userInfoLookupCombo.enabled = false;
             _federatedConnectionIDPChannelSection.authMechanismCombo.enabled = false;
@@ -2792,8 +2792,8 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.enabled = true;
             _federatedConnectionIDPChannelSection.samlBindingSoapCheck.enabled = true;
 
-//            _federatedConnectionIDPChannelSection.signAuthRequestCheck.enabled = true;
-//            _federatedConnectionIDPChannelSection.encryptAuthRequestCheck.enabled = true;
+            _federatedConnectionIDPChannelSection.signAuthRequestCheck.enabled = true;
+            _federatedConnectionIDPChannelSection.encryptAuthRequestCheck.enabled = true;
 
             _federatedConnectionIDPChannelSection.userInfoLookupCombo.enabled = true;
             _federatedConnectionIDPChannelSection.authMechanismCombo.enabled = true;
