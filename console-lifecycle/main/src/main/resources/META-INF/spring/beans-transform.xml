@@ -31,7 +31,9 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauBaseComponentsTransformer"/>
 
     <bean name="idpTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer">
+        <property name="sampleKeystore" ref="sampleKeystore"/>
+    </bean>
 
     <bean name="idpFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
@@ -156,40 +158,12 @@
 
     <bean name="samlr2IdPTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2IdPTransformer">
-        <property name="sampleKeystore">
-            <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore">
-                <property name="type" value="JKS"/>
-                <property name="password" value="ATRICORE"/>
-                <property name="privateKeyName" value="josso-sp1"/>
-                <property name="privateKeyPassword" value="ATRICORE"/>
-                <property name="certificateAlias" value="josso-sp1"/>
-                <property name="store">
-                    <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
-                        <property name="name" value="idp1-keystore"/>
-                        <property name="value" value="/com/atricore/idbus/console/lifecycle/main/sample-keystore.jks"/>
-                    </bean>
-                </property>
-            </bean>
-        </property>
+        <property name="sampleKeystore" ref="sampleKeystore"/>
     </bean>
 
     <bean name="samlr2SPTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SamlR2SPTransformer">
-        <property name="sampleKeystore">
-            <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore">
-                <property name="type" value="JKS"/>
-                <property name="password" value="ATRICORE"/>
-                <property name="privateKeyName" value="josso-sp1"/>
-                <property name="privateKeyPassword" value="ATRICORE"/>
-                <property name="certificateAlias" value="josso-sp1"/>
-                <property name="store">
-                    <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
-                        <property name="name" value="idp1-keystore"/>
-                        <property name="value" value="/com/atricore/idbus/console/lifecycle/main/sample-keystore.jks"/>
-                    </bean>
-                </property>
-            </bean>
-        </property>
+        <property name="sampleKeystore" ref="sampleKeystore"/>
     </bean>
 
     <bean name="idauSerializerTransformer"
@@ -327,5 +301,20 @@
             </list>
         </property>
     </bean>
+
+    <bean name="sampleKeystore" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore">
+        <property name="type" value="JKS"/>
+        <property name="password" value="ATRICORE"/>
+        <property name="privateKeyName" value="josso-sp1"/>
+        <property name="privateKeyPassword" value="ATRICORE"/>
+        <property name="certificateAlias" value="josso-sp1"/>
+        <property name="store">
+            <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
+                <property name="name" value="idp1-keystore"/>
+                <property name="uri" value="/com/atricore/idbus/console/lifecycle/main/sample-keystore.jks"/>
+            </bean>
+        </property>
+    </bean>
+
     
 </beans>

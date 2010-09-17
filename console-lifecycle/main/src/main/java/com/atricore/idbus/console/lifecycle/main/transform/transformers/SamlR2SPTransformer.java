@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+import org.springframework.beans.factory.InitializingBean;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
 import org.w3._2000._09.xmldsig_.X509DataType;
 import org.w3._2001._04.xmlenc_.EncryptionMethodType;
@@ -28,7 +29,7 @@ import java.security.cert.Certificate;
 /**
  * @version $Id$
  */
-public class SamlR2SPTransformer extends AbstractTransformer {
+public class SamlR2SPTransformer extends AbstractTransformer implements InitializingBean  {
 
     private static final Log logger = LogFactory.getLog(SamlR2SPTransformer.class);
 
@@ -37,6 +38,24 @@ public class SamlR2SPTransformer extends AbstractTransformer {
     private UUIDGenerator idGenerator = new UUIDGenerator();
 
     private Keystore sampleKeystore;
+
+    public void afterPropertiesSet() throws Exception {
+
+        if (sampleKeystore.getStore() != null &&
+                (sampleKeystore.getStore().getValue() == null ||
+                sampleKeystore.getStore().getValue().length == 0)) {
+            resolveResource(sampleKeystore.getStore());
+        }
+
+        if (sampleKeystore.getStore() == null &&
+            sampleKeystore.getStore().getValue() == null ||
+                sampleKeystore.getStore().getValue().length == 0) {
+            logger.debug("Sample Keystore invalid or not found!");
+        } else {
+            logger.debug("Sample Keystore size " + sampleKeystore.getStore());
+        }
+
+    }
 
     @Override
     public boolean accept(TransformEvent event) {

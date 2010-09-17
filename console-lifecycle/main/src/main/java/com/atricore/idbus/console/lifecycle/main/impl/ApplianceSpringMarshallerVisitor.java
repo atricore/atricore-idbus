@@ -454,8 +454,11 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyValue(pCfgBean, "name", config.getName());
         setPropertyValue(pCfgBean, "description", config.getDescription());
 
-        setKeystorePropertyValue(pCfgBean, "signer", config.getSigner());
-        setKeystorePropertyValue(pCfgBean, "encrypter", config.getEncrypter());
+        if (config.getSigner() != null)
+            setKeystorePropertyValue(pCfgBean, "signer", config.getSigner());
+
+        if (config.getEncrypter() != null)
+            setKeystorePropertyValue(pCfgBean, "encrypter", config.getEncrypter());
 
         setPropertyBean(bean, propertyName, pCfgBean);
 

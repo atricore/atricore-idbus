@@ -22,10 +22,15 @@ package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Channel;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.main.transform.Transformer;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -45,6 +50,27 @@ public abstract class AbstractTransformer implements Transformer {
 
     public Object after(TransformEvent event) throws TransformException {
         return null;
+    }
+
+    protected void resolveResource(Resource resource) throws IOException {
+
+        InputStream is = getClass().getResourceAsStream(resource.getUri());
+        if (is != null) {
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
+                byte[] buff = new byte[4096];
+                int read = is.read(buff, 0, 4096);
+                while (read > 0) {
+                    baos.write(buff, 0, read);
+                    read = is.read(buff, 0, 4096);
+                }
+                resource.setValue(baos.toByteArray());
+
+            } finally {
+                if (is != null) try { is.close(); } catch (IOException e) {/**/}
+            }
+        }
+
     }
 
     protected String resolveLocationUrl(Provider provider, Channel channel) {

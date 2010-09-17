@@ -84,7 +84,22 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
         if (node.getIdentityLookup() == null)
             addError("Serivce Provider needs an Indentity Lookup connection");
 
-        // TODO !
+        if (node.getConfig() ==null)
+            addError("No configuration found for SP " + node.getName());
+        else {
+            if (node.getConfig() instanceof SamlR2ProviderConfig) {
+                SamlR2ProviderConfig samlCfg = (SamlR2ProviderConfig) node.getConfig();
+
+                if (samlCfg.getSigner() == null && !samlCfg.isUseSampleStore()) {
+                    addError("No singer found and use sample store is set to false for " + node.getName());
+                }
+
+                if (samlCfg.getEncrypter() == null && !samlCfg.isUseSampleStore()) {
+                    addError("No encrypter found and use sample store is set to false for " + node.getName());
+                }
+
+            }
+        }
     }
 
     @Override
@@ -132,7 +147,22 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
         if (preferred > 1)
             addError("Too many Identity Provider Channels defined for SP " + node.getName() + ", found " + preferred);
 
-        // TODO !
+        if (node.getConfig() ==null)
+            addError("No configuration found for SP " + node.getName());
+        else {
+            if (node.getConfig() instanceof SamlR2ProviderConfig) {
+                SamlR2ProviderConfig samlCfg = (SamlR2ProviderConfig) node.getConfig();
+
+                if (samlCfg.getSigner() == null && !samlCfg.isUseSampleStore()) {
+                    addError("No singer found and use sample store is set to false for " + node.getName());
+                }
+
+                if (samlCfg.getEncrypter() == null && !samlCfg.isUseSampleStore()) {
+                    addError("No encrypter found and use sample store is set to false for " + node.getName());
+                }
+
+            }
+        }
     }
 
     @Override
