@@ -13,4 +13,5 @@ public class XmlIdentitySource extends IdentitySource {
     public void setXmlUrl(String xmlUrl) {
         this.xmlUrl = xmlUrl;
     }
+
 }

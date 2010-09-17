@@ -436,7 +436,7 @@
             <!--<dependency>-->
             <!--<groupId>net.sf.dozer</groupId>-->
             <!--<artifactId>dozer</artifactId>-->
-            <!--<version>5.2.2</version>-->
+            <!--<version>${dozer.version}</version>-->
             <!--<scope>test</scope>-->
             <!--</dependency>            -->
 

@@ -89,4 +89,24 @@ public class ExecutionEnvironment implements Serializable {
     public void setActive(boolean active) {
         this.active = active;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ExecutionEnvironment)) return false;
+
+        ExecutionEnvironment that = (ExecutionEnvironment) o;
+
+        if(id == 0) return false;
+
+        if (id != that.id) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
+    }
+
 }

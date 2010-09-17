@@ -1,0 +1,337 @@
+<!--
+  ~ Copyright (c) 2009., Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+    <bean name="ida1" class="com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance" scope="prototype">
+        <property name="idApplianceDefinition" ref="idApplianceDef1"/>
+        <property name="state" value="PROJECTED"/>
+    </bean>
+
+    <!-- =========================================== -->
+    <!-- TODO : ID Appliance Deployment   -->
+    <!-- =========================================== -->
+
+    <!-- =========================================== -->
+    <!-- ID Appliance Definition -->
+    <!-- =========================================== -->
+    <bean name="idApplianceDef1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition">
+
+        <property name="name" value="ida1"/>
+        <property name="displayName" value="Sample Federation w/ Provisioning"/>
+        <property name="namespace" value="com.mycompany.example"/>
+        <property name="description" value="This is a sample to test Identity Bus deployment facilities."/>
+        <property name="location">
+            <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Location">
+                <property name="protocol" value="http"/>
+                <property name="host" value="localhost"/>
+                <property name="port" value="8081"/>
+                <property name="context" value="IDBUS"/>
+                <property name="uri" value="IDA1"/>
+            </bean>
+        </property>
+
+        <property name="providers">
+            <set>
+                <ref bean="idp1"/>
+                <ref bean="sp1"/>
+            </set>
+        </property>
+
+        <property name="identitySources">
+            <set>
+                <ref bean="idsource1"/>
+            </set>
+        </property>
+
+        <property name="executionEnvironments">
+            <set>
+                <ref bean="execEnv1"/>
+            </set>
+        </property>
+
+    </bean>
+
+    <!-- =========================================== -->
+    <!-- IDP 1 -->
+    <!-- =========================================== -->
+    <bean name="idp1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider">
+        <property name="name" value="idp1"/>
+        <property name="displayName" value="Identity Provider #1"/>
+        <property name="description" value="This is a test Identity Provider #1"/>
+        <property name="identityAppliance" ref="idApplianceDef1"/>
+        <property name="remote" value="false"/>
+
+        <property name="activeBindings">
+            <set>
+                <value>SAMLR2_ARTIFACT</value>
+                <value>SAMLR2_HTTP_POST</value>
+                <value>SAMLR2_HTTP_REDIRECT</value>
+            </set>
+        </property>
+
+        <property name="activeProfiles">
+            <set>
+                <value>SSO</value>
+            </set>
+        </property>
+
+        <property name="authenticationMechanisms">
+            <set>
+                <ref bean="idp1-basic-authn"/>
+            </set>
+        </property>
+
+        <property name="location">
+            <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Location">
+                <property name="protocol" value="http"/>
+                <property name="host" value="localhost"/>
+                <property name="port" value="8081"/>
+                <property name="context" value="IDBUS"/>
+                <property name="uri" value="IDA1/IDP1"/>
+            </bean>
+        </property>
+
+        <property name="federatedConnectionsA">
+            <set>
+                <ref bean="idp1-sp1-fed"/>
+            </set>
+        </property>
+
+        <property name="identityLookup" ref="idp1-idlookup"/>
+
+        <property name="config">
+            <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig">
+                <property name="name" value="idp1-samlr2-config"/>
+                <property name="description" value="SamlR2 IdP1 Configuraiton"/>
+                <property name="signer">
+					<bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore">
+						<property name="type" value="JKS"/>
+						<property name="password" value="ATRICORE"/>
+						<property name="privateKeyName" value="josso-sp1"/>
+						<property name="privateKeyPassword" value="ATRICORE"/>
+						<property name="certificateAlias" value="josso-sp1"/>
+                        <property name="store">
+                            <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
+                                <property name="name" value="idp1-keystore"/>
+                                <property name="value" value="/tmp/ida1/keystore.jks"/>
+                            </bean>
+                        </property>
+					</bean>
+                </property>
+                <property name="encrypter">
+					<bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore">
+						<property name="type" value="JKS"/>
+                        <property name="password" value="ATRICORE"/>
+                        <property name="privateKeyName" value="josso-sp1"/>
+                        <property name="privateKeyPassword" value="ATRICORE"/>
+                        <property name="certificateAlias" value="josso-sp1"/>
+                        <property name="store">
+                            <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
+                                <property name="name" value="idp1-keystore"/>
+                                <property name="value" value="/tmp/ida1/keystore.jks"/>
+                            </bean>
+                        </property>
+					</bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="idp1-basic-authn" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.BasicAuthentication">
+        <property name="name" value="idp1-basic-authn"/>
+        <property name="hashAlgorithm" value="MD5"/>
+        <property name="hashEncoding" value="HEX"/>
+        <property name="ignoreUsernameCase" value="false"/>
+    </bean>
+
+    <bean name="idp1-idlookup" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityLookup">
+        <property name="name" value="idp1-idlookup"/>
+        <property name="description" value="IDP 1 Identity Lookup definition"/>
+        <property name="provider" ref="idp1"/>
+        <property name="identitySource" ref="idsource1"/>
+    </bean>
+
+    <!-- =========================================== -->
+    <!-- SP 1 -->
+    <!-- =========================================== -->
+
+    <bean name="sp1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider">
+        <property name="name" value="sp1"/>
+        <property name="displayName" value="Service Provider #1"/>
+        <property name="description" value="This is a test Service Provider #1"/>
+        <property name="identityAppliance" ref="idApplianceDef1"/>
+        <property name="remote" value="false"/>
+
+        <property name="location">
+            <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Location">
+                <property name="protocol" value="http"/>
+                <property name="host" value="localhost"/>
+                <property name="port" value="8081"/>
+                <property name="context" value="IDBUS"/>
+                <property name="uri" value="IDA1/SP1"/>
+            </bean>
+        </property>
+
+        <property name="activation" ref="sp1-josso"/>
+        <property name="identityLookup" ref="sp1-idlookup"/>
+
+        <property name="config">
+            <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig">
+                <property name="name" value="sp1-samlr2-config"/>
+                <property name="description" value="SamlR2 SP1 Configuraiton"/>
+
+                <property name="signer">
+					<bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore">
+						<property name="type" value="JKS"/>
+						<property name="password" value="ATRICORE"/>
+
+						<property name="privateKeyName" value="josso-sp1"/>
+						<property name="privateKeyPassword" value="ATRICORE"/>
+						<property name="certificateAlias" value="josso-sp1"/>
+
+                        <property name="store">
+                            <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
+                                <property name="name" value="sp1-keystore"/>
+                                <property name="value" value="/tmp/ida1/keystore.jks"/>
+                            </bean>
+                        </property>
+
+
+					</bean>
+                </property>
+                <property name="encrypter">
+					<bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore">
+						<property name="type" value="JKS"/>
+						<property name="password" value="ATRICORE"/>
+
+						<property name="privateKeyName" value="josso-sp1"/>
+						<property name="privateKeyPassword" value="ATRICORE"/>
+						<property name="certificateAlias" value="josso-sp1"/>
+
+                        <property name="store">
+                            <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Resource">
+                                <property name="name" value="sp1-keystore"/>
+                                <property name="value" value="/tmp/ida1/keystore.jks"/>
+                            </bean>
+                        </property>
+
+					</bean>
+                </property>
+            </bean>
+        </property>
+
+        <property name="federatedConnectionsB">
+            <set>
+                <ref bean="idp1-sp1-fed"/>
+            </set>
+        </property>
+
+    </bean>
+
+    <bean name="sp1-josso" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation">
+        <property name="name" value="sp1-josso-activation"/>
+        <property name="displayName" value="SP1 JOSSO Activation"/>
+        <property name="description" value="SP1 activation definition to JOSSO Agent"/>
+        <property name="partnerAppId" value="partnerapp1"/>
+
+        <property name="partnerAppLocation">
+            <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Location">
+                <property name="protocol" value="http"/>
+                <property name="host" value="localhost"/>
+                <property name="port" value="8080"/>
+                <property name="context" value="partnerapp"/>
+                <property name="uri" value=""/>
+            </bean>
+        </property>
+
+        <property name="executionEnv" ref="execEnv1"/>
+        <property name="sp" ref="sp1"/>
+
+    </bean>
+
+    <bean name="sp1-idlookup" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityLookup">
+        <property name="name" value="sp1-idlookup"/>
+        <property name="description" value="SP 1 Identity Lookup definition"/>
+        <property name="provider" ref="sp1"/>
+        <property name="identitySource" ref="idsource1"/>
+    </bean>
+
+    <bean name="idp1-sp1-fed" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.FederatedConnection">
+        <property name="name" value="idp1-sp1-fed"/>
+        <property name="roleA" ref="idp1"/>
+        <property name="channelA">
+
+            <bean name="sp-default-channel" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel">
+                <property name="name" value="idp1-default-channel"/>
+                <property name="description" value="IdP1 Default Channel"/>
+                <property name="overrideProviderSetup" value="false"/>
+            </bean>
+
+        </property>
+
+        <property name="roleB" ref="sp1"/>
+
+        <property name="channelB">
+            <bean name="idp-default-channel" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProviderChannel">
+                <property name="name" value="sp1-default-channel"/>
+                <property name="description" value="SP1 Default Channel"/>
+                <property name="overrideProviderSetup" value="false"/>
+                <property name="preferred" value="true"/>
+            </bean>
+        </property>
+
+    </bean>
+
+    <bean name="execEnv1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.TomcatExecutionEnvironment">
+        <property name="name" value="execEnv1"/>
+        <property name="platformId" value="tc60"/>
+        <property name="displayName" value="Execution Environment One"/>
+        <property name="description" value="Test Execution Environment One"/>
+        <property name="installUri" value="/tmp/ida1/apache-tomcat-6.0.29"/>
+        <property name="activations">
+            <set>
+                <ref bean="sp1-josso"/>
+            </set>
+        </property>
+    </bean>
+
+    <bean name="idsource1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentitySource">
+        <property name="name" value="idsource1"/>
+        <property name="displayName" value="Identity Source One"/>
+        <property name="description" value="Test Identity Source One"/>
+        <property name="idau" value="idau-default"/>
+        <property name="psp" value="psp-default"/>
+        <property name="pspTarget" value="pst-default"/>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer" id="customEditorConfigurer">
+        <property name="customEditors">
+            <map>
+                <entry key="byte[]">
+                    <bean class="com.atricore.idbus.console.lifecycle.main.util.FileToByteArrayPropertyEditor"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+</beans>

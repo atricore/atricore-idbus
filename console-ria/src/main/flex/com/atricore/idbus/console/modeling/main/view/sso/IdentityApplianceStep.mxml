@@ -25,7 +25,7 @@
         xmlns:mx="library://ns.adobe.com/flex/mx"
         xmlns:fx="http://ns.adobe.com/mxml/2009"
         xmlns:s="library://ns.adobe.com/flex/spark"
-        stepName="Basic Authentication"
+        stepName="Identity Appliance"
         xmlns:utils="com.atricore.idbus.console.components.*"
         creationComplete="initForm()">
 
@@ -54,7 +54,8 @@
                 location.protocol = applianceLocationProtocol.selectedItem.data;
                 location.host = applianceLocationDomain.text;
                 location.port = parseInt(applianceLocationPort.text);
-                location.context = applianceLocationPath.text;
+                location.context = "IDBUS";
+                location.uri = applianceName.text.toUpperCase();
                 idApplianceDef.location = location;
 
                 var identityAppliance:IdentityAppliance = new IdentityAppliance();
@@ -70,7 +71,7 @@
                 readableDecisionArray.push("Appliance location: " + applianceLocationProtocol.labelDisplay.text + "://" +
                         applianceLocationDomain.text +
                         ((applianceLocationPort.text != null && applianceLocationPort.text != "") ?
-                                ":" + applianceLocationPort.text : "") + "/" + applianceLocationPath.text);
+                                ":" + applianceLocationPort.text : "") + "/IDBUS/" + applianceName.text.toUpperCase());
                 return readableDecisionArray.join("\n").toString();
             }
 
@@ -80,7 +81,7 @@
                     validators.push(nameValidator);
                     validators.push(portValidator);
                     validators.push(domainValidator);
-                    validators.push(pathValidator);
+//                    validators.push(pathValidator);
                     validators.push(namespaceValidator);
                 }
             }
@@ -98,7 +99,7 @@
         <mx:NumberValidator id="portValidator" source="{applianceLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{applianceLocationDomain}" required="true" property="text"/>
-        <utils:URLPartValidator id="pathValidator" source="{applianceLocationPath}" required="false" property="text"/>
+        <!--<utils:URLPartValidator id="pathValidator" source="{applianceLocationPath}" required="false" property="text"/>-->
         <utils:NamespaceValidator id="namespaceValidator" source="{applianceNamespace}" required="true" property="text"/>
     </fx:Declarations>
 
@@ -128,9 +129,9 @@
                 <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
                 <s:TextInput id="applianceLocationDomain" width="150" change="handleFormChange(event);"/>
                 <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
-                <s:TextInput id="applianceLocationPort" width="40" change="handleFormChange(event);"/>
-                <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
-                <s:TextInput id="applianceLocationPath" styleName="locationInput" width="100" change="handleFormChange(event);"/>
+                <s:TextInput id="applianceLocationPort" width="40" change="handleFormChange(event);" text="8081"/>
+                <!--<s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>-->
+                <!--<s:TextInput id="applianceLocationPath" styleName="locationInput" width="100" change="handleFormChange(event);"/>-->
             </mx:FormItem>
             
         </utils:ValidatingForm>

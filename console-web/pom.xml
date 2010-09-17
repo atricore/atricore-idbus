@@ -179,11 +179,11 @@
                             WEB-INF,
                             WEB-INF/classes,
                             WEB-INF/lib/backport-util-concurrent-3.1.jar,
-                            WEB-INF/lib/blazeds-common-3.0.jar,
-                            WEB-INF/lib/blazeds-core-3.0.jar,
-                            WEB-INF/lib/blazeds-remoting-3.0.jar,
-                            WEB-INF/lib/dozer-5.2.2.jar,
-                            WEB-INF/lib/console-services-1.0.0-SNAPSHOT.jar,
+                            WEB-INF/lib/blazeds-common-${blazeds.version}.jar,
+                            WEB-INF/lib/blazeds-core-${blazeds.version}.jar,
+                            WEB-INF/lib/blazeds-remoting-${blazeds.version}.jar,
+                            WEB-INF/lib/dozer-${dozer.version}.jar,
+                            WEB-INF/lib/console-services-${pom.version}.jar,
                         </Bundle-ClassPath>
                         <Require-Bundle>
                             com.atricore.idbus.console.lifecycle.main,
@@ -735,7 +735,6 @@
                 <dependency>
                     <groupId>org.apache.xmlbeans</groupId>
                     <artifactId>xmlbeans</artifactId>
-                    <version>2.4.0</version>
                 </dependency>
 
                 <!-- FLEX , Embedded-->

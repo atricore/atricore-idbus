@@ -189,9 +189,9 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         var data:IdentitySource;
         if (_wizardDataModel.authData is EmbeddedIdentitySource) {
             var embeddedIdentitySource:EmbeddedIdentitySource = _wizardDataModel.authData as EmbeddedIdentitySource;
-            embeddedIdentitySource.idau = "idau-default";
-            embeddedIdentitySource.psp = "psp-default";
-            embeddedIdentitySource.pspTarget = "pst-default";
+            embeddedIdentitySource.idau = "default-idau";
+            embeddedIdentitySource.psp = "default-psp";
+            embeddedIdentitySource.pspTarget = "default-pspTarget";
             data = embeddedIdentitySource;
         } else if (_wizardDataModel.authData is DbIdentitySource) {
             data = _wizardDataModel.databaseData as DbIdentitySource;

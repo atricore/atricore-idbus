@@ -78,7 +78,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         view.spLocationProtocol.selectedIndex = 0;
         view.spLocationDomain.text = "";
         view.spLocationPort.text = "";
-        view.spLocationContext.text = "/idbus/";
+        view.spLocationContext.text = "/IDBUS/";
         view.spLocationPath.text = "";
 //        view.signAuthRequestCheck.selected = false;
 //        view.encryptAuthRequestCheck.selected = false;
