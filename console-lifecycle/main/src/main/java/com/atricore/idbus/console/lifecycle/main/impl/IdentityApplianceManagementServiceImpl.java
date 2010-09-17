@@ -47,9 +47,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.jdo.FetchPlan;
@@ -71,6 +68,8 @@ public class IdentityApplianceManagementServiceImpl implements
     private ApplianceDeployer deployer;
 
     private ApplianceDefinitionValidator validator;
+
+    private ApplianceMarshaller marshaller;
 
     private IdentityApplianceDAO identityApplianceDAO;
 
@@ -219,8 +218,26 @@ public class IdentityApplianceManagementServiceImpl implements
 
     @Transactional
     public ExportIdentityApplianceResponse exportIdentityAppliance(ExportIdentityApplianceRequest request) throws IdentityServerException {
-        syncAppliances();
-        throw new UnsupportedOperationException("Not Supported!");
+        try {
+
+            syncAppliances();
+
+            if (logger.isTraceEnabled())
+                logger.trace("Exporting appliance definition \n" + request.getApplianceId() + "\n");
+
+            IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
+
+            byte[] applianceBytes = marshaller.marshall(appliance);
+
+            ExportIdentityApplianceResponse response = new  ExportIdentityApplianceResponse();
+            response.setBytes(applianceBytes);
+            response.setApplianceId(appliance.getId() + "");
+
+            return response;
+        } catch (Exception e) {
+            logger.error("Error importing identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -233,26 +250,9 @@ public class IdentityApplianceManagementServiceImpl implements
             if (logger.isTraceEnabled())
                 logger.trace("Importing appliance definition \n" + request.getDescriptor() + "\n");
 
-            // 1. Instantiate beans
-            GenericApplicationContext ctx = new GenericApplicationContext();
-            ctx.setClassLoader(getClass().getClassLoader());
-
-            XmlBeanDefinitionReader xmlReader = new XmlBeanDefinitionReader(ctx);
-            xmlReader.loadBeanDefinitions(new ByteArrayResource(request.getDescriptor().getBytes()));
-            ctx.refresh();
-
-            Map<String, IdentityAppliance> appliances = ctx.getBeansOfType(IdentityAppliance.class);
-
-            if (appliances.size() < 1 )
-                throw new IdentityServerException("No Identity Appliance found in the given descriptor!");
-
-            if (appliances.size() > 1)
-                throw new IdentityServerException("Only one Identity Appliance per descriptor is supported. (found "+appliances.size()+")");
-
-            IdentityAppliance appliance = appliances.values().iterator().next();
+            // 1. Unmarshall appliance
+            IdentityAppliance appliance = marshaller.unmarshall(request.getDescriptor().getBytes());
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
-            if (applianceDef == null)
-                throw new IdentityServerException("Appliance must contain an Appliance Definition");
 
             validateAppliance(appliance);
 
@@ -866,6 +866,14 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setValidator(ApplianceDefinitionValidator validator) {
         this.validator = validator;
+    }
+
+    public ApplianceMarshaller getMarshaller() {
+        return marshaller;
+    }
+
+    public void setMarshaller(ApplianceMarshaller marshaller) {
+        this.marshaller = marshaller;
     }
 
     public IdentityApplianceDAO getIdentityApplianceDAO() {

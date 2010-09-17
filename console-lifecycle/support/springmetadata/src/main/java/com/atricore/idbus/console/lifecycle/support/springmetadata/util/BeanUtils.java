@@ -88,6 +88,27 @@ public class BeanUtils {
         return b;
     }
 
+    public static void setBeanDescription(Bean bean, String value) {
+
+        Description descr = new Description();
+        descr.getContent().add(value);
+
+        bean.setDescription(descr);
+
+    }
+
+    public static String getBeanDescription(Bean bean) {
+        Description d = bean.getDescription();
+        if( d == null)
+            return null;
+
+        StringBuilder sb = new StringBuilder();
+        for (String c : d.getContent())
+            sb.append(c);
+
+        return sb.toString();
+    }
+
     public static Bean getBean(Beans beans, String name) {
         for (Object o : beans.getImportsAndAliasAndBeen()) {
             if (o instanceof Bean ) {
@@ -305,6 +326,9 @@ public class BeanUtils {
         list.getBeenAndRevesAndIdreves().add(value);
     }
 
+    protected static void addValueToSet(com.atricore.idbus.console.lifecycle.support.springmetadata.model.Set set, Value value){
+        set.getBeenAndRevesAndIdreves().add(value);
+    }
 
     protected static com.atricore.idbus.console.lifecycle.support.springmetadata.model.List getListOfValuesAndRefs(Bean bean, String name){
         Property prop = getProperty(bean, name);
@@ -330,6 +354,32 @@ public class BeanUtils {
         for (String ref : references){
            addRefToList(list, ref);
         }
+    }
+
+    public static void setPropertyAsValues(Bean bean, String listName, java.util.Set<String> values) {
+        com.atricore.idbus.console.lifecycle.support.springmetadata.model.Set set = null;//getListOfValuesAndRefs(bean, listName);
+        Property prop = getProperty(bean, listName);
+
+        if(prop != null){
+            bean.getMetasAndConstructorArgsAndProperties().remove(prop);
+        }
+
+        set = new com.atricore.idbus.console.lifecycle.support.springmetadata.model.Set();
+        prop = new Property();
+        prop.setName(listName);
+
+        //in case of update, we need to remove all items from the list first
+        set.getBeenAndRevesAndIdreves().clear();
+        for (String strValue : values) {
+            Value value = new Value();
+            value.getContent().add(strValue);
+
+           addValueToSet(set, value);
+        }
+
+        prop.setSet(set);
+        bean.getMetasAndConstructorArgsAndProperties().add(prop);
+
     }
 
     public static void setPropertyAsValues(Bean bean, String listName, java.util.List<String> values) {
@@ -534,6 +584,43 @@ public class BeanUtils {
         refsToAdd.add(ref);
         setPropertyRefs(bean, setName, refsToAdd);
     }
+
+    public static void addPropertyRefsToSet(Bean bean, String setName, Ref refToAdd) {
+        java.util.Set<Ref> refsToAdd = new LinkedHashSet<Ref>();
+        com.atricore.idbus.console.lifecycle.support.springmetadata.model.Set refSet = getSetOfValuesAndRefs(bean, setName);
+        if(refSet == null){
+            refSet = new com.atricore.idbus.console.lifecycle.support.springmetadata.model.Set();
+        } else {
+            for (Object tmpObj : refSet.getBeenAndRevesAndIdreves()) {
+                if(tmpObj instanceof Ref){
+                    refsToAdd.add((Ref)tmpObj);
+                }
+            }
+        }
+        Ref ref = refToAdd;
+        refsToAdd.add(ref);
+        setPropertyRefs(bean, setName, refsToAdd);
+
+    }
+
+    public static void addPropertyRefsToSet(Bean bean, String setName, String refToAdd) {
+        java.util.Set<Ref> refsToAdd = new LinkedHashSet<Ref>();
+        com.atricore.idbus.console.lifecycle.support.springmetadata.model.Set refSet = getSetOfValuesAndRefs(bean, setName);
+        if(refSet == null){
+            refSet = new com.atricore.idbus.console.lifecycle.support.springmetadata.model.Set();
+        } else {
+            for (Object tmpObj : refSet.getBeenAndRevesAndIdreves()) {
+                if(tmpObj instanceof Ref){
+                    refsToAdd.add((Ref)tmpObj);
+                }
+            }
+        }
+        Ref ref = new Ref();
+        ref.setBean(refToAdd);
+        refsToAdd.add(ref);
+        setPropertyRefs(bean, setName, refsToAdd);
+    }
+
 
     public static void addPropertyBean(Bean bean, String listName, Bean beanToAdd) {
         java.util.List<Bean> beansToAdd = new ArrayList<Bean>();

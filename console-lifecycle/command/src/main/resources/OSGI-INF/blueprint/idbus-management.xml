@@ -86,11 +86,18 @@
             </completers>
         </command>
 
+        <command name="appliance/export-definition">
+            <action class="com.atricore.idbus.console.lifecycle.command.ExportApplianceDefinitionCommand">
+                <property name="printer" ref="appliancePrinter"/>
+            </action>
+        </command>
+
         <command name="appliance/import-definition">
             <action class="com.atricore.idbus.console.lifecycle.command.ImportApplianceDefinitionCommand">
                 <property name="printer" ref="appliancePrinter"/>
             </action>
         </command>
+
 
         <command name="appliance/modify">
             <action class="com.atricore.idbus.console.lifecycle.command.ModifyApplianceCommand">
