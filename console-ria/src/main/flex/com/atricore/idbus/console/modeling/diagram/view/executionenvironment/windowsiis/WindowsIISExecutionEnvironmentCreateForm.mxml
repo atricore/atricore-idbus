@@ -57,21 +57,9 @@
         <s:TextInput id="homeDirectory" width="300"/>
     </mx:FormItem>
 
-
-    <!-- TODO: create custom panel skin to change controlBarContent style? or use mx:ControlBar? -->
-    <s:Panel id="controlBarPanel" width="100%" height="40" borderVisible="false"
-            horizontalCenter="0" verticalCenter="0" contentBackgroundAlpha="0" dropShadowVisible="false"
-            creationComplete="controlBarPanel.titleDisplay.height=controlBarPanel.titleDisplay.minHeight=0;">
-        <s:controlBarContent>
-            <s:Button id="btnCancel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
-            <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}" enabled="true"/>
-        </s:controlBarContent>
-        <s:controlBarLayout>
-            <s:HorizontalLayout horizontalAlign="center"/>
-        </s:controlBarLayout>
-    </s:Panel>
-    <fx:Script><![CDATA[
-        import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.*;
-        ]]></fx:Script>
+    <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
+        <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}"/>
+        <s:Button id="btnCancel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
+    </mx:ControlBar>
 </mx:Form>
 <!--</mx:VBox>-->

@@ -135,7 +135,7 @@
             <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step2.ldapUsersRepository')}"
                            width="100%" height="100%" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
 
-                <mx:TabNavigator borderStyle="solid" width="100%" height="285">
+                <mx:TabNavigator borderStyle="solid" width="100%" height="285" creationPolicy="all">
 
                     <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.tab.base')}">
                         <s:VGroup>

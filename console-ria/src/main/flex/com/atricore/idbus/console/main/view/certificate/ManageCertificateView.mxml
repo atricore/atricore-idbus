@@ -43,7 +43,7 @@
             <s:TextArea id="currentCertificate" width="370" height="120" />
         </utils:TitledBorderBox>
 
-        <mx:TabNavigator borderStyle="solid" width="100%" height="100%">
+        <mx:TabNavigator borderStyle="solid" width="100%" height="100%" creationPolicy="all">
             <!-- UPLOAD KEY PAIR TAB -->
             <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.uploadKeyPair')}">
                 <s:VGroup width="100%" height="100%">
