@@ -165,7 +165,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         
         _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.add.form.heading');
         _popup.width = 520;
-        _popup.height = 500;
+        _popup.height = 450;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_addUserForm);
@@ -209,7 +209,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         
         _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.edit.form.heading');
         _popup.width = 520;
-        _popup.height = 500;
+        _popup.height = 450;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_editUserForm);
