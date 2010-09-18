@@ -96,7 +96,6 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleFederatedConnectionSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
-//        reflectSPSettingsInIdpChannelTab();
     }
 
     public function registerListeners():void {
@@ -148,6 +147,17 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             if (tmpProfile.name == Profile.SSO_SLO.name) {
                 view.samlProfileSLOCheck.selected = true;
             }
+        }
+        if(sp.accountLinkagePolicy != null) {
+            if(sp.accountLinkagePolicy.mappingType.toString() == IdentityMappingType.LOCAL.toString()){
+                view.accountLinkagePolicyCombo.selectedIndex = 1;
+            } else if (sp.accountLinkagePolicy.mappingType.toString() == IdentityMappingType.REMOTE.toString()) {
+                view.accountLinkagePolicyCombo.selectedIndex = 0;
+            } else if (sp.accountLinkagePolicy.mappingType.toString() == IdentityMappingType.MERGED.toString()) {
+                view.accountLinkagePolicyCombo.selectedIndex = 2;
+            }
+        } else {
+            view.accountLinkagePolicyCombo.selectedIndex = 0;
         }
         view.useInheritedSPSettings.selected = true;
         setIdpChannelFields();
@@ -564,7 +574,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.signAuthAssertionCheck.enabled = true;
             view.encryptAuthAssertionCheck.enabled = true;
             view.spChannelAuthContractCombo.enabled = true;
-            view.spChannelAuthMechanism.enabled = true;
+            view.spChannelAuthMechanism.enabled = false; //dont enable auth mechanism
             view.spChannelAuthAssertionEmissionPolicyCombo.enabled = true;
         }
     }

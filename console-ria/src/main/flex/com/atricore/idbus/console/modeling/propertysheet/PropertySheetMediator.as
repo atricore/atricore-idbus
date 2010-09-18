@@ -2807,6 +2807,19 @@ public class PropertySheetMediator extends IocMediator {
                 _federatedConnectionIDPChannelSection.samlProfileSLOCheck.selected = true;
             }
         }
+
+        if(sp.accountLinkagePolicy != null) {
+            if(sp.accountLinkagePolicy.mappingType.toString() == IdentityMappingType.LOCAL.toString()){
+                _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.selectedIndex = 1;
+            } else if (sp.accountLinkagePolicy.mappingType.toString() == IdentityMappingType.REMOTE.toString()) {
+                _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.selectedIndex = 0;
+            } else if (sp.accountLinkagePolicy.mappingType.toString() == IdentityMappingType.MERGED.toString()) {
+                _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.selectedIndex = 2;
+            }
+        } else {
+            _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.selectedIndex = 0;
+        }
+
         _federatedConnectionIDPChannelSection.useInheritedSPSettings.selected = true;
         setIdpChannelFields();
     }
@@ -2921,7 +2934,7 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionSPChannelSection.signAuthAssertionCheck.enabled = true;
             _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.enabled = true;
             _federatedConnectionSPChannelSection.spChannelAuthContractCombo.enabled = true;
-            _federatedConnectionSPChannelSection.spChannelAuthMechanism.enabled = true;
+            _federatedConnectionSPChannelSection.spChannelAuthMechanism.enabled = false; //dont enable auth mechanism
             _federatedConnectionSPChannelSection.spChannelAuthAssertionEmissionPolicyCombo.enabled = true;
         }
     }
