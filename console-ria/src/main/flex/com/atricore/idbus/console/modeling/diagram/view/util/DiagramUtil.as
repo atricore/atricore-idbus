@@ -19,8 +19,8 @@ public class DiagramUtil {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id && !nodeLinkExists(node1.node, node2.node)) {
             // TODO: finish this
-            if ((node1.data is ServiceProvider || node1.data is IdentityProvider)
-                    && (node2.data is IdentityProvider || node2.data is ServiceProvider)) {                    
+            if ((node1.data is ServiceProvider && node2.data is IdentityProvider)
+                    || (node1.data is IdentityProvider && node2.data is ServiceProvider)) {                    
                 canBeLinked = true;
             }
         }

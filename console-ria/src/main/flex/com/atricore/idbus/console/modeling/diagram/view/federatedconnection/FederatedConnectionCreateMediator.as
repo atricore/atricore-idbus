@@ -29,10 +29,15 @@ import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
+import com.atricore.idbus.console.services.dto.AccountLinkagePolicy;
+import com.atricore.idbus.console.services.dto.AuthenticationAssertionEmissionPolicy;
+import com.atricore.idbus.console.services.dto.AuthenticationContract;
+import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
+import com.atricore.idbus.console.services.dto.IdentityMappingType;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
@@ -229,9 +234,6 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 //        view.signAuthRequestCheck.selected = false;
 //        view.encryptAuthRequestCheck.selected = false;
 
-//        for each(var obj:ListItemValueObject in view.authMechanismCombo.dataProvider){
-//            obj.isSelected = false;
-//        }
         view.accountLinkagePolicyCombo.selectedIndex = 0;
 
         //RESET SP CHANNEL
@@ -261,6 +263,18 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
         var federatedConnection:FederatedConnection = new FederatedConnection();
 
+        if(_roleA is ServiceProvider){
+            var sp:ServiceProvider = _roleA as ServiceProvider;
+        } else if (_roleB is ServiceProvider){
+            sp = _roleB as ServiceProvider;
+        }
+
+        if(_roleA is IdentityProvider){
+            var idp:IdentityProvider = _roleA as IdentityProvider;
+        } else if (_roleB is IdentityProvider){
+            idp = _roleB as IdentityProvider;
+        }
+
         federatedConnection.name = view.federatedConnectionName.text;
         federatedConnection.description = view.federatedConnectionDescription.text;
 
@@ -270,72 +284,96 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
         if(!view.useInheritedSPSettings.selected){
             idpChannel.overrideProviderSetup = true;
-            
-            idpChannel.activeBindings = new ArrayCollection();
-            if(view.samlBindingHttpPostCheck.selected){
-                idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
-            }
-            if(view.samlBindingArtifactCheck.selected){
-                idpChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
-            }
-            if(view.samlBindingHttpRedirectCheck.selected){
-                idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
-            }
-            if(view.samlBindingSoapCheck.selected){
-                idpChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
-            }
-
-            idpChannel.activeProfiles = new ArrayCollection();
-            if(view.samlProfileSSOCheck.selected){
-                idpChannel.activeProfiles.addItem(Profile.SSO);
-            }
-            if(view.samlProfileSLOCheck.selected){
-                idpChannel.activeProfiles.addItem(Profile.SSO_SLO);
-            }
-
-            // TODO save remaining fields
-            //userInformationLookup
-            //authenticationContract
-            //authenticationMechanism
-            //authenticationAssertionEmissionPolicy
         } else {
             idpChannel.overrideProviderSetup = false;
+        }
+        
+        idpChannel.activeBindings = new ArrayCollection();
+        if(view.samlBindingHttpPostCheck.selected){
+            idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
+        }
+        if(view.samlBindingArtifactCheck.selected){
+            idpChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
+        }
+        if(view.samlBindingHttpRedirectCheck.selected){
+            idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
+        }
+        if(view.samlBindingSoapCheck.selected){
+            idpChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
+        }
+
+        idpChannel.activeProfiles = new ArrayCollection();
+        if(view.samlProfileSSOCheck.selected){
+            idpChannel.activeProfiles.addItem(Profile.SSO);
+        }
+        if(view.samlProfileSLOCheck.selected){
+            idpChannel.activeProfiles.addItem(Profile.SSO_SLO);
+        }
+
+        if(view.useInheritedSPSettings.selected){
+            idpChannel.accountLinkagePolicy = sp.accountLinkagePolicy;
+        } else {
+            idpChannel.accountLinkagePolicy = new AccountLinkagePolicy();
+            idpChannel.accountLinkagePolicy.name = idpChannel.name + "-accLinkagePolicy";
+            if(view.accountLinkagePolicyCombo.selectedItem.data == "ours"){
+                idpChannel.accountLinkagePolicy.mappingType = IdentityMappingType.LOCAL;
+            } else if(view.accountLinkagePolicyCombo.selectedItem.data == "theirs"){
+                idpChannel.accountLinkagePolicy.mappingType = IdentityMappingType.REMOTE;
+            } else if (view.accountLinkagePolicyCombo.selectedItem.data == "aggregate"){
+                idpChannel.accountLinkagePolicy.mappingType = IdentityMappingType.MERGED;
+            }
+            //TODO SET OTHER PROPERTIES FOR ACC.LINKAGE POLICY
         }
 
         //SP CHANNEL
         var spChannel:ServiceProviderChannel = new ServiceProviderChannel();
         if(!view.useInheritedIDPSettings.selected){
             spChannel.overrideProviderSetup = true;
-
-            spChannel.activeBindings = new ArrayCollection();
-            if (view.spChannelSamlBindingHttpPostCheck.selected) {
-                spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
-            }
-            if (view.spChannelSamlBindingArtifactCheck.selected) {
-                spChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
-            }
-            if (view.spChannelSamlBindingHttpRedirectCheck.selected) {
-                spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
-            }
-            if (view.spChannelSamlBindingSoapCheck.selected) {
-                spChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
-            }
-
-            spChannel.activeProfiles = new ArrayCollection();
-            if (view.spChannelSamlProfileSSOCheck.selected) {
-                spChannel.activeProfiles.addItem(Profile.SSO);
-            }
-            if (view.spChannelSamlProfileSLOCheck.selected) {
-                spChannel.activeProfiles.addItem(Profile.SSO_SLO);
-            }
-
-            // TODO save remaining fields
-            //userInformationLookup
-            //authenticationContract
-            //authenticationMechanism
-            //authenticationAssertionEmissionPolicy
         } else {
             spChannel.overrideProviderSetup = false;
+        }
+
+        spChannel.activeBindings = new ArrayCollection();
+        if (view.spChannelSamlBindingHttpPostCheck.selected) {
+            spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
+        }
+        if (view.spChannelSamlBindingArtifactCheck.selected) {
+            spChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
+        }
+        if (view.spChannelSamlBindingHttpRedirectCheck.selected) {
+            spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
+        }
+        if (view.spChannelSamlBindingSoapCheck.selected) {
+            spChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
+        }
+
+        spChannel.activeProfiles = new ArrayCollection();
+        if (view.spChannelSamlProfileSSOCheck.selected) {
+            spChannel.activeProfiles.addItem(Profile.SSO);
+        }
+        if (view.spChannelSamlProfileSLOCheck.selected) {
+            spChannel.activeProfiles.addItem(Profile.SSO_SLO);
+        }
+
+        if (view.spChannelAuthMechanism.selectedItem.data == "basic") {
+            var basicAuth:BasicAuthentication = new BasicAuthentication();
+            basicAuth.name = federatedConnection.name.replace(/\s+/g, "-").toLowerCase() + "-basic-authn";
+            basicAuth.hashAlgorithm = "MD5";
+            basicAuth.hashEncoding = "HEX";
+            basicAuth.ignoreUsernameCase = false;
+            spChannel.authenticationMechanism = basicAuth;
+        }
+
+        if (view.spChannelAuthContractCombo.selectedItem.data == "default") {
+            var authContract:AuthenticationContract = new AuthenticationContract();
+            authContract.name = "Default";
+            spChannel.authenticationContract = authContract;
+        }
+
+        if (view.spChannelAuthAssertionEmissionPolicyCombo.selectedItem.data == "default") {
+            var authAssertionEmissionPolicy:AuthenticationAssertionEmissionPolicy = new AuthenticationAssertionEmissionPolicy();
+            authAssertionEmissionPolicy.name = "Default";
+            spChannel.emissionPolicy = authAssertionEmissionPolicy;
         }
 
         if(_roleA is ServiceProvider && _roleB is IdentityProvider){
