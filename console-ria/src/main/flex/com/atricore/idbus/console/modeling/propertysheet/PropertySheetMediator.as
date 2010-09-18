@@ -55,6 +55,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProvider
 import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.xmlidentitysource.XmlIdentitySourceCoreSection;
+import com.atricore.idbus.console.services.dto.AccountLinkagePolicy;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
@@ -67,6 +68,7 @@ import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceState;
 import com.atricore.idbus.console.services.dto.IdentityLookup;
+import com.atricore.idbus.console.services.dto.IdentityMappingType;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
@@ -715,7 +717,7 @@ public class PropertySheetMediator extends IocMediator {
             //TODO
 
             for (var i:int = 0; i < _spCoreSection.spLocationProtocol.dataProvider.length; i++) {
-                if (serviceProvider.location != null && _spCoreSection.spLocationProtocol.dataProvider[i].label == serviceProvider.location.protocol) {
+                if (serviceProvider.location != null && _spCoreSection.spLocationProtocol.dataProvider[i].data == serviceProvider.location.protocol) {
                     _spCoreSection.spLocationProtocol.selectedIndex = i;
                     break;
                 }
@@ -723,8 +725,16 @@ public class PropertySheetMediator extends IocMediator {
             _spCoreSection.spLocationDomain.text = serviceProvider.location.host;
             _spCoreSection.spLocationPort.text = serviceProvider.location.port.toString() != "0" ?
                     serviceProvider.location.port.toString() : "";
-            _spCoreSection.spLocationContext.text = "/" + serviceProvider.location.context + "/";
+            _spCoreSection.spLocationContext.text = serviceProvider.location.context;
             _spCoreSection.spLocationPath.text = serviceProvider.location.uri;
+
+            for (var i:int = 0; i < _spCoreSection.accountLinkagePolicyCombo.dataProvider.length; i++) {
+                if (serviceProvider.accountLinkagePolicy != null &&
+                        _spCoreSection.accountLinkagePolicyCombo.dataProvider[i].name == serviceProvider.accountLinkagePolicy.name) {
+                    _spCoreSection.accountLinkagePolicyCombo.selectedIndex = i;
+                    break;
+                }
+            }
 
             _spCoreSection.serviceProvName.addEventListener(Event.CHANGE, handleSectionChange);
             _spCoreSection.serviceProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -733,12 +743,13 @@ public class PropertySheetMediator extends IocMediator {
             _spCoreSection.spLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
             _spCoreSection.spLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
             _spCoreSection.spLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
-//            _spCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
+            _spCoreSection.accountLinkagePolicyCombo.addEventListener(Event.CHANGE, handleSectionChange);
 
             _validators = [];
             _validators.push(_spCoreSection.nameValidator);
             _validators.push(_spCoreSection.portValidator);
             _validators.push(_spCoreSection.domainValidator);
+            _validators.push(_spCoreSection.contextValidator);
             _validators.push(_spCoreSection.pathValidator);
         }
     }
@@ -756,13 +767,23 @@ public class PropertySheetMediator extends IocMediator {
             serviceProvider.location.protocol = _spCoreSection.spLocationProtocol.labelDisplay.text;
             serviceProvider.location.host = _spCoreSection.spLocationDomain.text;
             serviceProvider.location.port = parseInt(_spCoreSection.spLocationPort.text);
-            serviceProvider.location.context = _spCoreSection.spLocationContext.text.substring(1,
-                    _spCoreSection.spLocationContext.text.length - 1);
+            serviceProvider.location.context = _spCoreSection.spLocationContext.text;
             serviceProvider.location.uri = _spCoreSection.spLocationPath.text;
 
-            // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
-            //authenticationContract
-            //authenticationAssertionEmissionPolicy
+            var accountLinkagePolicy:AccountLinkagePolicy = serviceProvider.accountLinkagePolicy;
+            if (accountLinkagePolicy == null) {
+                accountLinkagePolicy = new AccountLinkagePolicy();
+            }
+            accountLinkagePolicy.name = _spCoreSection.accountLinkagePolicyCombo.selectedItem.name;
+            var selectedPolicy:String = _spCoreSection.accountLinkagePolicyCombo.selectedItem.data;
+            if (selectedPolicy == "theirs") {
+                accountLinkagePolicy.mappingType = IdentityMappingType.CUSTOM;
+            } else if (selectedPolicy == "ours") {
+                accountLinkagePolicy.mappingType = IdentityMappingType.LOCAL;
+            } else if (selectedPolicy == "aggregate") {
+                accountLinkagePolicy.mappingType = IdentityMappingType.MERGED;
+            }
+            serviceProvider.accountLinkagePolicy = accountLinkagePolicy;
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

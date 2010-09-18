@@ -36,47 +36,47 @@
         <mx:EmailValidator id="userEmailValidator" source="{userEmail}" property="text" required="false"/>
     </fx:Declarations>
 
-    <mx:TabNavigator id="tabNav" width="500" height="385">
+    <mx:TabNavigator id="tabNav" width="500" height="360" creationPolicy="all">
 
         <s:NavigatorContent id="generalSection"
                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.general')}" >
-            <s:VGroup paddingLeft="10" paddingRight="10" paddingBottom="15">
+            <s:VGroup paddingLeft="10" paddingRight="10" paddingBottom="15" width="100%">
 
                 <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.add.panel.title')}"/>
 
                 <mx:HRule width="100%"/>
 
-                <mx:FormItem required="true" labelWidth="100"
+                <mx:FormItem required="true" labelWidth="150"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.username')}:">
                     <mx:TextInput id="userUsername" width="300" />
                 </mx:FormItem>
 
-                <mx:FormItem required="true" labelWidth="100"
+                <mx:FormItem required="true" labelWidth="150"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.firstname')}:">
                     <mx:TextInput id="userFirstName" width="300" />
                 </mx:FormItem>
 
-                <mx:FormItem required="true" labelWidth="100"
+                <mx:FormItem required="true" labelWidth="150"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.lastname')}:">
                     <mx:TextInput id="userLastName" width="300"  />
                 </mx:FormItem>
 
-                <mx:FormItem labelWidth="100"
+                <mx:FormItem labelWidth="150"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.fullname')}:">
                     <mx:TextInput id="userFullName" width="300" editable="false"/>
                 </mx:FormItem>
 
-                <mx:FormItem labelWidth="100"
+                <mx:FormItem labelWidth="150"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.email')}:">
                     <mx:TextInput id="userEmail" width="300" />
                 </mx:FormItem>
 
-                <mx:FormItem labelWidth="100"
+                <mx:FormItem labelWidth="150"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.telephone')}:">
                     <mx:TextInput id="userTelephone" width="300"/>
                 </mx:FormItem>
 
-                <mx:FormItem labelWidth="100"
+                <mx:FormItem labelWidth="150"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.fax')}:">
                     <mx:TextInput id="userFax" width="300"/>
                 </mx:FormItem>
@@ -85,20 +85,18 @@
 
         <s:NavigatorContent id="preferencesSection"
                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.preferences')}" >
-            <s:VGroup paddingLeft="10" paddingRight="10" paddingBottom="15">
+            <s:VGroup paddingLeft="10" paddingRight="10" paddingBottom="15" width="100%">
 
                 <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.environment.label')}"/>
 
                 <mx:HRule width="100%"/>
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.language')}:">
-                    <s:DropDownList id="userLanguage" width="70" selectedIndex="0">
+                    <s:DropDownList id="userLanguage" width="170" selectedIndex="0">
                         <s:dataProvider>
                             <mx:ArrayCollection>
                                 <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.language.english')}"
                                            data="en" />
-                                <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.language.spanish')}"
-                                           data="es" />
                             </mx:ArrayCollection>
                         </s:dataProvider>
                     </s:DropDownList>
@@ -108,27 +106,27 @@
 
         <s:NavigatorContent id="groupsSection"
                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.groups')}" >
-            <s:VGroup paddingLeft="10" paddingRight="10" paddingBottom="15">
+            <s:VGroup paddingLeft="10" paddingRight="10" paddingBottom="15" width="100%" height="100%">
 
                 <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.membership.label')}"/>
 
                 <mx:HRule width="100%"/>
 
-                <s:HGroup width="100%">
-                    <s:VGroup width="50%">
+                <s:HGroup width="100%" height="100%">
+                    <s:VGroup width="50%" height="100%">
                         <s:Label>
                             <s:text>{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.groups.available')}</s:text>
                         </s:Label>
                         <s:List id="groupsAvailablesList" dropEnabled="true" allowMultipleSelection="true"
-                                dragEnabled="true" dragMoveEnabled="true" labelField="name" width="100%"/>
+                                dragEnabled="true" dragMoveEnabled="true" labelField="name" width="100%" height="100%"/>
                     </s:VGroup>
 
-                    <s:VGroup width="50%">
+                    <s:VGroup width="50%" height="100%">
                         <s:Label>
                             <s:text>{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.groups.memberOf')}</s:text>
                         </s:Label>
                         <s:List id="groupsSelectedList" dropEnabled="true" allowMultipleSelection="true"
-                                dragEnabled="true" dragMoveEnabled="true" labelField="name" width="100%"/>
+                                dragEnabled="true" dragMoveEnabled="true" labelField="name" width="100%" height="100%"/>
                     </s:VGroup>
                 </s:HGroup>
 
@@ -137,49 +135,53 @@
 
         <s:NavigatorContent id="securitySection"
                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.security')}" >
-            <s:VGroup paddingLeft="10" paddingRight="10" paddingBottom="15">
+            <s:VGroup paddingLeft="10" paddingRight="10" paddingBottom="15" width="100%">
 
                 <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.label')}"/>
 
                 <mx:HRule width="100%"/>
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.disabled')}:">
-                    <mx:CheckBox id="accountDisabledCheck"/>
+                <mx:FormItem labelWidth="250"
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.disabled')}:">
+                    <mx:CheckBox id="accountDisabledCheck" x="300"/>
                 </mx:FormItem>
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.expires')}:">
-                    <mx:CheckBox id="accountExpiresCheck"
+                <mx:FormItem labelWidth="250"
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.expires')}:">
+                    <mx:CheckBox id="accountExpiresCheck" x="300"
                                  click="{accountExpiresDateItem.enabled = accountExpiresCheck.selected}"/>
                 </mx:FormItem>
 
-                <mx:FormItem id="accountExpiresDateItem"
+                <mx:FormItem labelWidth="250"
+                        id="accountExpiresDateItem"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.expires.date')}:"
                              enabled="false">
-                    <mx:DateField id="accountExpiresDate"/>
+                    <mx:DateField id="accountExpiresDate" width="150" x="300"/>
                 </mx:FormItem>
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.limit.login')}:">
-                    <mx:CheckBox id="accountLimitLoginCheck"
+                <mx:FormItem labelWidth="250"
+                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.limit.login')}:">
+                    <mx:CheckBox id="accountLimitLoginCheck" x="300"
                                  click="{accountLimitLoginSection.enabled = accountLimitLoginCheck.selected}"/>
                 </mx:FormItem>
 
-                <s:VGroup id="accountLimitLoginSection" paddingLeft="20" enabled="false">
+                <s:VGroup id="accountLimitLoginSection" enabled="false">
 
-                    <mx:FormItem id="accountMaxLimitLogiItem"
+                    <mx:FormItem id="accountMaxLimitLogiItem" labelWidth="250"
                                  label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.limit.max.login')}:">
-                        <mx:NumericStepper id="accountMaxLimitLogin" minimum="1" maximum="20"/>
+                        <mx:NumericStepper id="accountMaxLimitLogin" x="300" minimum="1" maximum="20"/>
                     </mx:FormItem>
 
                     <mx:FormItem
                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.terminte.previous.session')}:"
-                            labelWidth="155">
-                        <mx:RadioButton id="terminatePrevSession" selected="true"/>
+                            labelWidth="250">
+                        <mx:RadioButton id="terminatePrevSession" x="300" selected="true"/>
                     </mx:FormItem>
 
                     <mx:FormItem
                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.prevent.new.session')}:"
-                            labelWidth="155">
-                        <mx:RadioButton id="preventNewSession"/>
+                            labelWidth="250">
+                        <mx:RadioButton id="preventNewSession" x="300"/>
                     </mx:FormItem>
                 </s:VGroup>
             </s:VGroup>
@@ -187,7 +189,7 @@
 
         <s:NavigatorContent id="passwordSection"
                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.tab.label.password')}" >
-            <s:VGroup paddingLeft="10" paddingRight="10" paddingBottom="15">
+            <s:VGroup paddingLeft="10" paddingRight="10" paddingBottom="15" width="100%">
 
 
                 <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.password.label')}"/>
@@ -268,9 +270,8 @@
     </mx:TabNavigator>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
-        <s:Button id="cancelAddUser" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
-
         <s:Button id="submitAddUserButton"
                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.save')}" />
+        <s:Button id="cancelAddUser" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
     </mx:ControlBar>
 </mx:Form>

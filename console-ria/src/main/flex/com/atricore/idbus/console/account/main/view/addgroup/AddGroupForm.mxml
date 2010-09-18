@@ -44,9 +44,8 @@
     </mx:FormItem>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
-        <s:Button id="cancelAddGroup" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
-
         <s:Button id="submitAddGroupButton"
                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.save')}" />
+        <s:Button id="cancelAddGroup" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
     </mx:ControlBar>
 </mx:Form>
