@@ -254,7 +254,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         
         _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.search.form.heading');
         _popup.width = 300;
-        _popup.height = 300;
+        _popup.height = 235;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_searchUsersForm);

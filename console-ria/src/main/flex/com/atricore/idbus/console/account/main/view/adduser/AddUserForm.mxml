@@ -270,9 +270,8 @@
     </mx:TabNavigator>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
-        <s:Button id="cancelAddUser" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
-
         <s:Button id="submitAddUserButton"
                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.save')}" />
+        <s:Button id="cancelAddUser" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
     </mx:ControlBar>
 </mx:Form>

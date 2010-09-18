@@ -720,6 +720,14 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         
         idp.getAuthenticationMechanisms().add(authMechanism);
 
+        AuthenticationContractDTO authContract = new AuthenticationContractDTO();
+        authContract.setName("Default");
+        idp.setAuthenticationContract(authContract);
+
+        AuthenticationAssertionEmissionPolicyDTO authAssertionEmissionPolicy = new AuthenticationAssertionEmissionPolicyDTO();
+        authAssertionEmissionPolicy.setName("Default");
+        idp.setEmissionPolicy(authAssertionEmissionPolicy);
+        
         return idp;
     }
 

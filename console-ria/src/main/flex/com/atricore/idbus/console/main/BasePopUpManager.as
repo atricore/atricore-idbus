@@ -29,6 +29,7 @@ import com.atricore.idbus.console.main.view.progress.ProcessingView;
 import flash.display.DisplayObject;
 import flash.events.Event;
 
+import mx.containers.TitleWindow;
 import mx.core.FlexGlobals;
 import mx.core.UIComponent;
 import mx.effects.Effect;
@@ -45,7 +46,7 @@ public class BasePopUpManager {
     protected var _app:AtricoreConsole;
 
     protected var _lastWindowNotification:INotification;
-    protected var _popup:SizeableTitleWindow;
+    protected var _popup:TitleWindow;
     protected var _popupVisible:Boolean = false;
     protected var _progress:SizeableTitleWindow;
     protected var _progressVisible:Boolean = false;
@@ -71,7 +72,7 @@ public class BasePopUpManager {
         _facade = facade;
         _popupParent = popupParent;
         
-        _popup = new SizeableTitleWindow();
+        _popup = new TitleWindow();
         _popup.styleName = "";
         _popup.verticalScrollPolicy = "off";
         _popup.horizontalScrollPolicy = "off";
@@ -177,6 +178,7 @@ public class BasePopUpManager {
             _popup.removeAllChildren();
         }
         else {
+            _popup.styleName = "dialog";
             //PopUpManager.addPopUp(_popup, _popupParent, true);
             PopUpManager.addPopUp(_popup, FlexGlobals.topLevelApplication as DisplayObject, true);
             PopUpManager.centerPopUp(_popup);

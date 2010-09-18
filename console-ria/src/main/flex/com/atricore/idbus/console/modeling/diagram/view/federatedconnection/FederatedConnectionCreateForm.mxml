@@ -53,7 +53,7 @@
         <s:TextInput id="federatedConnectionDescription" width="300"/>
     </mx:FormItem>
 
-    <mx:TabNavigator id="channelNavigator" borderStyle="solid" width="100%" height="370">
+    <mx:TabNavigator id="channelNavigator" borderStyle="solid" width="100%" height="250" creationPolicy="all">
         <!-- IDP CHANNEL TAB -->
         <s:NavigatorContent id="idpChannelTab" icon="{EmbeddedIcons.idpChannelMiniIcon}" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.idpchannel')}">
             <s:VGroup width="100%" height="100%">
@@ -175,18 +175,11 @@
         </s:NavigatorContent>
     </mx:TabNavigator>
 
-    <!-- TODO: create custom panel skin to change controlBarContent style? or use mx:ControlBar? -->
-    <s:Panel id="controlBarPanel" width="100%" height="40" borderVisible="false"
-            horizontalCenter="0" verticalCenter="0" contentBackgroundAlpha="0" dropShadowVisible="false"
-            creationComplete="controlBarPanel.titleDisplay.height=controlBarPanel.titleDisplay.minHeight=0;">
-        <s:controlBarContent>
-            <s:Button id="btnCancel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
-            <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}" enabled="true"/>
-        </s:controlBarContent>
-        <s:controlBarLayout>
-            <s:HorizontalLayout horizontalAlign="center"/>
-        </s:controlBarLayout>
-    </s:Panel>
+    <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
+        <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}"/>
+        <s:Button id="btnCancel" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
+    </mx:ControlBar>
+    
     <fx:Script><![CDATA[
         import com.atricore.idbus.console.main.EmbeddedIcons;
         ]]></fx:Script>

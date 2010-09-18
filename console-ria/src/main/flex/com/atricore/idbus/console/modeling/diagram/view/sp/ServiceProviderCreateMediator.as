@@ -20,13 +20,13 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.sp {
-import com.atricore.idbus.console.components.ListItemValueObject;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
+import com.atricore.idbus.console.services.dto.AccountLinkagePolicy;
 import com.atricore.idbus.console.services.dto.Binding;
-import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
+import com.atricore.idbus.console.services.dto.IdentityMappingType;
 import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
@@ -70,6 +70,8 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleServiceProviderSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+
+        initLocation();
     }
 
     private function resetForm():void {
@@ -78,20 +80,36 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         view.spLocationProtocol.selectedIndex = 0;
         view.spLocationDomain.text = "";
         view.spLocationPort.text = "";
-        view.spLocationContext.text = "/IDBUS/";
+        view.spLocationContext.text = "";
         view.spLocationPath.text = "";
-//        view.signAuthRequestCheck.selected = false;
+//        view.signAuthRequestCheck.selected = true;
 //        view.encryptAuthRequestCheck.selected = false;
-        view.samlBindingHttpPostCheck.selected = false;
+        view.samlBindingHttpPostCheck.selected = true;
         view.samlBindingArtifactCheck.selected = false;
         view.samlBindingHttpRedirectCheck.selected = false;
         view.samlBindingSoapCheck.selected = false;
-        view.samlProfileSSOCheck.selected = false;
-        view.samlProfileSLOCheck.selected = false;     
+        view.samlProfileSSOCheck.selected = true;
+        view.samlProfileSLOCheck.selected = true;
+        view.accountLinkagePolicyCombo.selectedIndex = 0;
 
         FormUtility.clearValidationErrors(_validators);
     }
 
+    public function initLocation():void {
+        // set location
+        var location:Location = _projectProxy.currentIdentityAppliance.idApplianceDefinition.location;
+        for (var i:int = 0; i < view.spLocationProtocol.dataProvider.length; i++) {
+            if (location.protocol == view.spLocationProtocol.dataProvider[i].data) {
+                view.spLocationProtocol.selectedIndex = i;
+                break;
+            }
+        }
+        view.spLocationDomain.text = location.host;
+        view.spLocationPort.text = location.port.toString() != "0" ? location.port.toString() : "";
+        view.spLocationContext.text = location.context;
+        view.spLocationPath.text = location.uri;
+    }
+    
     override public function bindModel():void {
 
         var serviceProvider:ServiceProvider = new ServiceProvider();
@@ -103,7 +121,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         loc.protocol = view.spLocationProtocol.labelDisplay.text;
         loc.host = view.spLocationDomain.text;
         loc.port = parseInt(view.spLocationPort.text);
-        loc.context = "idbus";
+        loc.context = view.spLocationContext.text;
         loc.uri = view.spLocationPath.text;
         serviceProvider.location = loc;
 
@@ -131,10 +149,18 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         if(view.samlProfileSLOCheck.selected){
             serviceProvider.activeProfiles.addItem(Profile.SSO_SLO);
         }
-        
-        // TODO save remaining fields
-        //authenticationContract
-        //authenticationAssertionEmissionPolicy
+
+        var accountLinkagePolicy:AccountLinkagePolicy = new AccountLinkagePolicy();
+        accountLinkagePolicy.name = view.accountLinkagePolicyCombo.selectedItem.name;
+        var selectedPolicy:String = view.accountLinkagePolicyCombo.selectedItem.data;
+        if (selectedPolicy == "theirs") {
+            accountLinkagePolicy.mappingType = IdentityMappingType.CUSTOM;
+        } else if (selectedPolicy == "ours") {
+            accountLinkagePolicy.mappingType = IdentityMappingType.LOCAL;
+        } else if (selectedPolicy == "aggregate") {
+            accountLinkagePolicy.mappingType = IdentityMappingType.MERGED;
+        }
+        serviceProvider.accountLinkagePolicy = accountLinkagePolicy;
 
         _newServiceProvider = serviceProvider;
     }
@@ -174,6 +200,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         _validators.push(view.nameValidator);
         _validators.push(view.portValidator);
         _validators.push(view.domainValidator);
+        _validators.push(view.contextValidator);
         _validators.push(view.pathValidator);
     }
 

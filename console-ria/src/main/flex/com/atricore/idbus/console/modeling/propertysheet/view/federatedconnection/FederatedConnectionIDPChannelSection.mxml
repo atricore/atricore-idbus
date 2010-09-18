@@ -58,13 +58,14 @@
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
                 </mx:FormItem>
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:" labelWidth="235">
-                    <s:CheckBox id="signAuthRequestCheck"/>
-                </mx:FormItem>
+                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.sign.auth.requests')}:" labelWidth="235">-->
+                    <!--<s:CheckBox id="signAuthRequestCheck"/>-->
+                <!--</mx:FormItem>-->
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:" labelWidth="235">
-                    <s:CheckBox id="encryptAuthRequestCheck"/>
-                </mx:FormItem>
+                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:" labelWidth="235">-->
+                    <!--<s:CheckBox id="encryptAuthRequestCheck"/>-->
+                <!--</mx:FormItem>-->
+
         </mx:Form>
     </utils:TitledBorderBox>
 
@@ -72,39 +73,30 @@
                            paddingBottom="5">
         <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
                  verticalGap="8">
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.user.information.lookup')}:" labelWidth="235">
-                <s:DropDownList id="userInfoLookupCombo" labelField="name" width="180" selectedIndex="0"/>
-            </mx:FormItem>
-
-            <s:HGroup width="100%" horizontalAlign="left">
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.mechanism')}:" labelWidth="235">
-                    <s:List id="authMechanismCombo"
-                                   dataProvider="{authMechanismColl}"
-                                   itemRenderer="com.atricore.idbus.console.components.CheckBoxItemRenderer"
-                                   alternatingItemColors="[#EEEEEE, white]"
-                                   width="200">
-                        <s:layout>
-                            <s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedRowCount="4" />
-                        </s:layout>
-                    </s:List>
-                </mx:FormItem>
-                <s:Button id="configureAuthMechanism"
-                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
-            </s:HGroup>
 
             <s:HGroup width="100%">
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:" labelWidth="235">
-                    <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0"/>
+                    <s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0">
+                        <mx:ArrayCollection>
+                            <fx:Object name="Use Theirs" data="theirs"/>
+                            <fx:Object name="Use Ours" data="ours"/>
+                            <fx:Object name="Aggregate" data="aggregate"/>
+                        </mx:ArrayCollection>
+                    </s:DropDownList>
                 </mx:FormItem>
                 <s:Button id="configureAccLinkagePolicy"
                    label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>
             </s:HGroup>
 
-            <s:HGroup width="100%">
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.contract')}:" labelWidth="235">
-                    <s:DropDownList id="authContractCombo" width="200" labelField="name" selectedIndex="0"/>
-                </mx:FormItem>
-            </s:HGroup>
+
+            <!--<s:HGroup width="100%">-->
+                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.account.linkage.policy')}:" labelWidth="235">-->
+                    <!--<s:DropDownList id="accountLinkagePolicyCombo" width="200" labelField="name" selectedIndex="0"/>-->
+                <!--</mx:FormItem>-->
+                <!--<s:Button id="configureAccLinkagePolicy"-->
+                   <!--label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/>-->
+            <!--</s:HGroup>-->
+
         </mx:Form>
     </utils:TitledBorderBox>
 </s:HGroup>

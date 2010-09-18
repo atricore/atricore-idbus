@@ -26,6 +26,15 @@
          xmlns:utils="com.atricore.idbus.console.components.*" height="100%" width="100%" paddingLeft="5"
          paddingRight="5" paddingTop="5" paddingBottom="5">
 
+    <fx:Declarations>
+        <mx:ArrayCollection id="authMechanismColl">
+            <fx:Object label="Simple Authentication" data="basic"/>
+            <fx:Object label="Strong (Digital Sertificate)" data="strong"/>
+            <fx:Object label="Windows (NTLM)" data="ntlm"/>
+            <fx:Object label="Remember Me" data="rememberme"/>
+        </mx:ArrayCollection>
+    </fx:Declarations>
+
     <utils:TitledBorderBox title="Contract" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
                            paddingBottom="5">
         <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
@@ -61,21 +70,34 @@
                            paddingBottom="5">
         <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%"
                  verticalGap="8">
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.user.information.lookup')}:" labelWidth="235">
-                <s:DropDownList id="spChannelUserInfoLookupCombo" labelField="name" selectedIndex="0" width="180"/>
-            </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:" labelWidth="235">
-                <s:DropDownList id="spChannelAuthContractCombo"  labelField="name" selectedIndex="0" width="180"/>
-            </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:" labelWidth="235">
+                    <s:DropDownList id="spChannelAuthContractCombo"  labelField="name" selectedIndex="0" width="180" enabled="false">
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object name="Default" data="default"/>
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
+                    </s:DropDownList>
+                </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.mechanism')}:" labelWidth="235">
-                <s:DropDownList id="spChannelAuthMechanismCombo" labelField="name" selectedIndex="0" width="180"/>
-            </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.mechanism')}:" labelWidth="235">
+                    <s:DropDownList id="spChannelAuthMechanism"
+                                    dataProvider="{authMechanismColl}"
+                                    selectedIndex="0"
+                                    width="180"
+                                    enabled="false"/>
+                </mx:FormItem>
 
-            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:" labelWidth="235">
-                <s:DropDownList id="spChannelAuthAssertionEmissionPolicyCombo" labelField="name" selectedIndex="0" width="180"/>
-            </mx:FormItem>    
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:" labelWidth="235">
+                    <s:DropDownList id="spChannelAuthAssertionEmissionPolicyCombo" labelField="name" selectedIndex="0" width="180">
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object name="Default" data="default"/>
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
+                    </s:DropDownList>
+                </mx:FormItem>
         </mx:Form>
     </utils:TitledBorderBox>
 </s:HGroup>

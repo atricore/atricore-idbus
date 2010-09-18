@@ -312,7 +312,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "New Identity Provider Definition";
         _popup.width = 690;
-        _popup.height = 380;
+        _popup.height = 370;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_identityProviderCreateForm);
@@ -333,10 +333,12 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         if (!_serviceProviderCreateForm) {
             createServiceProviderCreateForm();
+        } else {
+            serviceProviderMediator.initLocation();
         }
-        _popup.title = "Create Service Provider";
+        _popup.title = "New Service Provider Definition";
         _popup.width = 690;
-        _popup.height = 550;
+        _popup.height = 255;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_serviceProviderCreateForm);
@@ -405,7 +407,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create Identity Vault";
         _popup.width = 410;
-        _popup.height = 150;
+        _popup.height = 140;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_identityVaultCreateForm);
@@ -428,7 +430,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create DB Identity Source";
         _popup.width = 540;
-        _popup.height = 360;
+        _popup.height = 350;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_dbIdentitySourceCreateForm);
@@ -451,7 +453,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create LDAP Identity Source";
         _popup.width = 500;
-        _popup.height = 380;
+        _popup.height = 370;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_ldapIdentitySourceCreateForm);
@@ -474,7 +476,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create XML Identity Source";
         _popup.width = 410;
-        _popup.height = 180;
+        _popup.height = 170;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_xmlIdentitySourceCreateForm);
@@ -497,7 +499,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create Weblogic Execution Environment";
         _popup.width = 450;
-        _popup.height = 270;
+        _popup.height = 260;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_weblogicExecutionEnvironmentCreateForm);
@@ -520,7 +522,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create Tomcat Execution Environment";
         _popup.width = 450;
-        _popup.height = 240;
+        _popup.height = 230;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_tomcatExecutionEnvironmentCreateForm);
@@ -543,7 +545,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create JBoss Portal Execution Environment";
         _popup.width = 450;
-        _popup.height = 210;
+        _popup.height = 200;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_jbossPortalExecutionEnvironmentCreateForm);
@@ -566,7 +568,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create Liferay Portal Execution Environment";
         _popup.width = 450;
-        _popup.height = 210;
+        _popup.height = 200;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_liferayPortalExecutionEnvironmentCreateForm);
@@ -589,7 +591,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create WASCE Execution Environment";
         _popup.width = 450;
-        _popup.height = 210;
+        _popup.height = 200;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_wasceExecutionEnvironmentCreateForm);
@@ -612,7 +614,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create Apache Execution Environment";
         _popup.width = 450;
-        _popup.height = 210;
+        _popup.height = 200;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_apacheExecutionEnvironmentCreateForm);
@@ -635,7 +637,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create Windows IIS Execution Environment";
         _popup.width = 450;
-        _popup.height = 210;
+        _popup.height = 200;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_windowsIISExecutionEnvironmentCreateForm);
@@ -659,8 +661,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
             federatedConnectionCreateMediator.handleNotification(_lastWindowNotification);
         }
         _popup.title = "Create Federated Connection";
-        _popup.width = 680;
-        _popup.height = 530;
+        _popup.width = 600;
+        _popup.height = 395;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_federatedConnectionCreateForm);
@@ -684,7 +686,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create JOSSO Activation";
         _popup.width = 680;
-        _popup.height = 300;
+        _popup.height = 200;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_activationCreateForm);
@@ -707,7 +709,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "Create JBoss Execution Environment";
         _popup.width = 450;
-        _popup.height = 270;
+        _popup.height = 260;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_jbossExecutionEnvironmentCreateForm);
