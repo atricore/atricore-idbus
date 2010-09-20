@@ -26,6 +26,7 @@ import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
+import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
 
@@ -137,6 +138,7 @@ public class ActivationCreateMediator extends IocFormMediator {
 
     private function closeWindow():void {
         resetForm();
+        sendNotification(PaletteMediator.DESELECT_PALETTE_ELEMENT);
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 

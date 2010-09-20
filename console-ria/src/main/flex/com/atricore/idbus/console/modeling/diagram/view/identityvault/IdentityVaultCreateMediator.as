@@ -3,6 +3,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
+import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 
 import flash.events.MouseEvent;
@@ -85,6 +86,7 @@ public class IdentityVaultCreateMediator extends IocFormMediator {
 
     private function closeWindow():void {
         resetForm();
+        sendNotification(PaletteMediator.DESELECT_PALETTE_ELEMENT);
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 

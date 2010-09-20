@@ -10,6 +10,7 @@ public class VNodesLinkedEvent extends VGraphEvent {
     public static const FEDERATED_CONNECTION_CREATED:String = "vnodesLinked";
     public static const ACTIVATION_CREATED:String = "activationCreated";
     public static const IDENTITY_LOOKUP_CREATED:String = "identityLookupCreated";
+    public static const LINKING_CANCELED:String = "linkingCanceled";
 
     private var _vnode1:IVisualNode;
 

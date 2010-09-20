@@ -40,10 +40,8 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityL
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityVaultElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.CreateSpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateXmlIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
@@ -51,9 +49,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityA
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
 import com.atricore.idbus.console.services.dto.Activation;
@@ -65,12 +61,11 @@ import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
-import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
-import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
+import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
@@ -143,6 +138,7 @@ public class DiagramMediator extends IocMediator {
             _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.IDENTITY_LOOKUP_CREATED, identityLookupCreatedEventHandler);
             _identityApplianceDiagram.removeEventListener(VEdgeSelectedEvent.VEDGE_SELECTED, edgeSelectedEventHandler);
             _identityApplianceDiagram.removeEventListener(VEdgeRemoveEvent.VEDGE_REMOVE, edgeRemoveEventHandler);
+            _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.LINKING_CANCELED, linkingCanceledEventHandler);
         }
 
         super.setViewComponent(viewComponent);
@@ -160,6 +156,7 @@ public class DiagramMediator extends IocMediator {
         _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.IDENTITY_LOOKUP_CREATED, identityLookupCreatedEventHandler);
         _identityApplianceDiagram.addEventListener(VEdgeSelectedEvent.VEDGE_SELECTED, edgeSelectedEventHandler);
         _identityApplianceDiagram.addEventListener(VEdgeRemoveEvent.VEDGE_REMOVE, edgeRemoveEventHandler);
+        _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.LINKING_CANCELED, linkingCanceledEventHandler);
         _emptyNotationModel = <Graph/>;
 
         resetGraph();
@@ -721,6 +718,10 @@ public class DiagramMediator extends IocMediator {
             var ril:RemoveIdentityLookupElementRequest = new RemoveIdentityLookupElementRequest(identityLookup);
             sendNotification(ApplicationFacade.REMOVE_IDENTITY_LOOKUP_ELEMENT, ril);
         }
+    }
+
+    private function linkingCanceledEventHandler(event:VNodesLinkedEvent):void {
+        sendNotification(PaletteMediator.DESELECT_PALETTE_ELEMENT);
     }
 
     private function toggleUnselectedNodesOff(visualCompToCheck:Object, selectedItem:Object):void {

@@ -5,6 +5,7 @@ import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
 
+import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.Connection;
 
 import flash.display.DisplayObject;
@@ -159,6 +160,7 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     private function mouseClickHandler(event:MouseEvent):void {
         if (_isConnectionMode && !_connectionDragInProgress) {
             exitConnectionMode();
+            dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.LINKING_CANCELED, null, null, true, false, 0));
             CursorManager.removeAllCursors();
         }
     }

@@ -4,6 +4,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
 
+import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 
 import com.atricore.idbus.console.services.dto.IdentityLookup;
@@ -52,7 +53,8 @@ public class CreateIdentityLookupCommand extends IocSimpleCommand implements IRe
         }
 
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);        
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        sendNotification(PaletteMediator.DESELECT_PALETTE_ELEMENT);
     }
 
      public function fault(info:Object):void {

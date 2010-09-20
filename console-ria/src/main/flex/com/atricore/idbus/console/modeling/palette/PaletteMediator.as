@@ -29,11 +29,17 @@ import com.atricore.idbus.console.modeling.palette.model.PaletteDrawer;
 import com.atricore.idbus.console.modeling.palette.model.PaletteEntry;
 import com.atricore.idbus.console.modeling.palette.model.PaletteRoot;
 
+import mx.core.UIComponent;
+
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
+import spark.components.supportClasses.ItemRenderer;
+
 public class PaletteMediator extends IocMediator {
     private var selectedIndex:int;
+    private var selectedItem:Object;
+    public static const DESELECT_PALETTE_ELEMENT:String = "deselectPaletteElement";
 
     private var _projectProxy:ProjectProxy;
 
@@ -185,23 +191,39 @@ public class PaletteMediator extends IocMediator {
 
 
     public function handlePaletteClick(event : PaletteEvent) : void {
-       switch(event.action) {
-          case PaletteEvent.ACTION_PALETTE_ITEM_CLICKED :
-             if (projectProxy.currentIdentityAppliance != null) {
-                var selectedPaletteEntry:PaletteEntry = event.data as PaletteEntry;
-                sendNotification(ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
-             }
+        selectedItem = event.target;
+        switch(event.action) {
+            case PaletteEvent.ACTION_PALETTE_ITEM_CLICKED :
+                var uiComponentSel:ItemRenderer = selectedItem as ItemRenderer;
+                uiComponentSel.selected = true;
+                if (projectProxy.currentIdentityAppliance != null) {
+                    var selectedPaletteEntry:PaletteEntry = event.data as PaletteEntry;
+                    sendNotification(ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
+                }
              break;
-       }
-
+        }
+//        sendNotification(DESELECT_PALETTE_ELEMENT);
     }
 
     override public function listNotificationInterests():Array {
-        return super.listNotificationInterests();
+        return [super.listNotificationInterests(),
+                DESELECT_PALETTE_ELEMENT
+        ];
     }
 
     override public function handleNotification(notification:INotification):void {
-        super.handleNotification(notification);
+//        super.handleNotification(notification);
+        switch (notification.getName()) {
+            case DESELECT_PALETTE_ELEMENT:
+                if(selectedItem != null){
+                    var uiComponentSel:ItemRenderer = selectedItem as ItemRenderer;
+//                    uiComponentSel.currentState = null;
+                    uiComponentSel.selected = false;
+//                    uiComponentSel.selected = true;
+                    selectedItem = null;
+                }
+                break;
+        }
     }
 
     public function get view():PaletteView {
