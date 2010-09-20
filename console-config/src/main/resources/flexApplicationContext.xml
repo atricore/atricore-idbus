@@ -192,6 +192,11 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
 
+    <object id="folderExistsCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand">
+        <property name="registry" ref="serviceRegistry"/>
+    </object>
+
     <!-- Mediators -->
     <object id="manageCertificateMediator"
             class="com.atricore.idbus.console.main.view.certificate.ManageCertificateMediator">
@@ -462,6 +467,7 @@
         <property name="searchUsersCommand" ref="searchUsersCommand"/>
         <property name="createIdentityLookupCommand" ref="createIdentityLookupCommand" />
         <property name="activateExecEnvironmentCommand" ref="activateExecEnvironmentCommand" />
+        <property name="folderExistsCommand" ref="folderExistsCommand" />
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>

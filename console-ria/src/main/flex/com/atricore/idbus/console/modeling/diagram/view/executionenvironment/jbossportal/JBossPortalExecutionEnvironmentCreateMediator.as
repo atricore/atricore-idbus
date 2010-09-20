@@ -24,6 +24,8 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
+import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
+import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironment;
 
@@ -37,6 +39,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class JBossPortalExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
+    private static var _environmentName:String = "JBOSS_PORTAL";    
 
     private var _newExecutionEnvironment:JBossPortalExecutionEnvironment;
 
@@ -89,21 +92,26 @@ public class JBossPortalExecutionEnvironmentCreateMediator extends IocFormMediat
     }
 
     private function handleJBossPortalExecutionEnvironmentSave(event:MouseEvent):void {
+        view.homeDirectory.errorString = "";
         if (validate(true)) {
-            bindModel();
-            if (_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null) {
-                _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
-            }
-            _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newExecutionEnvironment);
-            _projectProxy.currentIdentityApplianceElement = _newExecutionEnvironment;
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
-            sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            closeWindow();
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = view.homeDirectory.text;
+            cif.environmentName = _environmentName;
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
         }
-        else {
-            event.stopImmediatePropagation();
+    }
+
+    private function save():void {
+        bindModel();
+        if (_projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments == null) {
+            _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments = new ArrayCollection();
         }
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.executionEnvironments.addItem(_newExecutionEnvironment);
+        _projectProxy.currentIdentityApplianceElement = _newExecutionEnvironment;
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+        sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        closeWindow();
     }
 
     private function handleCancel(event:MouseEvent):void {
@@ -126,11 +134,27 @@ public class JBossPortalExecutionEnvironmentCreateMediator extends IocFormMediat
     }
 
     override public function listNotificationInterests():Array {
-        return super.listNotificationInterests();
+        return [super.listNotificationInterests(),
+                FolderExistsCommand.FOLDER_EXISTS,
+                FolderExistsCommand.FOLDER_DOESNT_EXISTS];
     }
 
     override public function handleNotification(notification:INotification):void {
-        super.handleNotification(notification);
+        switch (notification.getName()) {
+            case FolderExistsCommand.FOLDER_EXISTS:
+                var envName:String = notification.getBody() as String;
+                if(envName == _environmentName){
+                    view.homeDirectory.errorString = "";
+                    save();
+                }
+                break;
+            case FolderExistsCommand.FOLDER_DOESNT_EXISTS:
+                envName = notification.getBody() as String;
+                if(envName == _environmentName){
+                    view.homeDirectory.errorString = "Directory doesn't exist";
+                }
+                break;
+        }
     }
 }
 }

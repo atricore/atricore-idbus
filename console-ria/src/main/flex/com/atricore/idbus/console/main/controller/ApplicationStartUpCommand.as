@@ -134,6 +134,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _searchUsersCommand:IIocCommand;
     private var _activateExecEnvironmentCommand:IIocCommand;
     private var _createIdentityLookupCommand:IIocCommand;
+    private var _folderExistsCommand:IIocCommand;
 
 
     public function get applicationMediator():IIocMediator {
@@ -865,6 +866,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _activateExecEnvironmentCommand = value;
     }
 
+    public function get folderExistsCommand():IIocCommand {
+        return _folderExistsCommand;
+    }
+
+    public function set folderExistsCommand(value:IIocCommand):void {
+        _folderExistsCommand = value;
+    }
+
     override public function execute(note:INotification):void {
         var registry:ServiceRegistry = setupServiceRegistry();
 
@@ -909,6 +918,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_USERS, searchUsersCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT, activateExecEnvironmentCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_LOOKUP, createIdentityLookupCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, folderExistsCommand.getConfigName());
 
         // setup for first level mediators
         applicationMediator.setViewComponent(app);

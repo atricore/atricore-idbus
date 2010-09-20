@@ -63,6 +63,7 @@ public interface IdentityApplianceManagementAjaxService {
     
     RemoveIdentityApplianceResponse removeIdentityAppliance(RemoveIdentityApplianceRequest req) throws IdentityServerException;
 
+    CheckInstallFolderExistenceResponse checkInstallFolderExistence(CheckInstallFolderExistenceRequest req) throws IdentityServerException;
     /****************************
      * List methods
      ***************************/

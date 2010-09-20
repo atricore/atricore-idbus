@@ -25,6 +25,8 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.modeling.diagram.model.request.ActivateExecutionEnvironmentRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
+import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.apache.ApacheExecEnvCoreSection;
@@ -143,6 +145,9 @@ public class PropertySheetMediator extends IocMediator {
     private var _basicAuthenticationSection:BasicAuthenticationSection;
     private var _dirty:Boolean;
 
+    private var _execEnvSaveFunction:Function;
+    private var _execEnvHomeDir:TextInput;
+
     protected var _validators : Array;
 
     public function PropertySheetMediator(name : String = null, viewComp:PropertySheetView = null) {
@@ -184,7 +189,9 @@ public class PropertySheetMediator extends IocMediator {
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE,
             ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
-            ApplicationFacade.DIAGRAM_ELEMENT_SELECTED];
+            ApplicationFacade.DIAGRAM_ELEMENT_SELECTED,
+            FolderExistsCommand.FOLDER_EXISTS,
+            FolderExistsCommand.FOLDER_DOESNT_EXISTS];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -240,6 +247,21 @@ public class PropertySheetMediator extends IocMediator {
                     } else if (_currentIdentityApplianceElement is WindowsIISExecutionEnvironment){
                         enableWindowsIISExecEnvPropertyTabs();
                     }
+                }
+                break;
+            case FolderExistsCommand.FOLDER_EXISTS:
+                if(_execEnvHomeDir != null && _execEnvSaveFunction != null){
+                    _execEnvHomeDir.errorString = "";
+                    _execEnvSaveFunction.call();
+                    _execEnvHomeDir = null;
+                    _execEnvSaveFunction = null;
+                }
+                break;
+            case FolderExistsCommand.FOLDER_DOESNT_EXISTS:
+                if(_execEnvHomeDir != null){
+                    _execEnvHomeDir.errorString = "Directory doesn't exist";
+                    _execEnvHomeDir = null;
+                    _execEnvSaveFunction = null;                    
                 }
                 break;
         }
@@ -2089,18 +2111,29 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleTomcatExecEnvCorePropertyTabRollOut(e:Event):void {
         trace(e);
+        _tomcatExecEnvCoreSection.homeDirectory.errorString = "";
         if (_dirty && validate(true)) {
-             // bind model
-            var tomcatExecEnv:TomcatExecutionEnvironment = projectProxy.currentIdentityApplianceElement as TomcatExecutionEnvironment;
-            tomcatExecEnv.name = _tomcatExecEnvCoreSection.executionEnvironmentName.text;
-            tomcatExecEnv.description = _tomcatExecEnvCoreSection.executionEnvironmentDescription.text;
-            tomcatExecEnv.platformId = _tomcatExecEnvCoreSection.platform.selectedItem.data;
-            tomcatExecEnv.installUri = _tomcatExecEnvCoreSection.homeDirectory.text;
+            _execEnvSaveFunction = tomcatSave;
+            _execEnvHomeDir = _tomcatExecEnvCoreSection.homeDirectory;
 
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = _tomcatExecEnvCoreSection.homeDirectory.text;
+            cif.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _tomcatExecEnvCoreSection.homeDirectory.text);
         }
+    }
+
+    private function tomcatSave(): void {
+        var tomcatExecEnv:TomcatExecutionEnvironment = projectProxy.currentIdentityApplianceElement as TomcatExecutionEnvironment;
+        tomcatExecEnv.name = _tomcatExecEnvCoreSection.executionEnvironmentName.text;
+        tomcatExecEnv.description = _tomcatExecEnvCoreSection.executionEnvironmentDescription.text;
+        tomcatExecEnv.platformId = _tomcatExecEnvCoreSection.platform.selectedItem.data;
+        tomcatExecEnv.installUri = _tomcatExecEnvCoreSection.homeDirectory.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _dirty = false;
     }
 
     private function enableWeblogicExecEnvPropertyTabs():void {
@@ -2171,19 +2204,31 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleWeblogicExecEnvCorePropertyTabRollOut(e:Event):void {
         trace(e);
+        _weblogicExecEnvCoreSection.homeDirectory.errorString = "";
         if (_dirty && validate(true)) {
-             // bind model
-            var weblogicExecEnv:WeblogicExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WeblogicExecutionEnvironment;
-            weblogicExecEnv.name = _weblogicExecEnvCoreSection.executionEnvironmentName.text;
-            weblogicExecEnv.description = _weblogicExecEnvCoreSection.executionEnvironmentDescription.text;
-            weblogicExecEnv.platformId = _weblogicExecEnvCoreSection.platform.selectedItem.data;
-            weblogicExecEnv.installUri = _weblogicExecEnvCoreSection.homeDirectory.text;
-            weblogicExecEnv.domain = _weblogicExecEnvCoreSection.domain.text;
+            _execEnvSaveFunction = weblogicSave;
+            _execEnvHomeDir = _weblogicExecEnvCoreSection.homeDirectory;
 
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = _weblogicExecEnvCoreSection.homeDirectory.text;
+            cif.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _weblogicExecEnvCoreSection.homeDirectory.text);
         }
+    }
+
+    private function weblogicSave(): void {
+         // bind model
+        var weblogicExecEnv:WeblogicExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WeblogicExecutionEnvironment;
+        weblogicExecEnv.name = _weblogicExecEnvCoreSection.executionEnvironmentName.text;
+        weblogicExecEnv.description = _weblogicExecEnvCoreSection.executionEnvironmentDescription.text;
+        weblogicExecEnv.platformId = _weblogicExecEnvCoreSection.platform.selectedItem.data;
+        weblogicExecEnv.installUri = _weblogicExecEnvCoreSection.homeDirectory.text;
+        weblogicExecEnv.domain = _weblogicExecEnvCoreSection.domain.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _dirty = false;
     }
 
     private function enableJBossPortalExecEnvPropertyTabs():void {
@@ -2244,18 +2289,30 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleJBossPortalExecEnvCorePropertyTabRollOut(e:Event):void {
         trace(e);
+        _jbossPortalExecEnvCoreSection.homeDirectory.errorString = "";
         if (_dirty && validate(true)) {
-             // bind model
-            var jbossPortalExecEnv:JBossPortalExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JBossPortalExecutionEnvironment;
-            jbossPortalExecEnv.name = _jbossPortalExecEnvCoreSection.executionEnvironmentName.text;
-            jbossPortalExecEnv.description = _jbossPortalExecEnvCoreSection.executionEnvironmentDescription.text;
-            jbossPortalExecEnv.platformId = "";
-            jbossPortalExecEnv.installUri = _jbossPortalExecEnvCoreSection.homeDirectory.text;
+            _execEnvSaveFunction = jbossPortalSave;
+            _execEnvHomeDir = _jbossPortalExecEnvCoreSection.homeDirectory;
 
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = _jbossPortalExecEnvCoreSection.homeDirectory.text;
+            cif.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _jbossPortalExecEnvCoreSection.homeDirectory.text);
         }
+    }
+
+    private function jbossPortalSave(): void {
+         // bind model
+        var jbossPortalExecEnv:JBossPortalExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JBossPortalExecutionEnvironment;
+        jbossPortalExecEnv.name = _jbossPortalExecEnvCoreSection.executionEnvironmentName.text;
+        jbossPortalExecEnv.description = _jbossPortalExecEnvCoreSection.executionEnvironmentDescription.text;
+        jbossPortalExecEnv.platformId = "";
+        jbossPortalExecEnv.installUri = _jbossPortalExecEnvCoreSection.homeDirectory.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _dirty = false;
     }
 
     private function enableLiferayExecEnvPropertyTabs():void {
@@ -2316,18 +2373,30 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleLiferayExecEnvCorePropertyTabRollOut(e:Event):void {
         trace(e);
+        _liferayExecEnvCoreSection.homeDirectory.errorString = "";
         if (_dirty && validate(true)) {
-             // bind model
-            var liferayExecEnv:LiferayExecutionEnvironment = projectProxy.currentIdentityApplianceElement as LiferayExecutionEnvironment;
-            liferayExecEnv.name = _liferayExecEnvCoreSection.executionEnvironmentName.text;
-            liferayExecEnv.description = _liferayExecEnvCoreSection.executionEnvironmentDescription.text;
-            liferayExecEnv.platformId = "";
-            liferayExecEnv.installUri = _liferayExecEnvCoreSection.homeDirectory.text;
+            _execEnvSaveFunction = liferaySave;
+            _execEnvHomeDir = _liferayExecEnvCoreSection.homeDirectory;
 
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = _liferayExecEnvCoreSection.homeDirectory.text;
+            cif.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _liferayExecEnvCoreSection.homeDirectory.text);
         }
+    }
+
+    private function liferaySave(): void {
+         // bind model
+        var liferayExecEnv:LiferayExecutionEnvironment = projectProxy.currentIdentityApplianceElement as LiferayExecutionEnvironment;
+        liferayExecEnv.name = _liferayExecEnvCoreSection.executionEnvironmentName.text;
+        liferayExecEnv.description = _liferayExecEnvCoreSection.executionEnvironmentDescription.text;
+        liferayExecEnv.platformId = "";
+        liferayExecEnv.installUri = _liferayExecEnvCoreSection.homeDirectory.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _dirty = false;
     }
 
     private function enableWASCEExecEnvPropertyTabs():void {
@@ -2388,18 +2457,30 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleWASCEExecEnvCorePropertyTabRollOut(e:Event):void {
         trace(e);
+        _wasceExecEnvCoreSection.homeDirectory.errorString = "";
         if (_dirty && validate(true)) {
-             // bind model
-            var wasceExecEnv:WASCEExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WASCEExecutionEnvironment;
-            wasceExecEnv.name = _wasceExecEnvCoreSection.executionEnvironmentName.text;
-            wasceExecEnv.description = _wasceExecEnvCoreSection.executionEnvironmentDescription.text;
-            wasceExecEnv.platformId = "";
-            wasceExecEnv.installUri = _wasceExecEnvCoreSection.homeDirectory.text;
+            _execEnvSaveFunction = wasceSave;
+            _execEnvHomeDir = _wasceExecEnvCoreSection.homeDirectory;
 
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = _wasceExecEnvCoreSection.homeDirectory.text;
+            cif.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _wasceExecEnvCoreSection.homeDirectory.text);
         }
+    }
+
+    private function wasceSave(): void {
+         // bind model
+        var wasceExecEnv:WASCEExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WASCEExecutionEnvironment;
+        wasceExecEnv.name = _wasceExecEnvCoreSection.executionEnvironmentName.text;
+        wasceExecEnv.description = _wasceExecEnvCoreSection.executionEnvironmentDescription.text;
+        wasceExecEnv.platformId = "";
+        wasceExecEnv.installUri = _wasceExecEnvCoreSection.homeDirectory.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _dirty = false;
     }
 
     /*****JBOSS*****/
@@ -2471,19 +2552,31 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleJbossExecEnvCorePropertyTabRollOut(e:Event):void {
         trace(e);
+        _jbossExecEnvCoreSection.homeDirectory.errorString = "";
         if (_dirty && validate(true)) {
-             // bind model
-            var jbossExecEnv:JbossExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JbossExecutionEnvironment;
-            jbossExecEnv.name = _jbossExecEnvCoreSection.executionEnvironmentName.text;
-            jbossExecEnv.description = _jbossExecEnvCoreSection.executionEnvironmentDescription.text;
-            jbossExecEnv.platformId = _jbossExecEnvCoreSection.platform.selectedItem.data;
-            jbossExecEnv.installUri = _jbossExecEnvCoreSection.homeDirectory.text;
-            jbossExecEnv.instance = _jbossExecEnvCoreSection.instance.text;
+            _execEnvSaveFunction = jbossSave;
+            _execEnvHomeDir = _jbossExecEnvCoreSection.homeDirectory;
 
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = _jbossExecEnvCoreSection.homeDirectory.text;
+            cif.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _jbossExecEnvCoreSection.homeDirectory.text);
         }
+    }
+
+    private function jbossSave(): void {
+         // bind model
+        var jbossExecEnv:JbossExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JbossExecutionEnvironment;
+        jbossExecEnv.name = _jbossExecEnvCoreSection.executionEnvironmentName.text;
+        jbossExecEnv.description = _jbossExecEnvCoreSection.executionEnvironmentDescription.text;
+        jbossExecEnv.platformId = _jbossExecEnvCoreSection.platform.selectedItem.data;
+        jbossExecEnv.installUri = _jbossExecEnvCoreSection.homeDirectory.text;
+        jbossExecEnv.instance = _jbossExecEnvCoreSection.instance.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _dirty = false;
     }
 
     /*****APACHE*****/
@@ -2545,20 +2638,34 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleApacheExecEnvCorePropertyTabRollOut(e:Event):void {
         trace(e);
+        _apacheExecEnvCoreSection.homeDirectory.errorString = "";
         if (_dirty && validate(true)) {
-             // bind model
-            var apacheExecEnv:ApacheExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ApacheExecutionEnvironment;
-            apacheExecEnv.name = _apacheExecEnvCoreSection.executionEnvironmentName.text;
-            apacheExecEnv.description = _apacheExecEnvCoreSection.executionEnvironmentDescription.text;
-            //TODO CHECK PLATFORM ID
-            apacheExecEnv.platformId = "apache";
-            apacheExecEnv.installUri = _apacheExecEnvCoreSection.homeDirectory.text;
+            _execEnvSaveFunction = apacheSave;
+            _execEnvHomeDir = _apacheExecEnvCoreSection.homeDirectory;
 
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = _apacheExecEnvCoreSection.homeDirectory.text;
+            cif.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _apacheExecEnvCoreSection.homeDirectory.text);
+
         }
     }
+
+    private function apacheSave(): void {
+         // bind model
+        var apacheExecEnv:ApacheExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ApacheExecutionEnvironment;
+        apacheExecEnv.name = _apacheExecEnvCoreSection.executionEnvironmentName.text;
+        apacheExecEnv.description = _apacheExecEnvCoreSection.executionEnvironmentDescription.text;
+        //TODO CHECK PLATFORM ID
+        apacheExecEnv.platformId = "apache";
+        apacheExecEnv.installUri = _apacheExecEnvCoreSection.homeDirectory.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _dirty = false;
+    }
+
     /*****WINDOWS IIS*****/
     private function enableWindowsIISExecEnvPropertyTabs():void {
         _propertySheetsViewStack.removeAllChildren();
@@ -2618,19 +2725,31 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleWindowsIISExecEnvCorePropertyTabRollOut(e:Event):void {
         trace(e);
+        _windowsIISExecEnvCoreSection.homeDirectory.errorString = "";
         if (_dirty && validate(true)) {
-             // bind model
-            var windowsIISExecEnv:WindowsIISExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WindowsIISExecutionEnvironment;
-            windowsIISExecEnv.name = _windowsIISExecEnvCoreSection.executionEnvironmentName.text;
-            windowsIISExecEnv.description = _windowsIISExecEnvCoreSection.executionEnvironmentDescription.text;
-            //TODO CHECK PLATFORM ID
-            windowsIISExecEnv.platformId = "iis";
-            windowsIISExecEnv.installUri = _windowsIISExecEnvCoreSection.homeDirectory.text;
+            _execEnvSaveFunction = windowsIISSave;
+            _execEnvHomeDir = _windowsIISExecEnvCoreSection.homeDirectory;
 
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = _windowsIISExecEnvCoreSection.homeDirectory.text;
+            cif.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _windowsIISExecEnvCoreSection.homeDirectory.text);
         }
+    }
+
+    private function windowsIISSave(): void {
+         // bind model
+        var windowsIISExecEnv:WindowsIISExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WindowsIISExecutionEnvironment;
+        windowsIISExecEnv.name = _windowsIISExecEnvCoreSection.executionEnvironmentName.text;
+        windowsIISExecEnv.description = _windowsIISExecEnvCoreSection.executionEnvironmentDescription.text;
+        //TODO CHECK PLATFORM ID
+        windowsIISExecEnv.platformId = "iis";
+        windowsIISExecEnv.installUri = _windowsIISExecEnvCoreSection.homeDirectory.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _dirty = false;
     }
 
     private function handleExecEnvActivationPropertyTabRollOut(event:Event):void{

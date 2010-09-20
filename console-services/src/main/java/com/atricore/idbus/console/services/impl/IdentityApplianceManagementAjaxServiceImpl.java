@@ -30,6 +30,7 @@ import com.atricore.idbus.console.services.dto.*;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
 import org.dozer.DozerBeanMapper;
 
+import java.io.File;
 import java.util.HashSet;
 
 /**
@@ -399,6 +400,17 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, LookupResourceByIdResponse.class);
+    }
+
+    public CheckInstallFolderExistenceResponse checkInstallFolderExistence(CheckInstallFolderExistenceRequest req) throws IdentityServerException {
+        boolean folderExists = false;
+        if(req.getInstallFolder() != null){
+            folderExists = new File(req.getInstallFolder()).exists();
+        }
+        CheckInstallFolderExistenceResponse res = new CheckInstallFolderExistenceResponse();
+        res.setFolderExists(folderExists);
+        res.setEnvironmentName(req.getEnvironmentName());
+        return res;
     }
 
     /****************************

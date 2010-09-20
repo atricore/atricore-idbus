@@ -202,7 +202,6 @@ public class PaletteMediator extends IocMediator {
                 }
              break;
         }
-//        sendNotification(DESELECT_PALETTE_ELEMENT);
     }
 
     override public function listNotificationInterests():Array {
@@ -217,9 +216,7 @@ public class PaletteMediator extends IocMediator {
             case DESELECT_PALETTE_ELEMENT:
                 if(selectedItem != null){
                     var uiComponentSel:ItemRenderer = selectedItem as ItemRenderer;
-//                    uiComponentSel.currentState = null;
                     uiComponentSel.selected = false;
-//                    uiComponentSel.selected = true;
                     selectedItem = null;
                 }
                 break;

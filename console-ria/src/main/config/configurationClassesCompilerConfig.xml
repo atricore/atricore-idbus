@@ -90,6 +90,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.FederatedConnectionRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateIdentityLookupCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.ActivateExecEnvironmentCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.AddGroupCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.AddUserCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.DeleteGroupCommand</symbol>

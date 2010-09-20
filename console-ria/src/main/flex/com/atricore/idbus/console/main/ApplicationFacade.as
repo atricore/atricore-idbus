@@ -72,6 +72,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const CREATE_FEDERATED_CONNECTION:String = "createFederatedConnection";
     public static const CREATE_IDENTITY_LOOKUP:String = "createIdentityLookup";
     public static const ACTIVATE_EXEC_ENVIRONMENT:String = "activateExecEnvironment";
+    public static const CHECK_INSTALL_FOLDER_EXISTENCE:String = "checkInstallFolderExistence";
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
