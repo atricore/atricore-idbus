@@ -29,12 +29,17 @@ import com.atricore.idbus.console.modeling.palette.model.PaletteDrawer;
 import com.atricore.idbus.console.modeling.palette.model.PaletteEntry;
 import com.atricore.idbus.console.modeling.palette.model.PaletteRoot;
 
+import flash.display.Bitmap;
+
+import mx.controls.Image;
+import mx.core.ClassFactory;
 import mx.core.UIComponent;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 import spark.components.supportClasses.ItemRenderer;
+import spark.primitives.BitmapImage;
 
 public class PaletteMediator extends IocMediator {
     private var selectedIndex:int;
@@ -50,7 +55,7 @@ public class PaletteMediator extends IocMediator {
     public function set projectProxy(value:ProjectProxy):void {
         _projectProxy = value;
     }
-    
+
     public function PaletteMediator(name : String = null, viewComp:PaletteView = null) {
         super(name, viewComp);
 
@@ -74,11 +79,11 @@ public class PaletteMediator extends IocMediator {
         var saml2PaletteDrawer:PaletteDrawer = new PaletteDrawer("Internet SSO (SAML2)", null, null);
 
         saml2PaletteDrawer.add(
-                    new PaletteEntry("Identity Provider", EmbeddedIcons.idpMiniIcon, "Identity Provider Entry", DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("Identity Provider", EmbeddedIcons.idpMiniIcon, "Identity Provider Entry", DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE)
 
                 );
         saml2PaletteDrawer.add(
-                    new PaletteEntry("Service Provider", EmbeddedIcons.spMiniIcon, "Service Provider Entry", DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("Service Provider", EmbeddedIcons.spMiniIcon, "Service Provider Entry", DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE)
 
                 );
 
@@ -88,62 +93,62 @@ public class PaletteMediator extends IocMediator {
         var environmentsPaletteDrawer:PaletteDrawer = new PaletteDrawer("Execution Environments", null, null);
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("Alfresco", EmbeddedIcons.alfrescoEnvironmentMiniIcon, "Alfresco Environment Entry", DiagramElementTypes.ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("Alfresco", EmbeddedIcons.alfrescoEnvironmentMiniIcon, "Alfresco Environment Entry", DiagramElementTypes.ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("Apache", EmbeddedIcons.apacheEnvironmentMiniIcon, "Apache Environment Entry", DiagramElementTypes.APACHE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("Apache", EmbeddedIcons.apacheEnvironmentMiniIcon, "Apache Environment Entry", DiagramElementTypes.APACHE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("Java EE", EmbeddedIcons.javaEnvironmentMiniIcon, "Java EE Environment Entry", DiagramElementTypes.JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("Java EE", EmbeddedIcons.javaEnvironmentMiniIcon, "Java EE Environment Entry", DiagramElementTypes.JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("JBoss", EmbeddedIcons.jbossEnvironmentMiniIcon, "JBoss Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("JBoss", EmbeddedIcons.jbossEnvironmentMiniIcon, "JBoss Environment Entry", DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("JBoss Portal", EmbeddedIcons.jbossEnvironmentMiniIcon, "JBoss Portal Environment Entry", DiagramElementTypes.JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("JBoss Portal", EmbeddedIcons.jbossEnvironmentMiniIcon, "JBoss Portal Environment Entry", DiagramElementTypes.JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("Liferay Portal", EmbeddedIcons.liferayEnvironmentMiniIcon, "Liferay Portal Environment Entry", DiagramElementTypes.LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("Liferay Portal", EmbeddedIcons.liferayEnvironmentMiniIcon, "Liferay Portal Environment Entry", DiagramElementTypes.LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("PhpBB", EmbeddedIcons.phpbbEnvironmentMiniIcon, "PhpBB Environment Entry", DiagramElementTypes.PHPBB_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("PhpBB", EmbeddedIcons.phpbbEnvironmentMiniIcon, "PhpBB Environment Entry", DiagramElementTypes.PHPBB_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("Tomcat", EmbeddedIcons.tomcatEnvironmentMiniIcon, "Tomcat Environment Entry", DiagramElementTypes.TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("Tomcat", EmbeddedIcons.tomcatEnvironmentMiniIcon, "Tomcat Environment Entry", DiagramElementTypes.TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("Webserver", EmbeddedIcons.webEnvironmentMiniIcon, "Webserver Environment Entry", DiagramElementTypes.WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("Webserver", EmbeddedIcons.webEnvironmentMiniIcon, "Webserver Environment Entry", DiagramElementTypes.WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("Weblogic", EmbeddedIcons.weblogicEnvironmentMiniIcon, "Weblogic Environment Entry", DiagramElementTypes.WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("Weblogic", EmbeddedIcons.weblogicEnvironmentMiniIcon, "Weblogic Environment Entry", DiagramElementTypes.WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("Websphere CE", EmbeddedIcons.websphereEnvironmentMiniIcon, "Websphere CE Environment Entry", DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("Websphere CE", EmbeddedIcons.websphereEnvironmentMiniIcon, "Websphere CE Environment Entry", DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 
         environmentsPaletteDrawer.add(
-                    new PaletteEntry("Windows", EmbeddedIcons.windowsEnvironmentMiniIcon, "Windows Environment Entry", DiagramElementTypes.WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
+                new PaletteEntry("Windows", EmbeddedIcons.windowsEnvironmentMiniIcon, "Windows Environment Entry", DiagramElementTypes.WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE)
 
                 );
 
@@ -151,19 +156,19 @@ public class PaletteMediator extends IocMediator {
 
         var identitySourcesPaletteDrawer:PaletteDrawer = new PaletteDrawer("Identity Sources", null, null);
         identitySourcesPaletteDrawer.add(
-                    new PaletteEntry("Identity Vault", EmbeddedIcons.vaultMiniIcon, "Identity Vault Entry", DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE)
+                new PaletteEntry("Identity Vault", EmbeddedIcons.vaultMiniIcon, "Identity Vault Entry", DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE)
 
                 );
         identitySourcesPaletteDrawer.add(
-                    new PaletteEntry("DB Identity Source", EmbeddedIcons.dbIdentitySourceMiniIcon, "DB Identity Source Entry", DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE)
+                new PaletteEntry("DB Identity Source", EmbeddedIcons.dbIdentitySourceMiniIcon, "DB Identity Source Entry", DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE)
 
                 );
         identitySourcesPaletteDrawer.add(
-                    new PaletteEntry("LDAP Identity Source", EmbeddedIcons.ldapIdentitySourceMiniIcon, "LDAP Identity Source Entry", DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE)
+                new PaletteEntry("LDAP Identity Source", EmbeddedIcons.ldapIdentitySourceMiniIcon, "LDAP Identity Source Entry", DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE)
 
                 );
         identitySourcesPaletteDrawer.add(
-                    new PaletteEntry("XML Identity Source", EmbeddedIcons.xmlIdentitySourceMiniIcon, "XML Identity Source Entry", DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE)
+                new PaletteEntry("XML Identity Source", EmbeddedIcons.xmlIdentitySourceMiniIcon, "XML Identity Source Entry", DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE)
 
                 );
 
@@ -171,15 +176,17 @@ public class PaletteMediator extends IocMediator {
 
         var connectionPaletteDrawer:PaletteDrawer = new PaletteDrawer("Connections", null, null);
         connectionPaletteDrawer.add(
-                    new PaletteEntry("Federated Connection", EmbeddedIcons.connectionMiniIcon, "Federated Connection Entry", DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE)
+                new PaletteEntry("Federated Connection", EmbeddedIcons.connectionFederatedIcon, "Federated Connection Entry", DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE)
 
                 );
+
         connectionPaletteDrawer.add(
-                    new PaletteEntry("Activation", EmbeddedIcons.connectionMiniIcon, "Activation Entry", DiagramElementTypes.ACTIVATION_ELEMENT_TYPE)
+                new PaletteEntry("Activation", EmbeddedIcons.connectionActivationIcon, "Activation Entry", DiagramElementTypes.ACTIVATION_ELEMENT_TYPE)
 
                 );
+
         connectionPaletteDrawer.add(
-                    new PaletteEntry("Identity Lookup", EmbeddedIcons.connectionMiniIcon, "Identity Lookup Entry", DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE)
+                new PaletteEntry("Identity Lookup", EmbeddedIcons.connectionIdentityLookupIcon , "Identity Lookup Entry", DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE)
 
                 );
         pr.add(connectionPaletteDrawer);
@@ -200,18 +207,18 @@ public class PaletteMediator extends IocMediator {
                     var selectedPaletteEntry:PaletteEntry = event.data as PaletteEntry;
                     sendNotification(ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
                 }
-             break;
+                break;
         }
     }
 
     override public function listNotificationInterests():Array {
         return [super.listNotificationInterests(),
-                DESELECT_PALETTE_ELEMENT
+            DESELECT_PALETTE_ELEMENT
         ];
     }
 
     override public function handleNotification(notification:INotification):void {
-//        super.handleNotification(notification);
+        //        super.handleNotification(notification);
         switch (notification.getName()) {
             case DESELECT_PALETTE_ELEMENT:
                 if(selectedItem != null){

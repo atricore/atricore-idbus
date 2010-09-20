@@ -80,6 +80,8 @@
         <mx:WipeDown id="wipeDown" duration="200"/>
         <mx:WipeUp id="wipeUp" duration="200"/>
         <mx:WipeRight id="wipeRight" duration="200"/>
+
+        <mx:Image id="userProfileIcon" source="{EmbeddedIcons.userProfileIcon}" />
     </fx:Declarations>
 
     <fx:Metadata>
@@ -101,9 +103,9 @@
             <mx:Image source="@Embed('/assets/icons/ui/a3c_logo.jpeg')"/>
             <comp:MessageBox id="messageBox" showEffect="{wipeRight}" width="100%" height="70%" verticalAlign="middle" horizontalAlign="center" />
             <s:HGroup id="topBox" styleName="topBox" width="100%" height="100%" includeIn="operation" verticalAlign="middle" horizontalAlign="right">
-                <mx:MenuBar id="userActionMenuBar" width="9%" labelField="@label">
+                <mx:MenuBar id="userActionMenuBar" width="9%" labelField="@label" iconField="@icon">
                     <fx:XMLList>
-                        <menuitem label="Administrator">
+                        <menuitem label="Administrator" icon="userProfileIcon">
                             <menuitem label="Change Password"/>
                             <menuitem label="Logout"/>
                         </menuitem>

@@ -25,6 +25,7 @@ import com.atricore.idbus.console.components.CustomEdgeLabelRenderer;
 import com.atricore.idbus.console.components.CustomEdgeRenderer;
 import com.atricore.idbus.console.components.CustomVisualGraph;
 import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.util.Constants;
 import com.atricore.idbus.console.modeling.diagram.event.VEdgeRemoveEvent;
@@ -195,187 +196,187 @@ public class DiagramMediator extends IocMediator {
                     break;
                 }
 
-//                if (_currentlySelectedNode != null) {
+                //                if (_currentlySelectedNode != null) {
 
-                    switch (elementType) {
-                        case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
-                            // assert that source end is an Identity Appliance
-//                            if (_currentlySelectedNode.data is IdentityAppliance) {
-//                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
-                               var ownerIdentityAppliance:IdentityAppliance = _identityAppliance;
+                switch (elementType) {
+                    case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
+                        // assert that source end is an Identity Appliance
+                        //                            if (_currentlySelectedNode.data is IdentityAppliance) {
+                        //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
+                        var ownerIdentityAppliance:IdentityAppliance = _identityAppliance;
 
-                                var cip:CreateIdentityProviderElementRequest = new CreateIdentityProviderElementRequest(
-                                        ownerIdentityAppliance,
-//                                        _currentlySelectedNode.stringid
-                                        null
-                                        );
+                        var cip:CreateIdentityProviderElementRequest = new CreateIdentityProviderElementRequest(
+                                ownerIdentityAppliance,
+                            //                                        _currentlySelectedNode.stringid
+                                null
+                                );
 
-                                // this notification will be grabbed by the modeler mediator which will open
-                                // the corresponding form
-                                sendNotification(ApplicationFacade.CREATE_IDENTITY_PROVIDER_ELEMENT, cip);
-//                            }
-
-
-                            break;
-                        case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
-                            // assert that source end is an Identity Appliance
-//                            if (_currentlySelectedNode.data is IdentityAppliance) {
-//                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
-                                ownerIdentityAppliance = _identityAppliance;
-
-                                var csp:CreateServiceProviderElementRequest = new CreateServiceProviderElementRequest(
-                                        ownerIdentityAppliance,
-//                                        _currentlySelectedNode.stringid
-                                        null
-                                        );
-
-                                // this notification will be grabbed by the modeler mediator which will open
-                                // the corresponding form
-                                sendNotification(ApplicationFacade.CREATE_SERVICE_PROVIDER_ELEMENT, csp);
-//                            }
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_IDENTITY_PROVIDER_ELEMENT, cip);
+                        //                            }
 
 
-                            break;
-//                        case DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE:
-//                            // assert that source end is an Identity Appliance
-//                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is ServiceProvider) {
-//                                var ownerServiceProvider:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
-//
-//                                var cidpc:CreateIdpChannelElementRequest = new CreateIdpChannelElementRequest(
-//                                        ownerServiceProvider,
-//                                        _currentlySelectedNode.stringid
-//                                        );
-//                                _projectProxy.currentIdentityApplianceElementOwner = ownerServiceProvider;
-//                                // this notification will be grabbed by the modeler mediator which will open
-//                                // the corresponding form
-//                                sendNotification(ApplicationFacade.CREATE_IDP_CHANNEL_ELEMENT, cidpc);
-//                            }
-//                            break;
-//                        case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
-//                            // assert that source end is an Identity Appliance
-//                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is IdentityProvider) {
-//                                var ownerIdentityProvider:IdentityProvider = _currentlySelectedNode.data as IdentityProvider;
-//
-//                                var csdpc:CreateSpChannelElementRequest = new CreateSpChannelElementRequest(
-//                                        ownerIdentityProvider,
-//                                        _currentlySelectedNode.stringid
-//                                        );
-//                                _projectProxy.currentIdentityApplianceElementOwner = ownerIdentityProvider;
-//                                // this notification will be grabbed by the modeler mediator which will open
-//                                // the corresponding form
-//                                sendNotification(ApplicationFacade.CREATE_SP_CHANNEL_ELEMENT, csdpc);
-//                            }
-//                            break;
-                        case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
-                            ownerIdentityAppliance = _identityAppliance;
+                        break;
+                    case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
+                        // assert that source end is an Identity Appliance
+                        //                            if (_currentlySelectedNode.data is IdentityAppliance) {
+                        //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
+                        ownerIdentityAppliance = _identityAppliance;
 
-                            var civ:CreateIdentityVaultElementRequest = new CreateIdentityVaultElementRequest(
-                                    ownerIdentityAppliance, null);
+                        var csp:CreateServiceProviderElementRequest = new CreateServiceProviderElementRequest(
+                                ownerIdentityAppliance,
+                            //                                        _currentlySelectedNode.stringid
+                                null
+                                );
 
-                            // this notification will be grabbed by the modeler mediator which will open
-                            // the corresponding form
-                            sendNotification(ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT, civ);
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_SERVICE_PROVIDER_ELEMENT, csp);
+                        //                            }
 
-                            break;
-                        case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
-                            ownerIdentityAppliance = _identityAppliance;
 
-                            var cdiv:CreateDbIdentitySourceElementRequest = new CreateDbIdentitySourceElementRequest(
-                                    ownerIdentityAppliance, null);
+                        break;
+                    //                        case DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE:
+                    //                            // assert that source end is an Identity Appliance
+                    //                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is ServiceProvider) {
+                    //                                var ownerServiceProvider:ServiceProvider = _currentlySelectedNode.data as ServiceProvider;
+                    //
+                    //                                var cidpc:CreateIdpChannelElementRequest = new CreateIdpChannelElementRequest(
+                    //                                        ownerServiceProvider,
+                    //                                        _currentlySelectedNode.stringid
+                    //                                        );
+                    //                                _projectProxy.currentIdentityApplianceElementOwner = ownerServiceProvider;
+                    //                                // this notification will be grabbed by the modeler mediator which will open
+                    //                                // the corresponding form
+                    //                                sendNotification(ApplicationFacade.CREATE_IDP_CHANNEL_ELEMENT, cidpc);
+                    //                            }
+                    //                            break;
+                    //                        case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
+                    //                            // assert that source end is an Identity Appliance
+                    //                            if (_currentlySelectedNode != null && _currentlySelectedNode.data is IdentityProvider) {
+                    //                                var ownerIdentityProvider:IdentityProvider = _currentlySelectedNode.data as IdentityProvider;
+                    //
+                    //                                var csdpc:CreateSpChannelElementRequest = new CreateSpChannelElementRequest(
+                    //                                        ownerIdentityProvider,
+                    //                                        _currentlySelectedNode.stringid
+                    //                                        );
+                    //                                _projectProxy.currentIdentityApplianceElementOwner = ownerIdentityProvider;
+                    //                                // this notification will be grabbed by the modeler mediator which will open
+                    //                                // the corresponding form
+                    //                                sendNotification(ApplicationFacade.CREATE_SP_CHANNEL_ELEMENT, csdpc);
+                    //                            }
+                    //                            break;
+                    case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
+                        ownerIdentityAppliance = _identityAppliance;
 
-                            // this notification will be grabbed by the modeler mediator which will open
-                            // the corresponding form
-                            sendNotification(ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT, cdiv);
-//
-                            break;
-                        case DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE:
-                            ownerIdentityAppliance = _identityAppliance;
+                        var civ:CreateIdentityVaultElementRequest = new CreateIdentityVaultElementRequest(
+                                ownerIdentityAppliance, null);
 
-                            var cliv:CreateLdapIdentitySourceElementRequest = new CreateLdapIdentitySourceElementRequest(
-                                    ownerIdentityAppliance, null);
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT, civ);
 
-                            // this notification will be grabbed by the modeler mediator which will open
-                            // the corresponding form
-                            sendNotification(ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT, cliv);
-                            
-                            break;
-                        case DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE:
-                            ownerIdentityAppliance = _identityAppliance;
+                        break;
+                    case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
+                        ownerIdentityAppliance = _identityAppliance;
 
-                            var cxiv:CreateXmlIdentitySourceElementRequest = new CreateXmlIdentitySourceElementRequest(
-                                    ownerIdentityAppliance, null);
+                        var cdiv:CreateDbIdentitySourceElementRequest = new CreateDbIdentitySourceElementRequest(
+                                ownerIdentityAppliance, null);
 
-                            // this notification will be grabbed by the modeler mediator which will open
-                            // the corresponding form
-                            sendNotification(ApplicationFacade.CREATE_XML_IDENTITY_SOURCE_ELEMENT, cxiv);
-                            
-                            break;
-                        case DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            var cjbeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
-                                    );
-                            _projectProxy.currentIdentityAppliance = _identityAppliance;
-                            // this notification will be grabbed by the modeler mediator which will open
-                            // the corresponding form
-                            sendNotification(ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT, cjbeenv);
-                            break;
-                        case DiagramElementTypes.WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            var cweenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
-                                    );
-                            _projectProxy.currentIdentityAppliance = _identityAppliance;
-                            // this notification will be grabbed by the modeler mediator which will open
-                            // the corresponding form
-                            sendNotification(ApplicationFacade.CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT, cweenv);
-                            break;
-                        case DiagramElementTypes.TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            var cteenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
-                                    );
-                            _projectProxy.currentIdentityAppliance = _identityAppliance;
-                            // this notification will be grabbed by the modeler mediator which will open
-                            // the corresponding form
-                            sendNotification(ApplicationFacade.CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT, cteenv);
-                            break;
-                        case DiagramElementTypes.JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            var cjpeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
-                                    );
-                            _projectProxy.currentIdentityAppliance = _identityAppliance;
-                            // this notification will be grabbed by the modeler mediator which will open
-                            // the corresponding form
-                            sendNotification(ApplicationFacade.CREATE_JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT, cjpeenv);
-                            break;
-                        case DiagramElementTypes.LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            var clpeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
-                                    );
-                            _projectProxy.currentIdentityAppliance = _identityAppliance;
-                            // this notification will be grabbed by the modeler mediator which will open
-                            // the corresponding form
-                            sendNotification(ApplicationFacade.CREATE_LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT, clpeenv);
-                            break;
-                        case DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            var cwseenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
-                                    );
-                            _projectProxy.currentIdentityAppliance = _identityAppliance;
-                            // this notification will be grabbed by the modeler mediator which will open
-                            // the corresponding form
-                            sendNotification(ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT, cwseenv);
-                            break;
-                        case DiagramElementTypes.APACHE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            var caeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
-                                    );
-                            _projectProxy.currentIdentityAppliance = _identityAppliance;
-                            // this notification will be grabbed by the modeler mediator which will open
-                            // the corresponding form
-                            sendNotification(ApplicationFacade.CREATE_APACHE_EXECUTION_ENVIRONMENT_ELEMENT, caeenv);
-                            break;
-                        case DiagramElementTypes.WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
-                            var cwiiseenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
-                                    );
-                            _projectProxy.currentIdentityAppliance = _identityAppliance;
-                            // this notification will be grabbed by the modeler mediator which will open
-                            // the corresponding form
-                            sendNotification(ApplicationFacade.CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT, cwiiseenv);
-                            break;
-                    }
-//                }
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT, cdiv);
+                        //
+                        break;
+                    case DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE:
+                        ownerIdentityAppliance = _identityAppliance;
+
+                        var cliv:CreateLdapIdentitySourceElementRequest = new CreateLdapIdentitySourceElementRequest(
+                                ownerIdentityAppliance, null);
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT, cliv);
+
+                        break;
+                    case DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE:
+                        ownerIdentityAppliance = _identityAppliance;
+
+                        var cxiv:CreateXmlIdentitySourceElementRequest = new CreateXmlIdentitySourceElementRequest(
+                                ownerIdentityAppliance, null);
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_XML_IDENTITY_SOURCE_ELEMENT, cxiv);
+
+                        break;
+                    case DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                        var cjbeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                );
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT, cjbeenv);
+                        break;
+                    case DiagramElementTypes.WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                        var cweenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                );
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT, cweenv);
+                        break;
+                    case DiagramElementTypes.TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                        var cteenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                );
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT, cteenv);
+                        break;
+                    case DiagramElementTypes.JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                        var cjpeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                );
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT, cjpeenv);
+                        break;
+                    case DiagramElementTypes.LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                        var clpeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                );
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT, clpeenv);
+                        break;
+                    case DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                        var cwseenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                );
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT, cwseenv);
+                        break;
+                    case DiagramElementTypes.APACHE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                        var caeenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                );
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_APACHE_EXECUTION_ENVIRONMENT_ELEMENT, caeenv);
+                        break;
+                    case DiagramElementTypes.WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                        var cwiiseenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                );
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT, cwiiseenv);
+                        break;
+                }
+                //                }
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
                 toggleNodeOnByData(_identityApplianceDiagram, _projectProxy.currentIdentityApplianceElement);
@@ -414,24 +415,24 @@ public class DiagramMediator extends IocMediator {
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT, rsp);
                             break;
-//                        case DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE:
-//                            var idpChannel:IdentityProviderChannel = _currentlySelectedNode.data as IdentityProviderChannel;
-//
-//                            var ridpc:RemoveIdpChannelElementRequest = new RemoveIdpChannelElementRequest(idpChannel);
-//
-//                            // this notification will be grabbed by the modeler mediator which will invoke
-//                            // the corresponding command for processing the removal operation.
-//                            sendNotification(ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT, ridpc);
-//                            break;
-//                        case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
-//                            var spChannel:ServiceProviderChannel = _currentlySelectedNode.data as ServiceProviderChannel;
-//
-//                            var rspc:RemoveSpChannelElementRequest = new RemoveSpChannelElementRequest(spChannel);
-//
-//                            // this notification will be grabbed by the modeler mediator which will invoke
-//                            // the corresponding command for processing the removal operation.
-//                            sendNotification(ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT, rspc);
-//                            break;
+                        //                        case DiagramElementTypes.IDP_CHANNEL_ELEMENT_TYPE:
+                        //                            var idpChannel:IdentityProviderChannel = _currentlySelectedNode.data as IdentityProviderChannel;
+                        //
+                        //                            var ridpc:RemoveIdpChannelElementRequest = new RemoveIdpChannelElementRequest(idpChannel);
+                        //
+                        //                            // this notification will be grabbed by the modeler mediator which will invoke
+                        //                            // the corresponding command for processing the removal operation.
+                        //                            sendNotification(ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT, ridpc);
+                        //                            break;
+                        //                        case DiagramElementTypes.SP_CHANNEL_ELEMENT_TYPE:
+                        //                            var spChannel:ServiceProviderChannel = _currentlySelectedNode.data as ServiceProviderChannel;
+                        //
+                        //                            var rspc:RemoveSpChannelElementRequest = new RemoveSpChannelElementRequest(spChannel);
+                        //
+                        //                            // this notification will be grabbed by the modeler mediator which will invoke
+                        //                            // the corresponding command for processing the removal operation.
+                        //                            sendNotification(ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT, rspc);
+                        //                            break;
                         case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
                             var identityVault:DbIdentitySource = _currentlySelectedNode.data as DbIdentitySource;
 
@@ -477,13 +478,13 @@ public class DiagramMediator extends IocMediator {
         if (_identityAppliance != null) {
             var identityApplianceDefinition:IdentityApplianceDefinition = _identityAppliance.idApplianceDefinition;
 
-//            var rootGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), _identityAppliance, null, true, Constants.IDENTITY_BUS_DEEP);
-//            rootGraphNode.isVisible = false;
+            //            var rootGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), _identityAppliance, null, true, Constants.IDENTITY_BUS_DEEP);
+            //            rootGraphNode.isVisible = false;
 
             var vaultNodes:ArrayCollection = new ArrayCollection();
             if (identityApplianceDefinition.identitySources != null) {
                 for(var k:int=0; k < identityApplianceDefinition.identitySources.length; k++){
-                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.identitySources[k], null, null, true, Constants.PROVIDER_DEEP);
+                    var identityVaultGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.identitySources[k], null, null, null, null, true, Constants.PROVIDER_DEEP);
                     vaultNodes.addItem(identityVaultGraphNode);
                 }
             }
@@ -491,7 +492,7 @@ public class DiagramMediator extends IocMediator {
             var environmentNodes:ArrayCollection = new ArrayCollection();
             if (identityApplianceDefinition.executionEnvironments != null) {
                 for(var l:int=0; l < identityApplianceDefinition.executionEnvironments.length; l++){
-                    var execEnvGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.executionEnvironments[l], null, null, true, Constants.PROVIDER_DEEP);
+                    var execEnvGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), identityApplianceDefinition.executionEnvironments[l], null, null, null, null, true, Constants.PROVIDER_DEEP);
                     environmentNodes.addItem(execEnvGraphNode);
                 }
             }
@@ -499,48 +500,51 @@ public class DiagramMediator extends IocMediator {
             if (identityApplianceDefinition.providers != null) {
                 for (var i:int = 0; i < identityApplianceDefinition.providers.length; i++) {
                     var provider:Provider = identityApplianceDefinition.providers[i];
-                    var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, null, true, Constants.PROVIDER_DEEP);
+                    var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, null, null, null, true, Constants.PROVIDER_DEEP);
                     providerNodes[provider] = providerGraphNode;
-                        var provider:Provider = identityApplianceDefinition.providers[i];
-                        if (provider is FederatedProvider) {
-                            var locProv:FederatedProvider = provider as FederatedProvider;
-                                if(locProv.identityLookup != null && locProv.identityLookup.identitySource != null){
-                                    var idSource:IdentitySource = locProv.identityLookup.identitySource;
-                                    //TODO add identitySource and connection towards it
-                                    var vaultExists:Boolean = false;
-                                    for each (var tmpVaultGraphNode:IVisualNode in vaultNodes){
-                                        if(tmpVaultGraphNode.data as IdentitySource == idSource){
-                                            GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode, locProv.identityLookup);
-                                            vaultExists = true;
-                                        }
-                                    }
-                                    if(!vaultExists){
-                                        var newVaultNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), idSource, providerGraphNode, locProv.identityLookup, true, Constants.IDENTITY_VAULT_DEEP);
-                                        //if vault doesn't exist in the vaults array, add it so other providers can find it
-                                        vaultNodes.addItem(newVaultNode);
-                                    }
-
-                                }
-//                            }
-                            if(locProv is ServiceProvider){
-                                var sp:ServiceProvider = locProv as ServiceProvider;
-                                if(sp.activation != null && sp.activation.executionEnv != null){  //check for execution environment
-                                    var environmentExists:Boolean = false;
-                                    for each (var tmpExecEnvGraphNode:IVisualNode in environmentNodes){
-                                        if(tmpExecEnvGraphNode.data as ExecutionEnvironment == sp.activation.executionEnv){
-                                            GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpExecEnvGraphNode, providerGraphNode, sp.activation);
-                                            environmentExists = true;
-                                        }
-                                    }
-                                    if(!environmentExists){
-                                        var newExecEnvNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), sp.activation.executionEnv, providerGraphNode, sp.activation, true, Constants.IDENTITY_VAULT_DEEP);
-                                        //if vault doesn't exist in the vaults array, add it so other providers can find it
-                                        environmentNodes.addItem(newExecEnvNode);
-                                    }
-
+                    var provider:Provider = identityApplianceDefinition.providers[i];
+                    if (provider is FederatedProvider) {
+                        var locProv:FederatedProvider = provider as FederatedProvider;
+                        if(locProv.identityLookup != null && locProv.identityLookup.identitySource != null){
+                            var idSource:IdentitySource = locProv.identityLookup.identitySource;
+                            //TODO add identitySource and connection towards it
+                            var vaultExists:Boolean = false;
+                            for each (var tmpVaultGraphNode:IVisualNode in vaultNodes){
+                                if(tmpVaultGraphNode.data as IdentitySource == idSource){
+                                    GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode, locProv.identityLookup ,EmbeddedIcons.connectionIdentityLookupIcon, "Identity Lookup Connection");
+                                    vaultExists = true;
                                 }
                             }
+                            if(!vaultExists){
+                                var newVaultNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), idSource, providerGraphNode,
+                                        locProv.identityLookup, EmbeddedIcons.connectionIdentityLookupIcon, "Identity Lookup Connection", true, Constants.IDENTITY_VAULT_DEEP);
+                                //if vault doesn't exist in the vaults array, add it so other providers can find it
+                                vaultNodes.addItem(newVaultNode);
+                            }
+
                         }
+                        //                            }
+                        if(locProv is ServiceProvider){
+                            var sp:ServiceProvider = locProv as ServiceProvider;
+                            if(sp.activation != null && sp.activation.executionEnv != null){  //check for execution environment
+                                var environmentExists:Boolean = false;
+                                for each (var tmpExecEnvGraphNode:IVisualNode in environmentNodes){
+                                    if(tmpExecEnvGraphNode.data as ExecutionEnvironment == sp.activation.executionEnv){
+                                        GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpExecEnvGraphNode, providerGraphNode,
+                                                sp.activation, EmbeddedIcons.connectionActivationIcon, "Activation Connection");
+                                        environmentExists = true;
+                                    }
+                                }
+                                if(!environmentExists){
+                                    var newExecEnvNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), sp.activation.executionEnv, providerGraphNode,
+                                            sp.activation,EmbeddedIcons.connectionActivationIcon, "Activation Connection", true, Constants.IDENTITY_VAULT_DEEP);
+                                    //if vault doesn't exist in the vaults array, add it so other providers can find it
+                                    environmentNodes.addItem(newExecEnvNode);
+                                }
+
+                            }
+                        }
+                    }
                     //}
                 }
                 //now we have all the providers added to the graph. Now we need to link them
@@ -549,16 +553,18 @@ public class DiagramMediator extends IocMediator {
                         var fedProvider:FederatedProvider = identityApplianceDefinition.providers[j] as FederatedProvider;
                         for each (var fedConnA:FederatedConnection in fedProvider.federatedConnectionsA){
                             var graphNodeRoleA:IVisualNode = providerNodes[fedProvider];
-                            var graphNodeRoleB:IVisualNode = providerNodes[fedConnA.roleB];                            
+                            var graphNodeRoleB:IVisualNode = providerNodes[fedConnA.roleB];
                             if(!DiagramUtil.nodeLinkExists(graphNodeRoleA.node, graphNodeRoleB.node)){ //avoid double linking
-                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB, fedConnA);
+                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB,
+                                        fedConnA, EmbeddedIcons.connectionFederatedIcon, "Federated Connection");
                             }
                         }
                         for each (var fedConnB:FederatedConnection in fedProvider.federatedConnectionsB){
                             var graphNodeRoleA:IVisualNode = providerNodes[fedConnB.roleA];
-                            var graphNodeRoleB:IVisualNode = providerNodes[fedProvider];                           
+                            var graphNodeRoleB:IVisualNode = providerNodes[fedProvider];
                             if(!DiagramUtil.nodeLinkExists(graphNodeRoleA.node, graphNodeRoleB.node)){ //avoid double linking
-                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB, fedConnB);
+                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB,
+                                        fedConnB, EmbeddedIcons.connectionFederatedIcon, "Federated Connection");
                             }
                         }
                     }
@@ -571,21 +577,21 @@ public class DiagramMediator extends IocMediator {
 
     private function resetGraph():void {
         var graph:IGraph = new EnhancedGraph("Graph", true);
-		var vo:Object = TypeUtil.deserializeXMLString(_emptyNotationModel);
-		EnhancedGraph(graph).initFromVO(vo);
-		_identityApplianceDiagram.graph = graph;
+        var vo:Object = TypeUtil.deserializeXMLString(_emptyNotationModel);
+        EnhancedGraph(graph).initFromVO(vo);
+        _identityApplianceDiagram.graph = graph;
 
         _identityApplianceDiagram.graph.purgeGraph();
         _identityApplianceDiagram.newNodesDefaultVisible = true;
 
         _autoFitEnabled = true;
-//        _selectedOrientation = HierarchicalLayouter.ORIENT_TOP_DOWN;
-//        var layouter:HierarchicalLayouter = new HierarchicalLayouter(_identityApplianceDiagram);
-//        layouter.autoFitEnabled = _autoFitEnabled;
-//        layouter.orientation = _selectedOrientation;
+        //        _selectedOrientation = HierarchicalLayouter.ORIENT_TOP_DOWN;
+        //        var layouter:HierarchicalLayouter = new HierarchicalLayouter(_identityApplianceDiagram);
+        //        layouter.autoFitEnabled = _autoFitEnabled;
+        //        layouter.orientation = _selectedOrientation;
         var layouter:CircularLayouter = new CircularLayouter(_identityApplianceDiagram);
         layouter.autoFitEnabled = _autoFitEnabled;
-//        layouter.orientation = _selectedOrientation;
+        //        layouter.orientation = _selectedOrientation;
 
         _identityApplianceDiagram.layouter = layouter;
 
@@ -598,7 +604,7 @@ public class DiagramMediator extends IocMediator {
         /* set if edge labels should be displayed */
         _identityApplianceDiagram.displayEdgeLabels = true;
         _identityApplianceDiagram.displayNodeLabels = true;
-        
+
         _identityApplianceDiagram.draw();
         _identityApplianceDiagram.refresh();
 
@@ -704,7 +710,7 @@ public class DiagramMediator extends IocMediator {
         // edgeData is FederatedConnection, JOSSOActivation, etc.
         var edgeData:Object = event.data;
         var elementType:int = -1;
-        
+
         if(edgeData is FederatedConnection){
             var fedConnection:FederatedConnection = edgeData as FederatedConnection;
             var rfc:RemoveFederatedConnectionElementRequest = new RemoveFederatedConnectionElementRequest(fedConnection);
@@ -731,11 +737,11 @@ public class DiagramMediator extends IocMediator {
                 toggleUnselectedNodesOff(obj, selectedItem);
             } else
             if (obj is Button) {
-                    var button:Button = Button(obj);
+                var button:Button = Button(obj);
 
-                    if (button.parent != selectedItem) {
-                        button.selected = false;
-                    }
+                if (button.parent != selectedItem) {
+                    button.selected = false;
+                }
 
             }
         }
@@ -780,7 +786,7 @@ public class DiagramMediator extends IocMediator {
                 lookUpElementFigure(obj);
             } else
             if (obj is Button) {
-                    foundDiagramElement = Button(obj);
+                foundDiagramElement = Button(obj);
 
             }
         }

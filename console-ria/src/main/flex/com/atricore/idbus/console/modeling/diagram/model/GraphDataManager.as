@@ -33,7 +33,9 @@ import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
 
 public class GraphDataManager {
 
-    public static function addVNodeAsChild(_vgraph:IVisualGraph, sid:String, data:Object, parentNode:IVisualNode, connection:Connection, refresh:Boolean, deep: int):IVisualNode {
+    public static function addVNodeAsChild(_vgraph:IVisualGraph, sid:String, data:Object, parentNode:IVisualNode,
+                                           connection:Connection, iconCls:Class, connectionTooltip:String,
+                                           refresh:Boolean, deep: int):IVisualNode {
         var rootVNode:IVisualNode;
         var node:INode;
         var vnode:IVisualNode;
@@ -49,7 +51,7 @@ public class GraphDataManager {
         (_vgraph as CustomVisualGraph).setVNodeVisibility(vnode, true);
 
         if (parentNode != null) {
-            (_vgraph as CustomVisualGraph).createCustomVEdge(parentNode.node, node, connection, EmbeddedIcons.connectionMiniIcon, "Connection");
+            linkVNodes(_vgraph, vnode, parentNode, connection, iconCls, connectionTooltip);
             //_vgraph.currentRootVNode = rootVNode;
         } else {
             //_vgraph.currentRootVNode = vnode;
@@ -69,8 +71,9 @@ public class GraphDataManager {
         return vnode;
     }
 
-    public static function linkVNodes(_vgraph:IVisualGraph, node:IVisualNode, parentNode:IVisualNode, connection:Connection):void {
-        (_vgraph as CustomVisualGraph).createCustomVEdge(parentNode.node, node.node, connection, EmbeddedIcons.connectionMiniIcon, "Connection");
+    public static function linkVNodes(_vgraph:IVisualGraph, node:IVisualNode, parentNode:IVisualNode,
+                                      connection:Connection, iconCls:Class, connectionTooltip:String):void {
+        (_vgraph as CustomVisualGraph).createCustomVEdge(parentNode.node, node.node, connection, iconCls, connectionTooltip);
     }
 
     public static function removeVEdge(_vgraph:IVisualGraph, edge:IVisualEdge):void {
