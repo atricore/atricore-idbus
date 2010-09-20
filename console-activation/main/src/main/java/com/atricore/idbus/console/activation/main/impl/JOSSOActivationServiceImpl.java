@@ -52,6 +52,8 @@ public class JOSSOActivationServiceImpl implements ActivationService {
 
             activator.doActivate();
 
+
+
             return response;
         } catch (Exception e) {
             throw new ActivationException(e);

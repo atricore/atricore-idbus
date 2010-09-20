@@ -103,6 +103,11 @@ public class SamplesActivator extends ActivatorSupport {
             printer.printMsg("@|bold Congratulations!| You've successfully installed the samples.");
             printer.printMsg();
 
+            // Clear terminal!
+            printer.getOut().write("\u0001[0m");
+
+
+
         } catch (Exception e) {
             // 5. Inform outcome (error)
             printer.printMsg();

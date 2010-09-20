@@ -8,8 +8,7 @@ import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinition
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
@@ -50,7 +49,7 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
     @Override
     public void arrive(IdentityApplianceDefinition node) throws Exception {
 
-        validateName("Appliance name", node.getName());
+        validateName("Appliance name", node.getName(), node);
         validateDisplayName("Appliance display name", node.getDisplayName());
         validatePackageName("Appliance namespace", node.getNamespace());
 
@@ -60,7 +59,7 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
 
     @Override
     public void arrive(IdentityProvider node) throws Exception {
-        validateName("IDP name", node.getName());
+        validateName("IDP name", node.getName(), node);
         validateDisplayName("IDP display name", node.getDisplayName());
 
         validateLocation("IDP", node.getLocation(), true);
@@ -85,7 +84,7 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
             addError("Serivce Provider needs an Indentity Lookup connection");
 
         if (node.getConfig() ==null)
-            addError("No configuration found for SP " + node.getName());
+            addError("No configuration found for IDP " + node.getName());
         else {
             if (node.getConfig() instanceof SamlR2ProviderConfig) {
                 SamlR2ProviderConfig samlCfg = (SamlR2ProviderConfig) node.getConfig();
@@ -104,7 +103,7 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
 
     @Override
     public void arrive(ServiceProvider node) throws Exception {
-        validateName("SP name", node.getName());
+        validateName("SP name", node.getName(), node);
         validateDisplayName("SP display name", node.getDisplayName());
 
         validateLocation("SP", node.getLocation(), true);
@@ -145,10 +144,10 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
             addError("No preferred Identity Provider Channel defined for SP " + node.getName());
 
         if (preferred > 1)
-            addError("Too many Identity Provider Channels defined for SP " + node.getName() + ", found " + preferred);
+            addError("Too many preferred IDP Channels defined for SP " + node.getName() + ", found " + preferred);
 
         if (node.getConfig() ==null)
-            addError("No configuration found for SP " + node.getName());
+            addError("No provider configuration found for SP " + node.getName());
         else {
             if (node.getConfig() instanceof SamlR2ProviderConfig) {
                 SamlR2ProviderConfig samlCfg = (SamlR2ProviderConfig) node.getConfig();
@@ -167,7 +166,7 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
 
     @Override
     public void arrive(FederatedConnection node) throws Exception {
-        validateName("Federated Connection name", node.getName());
+        validateName("Federated Connection name", node.getName(), node);
 
         // Role A
         if (node.getRoleA() == null)
@@ -188,7 +187,7 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
 
     @Override
     public void arrive(IdentityLookup node) throws Exception {
-        validateName("Identity Lookup name", node.getName());
+        validateName("Identity Lookup name", node.getName(), node);
 
         if (node.getProvider() == null)
             addError("Identity Lookup provider cannot be null " + node.getName());
@@ -212,7 +211,7 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
     @Override
     public void arrive(JOSSOActivation node) throws Exception {
 
-        validateName("JOSSO Activation name", node.getName());
+        validateName("JOSSO Activation name", node.getName(), node);
         validateDisplayName("JOSSO Activation display name", node.getDisplayName());
 
         if (node.getPartnerAppId() == null)
@@ -235,7 +234,7 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
     @Override
     public void arrive(ExecutionEnvironment node) throws Exception {
 
-        validateName("Execution Environment name" , node.getName());
+        validateName("Execution Environment name" , node.getName(), node);
         validateDisplayName("Execution Environment display name" , node.getDisplayName());
 
         if (node.getPlatformId() == null)
@@ -248,7 +247,7 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
 
     @Override
     public void arrive(DbIdentitySource node) throws Exception {
-        validateName("DB Identity Source name" , node.getName());
+        validateName("DB Identity Source name" , node.getName(), node);
         validateDisplayName("DB Identity Source display name" , node.getDisplayName());
 
         // TODO !
@@ -256,14 +255,14 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
 
     @Override
     public void arrive(EmbeddedIdentitySource node) throws Exception {
-        validateName("Embedded Identity Source name" , node.getName());
+        validateName("Embedded Identity Source name" , node.getName(), node);
         validateDisplayName("Ebmedded Identity Source display name" , node.getDisplayName());
         // TODO !
     }
 
     @Override
     public void arrive(LdapIdentitySource node) throws Exception {
-        validateName("LDAP Identity Source name" , node.getName());
+        validateName("LDAP Identity Source name" , node.getName(), node);
         validateDisplayName("LDAP Identity Source display name" , node.getDisplayName());
 
         // TODO !
@@ -298,7 +297,9 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
     // UTILS
     // ---------------------------------------------------------------------
 
-    protected void validateName(String propertyName, String name) {
+    protected void validateName(String propertyName, String name, Object o) {
+
+        //
 
         if (name == null || name.length() == 0) {
             addError(propertyName + " cannot be null or empty");
@@ -313,13 +314,23 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
                 }
             }
         }
+
+        ValidationContext vctx = ctx.get();
+
+        if (vctx.isNameUsed(name, o))
+            addError(propertyName + " already in use in other component : " + name);
+
+        vctx.registerName(name, o);
+
     }
 
     protected void validateDisplayName(String propertyName, String name) {
+
+        /* TODO ! Disabled for now ... 
         if (name == null || name.length() == 0) {
             addError(propertyName + " cannot be null or empty");
             return;
-        }
+        } */
 
     }
 
@@ -402,6 +413,31 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
     }
 
     protected class ValidationContext {
+
+        private Map<String, Set<Object>> usedNames = new HashMap<String, Set<Object>>();
+
+        boolean isNameUsed(String name, Object o) {
+            Set objs = usedNames.get(name);
+            if (objs == null) {
+                objs = new HashSet<Object>();
+                usedNames.put(name, objs);
+            }
+
+            return objs.size() > 0 && !objs.contains(o);
+
+
+
+        }
+
+        void registerName(String name, Object o) {
+            Set objs = usedNames.get(name);
+            if (objs == null) {
+                objs = new HashSet<Object>();
+                usedNames.put(name, objs);
+            }
+            objs.add(o);
+        }
+
         private List<ValidationError> errors = new ArrayList<ValidationError>();
 
         public List<ValidationError> getErrors() {

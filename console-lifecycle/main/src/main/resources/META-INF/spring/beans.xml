@@ -161,7 +161,7 @@
 
         <prop key="datanucleus.plugin.pluginRegistryClassName">org.atricore.idbus.bundles.datanucleus.core.OsgiPluginRegistry</prop>
 
-        <prop key="lifecycle.validateAppliances">false</prop>
+        <prop key="lifecycle.validateAppliances">true</prop>
         <prop key="lifecycle.enableDebugValidation">false</prop>
 
     </osgix:cm-properties>

@@ -76,6 +76,9 @@ public class AgentConfigActivator extends ActivatorSupport {
             printer.printMsg("Now Follow the @|bold JOSSO Agent Configuration guide| for SSO-enabling applications.");
             printer.printMsg();
 
+            // Clear terminal!
+            printer.getOut().write("\u0001[0m");
+
         } catch (Exception e) {
             // 3. Inform outcome (error)
             printer.printMsg();
