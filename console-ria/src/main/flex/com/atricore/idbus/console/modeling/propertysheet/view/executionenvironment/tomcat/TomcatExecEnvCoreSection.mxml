@@ -43,12 +43,12 @@
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.applicationPlatform')}:">
-            <s:DropDownList id="platform" width="300" selectedIndex="0">
+            <s:DropDownList id="platform" width="300" selectedIndex="2">
                 <s:dataProvider>
                     <mx:ArrayCollection>
-                        <fx:Object label="5.0" data="tc50"/>
-                        <fx:Object label="5.5" data="tc55"/>
-                        <fx:Object label="6.0" data="tc60"/>
+                        <utils:ListItemValueObject label="5.0.x" data="tc50"/>
+                        <utils:ListItemValueObject label="5.5.x" data="tc55"/>
+                        <utils:ListItemValueObject label="6.0.x" data="tc60"/>
                     </mx:ArrayCollection>
                 </s:dataProvider>
             </s:DropDownList>

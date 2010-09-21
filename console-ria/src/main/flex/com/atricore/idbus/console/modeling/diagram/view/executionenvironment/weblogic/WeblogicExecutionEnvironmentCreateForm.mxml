@@ -44,11 +44,11 @@
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.applicationPlatform')}:">
-        <s:DropDownList id="platform" width="300" selectedIndex="0">
+        <s:DropDownList id="platform" width="300" selectedIndex="1">
             <s:dataProvider>
                 <mx:ArrayCollection>
-                    <fx:Object label="Weblogic 9" data="wl9"/>
-                    <fx:Object label="Weblogic 10" data="wl10"/>
+                    <utils:ListItemValueObject label="9.2" data="wl9"/>
+                    <utils:ListItemValueObject label="10.0" data="wl10"/>
                 </mx:ArrayCollection>
             </s:dataProvider>
         </s:DropDownList>

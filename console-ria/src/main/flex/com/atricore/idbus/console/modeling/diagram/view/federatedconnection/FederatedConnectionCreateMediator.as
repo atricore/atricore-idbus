@@ -20,22 +20,18 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.federatedconnection {
-import com.atricore.idbus.console.components.ListItemValueObject;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
-import com.atricore.idbus.console.modeling.diagram.view.activation.*;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 
-import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AccountLinkagePolicy;
 import com.atricore.idbus.console.services.dto.AuthenticationAssertionEmissionPolicy;
 import com.atricore.idbus.console.services.dto.AuthenticationContract;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
 import com.atricore.idbus.console.services.dto.Binding;
-import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityMappingType;

@@ -29,9 +29,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityA
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdpChannelElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSpChannelElementRequest;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
 import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand;
@@ -247,10 +245,6 @@ public class ModelerMediator extends IocMediator {
             ApplicationFacade.REMOVE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT,
-            ApplicationFacade.CREATE_IDP_CHANNEL_ELEMENT,
-            ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT,
-            ApplicationFacade.CREATE_SP_CHANNEL_ELEMENT,
-            ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT,
             ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT,
             ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.REMOVE_DB_IDENTITY_SOURCE_ELEMENT,
@@ -314,22 +308,22 @@ public class ModelerMediator extends IocMediator {
                 //                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.SERVICE_PROVIDER_REMOVE, rsp.serviceProvider);
                 break;
-            case ApplicationFacade.CREATE_IDP_CHANNEL_ELEMENT:
-                popupManager.showCreateIdpChannelWindow(notification);
-                break;
-            case ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT:
-                var ridpc:RemoveIdpChannelElementRequest = RemoveIdpChannelElementRequest(notification.getBody());
-                //                 TODO: Perform UI handling for confirming removal action
-                sendNotification(ApplicationFacade.IDP_CHANNEL_REMOVE, ridpc.idpChannel);
-                break;
-            case ApplicationFacade.CREATE_SP_CHANNEL_ELEMENT:
-                popupManager.showCreateSpChannelWindow(notification);
-                break;
-            case ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT:
-                var rspc:RemoveSpChannelElementRequest = RemoveSpChannelElementRequest(notification.getBody());
-                //                 TODO: Perform UI handling for confirming removal action
-                sendNotification(ApplicationFacade.SP_CHANNEL_REMOVE, rspc.spChannel);
-                break;
+//            case ApplicationFacade.CREATE_IDP_CHANNEL_ELEMENT:
+//                popupManager.showCreateIdpChannelWindow(notification);
+//                break;
+//            case ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT:
+//                var ridpc:RemoveIdpChannelElementRequest = RemoveIdpChannelElementRequest(notification.getBody());
+//                //                 TODO: Perform UI handling for confirming removal action
+//                sendNotification(ApplicationFacade.IDP_CHANNEL_REMOVE, ridpc.idpChannel);
+//                break;
+//            case ApplicationFacade.CREATE_SP_CHANNEL_ELEMENT:
+//                popupManager.showCreateSpChannelWindow(notification);
+//                break;
+//            case ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT:
+//                var rspc:RemoveSpChannelElementRequest = RemoveSpChannelElementRequest(notification.getBody());
+//                //                 TODO: Perform UI handling for confirming removal action
+//                sendNotification(ApplicationFacade.SP_CHANNEL_REMOVE, rspc.spChannel);
+//                break;
             case ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT:
                 popupManager.showCreateIdentityVaultWindow(notification);
                 break;

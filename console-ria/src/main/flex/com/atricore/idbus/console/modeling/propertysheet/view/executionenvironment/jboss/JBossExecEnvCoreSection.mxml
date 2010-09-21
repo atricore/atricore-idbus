@@ -45,12 +45,13 @@
         </mx:FormItem>
 
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.applicationPlatform')}:">
-            <s:DropDownList id="platform" width="300" selectedIndex="0">
+            <s:DropDownList id="platform" width="300" selectedIndex="2">
                 <s:dataProvider>
                 <mx:ArrayCollection>
-                    <fx:Object label="JBoss 4" data="jb40"/>
-                    <fx:Object label="JBoss 4.2" data="jb42"/>
-                    <fx:Object label="JBoss 5" data="jb50"/>
+                    <utils:ListItemValueObject label="3.2.6+" data="jb32"/>
+                    <utils:ListItemValueObject label="4.0.x" data="jb40"/>
+                    <utils:ListItemValueObject label="4.2.x" data="jb42"/>
+                    <utils:ListItemValueObject label="5.x" data="jb50"/>
                 </mx:ArrayCollection>
                 </s:dataProvider>
             </s:DropDownList>

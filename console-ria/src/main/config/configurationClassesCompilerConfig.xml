@@ -43,8 +43,8 @@
         </symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateMediator
         </symbol>
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator</symbol>
-        <symbol>com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator</symbol>
+        <!--<symbol>com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator</symbol>-->
+        <!--<symbol>com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator</symbol>-->
         <symbol>com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.browser.BrowserMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.palette.PaletteMediator</symbol>
@@ -79,8 +79,8 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.StopIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.DisposeIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand</symbol>
-        <symbol>com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand</symbol>
-        <symbol>com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand</symbol>
+        <!--<symbol>com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand</symbol>-->
+        <!--<symbol>com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand</symbol>-->
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOSetupCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand</symbol>

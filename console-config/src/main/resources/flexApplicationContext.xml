@@ -94,14 +94,14 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="spChannelRemoveCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand">
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
-    <object id="idpChannelRemoveCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand">
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
+    <!--<object id="spChannelRemoveCommand"-->
+            <!--class="com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand">-->
+        <!--<property name="projectProxy" ref="projectProxy"/>-->
+    <!--</object>-->
+    <!--<object id="idpChannelRemoveCommand"-->
+            <!--class="com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand">-->
+        <!--<property name="projectProxy" ref="projectProxy"/>-->
+    <!--</object>-->
     <object id="identityProviderRemoveCommand"
             class="com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
@@ -285,14 +285,14 @@
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    <object id="idpChannelCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator">
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
-    <object id="spChannelCreateMediator"
-            class="com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator">
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
+    <!--<object id="idpChannelCreateMediator"-->
+            <!--class="com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator">-->
+        <!--<property name="projectProxy" ref="projectProxy"/>-->
+    <!--</object>-->
+    <!--<object id="spChannelCreateMediator"-->
+            <!--class="com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator">-->
+        <!--<property name="projectProxy" ref="projectProxy"/>-->
+    <!--</object>-->
     <object id="serviceProviderCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -384,8 +384,8 @@
         <property name="manageCertificateMediator" ref="manageCertificateMediator"/>
         <property name="identityProviderMediator" ref="identityProviderCreateMediator"/>
         <property name="serviceProviderMediator" ref="serviceProviderCreateMediator"/>
-        <property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>
-        <property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>
+        <!--<property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>-->
+        <!--<property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>-->
         <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
         <property name="uploadProgressMediator" ref="uploadProgressMediator"/>
         <property name="buildApplianceMediator" ref="buildApplianceMediator"/>
@@ -446,8 +446,8 @@
         <property name="stopIdentityApplianceCommand" ref="stopIdentityApplianceCommand"/>
         <property name="disposeIdentityApplianceCommand" ref="disposeIdentityApplianceCommand"/>
         <property name="identityApplianceCreateCommand" ref="identityApplianceCreateCommand"/>
-        <property name="spChannelRemoveCommand" ref="spChannelRemoveCommand"/>
-        <property name="idpChannelRemoveCommand" ref="idpChannelRemoveCommand"/>
+        <!--<property name="spChannelRemoveCommand" ref="spChannelRemoveCommand"/>-->
+        <!--<property name="idpChannelRemoveCommand" ref="idpChannelRemoveCommand"/>-->
         <property name="identityProviderRemoveCommand" ref="identityProviderRemoveCommand"/>
         <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
         <property name="identityLookupRemoveCommand" ref="identityLookupRemoveCommand"/>
@@ -498,8 +498,8 @@
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
-        <property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>
-        <property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>
+        <!--<property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>-->
+        <!--<property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>-->
         <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>
         <property name="browserMediator" ref="browserMediator"/>
         <property name="paletteMediator" ref="paletteMediator"/>

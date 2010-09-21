@@ -48,15 +48,11 @@ import com.atricore.idbus.console.modeling.propertysheet.view.identityvault.Embe
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.BasicAuthenticationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.idpchannel.IDPChannelContractSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.idpchannel.IDPChannelCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.jossoactivation.JOSSOActivationCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceLookupSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelContractSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.spchannel.SPChannelCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.xmlidentitysource.XmlIdentitySourceCoreSection;
 import com.atricore.idbus.console.services.dto.AccountLinkagePolicy;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
@@ -125,8 +121,6 @@ public class PropertySheetMediator extends IocMediator {
     private var _iaCoreSection:IdentityApplianceCoreSection;
     private var _ipCoreSection:IdentityProviderCoreSection;
     private var _spCoreSection:ServiceProviderCoreSection;
-    private var _idpChannelCoreSection:IDPChannelCoreSection;
-    private var _spChannelCoreSection:SPChannelCoreSection;
     private var _embeddedDbVaultCoreSection:EmbeddedDBIdentityVaultCoreSection;
     private var _externalDbVaultCoreSection:ExternalDBIdentityVaultCoreSection;
     private var _ldapIdentitySourceCoreSection:LdapIdentitySourceCoreSection;
@@ -135,8 +129,6 @@ public class PropertySheetMediator extends IocMediator {
     private var _currentIdentityApplianceElement:Object;
     private var _ipContractSection:IdentityProviderContractSection;
     private var _spContractSection:ServiceProviderContractSection;
-    private var _idpChannelContractSection:IDPChannelContractSection;
-    private var _spChannelContractSection:SPChannelContractSection;
     private var _externalDbVaultLookupSection:ExternalDBIdentityVaultLookupSection;
     private var _federatedConnectionCoreSection:FederatedConnectionCoreSection;
     private var _federatedConnectionSPChannelSection:FederatedConnectionSPChannelSection;
@@ -230,10 +222,10 @@ public class PropertySheetMediator extends IocMediator {
                     enableIdentityProviderPropertyTabs();
                 } else if (_currentIdentityApplianceElement is ServiceProvider) {
                     enableServiceProviderPropertyTabs();
-                } else if (_currentIdentityApplianceElement is IdentityProviderChannel) {
-                    enableIdpChannelPropertyTabs();
-                } else if (_currentIdentityApplianceElement is ServiceProviderChannel) {
-                    enableSpChannelPropertyTabs();
+//                } else if (_currentIdentityApplianceElement is IdentityProviderChannel) {
+//                    enableIdpChannelPropertyTabs();
+//                } else if (_currentIdentityApplianceElement is ServiceProviderChannel) {
+//                    enableSpChannelPropertyTabs();
                 } else if (_currentIdentityApplianceElement is IdentitySource) {
                     if (_currentIdentityApplianceElement is EmbeddedIdentitySource) {
                         enableIdentityVaultPropertyTabs();
@@ -1077,375 +1069,6 @@ public class PropertySheetMediator extends IocMediator {
             }
             
             updateSamlR2Config(config);
-
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
-        }
-    }
-
-    protected function enableIdpChannelPropertyTabs():void {
-        // Attach idp channel editor form to property tabbed view
-        _propertySheetsViewStack.removeAllChildren();
-
-        // Core Tab
-        var corePropertyTab:Group = new Group();
-        corePropertyTab.id = "propertySheetCoreSection";
-        corePropertyTab.name = "Core";
-        corePropertyTab.width = Number("100%");
-        corePropertyTab.height = Number("100%");
-        corePropertyTab.setStyle("borderStyle", "solid");
-
-        _idpChannelCoreSection = new IDPChannelCoreSection();
-        corePropertyTab.addElement(_idpChannelCoreSection);
-        _propertySheetsViewStack.addNewChild(corePropertyTab);
-        _tabbedPropertiesTabBar.selectedIndex = 0;
-
-        _idpChannelCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdpChannelCorePropertyTabCreationComplete);
-        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdpChannelCorePropertyTabRollOut);
-
-        // Contract Tab
-        var contractPropertyTab:Group = new Group();
-        contractPropertyTab.id = "propertySheetContractSection";
-        contractPropertyTab.name = "Contract";
-        contractPropertyTab.width = Number("100%");
-        contractPropertyTab.height = Number("100%");
-        contractPropertyTab.setStyle("borderStyle", "solid");
-
-        _idpChannelContractSection = new IDPChannelContractSection();
-        contractPropertyTab.addElement(_idpChannelContractSection);
-        _propertySheetsViewStack.addNewChild(contractPropertyTab);
-        _idpChannelContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdpChannelContractPropertyTabCreationComplete);
-        contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdpChannelContractPropertyTabRollOut);
-    }
-
-    private function handleIdpChannelCorePropertyTabCreationComplete(event:Event):void {
-        var idpChannel:IdentityProviderChannel;
-
-        idpChannel = _currentIdentityApplianceElement as IdentityProviderChannel;
-
-        // if idpChannel is null that means some other element was selected before completing this
-        if (idpChannel != null) {
-            // bind view
-            _idpChannelCoreSection.identityProvChannelName.text = idpChannel.name;
-            _idpChannelCoreSection.identityProvChannelDescription.text = idpChannel.description;
-            //TODO
-
-            for (var i:int = 0; i < _idpChannelCoreSection.idpChannelLocationProtocol.dataProvider.length; i++) {
-                if (idpChannel.location != null && _idpChannelCoreSection.idpChannelLocationProtocol.dataProvider[i].label == idpChannel.location.protocol) {
-                    _idpChannelCoreSection.idpChannelLocationProtocol.selectedIndex = i;
-                    break;
-                }
-            }
-            _idpChannelCoreSection.idpChannelLocationDomain.text = idpChannel.location.host;
-            _idpChannelCoreSection.idpChannelLocationPort.text = idpChannel.location.port.toString();
-            _idpChannelCoreSection.idpChannelLocationContext.text = "/" + idpChannel.location.context + "/";
-            _idpChannelCoreSection.idpChannelLocationPath.text = idpChannel.location.uri;
-
-            _idpChannelCoreSection.identityProvChannelName.addEventListener(Event.CHANGE, handleSectionChange);
-            _idpChannelCoreSection.identityProvChannelDescription.addEventListener(Event.CHANGE, handleSectionChange);
-            _idpChannelCoreSection.idpChannelLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
-            _idpChannelCoreSection.idpChannelLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
-            _idpChannelCoreSection.idpChannelLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
-            _idpChannelCoreSection.idpChannelLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
-            _idpChannelCoreSection.idpChannelLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
-            _idpChannelCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
-
-            _validators = [];
-            _validators.push(_idpChannelCoreSection.nameValidator);
-            _validators.push(_idpChannelCoreSection.portValidator);
-            _validators.push(_idpChannelCoreSection.domainValidator);
-            _validators.push(_idpChannelCoreSection.pathValidator);
-        }
-    }
-
-    private function handleIdpChannelCorePropertyTabRollOut(e:Event):void {
-        if (_dirty && validate(true)) {
-            // bind model
-            var idpChannel:IdentityProviderChannel;
-
-            idpChannel = _currentIdentityApplianceElement as IdentityProviderChannel;
-
-            idpChannel.name = _idpChannelCoreSection.identityProvChannelName.text;
-            idpChannel.description = _idpChannelCoreSection.identityProvChannelDescription.text;
-
-            if(idpChannel.location == null){
-                idpChannel.location = new Location();
-            }
-
-            idpChannel.location.protocol = _idpChannelCoreSection.idpChannelLocationProtocol.labelDisplay.text;
-            idpChannel.location.host = _idpChannelCoreSection.idpChannelLocationDomain.text;
-            idpChannel.location.port = parseInt(_idpChannelCoreSection.idpChannelLocationPort.text);
-            idpChannel.location.context = _idpChannelCoreSection.idpChannelLocationContext.text.substring(1,
-                    _idpChannelCoreSection.idpChannelLocationContext.text.length - 1);
-            idpChannel.location.uri = _idpChannelCoreSection.idpChannelLocationPath.text;
-
-            // TODO save remaining fields to defaultChannel, calling appropriate lookup methods
-            //userInformationLookup
-            //authenticationContract
-            //authenticationMechanism
-            //authenticationAssertionEmissionPolicy
-
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
-        }
-    }
-
-    private function handleIdpChannelContractPropertyTabCreationComplete(event:Event):void {
-
-        var idpChannel:IdentityProviderChannel;
-
-        idpChannel = _currentIdentityApplianceElement as IdentityProviderChannel;
-
-        // if idpChannel is null that means some other element was selected before completing this
-        if (idpChannel != null) {
-            //_spContractSection.signAuthRequestCheck.selected = serviceProvider.signAuthenticationAssertions;
-            //_spContractSection.encryptAuthRequestCheck.selected = serviceProvider.encryptAuthenticationAssertions;
-
-            if (idpChannel != null) {
-                for (var j:int = 0; j < idpChannel.activeBindings.length; j ++) {
-                    var tmpBinding:Binding = idpChannel.activeBindings.getItemAt(j) as Binding;
-                    if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
-                        _idpChannelContractSection.samlBindingHttpPostCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
-                        _idpChannelContractSection.samlBindingHttpRedirectCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
-                        _idpChannelContractSection.samlBindingArtifactCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
-                        _idpChannelContractSection.samlBindingSoapCheck.selected = true;
-                    }
-                }
-                for (j = 0; j < idpChannel.activeProfiles.length; j++) {
-                    var tmpProfile:Profile = idpChannel.activeProfiles.getItemAt(j) as Profile;
-                    if (tmpProfile.name == Profile.SSO.name) {
-                        _idpChannelContractSection.samlProfileSSOCheck.selected = true;
-                    }
-                    if (tmpProfile.name == Profile.SSO_SLO.name) {
-                        _idpChannelContractSection.samlProfileSLOCheck.selected = true;
-                    }
-                }
-            }
-
-            _idpChannelContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _idpChannelContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _idpChannelContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _idpChannelContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _idpChannelContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        }
-    }
-
-    private function handleIdpChannelContractPropertyTabRollOut(event:Event):void {
-        if (_dirty) {
-            var idpChannel:IdentityProviderChannel;
-
-            idpChannel = _currentIdentityApplianceElement as IdentityProviderChannel;
-
-            idpChannel.activeBindings = new ArrayCollection();
-            if (_idpChannelContractSection.samlBindingHttpPostCheck.selected) {
-                idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
-            }
-            if (_idpChannelContractSection.samlBindingArtifactCheck.selected) {
-                idpChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
-            }
-            if (_idpChannelContractSection.samlBindingHttpRedirectCheck.selected) {
-                idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
-            }
-            if (_idpChannelContractSection.samlBindingSoapCheck.selected) {
-                idpChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
-            }
-
-            idpChannel.activeProfiles = new ArrayCollection();
-            if (_idpChannelContractSection.samlProfileSSOCheck.selected) {
-                idpChannel.activeProfiles.addItem(Profile.SSO);
-            }
-            if (_idpChannelContractSection.samlProfileSLOCheck.selected) {
-                idpChannel.activeProfiles.addItem(Profile.SSO_SLO);
-            }
-
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
-        }
-    }
-
-    protected function enableSpChannelPropertyTabs():void {
-        // Attach sp channel editor form to property tabbed view
-        _propertySheetsViewStack.removeAllChildren();
-
-        // Core Tab
-        var corePropertyTab:Group = new Group();
-        corePropertyTab.id = "propertySheetCoreSection";
-        corePropertyTab.name = "Core";
-        corePropertyTab.width = Number("100%");
-        corePropertyTab.height = Number("100%");
-        corePropertyTab.setStyle("borderStyle", "solid");
-
-        _spChannelCoreSection = new SPChannelCoreSection();
-        corePropertyTab.addElement(_spChannelCoreSection);
-        _propertySheetsViewStack.addNewChild(corePropertyTab);
-        _tabbedPropertiesTabBar.selectedIndex = 0;
-
-        _spChannelCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSpChannelCorePropertyTabCreationComplete);
-        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleSpChannelCorePropertyTabRollOut);
-
-        // Contract Tab
-        var contractPropertyTab:Group = new Group();
-        contractPropertyTab.id = "propertySheetContractSection";
-        contractPropertyTab.name = "Contract";
-        contractPropertyTab.width = Number("100%");
-        contractPropertyTab.height = Number("100%");
-        contractPropertyTab.setStyle("borderStyle", "solid");
-
-        _spChannelContractSection = new SPChannelContractSection();
-        contractPropertyTab.addElement(_spChannelContractSection);
-        _propertySheetsViewStack.addNewChild(contractPropertyTab);
-        _spChannelContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSpChannelContractPropertyTabCreationComplete);
-        contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleSpChannelContractPropertyTabRollOut);
-    }
-
-    private function handleSpChannelCorePropertyTabCreationComplete(event:Event):void {
-        var spChannel:ServiceProviderChannel;
-
-        spChannel = _currentIdentityApplianceElement as ServiceProviderChannel;
-
-        // if spChannel is null that means some other element was selected before completing this
-        if (spChannel != null) {
-            // bind view
-            _spChannelCoreSection.serviceProvChannelName.text = spChannel.name;
-            _spChannelCoreSection.serviceProvChannelDescription.text = spChannel.description;
-            //TODO
-
-            for (var i:int = 0; i < _spChannelCoreSection.spChannelLocationProtocol.dataProvider.length; i++) {
-                if (spChannel.location != null && _spChannelCoreSection.spChannelLocationProtocol.dataProvider[i].label == spChannel.location.protocol) {
-                    _spChannelCoreSection.spChannelLocationProtocol.selectedIndex = i;
-                    break;
-                }
-            }
-            _spChannelCoreSection.spChannelLocationDomain.text = spChannel.location.host;
-            _spChannelCoreSection.spChannelLocationPort.text = spChannel.location.port.toString();
-            _spChannelCoreSection.spChannelLocationContext.text = "/" + spChannel.location.context + "/";
-            _spChannelCoreSection.spChannelLocationPath.text = spChannel.location.uri;
-
-            _spChannelCoreSection.serviceProvChannelName.addEventListener(Event.CHANGE, handleSectionChange);
-            _spChannelCoreSection.serviceProvChannelDescription.addEventListener(Event.CHANGE, handleSectionChange);
-            _spChannelCoreSection.spChannelLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
-            _spChannelCoreSection.spChannelLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
-            _spChannelCoreSection.spChannelLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
-            _spChannelCoreSection.spChannelLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
-            _spChannelCoreSection.spChannelLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
-            _spChannelCoreSection.authMechanismCombo.addEventListener(Event.CHANGE, handleSectionChange);
-
-            _validators = [];
-            _validators.push(_spChannelCoreSection.nameValidator);
-            _validators.push(_spChannelCoreSection.portValidator);
-            _validators.push(_spChannelCoreSection.domainValidator);
-            _validators.push(_spChannelCoreSection.pathValidator);
-        }
-    }
-
-    private function handleSpChannelCorePropertyTabRollOut(e:Event):void {
-        if (_dirty && validate(true)) {
-            // bind model
-            var spChannel:ServiceProviderChannel;
-
-            spChannel = _currentIdentityApplianceElement as ServiceProviderChannel;
-
-            spChannel.name = _spChannelCoreSection.serviceProvChannelName.text;
-            spChannel.description = _spChannelCoreSection.serviceProvChannelDescription.text;
-
-            if(spChannel.location == null){
-                spChannel.location = new Location();
-            }
-
-            spChannel.location.protocol = _spChannelCoreSection.spChannelLocationProtocol.labelDisplay.text;
-            spChannel.location.host = _spChannelCoreSection.spChannelLocationDomain.text;
-            spChannel.location.port = parseInt(_spChannelCoreSection.spChannelLocationPort.text);
-            spChannel.location.context = _spChannelCoreSection.spChannelLocationContext.text.substring(1,
-                    _spChannelCoreSection.spChannelLocationContext.text.length - 1);
-            spChannel.location.uri = _spChannelCoreSection.spChannelLocationPath.text;
-
-            // TODO save remaining fields to channel, calling appropriate lookup methods
-            //userInformationLookup
-            //authenticationContract
-            //authenticationMechanism
-            //authenticationAssertionEmissionPolicy
-
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
-        }
-    }
-
-    private function handleSpChannelContractPropertyTabCreationComplete(event:Event):void {
-
-        var spChannel:ServiceProviderChannel;
-
-        spChannel = _currentIdentityApplianceElement as ServiceProviderChannel;
-
-        // if spChannel is null that means some other element was selected before completing this
-        if (spChannel != null) {
-            for (var j:int = 0; j < spChannel.activeBindings.length; j ++) {
-                var tmpBinding:Binding = spChannel.activeBindings.getItemAt(j) as Binding;
-                if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
-                    _spChannelContractSection.samlBindingHttpPostCheck.selected = true;
-                }
-                if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
-                    _spChannelContractSection.samlBindingHttpRedirectCheck.selected = true;
-                }
-                if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
-                    _spChannelContractSection.samlBindingArtifactCheck.selected = true;
-                }
-                if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
-                    _spChannelContractSection.samlBindingSoapCheck.selected = true;
-                }
-            }
-            for (j = 0; j < spChannel.activeProfiles.length; j++) {
-                var tmpProfile:Profile = spChannel.activeProfiles.getItemAt(j) as Profile;
-                if (tmpProfile.name == Profile.SSO.name) {
-                    _spChannelContractSection.samlProfileSSOCheck.selected = true;
-                }
-                if (tmpProfile.name == Profile.SSO_SLO.name) {
-                    _spChannelContractSection.samlProfileSLOCheck.selected = true;
-                }
-            }
-
-            _spChannelContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _spChannelContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _spChannelContractSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _spChannelContractSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _spChannelContractSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-        }
-    }
-
-    private function handleSpChannelContractPropertyTabRollOut(event:Event):void {
-        if (_dirty) {
-            var spChannel:ServiceProviderChannel;
-
-            spChannel = _currentIdentityApplianceElement as ServiceProviderChannel;
-
-            spChannel.activeBindings = new ArrayCollection();
-            if (_spChannelContractSection.samlBindingHttpPostCheck.selected) {
-                spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
-            }
-            if (_spChannelContractSection.samlBindingArtifactCheck.selected) {
-                spChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
-            }
-            if (_spChannelContractSection.samlBindingHttpRedirectCheck.selected) {
-                spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
-            }
-            if (_spChannelContractSection.samlBindingSoapCheck.selected) {
-                spChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
-            }
-
-            spChannel.activeProfiles = new ArrayCollection();
-            if (_spChannelContractSection.samlProfileSSOCheck.selected) {
-                spChannel.activeProfiles.addItem(Profile.SSO);
-            }
-            if (_spChannelContractSection.samlProfileSLOCheck.selected) {
-                spChannel.activeProfiles.addItem(Profile.SSO_SLO);
-            }
 
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;

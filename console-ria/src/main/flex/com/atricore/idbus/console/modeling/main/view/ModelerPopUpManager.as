@@ -51,14 +51,10 @@ import com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVa
 import com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateForm;
-import com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.ldapidentitysource.LdapIdentitySourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.ldapidentitysource.LdapIdentitySourceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateForm;
-import com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateMediator;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator;
@@ -78,8 +74,6 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _manageCertificateMediator:ManageCertificateMediator;
     private var _identityProviderMediator:IdentityProviderCreateMediator;
     private var _serviceProviderMediator:ServiceProviderCreateMediator;
-    private var _idpChannelCreateMediator:IDPChannelCreateMediator;
-    private var _spChannelCreateMediator:SPChannelCreateMediator;
     private var _identityVaultCreateMediator:IdentityVaultCreateMediator;
     private var _dbIdentitySourceCreateMediator:DbIdentitySourceCreateMediator;
     private var _ldapIdentitySourceCreateMediator:LdapIdentitySourceCreateMediator;
@@ -101,8 +95,6 @@ public class ModelerPopUpManager extends BasePopUpManager {
     // views
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
     private var _serviceProviderCreateForm:ServiceProviderCreateForm;
-    private var _idpChannelCreateForm:IDPChannelCreateForm;
-    private var _spChannelCreateForm:SPChannelCreateForm;
     private var _identityVaultCreateForm:IdentityVaultCreateForm;
     private var _dbIdentitySourceCreateForm:DbIdentitySourceCreateForm;
     private var _ldapIdentitySourceCreateForm:LdapIdentitySourceCreateForm;
@@ -149,22 +141,6 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set serviceProviderMediator(value:ServiceProviderCreateMediator):void {
         _serviceProviderMediator = value;
-    }
-
-    public function get idpChannelCreateMediator():IDPChannelCreateMediator {
-        return _idpChannelCreateMediator;
-    }
-
-    public function set idpChannelCreateMediator(value:IDPChannelCreateMediator):void {
-        _idpChannelCreateMediator = value;
-    }
-
-    public function get spChannelCreateMediator():SPChannelCreateMediator {
-        return _spChannelCreateMediator;
-    }
-
-    public function set spChannelCreateMediator(value:SPChannelCreateMediator):void {
-        _spChannelCreateMediator = value;
     }
 
     public function get identityVaultCreateMediator():IdentityVaultCreateMediator {
@@ -352,52 +328,6 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleServiceProviderCreateFormCreated(event:FlexEvent):void {
         serviceProviderMediator.setViewComponent(_serviceProviderCreateForm);
         serviceProviderMediator.handleNotification(_lastWindowNotification);
-    }
-
-    public function showCreateIdpChannelWindow(notification:INotification):void {
-        _lastWindowNotification = notification;
-        if (!_idpChannelCreateForm) {
-            createIdpChannelCreateForm();
-        }
-        _popup.title = "Create Identity Provider Channel";
-        _popup.width = 690;
-        _popup.height = 550;
-        _popup.x = (_popupParent.width / 2) - 225;
-        _popup.y = 80;
-        showPopup(_idpChannelCreateForm);
-    }
-
-    private function createIdpChannelCreateForm():void {
-        _idpChannelCreateForm = new IDPChannelCreateForm();
-        _idpChannelCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdpChannelCreateFormCreated);
-    }
-
-    private function handleIdpChannelCreateFormCreated(event:FlexEvent):void {
-        idpChannelCreateMediator.setViewComponent(_idpChannelCreateForm);
-        idpChannelCreateMediator.handleNotification(_lastWindowNotification);
-    }
-
-    public function showCreateSpChannelWindow(notification:INotification):void {
-        _lastWindowNotification = notification;
-        if (!_spChannelCreateForm) {
-            createSpChannelCreateForm();
-        }
-        _popup.title = "Create Service Provider Channel";
-        _popup.width = 690;
-        _popup.height = 510;
-        _popup.x = (_popupParent.width / 2) - 225;
-        _popup.y = 80;
-        showPopup(_spChannelCreateForm);
-    }
-
-    private function createSpChannelCreateForm():void {
-        _spChannelCreateForm = new SPChannelCreateForm();
-        _spChannelCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleSpChannelCreateFormCreated);
-    }
-
-    private function handleSpChannelCreateFormCreated(event:FlexEvent):void {
-        spChannelCreateMediator.setViewComponent(_spChannelCreateForm);
-        spChannelCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateIdentityVaultWindow(notification:INotification):void {

@@ -44,8 +44,8 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const IDENTITY_APPLIANCE_REMOVE:String = "identityApplianceRemove";
     public static const IDENTITY_PROVIDER_REMOVE:String = "identityProviderRemove";
     public static const SERVICE_PROVIDER_REMOVE:String = "serviceProviderRemove";
-    public static const IDP_CHANNEL_REMOVE:String = "idpChannelRemove";
-    public static const SP_CHANNEL_REMOVE:String = "spChannelRemove";
+//    public static const IDP_CHANNEL_REMOVE:String = "idpChannelRemove";
+//    public static const SP_CHANNEL_REMOVE:String = "spChannelRemove";
     public static const DB_IDENTITY_VAULT_REMOVE:String = "identityVaultRemove";
     public static const ACTIVATION_REMOVE:String = "activationRemove";
     public static const FEDERATED_CONNECTION_REMOVE:String = "federatedConnectionRemove";
@@ -96,10 +96,10 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const DIAGRAM_ELEMENT_REMOVE:String = "diagramElementRemove";
     public static const REMOVE_IDENTITY_APPLIANCE_ELEMENT:String = "removeIdentityApplianceElement";
     public static const REMOVE_IDENTITY_PROVIDER_ELEMENT:String = "removeIdentityProviderElement";
-    public static const CREATE_IDP_CHANNEL_ELEMENT:String = "createIdpChannelElement";
-    public static const REMOVE_IDP_CHANNEL_ELEMENT:String = "removeIdpChannelElement";
-    public static const CREATE_SP_CHANNEL_ELEMENT:String = "createSpChannelElement";
-    public static const REMOVE_SP_CHANNEL_ELEMENT:String = "removeSpChannelElement";
+//    public static const CREATE_IDP_CHANNEL_ELEMENT:String = "createIdpChannelElement";
+//    public static const REMOVE_IDP_CHANNEL_ELEMENT:String = "removeIdpChannelElement";
+//    public static const CREATE_SP_CHANNEL_ELEMENT:String = "createSpChannelElement";
+//    public static const REMOVE_SP_CHANNEL_ELEMENT:String = "removeSpChannelElement";
     public static const CREATE_DB_IDENTITY_SOURCE_ELEMENT:String = "createDbIdentitySourceElement";
     public static const REMOVE_DB_IDENTITY_SOURCE_ELEMENT:String = "removeDbIdentitySourceElement";
     public static const CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:String = "createLdapIdentitySourceElement";

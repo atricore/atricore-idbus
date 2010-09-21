@@ -6,7 +6,6 @@
 
     <fx:Script>
         <![CDATA[
-        import com.atricore.idbus.console.modeling.diagram.view.idpchannel.*;
 
         protected function dataChangeHandler(evt:Event):void {
                 chkBox.selected = data.isSelected;

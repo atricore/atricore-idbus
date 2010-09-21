@@ -56,8 +56,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _manageCertificateMediator:IIocMediator;
     private var _identityProviderCreateMediator:IIocMediator;
     private var _serviceProviderCreateMediator:IIocMediator;
-    private var _idpChannelCreateMediator:IIocMediator;
-    private var _spChannelCreateMediator:IIocMediator;
+//    private var _idpChannelCreateMediator:IIocMediator;
+//    private var _spChannelCreateMediator:IIocMediator;
     private var _identityVaultCreateMediator:IIocMediator;
     private var _dbIdentitySourceCreateMediator:IIocMediator;
     private var _ldapIdentitySourceCreateMediator:IIocMediator;
@@ -100,8 +100,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _identityApplianceRemoveCommand:IIocCommand;
     private var _identityProviderRemoveCommand:IIocCommand;
     private var _serviceProviderRemoveCommand:IIocCommand;
-    private var _idpChannelRemoveCommand:IIocCommand;
-    private var _spChannelRemoveCommand:IIocCommand;
+//    private var _idpChannelRemoveCommand:IIocCommand;
+//    private var _spChannelRemoveCommand:IIocCommand;
     private var _lookupIdentityApplianceByIdCommand:IIocCommand;
     private var _uploadCommand:IIocCommand;
     private var _buildIdentityApplianceCommand:IIocCommand;
@@ -207,22 +207,6 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set serviceProviderCreateMediator(value:IIocMediator):void {
         _serviceProviderCreateMediator = value;
-    }
-
-    public function get idpChannelCreateMediator():IIocMediator {
-        return _idpChannelCreateMediator;
-    }
-
-    public function set idpChannelCreateMediator(value:IIocMediator):void {
-        _idpChannelCreateMediator = value;
-    }
-
-    public function get spChannelCreateMediator():IIocMediator {
-        return _spChannelCreateMediator;
-    }
-
-    public function set spChannelCreateMediator(value:IIocMediator):void {
-        _spChannelCreateMediator = value;
     }
 
     public function get identityVaultCreateMediator():IIocMediator {
@@ -586,22 +570,6 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _serviceProviderRemoveCommand = value;
     }
 
-    public function get idpChannelRemoveCommand():IIocCommand {
-        return _idpChannelRemoveCommand;
-    }
-
-    public function set idpChannelRemoveCommand(value:IIocCommand):void {
-        _idpChannelRemoveCommand = value;
-    }
-
-    public function get spChannelRemoveCommand():IIocCommand {
-        return _spChannelRemoveCommand;
-    }
-
-    public function set spChannelRemoveCommand(value:IIocCommand):void {
-        _spChannelRemoveCommand = value;
-    }
-
     public function get lookupIdentityApplianceByIdCommand():IIocCommand {
         return _lookupIdentityApplianceByIdCommand;
     }
@@ -890,8 +858,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_REMOVE, identityApplianceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_PROVIDER_REMOVE, identityProviderRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SERVICE_PROVIDER_REMOVE, serviceProviderRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.IDP_CHANNEL_REMOVE, idpChannelRemoveCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.SP_CHANNEL_REMOVE, spChannelRemoveCommand.getConfigName());
+//        iocFacade.registerCommandByConfigName(ApplicationFacade.IDP_CHANNEL_REMOVE, idpChannelRemoveCommand.getConfigName());
+//        iocFacade.registerCommandByConfigName(ApplicationFacade.SP_CHANNEL_REMOVE, spChannelRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DB_IDENTITY_VAULT_REMOVE, identityVaultRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATION_REMOVE, activationRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_LOOKUP_REMOVE, identityLookupRemoveCommand.getConfigName());
@@ -954,8 +922,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(manageCertificateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(identityProviderCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(serviceProviderCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(idpChannelCreateMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(spChannelCreateMediator.getConfigName());
+//        iocFacade.registerMediatorByConfigName(idpChannelCreateMediator.getConfigName());
+//        iocFacade.registerMediatorByConfigName(spChannelCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(identityVaultCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(dbIdentitySourceCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(ldapIdentitySourceCreateMediator.getConfigName());
