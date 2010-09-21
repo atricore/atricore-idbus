@@ -79,6 +79,8 @@ public class WASCEExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.executionEnvironmentDescription.text = "";
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
+        view.replaceConfFiles.selected = false;
+        view.installSamples.selected = false;         
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -88,6 +90,8 @@ public class WASCEExecutionEnvironmentCreateMediator extends IocFormMediator {
         executionEnvironment.name = view.executionEnvironmentName.text;
         executionEnvironment.description = view.executionEnvironmentDescription.text;
         executionEnvironment.installUri = view.homeDirectory.text;
+        executionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
+        executionEnvironment.installDemoApps = view.installSamples.selected;        
         //executionEnvironment.platformId = "";
         _newExecutionEnvironment = executionEnvironment;
     }

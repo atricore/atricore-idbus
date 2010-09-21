@@ -80,6 +80,8 @@ public class ApacheExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
         view.homeDirectory.errorString = "";
+        view.replaceConfFiles.selected = false;
+        view.installSamples.selected = false;         
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -91,6 +93,8 @@ public class ApacheExecutionEnvironmentCreateMediator extends IocFormMediator {
         apacheExecutionEnvironment.name = view.executionEnvironmentName.text;
         apacheExecutionEnvironment.description = view.executionEnvironmentDescription.text;
         apacheExecutionEnvironment.installUri = view.homeDirectory.text;
+        apacheExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
+        apacheExecutionEnvironment.installDemoApps = view.installSamples.selected;
 //        apacheExecutionEnvironment.platformId = view.platform.selectedItem.data;
         //TODO check platform ID
         apacheExecutionEnvironment.platformId = "apache";

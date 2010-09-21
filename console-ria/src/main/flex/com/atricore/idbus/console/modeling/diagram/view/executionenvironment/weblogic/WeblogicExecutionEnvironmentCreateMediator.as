@@ -80,6 +80,8 @@ public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator 
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
         view.domain.text = "";
+        view.replaceConfFiles.selected = false;
+        view.installSamples.selected = false;         
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -90,6 +92,8 @@ public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator 
         executionEnvironment.description = view.executionEnvironmentDescription.text;
         executionEnvironment.installUri = view.homeDirectory.text;
         executionEnvironment.platformId = view.platform.selectedItem.data;
+        executionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
+        executionEnvironment.installDemoApps = view.installSamples.selected;
         executionEnvironment.domain = view.domain.text;
         _newExecutionEnvironment = executionEnvironment;
     }

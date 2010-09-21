@@ -83,7 +83,9 @@ public class JBossExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
         view.instance.text = "";
-
+        view.replaceConfFiles.selected = false;
+        view.installSamples.selected = false;
+        
         FormUtility.clearValidationErrors(_validators);
     }
 
@@ -94,6 +96,8 @@ public class JBossExecutionEnvironmentCreateMediator extends IocFormMediator {
         jbossExecutionEnvironment.name = view.executionEnvironmentName.text;
         jbossExecutionEnvironment.description = view.executionEnvironmentDescription.text;
         jbossExecutionEnvironment.installUri = view.homeDirectory.text;
+        jbossExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
+        jbossExecutionEnvironment.installDemoApps = view.installSamples.selected;
         jbossExecutionEnvironment.platformId = view.platform.selectedItem.data;
         jbossExecutionEnvironment.instance = view.instance.text;
         

@@ -1190,6 +1190,8 @@ public class IdentityApplianceManagementServiceImpl implements
 
             // Mark activation as activated and save appliance.
             execEnv.setActive(true);
+            execEnv.setInstallDemoApps(activateSamples);
+            execEnv.setOverwriteOriginalSetup(replaceConfig);
             identityApplianceDAO.save(appliance);
         } catch (ActivationException e) {
             throw new IdentityServerException(e);

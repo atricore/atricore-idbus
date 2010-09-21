@@ -428,8 +428,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
             createWeblogicExecutionEnvironmentCreateForm();
         }
         _popup.title = "Create Weblogic Execution Environment";
-        _popup.width = 450;
-        _popup.height = 260;
+        _popup.width = 500;
+        _popup.height = 320;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_weblogicExecutionEnvironmentCreateForm);
@@ -451,8 +451,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
             createTomcatExecutionEnvironmentCreateForm();
         }
         _popup.title = "Create Tomcat Execution Environment";
-        _popup.width = 450;
-        _popup.height = 230;
+        _popup.width = 500;
+        _popup.height = 290;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_tomcatExecutionEnvironmentCreateForm);
@@ -474,8 +474,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
             createJBossPortalExecutionEnvironmentCreateForm();
         }
         _popup.title = "Create JBoss Portal Execution Environment";
-        _popup.width = 450;
-        _popup.height = 200;
+        _popup.width = 500;
+        _popup.height = 260;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_jbossPortalExecutionEnvironmentCreateForm);
@@ -497,8 +497,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
             createLiferayPortalExecutionEnvironmentCreateForm();
         }
         _popup.title = "Create Liferay Portal Execution Environment";
-        _popup.width = 450;
-        _popup.height = 200;
+        _popup.width = 500;
+        _popup.height = 260;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_liferayPortalExecutionEnvironmentCreateForm);
@@ -520,8 +520,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
             createWASCEExecutionEnvironmentCreateForm();
         }
         _popup.title = "Create WASCE Execution Environment";
-        _popup.width = 450;
-        _popup.height = 200;
+        _popup.width = 500;
+        _popup.height = 260;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_wasceExecutionEnvironmentCreateForm);
@@ -543,8 +543,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
             createApacheExecutionEnvironmentCreateForm();
         }
         _popup.title = "Create Apache Execution Environment";
-        _popup.width = 450;
-        _popup.height = 200;
+        _popup.width = 500;
+        _popup.height = 260;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_apacheExecutionEnvironmentCreateForm);
@@ -566,8 +566,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
             createWindowsIISExecutionEnvironmentCreateForm();
         }
         _popup.title = "Create Windows IIS Execution Environment";
-        _popup.width = 450;
-        _popup.height = 200;
+        _popup.width = 500;
+        _popup.height = 260;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_windowsIISExecutionEnvironmentCreateForm);
@@ -638,8 +638,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
             createJBossExecutionEnvironmentCreateForm();
         }
         _popup.title = "Create JBoss Execution Environment";
-        _popup.width = 450;
-        _popup.height = 260;
+        _popup.width = 500;
+        _popup.height = 320;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_jbossExecutionEnvironmentCreateForm);
