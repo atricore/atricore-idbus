@@ -105,10 +105,10 @@ package com.atricore.idbus.console.branding
             var logoHeight:Number = logo.height;
 
             // make the progress bar the same width as the logo if the logo is large
-            barWidth = Math.max(barWidth, logoWidth);
+            barWidth = Math.max(barWidth, logoWidth) - 40;
             // calculate the box size & add some padding
-            var boxWidth:Number = Math.max(logoWidth, barWidth) + 20;
-            var boxHeight:Number = logoHeight + barHeight + 50;
+            var boxWidth:Number = Math.max(logoWidth, barWidth);
+            var boxHeight:Number = logoHeight + barHeight;
 
             // create and position the main box (all other sprites are added to it)
             mainBox = new Sprite();
@@ -123,9 +123,9 @@ package com.atricore.idbus.console.branding
                  mainBox.graphics.beginFill(uint(boxColors[0]));
              }
             mainBox.graphics.drawRoundRectComplex(0, 0, boxWidth, boxHeight, 12, 0, 0, 12);
+            mainBox.graphics.drawRoundRectComplex(0, 0, boxWidth, boxHeight, 12, 0, 0, 12);
             mainBox.graphics.endFill();
             addChild(mainBox);
-
             // position the logo
             logo.y = 10;
             logo.x = 10;
@@ -134,8 +134,8 @@ package com.atricore.idbus.console.branding
             //create progress bar
             bar = new Sprite();
             bar.graphics.drawRoundRect(0, 0, barWidth, barHeight, barRadius, barRadius);
-            bar.x = 10;
-            bar.y = logo.y + logoHeight + 20;
+            bar.x = logo.x + logoWidth/2 - barWidth/2;
+            bar.y = logo.y + logoHeight - 70;
             mainBox.addChild(bar);
 
             //create progress bar frame
