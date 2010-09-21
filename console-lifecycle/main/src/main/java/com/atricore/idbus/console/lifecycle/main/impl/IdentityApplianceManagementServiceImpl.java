@@ -419,6 +419,25 @@ public class IdentityApplianceManagementServiceImpl implements
             if (logger.isTraceEnabled())
                 logger.trace("Adding appliance " + applianceDef.getName());
 
+            // Work on some defaults
+            if (applianceDef.getDisplayName() == null)
+                applianceDef.setDisplayName(applianceDef.getName());
+
+            for (Provider p : applianceDef.getProviders()) {
+                if (p.getDisplayName() == null)
+                    p.setDisplayName(p.getName());
+            }
+
+            for (ExecutionEnvironment ex : applianceDef.getExecutionEnvironments()) {
+                if (ex.getDisplayName() == null)
+                    ex.setDisplayName(ex.getName());
+            }
+
+            for (IdentitySource is : applianceDef.getIdentitySources()) {
+                if (is.getDisplayName() == null)
+                    is.setDisplayName(is.getName());
+            }
+
             applianceDef.setRevision(1);
             applianceDef.setLastModification(new Date());
             appliance.setState(IdentityApplianceState.PROJECTED.toString());
@@ -459,16 +478,44 @@ public class IdentityApplianceManagementServiceImpl implements
                 throw new IdentityServerException("Appliance instance has invalid ID " + appliance.getId() + ", is it new ?" );
             }
 
-
             // Make sure that the appliance exists!
             if (!identityApplianceDAO.exists(appliance.getId()))
                 throw new ApplianceNotFoundException(appliance.getId());
 
+            IdentityAppliance oldAppliance = identityApplianceDAO.findById(appliance.getId());
+
+            // TODO : Validate other lifecycle related infomation like deployment time , etc.
+            // Maybe a validator that can take a context, including an operation lice add, update, etc ?!
+            if (!oldAppliance.getState().equals(appliance.getState()))
+                throw new IdentityServerException("Identity Appliance state cannot be modified");
+
+            if (oldAppliance.getIdApplianceDefinition() == null &&
+                    appliance.getIdApplianceDefinition() !=null)
+                throw new IdentityServerException("Identity Appliance deployment information cannot be added");
+
+            if (oldAppliance.getIdApplianceDefinition() != null &&
+                    appliance.getIdApplianceDefinition() ==null)
+                throw new IdentityServerException("Identity Appliance deployment information cannot be deleted");
+
+            if (oldAppliance.getIdApplianceDefinition() != null) {
+
+                IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
+                IdentityApplianceDeployment oldApplianceDep = oldAppliance.getIdApplianceDeployment();
+
+                if (oldApplianceDep.getDeployedRevision() != applianceDep.getDeployedRevision())
+                    throw new IdentityServerException("Identity Appliance deployed revision cannot be modified");
+
+                if (oldApplianceDep.getDeploymentTime() != null && !oldApplianceDep.getDeploymentTime().equals(applianceDep.getDeploymentTime()))
+                    throw new IdentityServerException("Identity Appliance deployment time cannot be modified");
+            }
+
+
+
+            validateAppliance(appliance);
+
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
             applianceDef.setLastModification(new Date());
             applianceDef.setRevision(applianceDef.getRevision() + 1);
-
-            validateAppliance(appliance);
 
             appliance = identityApplianceDAO.save(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
@@ -1016,8 +1063,10 @@ public class IdentityApplianceManagementServiceImpl implements
         } catch (ApplianceValidationException e) {
 
             logger.error(e.getMessage());
+            int i = 1;
             for (ValidationError ve : e.getErrors()) {
-                logger.error(e.getMessage());
+                logger.error(i + " : " + ve.getMsg());
+                i++;
             }
 
             throw e;
