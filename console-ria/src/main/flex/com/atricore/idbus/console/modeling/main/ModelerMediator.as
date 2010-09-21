@@ -396,7 +396,7 @@ public class ModelerMediator extends IocMediator {
                 popupManager.showUploadProgressWindow(notification);
                 break;
             case ApplicationFacade.IDENTITY_APPLIANCE_CHANGED:
-                if (projectProxy.currentIdentityAppliance.state == IdentityApplianceState.PROJECTED.name) {
+                if (projectProxy.currentIdentityAppliance.state != IdentityApplianceState.DISPOSED.name) {
                     view.btnSave.enabled = true;
                 }
                 break;

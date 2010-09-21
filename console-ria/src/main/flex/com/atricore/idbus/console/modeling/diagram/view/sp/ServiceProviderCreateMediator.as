@@ -103,7 +103,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
 
         // upload bindings
         view.certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
-        view.btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
+        //view.btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
         BindingUtils.bindProperty(view.certificateKeyPair, "dataProvider", this, "_selectedFiles");
 
         initLocation();
@@ -144,8 +144,8 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         view.keyAlias.enabled = false;
         view.keystorePassword.enabled = false;
         view.keyPassword.enabled = false;
-        view.btnUpload.enabled = false;
         view.lblUploadMsg.visible = false;
+        //view.btnUpload.enabled = false;
 
         _idaURI = "";
         _uploadedFile = null;
@@ -234,6 +234,8 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         spSamlConfig.useSampleStore = view.useDefaultKeystore.selected;
         if (!spSamlConfig.useSampleStore) {
             var keystore:Keystore = new Keystore();
+            keystore.name = serviceProvider.name.toLowerCase().replace(/\s+/g, "-") + "-keystore";
+            keystore.displayName = serviceProvider.name + " keystore";
             keystore.certificateAlias = view.certificateAlias.text;
             keystore.privateKeyName = view.keyAlias.text;
             keystore.privateKeyPassword = view.keyPassword.text;
@@ -255,6 +257,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
 
     private function handleServiceProviderSave(event:MouseEvent):void {
         if (validate(true)) {
+            /*
             if (view.uploadKeystore.selected && _uploadedFile == null) {
                 view.lblUploadMsg.text = "You must upload a keystore!!!";
                 view.lblUploadMsg.setStyle("color", "Red");
@@ -262,17 +265,33 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
                 event.stopImmediatePropagation();
                 return;
             }
-            bindModel();
-            _projectProxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newServiceProvider);
-            _projectProxy.currentIdentityApplianceElement = _newServiceProvider;
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
-            sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            closeWindow();
+            */
+            if (view.uploadKeystore.selected && (_selectedFiles == null || _selectedFiles.length == 0)) {
+                view.lblUploadMsg.text = "You must select a keystore!!!";
+                view.lblUploadMsg.setStyle("color", "Red");
+                view.lblUploadMsg.visible = true;
+                event.stopImmediatePropagation();
+                return;
+            }
+            if (view.uploadKeystore.selected && _selectedFiles != null && _selectedFiles.length > 0) {
+                _fileRef.load();  //this is available from flash player 10 and maybe flex sdk 3.4
+            } else {
+                saveServiceProvider();
+            }
         }
         else {
             event.stopImmediatePropagation();
         }
+    }
+
+    private function saveServiceProvider():void {
+        bindModel();
+        _projectProxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newServiceProvider);
+        _projectProxy.currentIdentityApplianceElement = _newServiceProvider;
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+        sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        closeWindow();
     }
 
     private function handleCancel(event:MouseEvent):void {
@@ -322,33 +341,40 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         _fileRef.browse(fileTypes);
     }
 
+    /*
     private function handleUpload(event:MouseEvent):void {
         _fileRef.load();  //this is available from flash player 10 and maybe flex sdk 3.4
         //_fileRef.data;
         //sendNotification(ApplicationFacade.SHOW_UPLOAD_PROGRESS, _fileRef);
     }
+    */
 
     private function fileSelectHandler(evt:Event):void {
         view.certificateKeyPair.prompt = null;
         _selectedFiles = new ArrayCollection();
         _selectedFiles.addItem(_fileRef.name);
         view.certificateKeyPair.selectedIndex = 0;
-        view.btnUpload.enabled = true;
+        //view.btnUpload.enabled = true;
+
+        view.lblUploadMsg.text = "";
+        view.lblUploadMsg.visible = false;
     }
 
     private function uploadCompleteHandler(event:Event):void {
         _uploadedFile = _fileRef.data;
         _uploadedFileName = _fileRef.name;
 
-        view.lblUploadMsg.text = "Keystore successfully uploaded.";
-        view.lblUploadMsg.setStyle("color", "Green");
-        view.lblUploadMsg.visible = true;
+        //view.lblUploadMsg.text = "Keystore successfully uploaded.";
+        //view.lblUploadMsg.setStyle("color", "Green");
+        //view.lblUploadMsg.visible = true;
 
         //sendNotification(UploadProgressMediator.UPLOAD_COMPLETED);
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
         view.certificateKeyPair.prompt = "Browse Key Pair";
-        view.btnUpload.enabled = false;
+        //view.btnUpload.enabled = false;
+
+        saveServiceProvider();
     }
 
     protected function get view():ServiceProviderCreateForm {

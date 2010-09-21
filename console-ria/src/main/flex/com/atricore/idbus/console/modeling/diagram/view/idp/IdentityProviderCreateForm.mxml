@@ -188,7 +188,7 @@
                             <s:DropDownList id="certificateKeyPair" width="145" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.browseKeyPair')}"
                                             requireSelection="true" enabled="false"/>
                         </mx:FormItem>
-                        <s:Button id="btnUpload" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload')}" enabled="false"/>
+                        <!--s:Button id="btnUpload" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload')}" enabled="false"/-->
                         <s:Label id="lblUploadMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload.success')}" visible="false" paddingTop="5"/>
                     </s:HGroup>
 
