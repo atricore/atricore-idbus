@@ -33,6 +33,8 @@
         <mx:StringValidator id="keyPasswordValidator" source="{keyPassword}" required="true" property="text"/>
 
         <s:RadioButtonGroup id="certificateManagementType"/>
+
+        <s:Fade id="fadeFx" alphaFrom="1" alphaTo="0" duration="2000" startDelay="2000"/>
     </fx:Declarations>
 
     <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.manageCertificate')}"
@@ -55,7 +57,7 @@
                             <s:DropDownList id="certificateKeyPair" width="145" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.browseKeyPair')}"
                                             requireSelection="true" enabled="false"/>
                         </mx:FormItem>
-                        <s:Button id="btnUpload" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload')}" enabled="false"/>
+                        <!--s:Button id="btnUpload" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload')}" enabled="false"/-->
                     </s:HGroup>
 
                     <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystoreFormat')}:">
@@ -66,7 +68,11 @@
                         </s:DropDownList>
                     </mx:FormItem>
 
-                    <s:Label id="lblUploadMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload.success')}" visible="false" paddingLeft="135" paddingTop="10"/>
+                    <s:Label id="lblUploadMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload.success')}" visible="false" paddingLeft="135" paddingTop="10">
+                        <s:filters>
+                            <s:BlurFilter blurX="0" blurY="0" />
+                        </s:filters>
+                    </s:Label>
                 </s:VGroup>
                 <s:VGroup paddingTop="5" height="100%" width="50%">
                     <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateAlias')}:" required="true">

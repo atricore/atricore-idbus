@@ -24,7 +24,6 @@ package com.atricore.idbus.console.modeling.main.view.sso
 import com.atricore.idbus.console.components.wizard.WizardEvent;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-import com.atricore.idbus.console.main.view.upload.UploadProgressMediator;
 import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
@@ -33,27 +32,22 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.Keystore;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
-import com.atricore.idbus.console.services.dto.SamlR2ProviderConfig;
+import com.atricore.idbus.console.services.dto.Resource;
 import com.atricore.idbus.console.services.dto.SamlR2SPConfig;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
-
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
 import flash.events.DataEvent;
 import flash.events.Event;
 import flash.events.MouseEvent;
-import flash.events.ProgressEvent;
 import flash.net.FileFilter;
 import flash.net.FileReference;
-
 import flash.utils.ByteArray;
 
 import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 import mx.utils.ObjectProxy;
-
-import mx.utils.ObjectUtil;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
@@ -101,16 +95,14 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         init();
     }
 
-
     private function init():void {
-
         view.dataModel = _wizardDataModel;
         view.addEventListener(WizardEvent.WIZARD_COMPLETE, onSimpleSSOWizardComplete);
         view.addEventListener(WizardEvent.WIZARD_CANCEL, onSimpleSSOWizardCancelled);
         view.addEventListener(CloseEvent.CLOSE, handleClose);
 
         // upload bindings
-        view.steps[1].btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
+        //view.steps[1].btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
         view.steps[1].certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
 
         //_fileRef = new FileReference();
@@ -122,13 +114,16 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         BindingUtils.bindProperty(view.steps[1], "uploadedFile", this, "_uploadedFile");
         BindingUtils.bindProperty(view.steps[1], "uploadedFileName", this, "_uploadedFileName");
         BindingUtils.bindProperty(view.steps[1].certificateKeyPair, "dataProvider", this, "_selectedFiles");
+
+        resetUploadFields();
     }
 
     override public function listNotificationInterests():Array {
         return [CreateSimpleSSOIdentityApplianceCommand.FAILURE,
-            CreateSimpleSSOIdentityApplianceCommand.SUCCESS,
-            UploadProgressMediator.CREATED,
-            UploadProgressMediator.UPLOAD_CANCELED];
+            CreateSimpleSSOIdentityApplianceCommand.SUCCESS
+            //UploadProgressMediator.CREATED,
+            //UploadProgressMediator.UPLOAD_CANCELED
+        ];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -139,6 +134,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
             case CreateSimpleSSOIdentityApplianceCommand.FAILURE :
                 handleSSOSetupFailure();
                 break;
+            /*
             case UploadProgressMediator.CREATED:
                 // upload progress window created, start upload
                 if (_fileRef != null) {
@@ -152,38 +148,44 @@ public class SimpleSSOWizardViewMediator extends IocMediator
                 if (_fileRef != null)
                     _fileRef.cancel();
                 break;
+            */
         }
     }
 
     private function onSimpleSSOWizardComplete(event:WizardEvent):void {
-        /*
-         var identityAppliance:IdentityAppliance = _wizardDataModel.applianceData;
-         var identityApplianceDefinition:IdentityApplianceDefinition = identityAppliance.idApplianceDefinition;
-         identityApplianceDefinition.identityVaults = new ArrayCollection();
-         identityApplianceDefinition.identityVaults.addItem(createIdentityVault());
-
-         identityApplianceDefinition.providers = new ArrayCollection();
-         for (var i:int = 0; i < _wizardDataModel.step3Data.length; i++) {
-         var sp:ServiceProvider = _wizardDataModel.step3Data[i] as ServiceProvider;
-         identityApplianceDefinition.providers.addItem(sp);
-         }
-         */
-
         _processingStarted = true;
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 
         sendNotification(ProcessingMediator.START, "Saving Identity Appliance...");
 
+        var config:SamlR2SPConfig = _wizardDataModel.certificateData.config as SamlR2SPConfig;
+        if (!config.useSampleStore && _selectedFiles != null && _selectedFiles.length > 0) {
+            _fileRef.load();
+        } else {
+            saveIdentityAppliance();
+        }
+    }
+
+    private function saveIdentityAppliance():void {
         var identityAppliance:IdentityAppliance = _wizardDataModel.applianceData;
         var identityApplianceDefinition:IdentityApplianceDefinition = identityAppliance.idApplianceDefinition;
         identityApplianceDefinition.identitySources = new ArrayCollection();
         identityApplianceDefinition.identitySources.addItem(createIdentityVault());
 
         var keystore:Keystore = _wizardDataModel.certificateData.keystore as Keystore;
-        identityApplianceDefinition.keystore = keystore;
-
         var config:SamlR2SPConfig = _wizardDataModel.certificateData.config as SamlR2SPConfig;
 
+        if (!config.useSampleStore && _uploadedFile != null && _uploadedFileName != null) {
+            var resource:Resource = new Resource();
+            resource.name = _uploadedFileName.substring(0, _uploadedFileName.lastIndexOf("."));
+            resource.displayName = _uploadedFileName;
+            resource.uri = _uploadedFileName;
+            resource.value = _uploadedFile;
+            keystore.store = resource;
+        }
+
+        identityApplianceDefinition.keystore = keystore;
+        
         identityApplianceDefinition.providers = new ArrayCollection();
         for (var i:int = 0; i < _wizardDataModel.spData.length; i++) {
             var sp:ServiceProvider = _wizardDataModel.spData[i] as ServiceProvider;
@@ -266,34 +268,50 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         _selectedFiles = new ArrayCollection();
         _selectedFiles.addItem(_fileRef.name);
         view.steps[1].certificateKeyPair.selectedIndex = 0;
-        view.steps[1].btnUpload.enabled = true;
+        //view.steps[1].btnUpload.enabled = true;
+
+        view.steps[1].lblUploadMsg.text = "";
+        view.steps[1].lblUploadMsg.visible = false;
+        view.steps[1].handleFormChange(null);
     }
 
+    /*
     private function uploadProgressHandler(event:ProgressEvent):void {
         var numPerc:Number = Math.round((Number(event.bytesLoaded) / Number(event.bytesTotal)) * 100);
         sendNotification(UploadProgressMediator.UPDATE_PROGRESS, numPerc);
     }
+    */
 
     private function uploadCompleteHandler(event:Event):void {
         _uploadedFile = _fileRef.data;
         _uploadedFileName = _fileRef.name;
 
-        view.steps[1].lblUploadMsg.text = "Keystore successfully uploaded.";
-        view.steps[1].lblUploadMsg.visible = true;
+        //view.steps[1].lblUploadMsg.text = "Keystore successfully uploaded.";
+        //view.steps[1].lblUploadMsg.setStyle("color", "Green");
+        //view.steps[1].lblUploadMsg.visible = true;
         
         //sendNotification(UploadProgressMediator.UPLOAD_COMPLETED);
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
         view.steps[1].certificateKeyPair.prompt = "Browse Key Pair";
-        view.steps[1].btnUpload.enabled = false;
+        saveIdentityAppliance();
+        //view.steps[1].btnUpload.enabled = false;
     }
 
+    private function resetUploadFields():void {
+        _fileRef = null;
+        _uploadedFile = null;
+        _uploadedFileName = null;
+        _selectedFiles = new ArrayCollection();
+        view.steps[1].certificateKeyPair.prompt = "Browse Key Pair";
+    }
+    
     private function uploadCompleteDataHandler(event:DataEvent):void {
         //var xmlResponse:XML = XML(event.data);
         //resourceId = xmlResponse.elements("resource").attribute("id").toString();
         //_resourceId = event.data;
-        view.steps[1].lblUploadMsg.text = "Keystore successfully uploaded";
-        view.steps[1].lblUploadMsg.visible = true;
+        //view.steps[1].lblUploadMsg.text = "Keystore successfully uploaded";
+        //view.steps[1].lblUploadMsg.visible = true;
     }
 
     private function handleClose(event:Event):void {

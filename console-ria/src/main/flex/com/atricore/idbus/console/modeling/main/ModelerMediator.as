@@ -149,6 +149,12 @@ public class ModelerMediator extends IocMediator {
     private function creationCompleteHandler(event:Event):void {
         _created = true;
 
+        /* Remove unused title in both modeler's and diagram's panel */
+        view.titleDisplay.width = 0;
+        view.titleDisplay.height = 0;
+        view.diagram.titleDisplay.width = 0;
+        view.diagram.titleDisplay.height = 0;
+
         browserMediator.setViewComponent(view.browser);
         diagramMediator.setViewComponent(view.diagram);
         paletteMediator.setViewComponent(view.palette);
@@ -390,7 +396,7 @@ public class ModelerMediator extends IocMediator {
                 popupManager.showUploadProgressWindow(notification);
                 break;
             case ApplicationFacade.IDENTITY_APPLIANCE_CHANGED:
-                if (projectProxy.currentIdentityAppliance.state == IdentityApplianceState.PROJECTED.name) {
+                if (projectProxy.currentIdentityAppliance.state != IdentityApplianceState.DISPOSED.name) {
                     view.btnSave.enabled = true;
                 }
                 break;

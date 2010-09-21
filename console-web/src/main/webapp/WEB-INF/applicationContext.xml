@@ -67,7 +67,9 @@
         <property name="adminGroupDescription" value="Administrators" />
         <property name="adminUsername" value="admin" />
         <property name="adminPassword" value="admin" />
-        <property name="adminFullName" value="admin fullname" />
+        <property name="adminName" value="Administrator" />
+        <property name="adminLastName" value="Administrator" />
+        <property name="adminFullName" value="Administrator" />
     </bean>
 
     <bean id="signOnAjaxServiceBean" class="com.atricore.idbus.console.services.impl.SignOnAjaxServiceImpl">

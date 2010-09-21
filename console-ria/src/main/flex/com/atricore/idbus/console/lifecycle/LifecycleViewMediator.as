@@ -88,6 +88,10 @@ public class LifecycleViewMediator extends IocMediator {
     private function creationCompleteHandler(event:Event):void {
         _created = true;
         
+        /* Remove unused title in lifecycle management panel */
+        view.titleDisplay.width = 0;
+        view.titleDisplay.height = 0;
+
         // Saved Appliances Grid
         view.grdSavedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
         view.grdSavedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);

@@ -37,6 +37,7 @@
          xmlns:group="com.atricore.idbus.console.account.groups.*"
          xmlns:user="com.atricore.idbus.console.account.users.*"
          width="100%" height="100%"
+         skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
         >
 
     <fx:Metadata>

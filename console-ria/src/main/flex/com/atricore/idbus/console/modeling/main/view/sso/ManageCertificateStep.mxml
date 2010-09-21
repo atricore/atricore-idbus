@@ -76,17 +76,21 @@
                 var obj:Object = new Object();
                 if (uploadKeystore.selected) {
                     var keystore:Keystore = new Keystore();
+                    keystore.name = "keystore";
+                    keystore.displayName = "Keystore";
                     keystore.certificateAlias = certificateAlias.text;
                     keystore.privateKeyName = keyAlias.text;
                     keystore.privateKeyPassword = keyPassword.text;
                     keystore.password = keystorePassword.text;
                     keystore.type = keystoreFormat.selectedItem.data;
+                    /*
                     var resource:Resource = new Resource();
                     resource.name = uploadedFileName.substring(0, uploadedFileName.lastIndexOf("."));
                     resource.displayName = uploadedFileName;
                     resource.uri = uploadedFileName;
                     resource.value = uploadedFile;
                     keystore.store = resource;
+                    */
                     obj.keystore = keystore;
 
                     obj.config = new SamlR2SPConfig();
@@ -131,15 +135,24 @@
                     enableDisableUploadFields(true);
                 } else {
                     enableDisableUploadFields(false);
+                    lblUploadMsg.text = "";
+                    lblUploadMsg.visible = false;
                 }
                 handleFormChange(event);
             }
 
-            private function handleFormChange(event:Event):void {
+            public function handleFormChange(event:Event):void {
                 // Check the step validity
                 if (uploadKeystore.selected) {
                     certificateForm.validateForm(event);
-                    isValid = certificateForm.isValid && uploadedFile != null;
+                    if (certificateKeyPair.dataProvider == null || certificateKeyPair.dataProvider.length == 0) {
+                        lblUploadMsg.text = "You must select a keystore!!!";
+                        lblUploadMsg.setStyle("color", "Red");
+                        lblUploadMsg.visible = true;
+                        isValid = false;
+                    } else {
+                        isValid = certificateForm.isValid;
+                    }
                 } else {
                     isValid = true;
                 }
@@ -182,9 +195,10 @@
                            width="100%" height="100%" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
                 <s:HGroup width="100%" height="100%">
                     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateKeyPair')}:">
-                        <s:DropDownList id="certificateKeyPair" width="{INPUT_WIDTH}" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.browseKeyPair')}" requireSelection="true"/>
+                        <s:DropDownList id="certificateKeyPair" width="{INPUT_WIDTH}" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.browseKeyPair')}" requireSelection="true"
+                                change="handleFormChange(event);"/>
                     </mx:FormItem>
-                    <s:Button id="btnUpload" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload')}" enabled="false"/>
+                    <!--s:Button id="btnUpload" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload')}" enabled="false"/-->
                     <s:Label id="lblUploadMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload.success')}" visible="false" paddingTop="5"/>
                 </s:HGroup>
 
