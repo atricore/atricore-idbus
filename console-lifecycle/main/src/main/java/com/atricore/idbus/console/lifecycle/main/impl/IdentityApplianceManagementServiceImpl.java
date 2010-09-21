@@ -497,7 +497,7 @@ public class IdentityApplianceManagementServiceImpl implements
                     appliance.getIdApplianceDefinition() ==null)
                 throw new IdentityServerException("Identity Appliance deployment information cannot be deleted");
 
-            if (oldAppliance.getIdApplianceDefinition() != null) {
+            if (oldAppliance.getIdApplianceDeployment() != null) {
 
                 IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
                 IdentityApplianceDeployment oldApplianceDep = oldAppliance.getIdApplianceDeployment();
