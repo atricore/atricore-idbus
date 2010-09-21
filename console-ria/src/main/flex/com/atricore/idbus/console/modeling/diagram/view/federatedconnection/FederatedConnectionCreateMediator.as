@@ -20,12 +20,11 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.federatedconnection {
-import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
-
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AccountLinkagePolicy;
 import com.atricore.idbus.console.services.dto.AuthenticationAssertionEmissionPolicy;
@@ -37,12 +36,8 @@ import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityMappingType;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
-import com.atricore.idbus.console.services.dto.JOSSOActivation;
-
-import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
-
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 
 import flash.events.Event;
@@ -50,10 +45,6 @@ import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
-
-import mx.events.FlexEvent;
-
-import mx.events.IndexChangedEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
@@ -63,8 +54,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
     private var _roleA:FederatedProvider;
     private var _roleB:FederatedProvider;
-    private var _spChannelTabInitialized:Boolean = false;
-
+    
     private var _federatedConnection:FederatedConnection;
 
     public function FederatedConnectionCreateMediator(name:String = null, viewComp:FederatedConnectionCreateForm = null) {
@@ -97,15 +87,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
     public function registerListeners():void {
         view.useInheritedSPSettings.addEventListener(Event.CHANGE, handleInheritedSpChkboxChanged);
-        view.channelNavigator.addEventListener(IndexChangedEvent.CHANGE, tabIndexChangedHandler);
-    }
-
-    private function tabIndexChangedHandler(event:Event):void {
-        if(view.channelNavigator.selectedChild == view.spChannelTab && !_spChannelTabInitialized){
-            view.useInheritedIDPSettings.addEventListener(Event.CHANGE, handleInheritedIdpChkboxChanged);
-            _spChannelTabInitialized = true;
-            reflectIdpSettingsInSpChannelTab();
-        }
+        view.useInheritedIDPSettings.addEventListener(Event.CHANGE, handleInheritedIdpChkboxChanged);
     }
 
     private function reflectSPSettingsInIdpChannelTab():void {
@@ -502,10 +484,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
         _roleB = cfc.roleB;
         //init idp channel
         reflectSPSettingsInIdpChannelTab();
-        //check if sp channel is null and init if not
-        if(_spChannelTabInitialized){
-            reflectIdpSettingsInSpChannelTab();
-        }
+        reflectIdpSettingsInSpChannelTab();
     }
 
 
