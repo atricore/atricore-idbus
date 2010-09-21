@@ -110,6 +110,10 @@ public class AccountManagementMediator extends IocMediator {
         var gView:GroupsView  = new GroupsView();
         var uView:UsersView  = new UsersView();
 
+        /* Remove unused title in account management panel */
+        view.titleDisplay.width = 0;
+        view.titleDisplay.height = 0;
+
         view.vsAccountMng.removeAllElements();
 
         groupsTab.id = "groupsTab";

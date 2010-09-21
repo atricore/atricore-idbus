@@ -149,6 +149,12 @@ public class ModelerMediator extends IocMediator {
     private function creationCompleteHandler(event:Event):void {
         _created = true;
 
+        /* Remove unused title in both modeler's and diagram's panel */
+        view.titleDisplay.width = 0;
+        view.titleDisplay.height = 0;
+        view.diagram.titleDisplay.width = 0;
+        view.diagram.titleDisplay.height = 0;
+
         browserMediator.setViewComponent(view.browser);
         diagramMediator.setViewComponent(view.diagram);
         paletteMediator.setViewComponent(view.palette);

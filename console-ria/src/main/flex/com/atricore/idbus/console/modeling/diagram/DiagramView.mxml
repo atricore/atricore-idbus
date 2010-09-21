@@ -31,6 +31,7 @@
           xmlns:vc="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
           xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
           horizontalCenter="0" verticalCenter="0"
+          skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
         >
     
     <s:layout>
