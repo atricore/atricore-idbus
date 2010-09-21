@@ -133,7 +133,7 @@ public class IdentityLookupTransformer extends AbstractTransformer {
                 // TODO : For now only default PSP is supported : String pspName = embeddedSource.getPsp();
 
                 Reference identityStoreOsgi = new Reference();
-                identityStoreOsgi.setId(provider.getName() + "-identity-store");
+                identityStoreOsgi.setId(providerBean.getName() + "-identity-store");
                 identityStoreOsgi.setInterface(AbstractStore.class.getName());
                 identityStoreOsgi.setCardinality("1..1");
                 identityStoreOsgi.setTimeout(60L);

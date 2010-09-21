@@ -312,7 +312,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "New Identity Provider Definition";
         _popup.width = 690;
-        _popup.height = 370;
+        _popup.height = 455;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_identityProviderCreateForm);
@@ -338,7 +338,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         }
         _popup.title = "New Service Provider Definition";
         _popup.width = 690;
-        _popup.height = 255;
+        _popup.height = 455;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_serviceProviderCreateForm);

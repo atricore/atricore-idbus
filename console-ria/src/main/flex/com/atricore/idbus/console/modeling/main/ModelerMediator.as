@@ -219,14 +219,14 @@ public class ModelerMediator extends IocMediator {
         trace("Open Button Click: " + event);
         if (view.appliances.selectedItem != null) {
             var applianceId:String = (view.appliances.selectedItem as IdentityAppliance).id.toString();
-            sendNotification(ProcessingMediator.START, "Opening identity appliance...");
+            sendNotification(ProcessingMediator.START, "Opening Identity Appliance...");
             sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, applianceId);
         }
     }
 
     private function handleSaveClick(event:MouseEvent):void {
         trace("Save Button Click: " + event);
-        sendNotification(ProcessingMediator.START);
+        sendNotification(ProcessingMediator.START, "Saving Identity Appliance...");
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
     }
 

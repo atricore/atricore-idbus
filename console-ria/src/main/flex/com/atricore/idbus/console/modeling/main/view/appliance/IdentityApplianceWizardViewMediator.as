@@ -93,7 +93,7 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
     private function onIdentityApplianceWizardComplete(event:WizardEvent):void {
         _processingStarted = true;
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
-        sendNotification(ProcessingMediator.START, "Saving Identity Appliance ...");
+        sendNotification(ProcessingMediator.START, "Saving Identity Appliance...");
         var identityAppliance:IdentityAppliance = _wizardDataModel.applianceData;
         sendNotification(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, identityAppliance);
     }

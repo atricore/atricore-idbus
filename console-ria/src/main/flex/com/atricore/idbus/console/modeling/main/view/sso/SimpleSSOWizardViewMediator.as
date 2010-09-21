@@ -34,6 +34,7 @@ import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.Keystore;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.SamlR2ProviderConfig;
+import com.atricore.idbus.console.services.dto.SamlR2SPConfig;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
@@ -45,10 +46,14 @@ import flash.events.ProgressEvent;
 import flash.net.FileFilter;
 import flash.net.FileReference;
 
+import flash.utils.ByteArray;
+
 import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 import mx.utils.ObjectProxy;
+
+import mx.utils.ObjectUtil;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
@@ -63,10 +68,13 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     private var _fileRef:FileReference;
 
     [Bindable]
-    public var _resourceId:String;
+    public var _selectedFiles:ArrayCollection;
 
     [Bindable]
-    public var _selectedFiles:ArrayCollection;
+    public var _uploadedFile:ByteArray;
+
+    [Bindable]
+    public var _uploadedFileName:String;
 
     private var _processingStarted:Boolean;
 
@@ -82,9 +90,9 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
             if (_fileRef != null) {
                 _fileRef.removeEventListener(Event.SELECT, fileSelectHandler);
-                _fileRef.removeEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
+                //_fileRef.removeEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
                 _fileRef.removeEventListener(Event.COMPLETE, uploadCompleteHandler);
-                _fileRef.removeEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
+                //_fileRef.removeEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
             }
         }
 
@@ -105,13 +113,14 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         view.steps[1].btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
         view.steps[1].certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
 
-        _fileRef = new FileReference();
-        _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
-        _fileRef.addEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
-        _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
-        _fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
+        //_fileRef = new FileReference();
+        //_fileRef.addEventListener(Event.SELECT, fileSelectHandler);
+        //_fileRef.addEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
+        //_fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
+        //_fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
 
-        BindingUtils.bindProperty(view.steps[1], "resourceId", this, "_resourceId");
+        BindingUtils.bindProperty(view.steps[1], "uploadedFile", this, "_uploadedFile");
+        BindingUtils.bindProperty(view.steps[1], "uploadedFileName", this, "_uploadedFileName");
         BindingUtils.bindProperty(view.steps[1].certificateKeyPair, "dataProvider", this, "_selectedFiles");
     }
 
@@ -163,7 +172,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         _processingStarted = true;
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 
-        sendNotification(ProcessingMediator.START, "Saving Identity Appliance ...");
+        sendNotification(ProcessingMediator.START, "Saving Identity Appliance...");
 
         var identityAppliance:IdentityAppliance = _wizardDataModel.applianceData;
         var identityApplianceDefinition:IdentityApplianceDefinition = identityAppliance.idApplianceDefinition;
@@ -173,16 +182,23 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         var keystore:Keystore = _wizardDataModel.certificateData.keystore as Keystore;
         identityApplianceDefinition.keystore = keystore;
 
-        var config:SamlR2ProviderConfig = _wizardDataModel.certificateData.config as SamlR2ProviderConfig;
+        var config:SamlR2SPConfig = _wizardDataModel.certificateData.config as SamlR2SPConfig;
 
         identityApplianceDefinition.providers = new ArrayCollection();
         for (var i:int = 0; i < _wizardDataModel.spData.length; i++) {
             var sp:ServiceProvider = _wizardDataModel.spData[i] as ServiceProvider;
             sp.config = config;
+            /*
+            var spConfig:SamlR2SPConfig = ObjectUtil.copy(config) as SamlR2SPConfig;
+            spConfig.name = sp.name.toLowerCase().replace(/\s+/g, "-") + "-samlr2-config";
+            spConfig.description = "SAMLR2 " + sp.name + "Configuration";
+            spConfig.signer = ObjectUtil.copy(spConfig.signer) as Keystore;
+            //spConfig.encrypter = ObjectUtil.copy(spConfig.encrypter) as Keystore;
+            spConfig.encrypter = spConfig.signer;
+            sp.config = spConfig;
+            */
             identityApplianceDefinition.providers.addItem(sp);
         }
-
-
 
         sendNotification(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, identityAppliance);
     }
@@ -230,9 +246,9 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         if (_fileRef == null) {
             _fileRef = new FileReference();
             _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
-            _fileRef.addEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
+            //_fileRef.addEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
             _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
-            _fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
+            //_fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
         }
         var fileFilter:FileFilter = new FileFilter("JKS(*.jks)", "*.jks");
         var fileTypes:Array = new Array(fileFilter);
@@ -240,9 +256,9 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     }
 
     private function handleUpload(event:MouseEvent):void {
-        //_fileRef.load();  //this is available from flash player 10 and maybe flex sdk 3.4
+        _fileRef.load();  //this is available from flash player 10 and maybe flex sdk 3.4
         //_fileRef.data;
-        sendNotification(ApplicationFacade.SHOW_UPLOAD_PROGRESS, _fileRef);
+        //sendNotification(ApplicationFacade.SHOW_UPLOAD_PROGRESS, _fileRef);
     }
 
     private function fileSelectHandler(evt:Event):void {
@@ -259,7 +275,13 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     }
 
     private function uploadCompleteHandler(event:Event):void {
-        sendNotification(UploadProgressMediator.UPLOAD_COMPLETED);
+        _uploadedFile = _fileRef.data;
+        _uploadedFileName = _fileRef.name;
+
+        view.steps[1].lblUploadMsg.text = "Keystore successfully uploaded.";
+        view.steps[1].lblUploadMsg.visible = true;
+        
+        //sendNotification(UploadProgressMediator.UPLOAD_COMPLETED);
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
         view.steps[1].certificateKeyPair.prompt = "Browse Key Pair";
@@ -269,7 +291,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     private function uploadCompleteDataHandler(event:DataEvent):void {
         //var xmlResponse:XML = XML(event.data);
         //resourceId = xmlResponse.elements("resource").attribute("id").toString();
-        _resourceId = event.data;
+        //_resourceId = event.data;
         view.steps[1].lblUploadMsg.text = "Keystore successfully uploaded";
         view.steps[1].lblUploadMsg.visible = true;
     }

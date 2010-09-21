@@ -28,14 +28,23 @@ import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AccountLinkagePolicy;
 import com.atricore.idbus.console.services.dto.Binding;
 import com.atricore.idbus.console.services.dto.IdentityMappingType;
+import com.atricore.idbus.console.services.dto.Keystore;
 import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.Profile;
+import com.atricore.idbus.console.services.dto.Resource;
+import com.atricore.idbus.console.services.dto.SamlR2SPConfig;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 
+import flash.events.Event;
 import flash.events.MouseEvent;
+import flash.net.FileFilter;
+import flash.net.FileReference;
+import flash.utils.ByteArray;
 
+import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
+import mx.events.ItemClickEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
@@ -43,10 +52,19 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
     private var _newServiceProvider:ServiceProvider;
+    private var _uploadedFile:ByteArray;
+    private var _uploadedFileName:String;
+
+    private var _idaURI:String;
+
+    [Bindable]
+    private var _fileRef:FileReference;
+
+    [Bindable]
+    public var _selectedFiles:ArrayCollection;
 
     public function ServiceProviderCreateMediator(name : String = null, viewComp:ServiceProviderCreateForm = null) {
         super(name, viewComp);
-
     }
 
     public function get projectProxy():ProjectProxy {
@@ -61,6 +79,15 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         if (getViewComponent()) {
             view.btnOk.removeEventListener(MouseEvent.CLICK, handleServiceProviderSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
+            view.certificateManagementType.removeEventListener(ItemClickEvent.ITEM_CLICK, handleManagementTypeClicked);
+            view.serviceProvName.removeEventListener(Event.CHANGE, handleProviderNameChange);
+
+            if (_fileRef != null) {
+                _fileRef.removeEventListener(Event.SELECT, fileSelectHandler);
+                //_fileRef.removeEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
+                _fileRef.removeEventListener(Event.COMPLETE, uploadCompleteHandler);
+                //_fileRef.removeEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
+            }
         }
 
         super.setViewComponent(viewComponent);
@@ -71,6 +98,13 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleServiceProviderSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+        view.certificateManagementType.addEventListener(ItemClickEvent.ITEM_CLICK, handleManagementTypeClicked);
+        view.serviceProvName.addEventListener(Event.CHANGE, handleProviderNameChange);
+
+        // upload bindings
+        view.certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
+        view.btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
+        BindingUtils.bindProperty(view.certificateKeyPair, "dataProvider", this, "_selectedFiles");
 
         initLocation();
     }
@@ -93,6 +127,32 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         view.samlProfileSLOCheck.selected = true;
         view.accountLinkagePolicyCombo.selectedIndex = 0;
 
+        _fileRef = null;
+        _selectedFiles = new ArrayCollection();
+        view.certificateKeyPair.prompt = "Browse Key Pair";
+
+        view.certificateAlias.text = "";
+        view.keyAlias.text = "";
+        view.keystorePassword.text = "";
+        view.keyPassword.text = "";
+        view.lblUploadMsg.text = "";
+
+        view.useDefaultKeystore.selected = true;
+        view.certificateKeyPair.enabled = false;
+        view.keystoreFormat.enabled = false;
+        view.certificateAlias.enabled = false;
+        view.keyAlias.enabled = false;
+        view.keystorePassword.enabled = false;
+        view.keyPassword.enabled = false;
+        view.btnUpload.enabled = false;
+        view.lblUploadMsg.visible = false;
+
+        _idaURI = "";
+        _uploadedFile = null;
+        _uploadedFileName = null;
+
+        registerValidators();
+
         FormUtility.clearValidationErrors(_validators);
     }
 
@@ -108,7 +168,11 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         view.spLocationDomain.text = location.host;
         view.spLocationPort.text = location.port.toString() != "0" ? location.port.toString() : "";
         view.spLocationContext.text = location.context;
-        view.spLocationPath.text = location.uri;
+        view.spLocationPath.text = location.uri + "/";
+
+        _idaURI = location.uri;
+
+        view.spTabNavigator.selectedIndex = 0;
     }
     
     override public function bindModel():void {
@@ -163,11 +227,41 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         }
         serviceProvider.accountLinkagePolicy = accountLinkagePolicy;
 
+        // set saml config
+        var spSamlConfig:SamlR2SPConfig = new SamlR2SPConfig();
+        spSamlConfig.name = serviceProvider.name.toLowerCase().replace(/\s+/g, "-") + "-samlr2-config";
+        spSamlConfig.description = "SAMLR2 " + serviceProvider.name + "Configuration";
+        spSamlConfig.useSampleStore = view.useDefaultKeystore.selected;
+        if (!spSamlConfig.useSampleStore) {
+            var keystore:Keystore = new Keystore();
+            keystore.certificateAlias = view.certificateAlias.text;
+            keystore.privateKeyName = view.keyAlias.text;
+            keystore.privateKeyPassword = view.keyPassword.text;
+            keystore.password = view.keystorePassword.text;
+            keystore.type = view.keystoreFormat.selectedItem.data;
+            var resource:Resource = new Resource();
+            resource.name = _uploadedFileName.substring(0, _uploadedFileName.lastIndexOf("."));
+            resource.displayName = _uploadedFileName;
+            resource.uri = _uploadedFileName;
+            resource.value = _uploadedFile;
+            keystore.store = resource;
+            spSamlConfig.signer = keystore;
+            spSamlConfig.encrypter = keystore;
+        }
+        serviceProvider.config = spSamlConfig;
+
         _newServiceProvider = serviceProvider;
     }
 
     private function handleServiceProviderSave(event:MouseEvent):void {
         if (validate(true)) {
+            if (view.uploadKeystore.selected && _uploadedFile == null) {
+                view.lblUploadMsg.text = "You must upload a keystore!!!";
+                view.lblUploadMsg.setStyle("color", "Red");
+                view.lblUploadMsg.visible = true;
+                event.stopImmediatePropagation();
+                return;
+            }
             bindModel();
             _projectProxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newServiceProvider);
             _projectProxy.currentIdentityApplianceElement = _newServiceProvider;
@@ -191,32 +285,97 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
-    protected function get view():ServiceProviderCreateForm
-    {
+    private function handleManagementTypeClicked(event:ItemClickEvent):void {
+        if (view.uploadKeystore.selected) {
+            enableDisableUploadFields(true);
+        } else {
+            enableDisableUploadFields(false);
+        }
+        registerValidators();
+        //validate(true);
+    }
+
+    private function handleProviderNameChange(event:Event):void {
+        view.spLocationPath.text = _idaURI + "/" + view.serviceProvName.text.toUpperCase().replace(/\s+/g, "-");
+    }
+
+    private function enableDisableUploadFields(enable:Boolean):void {
+        view.certificateKeyPair.enabled = enable;
+        view.keystoreFormat.enabled = enable;
+        view.certificateAlias.enabled = enable;
+        view.keyAlias.enabled = enable;
+        view.keystorePassword.enabled = enable;
+        view.keyPassword.enabled = enable;
+    }
+
+    // upload functions
+    private function browseHandler(event:MouseEvent):void {
+        if (_fileRef == null) {
+            _fileRef = new FileReference();
+            _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
+            //_fileRef.addEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
+            _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
+            //_fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
+        }
+        var fileFilter:FileFilter = new FileFilter("JKS(*.jks)", "*.jks");
+        var fileTypes:Array = new Array(fileFilter);
+        _fileRef.browse(fileTypes);
+    }
+
+    private function handleUpload(event:MouseEvent):void {
+        _fileRef.load();  //this is available from flash player 10 and maybe flex sdk 3.4
+        //_fileRef.data;
+        //sendNotification(ApplicationFacade.SHOW_UPLOAD_PROGRESS, _fileRef);
+    }
+
+    private function fileSelectHandler(evt:Event):void {
+        view.certificateKeyPair.prompt = null;
+        _selectedFiles = new ArrayCollection();
+        _selectedFiles.addItem(_fileRef.name);
+        view.certificateKeyPair.selectedIndex = 0;
+        view.btnUpload.enabled = true;
+    }
+
+    private function uploadCompleteHandler(event:Event):void {
+        _uploadedFile = _fileRef.data;
+        _uploadedFileName = _fileRef.name;
+
+        view.lblUploadMsg.text = "Keystore successfully uploaded.";
+        view.lblUploadMsg.setStyle("color", "Green");
+        view.lblUploadMsg.visible = true;
+
+        //sendNotification(UploadProgressMediator.UPLOAD_COMPLETED);
+        _fileRef = null;
+        _selectedFiles = new ArrayCollection();
+        view.certificateKeyPair.prompt = "Browse Key Pair";
+        view.btnUpload.enabled = false;
+    }
+
+    protected function get view():ServiceProviderCreateForm {
         return viewComponent as ServiceProviderCreateForm;
     }
 
-
-
     override public function registerValidators():void {
+        _validators = [];
         _validators.push(view.nameValidator);
         _validators.push(view.portValidator);
         _validators.push(view.domainValidator);
         _validators.push(view.contextValidator);
         _validators.push(view.pathValidator);
+        if (view.uploadKeystore.selected) {
+            _validators.push(view.certificateAliasValidator);
+            _validators.push(view.keyAliasValidator);
+            _validators.push(view.keystorePasswordValidator);
+            _validators.push(view.keyPasswordValidator);
+        }
     }
-
 
     override public function listNotificationInterests():Array {
         return super.listNotificationInterests();
     }
 
     override public function handleNotification(notification:INotification):void {
-
         super.handleNotification(notification);
-
-
     }
-
 }
 }

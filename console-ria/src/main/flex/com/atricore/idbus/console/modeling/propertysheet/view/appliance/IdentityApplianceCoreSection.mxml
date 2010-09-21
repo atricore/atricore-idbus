@@ -32,7 +32,8 @@
                             minValue="1" maxValue="65535"
                             invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'idappliance.portValidationError')}"/>
         <utils:URLPartValidator id="domainValidator" source="{applianceLocationDomain}" required="true" property="text"/>
-        <utils:URLPartValidator id="pathValidator" source="{applianceLocationContext}" required="false" property="text"/>
+        <utils:URLPartValidator id="contextValidator" source="{applianceLocationContext}" required="true" property="text"/>
+        <utils:URLMultipartValidator id="pathValidator" source="{applianceLocationPath}" required="true" property="text"/>
         <utils:NamespaceValidator id="namespaceValidator" source="{applianceNamespace}" required="true" property="text"/>
     </fx:Declarations>
 

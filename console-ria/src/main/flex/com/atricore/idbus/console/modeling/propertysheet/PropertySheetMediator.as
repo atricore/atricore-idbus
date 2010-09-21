@@ -28,6 +28,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.ActivateExecuti
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.certificate.CertificateSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.apache.ApacheExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jboss.JBossExecEnvCoreSection;
@@ -77,10 +78,13 @@ import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
 import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.Keystore;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Location;
 import com.atricore.idbus.console.services.dto.Profile;
+import com.atricore.idbus.console.services.dto.Resource;
+import com.atricore.idbus.console.services.dto.SamlR2ProviderConfig;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
@@ -92,8 +96,15 @@ import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import flash.net.FileFilter;
+import flash.net.FileReference;
+
+import flash.utils.ByteArray;
+
+import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.FlexEvent;
+import mx.events.ItemClickEvent;
 import mx.utils.StringUtil;
 import mx.validators.Validator;
 
@@ -143,12 +154,22 @@ public class PropertySheetMediator extends IocMediator {
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
     private var _authenticationPropertyTab:Group;
     private var _basicAuthenticationSection:BasicAuthenticationSection;
+    private var _certificateSection:CertificateSection;
     private var _dirty:Boolean;
 
     private var _execEnvSaveFunction:Function;
     private var _execEnvHomeDir:TextInput;
 
     protected var _validators : Array;
+
+    private var _uploadedFile:ByteArray;
+    private var _uploadedFileName:String;
+
+    [Bindable]
+    private var _fileRef:FileReference;
+
+    [Bindable]
+    public var _selectedFiles:ArrayCollection;
 
     public function PropertySheetMediator(name : String = null, viewComp:PropertySheetView = null) {
         super(name, viewComp);
@@ -326,6 +347,7 @@ public class PropertySheetMediator extends IocMediator {
         _validators.push(_iaCoreSection.nameValidator);
         _validators.push(_iaCoreSection.portValidator);
         _validators.push(_iaCoreSection.domainValidator);
+        _validators.push(_iaCoreSection.contextValidator);
         _validators.push(_iaCoreSection.pathValidator);
         _validators.push(_iaCoreSection.namespaceValidator);
     }
@@ -395,6 +417,20 @@ public class PropertySheetMediator extends IocMediator {
         _authenticationPropertyTab.setStyle("borderStyle", "solid");
 
         _propertySheetsViewStack.addNewChild(_authenticationPropertyTab);
+
+        // Certificate Tab
+        var certificatePropertyTab:Group = new Group();
+        certificatePropertyTab.id = "propertySheetCertificateSection";
+        certificatePropertyTab.name = "Certificate";
+        certificatePropertyTab.width = Number("100%");
+        certificatePropertyTab.height = Number("100%");
+        certificatePropertyTab.setStyle("borderStyle", "solid");
+
+        _certificateSection = new CertificateSection();
+        certificatePropertyTab.addElement(_certificateSection);
+        _propertySheetsViewStack.addNewChild(certificatePropertyTab);
+        _certificateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityProviderCertificatePropertyTabCreationComplete);
+        certificatePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleIdentityProviderCertificatePropertyTabRollOut);
     }
 
     protected function enableServiceProviderPropertyTabs():void {
@@ -431,6 +467,20 @@ public class PropertySheetMediator extends IocMediator {
 
         _spContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderContractPropertyTabCreationComplete);
         contractPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleServiceProviderContractPropertyTabRollOut);
+
+        // Certificate Tab
+        var certificatePropertyTab:Group = new Group();
+        certificatePropertyTab.id = "propertySheetCertificateSection";
+        certificatePropertyTab.name = "Certificate";
+        certificatePropertyTab.width = Number("100%");
+        certificatePropertyTab.height = Number("100%");
+        certificatePropertyTab.setStyle("borderStyle", "solid");
+
+        _certificateSection = new CertificateSection();
+        certificatePropertyTab.addElement(_certificateSection);
+        _propertySheetsViewStack.addNewChild(certificatePropertyTab);
+        _certificateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleServiceProviderCertificatePropertyTabCreationComplete);
+        certificatePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleServiceProviderCertificatePropertyTabRollOut);
     }
 
     private function handleIdentityProviderCorePropertyTabCreationComplete(event:Event):void {
@@ -726,6 +776,109 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
+    private function handleIdentityProviderCertificatePropertyTabCreationComplete(event:Event):void {
+        var identityProvider:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+
+        // if identityProvider is null that means some other element was selected before completing this
+        if (identityProvider != null) {
+            resetUploadFields();
+
+            // bind view
+            var config:SamlR2ProviderConfig = identityProvider.config as SamlR2ProviderConfig;
+            initCertificateSection(config);
+        }
+    }
+
+    private function handleIdentityProviderCertificatePropertyTabRollOut(event:Event):void {
+        if (_dirty) {
+            var identityProvider:IdentityProvider = _currentIdentityApplianceElement as IdentityProvider;
+            var config:SamlR2ProviderConfig = identityProvider.config as SamlR2ProviderConfig;
+
+            if (_certificateSection.useDefaultKeystore.selected && (_uploadedFile == null &&
+                    (config.signer == null || (config.signer != null && config.signer.store == null)))) {
+                _certificateSection.lblUploadMsg.text = "You must upload a keystore!!!";
+                _certificateSection.lblUploadMsg.setStyle("color", "Red");
+                _certificateSection.lblUploadMsg.visible = true;
+                return;
+            }
+            
+            updateSamlR2Config(config);
+
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
+
+    private function initCertificateSection(config:SamlR2ProviderConfig):void {
+        if (config.useSampleStore) {
+            _certificateSection.useDefaultKeystore.selected = true;
+            enableDisableUploadFields(false);
+        } else {
+            _certificateSection.uploadKeystore.selected = true;
+            enableDisableUploadFields(true);
+            if (config.signer != null) {
+                _certificateSection.certificateAlias.text = config.signer.certificateAlias;
+                _certificateSection.keyAlias.text = config.signer.privateKeyName;
+                _certificateSection.keystorePassword.text = config.signer.password;
+                _certificateSection.keyPassword.text = config.signer.privateKeyPassword;
+            }
+        }
+
+        _certificateSection.certificateManagementType.addEventListener(Event.CHANGE, handleSectionChange);
+        _certificateSection.certificateKeyPair.addEventListener(Event.CHANGE, handleSectionChange);
+        _certificateSection.keystoreFormat.addEventListener(Event.CHANGE, handleSectionChange);
+        _certificateSection.certificateAlias.addEventListener(Event.CHANGE, handleSectionChange);
+        _certificateSection.keyAlias.addEventListener(Event.CHANGE, handleSectionChange);
+        _certificateSection.keystorePassword.addEventListener(Event.CHANGE, handleSectionChange);
+        _certificateSection.keyPassword.addEventListener(Event.CHANGE, handleSectionChange);
+
+        _certificateSection.certificateManagementType.addEventListener(ItemClickEvent.ITEM_CLICK, handleCertManagementTypeClicked);
+        _certificateSection.certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
+        _certificateSection.btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
+        BindingUtils.bindProperty(_certificateSection.certificateKeyPair, "dataProvider", this, "_selectedFiles");
+
+        _validators = [];
+        if (_certificateSection.uploadKeystore.selected) {
+            _validators.push(_certificateSection.certificateAliasValidator);
+            _validators.push(_certificateSection.keyAliasValidator);
+            _validators.push(_certificateSection.keystorePasswordValidator);
+            _validators.push(_certificateSection.keyPasswordValidator);
+        }
+    }
+
+    private function updateSamlR2Config(config:SamlR2ProviderConfig):void {
+        if (_certificateSection.useDefaultKeystore.selected) {
+            config.useSampleStore = true;
+            config.signer = null;
+            config.encrypter = null;
+        } else {
+            var keystore:Keystore = config.signer;
+            if (keystore == null) {
+                keystore = new Keystore();
+            }
+            keystore.certificateAlias = _certificateSection.certificateAlias.text;
+            keystore.privateKeyName = _certificateSection.keyAlias.text;
+            keystore.privateKeyPassword = _certificateSection.keyPassword.text;
+            keystore.password = _certificateSection.keystorePassword.text;
+            keystore.type = _certificateSection.keystoreFormat.selectedItem.data;
+            if (_uploadedFile != null && _uploadedFileName != null) {
+                var resource:Resource = keystore.store;
+                if (resource == null) {
+                    resource = new Resource();
+                }
+                resource.name = _uploadedFileName.substring(0, _uploadedFileName.lastIndexOf("."));
+                resource.displayName = _uploadedFileName;
+                resource.uri = _uploadedFileName;
+                resource.value = _uploadedFile;
+                keystore.store = resource;
+            }
+
+            config.useSampleStore = false;
+            config.signer = keystore;
+            config.encrypter = keystore;
+        }
+    }
+
     private function handleServiceProviderCorePropertyTabCreationComplete(event:Event):void {
         var serviceProvider:ServiceProvider;
 
@@ -891,6 +1044,39 @@ public class PropertySheetMediator extends IocMediator {
             if (_spContractSection.samlProfileSLOCheck.selected) {
                 serviceProvider.activeProfiles.addItem(Profile.SSO_SLO);
             }
+
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _dirty = false;
+        }
+    }
+
+    private function handleServiceProviderCertificatePropertyTabCreationComplete(event:Event):void {
+        var serviceProvider:ServiceProvider = _currentIdentityApplianceElement as ServiceProvider;
+
+        // if serviceProvider is null that means some other element was selected before completing this
+        if (serviceProvider != null) {
+            resetUploadFields();
+
+            // bind view
+            var config:SamlR2ProviderConfig = serviceProvider.config as SamlR2ProviderConfig;
+            initCertificateSection(config);
+        }
+    }
+
+    private function handleServiceProviderCertificatePropertyTabRollOut(event:Event):void {
+        if (_dirty) {
+            var serviceProvider:ServiceProvider = _currentIdentityApplianceElement as ServiceProvider;
+            var config:SamlR2ProviderConfig = serviceProvider.config as SamlR2ProviderConfig;
+
+            if (_certificateSection.useDefaultKeystore.selected && (_uploadedFile == null &&
+                    (config.signer == null || (config.signer != null && config.signer.store == null)))) {
+                _certificateSection.lblUploadMsg.text = "You must upload a keystore!!!";
+                _certificateSection.lblUploadMsg.setStyle("color", "Red");
+                _certificateSection.lblUploadMsg.visible = true;
+                return;
+            }
+            
+            updateSamlR2Config(config);
 
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
@@ -2752,11 +2938,9 @@ public class PropertySheetMediator extends IocMediator {
         _dirty = false;
     }
 
-    private function handleExecEnvActivationPropertyTabRollOut(event:Event):void{
-        if(projectProxy.currentIdentityAppliance.state == IdentityApplianceState.DEPLOYED.toString()
-                || projectProxy.currentIdentityAppliance.state == IdentityApplianceState.STARTED.toString()){
+    private function handleExecEnvActivationPropertyTabRollOut(event:Event):void {
+        if (projectProxy.currentIdentityAppliance.state != IdentityApplianceState.DISPOSED.toString()){
             activateExecutionEnvironment(event);
-
         }
     }
 
@@ -2817,6 +3001,76 @@ public class PropertySheetMediator extends IocMediator {
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _dirty = false;
         }
+    }
+
+    private function browseHandler(event:MouseEvent):void {
+        if (_fileRef == null) {
+            _fileRef = new FileReference();
+            _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
+            //_fileRef.addEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
+            _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
+            //_fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
+        }
+        var fileFilter:FileFilter = new FileFilter("JKS(*.jks)", "*.jks");
+        var fileTypes:Array = new Array(fileFilter);
+        _fileRef.browse(fileTypes);
+    }
+
+    private function handleUpload(event:MouseEvent):void {
+        _fileRef.load();  //this is available from flash player 10 and maybe flex sdk 3.4
+        //sendNotification(ApplicationFacade.SHOW_UPLOAD_PROGRESS, _fileRef);
+    }
+
+    private function fileSelectHandler(evt:Event):void {
+        _certificateSection.certificateKeyPair.prompt = null;
+        _selectedFiles = new ArrayCollection();
+        _selectedFiles.addItem(_fileRef.name);
+        _certificateSection.certificateKeyPair.selectedIndex = 0;
+        _certificateSection.btnUpload.enabled = true;
+    }
+
+    private function uploadCompleteHandler(event:Event):void {
+        _uploadedFile = _fileRef.data;
+        _uploadedFileName = _fileRef.name;
+
+        _certificateSection.lblUploadMsg.text = "Keystore successfully uploaded.";
+        _certificateSection.lblUploadMsg.setStyle("color", "Green");
+        _certificateSection.lblUploadMsg.visible = true;
+
+        //sendNotification(UploadProgressMediator.UPLOAD_COMPLETED);
+        _fileRef = null;
+        _selectedFiles = new ArrayCollection();
+        _certificateSection.certificateKeyPair.prompt = "Browse Key Pair";
+        _certificateSection.btnUpload.enabled = false;
+    }
+
+    private function resetUploadFields():void {
+        _fileRef = null;
+        _selectedFiles = new ArrayCollection();
+        _uploadedFile = null;
+        _uploadedFileName = null;
+    }
+
+    private function handleCertManagementTypeClicked(event:ItemClickEvent):void {
+        if (_certificateSection.uploadKeystore.selected) {
+            enableDisableUploadFields(true);
+            _validators = [];
+            _validators.push(_certificateSection.certificateAliasValidator);
+            _validators.push(_certificateSection.keyAliasValidator);
+            _validators.push(_certificateSection.keystorePasswordValidator);
+            _validators.push(_certificateSection.keyPasswordValidator);
+        } else {
+            enableDisableUploadFields(false);
+        }
+    }
+
+    private function enableDisableUploadFields(enable:Boolean):void {
+        _certificateSection.certificateKeyPair.enabled = enable;
+        _certificateSection.keystoreFormat.enabled = enable;
+        _certificateSection.certificateAlias.enabled = enable;
+        _certificateSection.keyAlias.enabled = enable;
+        _certificateSection.keystorePassword.enabled = enable;
+        _certificateSection.keyPassword.enabled = enable;
     }
 
     protected function clearPropertyTabs():void {

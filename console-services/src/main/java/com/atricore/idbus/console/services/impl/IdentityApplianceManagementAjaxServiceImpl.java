@@ -181,26 +181,12 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idAppliance.setState(IdentityApplianceStateDTO.PROJECTED.toString());
 
         //here we'll set STORE to NULL, and later we'll fetch it from DB and update the appliance
-        Long storeId = null;
-        if (iad.getKeystore() != null) {
-            storeId = iad.getKeystore().getStore().getId();
-            iad.getKeystore().setStore(null);
-        }
+        //Long storeId = null;
+        //if (iad.getKeystore() != null) {
+        //    storeId = iad.getKeystore().getStore().getId();
+        //    iad.getKeystore().setStore(null);
+        //}
 
-        com.atricore.idbus.console.lifecycle.main.spi.request.AddIdentityApplianceRequest addIdApplianceReq =
-                new com.atricore.idbus.console.lifecycle.main.spi.request.AddIdentityApplianceRequest();
-        addIdApplianceReq.setIdentityAppliance(dozerMapper.map(idAppliance, IdentityAppliance.class));
-        com.atricore.idbus.console.lifecycle.main.spi.response.AddIdentityApplianceResponse beRes = null;
-
-        try {
-            beRes = idApplianceManagementService.addIdentityAppliance(addIdApplianceReq);
-        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
-            throw new IdentityServerException(e);
-        }
-        AddIdentityApplianceResponse res = dozerMapper.map(beRes, AddIdentityApplianceResponse.class);
-        idAppliance = res.getAppliance();
-
-        iad = idAppliance.getIdApplianceDefinition();
         SamlR2ProviderConfigDTO config = null;
         //// providers that are currently in providers list are service providers and if they have config set, thay all have the same config object
         if(iad.getProviders() != null && iad.getProviders().size() > 0){
@@ -230,9 +216,25 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             }
         }
 
-        IdentityAppliance foundAppliance = prepareApplianceForUpdate(idAppliance);
-        idAppliance = this.updateAppliance(foundAppliance).getAppliance();
+        com.atricore.idbus.console.lifecycle.main.spi.request.AddIdentityApplianceRequest addIdApplianceReq =
+                new com.atricore.idbus.console.lifecycle.main.spi.request.AddIdentityApplianceRequest();
+        addIdApplianceReq.setIdentityAppliance(dozerMapper.map(idAppliance, IdentityAppliance.class));
+        com.atricore.idbus.console.lifecycle.main.spi.response.AddIdentityApplianceResponse beRes = null;
 
+        try {
+            beRes = idApplianceManagementService.addIdentityAppliance(addIdApplianceReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        AddIdentityApplianceResponse res = dozerMapper.map(beRes, AddIdentityApplianceResponse.class);
+        idAppliance = res.getAppliance();
+
+        //iad = idAppliance.getIdApplianceDefinition();
+
+        //IdentityAppliance foundAppliance = prepareApplianceForUpdate(idAppliance);
+        //idAppliance = this.updateAppliance(foundAppliance).getAppliance();
+
+        /*
         if (storeId != null) {
             //lookup store
             LookupResourceByIdRequest lookupStoreReq = new LookupResourceByIdRequest();
@@ -253,6 +255,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             foundAppliance.getIdApplianceDefinition().getKeystore().setStore(beLookupStoreRes.getResource());
             idAppliance = this.updateAppliance(foundAppliance).getAppliance();
         }
+        */
 
         CreateSimpleSsoResponse response = new CreateSimpleSsoResponse();
         response.setAppliance(idAppliance);
@@ -618,11 +621,17 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         location.setContext(iad.getLocation().getContext());
         location.setUri(iad.getLocation().getUri() + "/" + createUrlSafeString(sp.getName()).toUpperCase());
         sp.setLocation(location);
-        
+
+        if (sp.getActiveBindings() == null) {
+            sp.setActiveBindings(new HashSet<BindingDTO>());
+        }
         sp.getActiveBindings().add(BindingDTO.SAMLR2_ARTIFACT);
         sp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_REDIRECT);
         sp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_POST);
 
+        if (sp.getActiveProfiles() == null) {
+            sp.setActiveProfiles(new HashSet<ProfileDTO>());
+        }
         sp.getActiveProfiles().add(ProfileDTO.SSO);
         sp.getActiveProfiles().add(ProfileDTO.SSO_SLO);
 
@@ -635,15 +644,31 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 //        idpLocation.setUri(createUrlSafeString(sp.getName()) + "/SAML2");
 //        idpChannel.setLocation(idpLocation);
 
-        SamlR2ProviderConfigDTO spSamlConfig = (SamlR2ProviderConfigDTO)sp.getConfig();
-        if(spSamlConfig == null){
-            spSamlConfig = new SamlR2ProviderConfigDTO();
-        }
+        SamlR2SPConfigDTO spSamlConfig = new SamlR2SPConfigDTO();
+        SamlR2ProviderConfigDTO originalConfig = (SamlR2ProviderConfigDTO)sp.getConfig();
         spSamlConfig.setName(sp.getName() + "-samlr2-config");
         spSamlConfig.setDescription("SAMLR2 " + sp.getName() + "Configuration");
-        if(!spSamlConfig.isUseSampleStore()){
-            spSamlConfig.setSigner(iad.getKeystore());
-            spSamlConfig.setEncrypter(iad.getKeystore());
+        spSamlConfig.setUseSampleStore(originalConfig.isUseSampleStore());
+        if (!spSamlConfig.isUseSampleStore() && originalConfig.getSigner() != null) {
+            KeystoreDTO keystore = new KeystoreDTO();
+            keystore.setName(originalConfig.getSigner().getName());
+            keystore.setDisplayName(originalConfig.getSigner().getDisplayName());
+            keystore.setType(originalConfig.getSigner().getType());
+            keystore.setCertificateAlias(originalConfig.getSigner().getCertificateAlias());
+            keystore.setPrivateKeyName(originalConfig.getSigner().getPrivateKeyName());
+            keystore.setPrivateKeyPassword(originalConfig.getSigner().getPrivateKeyPassword());
+            keystore.setPassword(originalConfig.getSigner().getPassword());
+            ResourceDTO originalResource = originalConfig.getSigner().getStore();
+            if (originalResource != null) {
+                ResourceDTO resource = new ResourceDTO();
+                resource.setName(originalResource.getName());
+                resource.setDisplayName(originalResource.getDisplayName());
+                resource.setUri(originalResource.getUri());
+                resource.setValue(originalResource.getValue());
+                keystore.setStore(resource);
+            }
+            spSamlConfig.setSigner(keystore);
+            spSamlConfig.setEncrypter(keystore);
         }
         sp.setConfig(spSamlConfig);
     }
@@ -700,6 +725,8 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idp.getActiveProfiles().add(ProfileDTO.SSO);
         idp.getActiveProfiles().add(ProfileDTO.SSO_SLO);
 
+        idp.setSignAuthenticationAssertions(true);
+
         LocationDTO idpLocation = new LocationDTO();
         idpLocation.setProtocol(iad.getLocation().getProtocol());
         idpLocation.setHost(iad.getLocation().getHost());
@@ -709,15 +736,34 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idp.setLocation(idpLocation);
 
 //        SamlR2ProviderConfigDTO idpSamlConfig = new SamlR2ProviderConfigDTO();
-        SamlR2ProviderConfigDTO idpSamlConfig = config;
-        if(idpSamlConfig == null){
-            idpSamlConfig = new SamlR2ProviderConfigDTO();
-        }
+        //SamlR2ProviderConfigDTO idpSamlConfig = config;
+        //if(idpSamlConfig == null){
+        //    idpSamlConfig = new SamlR2ProviderConfigDTO();
+        //}
+        SamlR2IDPConfigDTO idpSamlConfig = new SamlR2IDPConfigDTO();
         idpSamlConfig.setName(idp.getName() + "-samlr2-config");
         idpSamlConfig.setDescription("SAMLR2 " + idp.getName() + "Configuration");
-        if(!idpSamlConfig.isUseSampleStore()){
-            idpSamlConfig.setSigner(iad.getKeystore());
-            idpSamlConfig.setEncrypter(iad.getKeystore());
+        idpSamlConfig.setUseSampleStore(config.isUseSampleStore());
+        if (!idpSamlConfig.isUseSampleStore() && config.getSigner() != null) {
+            KeystoreDTO keystore = new KeystoreDTO();
+            keystore.setName(config.getSigner().getName());
+            keystore.setDisplayName(config.getSigner().getDisplayName());
+            keystore.setType(config.getSigner().getType());
+            keystore.setCertificateAlias(config.getSigner().getCertificateAlias());
+            keystore.setPrivateKeyName(config.getSigner().getPrivateKeyName());
+            keystore.setPrivateKeyPassword(config.getSigner().getPrivateKeyPassword());
+            keystore.setPassword(config.getSigner().getPassword());
+            ResourceDTO originalResource = config.getSigner().getStore();
+            if (originalResource != null) {
+                ResourceDTO resource = new ResourceDTO();
+                resource.setName(originalResource.getName());
+                resource.setDisplayName(originalResource.getDisplayName());
+                resource.setUri(originalResource.getUri());
+                resource.setValue(originalResource.getValue());
+                keystore.setStore(resource);
+            }
+            idpSamlConfig.setSigner(keystore);
+            idpSamlConfig.setEncrypter(keystore);
         }
         idp.setConfig(idpSamlConfig);
 

@@ -50,8 +50,15 @@
                         trigger="{btnOk}" triggerEvent="click"/>
         <utils:URLMultipartValidator id="pathValidator" source="{idpLocationPath}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click"/>
+        
+        <mx:StringValidator id="certificateAliasValidator" source="{certificateAlias}" required="true" property="text"/>
+        <mx:StringValidator id="keyAliasValidator" source="{keyAlias}" required="true" property="text"/>
+        <mx:StringValidator id="keystorePasswordValidator" source="{keystorePassword}" required="true" property="text"/>
+        <mx:StringValidator id="keyPasswordValidator" source="{keyPassword}" required="true" property="text"/>
+
+        <s:RadioButtonGroup id="certificateManagementType"/>
     </fx:Declarations>
-    
+
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.name')}:" required="true">
         <s:TextInput id="identityProviderName" width="300"/>
     </mx:FormItem>
@@ -60,91 +67,159 @@
         <s:TextInput id="identityProvDescription" width="300"/>
     </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.location')}:" required="true"
-            direction="horizontal" labelWidth="75">
-        <s:DropDownList id="idpLocationProtocol" width="70" selectedIndex="0">
-            <s:dataProvider>
-                <mx:ArrayCollection>
-                    <fx:Object label="http" data="http"/>
-                    <fx:Object label="https" data="https"/>
-                </mx:ArrayCollection>
-            </s:dataProvider>
-        </s:DropDownList>
-        <s:Label text="://" width="15" paddingTop="5"/>
-        <s:TextInput id="idpLocationDomain" width="130"/>
-        <s:Label text=":" width="10" paddingTop="5"/>
-        <s:TextInput id="idpLocationPort" width="40"/>
-        <s:Label text="/" width="10" paddingTop="5"/>
-        <s:TextInput id="idpLocationContext" width="100"/>
-        <s:Label text="/" width="10" paddingTop="5"/>
-        <s:TextInput id="idpLocationPath" width="130"/>
-    </mx:FormItem>
+    <mx:TabNavigator id="idpTabNavigator" borderStyle="solid" width="100%" height="310" creationPolicy="all">
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:" direction="horizontal">
-        <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}" selected="true"/>
-        <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}" selected="true"/>
-    </mx:FormItem>
+        <!-- CORE TAB -->
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.tab.core')}">
+            <s:VGroup>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:" direction="horizontal">
-        <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}" selected="true"/>
-        <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
-        <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
-        <s:CheckBox id="samlBindingSoapCheck"
-                 label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
-    </mx:FormItem>
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.location')}:" required="true"
+                        direction="horizontal" labelWidth="75">
+                    <s:DropDownList id="idpLocationProtocol" width="70" selectedIndex="0">
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object label="http" data="http"/>
+                                <fx:Object label="https" data="https"/>
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
+                    </s:DropDownList>
+                    <s:Label text="://" width="15" paddingTop="5"/>
+                    <s:TextInput id="idpLocationDomain" width="130"/>
+                    <s:Label text=":" width="10" paddingTop="5"/>
+                    <s:TextInput id="idpLocationPort" width="40"/>
+                    <s:Label text="/" width="10" paddingTop="5"/>
+                    <s:TextInput id="idpLocationContext" width="100"/>
+                    <s:Label text="/" width="10" paddingTop="5"/>
+                    <s:TextInput id="idpLocationPath" width="130"/>
+                </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:">
-        <s:CheckBox id="signAuthAssertionCheck" selected="true"/>
-    </mx:FormItem>
+                <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.user.information.lookup')}:">-->
+                    <!--<s:DropDownList id="userInfoLookupCombo" labelField="name" selectedIndex="0" width="180"/>-->
+                <!--</mx:FormItem>-->
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:">
-        <s:CheckBox id="encryptAuthAssertionCheck"/>
-    </mx:FormItem>
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:">
+                    <s:DropDownList id="authContract" labelField="name" selectedIndex="0" width="200">
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object name="Default" data="default"/>
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
+                    </s:DropDownList>
+                </mx:FormItem>
 
-    <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.user.information.lookup')}:">-->
-        <!--<s:DropDownList id="userInfoLookupCombo" labelField="name" selectedIndex="0" width="180"/>-->
-    <!--</mx:FormItem>-->
+                <s:HGroup width="100%" horizontalAlign="left">
+                    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.mechanism')}:" labelWidth="240">
+                        <s:DropDownList id="authMechanism"
+                                        dataProvider="{authMechanismColl}"
+                                        selectedIndex="0"
+                                        width="200"
+                                        enabled="false"/>
+                        <!--s:List id="authMechanismCombo"
+                                       dataProvider="{authMechanismColl}"
+                                       itemRenderer="com.atricore.idbus.console.components.CheckBoxItemRenderer"
+                                       alternatingItemColors="[#EEEEEE, white]"
+                                       width="200">
+                            <s:layout>
+                                <s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedRowCount="4" />
+                            </s:layout>
+                        </s:List-->
+                    </mx:FormItem>
+                    <!--s:Button id="configureAuthMechanism"
+                       label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/-->
+                </s:HGroup>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.auth.contract')}:">
-        <s:DropDownList id="authContract" labelField="name" selectedIndex="0" width="200">
-            <s:dataProvider>
-                <mx:ArrayCollection>
-                    <fx:Object name="Default" data="default"/>
-                </mx:ArrayCollection>
-            </s:dataProvider>
-        </s:DropDownList>
-    </mx:FormItem>
+                <mx:FormItem labelWidth="240" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:">
+                    <s:DropDownList id="authAssertionEmissionPolicy" labelField="name" selectedIndex="0" width="200">
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object name="Default" data="default"/>
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
+                    </s:DropDownList>
+                </mx:FormItem>
 
-    <s:HGroup width="100%" horizontalAlign="left">
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.auth.mechanism')}:" labelWidth="230">
-            <s:DropDownList id="authMechanism"
-                            dataProvider="{authMechanismColl}"
-                            selectedIndex="0"
-                            width="200"
-                            enabled="false"/>
-            <!--s:List id="authMechanismCombo"
-                           dataProvider="{authMechanismColl}"
-                           itemRenderer="com.atricore.idbus.console.components.CheckBoxItemRenderer"
-                           alternatingItemColors="[#EEEEEE, white]"
-                           width="200">
-                <s:layout>
-                    <s:VerticalLayout gap="0" horizontalAlign="contentJustify" requestedRowCount="4" />
-                </s:layout>
-            </s:List-->
-        </mx:FormItem>
-        <!--s:Button id="configureAuthMechanism"
-           label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.configure')}"/-->
-    </s:HGroup>    
+            </s:VGroup>
+        </s:NavigatorContent>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'auth.assertion.emission.policy')}:">
-        <s:DropDownList id="authAssertionEmissionPolicy" labelField="name" selectedIndex="0" width="200">
-            <s:dataProvider>
-                <mx:ArrayCollection>
-                    <fx:Object name="Default" data="default"/>
-                </mx:ArrayCollection>
-            </s:dataProvider>
-        </s:DropDownList>
-    </mx:FormItem>
+        <!-- CONTRACT TAB -->
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.tab.contract')}">
+            <s:VGroup>
+
+                <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:" direction="horizontal">
+                    <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}" selected="true"/>
+                    <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}" selected="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.bindings')}:" direction="horizontal">
+                    <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}" selected="true"/>
+                    <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
+                    <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
+                    <s:CheckBox id="samlBindingSoapCheck"
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.sign.auth.assertion')}:">
+                    <s:CheckBox id="signAuthAssertionCheck" selected="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="200" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:">
+                    <s:CheckBox id="encryptAuthAssertionCheck"/>
+                </mx:FormItem>
+
+            </s:VGroup>
+        </s:NavigatorContent>
+
+        <!-- CERTIFICATE TAB -->
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.tab.certificate')}">
+            <s:VGroup width="100%" height="100%" paddingLeft="10" paddingRight="10" paddingBottom="10">
+
+                <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.manageCertificate')}"
+                               width="100%" height="100%" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
+                    <s:RadioButton groupName="certificateManagementType" id="useDefaultKeystore" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.useDefaultKeystore')}" selected="true"/>
+                    <!--s:RadioButton groupName="certificateManagementType" id="autoGenerate" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.autoGenerate')}"/-->
+                    <s:RadioButton groupName="certificateManagementType" id="uploadKeystore" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.uploadKeystore')}"/>
+                </utils:TitledBorderBox>
+
+                <!-- UPLOAD CERTIFICATE -->
+                <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.uploadKeyPair')}"
+                               width="100%" height="100%" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
+                    <s:HGroup width="100%" height="100%">
+                        <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateKeyPair')}:">
+                            <s:DropDownList id="certificateKeyPair" width="145" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.browseKeyPair')}"
+                                            requireSelection="true" enabled="false"/>
+                        </mx:FormItem>
+                        <s:Button id="btnUpload" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload')}" enabled="false"/>
+                        <s:Label id="lblUploadMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload.success')}" visible="false" paddingTop="5"/>
+                    </s:HGroup>
+
+                    <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystoreFormat')}:">
+                        <s:DropDownList id="keystoreFormat" width="145" enabled="false" selectedIndex="0">
+                            <mx:ArrayCollection>
+                                 <fx:Object label="Java Keystore" data="JKS"/>
+                             </mx:ArrayCollection>
+                        </s:DropDownList>
+                    </mx:FormItem>
+
+                    <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateAlias')}:" required="true">
+                        <s:TextInput id="certificateAlias" width="145" enabled="false"/>
+                    </mx:FormItem>
+
+                    <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keyAlias')}:" required="true">
+                        <s:TextInput id="keyAlias" width="145" enabled="false"/>
+                    </mx:FormItem>
+
+                    <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystorePassword')}:" required="true">
+                        <s:TextInput id="keystorePassword" width="145" enabled="false"/>
+                    </mx:FormItem>
+                    <mx:FormItem labelWidth="120" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keyPassword')}:" required="true">
+                        <s:TextInput id="keyPassword" width="145" enabled="false"/>
+                    </mx:FormItem>
+                </utils:TitledBorderBox>
+
+            </s:VGroup>
+        </s:NavigatorContent>
+
+    </mx:TabNavigator>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
         <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}"/>
