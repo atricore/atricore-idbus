@@ -148,6 +148,9 @@ public abstract class AbstractTransformer implements Transformer {
 
             if (uriString.startsWith("//"))
                 uriString = uriString.substring(1);
+
+            if (uriString.endsWith("/"))
+                uriString = uriString.substring(0, uriString.length() - 1);
         }
 
         return contextString + uriString;
