@@ -510,10 +510,28 @@ public class IdentityApplianceManagementServiceImpl implements
             }
 
 
+            IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
+            if (applianceDef.getDisplayName() == null)
+                applianceDef.setDisplayName(applianceDef.getName());
+
+            for (Provider p : applianceDef.getProviders()) {
+                if (p.getDisplayName() == null)
+                    p.setDisplayName(p.getName());
+            }
+
+            for (ExecutionEnvironment ex : applianceDef.getExecutionEnvironments()) {
+                if (ex.getDisplayName() == null)
+                    ex.setDisplayName(ex.getName());
+            }
+
+            for (IdentitySource is : applianceDef.getIdentitySources()) {
+                if (is.getDisplayName() == null)
+                    is.setDisplayName(is.getName());
+            }
+
 
             validateAppliance(appliance);
 
-            IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
             applianceDef.setLastModification(new Date());
             applianceDef.setRevision(applianceDef.getRevision() + 1);
 
