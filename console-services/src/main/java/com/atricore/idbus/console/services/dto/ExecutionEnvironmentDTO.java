@@ -16,6 +16,8 @@ public class ExecutionEnvironmentDTO implements Serializable {
     private String installUri;
     private String platformId;
     private boolean active;
+    private boolean overwriteOriginalSetup;
+    private boolean installDemoApps;    
 
     private Set<ActivationDTO> activations;
 
@@ -86,6 +88,22 @@ public class ExecutionEnvironmentDTO implements Serializable {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public boolean isOverwriteOriginalSetup() {
+        return overwriteOriginalSetup;
+    }
+
+    public void setOverwriteOriginalSetup(boolean overwriteOriginalSetup) {
+        this.overwriteOriginalSetup = overwriteOriginalSetup;
+    }
+
+    public boolean isInstallDemoApps() {
+        return installDemoApps;
+    }
+
+    public void setInstallDemoApps(boolean installDemoApps) {
+        this.installDemoApps = installDemoApps;
     }
 
     @Override

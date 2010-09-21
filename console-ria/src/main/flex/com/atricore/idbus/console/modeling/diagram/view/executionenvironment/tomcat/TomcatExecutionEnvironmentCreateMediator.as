@@ -80,6 +80,8 @@ public class TomcatExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.executionEnvironmentDescription.text = "";
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
+        view.replaceConfFiles.selected = false;
+        view.installSamples.selected = false;         
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -91,6 +93,8 @@ public class TomcatExecutionEnvironmentCreateMediator extends IocFormMediator {
         tomcatExecutionEnvironment.name = view.executionEnvironmentName.text;
         tomcatExecutionEnvironment.description = view.executionEnvironmentDescription.text;
         tomcatExecutionEnvironment.installUri = view.homeDirectory.text;
+        tomcatExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
+        tomcatExecutionEnvironment.installDemoApps = view.installSamples.selected;
         tomcatExecutionEnvironment.platformId = view.platform.selectedItem.data;
         _newExecutionEnvironment = tomcatExecutionEnvironment;
     }
