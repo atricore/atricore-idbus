@@ -53,6 +53,8 @@ public class ApplicationServerInitialization {
 
     private String adminUsername;
     private String adminPassword;
+    private String adminName;
+    private String adminLastName;
     private String adminFullName;
 
     private GroupDTO adminGroup;
@@ -99,7 +101,9 @@ public class ApplicationServerInitialization {
                 addUserRequest.setUserName(adminUsername);
                 addUserRequest.setUserPassword(adminPassword);
                 addUserRequest.setFirstName(adminGroupName);
-                addUserRequest.setGivenName(adminFullName);
+                addUserRequest.setGivenName(adminName);
+                addUserRequest.setFirstName(adminName);
+                addUserRequest.setSurename(adminLastName);
                 addUserRequest.setCommonName(adminFullName);
                 addUserRequest.setAccountDisabled(false);
                 addUserRequest.setAllowUserToChangePassword(true);
@@ -148,6 +152,22 @@ public class ApplicationServerInitialization {
 
     public void setAdminGroupDescription(String adminGroupDescription) {
         this.adminGroupDescription = adminGroupDescription;
+    }
+
+    public String getAdminName() {
+        return adminName;
+    }
+
+    public void setAdminName(String adminName) {
+        this.adminName = adminName;
+    }
+
+    public String getAdminLastName() {
+        return adminLastName;
+    }
+
+    public void setAdminLastName(String adminLastName) {
+        this.adminLastName = adminLastName;
     }
 
     public String getAdminFullName() {
