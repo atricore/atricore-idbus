@@ -67,7 +67,7 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
 
         // TODO : Support different execution environments like ISAPI, PHP, etc ....
         setPropertyValue(partnerappBean, "partnerAppSLO", resolveLocationUrl(activation.getPartnerAppLocation()));
-        setPropertyValue(partnerappBean, "partnerAppACS", resolveLocationUrl(activation.getPartnerAppLocation()) + "josso_security_check");
+        setPropertyValue(partnerappBean, "partnerAppACS", resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso_security_check");
 
         Entry partnerappMapping = new Entry();
         partnerappMapping.setKey(partnerappKeyBean);
