@@ -130,17 +130,37 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         }
         spBean = b.iterator().next();
 
-        String idpChannelName = spBean.getName() +  "-" + (!idpChannel.isOverrideProviderSetup() ? "default" : normalizeBeanName(target.getName())) + "-idp-channel";
-        Bean idpChannelBean = newBean(spBeans, idpChannelName, IdPChannelImpl.class.getName());
 
-        ctx.put("idpChannelBean", idpChannelBean);
+        String idpChannelName = spBean.getName() +  "-" + (!idpChannel.isOverrideProviderSetup() ? "default" : normalizeBeanName(target.getName())) + "-idp-channel";
+
+        // Check if we already created this channel
+        if (!idpChannel.isOverrideProviderSetup() && getPropertyRef(spBean, "channel") != null) {
+            ctx.put("idpChannelBean", getBean(spBeans, idpChannelName));
+            return;
+        }
+
+        List<Bean> idpChannelBeans = getPropertyBeans(spBeans, spBean, "channels");
+        if (idpChannelBeans != null) {
+            for (Bean idpChannelBean : idpChannelBeans) {
+                if (getPropertyValue(idpChannelBean, "name").equals(idpChannelName)) {
+                    // Do not re-process a default channel definition
+                    if (logger.isTraceEnabled())
+                        logger.trace("Ignoring channel " + idpChannel.getName() + ". It was alredy processed");
+                    ctx.put("idpChannelBean", idpChannelBean);
+                    return;
+                }
+            }
+        }
+
 
         if (logger.isDebugEnabled())
             logger.debug("Creating IdP Channel definition for " + idpChannelName);
 
+        Bean idpChannelBean = newBean(spBeans, idpChannelName, IdPChannelImpl.class.getName());
+        ctx.put("idpChannelBean", idpChannelBean);
 
         // name
-        setPropertyValue(idpChannelBean, "name", idpChannelBean.getName());
+        setPropertyValue(idpChannelBean, "name", idpChannelName);
         setPropertyValue(idpChannelBean, "description", idpChannel.getDisplayName());
         setPropertyValue(idpChannelBean, "location", resolveLocationUrl(sp, idpChannel));
         setPropertyRef(idpChannelBean, "provider", normalizeBeanName(sp.getName()));
@@ -221,6 +241,12 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         endpoints.add(acHttpPost);
         
         setPropertyAsBeans(idpChannelBean, "endpoints", endpoints);
+
+        if (idpChannel.isOverrideProviderSetup())
+            addPropertyBeansAsRefsToSet(spBean, "channels", idpChannelBean);
+        else
+            setPropertyRef(spBean, "channel", idpChannelBean.getName());
+
     }
 
     @Override
@@ -229,12 +255,27 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         // IdP Channel bean
         Bean idpChannelBean = (Bean) event.getContext().get("idpChannelBean");
         Beans beans = (Beans) event.getContext().get("beans");
+        Beans spBeans = (Beans) event.getContext().get("spBeans");
         
         // Mediation Unit
         Collection<Bean> mus = getBeansOfType(beans, OsgiIdentityMediationUnit.class.getName());
         if (mus.size() == 1) {
             Bean mu = mus.iterator().next();
-            addPropertyBeansAsRefs(mu, "channels", idpChannelBean);
+
+            List<Bean> channels = getPropertyBeans(spBeans, mu, "channels");
+            boolean found = false;
+            
+            if (channels != null)
+                for (Bean bean : channels) {
+                    if (getPropertyValue(bean, "name").equals(getPropertyValue(idpChannelBean, "name"))) {
+                        found = true;
+                        break;
+                    }
+                }
+
+            if (!found)
+                addPropertyBeansAsRefs(mu, "channels", idpChannelBean);
+            
         } else {
             throw new TransformException("One and only one Identity Mediation Unit is expected, found " + mus.size());
         }
@@ -242,3 +283,4 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         return idpChannelBean;
     }
 }
+

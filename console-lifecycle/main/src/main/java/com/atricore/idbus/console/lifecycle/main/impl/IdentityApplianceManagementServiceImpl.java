@@ -372,7 +372,10 @@ public class IdentityApplianceManagementServiceImpl implements
                 throw new IdentityServerException("Execution Environment "+request.getExecEnvName()+" not found in appliance " +
                         request.getApplianceId());
 
-            activateExecEnv(appliance, execEnv, request.isReactivate(), request.isReplace(), request.isActivateSamples());
+            execEnv.setInstallDemoApps(request.isActivateSamples());
+            execEnv.setOverwriteOriginalSetup(request.isReplace());
+
+            activateExecEnv(appliance, execEnv, request.isReactivate());
 
             debugAppliance(appliance);
 
@@ -1116,8 +1119,7 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     protected void configureExecEnv(IdentityAppliance appliance,
-                                                   ExecutionEnvironment execEnv,
-                                                   boolean replaceConfig) throws IdentityServerException {
+                                                   ExecutionEnvironment execEnv) throws IdentityServerException {
 
         try {
 
@@ -1141,7 +1143,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
             ConfigureAgentRequest activationReq = doMakeConfigureAgentRequest(execEnv);
             activationReq.setJossoAgentConfigUri(agentCfg);
-            activationReq.setReplaceConfig(replaceConfig);
+            activationReq.setReplaceConfig(execEnv.isOverwriteOriginalSetup());
 
             ConfigureAgentResponse actiationResponse = activationService.configureAgent(activationReq);
         } catch (ActivationException e) {
@@ -1153,9 +1155,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
     protected void activateExecEnv(IdentityAppliance appliance,
                                                    ExecutionEnvironment execEnv,
-                                                   boolean reactivate,
-                                                   boolean replaceConfig,
-                                                   boolean activateSamples) throws IdentityServerException {
+                                                   boolean reactivate) throws IdentityServerException {
 
 
 
@@ -1173,10 +1173,10 @@ public class IdentityApplianceManagementServiceImpl implements
             ActivateAgentRequest activationRequest = doMakeAgentActivationRequest(execEnv);
             ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
 
-            if (replaceConfig)
-                configureExecEnv(appliance, execEnv, replaceConfig);
+            if (execEnv.isOverwriteOriginalSetup())
+                configureExecEnv(appliance, execEnv);
 
-            if (activateSamples) {
+            if (execEnv.isInstallDemoApps()) {
 
                 if (logger.isDebugEnabled())
                     logger.debug("Activating Samples in Execution Environment " + execEnv.getName());
@@ -1190,8 +1190,6 @@ public class IdentityApplianceManagementServiceImpl implements
 
             // Mark activation as activated and save appliance.
             execEnv.setActive(true);
-            execEnv.setInstallDemoApps(activateSamples);
-            execEnv.setOverwriteOriginalSetup(replaceConfig);
             identityApplianceDAO.save(appliance);
         } catch (ActivationException e) {
             throw new IdentityServerException(e);
@@ -1351,7 +1349,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
                 if (execEnv.isActive()) {
                     logger.debug("Execution environment is active, configuring " + execEnv.getName());
-                    configureExecEnv(appliance, execEnv, true);
+                    configureExecEnv(appliance, execEnv);
                 } else {
                     logger.debug("Execution environment is not active, skip configuration " + execEnv.getName());
                 }
@@ -1489,6 +1487,7 @@ public class IdentityApplianceManagementServiceImpl implements
         ConfigureAgentRequest req = new ConfigureAgentRequest();
         req.setTarget(execEnv.getInstallUri());
         req.setTargetPlatformId(execEnv.getPlatformId());
+        req.setReplaceConfig(execEnv.isOverwriteOriginalSetup());
 
         if (execEnv instanceof JBossExecutionEnvironment) {
             JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) execEnv;

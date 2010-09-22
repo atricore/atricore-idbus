@@ -520,20 +520,46 @@ public class BeanUtils {
         bean.getMetasAndConstructorArgsAndProperties().add(prop);
     }
 
-    public static java.util.List<Bean> getPropertyBeans(Bean bean, String propertyName) {
+    public static java.util.List<Bean> getPropertyBeans(Beans b, Bean bean, String propertyName) {
         com.atricore.idbus.console.lifecycle.support.springmetadata.model.List list = getListOfValuesAndRefs(bean, propertyName);
         java.util.List<Bean> beans = null;
         if(list != null){
             beans = new ArrayList<Bean>();
             for(Object obj : list.getBeenAndRevesAndIdreves()){
-                if(obj instanceof Bean){
+                if (obj instanceof Bean){
                     beans.add((Bean)obj);
+                } else if (obj instanceof Ref) {
+                    Ref ref = (Ref) obj;
+                    Bean refB = getBean(b, ref.getBean());
+                    if (refB != null)
+                        beans.add(refB);
                 }
             }
         }
 
         return beans;
     }
+
+    public static java.util.Set<Bean> getPropertyBeansFromSet(Beans b, Bean bean, String propertyName) {
+        com.atricore.idbus.console.lifecycle.support.springmetadata.model.Set set = getSetOfValuesAndRefs(bean, propertyName);
+        java.util.Set<Bean> beans = null;
+        if(set != null){
+            beans = new java.util.HashSet<Bean>();
+            for(Object obj : set.getBeenAndRevesAndIdreves()){
+                if (obj instanceof Bean){
+                    beans.add((Bean)obj);
+                } else if (obj instanceof Ref) {
+                    Ref ref = (Ref) obj;
+                    Bean refB = getBean(b, ref.getBean());
+                    if (refB != null)
+                        beans.add(refB);
+                }
+            }
+        }
+
+        return beans;
+    }
+
 
     public static java.util.List<Ref> getPropertyRefs(Bean bean, String propertyName) {
         com.atricore.idbus.console.lifecycle.support.springmetadata.model.List list = getListOfValuesAndRefs(bean, propertyName);

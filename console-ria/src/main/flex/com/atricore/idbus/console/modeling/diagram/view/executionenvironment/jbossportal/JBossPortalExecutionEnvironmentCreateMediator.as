@@ -91,7 +91,7 @@ public class JBossPortalExecutionEnvironmentCreateMediator extends IocFormMediat
         executionEnvironment.installUri = view.homeDirectory.text;
         executionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
         executionEnvironment.installDemoApps = view.installSamples.selected;              
-        //executionEnvironment.platformId = "";
+        executionEnvironment.platformId = "2.7.x";
         _newExecutionEnvironment = executionEnvironment;
     }
 

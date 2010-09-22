@@ -613,6 +613,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         if (!_activationCreateForm) {
             createActivationCreateForm();
+        } else {
+            activationCreateMediator.handleNotification(_lastWindowNotification);
         }
         _popup.title = "Create JOSSO Activation";
         _popup.width = 680;

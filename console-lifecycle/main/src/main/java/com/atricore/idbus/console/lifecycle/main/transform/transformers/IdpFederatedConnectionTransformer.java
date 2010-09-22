@@ -19,6 +19,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
@@ -140,35 +141,45 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         }
         idpBean = b.iterator().next();
 
-        List<Bean> spChannelBeans = getPropertyBeans(idpBean, "channels");
         String spChannelName = idpBean.getName() +  "-" + (!spChannel.isOverrideProviderSetup() ? "default" : normalizeBeanName(target.getName())) + "-sp-channel";
 
-        if (logger.isDebugEnabled())
-            logger.debug("Creating SP Channel definition for " + spChannelName);
+        // Check if we already created this channel
+        if (!spChannel.isOverrideProviderSetup() && getPropertyRef(idpBean, "channel") != null) {
+            ctx.put("spChannelBean", getBean(idpBeans, spChannelName));
+            return;
+        }
 
+        Set<Bean> spChannelBeans = getPropertyBeansFromSet(idpBeans, idpBean, "channels");
         if (spChannelBeans != null) {
             for (Bean spChannelBean : spChannelBeans) {
                 if (getPropertyValue(spChannelBean, "name").equals(spChannelName)) {
                     // Do not re-process a default channel definition
                     if (logger.isTraceEnabled())
                         logger.trace("Ignoring channel " + spChannel.getName() + ". It was alredy processed");
+
+                    ctx.put("spChannelBean", spChannelBean);
                     return;
                 }
             }
         }
 
+        if (logger.isDebugEnabled())
+            logger.debug("Creating SP Channel definition for " + spChannelName);
+
         // -------------------------------------------------------
         // SP Channel
         // -------------------------------------------------------
-        Bean spChannelBean = newBean(idpBeans, spChannelName, SPChannelImpl.class.getName());
+        Bean spChannelBean = newBean(idpBeans,spChannelName, SPChannelImpl.class.getName());
         ctx.put("spChannelBean", spChannelBean);
-        setPropertyValue(spChannelBean, "name", spChannelBean.getName());
+
+        setPropertyValue(spChannelBean, "name", spChannelName);
         setPropertyValue(spChannelBean, "description", spChannel.getDisplayName());
         setPropertyValue(spChannelBean, "location", resolveLocationUrl(idp, spChannel));
         setPropertyRef(spChannelBean, "provider", normalizeBeanName(idp.getName()));
         if (spChannel.isOverrideProviderSetup())
             setPropertyRef(spChannelBean, "targetProvider", normalizeBeanName(target.getName()));
         setPropertyRef(spChannelBean, "sessionManager", idpBean.getName() + "-session-manager");
+        setPropertyRef(spChannelBean, "identityManager", idpBean.getName() + "-identity-manager");
         setPropertyRef(spChannelBean, "member", idpBean.getName() + "-md");
 
         // identityMediator
@@ -361,6 +372,11 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         
         //Bean authnToSamlResponsePlan = newBean(idpBeans, "samlr2authnreq-to-samlr2response-plan", SamlR2AuthnReqToSamlR2RespPlan.class);
         //setPropertyRef(authnToSamlResponsePlan, "bpmsManager", "bpms-manager");
+
+        if (spChannel.isOverrideProviderSetup())
+            addPropertyBeansAsRefsToSet(idpBean, "channels", spChannelBean);
+        else
+            setPropertyRef(idpBean, "channel", spChannelBean.getName());
     }
 
     @Override
@@ -392,7 +408,21 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         Collection<Bean> mus = getBeansOfType(beans, OsgiIdentityMediationUnit.class.getName());
         if (mus.size() == 1) {
             Bean mu = mus.iterator().next();
-            addPropertyBeansAsRefs(mu, "channels", spChannelBean);
+
+            List<Bean> channels = getPropertyBeans(idpBeans, mu, "channels");
+            boolean found = false;
+
+            if (channels != null)
+                for (Bean bean : channels) {
+                    if (getPropertyValue(bean, "name").equals(getPropertyValue(spChannelBean, "name"))) {
+                        found = true;
+                        break;
+                    }
+                }
+
+            if (!found)
+                addPropertyBeansAsRefs(mu, "channels", spChannelBean);
+
         } else {
             throw new TransformException("One and only one Identity Mediation Unit is expected, found " + mus.size());
         }

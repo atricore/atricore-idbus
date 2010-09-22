@@ -31,6 +31,7 @@ public class ChannelDTO implements Serializable {
 
     private long id;
 	private String name;
+    private String displayName;
 	private LocationDTO location;
     private String description;
     private boolean overrideProviderSetup;
@@ -55,6 +56,14 @@ public class ChannelDTO implements Serializable {
 		this.name = name;
 	}
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+    
 	public LocationDTO getLocation() {
 		return location;
 	}

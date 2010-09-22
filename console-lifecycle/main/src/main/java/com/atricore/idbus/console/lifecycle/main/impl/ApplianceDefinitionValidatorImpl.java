@@ -162,6 +162,10 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
 
             }
         }
+
+        if (node.getActivation() == null) {
+            addError("Local Serivice Provider requires an activation connection " + node.getName());
+        }
     }
 
     @Override
@@ -280,14 +284,18 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
 
     @Override
     public void arrive(ServiceProviderChannel node) throws Exception {
+        validateName("Service Provider channel", node.getName(), node);
         if (node.isOverrideProviderSetup())
             validateLocation("Serivce Provider channel ", node.getLocation());
     }
 
     @Override
     public void arrive(IdentityProviderChannel node) throws Exception {
+        validateName("Identity Provider channel", node.getName(), node);
         if (node.isOverrideProviderSetup())
             validateLocation("Identity Provider channel ", node.getLocation());
+
+
     }
 
 
@@ -300,7 +308,6 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
     protected void validateName(String propertyName, String name, Object o) {
 
         //
-
         if (name == null || name.length() == 0) {
             addError(propertyName + " cannot be null or empty");
             return;
@@ -316,7 +323,6 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
         }
 
         ValidationContext vctx = ctx.get();
-
         if (vctx.isNameUsed(name, o))
             addError(propertyName + " already in use in other component : " + name);
 
@@ -424,8 +430,6 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
             }
 
             return objs.size() > 0 && !objs.contains(o);
-
-
 
         }
 
