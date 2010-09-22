@@ -361,9 +361,9 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
 
         Bean idpBean = getBeansOfType(idpBeans, IdentityProviderImpl.class.getName()).iterator().next();
 
+        // Wire SP Channels (DONE IN FED.CONN. TRANSF.
+        /*
         List<Bean> bc = new ArrayList<Bean>();
-
-        // Wire SP Channels
         Collection<Bean> channels = getBeansOfType(idpBeans, SPChannelImpl.class.getName());
         for (Bean b : channels) {
             String channelProvider = getPropertyRef(b, "provider");
@@ -373,9 +373,9 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
                 setPropertyRef(idpBean, "channel", b.getName());
             }
         }
-
         if (bc.size() > 0)
             setPropertyAsRefs(idpBean, "channels", bc);
+        */
 
         // Wire provider to COT
         Collection<Bean> cots = getBeansOfType(baseBeans, CircleOfTrustImpl.class.getName());

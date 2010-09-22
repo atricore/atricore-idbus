@@ -180,7 +180,6 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         setPropertyValue(spMediator, "preferredIdpSSOBinding", SamlR2Binding.SAMLR2_POST.getValue());
         setPropertyValue(spMediator, "preferredIdpSLOBinding", SamlR2Binding.SAMLR2_POST.getValue());
 
-
         ExecutionEnvironment execEnv = provider.getActivation().getExecutionEnv();
         IdentityApplianceDefinition applianceDef = provider.getIdentityAppliance();
 
@@ -420,9 +419,9 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         
         Bean spBean = getBeansOfType(spBeans, ServiceProviderImpl.class.getName()).iterator().next();
 
+        // Wire IdP Channels DONE IN FED.CONN. TRANSF.
+        /*
         List<Bean> bc = new ArrayList<Bean>();
-        
-        // Wire IdP Channels
         Collection<Bean> channels = getBeansOfType(spBeans, IdPChannelImpl.class.getName());
         for (Bean b : channels) {
             String channelProvider = getPropertyRef(b, "provider");
@@ -435,6 +434,16 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         if (bc.size() > 0)
             setPropertyAsRefs(spBean, "channels", bc);
+            */
+
+        Bean idMgr = getBean(spBeans, spBean.getName() + "-identity-manager");
+        if (idMgr != null) {
+            Collection<Bean> channels = getBeansOfType(spBeans, IdPChannelImpl.class.getName());
+            for (Bean b : channels) {
+                setPropertyRef(b, "identityManager", idMgr.getName());
+            }
+
+        }
 
         // Wire provider to COT
         Collection<Bean> cots = getBeansOfType(baseBeans, CircleOfTrustImpl.class.getName());
