@@ -50,6 +50,7 @@ public class BrowserModelFactory {
             applianceNode.type = Constants.IDENTITY_BUS_DEEP;
             applianceNode.data = identityAppliance;
             applianceNode.selectable = selectable;
+            applianceNode.icon = EmbeddedIcons.busMiniIcon;
             return applianceNode;
         }
 
@@ -60,6 +61,7 @@ public class BrowserModelFactory {
             applianceDefinitionNode.type = Constants.IDENTITY_BUS_DEEP;
             applianceDefinitionNode.data = identityApplianceDefinition;
             applianceDefinitionNode.selectable = selectable;
+            applianceDefinitionNode.icon = EmbeddedIcons.busMiniIcon;
             return applianceDefinitionNode;
         }
 
