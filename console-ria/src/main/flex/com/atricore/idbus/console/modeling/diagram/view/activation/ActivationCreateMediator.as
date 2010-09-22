@@ -100,6 +100,8 @@ public class ActivationCreateMediator extends IocFormMediator {
         }
         view.activationDomain.text = _sp.location.host;
         view.activationPort.text = _sp.location.port.toString();
+        view.activationName.text = _sp.name.toLowerCase().replace(/\s+/g, "-") + "-" +
+                _execEnv.name.toLowerCase().replace(/\s+/g, "-") + "-activation";
     }
 
     override public function bindModel():void {
