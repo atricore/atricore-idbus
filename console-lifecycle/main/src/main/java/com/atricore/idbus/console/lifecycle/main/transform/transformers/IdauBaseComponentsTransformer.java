@@ -75,7 +75,7 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
             logger.debug("Defining Identity Appliance Unit base components based on " + ida.getName());
 
         // Create IDAU Basic beans:
-        String idauName = module.getId();
+        String idauName = ida.getName();
 
         // Set the IdAU path/package name
         event.getContext().put("idauPath", event.getContext().get("idaBasePath") + "/idau/");

@@ -106,7 +106,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         setPropertyValue(ccMediator, "basicAuthnUILocation", resolveLocationBaseUrl(provider) + "/idbus-ui/claims/username-password.do");
 
         // artifactQueueManager
-        setPropertyRef(ccMediator, "artifactQueueManager", event.getContext().getCurrentModule().getId() + "-aqm");
+        setPropertyRef(ccMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
         
         // bindingFactory
         setPropertyBean(ccMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));
@@ -133,7 +133,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         setPropertyRef(claimsChannelBean, "provider", idpBean.getName());
 
         // unitContainer
-        setPropertyRef(claimsChannelBean, "unitContainer", event.getContext().getCurrentModule().getId() + "-container");
+        setPropertyRef(claimsChannelBean, "unitContainer", provider.getIdentityAppliance().getName() + "-container");
         
         // Mediation Unit
         Collection<Bean> mus = getBeansOfType(baseBeans, OsgiIdentityMediationUnit.class.getName());

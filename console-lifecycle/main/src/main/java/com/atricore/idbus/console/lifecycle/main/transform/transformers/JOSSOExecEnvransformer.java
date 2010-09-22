@@ -82,7 +82,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         setPropertyValue(bpBean, "role", "{urn:org:atricore:idbus:josso:metadata}JOSSOAgentDescriptor");
 
         // unitContainer
-        setPropertyRef(bpBean, "unitContainer", event.getContext().getCurrentModule().getId() + "-container");
+        setPropertyRef(bpBean, "unitContainer", applianceDef.getName() + "-container");
 
         // COT Manager
         Collection<Bean> cotMgrs = getBeansOfType(baseBeans, SamlR2CircleOfTrustManager.class.getName());
@@ -92,7 +92,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         }
 
         // State Manager
-        setPropertyRef(bpBean, "stateManager", event.getContext().getCurrentModule().getId() + "-state-manager");
+        setPropertyRef(bpBean, "stateManager", applianceDef.getName() + "-state-manager");
 
         // MBean
         Bean mBean = newBean(bpBeans, bpBean.getName() + "-mbean",
@@ -140,7 +140,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
         setPropertyValue(bc, "location", location);
 
-        setPropertyRef(bc, "unitContainer", event.getContext().getCurrentModule().getId() + "-container");
+        setPropertyRef(bc, "unitContainer", applianceDef.getName() + "-container");
         setPropertyRef(bc, "identityMediator", bpBean.getName() + "-binding-mediator");
 
         // endpoints
@@ -213,7 +213,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         setPropertyBean(bindingMediator, "bindingFactory", newAnonymousBean(JossoBindingFactory.class));
 
         // artifactQueueManager
-        setPropertyRef(bindingMediator, "artifactQueueManager", event.getContext().getCurrentModule().getId() + "-aqm");
+        setPropertyRef(bindingMediator, "artifactQueueManager", applianceDef.getName() + "-aqm");
 
         setPropertyValue(bindingMediator, "errorUrl", resolveLocationBaseUrl(applianceDef.getLocation()) + "/idbus-ui/error.do");
 

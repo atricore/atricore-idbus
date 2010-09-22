@@ -159,6 +159,6 @@ public class STSTransformer extends AbstractTransformer {
         if (aqmBean == null) {
             throw new TransformException("No Artifact Queue Manager defined as " + aqmName);
         }*/
-        setPropertyRef(sts, "artifactQueueManager", event.getContext().getCurrentModule().getId() + "-aqm");
+        setPropertyRef(sts, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
     }
 }

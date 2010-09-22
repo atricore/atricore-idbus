@@ -149,7 +149,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         setPropertyValue(sp, "role", SAMLR2MetadataConstants.SPSSODescriptor_QNAME.toString());
 
         // unitContainer
-        setPropertyRef(sp, "unitContainer", event.getContext().getCurrentModule().getId() + "-container");
+        setPropertyRef(sp, "unitContainer", provider.getIdentityAppliance().getName() + "-container");
 
         // COT Manager
         Collection<Bean> cotMgrs = getBeansOfType(baseBeans, SamlR2CircleOfTrustManager.class.getName());
@@ -159,7 +159,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         }
 
         // State Manager
-        setPropertyRef(sp, "stateManager", event.getContext().getCurrentModule().getId() + "-state-manager");
+        setPropertyRef(sp, "stateManager", provider.getIdentityAppliance().getName() + "-state-manager");
         
         // ----------------------------------------
         // Service Provider Mediator
@@ -192,7 +192,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         setPropertyValue(spMediator, "logMessages", true);
 
         // artifactQueueManager
-        setPropertyRef(spMediator, "artifactQueueManager", event.getContext().getCurrentModule().getId() + "-aqm");
+        setPropertyRef(spMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
 
         // bindingFactory
         setPropertyBean(spMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));
@@ -399,8 +399,8 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         //Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.memorysessionstore.MemorySessionStore");
         Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionStore");
         sessionStore.setInitMethod("init");
-        setPropertyRef(sessionStore, "cacheManager", event.getContext().getCurrentModule().getId() + "-cache-manager");
-        setPropertyValue(sessionStore, "cacheName", event.getContext().getCurrentModule().getId() +
+        setPropertyRef(sessionStore, "cacheManager", provider.getIdentityAppliance().getName() + "-cache-manager");
+        setPropertyValue(sessionStore, "cacheName", provider.getIdentityAppliance().getName() +
                 "-" + sp.getName() + "-sessionsCache");
         
         // Wiring

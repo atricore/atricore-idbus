@@ -120,7 +120,7 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         setPropertyValue(idpBean, "role", SAMLR2MetadataConstants.IDPSSODescriptor_QNAME.toString());
 
         // unitContainer
-        setPropertyRef(idpBean, "unitContainer", event.getContext().getCurrentModule().getId() + "-container");
+        setPropertyRef(idpBean, "unitContainer", provider.getIdentityAppliance().getName() + "-container");
 
         // COT Manager
         Collection<Bean> cotMgrs = getBeansOfType(baseBeans, SamlR2CircleOfTrustManager.class.getName());
@@ -132,7 +132,7 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         }
 
         // State Manager
-        setPropertyRef(idpBean, "stateManager", event.getContext().getCurrentModule().getId() + "-state-manager");
+        setPropertyRef(idpBean, "stateManager", provider.getIdentityAppliance().getName() + "-state-manager");
 
         // ----------------------------------------
         // Identity Provider Mediator
@@ -142,7 +142,7 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         setPropertyValue(idpMediator, "logMessages", true);
 
         // artifactQueueManager
-        setPropertyRef(idpMediator, "artifactQueueManager", event.getContext().getCurrentModule().getId() + "-aqm");
+        setPropertyRef(idpMediator, "artifactQueueManager", provider.getIdentityAppliance().getName() + "-aqm");
 
         // bindingFactory
         setPropertyBean(idpMediator, "bindingFactory", newAnonymousBean(SamlR2BindingFactory.class));
@@ -342,8 +342,8 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         //Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.memorysessionstore.MemorySessionStore");
         Bean sessionStore = newAnonymousBean("org.atricore.idbus.idojos.ehcachesessionstore.EHCacheSessionStore");
         sessionStore.setInitMethod("init");
-        setPropertyRef(sessionStore, "cacheManager", event.getContext().getCurrentModule().getId() + "-cache-manager");
-        setPropertyValue(sessionStore, "cacheName", event.getContext().getCurrentModule().getId() +
+        setPropertyRef(sessionStore, "cacheManager", provider.getIdentityAppliance().getName() + "-cache-manager");
+        setPropertyValue(sessionStore, "cacheName", provider.getIdentityAppliance().getName() +
                 "-" + idpBean.getName() + "-sessionsCache");
 
         // Wiring
