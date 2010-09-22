@@ -24,7 +24,10 @@ package com.atricore.idbus.console.modeling.main.view.sso
 import com.atricore.idbus.console.components.wizard.WizardEvent;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
 import com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand;
+import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
+import com.atricore.idbus.console.modeling.main.view.sso.event.SsoEvent;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
@@ -100,6 +103,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         view.addEventListener(WizardEvent.WIZARD_COMPLETE, onSimpleSSOWizardComplete);
         view.addEventListener(WizardEvent.WIZARD_CANCEL, onSimpleSSOWizardCancelled);
         view.addEventListener(CloseEvent.CLOSE, handleClose);
+        view.addEventListener(SsoEvent.VALIDATE_HOME_DIR, validateHomeDir);
 
         // upload bindings
         //view.steps[1].btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
@@ -120,7 +124,9 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
     override public function listNotificationInterests():Array {
         return [CreateSimpleSSOIdentityApplianceCommand.FAILURE,
-            CreateSimpleSSOIdentityApplianceCommand.SUCCESS
+            CreateSimpleSSOIdentityApplianceCommand.SUCCESS,
+            FolderExistsCommand.FOLDER_EXISTS,
+            FolderExistsCommand.FOLDER_DOESNT_EXISTS
             //UploadProgressMediator.CREATED,
             //UploadProgressMediator.UPLOAD_CANCELED
         ];
@@ -133,6 +139,20 @@ public class SimpleSSOWizardViewMediator extends IocMediator
                 break;
             case CreateSimpleSSOIdentityApplianceCommand.FAILURE :
                 handleSSOSetupFailure();
+                break;
+            case FolderExistsCommand.FOLDER_EXISTS:
+                var envName:String = notification.getBody() as String;
+                if(envName == "SSO_WIZARD_MADE_ENV"){
+                    var ssoEvent:SsoEvent = new SsoEvent(SsoEvent.DIRECTORY_EXISTS);
+                    view.dispatchEvent(ssoEvent);
+                }
+                break;
+            case FolderExistsCommand.FOLDER_DOESNT_EXISTS:
+                envName = notification.getBody() as String;
+                if(envName == "SSO_WIZARD_MADE_ENV"){
+                    var ssoEvent:SsoEvent = new SsoEvent(SsoEvent.DIRECTORY_DOESNT_EXIST);
+                    view.dispatchEvent(ssoEvent);
+                }
                 break;
             /*
             case UploadProgressMediator.CREATED:
@@ -315,6 +335,11 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     }
 
     private function handleClose(event:Event):void {
+    }
+
+    private function validateHomeDir(event:SsoEvent):void {
+            var cif:CheckInstallFolderRequest = event.cif;        
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
     }
 
     protected function get view():SimpleSSOWizardView

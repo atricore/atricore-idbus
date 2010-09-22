@@ -39,6 +39,8 @@
             import com.atricore.idbus.console.services.dto.JOSSOActivation;
             import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
             import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
+            import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
+            import com.atricore.idbus.console.modeling.main.view.sso.event.SsoEvent;
 
             [Bindable]
             private var validators:Array;
@@ -85,12 +87,39 @@
                     validators.push(partnerAppIdValidator);
                     validators.push(homeDirValidator);
                 }
+                parent.parent.addEventListener(SsoEvent.DIRECTORY_EXISTS, handleDirectoryExists);
+                parent.parent.addEventListener(SsoEvent.DIRECTORY_DOESNT_EXIST, handleDirectoryDoesntExists);
             }
 
             private function handleFormChange(event:Event):void {
                 // Check the step validity
+                homeDir.errorString = "";
                 ssoWizStep3Form.validateForm(event);
-                isValid = ssoWizStep3Form.isValid;
+                if(ssoWizStep3Form.isValid){
+                    var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+                    cif.homeDir = homeDir.text;
+                    cif.environmentName = "SSO_WIZARD_MADE_ENV";
+                    var ssoEvent:SsoEvent = new SsoEvent(SsoEvent.VALIDATE_HOME_DIR);
+                    ssoEvent.cif = cif;
+                    parent.parent.dispatchEvent(ssoEvent);
+//                    isValid = ssoWizStep3Form.isValid;
+                }
+
+            }
+
+            public function callback_handleFormChange(validationRes:Boolean, errorString:String):void {
+                homeDir.errorString = errorString;
+                isValid = validationRes;
+            }
+
+            public function handleDirectoryExists(event:Event):void {
+                homeDir.errorString = "";
+                isValid = true;
+            }
+
+            public function handleDirectoryDoesntExists(event:Event):void {
+                homeDir.errorString = "Directory doesn't exist";
+                isValid = false;
             }
 
             private function addSPToArray():void {
