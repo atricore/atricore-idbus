@@ -686,7 +686,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         spChannel.setOverrideProviderSetup(false);
 
         FederatedConnectionDTO fedConnection = new FederatedConnectionDTO();
-        fedConnection.setName(idp.getName() + "-" + sp.getName() + "-fed");
+        fedConnection.setName(idp.getName().toLowerCase() + "-" + sp.getName().toLowerCase());
         //SETTING ROLE A
         fedConnection.setRoleA(idp);
         fedConnection.setChannelA(spChannel);

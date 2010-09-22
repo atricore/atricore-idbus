@@ -108,7 +108,7 @@
                 <!--</s:HGroup>-->
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.preferredidpchannel')}:" labelWidth="235">
-                     <s:CheckBox id="preferredIDPChannel"/>
+                     <s:CheckBox id="preferredIDPChannel" selected="true"/>
                 </mx:FormItem>                
             </s:VGroup>
         </s:NavigatorContent>
