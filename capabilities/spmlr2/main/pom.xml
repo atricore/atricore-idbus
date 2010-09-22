@@ -177,8 +177,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>com.springsource.org.apache.commons.jxpath</artifactId>
+            <groupId>commons-jxpath</groupId>
+            <artifactId>commons-jxpath</artifactId>
             <scope>provided</scope>
         </dependency>
 

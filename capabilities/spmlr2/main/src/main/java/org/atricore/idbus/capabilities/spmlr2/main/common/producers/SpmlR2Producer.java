@@ -118,9 +118,9 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
             User user = lookupUser(target, spmlUser.getUserName());
 
             // Do not override null properties in the original object
-            String[] ignoredProps = getNullProps(user, new String[] {"id, groups"});
+            String[] ignoredProps = getNullProps(spmlUser, new String[] {"id, groups"});
 
-            BeanUtils.copyProperties(user, spmlUser, ignoredProps);
+            BeanUtils.copyProperties(spmlUser, user, ignoredProps);
 
             if (spmlUser.getGroup() != null && spmlUser.getGroup().size() > 0) {
 
@@ -234,6 +234,8 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
         for (PropertyDescriptor prop : props) {
 
             Method getter = prop.getReadMethod();
+            if (getter == null)
+                continue;
 
             try {
                 Object result = getter.invoke(o);

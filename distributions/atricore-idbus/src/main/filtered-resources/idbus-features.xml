@@ -284,9 +284,9 @@
         <bundle>mvn:commons-collections/commons-collections/${commons-collections.version}</bundle>
         <bundle>mvn:org.jdom/com.springsource.org.jdom/${jdom.version}</bundle>
         <!--bundle>mvn:org.apache.commons/com.springsource.org.apache.commons.jxpath/${commons-jxpath.version}</bundle-->
-        <bundle>mvn:commons-jxpath/commons-jxpath/1.3</bundle>
+        <bundle>mvn:commons-jxpath/commons-jxpath/${commons-jxpath.version}</bundle>
         <bundle>mvn:org.apache.commons/com.springsource.org.apache.commons.fileupload/${commons-fileupload.version}</bundle>
-        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.wadi-v2_1_2/${idbus.bundle.wadi-v2_1_2.version}</bundle>
+        <!--bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.wadi-v2_1_2/${idbus.bundle.wadi-v2_1_2.version}</bundle-->
     </feature>
 
     <feature name="mysql-connector-java" version="5.1.10">

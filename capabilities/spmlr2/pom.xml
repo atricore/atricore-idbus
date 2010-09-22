@@ -54,7 +54,7 @@
         <commons-lang.version>2.0</commons-lang.version>
         <commons-logging.version>1.1.1</commons-logging.version>
         <commons-codec.version>1.3</commons-codec.version>
-        <commons-jxpath.version>1.2.0</commons-jxpath.version>
+        <commons-jxpath.version>1.3</commons-jxpath.version>
         <cxf.version>2.2.2</cxf.version>
         <dozer.version>5.2.2</dozer.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
@@ -178,8 +178,8 @@
             </dependency>
 
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>com.springsource.org.apache.commons.jxpath</artifactId>
+                <groupId>commons-jxpath</groupId>
+                <artifactId>commons-jxpath</artifactId>
                 <version>${commons-jxpath.version}</version>
                 <scope>provided</scope>
             </dependency>
