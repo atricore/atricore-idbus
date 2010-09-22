@@ -66,13 +66,13 @@
                         </mx:ArrayCollection>
                     </s:dataProvider>
                 </s:DropDownList>
-                <s:Label text="://" width="15" paddingTop="5"/>
+                <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
                 <s:TextInput id="spLocationDomain" width="130"/>
-                <s:Label text=":" width="10" paddingTop="5"/>
+                <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
                 <s:TextInput id="spLocationPort" width="40"/>
-                <s:Label text="/" width="10" paddingTop="5"/>
+                <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
                 <s:TextInput id="spLocationContext" width="100"/>
-                <s:Label text="/" width="10" paddingTop="5"/>
+                <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
                 <s:TextInput id="spLocationPath" width="130"/>
             </mx:FormItem>
         </mx:Form>

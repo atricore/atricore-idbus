@@ -89,6 +89,19 @@ public class ActivationCreateMediator extends IocFormMediator {
         FormUtility.clearValidationErrors(_validators);
     }
 
+    override public function bindForm():void {
+        view.activationPartnerAppId.text = _sp.name;
+//        view.activationProtocol.selectedIndex = 0;
+        for (var i:int = 0; i < view.activationProtocol.dataProvider.length; i++) {
+            if (_sp.location != null && view.activationProtocol.dataProvider[i].data == _sp.location.protocol) {
+                view.activationProtocol.selectedIndex = i;
+                break;
+            }
+        }
+        view.activationDomain.text = _sp.location.host;
+        view.activationPort.text = _sp.location.port.toString();
+    }
+
     override public function bindModel():void {
 
         var activation:JOSSOActivation = new JOSSOActivation();
@@ -166,7 +179,7 @@ public class ActivationCreateMediator extends IocFormMediator {
         var car:CreateActivationElementRequest = notification.getBody() as CreateActivationElementRequest;
         _sp = car.sp;
         _execEnv = car.executionEnvironment;
-
+        bindForm();
     }
 }
 }

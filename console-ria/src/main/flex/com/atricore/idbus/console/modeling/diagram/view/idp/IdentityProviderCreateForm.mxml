@@ -83,13 +83,13 @@
                             </mx:ArrayCollection>
                         </s:dataProvider>
                     </s:DropDownList>
-                    <s:Label text="://" width="15" paddingTop="5"/>
+                    <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
                     <s:TextInput id="idpLocationDomain" width="130"/>
-                    <s:Label text=":" width="10" paddingTop="5"/>
+                    <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
                     <s:TextInput id="idpLocationPort" width="40"/>
-                    <s:Label text="/" width="10" paddingTop="5"/>
+                    <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
                     <s:TextInput id="idpLocationContext" width="100"/>
-                    <s:Label text="/" width="10" paddingTop="5"/>
+                    <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
                     <s:TextInput id="idpLocationPath" width="130"/>
                 </mx:FormItem>
 

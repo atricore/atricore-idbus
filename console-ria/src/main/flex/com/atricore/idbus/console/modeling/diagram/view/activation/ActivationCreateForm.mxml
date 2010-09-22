@@ -63,12 +63,12 @@
                 </mx:ArrayCollection>
             </s:dataProvider>
         </s:DropDownList>
-        <s:Label text="://" width="15"/>
+        <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
         <s:TextInput id="activationDomain" width="150"/>
-        <s:Label text=":" width="10"/>
+        <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
         <s:TextInput id="activationPort" width="40"/>
-        <s:Label text="/" width="7"/>
-        <s:TextInput id="activationContext" width="180"/>
+        <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+        <s:TextInput id="activationContext" width="140"/>
     </mx:FormItem>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">

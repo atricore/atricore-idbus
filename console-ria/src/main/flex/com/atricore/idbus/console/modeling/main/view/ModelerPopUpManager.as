@@ -617,7 +617,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
             activationCreateMediator.handleNotification(_lastWindowNotification);
         }
         _popup.title = "Create JOSSO Activation";
-        _popup.width = 680;
+        _popup.width = 670;
         _popup.height = 200;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
