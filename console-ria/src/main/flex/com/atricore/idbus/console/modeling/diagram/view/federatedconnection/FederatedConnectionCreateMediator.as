@@ -208,7 +208,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
         view.channelNavigator.selectedIndex = 0;
 
         //RESET IDP CHANNEL
-        view.preferredIDPChannel.selected = false;
+        view.preferredIDPChannel.selected = true;
         view.useInheritedSPSettings.selected = true;
         handleInheritedSpChkboxChanged(null);
 
@@ -482,9 +482,21 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
         var cfc:CreateFederatedConnectionElementRequest = notification.getBody() as CreateFederatedConnectionElementRequest;
         _roleA = cfc.roleA;
         _roleB = cfc.roleB;
-        //init idp channel
+        //init channels
         reflectSPSettingsInIdpChannelTab();
         reflectIdpSettingsInSpChannelTab();
+        //set default name
+        var spName:String;
+        var idpName:String;
+        if (_roleA is ServiceProvider) {
+            spName = _roleA.name;
+            idpName = _roleB.name;
+        } else {
+            spName = _roleB.name;
+            idpName = _roleA.name;
+        }
+        view.federatedConnectionName.text = idpName.toLowerCase().replace(/\s+/g, "-") + "-" +
+                spName.toLowerCase().replace(/\s+/g, "-");
     }
 
 
