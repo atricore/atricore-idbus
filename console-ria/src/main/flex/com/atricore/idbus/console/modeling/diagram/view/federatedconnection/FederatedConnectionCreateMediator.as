@@ -485,18 +485,13 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
         //init channels
         reflectSPSettingsInIdpChannelTab();
         reflectIdpSettingsInSpChannelTab();
+        bindForm();
+    }
+
+    override public function bindForm():void {
         //set default name
-        var spName:String;
-        var idpName:String;
-        if (_roleA is ServiceProvider) {
-            spName = _roleA.name;
-            idpName = _roleB.name;
-        } else {
-            spName = _roleB.name;
-            idpName = _roleA.name;
-        }
-        view.federatedConnectionName.text = idpName.toLowerCase().replace(/\s+/g, "-") + "-" +
-                spName.toLowerCase().replace(/\s+/g, "-");
+        view.federatedConnectionName.text = _roleA.name.toLowerCase().replace(/\s+/g, "-") + "-" +
+                _roleB.name.toLowerCase().replace(/\s+/g, "-") + "-fed";
     }
 
 
