@@ -154,12 +154,13 @@ public class LifecycleViewMediator extends IocMediator {
                             appliance.id == projectProxy.currentIdentityAppliance.id) {
                         selected = true;
                     }
-                    if (appliance.state == IdentityApplianceState.PROJECTED.name) {
+                    if (appliance.state != IdentityApplianceState.DISPOSED.name) {
                         savedAppliances.addItem(appliance);
                         if (selected) {
                             savedAppliancesSelectedIndex = savedAppliances.length - 1;
                         }
-                    } else if (appliance.state == IdentityApplianceState.BUILT.name) {
+                    }
+                    if (appliance.state == IdentityApplianceState.BUILT.name) {
                         compiledAppliances.addItem(appliance);
                         //if (selected) {
                         //    //compiledAppliancesSelectedIndex = compiledAppliances.length - 1;
