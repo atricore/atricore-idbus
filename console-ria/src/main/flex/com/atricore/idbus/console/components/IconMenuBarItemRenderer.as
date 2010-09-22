@@ -1,27 +1,21 @@
 package com.atricore.idbus.console.components {
-import flash.display.DisplayObject;
-
 import mx.controls.menuClasses.MenuBarItem;
 
-public class IconMenuBarItemRenderer extends MenuBarItem
-{
-    private var iconClass:Class;
+public class IconMenuBarItemRenderer extends MenuBarItem  {
 
-    override protected function commitProperties():void
+    override protected function measure():void
     {
-        super.commitProperties();
+        super.measure();
+        measuredHeight = 28;
+        measuredWidth = 10 + 16 + 10 + label.width + 15;
+    }
 
-        if (data)
-        {
-            iconClass = menuBar.itemToIcon(data);
-            if (iconClass)
-            {
-                icon = new iconClass();
-                icon.width = 16;
-                icon.height = 16;
-                addChild(DisplayObject(icon));
-            }
-        }
+    override protected function updateDisplayList(w:Number, h:Number):void{
+        super.updateDisplayList(w,h);
+        icon.width = 16;
+        icon.height = 16;
+        icon.x = label.x - icon.width - 15;
+        icon.y = label.y;
     }
 }
 }
