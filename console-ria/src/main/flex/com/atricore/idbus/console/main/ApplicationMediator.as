@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.main
 {
 import com.atricore.idbus.console.branding.AtricoreConsolePreloader;
+import com.atricore.idbus.console.components.MessageBox;
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
 import com.atricore.idbus.console.main.controller.NotFirstRunCommand;
 import com.atricore.idbus.console.main.controller.LoginCommand;
@@ -34,6 +35,8 @@ import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMedi
 
 import flash.events.Event;
 
+import mx.controls.MenuBar;
+import mx.effects.WipeRight;
 import mx.events.FlexEvent;
 
 import mx.events.MenuEvent;
@@ -59,6 +62,8 @@ public class ApplicationMediator extends IocMediator {
     private var _modelerMediator:IIocMediator;
     private var _lifecycleViewMediator:IIocMediator;
     private var _accountManagementMediator:IIocMediator;
+
+    private var _userActionMenuBar:MenuBar;
 
     public function ApplicationMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
 
@@ -107,6 +112,14 @@ public class ApplicationMediator extends IocMediator {
 
     }
 
+    public function get userActionMenuBar():MenuBar {
+        return _userActionMenuBar;
+    }
+
+    public function set userActionMenuBar(value:MenuBar):void {
+        _userActionMenuBar = value;
+    }
+
     override public function setViewComponent(p_viewComponent:Object):void {
         if (getViewComponent() != null) {
             app.stackButtonBar.removeEventListener(IndexChangeEvent.CHANGE, handleStackChange);
@@ -123,6 +136,12 @@ public class ApplicationMediator extends IocMediator {
         sendNotification(ApplicationFacade.NOT_FIRST_RUN);
         popupManager.init(iocFacade, app);
         app.addEventListener(FlexEvent.SHOW, handleShowConsole);
+        createHeading();
+    }
+
+    private function createHeading():void {
+        //app.brandedHeading.addChild(app.messageBox);
+        //app.brandedHeading.addChild(app.userActionMenuBar);
     }
 
     public function handleStackChange(event:IndexChangeEvent):void {
@@ -260,6 +279,7 @@ public class ApplicationMediator extends IocMediator {
     public function get app():AtricoreConsole {
         return getViewComponent() as AtricoreConsole;
     }
+
 
 }
 }

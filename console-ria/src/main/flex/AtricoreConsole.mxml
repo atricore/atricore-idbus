@@ -24,6 +24,7 @@
                xmlns:fx="http://ns.adobe.com/mxml/2009"
                xmlns:s="library://ns.adobe.com/flex/spark"
                xmlns:view="com.atricore.idbus.console.modeling.view.*"
+               xmlns:heading="com.atricore.idbus.console.branding.heading.*"
                xmlns:modeler="com.atricore.idbus.console.modeling.main.*"
                xmlns:comp="com.atricore.idbus.console.components.*"
                xmlns:login="com.atricore.idbus.console.main.view.login.*"
@@ -46,11 +47,15 @@
 
         import mx.collections.ArrayList;
 
+        import mx.core.IVisualElement;
+
         import org.puremvc.as3.patterns.observer.Notification;
 
         private var m_facade:ApplicationFacade;
 
         public static const BUNDLE:String = "console";
+
+        public var userProfileIcon:Class = EmbeddedIcons.userProfileIcon;
 
         private function onCreationComplete():void {
 
@@ -71,7 +76,7 @@
         private function stackChanged():void {
             modulesViewStack.selectedIndex = stackButtonBar.selectedIndex;
         }
-      ]]>
+        ]]>
     </fx:Script>
 
     <fx:Declarations>
@@ -81,7 +86,6 @@
         <mx:WipeUp id="wipeUp" duration="200"/>
         <mx:WipeRight id="wipeRight" duration="200"/>
 
-        <mx:Image id="userProfileIcon" source="{EmbeddedIcons.userProfileIcon}" />
     </fx:Declarations>
 
     <fx:Metadata>
@@ -98,40 +102,37 @@
 
     <s:VGroup paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
               width="100%" height="100%" includeIn="splash,operation">
-        <!--minHeight="955" minWidth="600">-->
-        <s:HGroup paddingTop="2" paddingLeft="10" paddingRight="10" height="8%" width="100%" includeIn="splash,operation">
-            <mx:Image source="@Embed('/assets/icons/ui/a3c_logo.jpeg')"/>
-            <comp:MessageBox id="messageBox" showEffect="{wipeRight}" width="100%" height="70%" verticalAlign="middle" horizontalAlign="center" />
-            <s:HGroup id="topBox" styleName="topBox" width="100%" height="100%" includeIn="operation" verticalAlign="middle" horizontalAlign="right">
-                <mx:MenuBar id="userActionMenuBar" width="9%" labelField="@label" iconField="@icon">
-                    <fx:XMLList>
-                        <menuitem label="Administrator" icon="userProfileIcon">
-                            <menuitem label="Change Password"/>
-                            <menuitem label="Logout"/>
-                        </menuitem>
-                    </fx:XMLList>
-                </mx:MenuBar>
-            </s:HGroup>
-        </s:HGroup>
 
-        <mx:HRule width="100%"/>
+        <heading:AtricoreHeading id="brandedHeading" includeIn="splash,operation">
+            <comp:MessageBox id="messageBox" x="400" width="70%" height="70%" includeIn="splash,operation"
+                             showEffect="{wipeRight}" verticalAlign="middle" horizontalAlign="center"/>
+            <mx:MenuBar id="userActionMenuBar" includeIn="operation" labelField="@label" iconField="@icon" 
+                        menuBarItemRenderer="com.atricore.idbus.console.components.IconMenuBarItemRenderer">
+                <fx:XMLList>
+                    <menuitem label="Administrator" icon="userProfileIcon" >
+                        <menuitem label="Change Password"/>
+                        <menuitem label="Logout"/>
+                    </menuitem>
+                </fx:XMLList>
+            </mx:MenuBar>
+        </heading:AtricoreHeading>
 
-            <login:LoginView id="loginView" includeIn="splash"/>
-            <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name"
-                         change="stackChanged()" skinClass="com.atricore.idbus.console.skin.buttonbar.IconButtonBarSkin"
-                         includeIn="operation"/>
+        <login:LoginView id="loginView" includeIn="splash"/>
+        <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name"
+                     change="stackChanged()" skinClass="com.atricore.idbus.console.skin.buttonbar.IconButtonBarSkin"
+                     includeIn="operation"/>
 
-            <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%" includeIn="operation">
-                <modeler:ModelerView id="modelerView" name="Modeler"/>
-                <lifecycle:LifecycleView id="lifecycleView" name="Lifecycle"/>
-                <account:AccountManagementView id="accountManagementView" name="Account"/>
-                <!--setup:SetupView id="setupView" name="Setup"/-->
-                <!--<s:Group width="95%" height="95%" name="Setup">-->
-                <!--<s:Label text="Setup"/>-->
-                <!--<s:BitmapImage id="icon" source="{EmbeddedIcons.setupMiniIcon}" />-->
-                <!--</s:Group>-->
+        <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%" includeIn="operation">
+            <modeler:ModelerView id="modelerView" name="Modeler"/>
+            <lifecycle:LifecycleView id="lifecycleView" name="Lifecycle"/>
+            <account:AccountManagementView id="accountManagementView" name="Account"/>
+            <!--setup:SetupView id="setupView" name="Setup"/-->
+            <!--<s:Group width="95%" height="95%" name="Setup">-->
+            <!--<s:Label text="Setup"/>-->
+            <!--<s:BitmapImage id="icon" source="{EmbeddedIcons.setupMiniIcon}" />-->
+            <!--</s:Group>-->
 
-            </comp:CustomViewStack>
+        </comp:CustomViewStack>
 
 
     </s:VGroup>
