@@ -77,11 +77,11 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
         }
 
         if (node.getAuthenticationMechanisms() == null || node.getAuthenticationMechanisms().size() < 1) {
-            addError("Serivce Provider needs at least one Authentication Mechanism");
+            addError("Identity Provider needs at least one Authentication Mechanism");
         }
 
         if (node.getIdentityLookup() == null)
-            addError("Serivce Provider needs an Indentity Lookup connection");
+            addError("Identity Provider needs an Indentity Lookup connection");
 
         if (node.getConfig() ==null)
             addError("No configuration found for IDP " + node.getName());

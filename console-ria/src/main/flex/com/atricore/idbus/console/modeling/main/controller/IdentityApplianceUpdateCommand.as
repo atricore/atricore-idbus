@@ -74,8 +74,13 @@ public class IdentityApplianceUpdateCommand extends IocSimpleCommand implements 
 
     public function result(data:Object):void {
         var resp:UpdateIdentityApplianceResponse = data.result as UpdateIdentityApplianceResponse;
-        projectProxy.currentIdentityAppliance = resp.appliance;
-        sendNotification(SUCCESS);
+        if (resp.validationErrors != null && resp.validationErrors.length > 0) {
+            projectProxy.identityApplianceValidationErrors = resp.validationErrors;
+            sendNotification(ApplicationFacade.APPLIANCE_VALIDATION_ERRORS);
+        } else {
+            projectProxy.currentIdentityAppliance = resp.appliance;
+            sendNotification(SUCCESS);
+        }
     }
 
     public function fault(info:Object):void {

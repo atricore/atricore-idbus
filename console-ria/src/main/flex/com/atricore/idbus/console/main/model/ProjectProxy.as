@@ -40,6 +40,7 @@ public class ProjectProxy extends IocProxy
     private var _currentIdentityApplianceElementOwner:Object;
     private var _currentView:String;
     private var _commandResultIdentityAppliance:IdentityAppliance;
+    private var _identityApplianceValidationErrors:ArrayCollection;
 
     public function ProjectProxy()
     {
@@ -100,6 +101,14 @@ public class ProjectProxy extends IocProxy
 
     public function set commandResultIdentityAppliance(commandResultIdentityAppliance:IdentityAppliance):void {
         _commandResultIdentityAppliance = commandResultIdentityAppliance;
+    }
+
+    public function get identityApplianceValidationErrors():ArrayCollection {
+        return _identityApplianceValidationErrors;
+    }
+
+    public function set identityApplianceValidationErrors(value:ArrayCollection):void {
+        _identityApplianceValidationErrors = value;
     }
 }
 }

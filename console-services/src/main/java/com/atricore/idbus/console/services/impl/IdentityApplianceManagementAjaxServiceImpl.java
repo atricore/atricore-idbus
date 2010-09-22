@@ -21,6 +21,8 @@
 
 package com.atricore.idbus.console.services.impl;
 
+import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
+import com.atricore.idbus.console.lifecycle.main.impl.ValidationError;
 import com.atricore.idbus.console.services.spi.IdentityApplianceManagementAjaxService;
 import com.atricore.idbus.console.services.spi.IdentityServerException;
 import com.atricore.idbus.console.services.spi.request.*;
@@ -31,7 +33,9 @@ import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagement
 import org.dozer.DozerBeanMapper;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Author: Dejan Maric
@@ -180,13 +184,6 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idAppliance.setIdApplianceDefinition(iad);
         idAppliance.setState(IdentityApplianceStateDTO.PROJECTED.toString());
 
-        //here we'll set STORE to NULL, and later we'll fetch it from DB and update the appliance
-        //Long storeId = null;
-        //if (iad.getKeystore() != null) {
-        //    storeId = iad.getKeystore().getStore().getId();
-        //    iad.getKeystore().setStore(null);
-        //}
-
         SamlR2ProviderConfigDTO config = null;
         //// providers that are currently in providers list are service providers and if they have config set, thay all have the same config object
         if(iad.getProviders() != null && iad.getProviders().size() > 0){
@@ -221,44 +218,25 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         addIdApplianceReq.setIdentityAppliance(dozerMapper.map(idAppliance, IdentityAppliance.class));
         com.atricore.idbus.console.lifecycle.main.spi.response.AddIdentityApplianceResponse beRes = null;
 
+        CreateSimpleSsoResponse response = new CreateSimpleSsoResponse();
+        
         try {
             beRes = idApplianceManagementService.addIdentityAppliance(addIdApplianceReq);
+            AddIdentityApplianceResponse res = dozerMapper.map(beRes, AddIdentityApplianceResponse.class);
+            idAppliance = res.getAppliance();
+            response.setAppliance(idAppliance);
         } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
-            throw new IdentityServerException(e);
-        }
-        AddIdentityApplianceResponse res = dozerMapper.map(beRes, AddIdentityApplianceResponse.class);
-        idAppliance = res.getAppliance();
-
-        //iad = idAppliance.getIdApplianceDefinition();
-
-        //IdentityAppliance foundAppliance = prepareApplianceForUpdate(idAppliance);
-        //idAppliance = this.updateAppliance(foundAppliance).getAppliance();
-
-        /*
-        if (storeId != null) {
-            //lookup store
-            LookupResourceByIdRequest lookupStoreReq = new LookupResourceByIdRequest();
-            lookupStoreReq.setResourceId(new Long(storeId).toString());
-
-            com.atricore.idbus.console.lifecycle.main.spi.request.LookupResourceByIdRequest beLookupStoreReq =
-                    dozerMapper.map(lookupStoreReq, com.atricore.idbus.console.lifecycle.main.spi.request.LookupResourceByIdRequest.class);
-
-            com.atricore.idbus.console.lifecycle.main.spi.response.LookupResourceByIdResponse beLookupStoreRes = null;
-
-            try {
-                beLookupStoreRes = idApplianceManagementService.lookupResourceById(beLookupStoreReq);
-            } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            if (e.getCause() instanceof ApplianceValidationException) {
+                List<String> validationErrors = new ArrayList<String>();
+                for (ValidationError error : ((ApplianceValidationException) e.getCause()).getErrors()) {
+                    validationErrors.add(error.getMsg());
+                }
+                response.setValidationErrors(validationErrors);
+            } else {
                 throw new IdentityServerException(e);
             }
-
-            foundAppliance = prepareApplianceForUpdate(idAppliance);
-            foundAppliance.getIdApplianceDefinition().getKeystore().setStore(beLookupStoreRes.getResource());
-            idAppliance = this.updateAppliance(foundAppliance).getAppliance();
         }
-        */
 
-        CreateSimpleSsoResponse response = new CreateSimpleSsoResponse();
-        response.setAppliance(idAppliance);
         return response;
     }
 
@@ -270,7 +248,17 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         try {
             beRes = idApplianceManagementService.addIdentityAppliance(beReq);
         } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
-            throw new IdentityServerException(e);
+            if (e.getCause() instanceof ApplianceValidationException) {
+                AddIdentityApplianceResponse resp = new AddIdentityApplianceResponse();
+                List<String> validationErrors = new ArrayList<String>();
+                for (ValidationError error : ((ApplianceValidationException) e.getCause()).getErrors()) {
+                    validationErrors.add(error.getMsg());
+                }
+                resp.setValidationErrors(validationErrors);
+                return resp;
+            } else {
+                throw new IdentityServerException(e);
+            }
         }
         return dozerMapper.map(beRes, AddIdentityApplianceResponse.class);
     }
@@ -332,7 +320,17 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         try {
             beRes = idApplianceManagementService.updateIdentityAppliance(beReq);
         } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
-            throw new IdentityServerException(e);
+            if (e.getCause() instanceof ApplianceValidationException) {
+                UpdateIdentityApplianceResponse resp = new UpdateIdentityApplianceResponse();
+                List<String> validationErrors = new ArrayList<String>();
+                for (ValidationError error : ((ApplianceValidationException) e.getCause()).getErrors()) {
+                    validationErrors.add(error.getMsg());
+                }
+                resp.setValidationErrors(validationErrors);
+                return resp;
+            } else {
+                throw new IdentityServerException(e);
+            }
         }
         return dozerMapper.map(beRes, UpdateIdentityApplianceResponse.class);
     }
@@ -675,13 +673,13 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
 
     private void createFederatedConnection(IdentityProviderDTO idp, ServiceProviderDTO sp){
         IdentityProviderChannelDTO idpChannel = new IdentityProviderChannelDTO();
-        idpChannel.setName(sp.getName() + "-default-channel");
+        idpChannel.setName(sp.getName() + "-to-" + idp.getName() + "-default-channel");
         idpChannel.setDescription(sp.getName() + " Default Channel");
         idpChannel.setOverrideProviderSetup(false);
         idpChannel.setPreferred(true);
 
         ServiceProviderChannelDTO spChannel = new ServiceProviderChannelDTO();
-        spChannel.setName(idp.getName() + "-default-channel");
+        spChannel.setName(idp.getName() + "-to-" + sp.getName() + "-default-channel");
         spChannel.setDescription(sp.getName() + " Default Channel");
         spChannel.setOverrideProviderSetup(false);
 

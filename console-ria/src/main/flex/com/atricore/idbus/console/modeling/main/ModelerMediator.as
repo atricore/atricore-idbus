@@ -44,6 +44,7 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceState;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.collections.ArrayCollection;
 import mx.controls.Alert;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
@@ -199,7 +200,7 @@ public class ModelerMediator extends IocMediator {
             Alert.show("There are unsaved changes which will be lost in case you choose to continue.",
                     "Confirm", Alert.OK | Alert.CANCEL, null, newApplianceConfirmed, null, Alert.OK);
             Alert.buttonWidth = buttonWidth;
-            Alert.yesLabel = "OK";
+            Alert.okLabel = "OK";
         } else {
             openNewApplianceWizard();
         }
@@ -272,6 +273,7 @@ public class ModelerMediator extends IocMediator {
             ApplicationFacade.SHOW_UPLOAD_PROGRESS,
             ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
             ApplicationFacade.CREATE_ACTIVATION,
+            ApplicationFacade.APPLIANCE_VALIDATION_ERRORS,
 //            ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
@@ -440,6 +442,21 @@ public class ModelerMediator extends IocMediator {
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         "There was an error updating appliance.");
+                break;
+            case ApplicationFacade.APPLIANCE_VALIDATION_ERRORS:
+                sendNotification(ProcessingMediator.STOP);
+                var validationErrors:ArrayCollection = projectProxy.identityApplianceValidationErrors;
+                if (validationErrors != null && validationErrors.length > 0) {
+                    var msg:String = "";
+                    for each (var validationError:String in validationErrors) {
+                        if (validationErrors.length > 1) {
+                            msg += "* ";
+                        }
+                        msg += validationError + "\n";
+                    }
+                    Alert.show(msg, "Validation Errors");
+                }
+                projectProxy.identityApplianceValidationErrors = null;
                 break;
         }
 
