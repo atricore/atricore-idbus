@@ -49,6 +49,8 @@
             private var labelWidth:Number = 165;
 
             private var lastSPCreated:Boolean;
+            [Bindable]
+            public var tmpPartnerAppLocationDomain:String;
 
             /**
              * This will holds the results
@@ -74,7 +76,7 @@
                 serviceProviderArray = new Array();
                 lastSPCreated = false;
 
-                clearTheForm();              
+                clearTheForm();
             }
 
             private function initForm():void {
@@ -91,6 +93,7 @@
                 parent.parent.addEventListener(SsoEvent.DIRECTORY_EXISTS, handleDirectoryExists);
                 parent.parent.addEventListener(SsoEvent.DIRECTORY_DOESNT_EXIST, handleDirectoryDoesntExists);
                 partnerappLocationPort.text = "8080";
+                partnerappLocationDomain.text = tmpPartnerAppLocationDomain;
             }
 
             private function handleSpNameChange(event:Event):void {
@@ -102,14 +105,14 @@
                 // Check the step validity
                 homeDir.errorString = "";
                 ssoWizStep3Form.validateForm(event);
-                if(ssoWizStep3Form.isValid){
+                if (ssoWizStep3Form.isValid) {
                     var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
                     cif.homeDir = homeDir.text;
                     cif.environmentName = "SSO_WIZARD_MADE_ENV";
                     var ssoEvent:SsoEvent = new SsoEvent(SsoEvent.VALIDATE_HOME_DIR);
                     ssoEvent.cif = cif;
                     parent.parent.dispatchEvent(ssoEvent);
-//                    isValid = ssoWizStep3Form.isValid;
+                    //                    isValid = ssoWizStep3Form.isValid;
                 }
 
             }
@@ -155,9 +158,9 @@
                 (sp.activation as JOSSOActivation).partnerAppLocation = loc;
                 (sp.activation as JOSSOActivation).partnerAppId = partnerAppId.text;
 
-                if(jossoSPPlatform.selectedItem.@data.indexOf("jb") == 0){
+                if (jossoSPPlatform.selectedItem.@data.indexOf("jb") == 0) {
                     sp.activation.executionEnv = new JbossExecutionEnvironment();
-                } else if (jossoSPPlatform.selectedItem.@data.indexOf("tc") == 0){
+                } else if (jossoSPPlatform.selectedItem.@data.indexOf("tc") == 0) {
                     sp.activation.executionEnv = new TomcatExecutionEnvironment();
                 }
                 sp.activation.executionEnv.name = partnerappLocationProtocol.labelDisplay.text + "-execenv";
@@ -179,7 +182,6 @@
 
                 creationStatusLbl.text = "JOSSO Service Provider successfully added";
                 fadeFx.play([creationStatusLbl]);
-
                 clearTheForm();
 
                 isValid = false; //disable 'save' and 'next' buttons
@@ -192,9 +194,8 @@
                 partnerAppId.text = "";
                 partnerAppId.errorString = "";
 
-//                partnerappLocationDomain.text = "";
                 partnerappLocationDomain.errorString = "";//prevents validation error from occurring
-//                partnerappLocationDomain.text = ((parent.parent as SimpleSSOWizardView).steps[0].applianceData as IdentityAppliance).idApplianceDefinition.name;
+                partnerappLocationDomain.text = tmpPartnerAppLocationDomain;
                 partnerappLocationPort.text = "8080";
                 partnerappLocationContext.text = "";
                 partnerappLocationContext.errorString = "";
@@ -207,8 +208,8 @@
             }
 
             private function changeSPLocationLabel(event:Event):void {
-//                var port:String = ( partnerappLocationPort.text == "" ? "" : ":" + partnerappLocationPort.text );
-//                spLocationLbl.text = "[ " + composeLocation() + " ]";
+                //                var port:String = ( partnerappLocationPort.text == "" ? "" : ":" + partnerappLocationPort.text );
+                //                spLocationLbl.text = "[ " + composeLocation() + " ]";
                 handleFormChange(event);
             }
 

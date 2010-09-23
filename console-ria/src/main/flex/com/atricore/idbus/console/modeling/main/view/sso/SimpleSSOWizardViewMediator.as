@@ -119,6 +119,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         BindingUtils.bindProperty(view.steps[1], "uploadedFileName", this, "_uploadedFileName");
         BindingUtils.bindProperty(view.steps[1].certificateKeyPair, "dataProvider", this, "_selectedFiles");
         BindingUtils.bindProperty(view.steps[6].partnerappLocationDomain, "text", view.steps[0].applianceLocationDomain, "text");
+        BindingUtils.bindProperty(view.steps[6], "tmpPartnerAppLocationDomain", view.steps[0].applianceLocationDomain, "text");
 
         resetUploadFields();
     }
