@@ -113,6 +113,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
 
     private function resetForm():void {
         view.identityProviderName.text = "";
+        view.identityProviderName.errorString = "";
         view.identityProvDescription.text = "";
         view.idpLocationProtocol.selectedIndex = 0;
         view.idpLocationDomain.text = "";
@@ -423,14 +424,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
 
     override public function registerValidators():void {
         _validators = [];
-        var nameValidator:NameValidator = new NameValidator();
-//        nameValidator.id = "nameValidator";
-        nameValidator.source = view.identityProviderName;
-        nameValidator.required = true;
-        nameValidator.property = "text";
-        nameValidator.trigger = view.btnOk;
-        nameValidator.triggerEvent = "click";
-        _validators.push(nameValidator);
+        _validators.push(view.nameValidator);
         view.portValidator.source = view.idpLocationPort;
         _validators.push(view.portValidator);
         view.domainValidator.source = view.idpLocationDomain;

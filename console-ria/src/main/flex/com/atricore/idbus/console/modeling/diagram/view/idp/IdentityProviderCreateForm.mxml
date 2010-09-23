@@ -39,8 +39,8 @@
             <fx:Object label="Windows (NTLM)" data="ntlm"/>
             <fx:Object label="Remember Me" data="rememberme"/>
         </mx:ArrayCollection>
-        <!--<utils:NameValidator id="nameValidator" source="{identityProviderName}" required="true" property="text" trigger="{btnOk}"-->
-                        <!--triggerEvent="click"/>-->
+        <utils:NameValidator id="nameValidator" source="{identityProviderName}" required="true" property="text" trigger="{btnOk}"
+                        triggerEvent="click"/>
         <mx:NumberValidator id="portValidator" source="{idpLocationPort}" required="false" property="text"
                         trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
                         invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>

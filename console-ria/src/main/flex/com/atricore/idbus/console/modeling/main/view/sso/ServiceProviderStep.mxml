@@ -41,6 +41,7 @@
             import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
             import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
             import com.atricore.idbus.console.modeling.main.view.sso.event.SsoEvent;
+            import com.atricore.idbus.console.services.dto.IdentityAppliance;
 
             [Bindable]
             private var validators:Array;
@@ -73,7 +74,7 @@
                 serviceProviderArray = new Array();
                 lastSPCreated = false;
 
-                clearTheForm();
+                clearTheForm();              
             }
 
             private function initForm():void {
@@ -89,6 +90,12 @@
                 }
                 parent.parent.addEventListener(SsoEvent.DIRECTORY_EXISTS, handleDirectoryExists);
                 parent.parent.addEventListener(SsoEvent.DIRECTORY_DOESNT_EXIST, handleDirectoryDoesntExists);
+                partnerappLocationPort.text = "8080";
+            }
+
+            private function handleSpNameChange(event:Event):void {
+                partnerAppId.text = jossoSPName.text;
+                handleFormChange(event);
             }
 
             private function handleFormChange(event:Event):void {
@@ -182,15 +189,20 @@
                 jossoSPName.text = "";
                 jossoSPName.errorString = ""; //prevents validation error from occurring
                 jossoSPPlatform.selectedIndex = 0;
+                partnerAppId.text = "";
+                partnerAppId.errorString = "";
 
-                partnerappLocationDomain.text = "";
+//                partnerappLocationDomain.text = "";
                 partnerappLocationDomain.errorString = "";//prevents validation error from occurring
-                partnerappLocationPort.text = "";
+//                partnerappLocationDomain.text = ((parent.parent as SimpleSSOWizardView).steps[0].applianceData as IdentityAppliance).idApplianceDefinition.name;
+                partnerappLocationPort.text = "8080";
                 partnerappLocationContext.text = "";
                 partnerappLocationContext.errorString = "";
-                //spLocationPath.text = "";
-                //spLocationPath.errorString = "";
-//                spLocationLbl.text = "";
+
+                homeDir.text = "";
+                homeDir.errorString = "";
+
+
                 partnerappLocationProtocol.selectedIndex = 0;
             }
 
@@ -242,7 +254,7 @@
                 </s:HGroup>
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.jossoSPName')}:"
                              required="true" paddingRight="4">
-                    <s:TextInput id="jossoSPName" width="388" change="handleFormChange(event);"/>
+                    <s:TextInput id="jossoSPName" width="388" change="handleSpNameChange(event);"/>
                 </mx:FormItem>
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step3.applicationPlatform')}:">
                     <s:DropDownList id="jossoSPPlatform" width="302"
