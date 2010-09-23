@@ -99,7 +99,7 @@ public class ActivationCreateMediator extends IocFormMediator {
             }
         }
         view.activationDomain.text = _sp.location.host;
-        view.activationPort.text = _sp.location.port.toString();
+        view.activationPort.text = "8080";
         view.activationName.text = _sp.name.toLowerCase().replace(/\s+/g, "-") + "-" +
                 _execEnv.name.toLowerCase().replace(/\s+/g, "-") + "-activation";
     }
