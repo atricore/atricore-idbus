@@ -76,7 +76,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
-    public static const SHOW_SUCCESS_MSG:String = "showSuccessMsg";
+//    public static const SHOW_SUCCESS_MSG:String = "showSuccessMsg";
     public static const LOGIN:String = "login";
     public static const CHANGE_PASSWORD:String = "changePassword";
     public static const NOT_FIRST_RUN:String = "notFirstRun";

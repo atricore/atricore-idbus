@@ -90,8 +90,8 @@ public class SetupWizardViewMediator extends IocMediator
     }
 
     public function handleServerSetupSuccess():void {
-        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-                "The server has been setup successfully.");
+//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+//                "The server has been setup successfully.");
     }
 
     public function handleServerSetupFailure():void {

@@ -127,7 +127,7 @@ public class AddGroupMediator extends IocFormMediator
     public function handleAddGroupSuccess():void {
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.LIST_GROUPS);
-        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The the group was successfully created.");
+//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The the group was successfully created.");
     }
 
     public function handleAddGroupFailure():void {

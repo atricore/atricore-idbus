@@ -30,6 +30,7 @@ import com.atricore.idbus.console.main.view.form.FormUtility;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.controls.Alert;
 import mx.events.FlexEvent;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -129,8 +130,9 @@ public class LoginMediator extends IocMediator
     }
 
     public function handleEmailSuccess():void {
-        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-                "An email with your password has been sent to your account.");
+//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+//                "An email with your password has been sent to your account.");
+        Alert.show("An email with your password has been sent to your account.", "Information");
     }
 
     public function resetLoginForm():void {

@@ -128,7 +128,7 @@ public class EditGroupMediator extends IocFormMediator
 
     public function handleEditGroupSuccess():void {
         sendNotification(ProcessingMediator.STOP);
-        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The the group was successfully updated.");
+//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The the group was successfully updated.");
         sendNotification(ApplicationFacade.LIST_GROUPS);
     }
 

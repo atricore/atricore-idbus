@@ -131,7 +131,7 @@ public class AddUserMediator extends IocFormMediator
     public function handleAddUserSuccess():void {
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.LIST_USERS);
-        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The user was successfully created.");
+//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The user was successfully created.");
     }
 
     public function handleAddUserFailure():void {

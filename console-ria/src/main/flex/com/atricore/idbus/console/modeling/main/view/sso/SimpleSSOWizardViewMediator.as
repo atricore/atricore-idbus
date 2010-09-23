@@ -255,8 +255,8 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
-        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-                "The SSO appliance has been successfully created.");
+//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+//                "The SSO appliance has been successfully created.");
     }
 
     public function handleSSOSetupFailure():void {

@@ -77,8 +77,8 @@ public class IdentityApplianceRemoveCommand extends IocSimpleCommand implements 
         projectProxy.currentIdentityApplianceElement = false;
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
-        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-                    "The identity appliance has been successfully removed.");
+//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+//                    "The identity appliance has been successfully removed.");
     }
 
     public function fault(info:Object):void {

@@ -415,8 +415,8 @@ public class ModelerMediator extends IocMediator {
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-                        "Appliance successfully opened.");
+//                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+//                        "Appliance successfully opened.");
                 break;
             case LookupIdentityApplianceByIdCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
@@ -435,8 +435,8 @@ public class ModelerMediator extends IocMediator {
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-                        "Appliance successfully updated.");
+//                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+//                        "Appliance successfully updated.");
                 break;
             case IdentityApplianceUpdateCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);

@@ -79,8 +79,8 @@ public class ActivateExecEnvironmentCommand extends IocSimpleCommand implements 
     public function result(data:Object):void {
         var resp:ActivateExecEnvResponse = data.result as ActivateExecEnvResponse;
         sendNotification(ProcessingMediator.STOP);
-        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-                        "Execution environment successfully activated.");
+//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+//                        "Execution environment successfully activated.");
         sendNotification(SUCCESS);
     }
 }

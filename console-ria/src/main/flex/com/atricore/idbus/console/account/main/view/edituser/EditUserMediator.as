@@ -201,7 +201,7 @@ public class EditUserMediator extends IocFormMediator
 
     public function handleEditUserSuccess():void {
         sendNotification(ProcessingMediator.STOP);
-        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The user was successfully updated.");
+//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The user was successfully updated.");
         sendNotification(ApplicationFacade.LIST_USERS);
     }
 

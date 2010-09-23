@@ -89,7 +89,7 @@ public class BuildApplianceMediator extends IocFormMediator
                     if (view.deployAppliance.selected) {
                         msg =  "Appliance has been successfully built and deployed.";
                     }
-                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, msg);
+//                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, msg);
                 }
                 break;
             case BuildIdentityApplianceCommand.FAILURE:

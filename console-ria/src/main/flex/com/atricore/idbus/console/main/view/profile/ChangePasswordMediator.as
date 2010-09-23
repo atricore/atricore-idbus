@@ -114,8 +114,8 @@ public class ChangePasswordMediator extends IocFormMediator
     }
 
     public function handlePasswordChangeSuccess():void {
-        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-                "The user password changed succsessfuly.");
+//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+//                "The user password changed succsessfuly.");
     }
 
     public function handlePasswordChangeFailure():void {

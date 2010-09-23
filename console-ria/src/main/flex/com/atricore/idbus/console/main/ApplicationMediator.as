@@ -35,6 +35,7 @@ import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMedi
 
 import flash.events.Event;
 
+import mx.controls.Alert;
 import mx.controls.MenuBar;
 import mx.effects.WipeRight;
 import mx.events.FlexEvent;
@@ -170,7 +171,7 @@ public class ApplicationMediator extends IocMediator {
 
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.SHOW_ERROR_MSG,
-            ApplicationFacade.SHOW_SUCCESS_MSG,
+//            ApplicationFacade.SHOW_SUCCESS_MSG,
             ApplicationFacade.CLEAR_MSG,
             ApplicationStartUpCommand.SUCCESS,
             ApplicationStartUpCommand.FAILURE,
@@ -219,11 +220,13 @@ public class ApplicationMediator extends IocMediator {
                 app.currentState = "operation";
                 break;
             case ApplicationFacade.SHOW_ERROR_MSG :
-                app.messageBox.showFailureMessage(notification.getBody() as String);
+//              app.messageBox.showFailureMessage(notification.getBody() as String);
+                var errString:String = notification.getBody() as String;
+                Alert.show(errString, "Error");
                 break;
-            case ApplicationFacade.SHOW_SUCCESS_MSG :
-                app.messageBox.showSuccessMessage(notification.getBody() as String);
-                break;
+//            case ApplicationFacade.SHOW_SUCCESS_MSG :
+//                app.messageBox.showSuccessMessage(notification.getBody() as String);
+//                break;
             case ApplicationFacade.CLEAR_MSG :
                 app.messageBox.clearAndHide();
                 break;
