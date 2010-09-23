@@ -20,6 +20,7 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.idp {
+import com.atricore.idbus.console.components.NameValidator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
@@ -157,9 +158,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         _uploadedFile = null;
         _uploadedFileName = null;
 
-        registerValidators();
-
         FormUtility.clearValidationErrors(_validators);
+        registerValidators();
     }
 
     public function initLocation():void {
@@ -423,10 +423,21 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
 
     override public function registerValidators():void {
         _validators = [];
-        _validators.push(view.nameValidator);
+        var nameValidator:NameValidator = new NameValidator();
+//        nameValidator.id = "nameValidator";
+        nameValidator.source = view.identityProviderName;
+        nameValidator.required = true;
+        nameValidator.property = "text";
+        nameValidator.trigger = view.btnOk;
+        nameValidator.triggerEvent = "click";
+        _validators.push(nameValidator);
+        view.portValidator.source = view.idpLocationPort;
         _validators.push(view.portValidator);
+        view.domainValidator.source = view.idpLocationDomain;
         _validators.push(view.domainValidator);
+        view.contextValidator.source = view.idpLocationContext;
         _validators.push(view.contextValidator);
+        view.pathValidator.source = view.idpLocationPath;
         _validators.push(view.pathValidator);
         if (view.uploadKeystore.selected) {
             _validators.push(view.certificateAliasValidator);
@@ -442,6 +453,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
 
     override public function handleNotification(notification:INotification):void {
         super.handleNotification(notification);
+        initLocation();
+        registerValidators();        
     }
 }
 }
