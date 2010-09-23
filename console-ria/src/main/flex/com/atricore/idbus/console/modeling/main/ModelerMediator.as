@@ -49,14 +49,15 @@ import mx.controls.Alert;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 
+import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class ModelerMediator extends IocMediator {
+public class ModelerMediator extends IocMediator implements IDisposable {
 
     public static const viewName:String = "ModelerView";
-    
+
     public static const BUNDLE:String = "console";
 
     public static const ORIENTATION_MENU_ITEM_INDEX:int = 3;
@@ -77,7 +78,7 @@ public class ModelerMediator extends IocMediator {
     private var _diagramMediator:IIocMediator;
     private var _paletteMediator:IIocMediator;
     private var _propertySheetMediator:IIocMediator;
-    
+
     public function ModelerMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
     }
@@ -133,16 +134,9 @@ public class ModelerMediator extends IocMediator {
     }
 
     override public function setViewComponent(p_viewComponent:Object):void {
-        if (getViewComponent() != null) {
-            view.btnNew.removeEventListener(MouseEvent.CLICK, handleNewClick);
-            view.btnOpen.removeEventListener(MouseEvent.CLICK, handleOpenClick);
-            view.btnSave.removeEventListener(MouseEvent.CLICK, handleSaveClick);
-            //view.btnLifecycle.removeEventListener(MouseEvent.CLICK, handleLifecycleClick);
-        }
-
         //this is not working for first viewStack child?
         (p_viewComponent as ModelerView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
-        
+
         super.setViewComponent(p_viewComponent);
 
     }
@@ -182,13 +176,25 @@ public class ModelerMediator extends IocMediator {
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 enableIdentityApplianceActionButtons();
             }/* else {
-                view.btnLifecycle.enabled = false;
-            }*/
+             view.btnLifecycle.enabled = false;
+             }*/
             // TODO: delete IF condition (fetch list every time modeler is opened)?
             if (projectProxy.identityApplianceList == null) {
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
             }
         }
+    }
+
+    public function dispose():void {
+        // Clean up:
+        //      - Remove event listeners
+        //      - Stop timers
+        //      - Set references to null
+
+        view.btnNew.removeEventListener(MouseEvent.CLICK, handleNewClick);
+        view.btnOpen.removeEventListener(MouseEvent.CLICK, handleOpenClick);
+        view.btnSave.removeEventListener(MouseEvent.CLICK, handleSaveClick);
+        view = null;
     }
 
     private function handleNewClick(event:MouseEvent):void {
@@ -211,7 +217,7 @@ public class ModelerMediator extends IocMediator {
             openNewApplianceWizard();
         }
     }
-    
+
     private function openNewApplianceWizard():void {
         if (view.applianceStyle.selectedItem.data == "Advanced") {
             sendNotification(IdentityApplianceWizardViewMediator.RUN);
@@ -243,7 +249,7 @@ public class ModelerMediator extends IocMediator {
             sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE);
         }
     }
-    
+
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.MODELER_VIEW_SELECTED,
             ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
@@ -274,7 +280,7 @@ public class ModelerMediator extends IocMediator {
             ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
             ApplicationFacade.CREATE_ACTIVATION,
             ApplicationFacade.APPLIANCE_VALIDATION_ERRORS,
-//            ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT,
+            //            ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             LookupIdentityApplianceByIdCommand.SUCCESS,
@@ -316,22 +322,22 @@ public class ModelerMediator extends IocMediator {
                 //                 TODO: Perform UI handling for confirming removal action
                 sendNotification(ApplicationFacade.SERVICE_PROVIDER_REMOVE, rsp.serviceProvider);
                 break;
-//            case ApplicationFacade.CREATE_IDP_CHANNEL_ELEMENT:
-//                popupManager.showCreateIdpChannelWindow(notification);
-//                break;
-//            case ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT:
-//                var ridpc:RemoveIdpChannelElementRequest = RemoveIdpChannelElementRequest(notification.getBody());
-//                //                 TODO: Perform UI handling for confirming removal action
-//                sendNotification(ApplicationFacade.IDP_CHANNEL_REMOVE, ridpc.idpChannel);
-//                break;
-//            case ApplicationFacade.CREATE_SP_CHANNEL_ELEMENT:
-//                popupManager.showCreateSpChannelWindow(notification);
-//                break;
-//            case ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT:
-//                var rspc:RemoveSpChannelElementRequest = RemoveSpChannelElementRequest(notification.getBody());
-//                //                 TODO: Perform UI handling for confirming removal action
-//                sendNotification(ApplicationFacade.SP_CHANNEL_REMOVE, rspc.spChannel);
-//                break;
+            //            case ApplicationFacade.CREATE_IDP_CHANNEL_ELEMENT:
+            //                popupManager.showCreateIdpChannelWindow(notification);
+            //                break;
+            //            case ApplicationFacade.REMOVE_IDP_CHANNEL_ELEMENT:
+            //                var ridpc:RemoveIdpChannelElementRequest = RemoveIdpChannelElementRequest(notification.getBody());
+            //                //                 TODO: Perform UI handling for confirming removal action
+            //                sendNotification(ApplicationFacade.IDP_CHANNEL_REMOVE, ridpc.idpChannel);
+            //                break;
+            //            case ApplicationFacade.CREATE_SP_CHANNEL_ELEMENT:
+            //                popupManager.showCreateSpChannelWindow(notification);
+            //                break;
+            //            case ApplicationFacade.REMOVE_SP_CHANNEL_ELEMENT:
+            //                var rspc:RemoveSpChannelElementRequest = RemoveSpChannelElementRequest(notification.getBody());
+            //                //                 TODO: Perform UI handling for confirming removal action
+            //                sendNotification(ApplicationFacade.SP_CHANNEL_REMOVE, rspc.spChannel);
+            //                break;
             case ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT:
                 popupManager.showCreateIdentityVaultWindow(notification);
                 break;
@@ -470,8 +476,8 @@ public class ModelerMediator extends IocMediator {
     private function enableIdentityApplianceActionButtons():void {
         var appliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
         /*if (appliance != null && appliance.idApplianceDeployment == null) {
-            view.btnLifecycle.enabled = true;
-        }*/
+         view.btnLifecycle.enabled = true;
+         }*/
     }
 
     private function applianceListLabelFunc(item:Object):String {
@@ -483,5 +489,9 @@ public class ModelerMediator extends IocMediator {
         return viewComponent as ModelerView;
     }
 
+    protected function set view(md:ModelerView):void
+    {
+        viewComponent = md;
+    }
 }
 }

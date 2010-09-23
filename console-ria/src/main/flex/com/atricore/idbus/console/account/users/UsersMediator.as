@@ -39,11 +39,12 @@ import mx.managers.PopUpManager;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 
+import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class UsersMediator extends IocMediator {
+public class UsersMediator extends IocMediator implements IDisposable{
 
     public static const BUNDLE:String = "console";
 
@@ -83,16 +84,6 @@ public class UsersMediator extends IocMediator {
     }
 
     override public function setViewComponent(p_viewComponent:Object):void {
-        if (getViewComponent() != null) {
-            view.btnNewUser.removeEventListener(MouseEvent.CLICK, handleNewUserClick);
-            view.btnEditUser.removeEventListener(MouseEvent.CLICK, handleEditUserClick);
-            view.btnDeleteUser.removeEventListener(MouseEvent.CLICK, handleDeleteUserClick);
-            view.btnSearchUser.removeEventListener(MouseEvent.CLICK, handleSearchUsersClick);
-
-            view.userList.removeEventListener(ListEvent.ITEM_CLICK , userListSelectHandler);
-            view.btnClearSearch.removeEventListener(MouseEvent.CLICK, handleClearSearch);
-        }
-
         super.setViewComponent(p_viewComponent);
         init();
     }
@@ -109,6 +100,22 @@ public class UsersMediator extends IocMediator {
         sendNotification(ApplicationFacade.LIST_USERS);
         _userPropertiesMediator.setViewComponent(view.properties);
         popupManager.init(iocFacade, view);
+    }
+
+    public function dispose():void {
+        // Clean up:
+        //      - Remove event listeners
+        //      - Stop timers
+        //      - Set references to null
+        view.btnNewUser.removeEventListener(MouseEvent.CLICK, handleNewUserClick);
+        view.btnEditUser.removeEventListener(MouseEvent.CLICK, handleEditUserClick);
+        view.btnDeleteUser.removeEventListener(MouseEvent.CLICK, handleDeleteUserClick);
+        view.btnSearchUser.removeEventListener(MouseEvent.CLICK, handleSearchUsersClick);
+
+        view.userList.removeEventListener(ListEvent.ITEM_CLICK , userListSelectHandler);
+        view.btnClearSearch.removeEventListener(MouseEvent.CLICK, handleClearSearch);
+
+        view = null;
     }
 
     private function onShow(event:Event):void {
@@ -245,6 +252,11 @@ public class UsersMediator extends IocMediator {
     protected function get view():UsersView
     {
         return viewComponent as UsersView;
+    }
+
+    protected function set view(uv:UsersView):void
+    {
+        viewComponent = uv;
     }
 }
 }

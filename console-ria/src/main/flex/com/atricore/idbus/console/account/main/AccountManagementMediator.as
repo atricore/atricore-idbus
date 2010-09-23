@@ -32,6 +32,7 @@ import mx.events.FlexEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 
+import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
@@ -39,7 +40,7 @@ import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 import spark.components.Group;
 import spark.events.IndexChangeEvent;
 
-public class AccountManagementMediator extends IocMediator {
+public class AccountManagementMediator extends IocMediator implements IDisposable{
 
     public static const BUNDLE:String = "console";
     private var resMan:IResourceManager = ResourceManager.getInstance();
@@ -139,6 +140,16 @@ public class AccountManagementMediator extends IocMediator {
         view.accountManagementTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
     }
 
+    public function dispose():void {
+        // Clean up:
+        //      - Remove event listeners
+        //      - Stop timers
+        //      - Set references to null
+
+        view.accountManagementTabBar.removeEventListener(IndexChangeEvent.CHANGE, stackChanged);
+        view = null;
+    }
+
     private function stackChanged(event:IndexChangeEvent):void {
         view.vsAccountMng.selectedIndex = view.accountManagementTabBar.selectedIndex;
     }
@@ -159,6 +170,11 @@ public class AccountManagementMediator extends IocMediator {
     protected function get view():AccountManagementView
     {
         return viewComponent as AccountManagementView;
+    }
+
+    protected function set view(amv:AccountManagementView):void
+    {
+        viewComponent = amv;
     }
 }
 }
