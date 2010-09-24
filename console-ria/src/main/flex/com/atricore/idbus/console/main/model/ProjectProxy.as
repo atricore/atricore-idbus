@@ -25,9 +25,10 @@ import com.atricore.idbus.console.services.dto.IdentityAppliance;
 
 import mx.collections.ArrayCollection;
 
+import org.osmf.traits.IDisposable;
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
-public class ProjectProxy extends IocProxy
+public class ProjectProxy extends IocProxy implements IDisposable
 {
 
     public static const ACTION_ITEM_CREATE : int = 1;
@@ -56,7 +57,7 @@ public class ProjectProxy extends IocProxy
     }
 
     public function get currentIdentityAppliance():IdentityAppliance {
-       return _currentIdentityAppliance;
+        return _currentIdentityAppliance;
     }
 
     public function set currentIdentityAppliance(currentIdentityApplianceDefinition:IdentityAppliance):void {
@@ -96,7 +97,7 @@ public class ProjectProxy extends IocProxy
     }
 
     public function get commandResultIdentityAppliance():IdentityAppliance {
-       return _commandResultIdentityAppliance;
+        return _commandResultIdentityAppliance;
     }
 
     public function set commandResultIdentityAppliance(commandResultIdentityAppliance:IdentityAppliance):void {
@@ -109,6 +110,17 @@ public class ProjectProxy extends IocProxy
 
     public function set identityApplianceValidationErrors(value:ArrayCollection):void {
         _identityApplianceValidationErrors = value;
+    }
+
+    public function dispose():void {
+        _identityApplianceList = null;
+        _viewAction = 0;
+        _currentIdentityAppliance = null;
+        _currentIdentityApplianceElement = null;
+        _currentIdentityApplianceElementOwner = null;
+        _currentView = "";
+        _commandResultIdentityAppliance = null;
+        _identityApplianceValidationErrors = null;
     }
 }
 }
