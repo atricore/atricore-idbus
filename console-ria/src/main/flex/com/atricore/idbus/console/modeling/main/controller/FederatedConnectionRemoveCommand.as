@@ -38,8 +38,9 @@ public class FederatedConnectionRemoveCommand extends IocSimpleCommand {
         federatedConnection.channelA.connectionA = null;
         federatedConnection.channelB.connectionB = null;
 
-        projectProxy.currentIdentityApplianceElement = false;
+        projectProxy.currentIdentityApplianceElement = null;
         // reflect removal in views and diagram editor
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, federatedConnection);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
     }

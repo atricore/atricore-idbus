@@ -55,7 +55,7 @@
 
         public static const BUNDLE:String = "console";
 
-        public var userProfileIcon:Class = EmbeddedIcons.userProfileIcon;
+        public var userProfileIcon:Class = EmbeddedIcons.userProfileSmallIcon;
 
         private function onCreationComplete():void {
 
@@ -106,13 +106,13 @@
         <heading:AtricoreHeading id="brandedHeading" includeIn="splash,operation">
             <!--<comp:MessageBox id="messageBox" x="400" width="70%" height="70%" includeIn="splash,operation"-->
                              <!--showEffect="{wipeRight}" verticalAlign="middle" horizontalAlign="center"/>-->
-            <mx:MenuBar id="userActionMenuBar" includeIn="operation" labelField="@label" iconField="@icon" 
-                        menuBarItemRenderer="com.atricore.idbus.console.components.IconMenuBarItemRenderer">
+            <mx:MenuBar id="userActionMenuBar" includeIn="operation" labelField="@label" iconField="@icon"
+                        textAlign="center">
                 <fx:XMLList>
-                    <menuitem label="Administrator" icon="userProfileIcon" >
-                        <menuitem label="Change Password"/>
-                        <menuitem label="Logout"/>
-                    </menuitem>
+                    <topmenu label="Administrator" icon="userProfileIcon" >
+                        <submenu label="Change Password"/>
+                        <submenu label="Logout"/>
+                    </topmenu>
                 </fx:XMLList>
             </mx:MenuBar>
         </heading:AtricoreHeading>

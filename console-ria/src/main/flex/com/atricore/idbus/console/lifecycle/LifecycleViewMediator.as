@@ -30,10 +30,11 @@ import mx.events.FlexEvent;
 
 import mx.managers.DragManager;
 
+import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class LifecycleViewMediator extends IocMediator {
+public class LifecycleViewMediator extends IocMediator implements IDisposable {
 
     public static const viewName:String = "LifecycleView";
 
@@ -54,32 +55,7 @@ public class LifecycleViewMediator extends IocMediator {
         _projectProxy = value;
     }
 
-
     override public function setViewComponent(viewComponent:Object):void {
-
-        if (getViewComponent() != null) {
-            view.grdSavedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-            view.grdSavedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-            view.grdSavedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-            view.grdSavedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
-            view.grdCompiledAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-            view.grdCompiledAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-            view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-            view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
-            view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInSavedAppliance);
-            view.grdDeployedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-            view.grdDeployedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-            view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-            view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
-            view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInCompiledAppliance);
-            view.grdDeployedAppliances.labelFunction = identityApplianceNameLabel;
-            view.grdDisposedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-            view.grdDisposedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-            view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-            view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
-            view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInDeployedAppliance);
-        }
-        
         (viewComponent as LifecycleView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 
         super.setViewComponent(viewComponent);
@@ -87,7 +63,7 @@ public class LifecycleViewMediator extends IocMediator {
 
     private function creationCompleteHandler(event:Event):void {
         _created = true;
-        
+
         /* Remove unused title in lifecycle management panel */
         view.titleDisplay.width = 0;
         view.titleDisplay.height = 0;
@@ -126,7 +102,7 @@ public class LifecycleViewMediator extends IocMediator {
 
         initGrids();
     }
-    
+
     public function initGrids():void {
         if (_created) {
             var savedAppliances:ArrayCollection = new ArrayCollection();
@@ -200,6 +176,37 @@ public class LifecycleViewMediator extends IocMediator {
         }
     }
 
+    public function dispose():void {
+        // Clean up:
+        //      - Remove event listeners
+        //      - Stop timers
+        //      - Set references to null
+
+        view.grdSavedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
+        view.grdSavedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+        view.grdSavedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+        view.grdSavedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
+        view.grdCompiledAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
+        view.grdCompiledAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+        view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+        view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
+        view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInSavedAppliance);
+        view.grdDeployedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
+        view.grdDeployedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+        view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+        view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
+        view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInCompiledAppliance);
+        view.grdDeployedAppliances.labelFunction = identityApplianceNameLabel;
+        view.grdDisposedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
+        view.grdDisposedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+        view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+        view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
+        view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInDeployedAppliance);
+
+        view = null;
+    }
+
+
     private function identityApplianceNameLabel(item:Object, column:AdvancedDataGridColumn):String {
         return (item as IdentityAppliance).idApplianceDefinition.name;
     }
@@ -254,7 +261,7 @@ public class LifecycleViewMediator extends IocMediator {
             sendNotification(ApplicationFacade.DISPOSE_IDENTITY_APPLIANCE, appliance.id.toString());
         }
     }
-    
+
     private function handleDragOver(event:DragEvent):void {
         var sourceGrid:CustomDataGrid = event.dragInitiator as CustomDataGrid;
         var targetGrid:CustomDataGrid = event.currentTarget as CustomDataGrid;
@@ -277,21 +284,21 @@ public class LifecycleViewMediator extends IocMediator {
             }
         }
     }
-    
+
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.LIFECYCLE_VIEW_SELECTED,
-                BuildIdentityApplianceCommand.SUCCESS,
-                BuildIdentityApplianceCommand.FAILURE,
-                DeployIdentityApplianceCommand.SUCCESS,
-                DeployIdentityApplianceCommand.FAILURE,
-                StartIdentityApplianceCommand.SUCCESS,
-                StartIdentityApplianceCommand.FAILURE,
-                StopIdentityApplianceCommand.SUCCESS,
-                StopIdentityApplianceCommand.FAILURE,
-                UndeployIdentityApplianceCommand.SUCCESS,
-                UndeployIdentityApplianceCommand.FAILURE,
-                DisposeIdentityApplianceCommand.SUCCESS,
-                DisposeIdentityApplianceCommand.FAILURE];
+            BuildIdentityApplianceCommand.SUCCESS,
+            BuildIdentityApplianceCommand.FAILURE,
+            DeployIdentityApplianceCommand.SUCCESS,
+            DeployIdentityApplianceCommand.FAILURE,
+            StartIdentityApplianceCommand.SUCCESS,
+            StartIdentityApplianceCommand.FAILURE,
+            StopIdentityApplianceCommand.SUCCESS,
+            StopIdentityApplianceCommand.FAILURE,
+            UndeployIdentityApplianceCommand.SUCCESS,
+            UndeployIdentityApplianceCommand.FAILURE,
+            DisposeIdentityApplianceCommand.SUCCESS,
+            DisposeIdentityApplianceCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -314,7 +321,7 @@ public class LifecycleViewMediator extends IocMediator {
                     updateAppliancesList(true);
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        "There was an error building appliance.");
+                            "There was an error building appliance.");
                 }
                 break;
             case DeployIdentityApplianceCommand.SUCCESS:
@@ -472,13 +479,17 @@ public class LifecycleViewMediator extends IocMediator {
             }
         }
         initGrids();
-        
+
         // TODO: retrieve the list instead of modifying the existing one?
         //sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
     }
 
-    public function get view():LifecycleView {
+    protected function get view():LifecycleView {
         return viewComponent as LifecycleView;
+    }
+
+    protected function set view(lc:LifecycleView):void {
+        viewComponent = lc;
     }
 
 }

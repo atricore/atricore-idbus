@@ -58,6 +58,8 @@ public class ApplicationMediator extends IocMediator {
     public static const LIFECYCLE_VIEW_INDEX:int = 1;
     public static const ACCOUNT_VIEW_INDEX:int = 4;
 
+    public var userProfileIcon:Class = EmbeddedIcons.userProfileIcon;
+
     private var _secureContextProxy:SecureContextProxy;
     private var _popupManager:ConsolePopUpManager;
     private var _modelerMediator:IIocMediator;
@@ -171,7 +173,7 @@ public class ApplicationMediator extends IocMediator {
 
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.SHOW_ERROR_MSG,
-//            ApplicationFacade.SHOW_SUCCESS_MSG,
+            //            ApplicationFacade.SHOW_SUCCESS_MSG,
             ApplicationFacade.CLEAR_MSG,
             ApplicationStartUpCommand.SUCCESS,
             ApplicationStartUpCommand.FAILURE,
@@ -220,13 +222,13 @@ public class ApplicationMediator extends IocMediator {
                 app.currentState = "operation";
                 break;
             case ApplicationFacade.SHOW_ERROR_MSG :
-//              app.messageBox.showFailureMessage(notification.getBody() as String);
+                //              app.messageBox.showFailureMessage(notification.getBody() as String);
                 var errString:String = notification.getBody() as String;
                 Alert.show(errString, "Error");
                 break;
-//            case ApplicationFacade.SHOW_SUCCESS_MSG :
-//                app.messageBox.showSuccessMessage(notification.getBody() as String);
-//                break;
+            //            case ApplicationFacade.SHOW_SUCCESS_MSG :
+            //                app.messageBox.showSuccessMessage(notification.getBody() as String);
+            //                break;
             case ApplicationFacade.CLEAR_MSG :
 //                app.messageBox.clearAndHide();
                 break;
@@ -268,8 +270,9 @@ public class ApplicationMediator extends IocMediator {
 
         app.stackButtonBar.addEventListener(IndexChangeEvent.CHANGE, handleStackChange);
         app.stackButtonBar.selectedIndex = 0;
-        if (_secureContextProxy.currentUser != null)
+        if (_secureContextProxy.currentUser != null) {
             app.userActionMenuBar.dataProvider.source[0].@label = _secureContextProxy.currentUser.commonName;
+        }
         app.userActionMenuBar.addEventListener(MenuEvent.ITEM_CLICK, handleUserMenuAction)
         sendNotification(ApplicationFacade.CLEAR_MSG);
     }

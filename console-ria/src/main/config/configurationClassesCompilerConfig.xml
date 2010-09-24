@@ -69,6 +69,7 @@
         <symbol>com.atricore.idbus.console.main.controller.ApplicationStartUpCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityVaultRemoveCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.ExecutionEnvironmentRemoveCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceRemoveCommand</symbol>

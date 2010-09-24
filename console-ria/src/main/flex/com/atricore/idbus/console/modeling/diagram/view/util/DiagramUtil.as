@@ -1,4 +1,6 @@
 package com.atricore.idbus.console.modeling.diagram.view.util {
+import com.atricore.idbus.console.main.EmbeddedIcons;
+import com.atricore.idbus.console.modeling.diagram.DiagramElementTypes;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
@@ -55,6 +57,48 @@ public class DiagramUtil {
             return true;
         }
         return false;
+    }
+
+    public static function getIconForElementType(elementType:int):Class {
+        switch (elementType) {
+            case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.idpMiniIcon;
+            case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
+                return EmbeddedIcons.spMiniIcon;
+            case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
+                return EmbeddedIcons.vaultMiniIcon;
+            case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.dbIdentitySourceMiniIcon;
+            case DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.ldapIdentitySourceMiniIcon;
+            case DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE:
+                return EmbeddedIcons.xmlIdentitySourceMiniIcon;
+            case DiagramElementTypes.JBOSS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.jbossEnvironmentMiniIcon;
+            case DiagramElementTypes.WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.weblogicEnvironmentMiniIcon;
+            case DiagramElementTypes.TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.tomcatEnvironmentMiniIcon;
+            case DiagramElementTypes.JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.jbossEnvironmentMiniIcon;
+            case DiagramElementTypes.LIFERAY_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.liferayEnvironmentMiniIcon;
+            case DiagramElementTypes.WEBSPHERE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.websphereEnvironmentMiniIcon;
+            case DiagramElementTypes.APACHE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.apacheEnvironmentMiniIcon;
+            case DiagramElementTypes.WINDOWS_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.windowsEnvironmentMiniIcon;
+            case DiagramElementTypes.ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.alfrescoEnvironmentMiniIcon;
+            case DiagramElementTypes.JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.javaEnvironmentMiniIcon;
+            case DiagramElementTypes.PHPBB_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.phpbbEnvironmentMiniIcon;
+            case DiagramElementTypes.WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                return EmbeddedIcons.webEnvironmentMiniIcon;
+        }
+        return null;
     }
 }
 }

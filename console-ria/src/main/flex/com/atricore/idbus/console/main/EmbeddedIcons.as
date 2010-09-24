@@ -160,6 +160,10 @@ public class EmbeddedIcons {
     static public var userProfileIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/ui/profile_16x16.png")]
+    static public var userProfileSmallIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/ui/world_network_22x22.png")]
     static public var worldIcon:Class;
 

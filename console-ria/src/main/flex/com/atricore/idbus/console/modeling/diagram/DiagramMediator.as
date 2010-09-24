@@ -30,21 +30,23 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.util.Constants;
 import com.atricore.idbus.console.modeling.diagram.event.VEdgeRemoveEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VEdgeSelectedEvent;
+import com.atricore.idbus.console.modeling.diagram.event.VNodeCreationEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
 import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDbIdentitySourceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
-import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateXmlIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityLookupElementRequest;
@@ -53,8 +55,10 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityV
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
+import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.Activation;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
+import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
@@ -64,13 +68,14 @@ import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
+import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
-import com.atricore.idbus.console.modeling.palette.PaletteMediator;
+
+import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
-
 import flash.utils.Dictionary;
 
 import mx.collections.ArrayCollection;
@@ -85,7 +90,9 @@ import org.un.cava.birdeye.ravis.enhancedGraphLayout.data.EnhancedGraph;
 import org.un.cava.birdeye.ravis.graphLayout.data.IEdge;
 import org.un.cava.birdeye.ravis.graphLayout.data.IGraph;
 import org.un.cava.birdeye.ravis.graphLayout.data.INode;
+import org.un.cava.birdeye.ravis.graphLayout.layout.BaseLayouter;
 import org.un.cava.birdeye.ravis.graphLayout.layout.CircularLayouter;
+import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualEdge;
 import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
 import org.un.cava.birdeye.ravis.utils.TypeUtil;
 import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;
@@ -140,6 +147,7 @@ public class DiagramMediator extends IocMediator {
             _identityApplianceDiagram.removeEventListener(VEdgeSelectedEvent.VEDGE_SELECTED, edgeSelectedEventHandler);
             _identityApplianceDiagram.removeEventListener(VEdgeRemoveEvent.VEDGE_REMOVE, edgeRemoveEventHandler);
             _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.LINKING_CANCELED, linkingCanceledEventHandler);
+            _identityApplianceDiagram.removeEventListener(VNodeCreationEvent.OPEN_CREATION_FORM, openDialogElementCreationFormEventHandler);
         }
 
         super.setViewComponent(viewComponent);
@@ -148,7 +156,6 @@ public class DiagramMediator extends IocMediator {
     }
 
     private function init():void {
-
         _identityApplianceDiagram = view.identityApplianceDiagram;
         _identityApplianceDiagram.addEventListener(VNodeSelectedEvent.VNODE_SELECTED, nodeSelectedEventHandler);
         _identityApplianceDiagram.addEventListener(VNodeRemoveEvent.VNODE_REMOVE, nodeRemoveEventHandler);
@@ -158,19 +165,24 @@ public class DiagramMediator extends IocMediator {
         _identityApplianceDiagram.addEventListener(VEdgeSelectedEvent.VEDGE_SELECTED, edgeSelectedEventHandler);
         _identityApplianceDiagram.addEventListener(VEdgeRemoveEvent.VEDGE_REMOVE, edgeRemoveEventHandler);
         _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.LINKING_CANCELED, linkingCanceledEventHandler);
+        _identityApplianceDiagram.addEventListener(VNodeCreationEvent.OPEN_CREATION_FORM, openDialogElementCreationFormEventHandler);
         _emptyNotationModel = <Graph/>;
 
         resetGraph();
         updateGraph();
-
     }
 
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
+            ApplicationFacade.PALETTE_ELEMENT_SELECTED,
             ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM,
             ApplicationFacade.DIAGRAM_ELEMENT_SELECTED,
             ApplicationFacade.DIAGRAM_ELEMENT_UPDATED,
-            ApplicationFacade.DIAGRAM_ELEMENT_REMOVE
+            ApplicationFacade.DIAGRAM_ELEMENT_REMOVE,
+            ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE,
+            ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE,
+            ApplicationFacade.REFRESH_DIAGRAM,
+            ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA
         ];
     }
 
@@ -178,25 +190,31 @@ public class DiagramMediator extends IocMediator {
         switch (notification.getName()) {
             case ApplicationFacade.UPDATE_IDENTITY_APPLIANCE:
                 updateIdentityAppliance();
+                //init();
+                break;
+            case ApplicationFacade.REFRESH_DIAGRAM:
                 init();
+                break;
+            case ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA:
+                updateGraphData();
+                break;
+            case ApplicationFacade.PALETTE_ELEMENT_SELECTED:
+                var elementType:int = notification.getBody() as int;
+
+                if (_applianceId != null) {
+                    if (elementType == DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE) {
+                        _identityApplianceDiagram.enterFederatedConnectionMode();
+                    } else if (elementType == DiagramElementTypes.ACTIVATION_ELEMENT_TYPE) {
+                        _identityApplianceDiagram.enterActivationMode();
+                    } else if (elementType == DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE) {
+                        _identityApplianceDiagram.enterIdentityLookupMode();
+                    } else {
+                        _identityApplianceDiagram.enterNodeCreationMode(elementType);
+                    }
+                }
                 break;
             case ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM:
                 var elementType:int = notification.getBody() as int;
-
-                if (_applianceId != null && elementType == DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE) {
-                    _identityApplianceDiagram.enterFederatedConnectionMode();
-                    break;
-                }
-                if (_applianceId != null && elementType == DiagramElementTypes.ACTIVATION_ELEMENT_TYPE) {
-                    _identityApplianceDiagram.enterActivationMode();
-                    break;
-                }
-                if (_applianceId != null && elementType == DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE) {
-                    _identityApplianceDiagram.enterIdentityLookupMode();
-                    break;
-                }
-
-                //                if (_currentlySelectedNode != null) {
 
                 switch (elementType) {
                     case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
@@ -346,7 +364,7 @@ public class DiagramMediator extends IocMediator {
                         sendNotification(ApplicationFacade.CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT, cwiiseenv);
                         break;
                 }
-                //                }
+                
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
                 toggleNodeOnByData(_identityApplianceDiagram, _projectProxy.currentIdentityApplianceElement);
@@ -384,25 +402,110 @@ public class DiagramMediator extends IocMediator {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT, rsp);
-                            break;    
-                        case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
-                            var identityVault:DbIdentitySource = _currentlySelectedNode.data as DbIdentitySource;
+                            break;
+                        case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
+                            var identityVault:EmbeddedIdentitySource = _currentlySelectedNode.data as EmbeddedIdentitySource;
 
                             var riv:RemoveIdentityVaultElementRequest = new RemoveIdentityVaultElementRequest(identityVault);
 
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
-                            sendNotification(ApplicationFacade.REMOVE_DB_IDENTITY_SOURCE_ELEMENT, riv);
+                            sendNotification(ApplicationFacade.REMOVE_IDENTITY_SOURCE_ELEMENT, riv);
+                            break;
+                        case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
+                            var dbIdentitySource:DbIdentitySource = _currentlySelectedNode.data as DbIdentitySource;
+
+                            var rdiv:RemoveIdentityVaultElementRequest = new RemoveIdentityVaultElementRequest(dbIdentitySource);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_IDENTITY_SOURCE_ELEMENT, rdiv);
+                            break;
+                        case DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE:
+                            var ldapIdentitySource:LdapIdentitySource = _currentlySelectedNode.data as LdapIdentitySource;
+
+                            var rliv:RemoveIdentityVaultElementRequest = new RemoveIdentityVaultElementRequest(ldapIdentitySource);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_IDENTITY_SOURCE_ELEMENT, rliv);
+                            break;
+                        case DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE:
+                            var xmlIdentitySource:XmlIdentitySource = _currentlySelectedNode.data as XmlIdentitySource;
+
+                            var rxiv:RemoveIdentityVaultElementRequest = new RemoveIdentityVaultElementRequest(xmlIdentitySource);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_IDENTITY_SOURCE_ELEMENT, rxiv);
+                            break;
+                        case DiagramElementTypes.EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                            var execEnv:ExecutionEnvironment = _currentlySelectedNode.data as ExecutionEnvironment;
+
+                            var rev:RemoveExecutionEnvironmentElementRequest = new RemoveExecutionEnvironmentElementRequest(execEnv);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_EXECUTION_ENVIRONMENT_ELEMENT, rev);
                             break;
                     }
                 }
 
-                if (_currentlySelectedEdge != null) {
-                    GraphDataManager.removeVEdge(_identityApplianceDiagram, _currentlySelectedEdge.vedge);
+                /*if (_currentlySelectedEdge != null) {
+                    GraphDataManager.removeVEdge(_identityApplianceDiagram, _currentlySelectedEdge.vedge, true);
                     _currentlySelectedEdge = null;
                     sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                }
+                }*/
 
+                break;
+            case ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE:
+                var element:Object = projectProxy.currentIdentityApplianceElement;
+                if (element is IdentityLookup) {
+                    var identityLookup:IdentityLookup = element as IdentityLookup;
+                    var providerNode:IVisualNode = findNodeElementBySemanticElement(identityLookup.provider);
+                    var identitySourceNode:IVisualNode = findNodeElementBySemanticElement(identityLookup.identitySource);
+                    GraphDataManager.linkVNodes(_identityApplianceDiagram, identitySourceNode, providerNode,
+                            identityLookup,EmbeddedIcons.connectionIdentityLookupIcon, "Identity Lookup Connection");
+                    _identityApplianceDiagram.exitConnectionMode();
+                } else if (element is FederatedConnection) {
+                    var federatedConnection:FederatedConnection = element as FederatedConnection;
+                    var provider1Node:IVisualNode = findNodeElementBySemanticElement(federatedConnection.roleA);
+                    var provider2Node:IVisualNode = findNodeElementBySemanticElement(federatedConnection.roleB);
+                    GraphDataManager.linkVNodes(_identityApplianceDiagram, provider2Node, provider1Node,
+                            federatedConnection, EmbeddedIcons.connectionFederatedIcon, "Federated Connection");
+                    _identityApplianceDiagram.exitConnectionMode();
+                } else if (element is JOSSOActivation) {
+                    var activation:JOSSOActivation = element as JOSSOActivation;
+                    var spNode:IVisualNode = findNodeElementBySemanticElement(activation.sp);
+                    var execEnvNode:IVisualNode = findNodeElementBySemanticElement(activation.executionEnv);
+                    GraphDataManager.linkVNodes(_identityApplianceDiagram, execEnvNode, spNode,
+                            activation, EmbeddedIcons.connectionActivationIcon, "Activation Connection");
+                    _identityApplianceDiagram.exitConnectionMode();
+                } else {
+                    GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), element, null, null, null, null, true, Constants.IDENTITY_BUS_DEEP);
+                }
+                break;
+            case ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE:
+                var element:Object = notification.getBody();
+                if (element is IdentityLookup) {
+                    var identityLookup:IdentityLookup = element as IdentityLookup;
+                    var edge:IVisualEdge = findEdgeElementBySemanticElement(identityLookup);
+                    GraphDataManager.removeVEdge(_identityApplianceDiagram, edge, true);
+                    _currentlySelectedEdge = null;
+                } else if (element is FederatedConnection) {
+                    var federatedConnection:FederatedConnection = element as FederatedConnection;
+                    var edge:IVisualEdge = findEdgeElementBySemanticElement(federatedConnection);
+                    GraphDataManager.removeVEdge(_identityApplianceDiagram, edge, true);
+                    _currentlySelectedEdge = null;
+                } else if (element is JOSSOActivation) {
+                    var activation:JOSSOActivation = element as JOSSOActivation;
+                    var edge:IVisualEdge = findEdgeElementBySemanticElement(activation);
+                    GraphDataManager.removeVEdge(_identityApplianceDiagram, edge, true);
+                    _currentlySelectedEdge = null;
+                } else {
+                    var node:IVisualNode = findNodeElementBySemanticElement(element);
+                    GraphDataManager.removeNode(_identityApplianceDiagram, node, true);
+                }
                 break;
         }
 
@@ -522,10 +625,76 @@ public class DiagramMediator extends IocMediator {
                     }
                 }
             }
+
+            var layouter:BaseLayouter = new BaseLayouter(_identityApplianceDiagram);
+            layouter.autoFitEnabled = _autoFitEnabled;
+            _identityApplianceDiagram.layouter = layouter;
         }
 
     }
 
+    private function updateGraphData():void {
+        var identityAppliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
+        if (identityAppliance != null) {
+            var identityApplianceDefinition:IdentityApplianceDefinition = identityAppliance.idApplianceDefinition;
+
+            if (identityApplianceDefinition.identitySources != null) {
+                for each (var identitySource:IdentitySource in identityApplianceDefinition.identitySources) {
+                    updateGraphNodeData(identitySource);
+                }
+            }
+
+            if (identityApplianceDefinition.executionEnvironments != null) {
+                for each (var execEnv:ExecutionEnvironment in identityApplianceDefinition.executionEnvironments) {
+                    updateGraphNodeData(execEnv);
+                }
+            }
+
+            if (identityApplianceDefinition.providers != null) {
+                for each (var provider:Provider in identityApplianceDefinition.providers) {
+                    updateGraphNodeData(provider);
+                    if (provider is FederatedProvider) {
+                        var locProv:FederatedProvider = provider as FederatedProvider;
+                        if (locProv.identityLookup != null) {
+                            updateGraphEdgeData(locProv.identityLookup);                            
+                        }
+                        if (locProv is ServiceProvider) {
+                            var sp:ServiceProvider = locProv as ServiceProvider;
+                            if (sp.activation != null) {
+                                updateGraphEdgeData(sp.activation);
+                            }
+                        }
+                        for each (var fedConnA:FederatedConnection in locProv.federatedConnectionsA) {
+                            updateGraphEdgeData(fedConnA);
+                        }
+                        for each (var fedConnB:FederatedConnection in locProv.federatedConnectionsB) {
+                            updateGraphEdgeData(fedConnB);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private function updateGraphNodeData(data:Object):void {
+        for each (var node:INode in _identityApplianceDiagram.graph.nodes) {
+            if (node.data != null && node.data.name == data.name) {
+                node.data = data;
+                node.vnode.data = data;
+                break;
+            }
+        }
+    }
+
+    private function updateGraphEdgeData(data:Object):void {
+        for each (var edge:IEdge in _identityApplianceDiagram.graph.edges) {
+            if (edge.data != null && edge.data.data != null && edge.data.data.name == data.name) {
+                edge.data.data = data;
+                edge.vedge.data.data = data;
+                break;
+            }
+        }
+    }
 
     private function resetGraph():void {
         var graph:IGraph = new EnhancedGraph("Graph", true);
@@ -588,18 +757,22 @@ public class DiagramMediator extends IocMediator {
             //need to add elementType in the notification body for delete func. to work properly
             if(node.data is IdentityAppliance){
                 elementType = DiagramElementTypes.IDENTITY_APPLIANCE_ELEMENT_TYPE;
-            } else
-            if(node.data is IdentityProvider){
+            } else if (node.data is IdentityProvider) {
                 elementType = DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE;
-            } else
-            if (node.data is ServiceProvider){
+            } else if (node.data is ServiceProvider) {
                 elementType = DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE;
-            } else
-            if(node.data is DbIdentitySource){
+            } else if (node.data is DbIdentitySource) {
                 elementType = DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE;
+            } else if (node.data is EmbeddedIdentitySource) {
+                elementType = DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE;
+            } else if (node.data is XmlIdentitySource) {
+                elementType = DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE;
+            } else if (node.data is LdapIdentitySource) {
+                elementType = DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE;
+            } else if (node.data is ExecutionEnvironment) {
+                elementType = DiagramElementTypes.EXECUTION_ENVIRONMENT_ELEMENT_TYPE;
             }
-            //TODO - add other element types
-
+            
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE, elementType);
         }
     }
@@ -609,8 +782,8 @@ public class DiagramMediator extends IocMediator {
         var node2:IVisualNode = event.vnode2;
 
         var cfc:CreateFederatedConnectionElementRequest = new CreateFederatedConnectionElementRequest();
-        cfc.roleA = node1.data as FederatedProvider;
-        cfc.roleB = node2.data as FederatedProvider
+        cfc.roleA = node1.node.data as FederatedProvider;
+        cfc.roleB = node2.node.data as FederatedProvider
         sendNotification(ApplicationFacade.CREATE_FEDERATED_CONNECTION, cfc);
     }
 
@@ -682,6 +855,10 @@ public class DiagramMediator extends IocMediator {
         sendNotification(PaletteMediator.DESELECT_PALETTE_ELEMENT);
     }
 
+    private function openDialogElementCreationFormEventHandler(event:VNodeCreationEvent):void {
+        sendNotification(ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM, event.elementType);
+    }
+
     private function toggleUnselectedNodesOff(visualCompToCheck:Object, selectedItem:Object):void {
 
         for each(var obj:Object in visualCompToCheck.getChildren()) {
@@ -745,12 +922,12 @@ public class DiagramMediator extends IocMediator {
         return foundDiagramElement;
     }
 
-    private function findNotationElementBySemanticElement(semanticElement:Object):IVisualNode {
+    private function findNodeElementBySemanticElement(semanticElement:Object):IVisualNode {
         var foundNode:IVisualNode;
 
-        for each(var node:IVisualNode in _identityApplianceDiagram.graph.nodes) {
-            if (node.data != null && node.data == semanticElement ) {
-                foundNode = node;
+        for each (var node:INode in _identityApplianceDiagram.graph.nodes) {
+            if (node.data != null && node.data == semanticElement) {
+                foundNode = node.vnode;
                 break;
             }
         }
@@ -758,7 +935,18 @@ public class DiagramMediator extends IocMediator {
         return foundNode;
     }
 
+    private function findEdgeElementBySemanticElement(semanticElement:Object):IVisualEdge {
+        var foundEdge:IVisualEdge;
 
+        for each (var edge:IEdge in _identityApplianceDiagram.graph.edges) {
+            if (edge.data != null && edge.data.data == semanticElement) {
+                foundEdge = edge.vedge;
+                break;
+            }
+        }
+
+        return foundEdge;
+    }
 
     /**
      * Event handler to be triggered in case the

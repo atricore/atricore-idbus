@@ -39,11 +39,12 @@ import mx.managers.PopUpManager;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 
+import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class GroupsMediator extends IocMediator {
+public class GroupsMediator extends IocMediator implements IDisposable{
 
     public static const BUNDLE:String = "console";
 
@@ -83,16 +84,6 @@ public class GroupsMediator extends IocMediator {
     }
 
     override public function setViewComponent(p_viewComponent:Object):void {
-        if (getViewComponent() != null) {
-            view.btnNewGroup.removeEventListener(MouseEvent.CLICK, handleNewGroupClick);
-            view.btnEditGroup.removeEventListener(MouseEvent.CLICK, handleEditGroupClick);
-            view.btnDeleteGroup.removeEventListener(MouseEvent.CLICK, handleDeleteGroupClick);
-            view.btnSearchGroup.removeEventListener(MouseEvent.CLICK, handleSearchGroupsClick);
-
-            view.groupList.removeEventListener(ListEvent.ITEM_CLICK , groupListClickHandler);
-            view.btnClearSearch.removeEventListener(MouseEvent.CLICK, handleClearSearch);
-        }
-
         super.setViewComponent(p_viewComponent);
         init();
     }
@@ -109,6 +100,22 @@ public class GroupsMediator extends IocMediator {
         sendNotification(ApplicationFacade.LIST_GROUPS);
         groupPropertiesMediator.setViewComponent(view.properties);
         popupManager.init(iocFacade, view);
+    }
+
+    public function dispose():void {
+        // Clean up:
+        //      - Remove event listeners
+        //      - Stop timers
+        //      - Set references to null
+        view.btnNewGroup.removeEventListener(MouseEvent.CLICK, handleNewGroupClick);
+        view.btnEditGroup.removeEventListener(MouseEvent.CLICK, handleEditGroupClick);
+        view.btnDeleteGroup.removeEventListener(MouseEvent.CLICK, handleDeleteGroupClick);
+        view.btnSearchGroup.removeEventListener(MouseEvent.CLICK, handleSearchGroupsClick);
+
+        view.groupList.removeEventListener(ListEvent.ITEM_CLICK , groupListClickHandler);
+        view.btnClearSearch.removeEventListener(MouseEvent.CLICK, handleClearSearch);
+
+        view = null;
     }
 
     private function onShow(event:Event):void {
@@ -243,6 +250,11 @@ public class GroupsMediator extends IocMediator {
     protected function get view():GroupsView
     {
         return viewComponent as GroupsView;
+    }
+
+    protected function set view(gv:GroupsView):void
+    {
+        viewComponent = gv;
     }
 }
 }

@@ -23,6 +23,7 @@ package com.atricore.idbus.console.modeling.main.controller
 {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
+import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 
@@ -51,6 +52,18 @@ public class IdentityProviderRemoveCommand extends IocSimpleCommand {
         for (var i:int=identityAppliance.idApplianceDefinition.providers.length-1; i>=0; i--) {
             if (identityAppliance.idApplianceDefinition.providers[i] == identityProvider) {
                 identityAppliance.idApplianceDefinition.providers.removeItemAt(i);
+                if (identityProvider.federatedConnectionsA != null) {
+                    for each (var fedConnA:FederatedConnection in identityProvider.federatedConnectionsA) {
+                        fedConnA.roleB.federatedConnectionsB.removeItemAt(fedConnA.roleB.federatedConnectionsB.getItemIndex(fedConnA));
+                    }
+                }
+                if (identityProvider.federatedConnectionsB != null) {
+                    for each (var fedConnB:FederatedConnection in identityProvider.federatedConnectionsB) {
+                        fedConnB.roleA.federatedConnectionsA.removeItemAt(fedConnB.roleA.federatedConnectionsA.getItemIndex(fedConnB));
+                    }
+                }
+                sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, identityProvider);
+                break;
             }
         }
 

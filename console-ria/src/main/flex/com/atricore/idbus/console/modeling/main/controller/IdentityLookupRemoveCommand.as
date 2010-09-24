@@ -37,8 +37,9 @@ public class IdentityLookupRemoveCommand extends IocSimpleCommand {
 //        identityLookup.provider = null;
 //        identityLookup.identitySource = null;
 
-        projectProxy.currentIdentityApplianceElement = false;
+        projectProxy.currentIdentityApplianceElement = null;
         // reflect removal in views and diagram editor
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, identityLookup);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
     }
