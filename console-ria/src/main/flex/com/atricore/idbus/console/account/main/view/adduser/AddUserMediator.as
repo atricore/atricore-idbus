@@ -131,7 +131,7 @@ public class AddUserMediator extends IocFormMediator
     public function handleAddUserSuccess():void {
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.LIST_USERS);
-//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The user was successfully created.");
+        //        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The user was successfully created.");
     }
 
     public function handleAddUserFailure():void {
@@ -183,47 +183,46 @@ public class AddUserMediator extends IocFormMediator
         newUserDef.telephoneNumber = view.userTelephone.text;
         newUserDef.facsimilTelephoneNumber = view.userFax.text;
 
-        _newUser = newUserDef;
-
         // Preference data
         if (view.userLanguage != null)
-            _newUser.language = view.userLanguage.selectedItem as String;
+            newUserDef.language = view.userLanguage.selectedItem.data;
         // Groups data
         if (view.groupsSelectedList != null) {
             if (view.groupsSelectedList.dataProvider as ArrayCollection != null)
-                _newUser.groups = (view.groupsSelectedList.dataProvider as ArrayCollection).toArray();
+                newUserDef.groups = (view.groupsSelectedList.dataProvider as ArrayCollection).toArray();
         }
         // Security
         if (view.accountDisabledCheck != null) { // Security Tab Loaded
-            _newUser.accountDisabled = view.accountDisabledCheck.selected;
-            _newUser.accountExpires = view.accountDisabledCheck.selected;
+            newUserDef.accountDisabled = view.accountDisabledCheck.selected;
+            newUserDef.accountExpires = view.accountDisabledCheck.selected;
             if (view.accountExpiresCheck.selected)
-                _newUser.accountExpirationDate = view.accountExpiresDate.selectedDate;
+                newUserDef.accountExpirationDate = view.accountExpiresDate.selectedDate;
 
-            _newUser.limitSimultaneousLogin = view.accountLimitLoginCheck.selected;
+            newUserDef.limitSimultaneousLogin = view.accountLimitLoginCheck.selected;
             if (view.accountLimitLoginCheck.selected) {
-                _newUser.maximunLogins = view.accountMaxLimitLogin.value;
-                _newUser.terminatePreviousSession = view.terminatePrevSession.selected;
-                _newUser.preventNewSession = view.preventNewSession.selected;
+                newUserDef.maximunLogins = view.accountMaxLimitLogin.value;
+                newUserDef.terminatePreviousSession = view.terminatePrevSession.selected;
+                newUserDef.preventNewSession = view.preventNewSession.selected;
             }
         }
         // Password
         if (view.allowPasswordChangeCheck != null) { //Password Tab Loaded
-            _newUser.allowUserToChangePassword = view.allowPasswordChangeCheck.selected;
-            _newUser.forcePeriodicPasswordChanges = view.forcePasswordChangeCheck.selected;
+            newUserDef.allowUserToChangePassword = view.allowPasswordChangeCheck.selected;
+            newUserDef.forcePeriodicPasswordChanges = view.forcePasswordChangeCheck.selected;
             if (view.forcePasswordChangeCheck.selected) {
-                _newUser.daysBetweenChanges = view.forcePasswordChangeDays.value;
-                _newUser.passwordExpirationDate = view.expirationPasswordDate.selectedDate;
+                newUserDef.daysBetweenChanges = view.forcePasswordChangeDays.value;
+                newUserDef.passwordExpirationDate = view.expirationPasswordDate.selectedDate;
             }
-            _newUser.notifyPasswordExpiration = view.notifyPasswordExpirationCheck.selected;
+            newUserDef.notifyPasswordExpiration = view.notifyPasswordExpirationCheck.selected;
             if (view.notifyPasswordExpirationCheck.selected) {
                 _newUser.daysBeforeExpiration = view.notifyPasswordExpirationDay.value;
             }
-            _newUser.userPassword = view.userPassword.text;
-            _newUser.automaticallyGeneratePassword = view.generatePasswordCheck.selected;
-            _newUser.emailNewPasword = view.emailNewPasswordCheck.selected;
+            newUserDef.userPassword = view.userPassword.text;
+            newUserDef.automaticallyGeneratePassword = view.generatePasswordCheck.selected;
+            newUserDef.emailNewPasword = view.emailNewPasswordCheck.selected;
         }
 
+        _newUser = newUserDef;
     }
 
     protected function get view():AddUserForm

@@ -298,7 +298,8 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
             UndeployIdentityApplianceCommand.SUCCESS,
             UndeployIdentityApplianceCommand.FAILURE,
             DisposeIdentityApplianceCommand.SUCCESS,
-            DisposeIdentityApplianceCommand.FAILURE];
+            DisposeIdentityApplianceCommand.FAILURE,
+            ApplicationFacade.LOGOUT];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -312,8 +313,8 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 if (projectProxy.currentView == viewName) {
                     updateAppliancesList(false);
                     sendNotification(ProcessingMediator.STOP);
-//                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-//                            "Appliance has been successfully built.");
+                    //                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                    //                            "Appliance has been successfully built.");
                 }
                 break;
             case BuildIdentityApplianceCommand.FAILURE:
@@ -328,8 +329,8 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 if (projectProxy.currentView == viewName) {
                     updateAppliancesList(false);
                     sendNotification(ProcessingMediator.STOP);
-//                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-//                            "Appliance has been successfully deployed.");
+                    //                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                    //                            "Appliance has been successfully deployed.");
                 }
                 break;
             case DeployIdentityApplianceCommand.FAILURE:
@@ -344,8 +345,8 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 if (projectProxy.currentView == viewName) {
                     updateAppliancesList(false);
                     sendNotification(ProcessingMediator.STOP);
-//                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-//                            "Appliance has been successfully undeployed.");
+                    //                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                    //                            "Appliance has been successfully undeployed.");
                 }
                 break;
             case UndeployIdentityApplianceCommand.FAILURE:
@@ -360,8 +361,8 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 if (projectProxy.currentView == viewName) {
                     updateAppliancesList(false);
                     sendNotification(ProcessingMediator.STOP);
-//                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-//                            "Appliance has been successfully started.");
+                    //                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                    //                            "Appliance has been successfully started.");
                 }
                 break;
             case StartIdentityApplianceCommand.FAILURE:
@@ -376,8 +377,8 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 if (projectProxy.currentView == viewName) {
                     updateAppliancesList(false);
                     sendNotification(ProcessingMediator.STOP);
-//                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-//                            "Appliance has been successfully stopped.");
+                    //                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                    //                            "Appliance has been successfully stopped.");
                 }
                 break;
             case StopIdentityApplianceCommand.FAILURE:
@@ -392,8 +393,8 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 if (projectProxy.currentView == viewName) {
                     updateAppliancesList(false);
                     sendNotification(ProcessingMediator.STOP);
-//                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-//                            "Appliance has been successfully disposed.");
+                    // sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                    //       "Appliance has been successfully disposed.");
                 }
                 break;
             case DisposeIdentityApplianceCommand.FAILURE:
@@ -403,6 +404,10 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                             "There was an error disposing appliance.");
                 }
+                break;
+
+            case ApplicationFacade.LOGOUT:
+
                 break;
         }
     }
