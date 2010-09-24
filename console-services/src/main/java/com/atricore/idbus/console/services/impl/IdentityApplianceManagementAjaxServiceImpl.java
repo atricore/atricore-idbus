@@ -33,9 +33,7 @@ import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagement
 import org.dozer.DozerBeanMapper;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Author: Dejan Maric
@@ -200,6 +198,8 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             }
         }
 
+        updateExecutionEnvNames(iad);
+        
         iad.getProviders().add(idp);
 
         //connect all providers with created identity vault/source
@@ -796,32 +796,73 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             iad.setExecutionEnvironments(new HashSet<ExecutionEnvironmentDTO>());
         }
         
-        String targetPlatform = activation.getExecutionEnv().getPlatformId();
-        ExecutionEnvironmentDTO executionEnv = findExecutionEnvironment(iad, sp);
+        ExecutionEnvironmentDTO executionEnv = findExecutionEnvironment(iad, activation);
+
         if (executionEnv == null) {
             executionEnv = activation.getExecutionEnv();
-        }
-
-            executionEnv.setName(targetPlatform + "-" + activation.getPartnerAppLocation().getHost());
-            executionEnv.setDescription(executionEnv.getName().replaceAll("-", " "));
-            if(executionEnv.getActivations() == null){
+            executionEnv.setName(createTempExecutionEnvName(activation));
+            if (executionEnv.getActivations() == null) {
                 executionEnv.setActivations(new HashSet<ActivationDTO>());
             }
-            executionEnv.getActivations().add(activation);
             iad.getExecutionEnvironments().add(executionEnv);
+        } else {
+            activation.setExecutionEnv(executionEnv);
+        }
+
+        executionEnv.getActivations().add(activation);
+        
         return activation;
     }
 
-    private ExecutionEnvironmentDTO findExecutionEnvironment(IdentityApplianceDefinitionDTO iad, ServiceProviderDTO sp) {
+    private ExecutionEnvironmentDTO findExecutionEnvironment(IdentityApplianceDefinitionDTO iad,
+                    JOSSOActivationDTO activation) {
         if (iad.getExecutionEnvironments() != null) {
+            String execEnvName = createTempExecutionEnvName(activation);
             for (ExecutionEnvironmentDTO executionEnv : iad.getExecutionEnvironments()) {
-                if (executionEnv.getName().equals(sp.getDescription() + "-" +
-                        sp.getLocation().getHost() + "-" + sp.getLocation().getPort())) {
+                if (executionEnv.getName().equals(execEnvName)) {
                     return executionEnv;
                 }
             }
         }
         return null;
+    }
+
+    private String createTempExecutionEnvName(JOSSOActivationDTO activation) {
+        return activation.getExecutionEnv().getPlatformId() + "-" +
+                activation.getPartnerAppLocation().getHost() + "-" + activation.getPartnerAppLocation().getPort();
+    }
+
+    private void updateExecutionEnvNames(IdentityApplianceDefinitionDTO iad) {
+        Map<String, Integer> currentPlatformCount = new HashMap<String, Integer>();
+        if (iad.getExecutionEnvironments() != null) {
+            for (ExecutionEnvironmentDTO execEnv : iad.getExecutionEnvironments()) {
+                int num = getNumberOfSameExecEnvPlatforms(iad, execEnv.getPlatformId());
+                if (num == 1) {
+                    execEnv.setName(execEnv.getPlatformId());
+                } else {
+                    Integer platformCount = currentPlatformCount.get(execEnv.getPlatformId());
+                    if (platformCount == null) {
+                        currentPlatformCount.put(execEnv.getPlatformId(), 1);
+                    } else {
+                        currentPlatformCount.put(execEnv.getPlatformId(), platformCount + 1);
+                    }
+                    execEnv.setName(execEnv.getPlatformId() + "-" + currentPlatformCount.get(execEnv.getPlatformId()));
+                }
+                execEnv.setDescription(execEnv.getName().replaceAll("-", " "));
+            }
+        }
+    }
+
+    private int getNumberOfSameExecEnvPlatforms(IdentityApplianceDefinitionDTO iad, String platformId) {
+        int num = 0;
+        if (iad.getExecutionEnvironments() != null) {
+            for (ExecutionEnvironmentDTO executionEnv : iad.getExecutionEnvironments()) {
+                if (executionEnv.getPlatformId().equals(platformId)) {
+                    num++;
+                }
+            }
+        }
+        return num;
     }
 
     /**

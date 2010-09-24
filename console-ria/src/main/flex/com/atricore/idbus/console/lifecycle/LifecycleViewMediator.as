@@ -427,6 +427,8 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
             case LifecycleGridButtonEvent.ACTION_EDIT :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
                 sendNotification(ProcessingMediator.START, "Opening identity appliance...");
+                projectProxy.currentIdentityAppliance = null;
+                sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, appliance.id.toString());
                 break;
             case LifecycleGridButtonEvent.ACTION_REMOVE :
@@ -447,6 +449,11 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
                 sendNotification(ProcessingMediator.START, "Undeploying appliance ...");
                 sendNotification(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, appliance.id.toString());
+                break;
+            case LifecycleGridButtonEvent.ACTION_BUILD :
+                var appliance:IdentityAppliance = event.data as IdentityAppliance;
+                sendNotification(ProcessingMediator.START, "Rebuilding appliance ...");
+                sendNotification(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, [appliance.id.toString(), false]);
                 break;
         }
     }

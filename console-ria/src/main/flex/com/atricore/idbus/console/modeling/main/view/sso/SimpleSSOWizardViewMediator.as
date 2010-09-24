@@ -251,7 +251,7 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
     public function handleSSOSetupSuccess():void {
         sendNotification(ProcessingMediator.STOP);
-        sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+        //sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
