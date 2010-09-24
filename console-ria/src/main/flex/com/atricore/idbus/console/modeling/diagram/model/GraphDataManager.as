@@ -21,9 +21,6 @@
 
 package com.atricore.idbus.console.modeling.diagram.model {
 import com.atricore.idbus.console.components.CustomVisualGraph;
-
-import com.atricore.idbus.console.main.EmbeddedIcons;
-
 import com.atricore.idbus.console.services.dto.Connection;
 
 import org.un.cava.birdeye.ravis.graphLayout.data.INode;
@@ -73,11 +70,25 @@ public class GraphDataManager {
 
     public static function linkVNodes(_vgraph:IVisualGraph, node:IVisualNode, parentNode:IVisualNode,
                                       connection:Connection, iconCls:Class, connectionTooltip:String):void {
-        (_vgraph as CustomVisualGraph).createCustomVEdge(parentNode.node, node.node, connection, iconCls, connectionTooltip);
+        if (node != null && parentNode != null) {
+            (_vgraph as CustomVisualGraph).createCustomVEdge(parentNode.node, node.node, connection, iconCls, connectionTooltip);
+        }
     }
 
-    public static function removeVEdge(_vgraph:IVisualGraph, edge:IVisualEdge):void {
-        (_vgraph as CustomVisualGraph).removeEdge(edge);
+    public static function removeNode(_vgraph:IVisualGraph, node:IVisualNode, refresh:Boolean):void {
+        if (node != null) {
+            (_vgraph as CustomVisualGraph).removeNode(node);
+            if (refresh)
+                _vgraph.draw();
+        }
+    }
+
+    public static function removeVEdge(_vgraph:IVisualGraph, edge:IVisualEdge, refresh:Boolean):void {
+        if (edge != null) {
+            (_vgraph as CustomVisualGraph).removeEdge(edge);
+            if (refresh)
+                _vgraph.draw();
+        }
     }
 
     /**

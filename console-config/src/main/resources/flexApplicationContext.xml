@@ -45,6 +45,10 @@
             class="com.atricore.idbus.console.modeling.main.controller.IdentityVaultRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="executionEnvironmentRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ExecutionEnvironmentRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="createSimpleSSOIdentityApplianceCommand"
             class="com.atricore.idbus.console.modeling.main.controller.CreateSimpleSSOIdentityApplianceCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -436,6 +440,7 @@
         <property name="registerCommand" ref="registerCommand"/>
         <property name="identityApplianceUpdateCommand" ref="identityApplianceUpdateCommand"/>
         <property name="identityVaultRemoveCommand" ref="identityVaultRemoveCommand"/>
+        <property name="executionEnvironmentRemoveCommand" ref="executionEnvironmentRemoveCommand"/>
         <property name="createSimpleSSOIdentityApplianceCommand" ref="createSimpleSSOIdentityApplianceCommand"/>
         <property name="identityApplianceListLoadCommand" ref="identityApplianceListLoadCommand"/>
         <property name="identityApplianceRemoveCommand" ref="identityApplianceRemoveCommand"/>

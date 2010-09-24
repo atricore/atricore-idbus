@@ -1,11 +1,9 @@
 package com.atricore.idbus.console.components {
 import com.atricore.idbus.console.modeling.diagram.event.VEdgeSelectedEvent;
+import com.atricore.idbus.console.modeling.diagram.event.VNodeCreationEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
-import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
-
-import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.Connection;
 
 import flash.display.DisplayObject;
@@ -18,15 +16,18 @@ import org.un.cava.birdeye.ravis.enhancedGraphLayout.event.VGEdgeEvent;
 import org.un.cava.birdeye.ravis.enhancedGraphLayout.visual.EnhancedVisualGraph;
 import org.un.cava.birdeye.ravis.graphLayout.data.IEdge;
 import org.un.cava.birdeye.ravis.graphLayout.data.INode;
+import org.un.cava.birdeye.ravis.graphLayout.layout.CircularLayouter;
+import org.un.cava.birdeye.ravis.graphLayout.layout.ILayoutAlgorithm;
 import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualEdge;
 import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
+import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;
 
 public class CustomVisualGraph extends EnhancedVisualGraph {
 
     private static var FEDERATED_CONNECTION_MODE:uint = 1;
     private static var ACTIVATION_MODE:uint = 2;
     private static var IDENTITY_LOOKUP_MODE:uint = 3;
-
+    
     private var _isConnectionMode:Boolean;
     private var _connectionMode:uint;
     private var _connectionStartPoint:Point;
@@ -40,8 +41,14 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     [Embed(source="/images/cursorImages/cross.png")]
     public static var crossCursorSymbol:Class;
 
+    private var _isNodeCreationMode:Boolean;
+    private var _nodeCreationElementType:int;
+    private var _nodeCreationPosition:Point;
+    private var _nodeCreationElementIcon:Class;
+
     public function CustomVisualGraph() {
         super();
+        _nodeCreationElementType = -1;
         this.addEventListener(VGEdgeEvent.VG_EDGE_CLICK, edgeEventHandler);
     }
 
@@ -84,7 +91,7 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         if (_isConnectionMode && _connectionDragInProgress) {
             var lineColor:uint = uint(0xCCCCCC);  //grey
             var targetNode:IVisualNode = data as IVisualNode;
-            if (targetNode != null && targetNode!= _connectionSourceNode) {
+            if (_connectionSourceNode != null && targetNode != null && targetNode != _connectionSourceNode) {
                 if (!DiagramUtil.nodeLinkExists(_connectionSourceNode.node, targetNode.node) && canConnect(_connectionSourceNode, targetNode)) {
                     lineColor = uint(0x00CC00);  //green
                 } else {
@@ -101,6 +108,16 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         }
     }
 
+    override public function set layouter(l:ILayoutAlgorithm):void {
+        //super.layouter = l;
+        //if (_layouter != null) {
+        //    _layouter.resetAll(); // to stop any pending animations
+        //}
+        _layouter = l;
+        /* need to signal control components possibly */
+        this.dispatchEvent(new VGraphEvent(VGraphEvent.LAYOUTER_CHANGED));
+    }
+
     private function enterConnectionMode():void {
         _isConnectionMode = true;
         _moveNodeInDrag = false;
@@ -115,18 +132,37 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     }
 
     public function enterFederatedConnectionMode():void {
+        exitNodeCreationMode();
         _connectionMode = FEDERATED_CONNECTION_MODE;
         enterConnectionMode();
     }
 
     public function enterActivationMode():void {
+        exitNodeCreationMode();
         _connectionMode = ACTIVATION_MODE;
         enterConnectionMode();
     }
 
     public function enterIdentityLookupMode():void {
+        exitNodeCreationMode();
         _connectionMode = IDENTITY_LOOKUP_MODE;
         enterConnectionMode();
+    }
+
+    public function enterNodeCreationMode(elementType:int):void {
+        exitConnectionMode();
+        _isNodeCreationMode = true;
+        _nodeCreationElementType = elementType;
+        _nodeCreationElementIcon = DiagramUtil.getIconForElementType(_nodeCreationElementType);
+        _moveNodeInDrag = false;
+        _moveEdgeInDrag = false;
+        _moveGraphInDrag = false;
+        (document as DisplayObject).addEventListener(MouseEvent.CLICK, mouseClickHandler);
+        (document as DisplayObject).addEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
+        (document as DisplayObject).addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
+        (document as DisplayObject).addEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
+        (document as DisplayObject).addEventListener(MouseEvent.ROLL_OUT, rollOutHandler);
+        (document as DisplayObject).addEventListener(MouseEvent.MOUSE_MOVE, handleConnectionDrag);
     }
 
     public function exitConnectionMode():void {
@@ -142,9 +178,6 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         (document as DisplayObject).removeEventListener(MouseEvent.CLICK, mouseClickHandler);
         (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
         (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
-        (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_UP, mouseUpHandler);
-        (document as DisplayObject).removeEventListener(MouseEvent.ROLL_OUT, rollOutHandler);
-        (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_MOVE, handleConnectionDrag);
     }
 
     public function resetConnectionModeParameters():void {
@@ -157,10 +190,28 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         _dragComponent = null;
     }
 
+    public function exitNodeCreationMode():void {
+        _isNodeCreationMode = false;
+        _nodeCreationElementType = -1;
+        _nodeCreationElementIcon = null;
+        _dragComponent = null;
+        _moveNodeInDrag = true;
+        _moveEdgeInDrag = true;
+        _moveGraphInDrag = true;
+        (document as DisplayObject).removeEventListener(MouseEvent.CLICK, mouseClickHandler);
+        (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
+        (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
+    }
+
     private function mouseClickHandler(event:MouseEvent):void {
         if (_isConnectionMode && !_connectionDragInProgress) {
             exitConnectionMode();
             dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.LINKING_CANCELED, null, null, true, false, 0));
+            CursorManager.removeAllCursors();
+        } else if (_isNodeCreationMode) {
+            _nodeCreationPosition = new Point(_canvas.contentMouseX, _canvas.contentMouseY);
+            dispatchEvent(new VNodeCreationEvent(VNodeCreationEvent.OPEN_CREATION_FORM, _nodeCreationElementType, true, false, 0));
+            exitNodeCreationMode();
             CursorManager.removeAllCursors();
         }
     }
@@ -168,6 +219,8 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     private function mouseOverHandler(event:MouseEvent):void {
         if (_isConnectionMode) {
             CursorManager.setCursor(crossCursorSymbol);
+        } else if (_isNodeCreationMode && _nodeCreationElementIcon != null) {
+            CursorManager.setCursor(_nodeCreationElementIcon);
         }
     }
 
@@ -200,7 +253,16 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     }
 
     public function createVisualNode(node:INode):IVisualNode {
-        return createVNode(node);
+        var vnode:IVisualNode = createVNode(node);
+        if (!(_layouter is CircularLayouter)) {
+            if (_nodeCreationPosition != null) {
+                //vnode.viewX = _nodeCreationPosition.x - vnode.view.width / 2;
+                //vnode.viewY = _nodeCreationPosition.y - vnode.view.height / 2;
+                vnode.viewX = _nodeCreationPosition.x - 32;
+                vnode.viewY = _nodeCreationPosition.y - 22;
+            }
+        }
+        return vnode;
     }
 
     public function createCustomVEdge(parentNode:INode, node:INode, connection:Connection, edgeIcon:Class = null,
@@ -249,10 +311,12 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
 
     public function removeEdge(vedge:IVisualEdge):void {
         if (vedge != null) {
-            if (vedge.labelView != null) {
+            unlinkNodes(vedge.edge.node1.vnode, vedge.edge.node2.vnode);
+            /*if (vedge.labelView != null) {
                 removeVEdgeView(vedge.labelView);
             }
             removeVEdge(vedge);
+            _graph.removeEdge(vedge.edge);*/
         }
     }
     

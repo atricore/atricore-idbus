@@ -76,7 +76,7 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+                sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
 //                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
 //                        "The appliance has been successfully created.");

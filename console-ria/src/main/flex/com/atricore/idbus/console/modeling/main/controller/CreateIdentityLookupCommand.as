@@ -50,6 +50,8 @@ public class CreateIdentityLookupCommand extends IocSimpleCommand implements IRe
             identityLookup.provider = provider;
             identityLookup.identitySource = _projectProxy.currentIdentityAppliance.idApplianceDefinition.identitySources[index];
             provider.identityLookup = identityLookup;
+            _projectProxy.currentIdentityApplianceElement = identityLookup;
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
         }
 
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);

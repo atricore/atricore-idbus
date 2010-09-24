@@ -29,17 +29,10 @@ import com.atricore.idbus.console.modeling.palette.model.PaletteDrawer;
 import com.atricore.idbus.console.modeling.palette.model.PaletteEntry;
 import com.atricore.idbus.console.modeling.palette.model.PaletteRoot;
 
-import flash.display.Bitmap;
-
-import mx.controls.Image;
-import mx.core.ClassFactory;
-import mx.core.UIComponent;
-
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 import spark.components.supportClasses.ItemRenderer;
-import spark.primitives.BitmapImage;
 
 public class PaletteMediator extends IocMediator {
     private var selectedIndex:int;
@@ -205,7 +198,8 @@ public class PaletteMediator extends IocMediator {
                 uiComponentSel.selected = true;
                 if (projectProxy.currentIdentityAppliance != null) {
                     var selectedPaletteEntry:PaletteEntry = event.data as PaletteEntry;
-                    sendNotification(ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
+                    //sendNotification(ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM, selectedPaletteEntry.elementType);
+                    sendNotification(ApplicationFacade.PALETTE_ELEMENT_SELECTED, selectedPaletteEntry.elementType);
                 }
                 break;
         }

@@ -24,6 +24,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityLookupElementRequest;
@@ -260,7 +261,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT,
             ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT,
-            ApplicationFacade.REMOVE_DB_IDENTITY_SOURCE_ELEMENT,
+            ApplicationFacade.REMOVE_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.CREATE_XML_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT,
@@ -274,6 +275,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             ApplicationFacade.REMOVE_ACTIVATION_ELEMENT,
             ApplicationFacade.REMOVE_FEDERATED_CONNECTION_ELEMENT,
             ApplicationFacade.REMOVE_IDENTITY_LOOKUP_ELEMENT,
+            ApplicationFacade.REMOVE_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_FEDERATED_CONNECTION,
             ApplicationFacade.MANAGE_CERTIFICATE,
             ApplicationFacade.SHOW_UPLOAD_PROGRESS,
@@ -344,10 +346,10 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             case ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT:
                 popupManager.showCreateDbIdentitySourceWindow(notification);
                 break;
-            case ApplicationFacade.REMOVE_DB_IDENTITY_SOURCE_ELEMENT:
-                var rdbiv:RemoveIdentityVaultElementRequest = RemoveIdentityVaultElementRequest(notification.getBody());
+            case ApplicationFacade.REMOVE_IDENTITY_SOURCE_ELEMENT:
+                var riv:RemoveIdentityVaultElementRequest = RemoveIdentityVaultElementRequest(notification.getBody());
                 //                 TODO: Perform UI handling for confirming removal action
-                sendNotification(ApplicationFacade.DB_IDENTITY_VAULT_REMOVE, rdbiv.identityVault);
+                sendNotification(ApplicationFacade.IDENTITY_SOURCE_REMOVE, riv.identityVault);
                 break;
             case ApplicationFacade.CREATE_LDAP_IDENTITY_SOURCE_ELEMENT:
                 popupManager.showCreateLdapIdentitySourceWindow(notification);
@@ -397,6 +399,11 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 var ril:RemoveIdentityLookupElementRequest = RemoveIdentityLookupElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.IDENTITY_LOOKUP_REMOVE, ril.identityLookup);
                 break;
+            case ApplicationFacade.REMOVE_EXECUTION_ENVIRONMENT_ELEMENT:
+                var rev:RemoveExecutionEnvironmentElementRequest = RemoveExecutionEnvironmentElementRequest(notification.getBody());
+                //                 TODO: Perform UI handling for confirming removal action
+                sendNotification(ApplicationFacade.EXECUTION_ENVIRONMENT_REMOVE, rev.executionEnvironment);
+                break;
             case ApplicationFacade.MANAGE_CERTIFICATE:
                 popupManager.showManageCertificateWindow(notification);
                 break;
@@ -421,6 +428,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
 //                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
 //                        "Appliance successfully opened.");
                 break;
@@ -441,6 +449,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA);
 //                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
 //                        "Appliance successfully updated.");
                 break;

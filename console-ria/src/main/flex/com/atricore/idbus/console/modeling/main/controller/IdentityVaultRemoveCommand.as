@@ -27,6 +27,8 @@ import com.atricore.idbus.console.services.dto.IdentityAppliance;
 
 import com.atricore.idbus.console.services.dto.IdentitySource;
 
+import com.atricore.idbus.console.services.dto.Provider;
+
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
@@ -53,10 +55,18 @@ public class IdentityVaultRemoveCommand extends IocSimpleCommand {
         for (var i:int=identityAppliance.idApplianceDefinition.identitySources.length-1; i>=0; i--) {
             if (identityAppliance.idApplianceDefinition.identitySources[i] == identityVault) {
                 identityAppliance.idApplianceDefinition.identitySources.removeItemAt(i);
+                if (identityAppliance.idApplianceDefinition.providers != null) {
+                    for each (var provider:Provider in identityAppliance.idApplianceDefinition.providers) {
+                        if (provider.identityLookup != null && provider.identityLookup.identitySource == identityVault) {
+                            provider.identityLookup = null;
+                        }
+                    }
+                }
+                sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, identityVault);
             }
         }
 
-        projectProxy.currentIdentityApplianceElement = false;
+        projectProxy.currentIdentityApplianceElement = null;
         // reflect removal in views and diagram editor
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

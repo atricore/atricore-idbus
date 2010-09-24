@@ -34,8 +34,9 @@ public class ActivationRemoveCommand extends IocSimpleCommand {
         sp.activation = null;
         execEnv.activations.removeItemAt(execEnv.activations.getItemIndex(activation));        
 
-        projectProxy.currentIdentityApplianceElement = false;
+        projectProxy.currentIdentityApplianceElement = null;
         // reflect removal in views and diagram editor
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE, activation);
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
     }
