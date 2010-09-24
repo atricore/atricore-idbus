@@ -104,8 +104,8 @@
               width="100%" height="100%" includeIn="splash,operation">
 
         <heading:AtricoreHeading id="brandedHeading" includeIn="splash,operation">
-            <comp:MessageBox id="messageBox" x="400" width="70%" height="70%" includeIn="splash,operation"
-                             showEffect="{wipeRight}" verticalAlign="middle" horizontalAlign="center"/>
+            <!--<comp:MessageBox id="messageBox" x="400" width="70%" height="70%" includeIn="splash,operation"-->
+                             <!--showEffect="{wipeRight}" verticalAlign="middle" horizontalAlign="center"/>-->
             <mx:MenuBar id="userActionMenuBar" includeIn="operation" labelField="@label" iconField="@icon" 
                         menuBarItemRenderer="com.atricore.idbus.console.components.IconMenuBarItemRenderer">
                 <fx:XMLList>

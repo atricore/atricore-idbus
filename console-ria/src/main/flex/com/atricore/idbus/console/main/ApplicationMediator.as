@@ -228,7 +228,7 @@ public class ApplicationMediator extends IocMediator {
 //                app.messageBox.showSuccessMessage(notification.getBody() as String);
 //                break;
             case ApplicationFacade.CLEAR_MSG :
-                app.messageBox.clearAndHide();
+//                app.messageBox.clearAndHide();
                 break;
             case ApplicationFacade.DISPLAY_APPLIANCE_MODELER:
                 app.stackButtonBar.selectedIndex = MODELER_VIEW_INDEX;
