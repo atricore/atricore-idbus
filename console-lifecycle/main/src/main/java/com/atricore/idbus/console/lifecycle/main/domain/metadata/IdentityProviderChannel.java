@@ -63,6 +63,10 @@ public class IdentityProviderChannel extends FederatedChannel {
         return preferred;
     }
 
+    public boolean getPreferred() {
+        return preferred;
+    }
+
     public void setPreferred(boolean preferred) {
         this.preferred = preferred;
     }

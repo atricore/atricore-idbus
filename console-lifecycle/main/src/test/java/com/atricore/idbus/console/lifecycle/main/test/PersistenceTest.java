@@ -84,7 +84,7 @@ public class PersistenceTest {
     public void tearDownTest() {
     }
 
-    //@Test
+    @Test
     public void testAddAppliance() throws Exception{
 
         IdentityAppliance ida1 = newApplianceInstance("ida1");
@@ -101,9 +101,13 @@ public class PersistenceTest {
         assertAppliancesAreEqual(ida1, ida1Test, true);
     }
 
-    //@Test
+    @Test
     public void testUpdaetAppliance() throws Exception {
-        IdentityAppliance ida1 = newApplianceInstance("ida1");
+
+        IdentityAppliance ida1 = newApplianceInstance("ida1", "ida1-1");
+
+        // Change the name!
+        // ida1-getIdApplianceDefinition().setName("ida11");
 
         AddIdentityApplianceRequest addReq = new AddIdentityApplianceRequest();
         addReq.setIdentityAppliance(ida1);
@@ -111,7 +115,7 @@ public class PersistenceTest {
         AddIdentityApplianceResponse addRes =  svc.addIdentityAppliance(addReq);
         IdentityAppliance ida1Test = addRes.getAppliance();
 
-        ida1 = newApplianceInstance("ida1");
+        ida1 = newApplianceInstance("ida1", "ida1-1");
 
         UpdateIdentityApplianceRequest updReq = new UpdateIdentityApplianceRequest();
         updReq.setAppliance(ida1Test);
@@ -127,7 +131,7 @@ public class PersistenceTest {
     @Test
     public void testDeleteAppliance() throws Exception{
 
-        IdentityAppliance ida1 = newApplianceInstance("ida1");
+        IdentityAppliance ida1 = newApplianceInstance("ida1", "ida1-2");
 
         AddIdentityApplianceRequest req = new AddIdentityApplianceRequest();
         req.setIdentityAppliance(ida1);
@@ -135,7 +139,7 @@ public class PersistenceTest {
         AddIdentityApplianceResponse res =  svc.addIdentityAppliance(req);
         IdentityAppliance ida1Test = res.getAppliance();
 
-        ida1 = newApplianceInstance("ida1");
+        ida1 = newApplianceInstance("ida1", "ida1-2");
 
         // Let's check that we get what we sent !
         assertAppliancesAreEqual(ida1, ida1Test, true);
@@ -151,137 +155,6 @@ public class PersistenceTest {
         RemoveIdentityApplianceResponse removeRes = svc.removeIdentityAppliance(removeReq);
 
     }
-
-
-    /*
-    @Test
-    public void testRetrieveAppliance() throws Exception{
-
-        PersistenceManager pm = pmf.getPersistenceManager();
-        Transaction tx=pm.currentTransaction();
-        IdentityAppliance ida = null;
-        try {
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(5);
-            Extent e = pm.getExtent(IdentityAppliance.class, true);
-            Iterator iter = e.iterator();
-
-            if(!iter.hasNext()) assert false : "No Identity Bus persisted";
-
-            while (iter.hasNext()){
-                Object obj = iter.next();
-                if(obj instanceof IdentityAppliance){
-                	ia = pm.detachCopy((IdentityAppliance)obj);
-
-                }
-            }        
-            
-            e.closeAll();
-
-            tx.commit();
-        }catch (Exception e){
-            logger.error("Error reading Domain objects", e);
-            throw e;
-        }finally {
-            if (tx.isActive()){
-                tx.rollback();
-            }
-            pm.close();
-        }
-        if(ia.getIdApplianceDefinition() != null){
-            test = ia.getIdApplianceDefinition();
-        } else {
-            assert false: "Identity Appliance Definition not read!";
-        }
-
-        //we want to test detached objects, not the one in transaction
-        IdentityApplianceDefinition original  = (IdentityApplianceDefinition) appCtx.getBean("idbus1");
-
-        assertApplianceDefinitionsAreEqual(original, test);
-    }
-
-    // TODO : Test also Identity Appliance
-
-    @Test
-    public void testFetchingStartedAppliances(){
-        // TODO
-    }
-
-//    @Test
-    public void testFetchingProjectedAppliances() throws Exception {
-        PersistenceManager pm = pmf.getPersistenceManager();
-        Transaction tx=pm.currentTransaction();
-        Collection result = null;
-        try {
-            tx.begin();
-//            pm.getObject
-            Query subquery = pm.newQuery(IdentityApplianceDeployment.class, "state == \"Started\"");
-            Query q = pm.newQuery(IdentityAppliance.class, "deployments.contains(idApplianceDeployment)");
-            q.declareImports("import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment");
-            q.addSubquery(subquery, "Collection deployments", null);
-            result = pm.detachCopyAll((Collection)q.execute());
-//            result = pm.detachCopyAll((Collection)subquery.execute());
-
-
-        }catch (Exception e){
-            logger.error("Error reading projected appliances", e);
-            throw e;
-        }finally {
-            if (tx.isActive()){
-                tx.rollback();
-            }
-            pm.close();
-        }
-        assert !result.isEmpty() : "no appliance found";
-    }
-    
-    @Test
-    public void testDeleteDomain() throws Exception{
-
-        PersistenceManager pm = pmf.getPersistenceManager();
-        Transaction tx=pm.currentTransaction();
-        try {
-            tx.begin();
-            pm.getFetchPlan().setMaxFetchDepth(4);
-            Extent e = pm.getExtent(IdentityAppliance.class, true);
-            Iterator iter = e.iterator();
-
-            IdentityAppliance appliance = null;
-            if(iter.hasNext()){
-                appliance = (IdentityAppliance)iter.next();
-            } else {
-                throw new Exception("no appliance found");
-            }
-//            pm.deletePersistent(appliance.getIdApplianceDefinition());
-            appliance.getIdApplianceDefinition().setProviders(null);
-            pm.makePersistent(appliance);
-//            tx.commit();
-//            pm.close();
-//            pm = pmf.getPersistenceManager();
-//            tx=pm.currentTransaction();
-//            tx.begin();
-//            e = pm.getExtent(IdentityAppliance.class, true);
-//            iter = e.iterator();
-//
-//            if(iter.hasNext()){
-//                appliance = (IdentityAppliance)iter.next();
-                pm.deletePersistent(appliance);
-//            }
-            logger.debug("Deleted identity appliance");
-            tx.commit();
-
-        }catch (Exception e){
-            logger.error("Error reading Domain objects", e);
-            throw e;
-        }finally {
-            if (tx.isActive()){
-                tx.rollback();
-            }
-            pm.close();
-        }     	
-    }
-
-    */
 
     protected void assertAppliancesAreEqual(IdentityAppliance original, IdentityAppliance test, boolean ignoreIds) {
         TestCase.assertNotNull("Original is Null", original);
@@ -551,6 +424,13 @@ public class PersistenceTest {
             TestCase.assertEquals(original.getId(), test.getId());
 
     }
+
+    protected IdentityAppliance newApplianceInstance(String name, String newName) {
+        IdentityAppliance a = newApplianceInstance(name);
+        a.getIdApplianceDefinition().setName(newName);
+        return a;
+    }
+
 
     protected IdentityAppliance newApplianceInstance(String name) {
         ApplicationContext ctx = new ClassPathXmlApplicationContext("/com/atricore/idbus/console/lifecycle/main/test/appliance-model-beans.xml");

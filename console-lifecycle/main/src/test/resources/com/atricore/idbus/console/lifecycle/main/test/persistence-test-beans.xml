@@ -36,10 +36,32 @@
     <tx:annotation-driven/>
 
     <bean id="svc" class="com.atricore.idbus.console.lifecycle.main.impl.IdentityApplianceManagementServiceImpl">
+        <property name="validateAppliances" value="true"/>
+        <property name="enableDebugValidation" value="true"/>
+
+        <property name="validator" ref="applianceDefValidator"/>
+        <!--property name="activationService" ref="activationService"/-->
+        <!--property name="builder" ref="applianceBuilder"/-->
+        <!--property name="deployer" ref="applianceDeployer"/-->
+        <property name="marshaller" ref="applianceMarshaller"/>
+
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
         <property name="identityApplianceDeploymentDAO" ref="identityApplianceDeploymentDAO"/>
         <property name="identityApplianceDefinitionDAO" ref="identityApplianceDefinitionDAO"/>
         <property name="federatedConnectionDAO" ref="federatedConnectionDAO"/>
+    </bean>
+
+    <bean id="applianceDefValidator" class="com.atricore.idbus.console.lifecycle.main.impl.ApplianceDefinitionValidatorImpl">
+        <property name="walker">
+            <bean name="idbusWalker"
+                  class="com.atricore.idbus.console.lifecycle.main.transform.ReflexiveIdentityApplianceDefinitionWalker"/>
+        </property>
+    </bean>
+
+    <bean id="applianceMarshaller" class="com.atricore.idbus.console.lifecycle.main.impl.ApplianceSpringMarshaller">
+        <property name="walker" >
+            <bean class="com.atricore.idbus.console.lifecycle.main.transform.ReflexiveIdentityApplianceDefinitionWalker"/>
+        </property>
     </bean>
 
     <bean name="derby-network" class="org.atricore.idbus.bundles.apache.derby.OsgiNetworkServerControl" scope="singleton">

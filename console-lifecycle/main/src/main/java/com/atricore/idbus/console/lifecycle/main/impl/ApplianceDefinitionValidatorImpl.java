@@ -34,7 +34,7 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
         }
 
         if (vctx.getErrors().size() > 0) {
-            throw new ApplianceValidationException(vctx.getErrors());
+            throw new ApplianceValidationException(appliance, vctx.getErrors());
         }
     }
 
