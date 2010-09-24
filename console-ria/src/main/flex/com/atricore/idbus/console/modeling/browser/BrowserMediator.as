@@ -41,6 +41,8 @@ public class BrowserMediator extends IocMediator {
     private var _identityAppliance:IdentityAppliance;
     private var _projectProxy:ProjectProxy;
 
+    private var _selectedItem:BrowserNode;
+
     public function BrowserMediator(name:String = null, viewComp:BrowserView = null) {
         super(name, viewComp);
     }
@@ -71,9 +73,9 @@ public class BrowserMediator extends IocMediator {
     }
 
     private function onTreeChange(event:Event):void {
-        var selectedItem:BrowserNode = event.currentTarget.selectedItem;
+        _selectedItem = event.currentTarget.selectedItem;
 
-        projectProxy.currentIdentityApplianceElement = selectedItem.data;
+        projectProxy.currentIdentityApplianceElement = _selectedItem.data;
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_SELECTED)
     }
 
@@ -173,6 +175,10 @@ public class BrowserMediator extends IocMediator {
     private function findDataTreeNodeByData(node:BrowserNode, data:Object):BrowserNode {
         var targetTreeNode:BrowserNode;
 
+        if (_selectedItem != null && _selectedItem.data == data) {
+            return _selectedItem;
+        }
+        
         if (node.data == data) {
             targetTreeNode = node;
         } else {
