@@ -193,7 +193,9 @@ public class DiagramMediator extends IocMediator {
                 //init();
                 break;
             case ApplicationFacade.REFRESH_DIAGRAM:
-                init();
+                //init();
+                resetGraph();
+                updateGraph();
                 break;
             case ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA:
                 updateGraphData();

@@ -173,18 +173,18 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         if (_created) {
             sendNotification(ApplicationFacade.CLEAR_MSG);
             view.btnSave.enabled = false;
-            if (projectProxy.currentIdentityAppliance != null) {
+            if (projectProxy.currentIdentityAppliance != null &&
+                    projectProxy.currentIdentityAppliance.state != IdentityApplianceState.DISPOSED.name) {
                 sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID,
                         projectProxy.currentIdentityAppliance.id.toString());
                 //sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 //enableIdentityApplianceActionButtons();
-            }/* else {
-             view.btnLifecycle.enabled = false;
-             }*/
-            // TODO: delete IF condition (fetch list every time modeler is opened)?
-            if (projectProxy.identityApplianceList == null) {
-                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+            } else {
+                projectProxy.currentIdentityAppliance = null;
+                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
             }
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
         }
     }
 
@@ -442,6 +442,10 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 //view.btnLifecycle.enabled = false;
                 enableIdentityApplianceActionButtons();
                 sendNotification(ProcessingMediator.STOP);
+                if (projectProxy.currentIdentityAppliance != null &&
+                        projectProxy.currentIdentityAppliance.state == IdentityApplianceState.DISPOSED.name) {
+                    projectProxy.currentIdentityAppliance = null;
+                }
                 //sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
@@ -454,7 +458,17 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                         "There was an error opening appliance.");
                 break;
             case IdentityApplianceListLoadCommand.SUCCESS:
-                view.appliances.dataProvider = projectProxy.identityApplianceList;
+                if (projectProxy.identityApplianceList == null) {
+                    view.appliances.dataProvider = null;
+                } else {
+                    var appliances:ArrayCollection = new ArrayCollection();
+                    for each (var appliance:IdentityAppliance in projectProxy.identityApplianceList) {
+                        if (appliance.state != IdentityApplianceState.DISPOSED.name) {
+                            appliances.addItem(appliance);
+                        }
+                    }
+                    view.appliances.dataProvider = appliances;
+                }
                 break;
             case IdentityApplianceListLoadCommand.FAILURE:
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
