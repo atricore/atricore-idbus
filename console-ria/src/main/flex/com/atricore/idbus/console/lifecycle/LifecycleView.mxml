@@ -239,7 +239,7 @@
                                                headerText="Identity Appliance"
                                                headerStyleName="applianceHeader"
                                                showDataTips="true" wordWrap="true"/>
-                    <mx:AdvancedDataGridColumn headerText="Actions" width="65">
+                    <mx:AdvancedDataGridColumn headerText="Actions" width="30">
                         <mx:itemRenderer>
                             <fx:Component>
                                 <s:MXAdvancedDataGridItemRenderer>

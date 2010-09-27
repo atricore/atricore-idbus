@@ -132,7 +132,7 @@
                     <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
                     <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
                     <s:CheckBox id="samlBindingSoapCheck"
-                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}"/>
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}" selected="true"/>
                 </mx:FormItem>
 
             </s:VGroup>
