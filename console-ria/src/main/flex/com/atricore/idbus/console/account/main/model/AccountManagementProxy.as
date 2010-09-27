@@ -26,9 +26,10 @@ import com.atricore.idbus.console.services.dto.User;
 
 import mx.collections.ArrayCollection;
 
+import org.osmf.traits.IDisposable;
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
-public class AccountManagementProxy extends IocProxy
+public class AccountManagementProxy extends IocProxy implements IDisposable
 {
 
     private var _groupsList:Array;
@@ -91,6 +92,15 @@ public class AccountManagementProxy extends IocProxy
 
     public function set searchedUsers(value:ArrayCollection):void {
         _searchedUsers = value;
+    }
+
+    public function dispose():void {
+        _groupsList = null;
+        _userList = null;
+        _currentGroup = null;
+        _currentUser = null;
+        _searchedGroups = null;
+        _searchedUsers = null;
     }
 }
 }

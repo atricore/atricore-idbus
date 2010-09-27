@@ -21,12 +21,15 @@
 
 package com.atricore.idbus.console.main
 {
+import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.branding.AtricoreConsolePreloader;
-import com.atricore.idbus.console.components.MessageBox;
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
-import com.atricore.idbus.console.main.controller.NotFirstRunCommand;
 import com.atricore.idbus.console.main.controller.LoginCommand;
+import com.atricore.idbus.console.main.controller.NotFirstRunCommand;
 import com.atricore.idbus.console.main.controller.SetupServerCommand;
+import com.atricore.idbus.console.main.model.KeystoreProxy;
+import com.atricore.idbus.console.main.model.ProfileProxy;
+import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
@@ -37,9 +40,7 @@ import flash.events.Event;
 
 import mx.controls.Alert;
 import mx.controls.MenuBar;
-import mx.effects.WipeRight;
 import mx.events.FlexEvent;
-
 import mx.events.MenuEvent;
 import mx.events.StateChangeEvent;
 
@@ -61,6 +62,11 @@ public class ApplicationMediator extends IocMediator {
     public var userProfileIcon:Class = EmbeddedIcons.userProfileIcon;
 
     private var _secureContextProxy:SecureContextProxy;
+    private var _projectProxy:ProjectProxy;
+    private var _keystoreProxy:KeystoreProxy;
+    private var _profileProxy:ProfileProxy;
+    private var _accountManagementProxy:AccountManagementProxy;
+
     private var _popupManager:ConsolePopUpManager;
     private var _modelerMediator:IIocMediator;
     private var _lifecycleViewMediator:IIocMediator;
@@ -113,6 +119,38 @@ public class ApplicationMediator extends IocMediator {
     public function get secureContextProxy():SecureContextProxy {
         return _secureContextProxy;
 
+    }
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
+    }
+
+    public function get keystoreProxy():KeystoreProxy {
+        return _keystoreProxy;
+    }
+
+    public function set keystoreProxy(value:KeystoreProxy):void {
+        _keystoreProxy = value;
+    }
+
+    public function get profileProxy():ProfileProxy {
+        return _profileProxy;
+    }
+
+    public function set profileProxy(value:ProfileProxy):void {
+        _profileProxy = value;
+    }
+
+    public function get accountManagementProxy():AccountManagementProxy {
+        return _accountManagementProxy;
+    }
+
+    public function set accountManagementProxy(value:AccountManagementProxy):void {
+        _accountManagementProxy = value;
     }
 
     public function get userActionMenuBar():MenuBar {
@@ -230,7 +268,7 @@ public class ApplicationMediator extends IocMediator {
             //                app.messageBox.showSuccessMessage(notification.getBody() as String);
             //                break;
             case ApplicationFacade.CLEAR_MSG :
-//                app.messageBox.clearAndHide();
+                //                app.messageBox.clearAndHide();
                 break;
             case ApplicationFacade.DISPLAY_APPLIANCE_MODELER:
                 app.stackButtonBar.selectedIndex = MODELER_VIEW_INDEX;
@@ -278,14 +316,16 @@ public class ApplicationMediator extends IocMediator {
     }
 
     public function logout():void {
-        _secureContextProxy.logout();
-        // TODO: cleanup proxyies holding for instance appliance state
+        sendNotification(ApplicationFacade.LOGOUT);
+        secureContextProxy.dispose();
+        projectProxy.dispose();
+        keystoreProxy.dispose();
+        profileProxy.dispose();
+        accountManagementProxy.dispose();
     }
 
     public function get app():AtricoreConsole {
         return getViewComponent() as AtricoreConsole;
     }
-
-
 }
 }

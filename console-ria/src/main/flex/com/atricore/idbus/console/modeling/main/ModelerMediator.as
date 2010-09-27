@@ -174,8 +174,10 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             sendNotification(ApplicationFacade.CLEAR_MSG);
             view.btnSave.enabled = false;
             if (projectProxy.currentIdentityAppliance != null) {
-                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                enableIdentityApplianceActionButtons();
+                sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID,
+                        projectProxy.currentIdentityAppliance.id.toString());
+                //sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                //enableIdentityApplianceActionButtons();
             }/* else {
              view.btnLifecycle.enabled = false;
              }*/
@@ -195,6 +197,16 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         view.btnNew.removeEventListener(MouseEvent.CLICK, handleNewClick);
         view.btnOpen.removeEventListener(MouseEvent.CLICK, handleOpenClick);
         view.btnSave.removeEventListener(MouseEvent.CLICK, handleSaveClick);
+
+        _identityAppliance = null;
+        _emptyNotationModel = null;
+        _popupManager = null;
+        _applianceList = null;
+        _created = null;
+        _browserMediator = null;
+        _diagramMediator = null;
+        _paletteMediator = null;
+        _propertySheetMediator = null;
         view = null;
     }
 
@@ -282,7 +294,8 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
             ApplicationFacade.CREATE_ACTIVATION,
             ApplicationFacade.APPLIANCE_VALIDATION_ERRORS,
-            //            ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT,
+            //ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT,
+            ApplicationFacade.LOGOUT,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             LookupIdentityApplianceByIdCommand.SUCCESS,
@@ -415,6 +428,9 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                     view.btnSave.enabled = true;
                 }
                 break;
+            case ApplicationFacade.LOGOUT:
+                this.dispose();
+                break;
             case BuildApplianceMediator.RUN:
                 popupManager.showBuildIdentityApplianceWindow(notification);
                 break;
@@ -426,11 +442,11 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 //view.btnLifecycle.enabled = false;
                 enableIdentityApplianceActionButtons();
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+                //sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
-//                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-//                        "Appliance successfully opened.");
+                //                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                //                        "Appliance successfully opened.");
                 break;
             case LookupIdentityApplianceByIdCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
@@ -447,11 +463,11 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             case IdentityApplianceUpdateCommand.SUCCESS:
                 view.btnSave.enabled = false;
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+                //sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 sendNotification(ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA);
-//                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-//                        "Appliance successfully updated.");
+                //                sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+                //                        "Appliance successfully updated.");
                 break;
             case IdentityApplianceUpdateCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
@@ -479,7 +495,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
 
     private function updateIdentityAppliance():void {
         _identityAppliance = projectProxy.currentIdentityAppliance;
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+        //sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
     }
 
     private function enableIdentityApplianceActionButtons():void {

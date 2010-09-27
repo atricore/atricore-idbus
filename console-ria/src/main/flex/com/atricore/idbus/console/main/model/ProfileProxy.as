@@ -23,9 +23,10 @@ package com.atricore.idbus.console.main.model
 {
 import com.atricore.idbus.console.services.dto.User;
 
+import org.osmf.traits.IDisposable;
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
-public class ProfileProxy extends IocProxy
+public class ProfileProxy extends IocProxy implements IDisposable
 {
    public var user : User;
 
@@ -34,5 +35,8 @@ public class ProfileProxy extends IocProxy
       super(name);
    }
 
+   public function dispose():void {
+        user = null;       
+   }
 }
 }

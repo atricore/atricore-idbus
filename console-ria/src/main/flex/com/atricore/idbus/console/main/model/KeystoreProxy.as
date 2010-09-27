@@ -23,9 +23,10 @@ package com.atricore.idbus.console.main.model
 {
 import com.atricore.idbus.console.services.dto.Keystore;
 
+import org.osmf.traits.IDisposable;
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
-public class KeystoreProxy extends IocProxy
+public class KeystoreProxy extends IocProxy implements IDisposable
 {
 
     public static const ACTION_ITEM_CREATE : int = 1;
@@ -33,12 +34,12 @@ public class KeystoreProxy extends IocProxy
 
     private var _viewAction:int;
     private var _currentKeystore:Keystore;
-    
+
     public function KeystoreProxy()
     {
         super(NAME, null);
     }
-    
+
     public function get currentKeystore():Keystore {
         return _currentKeystore;
     }
@@ -54,6 +55,12 @@ public class KeystoreProxy extends IocProxy
     public function set viewAction(viewAction:int):void {
         _viewAction = viewAction;
     }
-    
+
+    public function dispose():void {
+        _viewAction = null;
+        _currentKeystore = null;
+    }
+
+
 }
 }

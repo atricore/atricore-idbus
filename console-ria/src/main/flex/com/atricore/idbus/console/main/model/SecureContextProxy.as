@@ -24,30 +24,32 @@ package com.atricore.idbus.console.main.model
 import com.atricore.idbus.console.services.dto.User;
 
 
+import org.osmf.traits.IDisposable;
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
-public class SecureContextProxy extends IocProxy
+public class SecureContextProxy extends IocProxy implements IDisposable
 {
 
-   private var _currentUser : User;
+    private var _currentUser : User;
 
-   public function SecureContextProxy() {
-      super(NAME, null);
-   }
+    public function SecureContextProxy() {
+        super(NAME, null);
+    }
 
-   public function logout() : void {
-      _currentUser = null;
-   }
+    public function logout() : void {
+        _currentUser = null;
+    }
 
+    public function set currentUser(user : User) : void {
+        _currentUser = user;
+    }
 
-   public function set currentUser(user : User) : void {
-      _currentUser = user;
-   }
+    public function get currentUser() : User {
+        return _currentUser;
+    }
 
-   public function get currentUser() : User {
-      return _currentUser;
-   }
-
-
+    public function dispose():void {
+        _currentUser = null;
+    }
 }
 }

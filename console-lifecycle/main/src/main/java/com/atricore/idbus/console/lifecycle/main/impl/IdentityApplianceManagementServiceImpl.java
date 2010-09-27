@@ -1173,7 +1173,8 @@ public class IdentityApplianceManagementServiceImpl implements
             ActivateAgentRequest activationRequest = doMakeAgentActivationRequest(execEnv);
             ActivateAgentResponse activationResponse = activationService.activateAgent(activationRequest);
 
-            if (execEnv.isOverwriteOriginalSetup())
+            // Only configure the appliance if we have deployment information
+            if (execEnv.isOverwriteOriginalSetup() && appliance.getIdApplianceDeployment() != null)
                 configureExecEnv(appliance, execEnv);
 
             if (execEnv.isInstallDemoApps()) {
