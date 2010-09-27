@@ -249,6 +249,7 @@ public class IdentityApplianceManagementServiceImpl implements
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
 
             validateAppliance(appliance, ApplianceValidator.Operation.IMPORT);
+            debugAppliance(appliance, ApplianceValidator.Operation.IMPORT);
 
             if (logger.isDebugEnabled())
                     logger.debug("Received Identity Appliance Definition : [" +
@@ -271,7 +272,7 @@ public class IdentityApplianceManagementServiceImpl implements
             if (logger.isTraceEnabled())
                 logger.trace("Created Identity Appliance " + appliance.getId());
 
-            debugAppliance(appliance, ApplianceValidator.Operation.IMPORT);
+
 
             // 4. Return the appliance
             ImportApplianceDefinitionResponse response = new ImportApplianceDefinitionResponse();
@@ -315,8 +316,9 @@ public class IdentityApplianceManagementServiceImpl implements
                     throw new UnsupportedOperationException("Appliance lifecycle management action not supported: " + req.getAction());
             }
 
-            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             debugAppliance(appliance, ApplianceValidator.Operation.ANY);
+
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
 
             ManageIdentityApplianceLifeCycleResponse response = new ManageIdentityApplianceLifeCycleResponse(req.getAction(), appliance);
             response.setStatusCode(StatusCode.STS_OK);
@@ -356,12 +358,10 @@ public class IdentityApplianceManagementServiceImpl implements
                 throw new IdentityServerException("Execution Environment "+request.getExecEnvName()+" not found in appliance " +
                         request.getApplianceId());
 
-
             execEnv.setInstallDemoApps(request.isActivateSamples());
             execEnv.setOverwriteOriginalSetup(request.isReplace());
 
             activateExecEnv(appliance, execEnv, request.isReactivate());
-
             debugAppliance(appliance, ApplianceValidator.Operation.ANY);
 
             return response;
@@ -436,12 +436,11 @@ public class IdentityApplianceManagementServiceImpl implements
             }
 
             validateAppliance(appliance, ApplianceValidator.Operation.ADD);
+            debugAppliance(appliance, ApplianceValidator.Operation.ADD);
 
             appliance = identityApplianceDAO.save(appliance);
             if (logger.isTraceEnabled())
                 logger.trace("Added appliance " + appliance.getIdApplianceDefinition().getName() + " with ID:" + appliance.getId());
-
-            debugAppliance(appliance, ApplianceValidator.Operation.ADD);
 
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
 
@@ -482,6 +481,7 @@ public class IdentityApplianceManagementServiceImpl implements
             }
 
             validateAppliance(appliance, ApplianceValidator.Operation.UPDATE);
+            debugAppliance(appliance, ApplianceValidator.Operation.UPDATE);
 
             applianceDef.setLastModification(new Date());
             applianceDef.setRevision(applianceDef.getRevision() + 1);
@@ -489,10 +489,7 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = identityApplianceDAO.save(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
 
-            debugAppliance(appliance, ApplianceValidator.Operation.UPDATE);
-
             res = new UpdateIdentityApplianceResponse(appliance);
-
 
         } catch (Exception e){
 	        logger.error("Error updating identity appliance", e);
@@ -1259,10 +1256,6 @@ public class IdentityApplianceManagementServiceImpl implements
                     fp.getFederatedConnectionsA().clear();
                     fp.getFederatedConnectionsB().clear();
                 }
-            }
-
-            for (Long id : fcIds) {
-                federatedConnectionDAO.delete(id);
             }
 
             identityApplianceDAO.delete(appliance.getId());

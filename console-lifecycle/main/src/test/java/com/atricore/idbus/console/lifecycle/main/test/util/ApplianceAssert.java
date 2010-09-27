@@ -68,9 +68,8 @@ public class ApplianceAssert {
         assertEquals(original.getName(), test.getName()) ;
         assertEquals(original.getDisplayName(), test.getDisplayName());
         assertEquals(original.getDescription(), test.getDescription());
-        assertEquals(original.getLocation().getLocationAsString(), test.getLocation().getLocationAsString()) ;
         assertEquals(original.getProviders().size() , test.getProviders().size());
-
+        assertEquals(original.getLocation().getLocationAsString(), test.getLocation().getLocationAsString()) ;
 
         for (Provider originalProvider : original.getProviders()) {
             boolean found = false;

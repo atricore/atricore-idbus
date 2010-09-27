@@ -58,7 +58,6 @@ public class IdentityApplianceDefinition implements Serializable {
     
     private Set<ExecutionEnvironment> executionEnvironments;
 
-
     private Keystore keystore;
 
     public long getId() {

@@ -34,7 +34,7 @@
         </class>
 
         <class name="IdentityApplianceUnit" table="ATC_ID_APPLIANCE_UNIT">
-            <field name="providers" table="ATC_IDAPPLIANCEUNIT_PROVIDERS"/>
+            <field name="providers" />
         </class>
 
         <class name="IdentityServer" table="ATC_ID_SERVER" />
