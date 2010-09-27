@@ -23,6 +23,8 @@ package com.atricore.idbus.console.modeling.main {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.browser.BrowserMediator;
+import com.atricore.idbus.console.modeling.diagram.DiagramMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
@@ -145,6 +147,8 @@ public class ModelerMediator extends IocMediator implements IDisposable {
     private function creationCompleteHandler(event:Event):void {
         _created = true;
 
+        event.target.removeEventListener(FlexEvent.CREATION_COMPLETE,creationCompleteHandler);
+
         /* Remove unused title in both modeler's and diagram's panel */
         view.titleDisplay.width = 0;
         view.titleDisplay.height = 0;
@@ -156,11 +160,6 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         paletteMediator.setViewComponent(view.palette);
         propertySheetMediator.setViewComponent(view.propertysheet);
 
-        view.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
-        view.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
-        view.btnSave.addEventListener(MouseEvent.CLICK, handleSaveClick);
-        //view.btnLifecycle.addEventListener(MouseEvent.CLICK, handleLifecycleClick);
-
         view.appliances.labelFunction = applianceListLabelFunc;
         view.btnSave.enabled = false;
 
@@ -171,6 +170,8 @@ public class ModelerMediator extends IocMediator implements IDisposable {
 
     public function init():void {
         if (_created) {
+            setupListeners(null); //setup listeners for the first time
+            view.addEventListener(Event.ADDED_TO_STAGE, setupListeners);
             sendNotification(ApplicationFacade.CLEAR_MSG);
             view.btnSave.enabled = false;
             if (projectProxy.currentIdentityAppliance != null &&
@@ -188,6 +189,11 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         }
     }
 
+    private function setupListeners(event:Event):void {
+        view.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
+        view.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
+        view.btnSave.addEventListener(MouseEvent.CLICK, handleSaveClick);
+    }
     public function dispose():void {
         // Clean up:
         //      - Remove event listeners
@@ -199,15 +205,9 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         view.btnSave.removeEventListener(MouseEvent.CLICK, handleSaveClick);
 
         _identityAppliance = null;
-        _emptyNotationModel = null;
-        _popupManager = null;
-        _applianceList = null;
-        _created = null;
-        _browserMediator = null;
-        _diagramMediator = null;
-        _paletteMediator = null;
-        _propertySheetMediator = null;
-        view = null;
+        view.appliances.selectedItem = null;
+        (browserMediator as BrowserMediator).dispose();
+        (diagramMediator as DiagramMediator).dispose();
     }
 
     private function handleNewClick(event:MouseEvent):void {

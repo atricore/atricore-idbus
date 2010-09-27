@@ -33,10 +33,11 @@ import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 import flash.events.Event;
 
+import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class BrowserMediator extends IocMediator {
+public class BrowserMediator extends IocMediator implements IDisposable {
     private var _applianceRootNode;
     private var _identityAppliance:IdentityAppliance;
     private var _projectProxy:ProjectProxy;
@@ -178,7 +179,7 @@ public class BrowserMediator extends IocMediator {
         if (_selectedItem != null && _selectedItem.data == data) {
             return _selectedItem;
         }
-        
+
         if (node.data == data) {
             targetTreeNode = node;
         } else {
@@ -203,6 +204,22 @@ public class BrowserMediator extends IocMediator {
     protected function get view():BrowserView
     {
         return viewComponent as BrowserView;
+    }
+
+    public function dispose():void {
+        // Clean up:
+        //      - Remove event listeners
+        //      - Stop timers
+        //      - Set references to null
+
+
+        //(_applianceRootNode as BrowserNode).removeChildren();
+        view.dataProvider = null;
+        view.validateNow();
+        view.selectedItem = null;
+        _applianceRootNode = null;
+        _identityAppliance = null;
+        _selectedItem = null;
     }
 
 }

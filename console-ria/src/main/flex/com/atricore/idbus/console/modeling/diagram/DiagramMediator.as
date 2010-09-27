@@ -84,6 +84,7 @@ import mx.core.ClassFactory;
 import mx.core.Container;
 import mx.utils.UIDUtil;
 
+import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 import org.un.cava.birdeye.ravis.enhancedGraphLayout.data.EnhancedGraph;
@@ -97,7 +98,7 @@ import org.un.cava.birdeye.ravis.graphLayout.visual.IVisualNode;
 import org.un.cava.birdeye.ravis.utils.TypeUtil;
 import org.un.cava.birdeye.ravis.utils.events.VGraphEvent;
 
-public class DiagramMediator extends IocMediator {
+public class DiagramMediator extends IocMediator implements IDisposable {
 
     public static const BUNDLE:String = "console";
 
@@ -256,7 +257,7 @@ public class DiagramMediator extends IocMediator {
                         //                            }
 
 
-                        break; 
+                        break;
                     case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                         ownerIdentityAppliance = _identityAppliance;
 
@@ -366,7 +367,7 @@ public class DiagramMediator extends IocMediator {
                         sendNotification(ApplicationFacade.CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT, cwiiseenv);
                         break;
                 }
-                
+
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
                 toggleNodeOnByData(_identityApplianceDiagram, _projectProxy.currentIdentityApplianceElement);
@@ -454,10 +455,10 @@ public class DiagramMediator extends IocMediator {
                 }
 
                 /*if (_currentlySelectedEdge != null) {
-                    GraphDataManager.removeVEdge(_identityApplianceDiagram, _currentlySelectedEdge.vedge, true);
-                    _currentlySelectedEdge = null;
-                    sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                }*/
+                 GraphDataManager.removeVEdge(_identityApplianceDiagram, _currentlySelectedEdge.vedge, true);
+                 _currentlySelectedEdge = null;
+                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                 }*/
 
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE:
@@ -658,7 +659,7 @@ public class DiagramMediator extends IocMediator {
                     if (provider is FederatedProvider) {
                         var locProv:FederatedProvider = provider as FederatedProvider;
                         if (locProv.identityLookup != null) {
-                            updateGraphEdgeData(locProv.identityLookup);                            
+                            updateGraphEdgeData(locProv.identityLookup);
                         }
                         if (locProv is ServiceProvider) {
                             var sp:ServiceProvider = locProv as ServiceProvider;
@@ -774,7 +775,7 @@ public class DiagramMediator extends IocMediator {
             } else if (node.data is ExecutionEnvironment) {
                 elementType = DiagramElementTypes.EXECUTION_ENVIRONMENT_ELEMENT_TYPE;
             }
-            
+
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_REMOVE, elementType);
         }
     }
@@ -993,6 +994,12 @@ public class DiagramMediator extends IocMediator {
         return viewComponent as DiagramView;
     }
 
-
+    public function dispose():void {
+        // Clean up:
+        //      - Remove event listeners
+        //      - Stop timers
+        //      - Set references to null
+        resetGraph();
+    }
 }
 }
