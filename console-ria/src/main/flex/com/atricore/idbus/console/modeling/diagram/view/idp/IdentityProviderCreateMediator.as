@@ -160,7 +160,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         _uploadedFileName = null;
 
         FormUtility.clearValidationErrors(_validators);
-        registerValidators();
+//        registerValidators();
     }
 
     public function initLocation():void {
@@ -423,7 +423,15 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
     }
 
     override public function registerValidators():void {
+        FormUtility.clearValidationErrors(_validators);
         _validators = [];
+//        var nameValidator:NameValidator = new NameValidator();
+//        nameValidator.source = view.identityProviderName;
+//        nameValidator.required = true;
+//        nameValidator.property = "text";
+//        nameValidator.trigger = view.btnOk;
+//        nameValidator.triggerEvent = "click";
+//        _validators.push(nameValidator);
         _validators.push(view.nameValidator);
         view.portValidator.source = view.idpLocationPort;
         _validators.push(view.portValidator);
@@ -448,7 +456,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
     override public function handleNotification(notification:INotification):void {
         super.handleNotification(notification);
         initLocation();
-        registerValidators();        
+//        registerValidators();
     }
+
 }
 }

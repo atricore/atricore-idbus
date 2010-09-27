@@ -281,12 +281,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateIdentityProviderWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_identityProviderCreateForm) {
-            createIdentityProviderCreateForm();
-        } else {
-//            identityProviderMediator.initLocation();
-            identityProviderMediator.handleNotification(_lastWindowNotification);
-        }
+        createIdentityProviderCreateForm();
         _popup.title = "New Identity Provider Definition";
         _popup.width = 690;
         _popup.height = 455;
@@ -308,11 +303,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateServiceProviderWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_serviceProviderCreateForm) {
-            createServiceProviderCreateForm();
-        } else {
-            serviceProviderMediator.initLocation();
-        }
+        createServiceProviderCreateForm();
         _popup.title = "New Service Provider Definition";
         _popup.width = 690;
         _popup.height = 455;
@@ -333,9 +324,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateIdentityVaultWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_identityVaultCreateForm) {
-            createIdentityVaultCreateForm();
-        }
+        createIdentityVaultCreateForm();
         _popup.title = "Create Identity Vault";
         _popup.width = 410;
         _popup.height = 140;
@@ -356,9 +345,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateDbIdentitySourceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_dbIdentitySourceCreateForm) {
-            createDbIdentitySourceCreateForm();
-        }
+        createDbIdentitySourceCreateForm();
         _popup.title = "Create DB Identity Source";
         _popup.width = 540;
         _popup.height = 350;
@@ -379,9 +366,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateLdapIdentitySourceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_ldapIdentitySourceCreateForm) {
-            createLdapIdentitySourceCreateForm();
-        }
+        createLdapIdentitySourceCreateForm();
         _popup.title = "Create LDAP Identity Source";
         _popup.width = 500;
         _popup.height = 370;
@@ -402,9 +387,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateXmlIdentitySourceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_xmlIdentitySourceCreateForm) {
-            createXmlIdentitySourceCreateForm();
-        }
+        createXmlIdentitySourceCreateForm();
         _popup.title = "Create XML Identity Source";
         _popup.width = 410;
         _popup.height = 170;
@@ -425,9 +408,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateWeblogicExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_weblogicExecutionEnvironmentCreateForm) {
-            createWeblogicExecutionEnvironmentCreateForm();
-        }
+        createWeblogicExecutionEnvironmentCreateForm();
         _popup.title = "Create Weblogic Execution Environment";
         _popup.width = 500;
         _popup.height = 320;
@@ -448,9 +429,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateTomcatExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_tomcatExecutionEnvironmentCreateForm) {
-            createTomcatExecutionEnvironmentCreateForm();
-        }
+        createTomcatExecutionEnvironmentCreateForm();
         _popup.title = "Create Tomcat Execution Environment";
         _popup.width = 500;
         _popup.height = 290;
@@ -471,9 +450,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateJBossPortalExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_jbossPortalExecutionEnvironmentCreateForm) {
-            createJBossPortalExecutionEnvironmentCreateForm();
-        }
+        createJBossPortalExecutionEnvironmentCreateForm();
         _popup.title = "Create JBoss Portal Execution Environment";
         _popup.width = 500;
         _popup.height = 260;
@@ -494,9 +471,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateLiferayPortalExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_liferayPortalExecutionEnvironmentCreateForm) {
-            createLiferayPortalExecutionEnvironmentCreateForm();
-        }
+        createLiferayPortalExecutionEnvironmentCreateForm();
         _popup.title = "Create Liferay Portal Execution Environment";
         _popup.width = 500;
         _popup.height = 260;
@@ -517,9 +492,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateWASCEExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_wasceExecutionEnvironmentCreateForm) {
-            createWASCEExecutionEnvironmentCreateForm();
-        }
+        createWASCEExecutionEnvironmentCreateForm();
         _popup.title = "Create WASCE Execution Environment";
         _popup.width = 500;
         _popup.height = 260;
@@ -540,9 +513,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateApacheExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_apacheExecutionEnvironmentCreateForm) {
-            createApacheExecutionEnvironmentCreateForm();
-        }
+        createApacheExecutionEnvironmentCreateForm();
         _popup.title = "Create Apache Execution Environment";
         _popup.width = 500;
         _popup.height = 260;
@@ -563,9 +534,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateWindowsIISExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_windowsIISExecutionEnvironmentCreateForm) {
-            createWindowsIISExecutionEnvironmentCreateForm();
-        }
+        createWindowsIISExecutionEnvironmentCreateForm();
         _popup.title = "Create Windows IIS Execution Environment";
         _popup.width = 500;
         _popup.height = 260;
@@ -586,11 +555,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateFederatedConnectionWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_federatedConnectionCreateForm) {
-            createFederatedConnectionCreateForm();
-        } else {
-            federatedConnectionCreateMediator.handleNotification(_lastWindowNotification);
-        }
+        createFederatedConnectionCreateForm();
         _popup.title = "Create Federated Connection";
         _popup.width = 600;
         _popup.height = 395;
@@ -612,11 +577,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateActivationWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_activationCreateForm) {
-            createActivationCreateForm();
-        } else {
-            activationCreateMediator.handleNotification(_lastWindowNotification);
-        }
+        createActivationCreateForm();
         _popup.title = "Create JOSSO Activation";
         _popup.width = 670;
         _popup.height = 200;
@@ -637,9 +598,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function showCreateJBossExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
-        if (!_jbossExecutionEnvironmentCreateForm) {
-            createJBossExecutionEnvironmentCreateForm();
-        }
+        createJBossExecutionEnvironmentCreateForm();
         _popup.title = "Create JBoss Execution Environment";
         _popup.width = 500;
         _popup.height = 320;
