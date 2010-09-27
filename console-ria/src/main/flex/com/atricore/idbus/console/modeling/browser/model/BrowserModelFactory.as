@@ -121,6 +121,8 @@ public class BrowserModelFactory {
             execEnvironmentNode.id = Number(executionEnvironment.id);
             execEnvironmentNode.label = executionEnvironment.name;
             execEnvironmentNode.type = Constants.EXEC_ENVIRONMENT_DEEP;
+            execEnvironmentNode.data = executionEnvironment;
+            execEnvironmentNode.selectable = selectable;
             if(executionEnvironment is JbossExecutionEnvironment){
                 execEnvironmentNode.icon = EmbeddedIcons.jbossEnvironmentMiniIcon;
             } else if(executionEnvironment is WeblogicExecutionEnvironment){

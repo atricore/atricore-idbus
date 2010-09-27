@@ -74,7 +74,7 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
         switch (notification.getName()) {
             case IdentityApplianceCreateCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+                //sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);

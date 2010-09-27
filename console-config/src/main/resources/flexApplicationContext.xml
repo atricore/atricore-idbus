@@ -369,10 +369,17 @@
 
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
         <property name="popupManager" ref="consolePopUpManager"/>
-        <property name="secureContextProxy" ref="secureContextProxy"/>
+
         <property name="modelerMediator" ref="modelerMediator"/>
         <property name="lifecycleViewMediator" ref="lifecycleViewMediator"/>
         <property name="accountManagementMediator" ref="accountManagementMediator"/>
+
+        <property name="secureContextProxy" ref="secureContextProxy"/>
+        <property name="projectProxy" ref="projectProxy"/>
+        <property name="keystoreProxy" ref="keystoreProxy"/>
+        <property name="profileProxy" ref="profileProxy"/>
+        <property name="secureContextProxy" ref="secureContextProxy"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
 
     <!-- support components -->

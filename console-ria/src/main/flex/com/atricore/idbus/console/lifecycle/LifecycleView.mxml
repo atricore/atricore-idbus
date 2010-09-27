@@ -31,7 +31,7 @@
 
         <s:VGroup width="30%" height="100%" paddingLeft="10" paddingBottom="10" paddingTop="10">
             <s:HGroup width="100%" verticalAlign="bottom">
-                <s:Label width="200" text="Saved" styleName="h3"/>
+                <s:Label width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.saved')}" styleName="h3"/>
                 <!--mx:Spacer width="100%"/>
                 <s:Button id="btnApplianceCreate" label="Create" enabled="false"/-->
             </s:HGroup>
@@ -86,7 +86,7 @@
 
         <s:VGroup width="30%" height="100%" paddingBottom="10" paddingTop="10">
             <s:HGroup width="100%" verticalAlign="bottom">
-                <s:Label width="200" text="Compiled" styleName="h3"/>
+                <s:Label width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.staged')}" styleName="h3"/>
                 <!--mx:Spacer width="100%"/>
                 <s:DropDownList id="cboCompiledIdentityAppliances" prompt="Rebuild All"
                              width="150"
@@ -104,7 +104,7 @@
                                                headerText="Identity Appliance"
                                                headerStyleName="applianceHeader"
                                                showDataTips="true" dataField="applianceLabel" wordWrap="true"/>
-                    <mx:AdvancedDataGridColumn headerText="Actions" width="65">
+                    <mx:AdvancedDataGridColumn headerText="Actions" width="90">
                         <mx:itemRenderer>
                             <fx:Component>
                                 <s:MXAdvancedDataGridItemRenderer>
@@ -126,6 +126,12 @@
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
                                                                toolTip="Edit Compiled Identity Appliance"
                                                                click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
+                                        <components:IconButton iconUp="{EmbeddedIcons.setupIcon}"
+                                                               iconWidth="22" iconHeight="22"
+                                                               paddingTop="3" paddingLeft="3"
+                                                               skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
+                                                               toolTip="Rebuild Identity Appliance"
+                                                               click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_BUILD));"/>
                                         <components:IconButton iconUp="{EmbeddedIcons.trashApplianceIcon}"
                                                                iconWidth="22" iconHeight="22"
                                                                paddingTop="3" paddingLeft="3"
@@ -143,7 +149,7 @@
 
         <s:VGroup width="30%" height="100%" paddingBottom="10" paddingTop="10">
             <s:HGroup width="100%" verticalAlign="bottom">
-                <s:Label width="200" text="Deployed" styleName="h3"/>
+                <s:Label width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.deployed')}" styleName="h3"/>
                 <!--mx:Spacer width="100%"/>
                 <s:DropDownList id="cboDeployedIdentityAppliances" prompt="Redeploy All"
                              width="150"
@@ -215,7 +221,7 @@
 
         <s:VGroup width="30%" height="100%" paddingRight="10" paddingBottom="10" paddingTop="10">
             <s:HGroup width="100%" verticalAlign="bottom">
-                <s:Label width="200" text="Disposed" styleName="h3"/>
+                <s:Label width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.disposed')}" styleName="h3"/>
                 <!--mx:Spacer width="100%"/>
                 <s:DropDownList id="cboDisposedIdentityAppliances" prompt="Remove All"
                              width="150"
