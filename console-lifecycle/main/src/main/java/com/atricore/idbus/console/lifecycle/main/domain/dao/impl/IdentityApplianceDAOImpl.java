@@ -3,6 +3,7 @@ package com.atricore.idbus.console.lifecycle.main.domain.dao.impl;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.dao.IdentityApplianceDAO;
+import com.atricore.idbus.console.lifecycle.main.exception.ApplianceNotFoundException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -24,7 +25,6 @@ public class IdentityApplianceDAOImpl extends GenericDAOImpl<IdentityAppliance, 
         if (deployedOnly) {
             // TODO : Deployed
             PersistenceManager pm = getPersistenceManager();
-            
             Query query = pm.newQuery("SELECT FROM com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance" +
                     //" WHERE this.idApplianceDeployment != null");
                     " WHERE this.state == '" + IdentityApplianceState.DEPLOYED + "'" +
@@ -35,5 +35,21 @@ public class IdentityApplianceDAOImpl extends GenericDAOImpl<IdentityAppliance, 
             //TODO for now returning all appliances for list of projected
             return findAll();
         }
+    }
+
+    public IdentityAppliance findByName(String name) throws ApplianceNotFoundException {
+        PersistenceManager pm = getPersistenceManager();
+        Query query = pm.newQuery("SELECT FROM com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance" +
+                " WHERE this.idApplianceDefinition.name == '" + name + "'");
+
+        Collection<IdentityAppliance> appliances = (Collection<IdentityAppliance>) query.execute();
+
+        if (appliances == null || appliances.size() < 1)
+            throw new ApplianceNotFoundException(name);
+
+        if (appliances.size() > 1) // TODO : Improve exception!
+            throw new RuntimeException("Too many appliances found for name '"+name+"'" + appliances.size());
+
+        return appliances.iterator().next();
     }
 }

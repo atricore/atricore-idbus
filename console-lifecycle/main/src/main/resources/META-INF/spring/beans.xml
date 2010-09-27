@@ -91,11 +91,12 @@
 
     </bean>
 
-    <bean id="applianceDefValidator" class="com.atricore.idbus.console.lifecycle.main.impl.ApplianceDefinitionValidatorImpl">
+    <bean id="applianceDefValidator" class="com.atricore.idbus.console.lifecycle.main.impl.ApplianceValidatorImpl">
         <property name="walker">
             <bean name="idbusWalker"
                   class="com.atricore.idbus.console.lifecycle.main.transform.ReflexiveIdentityApplianceDefinitionWalker"/>
         </property>
+        <property name="dao" ref="identityApplianceDAO"/>
     </bean>
 
     <bean id="applianceDeployer" class="com.atricore.idbus.console.lifecycle.main.impl.FeaturesBasedApplianceDeployer">
