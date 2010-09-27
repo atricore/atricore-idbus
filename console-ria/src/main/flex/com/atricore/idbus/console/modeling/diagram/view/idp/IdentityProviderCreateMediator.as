@@ -160,7 +160,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         _uploadedFileName = null;
 
         FormUtility.clearValidationErrors(_validators);
-        registerValidators();
+//        registerValidators();
     }
 
     public function initLocation():void {
@@ -423,6 +423,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
     }
 
     override public function registerValidators():void {
+        FormUtility.clearValidationErrors(_validators);
         _validators = [];
         _validators.push(view.nameValidator);
         view.portValidator.source = view.idpLocationPort;
@@ -448,7 +449,8 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
     override public function handleNotification(notification:INotification):void {
         super.handleNotification(notification);
         initLocation();
-        registerValidators();        
+//        registerValidators();
     }
+
 }
 }
