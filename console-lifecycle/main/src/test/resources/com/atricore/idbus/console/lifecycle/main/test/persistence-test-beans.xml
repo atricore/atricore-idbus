@@ -51,6 +51,11 @@
         <property name="federatedConnectionDAO" ref="federatedConnectionDAO"/>
     </bean>
 
+    <bean id="persistenceTest" class="com.atricore.idbus.console.lifecycle.main.test.TransactionalPersistenceTest">
+        <property name="svc" ref="svc"/>
+        <property name="dao" ref="identityApplianceDAO"/>
+    </bean>
+
     <bean id="applianceDefValidator" class="com.atricore.idbus.console.lifecycle.main.impl.ApplianceDefinitionValidatorImpl">
         <property name="walker">
             <bean name="idbusWalker"

@@ -304,6 +304,7 @@
 
     <bean name="execEnv1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.TomcatExecutionEnvironment">
         <property name="name" value="execEnv1"/>
+        <property name="displayName" value="Exec Env 1"/>
         <property name="platformId" value="tc60"/>
         <property name="description" value="Execution Environment One"/>
         <property name="installUri" value="/tmp/apache-tomcat-6.0.29"/>
@@ -316,6 +317,7 @@
 
     <bean name="idsource1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentitySource">
         <property name="name" value="idsource1"/>
+        <property name="displayName" value="ID Source 1"/>
         <property name="description" value="Identity Source One"/>
         <property name="idau" value="idau-default"/>
         <property name="psp" value="psp-default"/>

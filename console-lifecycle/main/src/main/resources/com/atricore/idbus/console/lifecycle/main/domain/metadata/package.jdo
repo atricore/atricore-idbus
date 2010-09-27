@@ -36,8 +36,8 @@
 
         <class name="Activation" detachable="true">
             <inheritance strategy="new-table"/>
-            <field name="sp" default-fetch-group="true"/>
-            <field name="executionEnv" default-fetch-group="true"/>
+            <field name="sp" default-fetch-group="true" dependent="false"/>
+            <field name="executionEnv" default-fetch-group="true" dependent="false"/>
         </class>
 
         <class name="AlfrescoExecutionEnvironment" detachable="true">
@@ -112,13 +112,13 @@
 
         <class name="FederatedChannel" detachable="true">
             <inheritance strategy="new-table"/>
-            <field name="connectionA" mapped-by="channelA" default-fetch-group="true"/>
-            <field name="connectionB" mapped-by="channelB" default-fetch-group="true" />
+            <field name="connectionA" mapped-by="channelA" default-fetch-group="true" dependent="true"/>
+            <field name="connectionB" mapped-by="channelB" default-fetch-group="true" dependent="true"/>
         </class>
 
         <class name="FederatedConnection" detachable="true">
             <inheritance strategy="new-table"/>
-            <field name="roleA" default-fetch-group="true"  />
+            <field name="roleA" default-fetch-group="true" />
             <field name="channelA" default-fetch-group="true" dependent="true" />
             <field name="roleB" default-fetch-group="true" />
             <field name="channelB" default-fetch-group="true" dependent="true"/>
@@ -126,12 +126,13 @@
 
         <class name="FederatedProvider" detachable="true">
             <inheritance strategy="new-table"/>
-
-            <field name="federatedConnectionsA" default-fetch-group="true" persistence-modifier="persistent" mapped-by="roleA">
-                <collection dependent-element="true"/>
+            <field name="federatedConnectionsA" default-fetch-group="true"
+                   persistence-modifier="persistent" mapped-by="roleA" delete-action="null">
+                <collection dependent-element="false"/>
             </field>
-            <field name="federatedConnectionsB" default-fetch-group="true" persistence-modifier="persistent" mapped-by="roleB">
-                <collection dependent-element="true"/>
+            <field name="federatedConnectionsB" default-fetch-group="true"
+                   persistence-modifier="persistent" mapped-by="roleB" delete-action="null">
+                <collection dependent-element="false"/>
             </field>
         </class>
 
@@ -289,7 +290,7 @@
 
         <class name="ServiceProvider" detachable="true">
             <inheritance strategy="new-table"/>
-            <field name="activation" default-fetch-group="true" mapped-by="sp"/>
+            <field name="activation" default-fetch-group="true" mapped-by="sp" dependent="true"/>
             <field name="accountLinkagePolicy" default-fetch-group="true" />
             <field name="authenticationContract" default-fetch-group="true" />
 
