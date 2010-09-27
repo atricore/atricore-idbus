@@ -5,9 +5,12 @@ import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButton
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.DisposeIdentityApplianceCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
+import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceRemoveCommand;
 import com.atricore.idbus.console.modeling.main.controller.StartIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.StopIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.UndeployIdentityApplianceCommand;
@@ -39,6 +42,8 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
     public static const viewName:String = "LifecycleView";
 
     private var _projectProxy:ProjectProxy;
+
+    private var _removedApplianceId:Number;
 
     private var _created:Boolean;
 
@@ -76,27 +81,27 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
         view.colSavedApplianceName.labelFunction = identityApplianceNameLabel;
 
         // Compiled Appliances Grid
-        view.grdCompiledAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-        view.grdCompiledAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-        view.grdCompiledAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-        view.grdCompiledAppliances.addEventListener(DragEvent.DRAG_OVER, handleDragOver);
-        view.grdCompiledAppliances.addEventListener(DragEvent.DRAG_DROP, dropInSavedOrDeployedAppliance);
-        view.colCompiledApplianceName.labelFunction = identityApplianceNameLabel;
+        view.grdStagedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
+        view.grdStagedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+        view.grdStagedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+        view.grdStagedAppliances.addEventListener(DragEvent.DRAG_OVER, handleDragOver);
+        view.grdStagedAppliances.addEventListener(DragEvent.DRAG_DROP, handleDropInStagedGrid);
+        view.colStagedApplianceName.labelFunction = identityApplianceNameLabel;
 
         // Deployed Appliances Grid
         view.grdDeployedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
         view.grdDeployedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
         view.grdDeployedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
         view.grdDeployedAppliances.addEventListener(DragEvent.DRAG_OVER, handleDragOver);
-        view.grdDeployedAppliances.addEventListener(DragEvent.DRAG_DROP, dropInCompiledAppliance);
+        view.grdDeployedAppliances.addEventListener(DragEvent.DRAG_DROP, handleDropInDeployedGrid);
         view.colDeployedApplianceName.labelFunction = identityApplianceNameLabel;
 
         // Disposed Appliances Grid
         view.grdDisposedAppliances.addEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-        view.grdDisposedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+        //view.grdDisposedAppliances.addEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
         view.grdDisposedAppliances.addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
         view.grdDisposedAppliances.addEventListener(DragEvent.DRAG_OVER, handleDragOver);
-        view.grdDisposedAppliances.addEventListener(DragEvent.DRAG_DROP, dropInDeployedAppliance);
+        view.grdDisposedAppliances.addEventListener(DragEvent.DRAG_DROP, handleDropInDisposedGrid);
         view.grdDisposedAppliances.labelFunction = identityApplianceNameLabel;
         view.colDisposedApplianceName.labelFunction = identityApplianceNameLabel;
 
@@ -106,19 +111,19 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
     public function initGrids():void {
         if (_created) {
             var savedAppliances:ArrayCollection = new ArrayCollection();
-            var compiledAppliances:ArrayCollection = new ArrayCollection();
+            var stagedAppliances:ArrayCollection = new ArrayCollection();
             var deployedAppliances:ArrayCollection = new ArrayCollection();
             var disposedAppliances:ArrayCollection = new ArrayCollection();
 
             var savedAppliancesSelectedIndex:int = -1;
-            var compiledAppliancesSelectedIndex:int = -1;
+            var stagedAppliancesSelectedIndex:int = -1;
             var deployedAppliancesSelectedIndex:int = -1;
             var disposedAppliancesSelectedIndex:int = -1;
 
             // reset appliance(s) selection
             var grid:AdvancedDataGrid = view.grdSavedAppliances;
             view.grdSavedAppliances.selectedIndex = savedAppliancesSelectedIndex;
-            view.grdCompiledAppliances.selectedIndex = compiledAppliancesSelectedIndex;
+            view.grdStagedAppliances.selectedIndex = stagedAppliancesSelectedIndex;
             view.grdDeployedAppliances.selectedIndex = deployedAppliancesSelectedIndex;
             view.grdDisposedAppliances.selectedIndex = disposedAppliancesSelectedIndex;
 
@@ -137,9 +142,9 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                         }
                     }
                     if (appliance.state == IdentityApplianceState.BUILT.name) {
-                        compiledAppliances.addItem(appliance);
+                        stagedAppliances.addItem(appliance);
                         //if (selected) {
-                        //    //compiledAppliancesSelectedIndex = compiledAppliances.length - 1;
+                        //    //stagedAppliancesSelectedIndex = stagedAppliances.length - 1;
                         //}
                     } else if (appliance.state == IdentityApplianceState.DEPLOYED.name ||
                             appliance.state == IdentityApplianceState.STARTED.name) {
@@ -157,7 +162,7 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
             }
 
             view.grdSavedAppliances.dataProvider = new HierarchicalData(savedAppliances);
-            view.grdCompiledAppliances.dataProvider = new HierarchicalData(compiledAppliances);
+            view.grdStagedAppliances.dataProvider = new HierarchicalData(stagedAppliances);
             view.grdDeployedAppliances.dataProvider = new HierarchicalData(deployedAppliances);
             view.grdDisposedAppliances.dataProvider = new HierarchicalData(disposedAppliances);
 
@@ -170,7 +175,7 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
             view.grdSavedAppliances.validateNow();
 
             view.grdSavedAppliances.selectedIndex = savedAppliancesSelectedIndex;
-            //view.grdCompiledAppliances.selectedIndex = compiledAppliancesSelectedIndex;
+            //view.grdStagedAppliances.selectedIndex = stagedAppliancesSelectedIndex;
             //view.grdDeployedAppliances.selectedIndex = deployedAppliancesSelectedIndex;
             //view.grdDisposedAppliances.selectedIndex = disposedAppliancesSelectedIndex;
         }
@@ -186,22 +191,22 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
         view.grdSavedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
         view.grdSavedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
         view.grdSavedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
-        view.grdCompiledAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-        view.grdCompiledAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-        view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-        view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
-        view.grdCompiledAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInSavedOrDeployedAppliance);
+        view.grdStagedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
+        view.grdStagedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+        view.grdStagedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+        view.grdStagedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
+        view.grdStagedAppliances.removeEventListener(DragEvent.DRAG_DROP, handleDropInStagedGrid);
         view.grdDeployedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
         view.grdDeployedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
         view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
         view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
-        view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInCompiledAppliance);
+        view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_DROP, handleDropInDeployedGrid);
         view.grdDeployedAppliances.labelFunction = identityApplianceNameLabel;
         view.grdDisposedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-        view.grdDisposedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
+        //view.grdDisposedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
         view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
         view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
-        view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_DROP, dropInDeployedAppliance);
+        view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_DROP, handleDropInDisposedGrid);
 
         view = null;
     }
@@ -223,7 +228,7 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
          */
     }
 
-    private function dropInSavedOrDeployedAppliance(event:DragEvent):void {
+    private function handleDropInStagedGrid(event:DragEvent):void {
 
         var items:Array = event.dragSource.dataForFormat('treeDataGridItems') as Array;
         var sourceGrid:CustomDataGrid = event.dragInitiator as CustomDataGrid;
@@ -247,7 +252,7 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
         }
     }
 
-    private function dropInCompiledAppliance(event:DragEvent):void {
+    private function handleDropInDeployedGrid(event:DragEvent):void {
 
         var items:Array = event.dragSource.dataForFormat('treeDataGridItems') as Array;
 
@@ -260,7 +265,7 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
         }
     }
 
-    private function dropInDeployedAppliance(event:DragEvent):void {
+    private function handleDropInDisposedGrid(event:DragEvent):void {
 
         var items:Array = event.dragSource.dataForFormat('treeDataGridItems') as Array;
 
@@ -280,9 +285,9 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
         var items:Array = event.dragSource.dataForFormat('treeDataGridItems') as Array;
 
         if ((sourceGrid.id == targetGrid.id) ||
-                (sourceGrid.id == "grdSavedAppliances" && targetGrid.id != "grdCompiledAppliances") ||
-                (sourceGrid.id == "grdCompiledAppliances" && targetGrid.id != "grdDeployedAppliances") ||
-                (sourceGrid.id == "grdDeployedAppliances" && targetGrid.id == "grdSavedAppliances")) {
+                (sourceGrid.id == "grdSavedAppliances" && targetGrid.id != "grdStagedAppliances") ||
+                (sourceGrid.id == "grdStagedAppliances" && targetGrid.id == "grdSavedAppliances") ||
+                (sourceGrid.id == "grdDeployedAppliances" && targetGrid.id != "grdStagedAppliances")) {
             event.preventDefault();
             DragManager.showFeedback(DragManager.NONE);
             return;
@@ -297,7 +302,7 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
         }
 
         if (targetGrid.id == "grdDisposedAppliances") {
-            if ((items[0] as IdentityAppliance).state == IdentityApplianceState.STARTED.name) {
+            if ((items[0] as IdentityAppliance).state != IdentityApplianceState.BUILT.name) {
                 event.preventDefault();
                 DragManager.showFeedback(DragManager.NONE);
                 return;
@@ -319,6 +324,9 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
             UndeployIdentityApplianceCommand.FAILURE,
             DisposeIdentityApplianceCommand.SUCCESS,
             DisposeIdentityApplianceCommand.FAILURE,
+            IdentityApplianceListLoadCommand.SUCCESS,
+            IdentityApplianceRemoveCommand.SUCCESS,
+            IdentityApplianceRemoveCommand.FAILURE,
             ApplicationFacade.LOGOUT];
     }
 
@@ -425,7 +433,25 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                             "There was an error disposing appliance.");
                 }
                 break;
-
+            case IdentityApplianceListLoadCommand.SUCCESS:
+                initGrids();
+                break;
+            case IdentityApplianceRemoveCommand.SUCCESS:
+                if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(false, true);
+                    sendNotification(ProcessingMediator.STOP);
+                    _removedApplianceId = null;
+                }
+                break;
+            case IdentityApplianceRemoveCommand.FAILURE:
+                if (projectProxy.currentView == viewName) {
+                    updateAppliancesList(true);
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                            "There was an error removing appliance.");
+                    _removedApplianceId = null;
+                }
+                break;
             case ApplicationFacade.LOGOUT:
 
                 break;
@@ -453,7 +479,15 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 break;
             case LifecycleGridButtonEvent.ACTION_REMOVE :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
-                Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null, removeConfirmed, null, Alert.YES);
+                Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null, function(event:CloseEvent) {
+                    if (event.detail == Alert.YES) {
+                        // verify that a removal can be performed
+                        _removedApplianceId = appliance.id;
+                        sendNotification(ProcessingMediator.START, "Removing appliance ...");
+                        var ria:RemoveIdentityApplianceElementRequest = new RemoveIdentityApplianceElementRequest(appliance);
+                        sendNotification(ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT, ria);
+                    }
+                }, null, Alert.YES);
                 break;
             case LifecycleGridButtonEvent.ACTION_START :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
@@ -475,29 +509,30 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 sendNotification(ProcessingMediator.START, "Rebuilding appliance ...");
                 sendNotification(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, [appliance.id.toString(), false]);
                 break;
+            case LifecycleGridButtonEvent.ACTION_DISPOSE :
+                var appliance:IdentityAppliance = event.data as IdentityAppliance;
+                sendNotification(ProcessingMediator.START, "Disposing appliance ...");
+                sendNotification(ApplicationFacade.DISPOSE_IDENTITY_APPLIANCE, appliance.id.toString());
+                break;
         }
     }
 
     private function handleGridDoubleClick(event:MouseEvent):void {
-        var item:IdentityAppliance = event.currentTarget.selectedItem as IdentityAppliance;
-        if (item) {
-            // TODO: open in modeler
+        var appliance:IdentityAppliance = event.currentTarget.selectedItem as IdentityAppliance;
+        if (appliance != null) {
+            sendNotification(ProcessingMediator.START, "Opening identity appliance...");
+            projectProxy.currentIdentityAppliance = null;
+            sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+            sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, appliance.id.toString());
         }
     }
-
-    private function removeConfirmed(event:CloseEvent):void {
-        if (event.detail == Alert.YES) {
-            // verify that a removal can be performed
-        }
-    }
-
 
     private function buildToolTip(row:Object):String {
         var appliance:IdentityApplianceDefinition = row as IdentityApplianceDefinition;
         return appliance ? appliance.name : "";
     }
 
-    private function updateAppliancesList(error:Boolean):void {
+    private function updateAppliancesList(error:Boolean, remove:Boolean = false):void {
         if (!error) {
             var modifiedAppliance:IdentityAppliance = projectProxy.commandResultIdentityAppliance;
             if (modifiedAppliance != null) {
@@ -505,6 +540,16 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                     var appliance:IdentityAppliance = projectProxy.identityApplianceList[i] as IdentityAppliance;
                     if (modifiedAppliance.id == appliance.id) {
                         projectProxy.identityApplianceList[i] = modifiedAppliance;
+                        break;
+                    }
+                }
+            }
+
+            if (remove) {
+                for (var i:int = 0; i < projectProxy.identityApplianceList.length; i++) {
+                    var appliance:IdentityAppliance = projectProxy.identityApplianceList[i] as IdentityAppliance;
+                    if (_removedApplianceId == appliance.id) {
+                        projectProxy.identityApplianceList.removeItemAt(i);
                         break;
                     }
                 }
