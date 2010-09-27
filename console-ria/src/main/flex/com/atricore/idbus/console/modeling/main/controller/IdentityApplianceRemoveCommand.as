@@ -38,6 +38,9 @@ import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleComma
 
 public class IdentityApplianceRemoveCommand extends IocSimpleCommand implements IResponder {
 
+    public static const SUCCESS:String = "IdentityApplianceRemoveCommand.SUCCESS";
+    public static const FAILURE:String = "IdentityApplianceRemoveCommand.FAILURE";
+
     private var _registry:ServiceRegistry;
     private var _projectProxy:ProjectProxy;
 
@@ -75,20 +78,17 @@ public class IdentityApplianceRemoveCommand extends IocSimpleCommand implements 
         projectProxy.currentIdentityAppliance = null;
         projectProxy.currentIdentityApplianceElementOwner = false;
         projectProxy.currentIdentityApplianceElement = false;
-        sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
-//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-//                    "The identity appliance has been successfully removed.");
+        projectProxy.commandResultIdentityAppliance = null;
+        sendNotification(SUCCESS);
+        //sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+        //sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
     }
 
     public function fault(info:Object):void {
         var fault:Fault = (info as FaultEvent).fault;
         var msg:String = fault.faultString.substring((fault.faultString.indexOf('.') + 1), fault.faultString.length);
         trace(msg);
-//        sendNotification(FAILURE, msg);
-        sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                    "There an error removing the identity appliance. Find more details in log file.");
-
+        sendNotification(FAILURE, msg);
     }
 
 }
