@@ -399,7 +399,6 @@ public class IdentityApplianceManagementServiceImpl implements
 
             IdentityAppliance appliance = req.getIdentityAppliance();
 
-            // TODO : Validate the entire appliance ...
             if (appliance.getIdApplianceDefinition() == null)
                 throw new IdentityServerException("Appliances must contain an appliance definition!");
 
@@ -410,6 +409,24 @@ public class IdentityApplianceManagementServiceImpl implements
             // Work on some defaults
             if (applianceDef.getDisplayName() == null)
                 applianceDef.setDisplayName(applianceDef.getName());
+
+            // Name
+            if (appliance.getName() == null)
+                appliance.setName(applianceDef.getName());
+            else
+                applianceDef.setName(appliance.getName());
+
+            // Displayname
+            if (appliance.getDisplayName() == null)
+                appliance.setDisplayName(applianceDef.getDisplayName());
+            else
+                applianceDef.setDisplayName(appliance.getDisplayName());
+
+            // Description
+            if (appliance.getDescription() == null)
+                appliance.setDescription(applianceDef.getDescription());
+            else
+                applianceDef.setDescription(appliance.getDescription());
 
             for (Provider p : applianceDef.getProviders()) {
                 if (p.getDisplayName() == null)

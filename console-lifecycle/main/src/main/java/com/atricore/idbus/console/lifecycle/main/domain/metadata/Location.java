@@ -21,6 +21,7 @@ public class Location implements Serializable {
     private String uri;
 
     private String locationAsString;
+
     private static final long serialVersionUID = -2122107248713729110L;
 
     public Location(){

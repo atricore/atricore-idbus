@@ -40,7 +40,7 @@ public class IdentityApplianceDAOImpl extends GenericDAOImpl<IdentityAppliance, 
     public IdentityAppliance findByName(String name) throws ApplianceNotFoundException {
         PersistenceManager pm = getPersistenceManager();
         Query query = pm.newQuery("SELECT FROM com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance" +
-                " WHERE this.idApplianceDefinition.name == '" + name + "'");
+                " WHERE this.name == '" + name + "'");
 
         Collection<IdentityAppliance> appliances = (Collection<IdentityAppliance>) query.execute();
 
