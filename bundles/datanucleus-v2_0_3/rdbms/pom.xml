@@ -47,7 +47,6 @@
                 <configuration>
                     <instructions>
                         <Embed-Dependency>*;scope=compile; type=!pom; inline=false</Embed-Dependency>
-
                         <!-- Bundle Symbolic name is hard coded in datanucleus code! -->
                         <Bundle-SymbolicName>org.datanucleus.rdbms</Bundle-SymbolicName>
                     </instructions>
