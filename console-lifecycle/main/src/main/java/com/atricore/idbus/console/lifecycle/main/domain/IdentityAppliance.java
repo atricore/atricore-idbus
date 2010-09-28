@@ -22,11 +22,20 @@ public class IdentityAppliance implements Serializable {
 
     private String description;
 
-
     private IdentityApplianceDefinition idApplianceDefinition;
 
+    private String idApplianceDefinitionBin;
+
     private IdentityApplianceDeployment idApplianceDeployment;
-    
+
+    public String getIdApplianceDefinitionBin() {
+        return idApplianceDefinitionBin;
+    }
+
+    public void setIdApplianceDefinitionBin(String idApplianceDefinitionBin) {
+        this.idApplianceDefinitionBin = idApplianceDefinitionBin;
+    }
+
     public long getId() {
         return id;
     }

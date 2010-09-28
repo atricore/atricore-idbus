@@ -27,13 +27,7 @@
 
         <class name="IdentityAppliance" detachable="true">
             <field name="id" value-strategy="native" primary-key="true"/>
-
-            <field name="idApplianceDefinition"
-                   persistence-modifier="persistent"
-                   default-fetch-group="true"
-                   embedded="true"
-                   dependent="true" />
-
+            <field name="idApplianceDefinition" persistence-modifier="none" />
             <field name="idApplianceDeployment" default-fetch-group="true" dependent="true" />
             
         </class>
