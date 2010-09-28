@@ -30,15 +30,15 @@
             <field name="id" value-strategy="native" primary-key="true"/>
 
             <!-- Collections -->
-            <field name="providers" embedded="true"/>
-            <field name="identitySources" embedded="true"/>
-            <field name="executionEnvironments" embedded="true"/>
-			<field name="activeFeatures" embedded="true"/>
-            <field name="supportedRoles" embedded="true"/>
+            <field name="providers" embedded="true" default-fetch-group="true"/>
+            <field name="identitySources" embedded="true" default-fetch-group="true"/>
+            <field name="executionEnvironments" embedded="true" default-fetch-group="true"/>
+			<field name="activeFeatures" embedded="true" default-fetch-group="true"/>
+            <field name="supportedRoles" embedded="true" default-fetch-group="true"/>
 
             <!-- POJOs -->
-            <field name="location" persistence-modifier="persistent" embedded="true" />
-            <field name="keystore" persistence-modifier="persistent" embedded="true" />
+            <field name="location" persistence-modifier="persistent" embedded="true" default-fetch-group="true"/>
+            <field name="keystore" persistence-modifier="persistent" embedded="true" default-fetch-group="true"/>
         </class>
 
 

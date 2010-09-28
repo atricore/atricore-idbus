@@ -41,7 +41,7 @@
 
         <class name="IdentityApplianceUnit" detachable="true">
             <field name="id" value-strategy="native" primary-key="true"/>
-            <field name="providers" embedded="true"/>                
+            <field name="providers" embedded="true" default-fetch-group="true"/>                
         </class>
 
         <class name="IdentityServer" detachable="true">
