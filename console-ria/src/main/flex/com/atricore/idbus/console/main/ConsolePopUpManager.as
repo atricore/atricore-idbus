@@ -140,7 +140,7 @@ public class ConsolePopUpManager extends BasePopUpManager {
         createChangePasswordForm();
         _popup.title = "Change Password";
         _popup.width = 400;
-        _popup.height = 250;
+        _popup.height = 180;
         showPopup(_changePasswordForm);
     }
 

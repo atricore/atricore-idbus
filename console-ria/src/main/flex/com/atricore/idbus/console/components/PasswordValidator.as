@@ -25,6 +25,11 @@ public class PasswordValidator extends Validator
                     "Password Dosen't match Retype!"));
         }
 
+        if (value.password.length < 8) {
+            results.push(new ValidationResult(true, null, "Password length",
+                    "Password must have at least 8 characters."));
+        }
+
         return results;
     }
 
