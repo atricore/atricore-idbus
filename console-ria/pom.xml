@@ -156,7 +156,7 @@
             <type>swc</type>
         </dependency>
 
-        <!-- Flex 4 Automation  -->
+        <!-- Flex 4 Automation
         <dependency>
             <groupId>com.adobe.flex.framework</groupId>
             <artifactId>automation</artifactId>
@@ -201,6 +201,8 @@
             <type>swc</type>
             <classifier>flex4</classifier>
         </dependency>
+
+        -->
 
     </dependencies>
 
