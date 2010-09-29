@@ -534,6 +534,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         var providerNodes:Dictionary = new Dictionary();
 
         if (_identityAppliance != null) {
+
+            view.graphCanvas.redrawGraphGrid();
+            view.graphCanvas.drawGrid = true;
+
             var identityApplianceDefinition:IdentityApplianceDefinition = _identityAppliance.idApplianceDefinition;
 
             //            var rootGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), _identityAppliance, null, true, Constants.IDENTITY_BUS_DEEP);
@@ -632,6 +636,9 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             var layouter:BaseLayouter = new BaseLayouter(_identityApplianceDiagram);
             layouter.autoFitEnabled = _autoFitEnabled;
             _identityApplianceDiagram.layouter = layouter;
+        } else {
+            view.graphCanvas.drawGrid = false;
+            view.graphCanvas.removeGraphGrid();
         }
 
     }
@@ -733,6 +740,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         _identityApplianceDiagram.refresh();
 
         _identityApplianceDiagram.exitConnectionMode();
+        view.graphCanvas.drawGrid = false;
+        view.graphCanvas.removeGraphGrid();
     }
 
     private function nodeSelectedEventHandler(event:VNodeSelectedEvent):void
