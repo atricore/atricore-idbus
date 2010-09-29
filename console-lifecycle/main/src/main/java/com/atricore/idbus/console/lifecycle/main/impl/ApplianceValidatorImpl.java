@@ -205,7 +205,6 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     public void arrive(ServiceProvider node) throws Exception {
         validateName("SP name", node.getName(), node);
         validateDisplayName("SP display name", node.getDisplayName());
-
         validateLocation("SP", node.getLocation(), node, true);
 
         int preferred = 0;
@@ -398,7 +397,14 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 
     }
 
+    public void arrive(Keystore node) throws Exception {
+        if (node == null)
+            return;
 
+        Resource ks = node.getStore();
+
+        // TODO : Validate keystore properties, value 
+    }
 
 
     // ---------------------------------------------------------------------
