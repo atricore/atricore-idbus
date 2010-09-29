@@ -5,12 +5,9 @@ import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.dao.IdentityApplianceDAO;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceNotFoundException;
-import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.datanucleus.exceptions.NucleusUserException;
-import org.datanucleus.util.NucleusLogger;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -107,6 +104,28 @@ public class IdentityApplianceDAOImpl extends GenericDAOImpl<IdentityAppliance, 
         }
     }
 
+    @Override
+    public IdentityAppliance detachCopy(IdentityAppliance object, int fetchDepth) {
+        try {
+            return unmarshall(super.detachCopy(object, fetchDepth));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Collection<IdentityAppliance> detachCopyAll(Collection<IdentityAppliance> objects, int fetchDepth) {
+        try {
+            return unmarshallAll(super.detachCopyAll(objects, fetchDepth));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Collection<IdentityAppliance> unmarshallAll(Collection<IdentityAppliance> all) throws IOException, ClassNotFoundException {
         List<IdentityAppliance> appliances = new ArrayList<IdentityAppliance>(all.size());
         for (IdentityAppliance a : all) {
@@ -147,6 +166,7 @@ public class IdentityApplianceDAOImpl extends GenericDAOImpl<IdentityAppliance, 
         String ad = new String(enc);
 
         a.setIdApplianceDefinitionBin(ad);
+        a.setIdApplianceDefinition(null);
 
         return a;
 

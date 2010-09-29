@@ -238,6 +238,7 @@ public class TransactionalPersistenceTest {
 
     protected IdentityAppliance newApplianceInstance(String name, String newName) {
         IdentityAppliance a = newApplianceInstance(name);
+        a.setName(newName);
         a.getIdApplianceDefinition().setName(newName);
         return a;
     }

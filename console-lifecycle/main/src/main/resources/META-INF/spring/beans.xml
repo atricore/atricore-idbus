@@ -79,6 +79,7 @@
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
         <property name="identityApplianceDefinitionDAO" ref="identityApplianceDefinitionDAO"/>
         <property name="identityApplianceDeploymentDAO" ref="identityApplianceDeploymentDAO"/>
+        <property name="identityApplianceUnitDAO" ref="identityApplianceUnitDAO"/>
         <property name="identitySourceDAO" ref="identitySourceDAO"/>
         <property name="userInformationLookupDAO" ref="userInformationLookupDAO"/>
         <property name="federatedConnectionDAO" ref="federatedConnectionDAO"/>

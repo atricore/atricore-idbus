@@ -32,7 +32,6 @@ import com.atricore.idbus.console.activation.main.spi.response.ActivateSamplesRe
 import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentResponse;
 import com.atricore.idbus.console.activation.main.spi.response.PlatformSupportedResponse;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
-import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.dao.*;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
@@ -76,6 +75,8 @@ public class IdentityApplianceManagementServiceImpl implements
     private IdentityApplianceDefinitionDAO identityApplianceDefinitionDAO;
 
     private IdentityApplianceDeploymentDAO identityApplianceDeploymentDAO;
+
+    private IdentityApplianceUnitDAO identityApplianceUnitDAO;
 
     private IdentitySourceDAO identitySourceDAO;
 
@@ -930,6 +931,14 @@ public class IdentityApplianceManagementServiceImpl implements
         this.identityApplianceDeploymentDAO = identityApplianceDeploymentDAO;
     }
 
+    public IdentityApplianceUnitDAO getIdentityApplianceUnitDAO() {
+        return identityApplianceUnitDAO;
+    }
+
+    public void setIdentityApplianceUnitDAO(IdentityApplianceUnitDAO identityApplianceUnitDAO) {
+        this.identityApplianceUnitDAO = identityApplianceUnitDAO;
+    }
+
     public IdentitySourceDAO getIdentitySourceDAO() {
         return identitySourceDAO;
     }
@@ -1250,6 +1259,7 @@ public class IdentityApplianceManagementServiceImpl implements
             if (!appliance.getState().equals(IdentityApplianceState.DISPOSED.toString()))
                 throw new IllegalStateException("Appliance in state " + appliance.getState() + " cannot be deleted");
 
+            /*
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
             IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
 
@@ -1274,8 +1284,28 @@ public class IdentityApplianceManagementServiceImpl implements
                     fp.getFederatedConnectionsB().clear();
                 }
             }
+            */
+
+            // TODO: fix jdo mapping so that idaus will be cascade deleted (currently only records from join table are removed)?
+            /*List<Long> idauIDs = new ArrayList<Long>();
+            IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
+            if (applianceDep != null && applianceDep.getIdaus() != null) {
+                for (IdentityApplianceUnit idaUnit : applianceDep.getIdaus()) {
+                    idauIDs.add(idaUnit.getId());
+                }
+            }*/
+
+            // some units are left unremoved, e.g. after appliance is deployed/undeployed/deployed, so we have to remove all
+            // units with the given group
+            String unitsGroup = appliance.getIdApplianceDefinition().getNamespace() + "." + appliance.getName();
 
             identityApplianceDAO.delete(appliance.getId());
+
+            identityApplianceUnitDAO.deleteUnitsByGroup(unitsGroup);
+            
+            /*for (Long idauID : idauIDs) {
+                identityApplianceUnitDAO.delete(idauID);
+            }*/
 
         } catch (Exception e) {
             logger.error("Cannot delete identity appliance " + appliance.getId());

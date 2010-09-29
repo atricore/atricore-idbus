@@ -48,6 +48,7 @@
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
         <property name="identityApplianceDeploymentDAO" ref="identityApplianceDeploymentDAO"/>
         <property name="identityApplianceDefinitionDAO" ref="identityApplianceDefinitionDAO"/>
+        <property name="identityApplianceUnitDAO" ref="identityApplianceUnitDAO"/>
         <property name="federatedConnectionDAO" ref="federatedConnectionDAO"/>
     </bean>
 
@@ -101,6 +102,10 @@
     </bean>
 
     <bean id="identityApplianceDefinitionDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityApplianceDefinitionDAOImpl">
+        <property name="persistenceManagerFactory" ref="pmfProxy"/>
+    </bean>
+
+    <bean id="identityApplianceUnitDAO" class="com.atricore.idbus.console.lifecycle.main.domain.dao.impl.IdentityApplianceUnitDAOImpl">
         <property name="persistenceManagerFactory" ref="pmfProxy"/>
     </bean>
 

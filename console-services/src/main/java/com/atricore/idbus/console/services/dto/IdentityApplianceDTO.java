@@ -21,19 +21,29 @@
 
 package com.atricore.idbus.console.services.dto;
 
+import java.io.Serializable;
+
 /**
  * Author: Dejan Maric
  */
-public class IdentityApplianceDTO {
+public class IdentityApplianceDTO implements Serializable {
 
-        private static final long serialVersionUID = 871536646583177663L;
+    private static final long serialVersionUID = 871536646583177663L;
 
     private long id;
 
     private String state;
 
+    private String name;
+
+    private String displayName;
+
+    private String description;
+
     private IdentityApplianceDefinitionDTO idApplianceDefinition;
 
+    private String idApplianceDefinitionBin;
+    
     private IdentityApplianceDeploymentDTO idApplianceDeployment;
 
     public long getId() {
@@ -66,6 +76,38 @@ public class IdentityApplianceDTO {
 
     public void setIdApplianceDeployment(IdentityApplianceDeploymentDTO idApplianceDeployment) {
         this.idApplianceDeployment = idApplianceDeployment;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getIdApplianceDefinitionBin() {
+        return idApplianceDefinitionBin;
+    }
+
+    public void setIdApplianceDefinitionBin(String idApplianceDefinitionBin) {
+        this.idApplianceDefinitionBin = idApplianceDefinitionBin;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
