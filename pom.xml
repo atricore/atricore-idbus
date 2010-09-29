@@ -339,6 +339,52 @@
                 <type>swc</type>
             </dependency>
 
+            <!-- Flex Automation 
+            <dependency>
+                <groupId>com.adobe.flex.framework</groupId>
+                <artifactId>automation</artifactId>
+                <version>${flex.framework.version}</version>
+                <type>swc</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.adobe.flex.framework</groupId>
+                <artifactId>automation_spark</artifactId>
+                <version>${flex.framework.version}</version>
+                <type>swc</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.adobe.flex.framework</groupId>
+                <artifactId>automation_agent</artifactId>
+                <version>${flex.framework.version}</version>
+                <type>swc</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.adobe.flex.framework</groupId>
+                <artifactId>automation_agent</artifactId>
+                <version>${flex.framework.version}</version>
+                <classifier>en_US</classifier>
+                <type>rb.swc</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.adobe.flex.framework</groupId>
+                <artifactId>automation_dmv</artifactId>
+                <version>${flex.framework.version}</version>
+                <type>swc</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.adobe.flex.framework</groupId>
+                <artifactId>automation_flashflexkit</artifactId>
+                <version>${flex.framework.version}</version>
+                <type>swc</type>
+            </dependency>
+
+            -->
+            
             <dependency>
                 <groupId>com.adobe.flex.framework</groupId>
                 <artifactId>datavisualization</artifactId>

@@ -156,6 +156,54 @@
             <type>swc</type>
         </dependency>
 
+        <!-- Flex 4 Automation  -->
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>automation</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>automation_spark</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>automation_agent</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>automation_agent</artifactId>
+            <classifier>en_US</classifier>
+            <type>rb.swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>automation_dmv</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.adobe.flex.framework</groupId>
+            <artifactId>automation_flashflexkit</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gorillalogic.</groupId>
+            <artifactId>automation-monkey</artifactId>
+            <version>1.0.0</version>
+            <type>swc</type>
+            <classifier>flex4</classifier>
+        </dependency>
+
     </dependencies>
 
 </project>
+
+        

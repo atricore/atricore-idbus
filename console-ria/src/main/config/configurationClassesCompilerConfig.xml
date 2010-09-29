@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flex-config>
+    <!--
+    <compiler>
+        <locale>
+            <locale-element>en_US</locale-element>
+        </locale>
+    </compiler>
+    -->
+    
     <includes>
         <!--
         <symbol>mx.logging.targets.TraceTarget</symbol>
@@ -114,6 +122,10 @@
 
         <symbol>com.atricore.idbus.console.modeling.main.view.ModelerPopUpManager</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager</symbol>
+
+        <!-- Flex Automation
+        <symbol>com.gorillalogic.flexmonkium.FlexMonkium</symbol>
+        -->
 
     </includes>
 </flex-config>

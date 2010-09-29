@@ -345,17 +345,15 @@ public class IdentityApplianceManagementServiceImpl implements
             if (logger.isTraceEnabled())
                 logger.trace("Looking for Execution Environment in " + appliance.getIdApplianceDefinition().getName());
 
-            boolean found = false;
             ExecutionEnvironment execEnv = null;
             for (ExecutionEnvironment e : appliance.getIdApplianceDefinition().getExecutionEnvironments()) {
-
                 if (e.getName().equals(request.getExecEnvName())) {
-                    found = true;
+                    execEnv = e;
                     break;
                 }
             }
 
-            if (!found)
+            if (execEnv == null)
                 throw new IdentityServerException("Execution Environment "+request.getExecEnvName()+" not found in appliance " +
                         request.getApplianceId());
 
