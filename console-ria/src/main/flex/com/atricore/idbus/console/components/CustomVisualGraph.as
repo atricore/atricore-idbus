@@ -79,6 +79,8 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
                     } else if(_connectionMode == IDENTITY_LOOKUP_MODE){
                         dispatchEvent(new VNodesLinkedEvent(VNodesLinkedEvent.IDENTITY_LOOKUP_CREATED, _connectionSourceNode, _connectionTargetNode, true, false, 0));
                     }
+                    exitConnectionMode();
+                    CursorManager.removeAllCursors();
                 }
             }
             resetConnectionModeParameters();
