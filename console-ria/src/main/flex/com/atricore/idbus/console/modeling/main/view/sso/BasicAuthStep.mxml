@@ -133,7 +133,7 @@
 
             <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.basicAuth')}"
                            width="100%" height="100%" cornerRadius="5" paddingLeft="10" paddingRight="5" paddingTop="20" paddingBottom="5">
-                <s:CheckBox id="obfuscatePass" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.obfuscatePass')}"/>
+                <s:CheckBox id="obfuscatePass" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.obfuscatePass')}" selected="true"/>
                 <!--paddingLeft="65" paddingTop="40"-->
             </utils:TitledBorderBox>
             <utils:TitledBorderBox title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ssoWiz.step1.usersRepository')}"
