@@ -38,13 +38,13 @@ public class IdentityApplianceDefinition implements Serializable {
 
     private String namespace;
 
-    private Location location;
-
     private String description;
 
     private int revision;
 
     private Date lastModification;
+
+    private Location location;
 
     // RFU
     private Set<Feature> activeFeatures;
@@ -57,7 +57,6 @@ public class IdentityApplianceDefinition implements Serializable {
     private Set<IdentitySource> identitySources;
     
     private Set<ExecutionEnvironment> executionEnvironments;
-
 
     private Keystore keystore;
 

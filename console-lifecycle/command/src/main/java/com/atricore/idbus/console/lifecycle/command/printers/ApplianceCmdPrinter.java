@@ -46,13 +46,15 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
         if (e instanceof ApplianceValidationException) {
 
             int i = 0;
-            sb.append("\u001B[1m ").append(((ApplianceValidationException) e).getErrors().size()).append(" Appliance Validation Errors \u001B[0m\n");
+            sb.append("\u001B[1m ");
+            sb.append(" Appliance Validation Errors found : \u001B[0m\n");
+            sb.append(((ApplianceValidationException) e).getErrors().size());
             sb.append("  -------------------------------------\n");
 
             for (ValidationError err : ((ApplianceValidationException)e).getErrors()) {
 
                 sb.append("\u001B[1m");
-                sb.append(getIntegerString(i, 2));
+                sb.append(getIntegerString(i+1, 2));
                 sb.append(") \u001B[0m");
                 sb.append("\u001B[31m").append(err.getMsg()).append("\u001B[0m");
                 if (err.getError() != null) {

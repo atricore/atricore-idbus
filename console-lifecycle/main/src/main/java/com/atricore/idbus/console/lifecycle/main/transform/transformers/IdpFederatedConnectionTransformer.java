@@ -169,7 +169,7 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         // -------------------------------------------------------
         // SP Channel
         // -------------------------------------------------------
-        Bean spChannelBean = newBean(idpBeans,spChannelName, SPChannelImpl.class.getName());
+        Bean spChannelBean = newBean(idpBeans, spChannelName, SPChannelImpl.class.getName());
         ctx.put("spChannelBean", spChannelBean);
 
         setPropertyValue(spChannelBean, "name", spChannelName);

@@ -12,6 +12,7 @@ public class LifecycleGridButtonEvent extends Event
     public static const ACTION_STOP:int = 3;
     public static const ACTION_UNDEPLOY:int = 4;
     public static const ACTION_BUILD:int = 5;
+    public static const ACTION_DISPOSE:int = 6;
 
     private var _data:Object;
     private var _action:int;

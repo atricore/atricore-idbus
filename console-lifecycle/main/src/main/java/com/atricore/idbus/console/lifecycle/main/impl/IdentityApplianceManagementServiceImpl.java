@@ -32,7 +32,6 @@ import com.atricore.idbus.console.activation.main.spi.response.ActivateSamplesRe
 import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentResponse;
 import com.atricore.idbus.console.activation.main.spi.response.PlatformSupportedResponse;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
-import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.dao.*;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
@@ -67,7 +66,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private ApplianceDeployer deployer;
 
-    private ApplianceDefinitionValidator validator;
+    private ApplianceValidator validator;
 
     private ApplianceMarshaller marshaller;
 
@@ -76,6 +75,8 @@ public class IdentityApplianceManagementServiceImpl implements
     private IdentityApplianceDefinitionDAO identityApplianceDefinitionDAO;
 
     private IdentityApplianceDeploymentDAO identityApplianceDeploymentDAO;
+
+    private IdentityApplianceUnitDAO identityApplianceUnitDAO;
 
     private IdentitySourceDAO identitySourceDAO;
 
@@ -211,12 +212,6 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     @Transactional
-    public ImportIdentityApplianceResponse importIdentityAppliance(ImportIdentityApplianceRequest request) throws IdentityServerException {
-        syncAppliances();
-        throw new UnsupportedOperationException("Not Supported!");
-    }
-
-    @Transactional
     public ExportIdentityApplianceResponse exportIdentityAppliance(ExportIdentityApplianceRequest request) throws IdentityServerException {
         try {
 
@@ -254,7 +249,8 @@ public class IdentityApplianceManagementServiceImpl implements
             IdentityAppliance appliance = marshaller.unmarshall(request.getDescriptor().getBytes());
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
 
-            validateAppliance(appliance);
+            validateAppliance(appliance, ApplianceValidator.Operation.IMPORT);
+            debugAppliance(appliance, ApplianceValidator.Operation.IMPORT);
 
             if (logger.isDebugEnabled())
                     logger.debug("Received Identity Appliance Definition : [" +
@@ -277,7 +273,7 @@ public class IdentityApplianceManagementServiceImpl implements
             if (logger.isTraceEnabled())
                 logger.trace("Created Identity Appliance " + appliance.getId());
 
-            debugAppliance(appliance);
+
 
             // 4. Return the appliance
             ImportApplianceDefinitionResponse response = new ImportApplianceDefinitionResponse();
@@ -321,8 +317,9 @@ public class IdentityApplianceManagementServiceImpl implements
                     throw new UnsupportedOperationException("Appliance lifecycle management action not supported: " + req.getAction());
             }
 
+            debugAppliance(appliance, ApplianceValidator.Operation.ANY);
+
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
-            debugAppliance(appliance);
 
             ManageIdentityApplianceLifeCycleResponse response = new ManageIdentityApplianceLifeCycleResponse(req.getAction(), appliance);
             response.setStatusCode(StatusCode.STS_OK);
@@ -350,21 +347,11 @@ public class IdentityApplianceManagementServiceImpl implements
 
             boolean found = false;
             ExecutionEnvironment execEnv = null;
-            for (Provider p : appliance.getIdApplianceDefinition().getProviders()) {
+            for (ExecutionEnvironment e : appliance.getIdApplianceDefinition().getExecutionEnvironments()) {
 
-                if (p instanceof ServiceProvider) {
-                    ServiceProvider sp = (ServiceProvider) p;
-                    if (sp.getActivation() == null)
-                        continue;
-
-                    execEnv = sp.getActivation().getExecutionEnv();
-                    if (execEnv == null)
-                        continue;
-
-                    if (execEnv.getName().equals(request.getExecEnvName())) {
-                        found = true;
-                        break;
-                    }
+                if (e.getName().equals(request.getExecEnvName())) {
+                    found = true;
+                    break;
                 }
             }
 
@@ -376,8 +363,7 @@ public class IdentityApplianceManagementServiceImpl implements
             execEnv.setOverwriteOriginalSetup(request.isReplace());
 
             activateExecEnv(appliance, execEnv, request.isReactivate());
-
-            debugAppliance(appliance);
+            debugAppliance(appliance, ApplianceValidator.Operation.ANY);
 
             return response;
         } catch (Exception e) {
@@ -401,7 +387,7 @@ public class IdentityApplianceManagementServiceImpl implements
         if (logger.isDebugEnabled())
             logger.debug("Validating appliance " + appliance.getId());
 
-        validator.validate(appliance);
+        validator.validate(appliance, ApplianceValidator.Operation.ANY);
         return response;
     }
 
@@ -414,7 +400,6 @@ public class IdentityApplianceManagementServiceImpl implements
 
             IdentityAppliance appliance = req.getIdentityAppliance();
 
-            // TODO : Validate the entire appliance ...
             if (appliance.getIdApplianceDefinition() == null)
                 throw new IdentityServerException("Appliances must contain an appliance definition!");
 
@@ -425,6 +410,24 @@ public class IdentityApplianceManagementServiceImpl implements
             // Work on some defaults
             if (applianceDef.getDisplayName() == null)
                 applianceDef.setDisplayName(applianceDef.getName());
+
+            // Name
+            if (appliance.getName() == null)
+                appliance.setName(applianceDef.getName());
+            else
+                applianceDef.setName(appliance.getName());
+
+            // Displayname
+            if (appliance.getDisplayName() == null)
+                appliance.setDisplayName(applianceDef.getDisplayName());
+            else
+                applianceDef.setDisplayName(appliance.getDisplayName());
+
+            // Description
+            if (appliance.getDescription() == null)
+                appliance.setDescription(applianceDef.getDescription());
+            else
+                applianceDef.setDescription(appliance.getDescription());
 
             for (Provider p : applianceDef.getProviders()) {
                 if (p.getDisplayName() == null)
@@ -450,13 +453,12 @@ public class IdentityApplianceManagementServiceImpl implements
                 appliance.setIdApplianceDeployment(null);
             }
 
-            validateAppliance(appliance);
+            validateAppliance(appliance, ApplianceValidator.Operation.ADD);
+            debugAppliance(appliance, ApplianceValidator.Operation.ADD);
 
             appliance = identityApplianceDAO.save(appliance);
             if (logger.isTraceEnabled())
                 logger.trace("Added appliance " + appliance.getIdApplianceDefinition().getName() + " with ID:" + appliance.getId());
-
-            debugAppliance(appliance);
 
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
 
@@ -477,42 +479,6 @@ public class IdentityApplianceManagementServiceImpl implements
             syncAppliances();
             IdentityAppliance appliance = request.getAppliance();
 
-            if (appliance.getId() < 1) {
-                throw new IdentityServerException("Appliance instance has invalid ID " + appliance.getId() + ", is it new ?" );
-            }
-
-            // Make sure that the appliance exists!
-            if (!identityApplianceDAO.exists(appliance.getId()))
-                throw new ApplianceNotFoundException(appliance.getId());
-
-            IdentityAppliance oldAppliance = identityApplianceDAO.findById(appliance.getId());
-
-            // TODO : Validate other lifecycle related infomation like deployment time , etc.
-            // Maybe a validator that can take a context, including an operation lice add, update, etc ?!
-            if (!oldAppliance.getState().equals(appliance.getState()))
-                throw new IdentityServerException("Identity Appliance state cannot be modified");
-
-            if (oldAppliance.getIdApplianceDefinition() == null &&
-                    appliance.getIdApplianceDefinition() !=null)
-                throw new IdentityServerException("Identity Appliance deployment information cannot be added");
-
-            if (oldAppliance.getIdApplianceDefinition() != null &&
-                    appliance.getIdApplianceDefinition() ==null)
-                throw new IdentityServerException("Identity Appliance deployment information cannot be deleted");
-
-            if (oldAppliance.getIdApplianceDeployment() != null) {
-
-                IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
-                IdentityApplianceDeployment oldApplianceDep = oldAppliance.getIdApplianceDeployment();
-
-                if (oldApplianceDep.getDeployedRevision() != applianceDep.getDeployedRevision())
-                    throw new IdentityServerException("Identity Appliance deployed revision cannot be modified");
-
-                if (oldApplianceDep.getDeploymentTime() != null && !oldApplianceDep.getDeploymentTime().equals(applianceDep.getDeploymentTime()))
-                    throw new IdentityServerException("Identity Appliance deployment time cannot be modified");
-            }
-
-
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
             if (applianceDef.getDisplayName() == null)
                 applianceDef.setDisplayName(applianceDef.getName());
@@ -532,8 +498,8 @@ public class IdentityApplianceManagementServiceImpl implements
                     is.setDisplayName(is.getName());
             }
 
-
-            validateAppliance(appliance);
+            validateAppliance(appliance, ApplianceValidator.Operation.UPDATE);
+            debugAppliance(appliance, ApplianceValidator.Operation.UPDATE);
 
             applianceDef.setLastModification(new Date());
             applianceDef.setRevision(applianceDef.getRevision() + 1);
@@ -541,10 +507,7 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = identityApplianceDAO.save(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
 
-            debugAppliance(appliance);
-
             res = new UpdateIdentityApplianceResponse(appliance);
-
 
         } catch (Exception e){
 	        logger.error("Error updating identity appliance", e);
@@ -928,11 +891,11 @@ public class IdentityApplianceManagementServiceImpl implements
         this.deployer = deployer;
     }
 
-    public ApplianceDefinitionValidator getValidator() {
+    public ApplianceValidator getValidator() {
         return validator;
     }
 
-    public void setValidator(ApplianceDefinitionValidator validator) {
+    public void setValidator(ApplianceValidator validator) {
         this.validator = validator;
     }
 
@@ -966,6 +929,14 @@ public class IdentityApplianceManagementServiceImpl implements
 
     public void setIdentityApplianceDeploymentDAO(IdentityApplianceDeploymentDAO identityApplianceDeploymentDAO) {
         this.identityApplianceDeploymentDAO = identityApplianceDeploymentDAO;
+    }
+
+    public IdentityApplianceUnitDAO getIdentityApplianceUnitDAO() {
+        return identityApplianceUnitDAO;
+    }
+
+    public void setIdentityApplianceUnitDAO(IdentityApplianceUnitDAO identityApplianceUnitDAO) {
+        this.identityApplianceUnitDAO = identityApplianceUnitDAO;
     }
 
     public IdentitySourceDAO getIdentitySourceDAO() {
@@ -1074,13 +1045,13 @@ public class IdentityApplianceManagementServiceImpl implements
 
     // -------------------------------------------------< Protected Utils , they need transactional context !>
 
-    protected void validateAppliance(IdentityAppliance appliance) throws ApplianceValidationException {
+    protected void validateAppliance(IdentityAppliance appliance, ApplianceValidator.Operation operation) throws ApplianceValidationException {
 
         if (!isValidateAppliances())
             return;
 
         try{
-            validator.validate(appliance);
+            validator.validate(appliance, operation);
         } catch (ApplianceValidationException e) {
 
             logger.error(e.getMessage());
@@ -1094,14 +1065,13 @@ public class IdentityApplianceManagementServiceImpl implements
         }
     }
 
-    protected void debugAppliance(IdentityAppliance appliance) {
+    protected void debugAppliance(IdentityAppliance appliance, ApplianceValidator.Operation operation) {
 
         if (!isEnableDebugValidation())
             return ;
 
-
         try {
-            validateAppliance(appliance);
+            validateAppliance(appliance, operation);
             logger.debug("Appliance " + appliance.getId() + " is valid");
 
         } catch (ApplianceValidationException e) {
@@ -1289,6 +1259,7 @@ public class IdentityApplianceManagementServiceImpl implements
             if (!appliance.getState().equals(IdentityApplianceState.DISPOSED.toString()))
                 throw new IllegalStateException("Appliance in state " + appliance.getState() + " cannot be deleted");
 
+            /*
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
             IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
 
@@ -1313,12 +1284,28 @@ public class IdentityApplianceManagementServiceImpl implements
                     fp.getFederatedConnectionsB().clear();
                 }
             }
+            */
 
-            for (Long id : fcIds) {
-                federatedConnectionDAO.delete(id);
-            }
+            // TODO: fix jdo mapping so that idaus will be cascade deleted (currently only records from join table are removed)?
+            /*List<Long> idauIDs = new ArrayList<Long>();
+            IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
+            if (applianceDep != null && applianceDep.getIdaus() != null) {
+                for (IdentityApplianceUnit idaUnit : applianceDep.getIdaus()) {
+                    idauIDs.add(idaUnit.getId());
+                }
+            }*/
+
+            // some units are left unremoved, e.g. after appliance is deployed/undeployed/deployed, so we have to remove all
+            // units with the given group
+            String unitsGroup = appliance.getIdApplianceDefinition().getNamespace() + "." + appliance.getName();
 
             identityApplianceDAO.delete(appliance.getId());
+
+            identityApplianceUnitDAO.deleteUnitsByGroup(unitsGroup);
+            
+            /*for (Long idauID : idauIDs) {
+                identityApplianceUnitDAO.delete(idauID);
+            }*/
 
         } catch (Exception e) {
             logger.error("Cannot delete identity appliance " + appliance.getId());

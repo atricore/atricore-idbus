@@ -1,9 +1,13 @@
 package com.atricore.idbus.console.lifecycle.main.impl;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
+import com.atricore.idbus.console.lifecycle.main.domain.dao.IdentityApplianceDAO;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
+import com.atricore.idbus.console.lifecycle.main.exception.ApplianceNotFoundException;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
-import com.atricore.idbus.console.lifecycle.main.spi.ApplianceDefinitionValidator;
+import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
+import com.atricore.idbus.console.lifecycle.main.spi.ApplianceValidator;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionWalker;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
@@ -13,28 +17,38 @@ import java.util.*;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitionVisitor
-        implements ApplianceDefinitionValidator {
+public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
+        implements ApplianceValidator {
 
-    private static final Log logger = LogFactory.getLog(ApplianceDefinitionValidatorImpl.class);
+    private static final Log logger = LogFactory.getLog(ApplianceValidatorImpl.class);
 
     private IdentityApplianceDefinitionWalker walker;
+
+    private IdentityApplianceDAO dao;
 
     private static ThreadLocal<ValidationContext> ctx = new ThreadLocal<ValidationContext>();
 
     public void validate(IdentityAppliance appliance) throws ApplianceValidationException {
+        validate(appliance, Operation.ANY);
+    }
+
+    public void validate(IdentityAppliance appliance, Operation op) throws ApplianceValidationException {
+
         ValidationContext vctx = new ValidationContext();
+        vctx.setOperation(op);
         ctx.set(vctx);
 
         try {
+            arrive(appliance);
             walker.walk(appliance.getIdApplianceDefinition(), this);
+            arrive(appliance.getIdApplianceDeployment());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             addError("Fatal error", e);
         }
 
         if (vctx.getErrors().size() > 0) {
-            throw new ApplianceValidationException(vctx.getErrors());
+            throw new ApplianceValidationException(appliance, vctx.getErrors());
         }
     }
 
@@ -46,14 +60,100 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
         this.walker = walker;
     }
 
+    public IdentityApplianceDAO getDao() {
+        return dao;
+    }
+
+    public void setDao(IdentityApplianceDAO dao) {
+        this.dao = dao;
+    }
+
+    /**
+     * @param appliance
+     */
+    public void arrive(IdentityAppliance appliance) {
+
+        if (getOperation().equals(Operation.UPDATE)) {
+
+            if (appliance.getId() < 1) {
+                addError("Appliance instance has invalid ID " + appliance.getId() + ", is it new ?" );
+                return;
+            }
+
+            // Make sure that the appliance exists!
+            if (!dao.exists(appliance.getId())) {
+                addError("Appliance does not exist with ID : " + appliance.getId());
+                return ;
+            }
+
+            IdentityAppliance oldAppliance = dao.findById(appliance.getId());
+            ctx.get().setOldAppliance(oldAppliance);
+
+            if (!oldAppliance.getState().equals(appliance.getState()))
+                addError("Identity Appliance state cannot be modified");
+
+            if (oldAppliance.getIdApplianceDefinition() == null &&
+                    appliance.getIdApplianceDefinition() !=null)
+                addError("Identity Appliance deployment information cannot be added");
+
+            if (oldAppliance.getIdApplianceDefinition() != null &&
+                    appliance.getIdApplianceDefinition() ==null)
+                addError("Identity Appliance deployment information cannot be deleted");
+
+        }
+    }
+
+    public void arrive(IdentityApplianceDeployment applianceDep) {
+        switch (getOperation()) {
+            case UPDATE:
+                IdentityApplianceDeployment oldApplianceDep = ctx.get().getOldAppliance().getIdApplianceDeployment();
+
+                if (oldApplianceDep == null) {
+                    // TODO : Somewhere this dep.info is  added, check it! addError("Deployment information cannot be added");
+                    return;
+                }
+
+                // TODO : Validate other lifecycle related infomation ...
+                if (oldApplianceDep.getDeployedRevision() != applianceDep.getDeployedRevision())
+                    addError("Identity Appliance deployed revision cannot be modified");
+
+                if (oldApplianceDep.getDeploymentTime() != null && !oldApplianceDep.getDeploymentTime().equals(applianceDep.getDeploymentTime()))
+                    addError("Identity Appliance deployment time cannot be modified");
+                break;
+            case ADD:
+            case IMPORT:
+                if (applianceDep != null)
+                    addError("New appliances can't have deployment information ");
+                break;
+            default:
+                break;
+
+        }
+
+    }
+
     @Override
     public void arrive(IdentityApplianceDefinition node) throws Exception {
 
         validateName("Appliance name", node.getName(), node);
         validateDisplayName("Appliance display name", node.getDisplayName());
         validatePackageName("Appliance namespace", node.getNamespace());
-
         validateLocation("Appliance", node.getLocation());
+
+        if (getOperation() == Operation.ADD ||
+            getOperation() == Operation.IMPORT) {
+
+            try {
+                IdentityAppliance oldAppliance = dao.findByName(node.getName());
+                addError("Appliance name already in use '" +
+                        node.getName() + "' by " + oldAppliance.getId());
+
+            } catch (ApplianceNotFoundException e) {
+                // OK!
+            }
+
+        }
+
 
     }
 
@@ -418,7 +518,15 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
         ctx.get().getErrors().add(new ValidationError(msg));
     }
 
+    protected Operation getOperation() {
+        return ctx.get().getOperation();
+    }
+
     protected class ValidationContext {
+
+        private IdentityAppliance oldAppliance;
+
+        private Operation operation;
 
         private Map<String, Set<Object>> usedNames = new HashMap<String, Set<Object>>();
 
@@ -447,6 +555,23 @@ public class ApplianceDefinitionValidatorImpl extends AbstractApplianceDefinitio
         public List<ValidationError> getErrors() {
             return errors;
         }
+
+        public void setOperation(Operation op) {
+            this.operation = op;
+        }
+
+        public Operation getOperation() {
+            return operation;
+        }
+
+        public void setOldAppliance(IdentityAppliance oldAppliance) {
+            this.oldAppliance = oldAppliance;
+        }
+
+        public IdentityAppliance getOldAppliance() {
+            return oldAppliance;
+        }
     }
+
 
 }

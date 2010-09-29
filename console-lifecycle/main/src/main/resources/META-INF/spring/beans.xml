@@ -66,6 +66,10 @@
 
         <property name="lazySyncAppliances" value="true"/>
 
+        <property name="validateAppliances" value="${lifecycle.validateAppliances}"/>
+        <property name="enableDebugValidation" value="${lifecycle.enableDebugValidation}"/>
+
+        <property name="validator" ref="applianceDefValidator"/>
         <property name="activationService" ref="activationService"/>
         <property name="builder" ref="applianceBuilder"/>
         <property name="deployer" ref="applianceDeployer"/>
@@ -75,6 +79,7 @@
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
         <property name="identityApplianceDefinitionDAO" ref="identityApplianceDefinitionDAO"/>
         <property name="identityApplianceDeploymentDAO" ref="identityApplianceDeploymentDAO"/>
+        <property name="identityApplianceUnitDAO" ref="identityApplianceUnitDAO"/>
         <property name="identitySourceDAO" ref="identitySourceDAO"/>
         <property name="userInformationLookupDAO" ref="userInformationLookupDAO"/>
         <property name="federatedConnectionDAO" ref="federatedConnectionDAO"/>
@@ -85,16 +90,14 @@
         <property name="authenticationAssertionEmissionPolicyDAO" ref="authenticationAssertionEmissionPolicyDAO"/>
         <property name="resourceDAO" ref="resourceDAO"/>
 
-        <property name="validateAppliances" value="${lifecycle.validateAppliances}"/>
-        <property name="enableDebugValidation" value="${lifecycle.enableDebugValidation}"/>
-        <property name="validator" ref="applianceDefValidator"/>
     </bean>
 
-    <bean id="applianceDefValidator" class="com.atricore.idbus.console.lifecycle.main.impl.ApplianceDefinitionValidatorImpl">
+    <bean id="applianceDefValidator" class="com.atricore.idbus.console.lifecycle.main.impl.ApplianceValidatorImpl">
         <property name="walker">
             <bean name="idbusWalker"
                   class="com.atricore.idbus.console.lifecycle.main.transform.ReflexiveIdentityApplianceDefinitionWalker"/>
         </property>
+        <property name="dao" ref="identityApplianceDAO"/>
     </bean>
 
     <bean id="applianceDeployer" class="com.atricore.idbus.console.lifecycle.main.impl.FeaturesBasedApplianceDeployer">

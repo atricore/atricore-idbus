@@ -36,10 +36,10 @@
     <!-- =========================================== -->
     <bean name="idApplianceDef1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition">
 
-        <property name="name" value="ida1"/>
-        <property name="displayName" value="Sample Federation w/ Provisioning"/>
-        <property name="namespace" value="com.mycompany.example"/>
-        <property name="description" value="This is a sample to test Identity Bus deployment facilities."/>
+        <property name="name" value="ida1-persistence"/>
+        <property name="displayName" value="IDA Persistence Test"/>
+        <property name="namespace" value="com.atricore.idbus.console.lifecycle.main.test.persistence"/>
+        <property name="description" value="Sample for persistence testing."/>
         <property name="location">
             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Location">
                 <property name="protocol" value="http"/>
@@ -281,9 +281,9 @@
         <property name="roleA" ref="idp1"/>
         <property name="channelA">
 
-            <bean name="sp-default-channel" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel">
+            <bean name="idp1-default-sp-channel" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProviderChannel">
                 <property name="name" value="idp1-default-channel"/>
-                <property name="description" value="IdP1 Default Channel"/>
+                <property name="description" value="IdP1 Default SP Channel"/>
                 <property name="overrideProviderSetup" value="false"/>
             </bean>
 
@@ -293,9 +293,10 @@
 
         <property name="channelB">
             <bean name="idp-default-channel" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProviderChannel">
-                <property name="name" value="sp1-default-channel"/>
-                <property name="description" value="SP1 Default Channel"/>
+                <property name="name" value="sp1-default-idp-channel"/>
+                <property name="description" value="SP1 Default IDP Channel"/>
                 <property name="overrideProviderSetup" value="false"/>
+                <property name="preferred" value="true"/>
             </bean>
         </property>
 
@@ -303,6 +304,7 @@
 
     <bean name="execEnv1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.TomcatExecutionEnvironment">
         <property name="name" value="execEnv1"/>
+        <property name="displayName" value="Exec Env 1"/>
         <property name="platformId" value="tc60"/>
         <property name="description" value="Execution Environment One"/>
         <property name="installUri" value="/tmp/apache-tomcat-6.0.29"/>
@@ -315,6 +317,7 @@
 
     <bean name="idsource1" class="com.atricore.idbus.console.lifecycle.main.domain.metadata.EmbeddedIdentitySource">
         <property name="name" value="idsource1"/>
+        <property name="displayName" value="ID Source 1"/>
         <property name="description" value="Identity Source One"/>
         <property name="idau" value="idau-default"/>
         <property name="psp" value="psp-default"/>

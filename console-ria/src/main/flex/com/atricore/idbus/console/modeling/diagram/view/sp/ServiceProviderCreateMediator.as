@@ -286,6 +286,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
 
     private function saveServiceProvider():void {
         bindModel();
+        _newServiceProvider.identityAppliance = _projectProxy.currentIdentityAppliance.idApplianceDefinition;
         _projectProxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newServiceProvider);
         _projectProxy.currentIdentityApplianceElement = _newServiceProvider;
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);

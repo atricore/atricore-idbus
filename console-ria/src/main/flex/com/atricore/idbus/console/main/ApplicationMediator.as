@@ -313,15 +313,17 @@ public class ApplicationMediator extends IocMediator {
         }
         app.userActionMenuBar.addEventListener(MenuEvent.ITEM_CLICK, handleUserMenuAction)
         sendNotification(ApplicationFacade.CLEAR_MSG);
+        sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
     }
 
     public function logout():void {
-        sendNotification(ApplicationFacade.LOGOUT);
         secureContextProxy.dispose();
         projectProxy.dispose();
         keystoreProxy.dispose();
         profileProxy.dispose();
         accountManagementProxy.dispose();
+
+        sendNotification(ApplicationFacade.LOGOUT);
     }
 
     public function get app():AtricoreConsole {

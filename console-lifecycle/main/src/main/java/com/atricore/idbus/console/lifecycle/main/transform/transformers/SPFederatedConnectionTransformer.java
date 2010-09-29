@@ -128,9 +128,8 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         if (b.size() != 1) {
             throw new TransformException("Invalid SP definition count : " + b.size());
         }
+        
         spBean = b.iterator().next();
-
-
         String idpChannelName = spBean.getName() +  "-" + (!idpChannel.isOverrideProviderSetup() ? "default" : normalizeBeanName(target.getName())) + "-idp-channel";
 
         // Check if we already created this channel

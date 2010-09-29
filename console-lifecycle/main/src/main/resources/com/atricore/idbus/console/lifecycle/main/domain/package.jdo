@@ -21,14 +21,15 @@
 <jdo xmlns="http://java.sun.com/xml/ns/jdo/jdo"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:schemaLocation="http://java.sun.com/xml/ns/jdo/jdo
-        http://java.sun.com/xml/ns/jdo/jdo_2_3.xsd">
+        http://java.sun.com/xml/ns/jdo/jdo_2_0.xsd">
     
     <package name="com.atricore.idbus.console.lifecycle.main.domain">
 
         <class name="IdentityAppliance" detachable="true">
             <field name="id" value-strategy="native" primary-key="true"/>
-            <field name="idApplianceDefinition" default-fetch-group="true" dependent="true"/>
-            <field name="idApplianceDeployment" default-fetch-group="true" dependent="true"/>
+            <field name="idApplianceDefinition" persistence-modifier="none" />
+            <field name="idApplianceDeployment" default-fetch-group="true" dependent="true" />
+            
         </class>
 
         <class name="IdentityApplianceDeployment" detachable="true">
@@ -41,9 +42,7 @@
 
         <class name="IdentityApplianceUnit" detachable="true">
             <field name="id" value-strategy="native" primary-key="true"/>
-            <field name="providers" default-fetch-group="true" delete-action="none">
-                <join/>
-            </field>                
+            <field name="providers" embedded="true" default-fetch-group="true"/>                
         </class>
 
         <class name="IdentityServer" detachable="true">

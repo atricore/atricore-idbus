@@ -23,18 +23,22 @@
 <orm xmlns="http://java.sun.com/xml/ns/jdo/orm"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xsi:schemaLocation="http://java.sun.com/xml/ns/jdo/orm
-        http://java.sun.com/xml/ns/jdo/orm_2_3.xsd">
+        http://java.sun.com/xml/ns/jdo/orm_2_0.xsd">
 
     <package name="com.atricore.idbus.console.lifecycle.main.domain">
 
-        <class name="IdentityAppliance" table="ATC_ID_APPLIANCE" />
+        <class name="IdentityAppliance" table="ATC_ID_APPLIANCE" >
+            <field name="idApplianceDefinitionBin">
+                <column jdbc-type="LONGVARCHAR" />
+            </field>
+        </class>
 
         <class name="IdentityApplianceDeployment" table="ATC_ID_APPLIANCE_DEPLOYMENT">
              <field name="idaus" table="ATC_ID_APPLIANCE_DEPLOYMENT_UNITS"/>
         </class>
 
         <class name="IdentityApplianceUnit" table="ATC_ID_APPLIANCE_UNIT">
-            <field name="providers" table="ATC_IDAPPLIANCEUNIT_PROVIDERS"/>
+            <field name="providers" />
         </class>
 
         <class name="IdentityServer" table="ATC_ID_SERVER" />
