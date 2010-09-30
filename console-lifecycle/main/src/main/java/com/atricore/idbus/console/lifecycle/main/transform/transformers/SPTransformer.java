@@ -355,7 +355,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         Bean mBeanKey = newBean(spBeans, mBean.getName() + "-key", String.class);
         setConstructorArg(mBeanKey, 0, "java.lang.String", "org.atricore.idbus." +
                 event.getContext().getCurrentModule().getId() +
-                ":type=ServiceProvider,name=" + sp.getName());
+                ":type=ServiceProvider,name=" + applianceDef.getName() + "." + sp.getName());
 
         Entry mBeanEntry = new Entry();
         mBeanEntry.setKeyRef(mBeanKey.getName());
