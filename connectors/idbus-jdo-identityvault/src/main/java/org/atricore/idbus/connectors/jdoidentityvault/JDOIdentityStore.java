@@ -4,6 +4,7 @@ import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
+import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
 import org.atricore.idbus.kernel.main.store.AbstractStore;
 import org.atricore.idbus.kernel.main.store.UserKey;
@@ -34,12 +35,14 @@ public class JDOIdentityStore extends AbstractStore
         try {
 
             User user = idPartition.findUserByUserName(key.toString());
-            // TODO : Support other type of credentials ?
+            // TODO : Support other type of credentials !
 
             Credential usrCred = cp.newCredential("username", user.getUserName());
             Credential pwdCred = cp.newCredential("password", user.getUserPassword());
 
             return new Credential[] {usrCred, pwdCred};
+        } catch (UserNotFoundException e) {
+            return new Credential[0];
         } catch (ProvisioningException e) {
             throw new SSOIdentityException(e);
         }
@@ -50,6 +53,8 @@ public class JDOIdentityStore extends AbstractStore
         try {
             User jdoUser = idPartition.findUserByUserName(key.toString());
             return toSSOUser(jdoUser);
+        } catch (UserNotFoundException e) {
+            throw new NoSuchUserException(key.toString());
         } catch (ProvisioningException e) {
             throw new SSOIdentityException(e);
         }
@@ -60,6 +65,8 @@ public class JDOIdentityStore extends AbstractStore
         try {
             Collection<Group> groups = idPartition.findGroupsByUsernName(key.toString());
             return toSSORoles(groups);
+        } catch (UserNotFoundException e) {
+            throw new NoSuchUserException(key.toString());
         } catch (ProvisioningException e) {
             throw new SSOIdentityException(e);
         }

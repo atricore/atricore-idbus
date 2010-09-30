@@ -337,7 +337,7 @@ public class LDAPIdentityStore extends AbstractStore  {
             } else if ("PRINCIPAL".equals(getRoleMatchingMode())) {
                 // Use User ID to match the role
                 userDN = _principalUidAttributeID + "=" + username;
-            }else {
+            } else {
                 // Default behaviour: Match the role using the User DN, not just the username :
                 userDN = selectUserDN(username);
             }
