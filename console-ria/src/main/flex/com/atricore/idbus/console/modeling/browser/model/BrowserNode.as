@@ -42,6 +42,8 @@ public class BrowserNode
 
     public var data:Object;
 
+    public var parentNode:BrowserNode;
+    
     public function addChild(node:BrowserNode):void {
         if (this.children == null) {
             this.children = new ArrayCollection();

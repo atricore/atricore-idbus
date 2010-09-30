@@ -50,7 +50,7 @@ public class DefaultBrowserNodeRenderer extends TreeItemRenderer
                 var node:BrowserNode = value as BrowserNode;
 
                 treeDataItem.icon = node.icon;
-                /*
+
                 if (node.childsLength() > 0 && node.icon == null) {
                     if (treeDataItem.open) {
                         treeDataItem.icon = EmbeddedIcons.folderOpenIcon;
@@ -58,7 +58,6 @@ public class DefaultBrowserNodeRenderer extends TreeItemRenderer
                         treeDataItem.icon = EmbeddedIcons.folderClosedIcon;
                     }
                 }
-                */
             }
 		}
 
