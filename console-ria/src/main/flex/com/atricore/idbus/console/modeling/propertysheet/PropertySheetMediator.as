@@ -827,7 +827,7 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function updateSamlR2Config(config:SamlR2ProviderConfig):void {
+    private function updateSamlR2Config(provider:Provider, config:SamlR2ProviderConfig):void {
         if (_certificateSection.useDefaultKeystore.selected) {
             config.useSampleStore = true;
             config.signer = null;
@@ -836,6 +836,8 @@ public class PropertySheetMediator extends IocMediator {
             var keystore:Keystore = config.signer;
             if (keystore == null) {
                 keystore = new Keystore();
+                keystore.name = provider.name.toLowerCase().replace(/\s+/g, "-") + "-keystore";
+                keystore.displayName = provider.name + " keystore";
             }
             keystore.certificateAlias = _certificateSection.certificateAlias.text;
             keystore.privateKeyName = _certificateSection.keyAlias.text;
@@ -1066,7 +1068,7 @@ public class PropertySheetMediator extends IocMediator {
             if (_certificateSection.uploadKeystore.selected && _selectedFiles != null && _selectedFiles.length > 0) {
                 _fileRef.load();
             } else {
-                updateSamlR2Config(config);
+                updateSamlR2Config(provider, config);
             }
 
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -2687,7 +2689,7 @@ public class PropertySheetMediator extends IocMediator {
 
         var provider:Provider = _currentIdentityApplianceElement as Provider;
         var config:SamlR2ProviderConfig = provider.config as SamlR2ProviderConfig;
-        updateSamlR2Config(config);
+        updateSamlR2Config(provider, config);
     }
 
     private function resetUploadFields():void {
