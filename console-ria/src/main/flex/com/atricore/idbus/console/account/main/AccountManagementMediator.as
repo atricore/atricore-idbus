@@ -120,13 +120,11 @@ public class AccountManagementMediator extends IocMediator implements IDisposabl
         groupsTab.id = "groupsTab";
         groupsTab.width = Number("100%");
         groupsTab.height = Number("100%");
-        groupsTab.setStyle("borderStyle", "solid");
         groupsTab.addElement(gView);
 
         usersTab.id = "usersTab";
         usersTab.width = Number("100%");
         usersTab.height = Number("100%");
-        usersTab.setStyle("borderStyle", "solid");
         usersTab.addElement(uView);
 
         groupsMediator.setViewComponent(gView);
