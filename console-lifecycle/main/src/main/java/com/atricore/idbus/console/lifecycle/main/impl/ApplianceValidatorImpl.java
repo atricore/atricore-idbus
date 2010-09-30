@@ -138,7 +138,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         validateName("Appliance name", node.getName(), node);
         validateDisplayName("Appliance display name", node.getDisplayName());
         validatePackageName("Appliance namespace", node.getNamespace());
-        validateLocation("Appliance", node.getLocation());
+        validateLocation("Appliance", node.getLocation(), node, false);
 
         if (getOperation() == Operation.ADD ||
             getOperation() == Operation.IMPORT) {
@@ -162,7 +162,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         validateName("IDP name", node.getName(), node);
         validateDisplayName("IDP display name", node.getDisplayName());
 
-        validateLocation("IDP", node.getLocation(), true);
+        validateLocation("IDP", node.getLocation(), node, true);
 
         for (FederatedConnection fcA : node.getFederatedConnectionsA()) {
             if (fcA.getRoleA() != node) {
@@ -205,8 +205,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     public void arrive(ServiceProvider node) throws Exception {
         validateName("SP name", node.getName(), node);
         validateDisplayName("SP display name", node.getDisplayName());
-
-        validateLocation("SP", node.getLocation(), true);
+        validateLocation("SP", node.getLocation(), node, true);
 
         int preferred = 0;
 
@@ -321,7 +320,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.getPartnerAppId() == null)
             addError("JOSSO Activation partner app. ID cannot be null ");
 
-        validateLocation("JOSSO Activation partner app.", node.getPartnerAppLocation());
+        validateLocation("JOSSO Activation partner app.", node.getPartnerAppLocation(), node, false);
 
         if (node.getSp() == null)
             addError("JOSSO Activation " + node.getName() + " SP cannot be null");
@@ -386,19 +385,26 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     public void arrive(ServiceProviderChannel node) throws Exception {
         validateName("Service Provider channel", node.getName(), node);
         if (node.isOverrideProviderSetup())
-            validateLocation("Serivce Provider channel ", node.getLocation());
+            validateLocation("Serivce Provider channel ", node.getLocation(), node, true);
     }
 
     @Override
     public void arrive(IdentityProviderChannel node) throws Exception {
         validateName("Identity Provider channel", node.getName(), node);
         if (node.isOverrideProviderSetup())
-            validateLocation("Identity Provider channel ", node.getLocation());
+            validateLocation("Identity Provider channel ", node.getLocation(), node, true);
 
 
     }
 
+    public void arrive(Keystore node) throws Exception {
+        if (node == null)
+            return;
 
+        Resource ks = node.getStore();
+
+        // TODO : Validate keystore properties, value 
+    }
 
 
     // ---------------------------------------------------------------------
@@ -459,11 +465,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         }
     }
 
-    protected void validateLocation(String propertyName, Location location) {
-        validateLocation(propertyName, location, false);
-    }
-
-    protected void validateLocation(String propertyName, Location location, boolean validateUri) {
+    protected void validateLocation(String propertyName, Location location, Object obj, boolean validateUri) {
         if (location == null) {
             addError(propertyName + " location cannot be null");
             return ;
@@ -496,8 +498,12 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                 addError(propertyName + " location URI must be relative (do not start it with '/')");
         }
 
+        String locationStr = location.getLocationAsString();
+        if (ctx.get().isLocationUsed(locationStr, obj)) {
+            addError(propertyName + " location is already in use " + locationStr);
+        }
 
-
+        ctx.get().registerLocation(locationStr, obj);
 
     }
 
@@ -528,7 +534,31 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 
         private Operation operation;
 
+        private List<ValidationError> errors = new ArrayList<ValidationError>();
+
         private Map<String, Set<Object>> usedNames = new HashMap<String, Set<Object>>();
+
+        private Map<String, Set<Object>> usedLocations = new HashMap<String, Set<Object>>();
+
+        boolean isLocationUsed(String location, Object o) {
+            Set objs = usedLocations.get(location);
+            if (objs == null) {
+                objs = new HashSet<Object>();
+                usedLocations.put(location, objs);
+            }
+
+            return objs.size() > 0 && !objs.contains(o);
+
+        }
+
+        void registerLocation(String location, Object o) {
+            Set objs = usedLocations.get(location);
+            if (objs == null) {
+                objs = new HashSet<Object>();
+                usedLocations.put(location, objs);
+            }
+            objs.add(o);
+        }
 
         boolean isNameUsed(String name, Object o) {
             Set objs = usedNames.get(name);
@@ -549,8 +579,6 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
             }
             objs.add(o);
         }
-
-        private List<ValidationError> errors = new ArrayList<ValidationError>();
 
         public List<ValidationError> getErrors() {
             return errors;

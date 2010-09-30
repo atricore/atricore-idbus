@@ -35,7 +35,7 @@
         >
     
     <s:layout>
-        <s:VerticalLayout paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5"/>
+        <s:VerticalLayout/>
     </s:layout>
 
     <fx:Script>
@@ -48,12 +48,12 @@
         [ResourceBundle("console")]
     </fx:Metadata>
 
-    <s:Group id="graphCanvas" width="100%" height="100%">
+    <comp:GraphCanvas id="graphCanvas" width="100%" height="100%">
         <comp:CustomVisualGraph id="identityApplianceDiagram" width="100%" height="100%"
                            left="0" right="0" top="0" bottom="0" alpha="1"
                            resize="identityApplianceDiagram.draw(VisualGraph.DF_RESET_LL)"
                            visibilityLimitActive="true"
                 >
         </comp:CustomVisualGraph>
-    </s:Group>
+    </comp:GraphCanvas>
 </s:Panel>
