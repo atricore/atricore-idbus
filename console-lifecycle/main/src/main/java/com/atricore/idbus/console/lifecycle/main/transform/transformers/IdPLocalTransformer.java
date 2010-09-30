@@ -280,7 +280,7 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         Bean mBeanKey = newBean(idpBeans, mBean.getName() + "-key", String.class);
         setConstructorArg(mBeanKey, 0, "java.lang.String", "org.atricore.idbus." +
                 event.getContext().getCurrentModule().getId() +
-                ":type=IdentityProvider,name=" + idpBean.getName());
+                ":type=IdentityProvider,name=" + provider.getIdentityAppliance().getName() + "." + idpBean.getName());
 
         Entry mBeanEntry = new Entry();
         mBeanEntry.setKeyRef(mBeanKey.getName());

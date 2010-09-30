@@ -33,9 +33,7 @@
             </field>
         </class>
 
-        <class name="IdentityApplianceDeployment" table="ATC_ID_APPLIANCE_DEPLOYMENT">
-             <field name="idaus" table="ATC_ID_APPLIANCE_DEPLOYMENT_UNITS"/>
-        </class>
+        <class name="IdentityApplianceDeployment" table="ATC_ID_APPLIANCE_DEPLOYMENT"/>
 
         <class name="IdentityApplianceUnit" table="ATC_ID_APPLIANCE_UNIT">
             <field name="providers" />

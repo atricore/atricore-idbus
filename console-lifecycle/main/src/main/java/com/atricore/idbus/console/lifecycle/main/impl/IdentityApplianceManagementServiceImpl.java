@@ -1375,7 +1375,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
         // Build the appliance
         appliance = builder.build(appliance);
-        appliance.setState(IdentityApplianceState.BUILT.toString());
+        appliance.setState(IdentityApplianceState.STAGED.toString());
 
         // Install it
         if (deploy)
@@ -1417,7 +1417,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
                     } else if (!deployer.isStarted(appliance)) {
 
-                        // STARTED in DB but not STARTED in OSGI --> BUILT
+                        // STARTED in DB but not STARTED in OSGI --> STAGED
                         appliance.setState(IdentityApplianceState.DEPLOYED.toString());
                         if (logger.isDebugEnabled())
                             logger.debug("Synchronizing Appliance state : DEPLOYED " + appliance.getId());
