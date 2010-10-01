@@ -29,12 +29,11 @@
     <fx:Declarations>
         <mx:StringValidator id="usersCtxDNValidator" source="{usersCtxDN}" required="true" property="text"/>
         <mx:StringValidator id="principalUidAttributeIDValidator" source="{principalUidAttributeID}" required="true" property="text"/>
-        <mx:StringValidator id="roleMatchingModeValidator" source="{roleMatchingMode}" required="true" property="text"/>
         <mx:StringValidator id="uidAttributeIDValidator" source="{uidAttributeID}" required="true" property="text"/>
         <mx:StringValidator id="rolesCtxDNValidator" source="{rolesCtxDN}" required="true" property="text"/>
         <mx:StringValidator id="roleAttributeIDValidator" source="{roleAttributeID}" required="true" property="text"/>
         <mx:StringValidator id="credentialQueryStringValidator" source="{credentialQueryString}" required="true" property="text"/>
-        <mx:StringValidator id="updateableCredentialAttributeValidator" source="{updateableCredentialAttribute}" required="true" property="text"/>
+        <!--<mx:StringValidator id="updateableCredentialAttributeValidator" source="{updateableCredentialAttribute}" property="text"/>-->
         <mx:StringValidator id="userPropertiesQueryStringValidator" source="{userPropertiesQueryString}" required="true" property="text"/>
     </fx:Declarations>
 
@@ -51,9 +50,16 @@
             <s:TextInput id="principalUidAttributeID" width="300"/>
         </mx:FormItem>
 
-        <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.roleMatchingMode')}:"
-                     required="true">
-            <s:TextInput id="roleMatchingMode" width="300"/>
+        <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.roleMatchingMode')}:">
+                <s:DropDownList id="roleMatchingMode" selectedIndex="0" width="300">
+                    <s:dataProvider>
+                        <mx:ArrayCollection>
+                            <fx:Object label="Distinguished Name" data="DN"/>
+                            <fx:Object label="User Id" data="UID"/>
+                            <fx:Object label="User Principal" data="PRINCIPAL"/>
+                        </mx:ArrayCollection>
+                    </s:dataProvider>
+                </s:DropDownList>            
         </mx:FormItem>
 
         <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.uidAttributeID')}:"
@@ -71,8 +77,7 @@
             <s:TextInput id="roleAttributeID" width="300"/>
         </mx:FormItem>
 
-        <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.updateableCredentialAttribute')}:"
-                     required="true">
+        <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.updateableCredentialAttribute')}:">
             <s:TextInput id="updateableCredentialAttribute" width="300"/>
         </mx:FormItem>
 

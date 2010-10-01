@@ -78,7 +78,7 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
         view.ldapSearchScope.selectedIndex = 0;
         view.usersCtxDN.text = "";
         view.principalUidAttributeID.text = "";
-        view.roleMatchingMode.text = "";
+        view.roleMatchingMode.selectedIndex = 0;
         view.uidAttributeID.text = "";
         view.rolesCtxDN.text = "";
         view.roleAttributeID.text = "";
@@ -100,7 +100,7 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
         ldapIdentitySource.ldapSearchScope = view.ldapSearchScope.selectedItem.data;
         ldapIdentitySource.usersCtxDN = view.usersCtxDN.text;
         ldapIdentitySource.principalUidAttributeID = view.principalUidAttributeID.text;
-        ldapIdentitySource.roleMatchingMode = view.roleMatchingMode.text;
+        ldapIdentitySource.roleMatchingMode = view.roleMatchingMode.selectedItem.data as String;
         ldapIdentitySource.uidAttributeID = view.uidAttributeID.text;
         ldapIdentitySource.rolesCtxDN = view.rolesCtxDN.text;
         ldapIdentitySource.roleAttributeID = view.roleAttributeID.text;
@@ -148,12 +148,10 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
         _validators.push(view.securityCredentialValidator);
         _validators.push(view.usersCtxDNValidator);
         _validators.push(view.principalUidAttributeIDValidator);
-        _validators.push(view.roleMatchingModeValidator);
         _validators.push(view.uidAttributeIDValidator);
         _validators.push(view.rolesCtxDNValidator);
         _validators.push(view.roleAttributeIDValidator);
         _validators.push(view.credentialQueryStringValidator);
-        _validators.push(view.updateableCredentialAttributeValidator);
         _validators.push(view.userPropertiesQueryStringValidator);
     }
 

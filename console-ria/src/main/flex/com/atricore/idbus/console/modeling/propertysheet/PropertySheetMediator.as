@@ -1364,7 +1364,14 @@ public class PropertySheetMediator extends IocMediator {
         if (ldapIdentitySource != null) {
             _ldapIdentitySourceLookupSection.usersCtxDN.text = ldapIdentitySource.usersCtxDN;
             _ldapIdentitySourceLookupSection.principalUidAttributeID.text = ldapIdentitySource.principalUidAttributeID;
-            _ldapIdentitySourceLookupSection.roleMatchingMode.text = ldapIdentitySource.roleMatchingMode;
+
+            for (var i:int = 0; i < _ldapIdentitySourceLookupSection.roleMatchingMode.dataProvider.length; i++) {
+                if (_ldapIdentitySourceLookupSection.roleMatchingMode.dataProvider[i].data == ldapIdentitySource.roleMatchingMode) {
+                    _ldapIdentitySourceLookupSection.roleMatchingMode.selectedIndex = i;
+                    break;
+                }
+            }
+
             _ldapIdentitySourceLookupSection.uidAttributeID.text = ldapIdentitySource.uidAttributeID;
             _ldapIdentitySourceLookupSection.rolesCtxDN.text = ldapIdentitySource.rolesCtxDN;
             _ldapIdentitySourceLookupSection.roleAttributeID.text = ldapIdentitySource.roleAttributeID;
@@ -1385,12 +1392,10 @@ public class PropertySheetMediator extends IocMediator {
             _validators = [];
             _validators.push(_ldapIdentitySourceLookupSection.usersCtxDNValidator);
             _validators.push(_ldapIdentitySourceLookupSection.principalUidAttributeIDValidator);
-            _validators.push(_ldapIdentitySourceLookupSection.roleMatchingModeValidator);
             _validators.push(_ldapIdentitySourceLookupSection.uidAttributeIDValidator);
             _validators.push(_ldapIdentitySourceLookupSection.rolesCtxDNValidator);
             _validators.push(_ldapIdentitySourceLookupSection.roleAttributeIDValidator);
             _validators.push(_ldapIdentitySourceLookupSection.credentialQueryStringValidator);
-            _validators.push(_ldapIdentitySourceLookupSection.updateableCredentialAttributeValidator);
             _validators.push(_ldapIdentitySourceLookupSection.userPropertiesQueryStringValidator);
         }
     }
@@ -1401,7 +1406,7 @@ public class PropertySheetMediator extends IocMediator {
             var ldapIdentitySource:LdapIdentitySource = _currentIdentityApplianceElement as LdapIdentitySource;
             ldapIdentitySource.usersCtxDN = _ldapIdentitySourceLookupSection.usersCtxDN.text;
             ldapIdentitySource.principalUidAttributeID = _ldapIdentitySourceLookupSection.principalUidAttributeID.text;
-            ldapIdentitySource.roleMatchingMode = _ldapIdentitySourceLookupSection.roleMatchingMode.text;
+            ldapIdentitySource.roleMatchingMode = _ldapIdentitySourceLookupSection.roleMatchingMode.selectedItem.data as String;
             ldapIdentitySource.uidAttributeID = _ldapIdentitySourceLookupSection.uidAttributeID.text;
             ldapIdentitySource.rolesCtxDN = _ldapIdentitySourceLookupSection.rolesCtxDN.text;
             ldapIdentitySource.roleAttributeID = _ldapIdentitySourceLookupSection.roleAttributeID.text;
