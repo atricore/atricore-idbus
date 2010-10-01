@@ -37,6 +37,10 @@ package com.atricore.idbus.console.main.view.util {
         
         public static const EXEC_ENVIRONMENT_DEEP:uint=2;
 
+        public static const CONNECTIONS_DEEP:uint=3;
+
+        public static const CONNECTION_DEEP:uint=4;
+
 		//dashboard parameters
 		public static const MANAGER_PARAM_APPLIANCE_ID:String = "applianceId";
         public static const MANAGER_PARAM_STARTED_ONLY:String = "startedOnly";

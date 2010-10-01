@@ -105,7 +105,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
         Bean mBeanEntryKeyBean = newBean(bpBeans, mBean.getName() + "-key", String.class);
         setConstructorArg(mBeanEntryKeyBean, 0, "java.lang.String", "org.atricore.idbus." +
-                event.getContext().getCurrentModule().getId() + ":type=BindingProvider,name=" + bpBean.getName());
+                event.getContext().getCurrentModule().getId() + ":type=BindingProvider,name=" + applianceDef.getName() + "." + bpBean.getName());
 
         Entry mBeanEntry = new Entry();
         mBeanEntry.setKeyRef(mBeanEntryKeyBean.getName());

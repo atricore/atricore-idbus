@@ -35,8 +35,8 @@
         <class name="IdentityApplianceDeployment" detachable="true">
             <field name="id" value-strategy="native" primary-key="true"/>
 
-            <field name="idaus" default-fetch-group="true">
-                <join delete-action="cascade"/>
+            <field name="idaus" default-fetch-group="true" >
+                <collection dependent-element="true" />
             </field>
         </class>
 

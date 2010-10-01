@@ -370,7 +370,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
-                toggleNodeOnByData(_identityApplianceDiagram, _projectProxy.currentIdentityApplianceElement);
+                toggleGraphElementOnByData(_projectProxy.currentIdentityApplianceElement);
                 break;
 
             case ApplicationFacade.DIAGRAM_ELEMENT_UPDATED:
@@ -468,14 +468,14 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     var providerNode:IVisualNode = findNodeElementBySemanticElement(identityLookup.provider);
                     var identitySourceNode:IVisualNode = findNodeElementBySemanticElement(identityLookup.identitySource);
                     GraphDataManager.linkVNodes(_identityApplianceDiagram, identitySourceNode, providerNode,
-                            identityLookup,EmbeddedIcons.connectionIdentityLookupIcon, "Identity Lookup Connection");
+                            identityLookup,EmbeddedIcons.connectionIdentityLookupMiniIcon, "Identity Lookup Connection");
                     _identityApplianceDiagram.exitConnectionMode();
                 } else if (element is FederatedConnection) {
                     var federatedConnection:FederatedConnection = element as FederatedConnection;
                     var provider1Node:IVisualNode = findNodeElementBySemanticElement(federatedConnection.roleA);
                     var provider2Node:IVisualNode = findNodeElementBySemanticElement(federatedConnection.roleB);
                     GraphDataManager.linkVNodes(_identityApplianceDiagram, provider2Node, provider1Node,
-                            federatedConnection, EmbeddedIcons.connectionFederatedIcon, "Federated Connection");
+                            federatedConnection, EmbeddedIcons.connectionFederatedMiniIcon, "Federated Connection");
                     _identityApplianceDiagram.exitConnectionMode();
                 } else if (element is JOSSOActivation) {
                     var activation:JOSSOActivation = element as JOSSOActivation;
@@ -508,6 +508,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 } else {
                     var node:IVisualNode = findNodeElementBySemanticElement(element);
                     GraphDataManager.removeNode(_identityApplianceDiagram, node, true);
+                    _currentlySelectedNode = null;
                 }
                 break;
         }
@@ -742,16 +743,17 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         _identityApplianceDiagram.exitConnectionMode();
         view.graphCanvas.drawGrid = false;
         view.graphCanvas.removeGraphGrid();
+        _currentlySelectedNode = null;
+        _currentlySelectedEdge = null;
     }
 
     private function nodeSelectedEventHandler(event:VNodeSelectedEvent):void
     {
         var node:INode = _identityApplianceDiagram.graph.nodeByStringId(event.vnodeId);
 
-        toggleUnselectedNodesOff(_identityApplianceDiagram, event.target);
-        unselectAllEdges();
-
         if (node != null) {
+            toggleUnselectedNodesOff(_identityApplianceDiagram, event.target);
+            unselectAllEdges();
             _currentlySelectedNode = node;
             _projectProxy.currentIdentityApplianceElement = node.data;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_SELECTED);
@@ -832,11 +834,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
     private function edgeSelectedEventHandler(event:VEdgeSelectedEvent):void {
         var edge:IEdge = event.edge;
 
-        //var edge:IEdge = _identityApplianceDiagram.edgeByStringId(event.vedgeId);
-
-        toggleUnselectedNodesOff(_identityApplianceDiagram, event.target);
-
         if (edge != null) {
+            unselectAllNodes();
             _currentlySelectedEdge = edge;
             _projectProxy.currentIdentityApplianceElement = edge.data.data;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_SELECTED);
@@ -888,34 +887,46 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         }
     }
 
+    private function unselectAllNodes():void {
+        for each (var node:INode in _identityApplianceDiagram.graph.nodes) {
+            if (node.vnode.view is NodeDetailedRenderer) {
+                (node.vnode.view as NodeDetailedRenderer).nodeBtn.selected = false;
+            }
+        }
+        _currentlySelectedNode = null;
+    }
+
     private function unselectAllEdges():void {
-        _currentlySelectedEdge = null;
         for each (var edge:IEdge in _identityApplianceDiagram.graph.edges) {
             edge.vedge.lineStyle.color = 0xCCCCCC;
         }
+        _currentlySelectedEdge = null;
         _identityApplianceDiagram.refresh();
     }
 
-    private function toggleNodeOnByData(visualCompToCheck:Object, targetSemanticElement:Object):void {
-
-        for each(var obj:Object in visualCompToCheck.getChildren()) {
-            if (obj is Container && !(obj is NodeDetailedRenderer)) {
-                toggleNodeOnByData(obj, targetSemanticElement);
-            } else
-            if (obj is NodeDetailedRenderer) {
-                var renderer:NodeDetailedRenderer = NodeDetailedRenderer(obj);
-
-                var diagramSemanticElement:Object = IVisualNode(renderer.data).data
-
-                var elementFigure:Button = lookUpElementFigure(renderer) as Button;
-
-                if (diagramSemanticElement == targetSemanticElement ) {
-                    elementFigure.selected = true;
-                } else {
-                    elementFigure.selected = false;
-                }
+    private function toggleGraphElementOnByData(semanticElement:Object):void {
+        _currentlySelectedNode = null;
+        _currentlySelectedEdge = null;
+        
+        for each (var node:INode in _identityApplianceDiagram.graph.nodes) {
+            if (node.data != null && node.data == semanticElement) {
+                (node.vnode.view as NodeDetailedRenderer).nodeBtn.selected = true;
+                _currentlySelectedNode = node;
+            } else {
+                (node.vnode.view as NodeDetailedRenderer).nodeBtn.selected = false;
             }
         }
+
+        for each (var edge:IEdge in _identityApplianceDiagram.graph.edges) {
+            if (edge.data != null && edge.data.data == semanticElement) {
+                _currentlySelectedEdge = edge;
+                edge.vedge.lineStyle.color = 0x6B8E23;
+            } else {
+                edge.vedge.lineStyle.color = 0xCCCCCC;
+            }
+        }
+
+        _identityApplianceDiagram.refresh();
     }
 
 

@@ -57,7 +57,7 @@
         <s:TabBar id="accountManagementTabBar" dataProvider="{new ArrayCollection(vsAccountMng.content)}"
                   labelField="name" skinClass="com.atricore.idbus.console.skin.tabbar.IconTabBarSkin"/>
 
-        <comp:CustomViewStack id="vsAccountMng" creationPolicy="all"
+        <comp:CustomViewStack id="vsAccountMng" creationPolicy="all" borderVisible="false"
                               width="100%" height="100%" />
     </s:VGroup>
 

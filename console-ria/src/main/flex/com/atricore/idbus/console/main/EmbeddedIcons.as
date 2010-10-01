@@ -261,6 +261,18 @@ public class EmbeddedIcons {
     //CONNECTIONS
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/connection.png")]
+    public static var connectionFederatedMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/activation.png")]
+    public static var connectionActivationMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/identity_lookup.png")]
+    public static var connectionIdentityLookupMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/connection.png")]
     public static var connectionFederatedIcon:Class;
 
     [Bindable]

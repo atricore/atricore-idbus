@@ -27,7 +27,7 @@
 
     <mx:Zoom id="zoomAll" zoomWidthTo="1.2" zoomHeightTo="1.2" zoomWidthFrom="1" zoomHeightFrom="1"/>
 
-    <mx:Button label="{_linkLabel}" icon="{_linkIcon}" click="nodeSelected(event)" toggle="true"/>
+    <mx:Button id="nodeBtn" label="{_linkLabel}" icon="{_linkIcon}" click="nodeSelected(event)" toggle="true"/>
 
     <mx:Button id="removeNode" icon="{EmbeddedIcons.removeNodeIcon}" click="confirmNodeRemove(event)" visible="false"/>
 

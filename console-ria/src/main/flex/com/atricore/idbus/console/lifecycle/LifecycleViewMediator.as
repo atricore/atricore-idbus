@@ -141,7 +141,7 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                             savedAppliancesSelectedIndex = savedAppliances.length - 1;
                         }
                     }
-                    if (appliance.state == IdentityApplianceState.BUILT.name) {
+                    if (appliance.state == IdentityApplianceState.STAGED.name) {
                         stagedAppliances.addItem(appliance);
                         //if (selected) {
                         //    //stagedAppliancesSelectedIndex = stagedAppliances.length - 1;
@@ -302,7 +302,7 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
         }
 
         if (targetGrid.id == "grdDisposedAppliances") {
-            if ((items[0] as IdentityAppliance).state != IdentityApplianceState.BUILT.name) {
+            if ((items[0] as IdentityAppliance).state != IdentityApplianceState.STAGED.name) {
                 event.preventDefault();
                 DragManager.showFeedback(DragManager.NONE);
                 return;

@@ -169,17 +169,17 @@ public class PaletteMediator extends IocMediator {
 
         var connectionPaletteDrawer:PaletteDrawer = new PaletteDrawer("Connections", null, null);
         connectionPaletteDrawer.add(
-                new PaletteEntry("Federated Connection", EmbeddedIcons.connectionFederatedIcon, "Federated Connection Entry", DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE)
+                new PaletteEntry("Federated Connection", EmbeddedIcons.connectionFederatedMiniIcon, "Federated Connection Entry", DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE)
 
                 );
 
         connectionPaletteDrawer.add(
-                new PaletteEntry("Activation", EmbeddedIcons.connectionActivationIcon, "Activation Entry", DiagramElementTypes.ACTIVATION_ELEMENT_TYPE)
+                new PaletteEntry("Activation", EmbeddedIcons.connectionActivationMiniIcon, "Activation Entry", DiagramElementTypes.ACTIVATION_ELEMENT_TYPE)
 
                 );
 
         connectionPaletteDrawer.add(
-                new PaletteEntry("Identity Lookup", EmbeddedIcons.connectionIdentityLookupIcon , "Identity Lookup Entry", DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE)
+                new PaletteEntry("Identity Lookup", EmbeddedIcons.connectionIdentityLookupMiniIcon , "Identity Lookup Entry", DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE)
 
                 );
         pr.add(connectionPaletteDrawer);

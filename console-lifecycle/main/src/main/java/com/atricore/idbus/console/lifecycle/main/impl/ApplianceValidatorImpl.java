@@ -6,12 +6,20 @@ import com.atricore.idbus.console.lifecycle.main.domain.dao.IdentityApplianceDAO
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceNotFoundException;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
-import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
 import com.atricore.idbus.console.lifecycle.main.spi.ApplianceValidator;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionWalker;
-import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.util.*;
 
 /**
@@ -401,9 +409,61 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node == null)
             return;
 
+        if (StringUtils.isBlank(node.getName()))
+            addError("Keystore name cannot be null or empty");
+
+        validateDisplayName("Keystore display name" , node.getDisplayName());
+
+        if (StringUtils.isBlank(node.getType()))
+            addError("Keystore type cannot be null or empty");
+
+        if (StringUtils.isBlank(node.getPassword()))
+            addError("Keystore password cannot be null or empty");
+
+        if (StringUtils.isBlank(node.getPrivateKeyName()))
+            addError("Keystore private key name cannot be null or empty");
+
+        if (StringUtils.isBlank(node.getPrivateKeyPassword()))
+            addError("Keystore private key password cannot be null or empty");
+
+        if (StringUtils.isBlank(node.getCertificateAlias()))
+            addError("Keystore certificate alias cannot be null or empty");
+
         Resource ks = node.getStore();
 
-        // TODO : Validate keystore properties, value 
+        if (ks == null) {
+            addError("Keystore file cannot be null");
+        } else {
+            if (StringUtils.isBlank(ks.getName()))
+                addError("Keystore file name cannot be null or empty");
+
+            validateDisplayName("Keystore file display name", ks.getDisplayName());
+
+            if (StringUtils.isBlank(ks.getUri()))
+                addError("Keystore file uri cannot be null or empty");
+
+            if (ks.getValue() == null) {
+                addError("Keystore file value cannot be null");
+            } else if (node.getType() != null && node.getPassword() != null && node.getCertificateAlias() != null) {
+                try {
+                    KeyStore keyStore = KeyStore.getInstance("PKCS#12".equals(node.getType()) ? "PKCS12" : "JKS");
+                    keyStore.load(new ByteArrayInputStream(ks.getValue()), node.getPassword().toCharArray());
+                    Certificate certificate = keyStore.getCertificate(node.getCertificateAlias());
+                    if (certificate == null)
+                        addError("No certificate associated with alias '" + node.getCertificateAlias() + "'");
+                } catch (KeyStoreException e) {
+                    addError("Keystore type is not available");
+                } catch (NoSuchAlgorithmException e) {
+                    addError("Algorithm used to check the integrity of the keystore cannot be found");
+                } catch (CertificateException e) {
+                    addError("Certificates in the keystore cannot be loaded");
+                } catch (EOFException e) {
+                    addError("Keystore data is corrupted");
+                } catch (IOException e) {
+                    addError("Keystore was tampered with, or password was incorrect");
+                }
+            }
+        }
     }
 
 

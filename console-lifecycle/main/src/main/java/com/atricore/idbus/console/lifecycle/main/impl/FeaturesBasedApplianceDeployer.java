@@ -110,7 +110,7 @@ public class FeaturesBasedApplianceDeployer implements ApplianceDeployer, Bundle
 
             IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
 
-            if (!appliance.getState().equals(IdentityApplianceState.BUILT.toString()))
+            if (!appliance.getState().equals(IdentityApplianceState.STAGED.toString()))
                 throw new IllegalStateException("Appliance in state " + appliance.getState() + " cannot be undeployed");
 
             IdentityApplianceDeployment applianceDep = appliance.getIdApplianceDeployment();
@@ -159,7 +159,7 @@ public class FeaturesBasedApplianceDeployer implements ApplianceDeployer, Bundle
             svc.removeRepository(new URI(applianceDep.getFeatureUri()));
 
             appliance.setIdApplianceDeployment(null); // Clear deployment information!
-            appliance.setState(IdentityApplianceState.BUILT.toString());
+            appliance.setState(IdentityApplianceState.STAGED.toString());
 
             return appliance;
 

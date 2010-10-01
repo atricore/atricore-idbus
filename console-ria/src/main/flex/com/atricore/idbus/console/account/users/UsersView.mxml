@@ -20,7 +20,6 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-
 <s:VGroup xmlns:s="library://ns.adobe.com/flex/spark"
           xmlns:mx="library://ns.adobe.com/flex/mx"
           xmlns:fx="http://ns.adobe.com/mxml/2009"
@@ -55,87 +54,84 @@
     </fx:Script>
 
     <s:HGroup id="buttonBar" width="100%" height="5%"
-              paddingLeft="15" paddingRight="15" paddingTop="5" paddingBottom="5">
+              paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
         <components:IconLabelButton id="btnNewUser"
-                               iconUp="{EmbeddedIcons.addUserIcon}"
-                               iconWidth="22"  iconHeight="22"
-                               paddingTop="3" paddingLeft="3" isLinkButton="false"
-                               skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
-                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.add.panel.label')}"
-                               label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.add.panel.label')}"/>
+                                    iconUp="{EmbeddedIcons.addUserIcon}"
+                                    iconWidth="22"  iconHeight="22"
+                                    paddingTop="3" paddingLeft="3" isLinkButton="false"
+                                    skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
+                                    toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.add.panel.label')}"
+                                    label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.add.panel.label')}"/>
         <components:IconLabelButton id="btnEditUser" enabled="false"
-                               iconUp="{EmbeddedIcons.editUserIcon}"
-                               iconWidth="22"  iconHeight="22"
-                               paddingTop="3" paddingLeft="3" isLinkButton="false"
-                               skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
-                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.edit.panel.label')}"
-                               label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.edit.panel.label')}"/>
+                                    iconUp="{EmbeddedIcons.editUserIcon}"
+                                    iconWidth="22"  iconHeight="22"
+                                    paddingTop="3" paddingLeft="3" isLinkButton="false"
+                                    skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
+                                    toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.edit.panel.label')}"
+                                    label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.edit.panel.label')}"/>
         <components:IconLabelButton id="btnDeleteUser" enabled="false"
-                               iconUp="{EmbeddedIcons.removeUserIcon}"
-                               iconWidth="22"  iconHeight="22"
-                               paddingTop="3" paddingLeft="3" isLinkButton="false"
-                               skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
-                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.delete.panel.label')}"
-                               label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.delete.panel.label')}"/>
+                                    iconUp="{EmbeddedIcons.removeUserIcon}"
+                                    iconWidth="22"  iconHeight="22"
+                                    paddingTop="3" paddingLeft="3" isLinkButton="false"
+                                    skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
+                                    toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.delete.panel.label')}"
+                                    label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.delete.panel.label')}"/>
         <components:IconLabelButton id="btnSearchUser"
-                               iconUp="{EmbeddedIcons.searchUserIcon}"
-                               iconWidth="22"  iconHeight="22"
-                               paddingTop="3" paddingLeft="3" isLinkButton="false"
-                               skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
-                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.search.panel.label')}"
-                               label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.search.panel.label')}"/>
+                                    iconUp="{EmbeddedIcons.searchUserIcon}"
+                                    iconWidth="22"  iconHeight="22"
+                                    paddingTop="3" paddingLeft="3" isLinkButton="false"
+                                    skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
+                                    toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.search.panel.label')}"
+                                    label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.users.search.panel.label')}"/>
+        <components:IconLabelButton id="btnClearSearch"
+                                    iconUp="@Embed('/images/icons/close.png')"
+                                    iconWidth="22"  iconHeight="22"
+                                    paddingTop="3" paddingLeft="3" isLinkButton="false"  visible="false"
+                                    skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
+                                    toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.search.filters.remove')}"
+                                    label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.search.filters.remove')}" />
     </s:HGroup>
 
-    <s:HGroup id="bodyHBox" width="100%" height="95%" paddingLeft="15" paddingRight="15">
-        <s:VGroup width="75%" height="95%">
-            <mx:DataGrid id="userList" width="100%" rowCount="14" verticalAlign="middle">
-                <mx:columns>
-                    <mx:DataGridColumn dataField="userName" headerText="Username"/>
-                    <mx:DataGridColumn dataField="firstName" headerText="First Name"/>
-                    <mx:DataGridColumn dataField="surename" headerText="Last Name"/>
-                    <mx:DataGridColumn dataField="commonName" headerText="Full Name"/>
-                    <mx:DataGridColumn dataField="groups" headerText="Groups">
-                        <mx:itemRenderer>
-                            <fx:Component>
-                                <s:MXDataGridItemRenderer>
-                                    <s:states>
-                                        <s:State name="normal" />
-                                        <s:State name="hovered" />
-                                        <s:State name="selected" />
-                                    </s:states>
-                                    <fx:Script>
+    <s:VGroup id="bodyHBox" width="100%" height="95%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
+        <mx:DataGrid id="userList" width="100%" height="60%" rowCount="10" verticalAlign="middle">
+            <mx:columns>
+                <mx:DataGridColumn dataField="userName" headerText="Username"/>
+                <mx:DataGridColumn dataField="firstName" headerText="First Name"/>
+                <mx:DataGridColumn dataField="surename" headerText="Last Name"/>
+                <mx:DataGridColumn dataField="commonName" headerText="Full Name"/>
+                <mx:DataGridColumn dataField="groups" headerText="Groups">
+                    <mx:itemRenderer>
+                        <fx:Component>
+                            <s:MXDataGridItemRenderer>
+                                <s:states>
+                                    <s:State name="normal" />
+                                    <s:State name="hovered" />
+                                    <s:State name="selected" />
+                                </s:states>
+                                <fx:Script>
                                 <![CDATA[
-                                        import com.atricore.idbus.console.services.dto.Group;
+                                    import com.atricore.idbus.console.services.dto.Group;
 
-                                        public function concateGroups(groups:Array):String {
-                                            var userGroups:String = "";
-                                            for each (var group:Group in groups) {
-                                                if (userGroups != "")
-                                                    userGroups = userGroups.concat(", ");
-                                                userGroups = userGroups.concat(group.name);
-                                            }
-                                            return userGroups;
+                                    public function concateGroups(groups:Array):String {
+                                        var userGroups:String = "";
+                                        for each (var group:Group in groups) {
+                                            if (userGroups != "")
+                                                userGroups = userGroups.concat(", ");
+                                            userGroups = userGroups.concat(group.name);
                                         }
+                                        return userGroups;
+                                    }
                                 ]]>
                                 </fx:Script>
-                                    <s:Label text="{concateGroups(data.groups)}"
-                                             top="0" left="0" right="0" bottom="0" paddingTop="2" paddingLeft="7"/>
-                                </s:MXDataGridItemRenderer>
-                            </fx:Component>
-                        </mx:itemRenderer>
-                    </mx:DataGridColumn>
-                </mx:columns>
-            </mx:DataGrid>
+                                <s:Label text="{concateGroups(data.groups)}"
+                                         top="0" left="0" right="0" bottom="0" paddingTop="2" paddingLeft="7"/>
+                            </s:MXDataGridItemRenderer>
+                        </fx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
+            </mx:columns>
+        </mx:DataGrid>
+        <properties:UserPropertiesView id="properties" width="100%" height="40%" visible="false"/>
+    </s:VGroup>
 
-            <components:IconButton id="btnClearSearch"
-                                   iconUp="@Embed('/images/icons/close.png')"
-                                   paddingTop="3" paddingLeft="3" isLinkButton="false"
-                                   skinClass="com.atricore.idbus.console.components.IconButtonSkin"
-                                   visible="false"
-                                   toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.search.filters.remove')}"/>
-
-        </s:VGroup>
-
-        <properties:UserPropertiesView id="properties" width="24%" height="99%" visible="false"/>
-    </s:HGroup>
 </s:VGroup>
