@@ -60,6 +60,7 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
 
     private function init():void {
         view.dataModel = _wizardDataModel;
+        view.steps[0].applianceNamespace.text = "com.mycompany.myrealm";
         view.addEventListener(WizardEvent.WIZARD_COMPLETE, onIdentityApplianceWizardComplete);
         view.addEventListener(WizardEvent.WIZARD_CANCEL, onIdentityApplianceWizardCancelled);
         view.addEventListener(CloseEvent.CLOSE, handleClose);
