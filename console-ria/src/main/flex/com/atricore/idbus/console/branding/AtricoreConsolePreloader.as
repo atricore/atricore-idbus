@@ -164,6 +164,14 @@ package com.atricore.idbus.console.branding
             mainBox.addChild(loadingTextField);
         }
 
+        private function centerPreloader(event:Event = null):void {
+            var boxWidth:Number = Math.max(logo.width, barWidth);
+            var boxHeight:Number = logo.height + barHeight;
+            
+            mainBox.x = stage.stageWidth/2 - boxWidth/2;
+            mainBox.y = stage.stageHeight/2 - boxHeight/2;
+        }
+
         // This function is called whenever the state of the preloader changes.
         // Use the _fractionLoaded variable to draw your progress bar.
         virtual protected function draw():void {
@@ -197,6 +205,10 @@ package com.atricore.idbus.console.branding
             value.addEventListener(Event.COMPLETE, completeHandler);
             value.addEventListener(FlexEvent.INIT_PROGRESS, initProgressHandler);
             value.addEventListener(FlexEvent.INIT_COMPLETE, initCompleteHandler);
+
+            // fix for IE
+            stage.addEventListener(Event.RESIZE, centerPreloader);
+            centerPreloader();
         }
 
         virtual public function set backgroundAlpha(alpha:Number):void{}
@@ -252,6 +264,12 @@ package com.atricore.idbus.console.branding
         // Called when both download and initialization are complete
         virtual protected function initCompleteHandler(event:Event):void {
             _IsInitComplete = true;
+
+            _preloader.removeEventListener(ProgressEvent.PROGRESS, progressHandler);
+            _preloader.removeEventListener(Event.COMPLETE, completeHandler);
+            _preloader.removeEventListener(FlexEvent.INIT_PROGRESS, initProgressHandler);
+            _preloader.removeEventListener(FlexEvent.INIT_COMPLETE, initCompleteHandler);
+            stage.removeEventListener(Event.RESIZE, centerPreloader);
         }
 
         // Called as often as possible
