@@ -67,8 +67,6 @@ public class ListGroupsCommand extends IocSimpleCommand implements IResponder {
     public function result(data:Object):void {
         var resp:ListGroupResponse = data.result as ListGroupResponse;
         accountManagementProxy.groupsList = resp.groups;
-        if (accountManagementProxy.groupsList.length > 0)
-            accountManagementProxy.currentGroup = accountManagementProxy.groupsList[0];
         sendNotification(SUCCESS);
     }
 

@@ -52,6 +52,8 @@ public class GroupsMediator extends IocMediator implements IDisposable{
     private var _accountManagementProxy:AccountManagementProxy;
     private var _groupPropertiesMediator:IIocMediator;
 
+    private var _updatedGroupIndex:Number;
+
     [Bindable]
 
 
@@ -139,6 +141,17 @@ public class GroupsMediator extends IocMediator implements IDisposable{
             case ListGroupsCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
                 view.groupList.dataProvider = accountManagementProxy.groupsList;
+                if (_updatedGroupIndex != -1)  {
+                    view.groupList.selectedIndex = _updatedGroupIndex;
+                    _updatedGroupIndex = -1;
+                }
+                else {
+                    view.groupList.selectedIndex = accountManagementProxy.groupsList.length - 1;
+                }
+                // dispatch index change.
+                view.groupList.dispatchEvent(
+                        new ListEvent(ListEvent.ITEM_CLICK, false, false,view.groupList.selectedIndex,-1,null,null)
+                        );
                 view.validateNow();
                 break;
             case ListGroupsCommand.FAILURE:
@@ -158,6 +171,7 @@ public class GroupsMediator extends IocMediator implements IDisposable{
                 break;
 
             case ApplicationFacade.DISPLAY_EDIT_GROUP:
+                _updatedGroupIndex = view.groupList.selectedIndex;
                 popupManager.showEditGroupWindow(notification);
                 break;
 
