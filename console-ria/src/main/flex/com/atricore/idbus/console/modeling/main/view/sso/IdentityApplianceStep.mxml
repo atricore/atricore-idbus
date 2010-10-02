@@ -48,7 +48,6 @@
                 var idApplianceDef:IdentityApplianceDefinition = new IdentityApplianceDefinition();
                 idApplianceDef.name = applianceName.text;
                 idApplianceDef.description = applianceDescription.text;
-                idApplianceDef.namespace = applianceNamespace.text;
 
                 var location:Location = new Location();
                 location.protocol = applianceLocationProtocol.selectedItem.data;
@@ -59,6 +58,7 @@
                 idApplianceDef.location = location;
 
                 var identityAppliance:IdentityAppliance = new IdentityAppliance();
+                identityAppliance.namespace = applianceNamespace.text;
                 identityAppliance.idApplianceDefinition = idApplianceDef;
                 return identityAppliance;
             }

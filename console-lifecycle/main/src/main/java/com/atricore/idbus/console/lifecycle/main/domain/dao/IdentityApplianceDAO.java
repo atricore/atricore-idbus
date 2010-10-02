@@ -10,4 +10,8 @@ public interface IdentityApplianceDAO extends GenericDAO<IdentityAppliance, Long
     Collection<IdentityAppliance> list(boolean deployedOnly);
 
     IdentityAppliance findByName(String name) throws ApplianceNotFoundException;
+
+    IdentityAppliance findByNamespace(String namespace) throws ApplianceNotFoundException;
+
+    boolean namespaceExists(long applianceId, String namespace);
 }

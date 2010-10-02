@@ -312,7 +312,7 @@ public class PropertySheetMediator extends IocMediator {
         // bind view
         _iaCoreSection.applianceName.text = identityAppliance.idApplianceDefinition.name;
         _iaCoreSection.applianceDescription.text = identityAppliance.idApplianceDefinition.description;
-        _iaCoreSection.applianceNamespace.text = identityAppliance.idApplianceDefinition.namespace;
+        _iaCoreSection.applianceNamespace.text = identityAppliance.namespace;
 
         var location:Location = identityAppliance.idApplianceDefinition.location;
         for (var i:int = 0; i < _iaCoreSection.applianceLocationProtocol.dataProvider.length; i++) {
@@ -355,7 +355,7 @@ public class PropertySheetMediator extends IocMediator {
 
             identityAppliance.idApplianceDefinition.name = _iaCoreSection.applianceName.text;
             identityAppliance.idApplianceDefinition.description = _iaCoreSection.applianceDescription.text;
-            identityAppliance.idApplianceDefinition.namespace = _iaCoreSection.applianceNamespace.text;
+            identityAppliance.namespace = _iaCoreSection.applianceNamespace.text;
             identityAppliance.idApplianceDefinition.location.protocol = _iaCoreSection.applianceLocationProtocol.selectedItem.label;
             identityAppliance.idApplianceDefinition.location.host = _iaCoreSection.applianceLocationDomain.text;
             identityAppliance.idApplianceDefinition.location.port = parseInt(_iaCoreSection.applianceLocationPort.text);

@@ -25,6 +25,7 @@
     <bean name="ida1" class="com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance" scope="prototype">
         <property name="idApplianceDefinition" ref="idApplianceDef1"/>
         <property name="state" value="PROJECTED"/>
+        <property name="namespace" value="com.atricore.idbus.console.lifecycle.main.test.persistence"/>
     </bean>
 
     <!-- =========================================== -->
@@ -38,7 +39,6 @@
 
         <property name="name" value="ida1-persistence"/>
         <property name="displayName" value="IDA Persistence Test"/>
-        <property name="namespace" value="com.atricore.idbus.console.lifecycle.main.test.persistence"/>
         <property name="description" value="Sample for persistence testing."/>
         <property name="location">
             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Location">

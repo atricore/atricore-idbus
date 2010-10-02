@@ -102,7 +102,7 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
         if (verbose) {
 
             sb.append("\n");
-            printApplianceDefinition(sb, applianceDef);
+            printApplianceDefinition(sb, applianceDef, appliance.getNamespace());
 
             if (applianceDep != null) {
                 sb.append("\n");
@@ -113,7 +113,7 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
         sb.append("\n");
     }
 
-    protected void printApplianceDefinition(StringBuilder sb, IdentityApplianceDefinition applianceDef) {
+    protected void printApplianceDefinition(StringBuilder sb, IdentityApplianceDefinition applianceDef, String namespace) {
 
         sb.append("\u001B[1m  Defined   \u001B[0m");
         sb.append("\n");
@@ -122,7 +122,7 @@ public class ApplianceCmdPrinter extends AbstractCmdPrinter<IdentityAppliance> {
         sb.append("\n");
 
         sb.append("\u001B[1m    Namespace  : \u001B[0m");
-        sb.append(applianceDef.getNamespace());
+        sb.append(namespace);
         sb.append("\n");
 
         sb.append("\u001B[1m    Location   : \u001B[0m");

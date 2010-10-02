@@ -1,20 +1,19 @@
 package com.atricore.idbus.console.services.spi.request;
 
-import com.atricore.idbus.console.services.dto.IdentityApplianceDefinitionDTO;
-
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
 /**
  * Author: Dejan Maric
  */
 public class CreateSimpleSsoRequest extends AbstractManagementRequest {
 
-    private IdentityApplianceDefinitionDTO identityApplianceDefinition;
+    private IdentityApplianceDTO identityAppliance;
 
-    public IdentityApplianceDefinitionDTO getIdentityApplianceDefinition() {
-        return identityApplianceDefinition;
+    public IdentityApplianceDTO getIdentityAppliance() {
+        return identityAppliance;
     }
 
-    public void setIdentityApplianceDefinition(IdentityApplianceDefinitionDTO identityApplianceDefinition) {
-        this.identityApplianceDefinition = identityApplianceDefinition;
+    public void setIdentityAppliance(IdentityApplianceDTO identityAppliance) {
+        this.identityAppliance = identityAppliance;
     }
 }

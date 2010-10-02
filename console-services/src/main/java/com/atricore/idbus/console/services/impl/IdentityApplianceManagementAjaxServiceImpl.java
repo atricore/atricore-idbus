@@ -163,10 +163,9 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
     public CreateSimpleSsoResponse createSimpleSso(CreateSimpleSsoRequest req)
             throws IdentityServerException {
 
-        IdentityApplianceDefinitionDTO iad = req.getIdentityApplianceDefinition();
+        IdentityApplianceDTO idAppliance = req.getIdentityAppliance();
+        IdentityApplianceDefinitionDTO iad = idAppliance.getIdApplianceDefinition();
 
-        IdentityApplianceDTO idAppliance = new IdentityApplianceDTO();
-        idAppliance.setIdApplianceDefinition(iad);
         idAppliance.setState(IdentityApplianceStateDTO.PROJECTED.toString());
 
         SamlR2ProviderConfigDTO config = null;

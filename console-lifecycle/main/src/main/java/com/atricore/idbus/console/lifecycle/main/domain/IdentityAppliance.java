@@ -22,6 +22,8 @@ public class IdentityAppliance implements Serializable {
 
     private String description;
 
+    private String namespace;
+
     private IdentityApplianceDefinition idApplianceDefinition;
 
     private String idApplianceDefinitionBin;
@@ -74,6 +76,14 @@ public class IdentityAppliance implements Serializable {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public IdentityApplianceDefinition getIdApplianceDefinition() {

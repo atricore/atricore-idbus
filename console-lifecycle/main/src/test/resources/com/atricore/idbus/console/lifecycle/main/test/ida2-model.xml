@@ -25,6 +25,7 @@
     <bean name="ida1" class="com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance" scope="prototype">
         <property name="idApplianceDefinition" ref="idApplianceDef1"/>
         <property name="state" value="PROJECTED"/>
+        <property name="namespace" value="com.mycompany.example"/>
     </bean>
 
     <!-- =========================================== -->
@@ -38,7 +39,6 @@
 
         <property name="name" value="ida2"/>
         <property name="displayName" value="Sample Federation w/ Provisioning"/>
-        <property name="namespace" value="com.mycompany.example"/>
         <property name="description" value="This is a sample to test Identity Bus deployment facilities."/>
         <property name="location">
             <bean class="com.atricore.idbus.console.lifecycle.main.domain.metadata.Location">
