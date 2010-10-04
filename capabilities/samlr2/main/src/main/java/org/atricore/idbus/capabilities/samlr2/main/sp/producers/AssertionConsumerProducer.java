@@ -37,6 +37,7 @@ import org.atricore.idbus.capabilities.samlr2.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2ResponseException;
 import org.atricore.idbus.capabilities.samlr2.support.core.StatusCode;
 import org.atricore.idbus.capabilities.samlr2.support.core.StatusDetails;
@@ -1169,7 +1170,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
             } catch (NoSuchSessionException e) {
                 // Ignore this ...
                 if (logger.isDebugEnabled())
-                    logger.debug("Invalidating already invalid sso session " + secCtx.getSessionIndex());
+                    logger.debug("Invalidating already expired sso session " + secCtx.getSessionIndex());
 
             } catch (SSOSessionException e) {
                 throw new SamlR2Exception(e);
@@ -1182,7 +1183,12 @@ public class AssertionConsumerProducer extends SamlR2Producer {
         Set<SubjectNameID> nameIds = federatedSubject.getPrincipals(SubjectNameID.class);
         if (nameIds != null) {
             for (SubjectNameID i : nameIds) {
-                if (i.getFormat() == null) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Checking Subject ID " + i.getName() + "["+i.getFormat()+"] ");
+
+                // TODO : Support other name ID formats
+                if (i.getFormat() == null || i.getFormat().equals(NameIDFormat.UNSPECIFIED.getValue())) {
                     nameId = i;
                     break;
                 }

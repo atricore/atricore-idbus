@@ -177,6 +177,17 @@ public class LDAPIdentityStore extends AbstractStore  {
 
     // ----------------------------------------------------- IdentityStore Methods
 
+
+    @Override
+    public boolean userExists(UserKey key) throws SSOIdentityException {
+        try {
+            String dn = selectUserDN(((SimpleUserKey) key).getId());
+            return dn != null;
+        } catch (NamingException e) {
+            throw new SSOIdentityException(e);
+        }
+    }
+
     /**
      * Loads user information and its user attributes from the LDAP server.
      *
@@ -308,7 +319,7 @@ public class LDAPIdentityStore extends AbstractStore  {
      * @return the list of roles to which the user is associated to.
      * @throws NamingException LDAP error obtaining roles fro the given user
      */
-    protected String[] selectRolesByUsername(String username) throws NamingException {
+    protected String[] selectRolesByUsername(String username) throws NamingException, NoSuchUserException {
         List userRoles = new ArrayList();
 
 
@@ -344,6 +355,9 @@ public class LDAPIdentityStore extends AbstractStore  {
 
             if (logger.isDebugEnabled())
                 logger.debug("Searching Roles for user '" + userDN + "' in Uid attribute name '" + uidAttributeID + "'");
+
+            if (userDN ==null)
+                throw new NoSuchUserException(username);
 
             try {
                 if (userDN.contains("\\")) {
@@ -479,14 +493,8 @@ public class LDAPIdentityStore extends AbstractStore  {
 
         InitialLdapContext ctx = createLdapInitialContext();
 
-        BasicAttributes matchAttrs = new BasicAttributes(true);
-
         String uidAttrName = this.getPrincipalUidAttributeID();
         String usersCtxDN = this.getUsersCtxDN();
-
-        matchAttrs.put( attrId, attrValue );
-
-        // String[] principalAttr = {attrId};
 
         try {
             // NamingEnumeration answer = ctx.search(usersCtxDN, matchAttrs, principalAttr);
