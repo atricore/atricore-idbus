@@ -32,9 +32,16 @@ public class DiagramUtil {
     public static function nodesCanBeLinkedWithActivation(node1:IVisualNode, node2:IVisualNode):Boolean {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
-            if ((node1.data is ServiceProvider && node2.data is ExecutionEnvironment) ||
-                (node1.data is ExecutionEnvironment && node2.data is ServiceProvider)) {
-                canBeLinked = true;
+            if (node1.data is ServiceProvider && node2.data is ExecutionEnvironment){
+                var sp:ServiceProvider = node1.data as ServiceProvider;
+                if(sp.activation == null){
+                    canBeLinked = true;
+                }
+            } else if (node1.data is ExecutionEnvironment && node2.data is ServiceProvider) {
+                var sp:ServiceProvider = node2.data as ServiceProvider;
+                if(sp.activation == null){
+                    canBeLinked = true;
+                }
             }
         }
         return canBeLinked;
