@@ -36,6 +36,31 @@ public abstract class AbstractPrincipal implements Serializable, Principal {
 		this.id = id;
 	}
 	
-	abstract public String getName();
-	abstract protected void setName(String name);
+    /**
+     * Compare this BaseRole's name against another BaseRole
+     *
+     * @return true if name equals another.getName();
+     */
+    public boolean equals(Object another) {
+
+        if (!another.getClass().isAssignableFrom(getClass()))
+            return false;
+
+        String anotherName = ((AbstractPrincipal) another).getName();
+        boolean equals = false;
+        if (getName() == null)
+            equals = anotherName == null;
+        else
+            equals = getName().equals(anotherName);
+        return equals;
+    }
+
+    public int hashCode() {
+        return (getName() == null ? 0 : getName().hashCode());
+    }
+
+    abstract public String getName();
+
+    abstract protected void setName(String name);
+
 }

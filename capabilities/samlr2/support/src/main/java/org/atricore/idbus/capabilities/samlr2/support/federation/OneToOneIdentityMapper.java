@@ -60,7 +60,6 @@ public class OneToOneIdentityMapper implements IdentityMapper {
         // federated subject entitlements are the ones conveyed in the idp subject with
         // an extra tag
         for (SubjectAttribute sa : idpSubject.getPrincipals(SubjectAttribute.class)) {
-            
             // Map SAML 2.0 Groups as roles
             if (sa.getName().equals("urn:oasis:names:tc:SAML:2.0:profiles:attribute:DCE:groups")) {
                 merged.add(new SubjectRole(sa.getValue()));

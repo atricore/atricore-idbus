@@ -60,5 +60,33 @@ public class SubjectAttribute extends AbstractPrincipal {
 	protected void setValue(String value) {
 		this.value = value;
 	}
-    
+
+    @Override
+    public boolean equals(Object another) {
+        if (!(another instanceof SubjectAttribute))
+            return false;
+
+        String anotherName = ((SubjectAttribute) another).getName();
+        String anotherValue = ((SubjectAttribute) another).getValue();
+
+        boolean equals = false;
+
+        if (getName() == null)
+            equals = anotherName == null;
+        else
+            equals = getName().equals(anotherName);
+
+        if (equals && getValue() == null) {
+            equals = anotherValue == null;
+        } else
+            equals = getValue().equals(anotherValue);
+
+        return equals;
+    }
+
+    @Override
+    public int hashCode() {
+        String str = getName() + ":" + getValue();
+        return str.hashCode(); 
+    }
 }

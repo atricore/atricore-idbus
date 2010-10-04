@@ -2,8 +2,11 @@ package org.atricore.idbus.capabilities.samlr2.support.federation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.support.profiles.DCEPACAttributeDefinition;
 import org.atricore.idbus.kernel.main.federation.IdentityMapper;
+import org.atricore.idbus.kernel.main.federation.SubjectAttribute;
 import org.atricore.idbus.kernel.main.federation.SubjectNameID;
+import org.atricore.idbus.kernel.main.federation.SubjectRole;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
@@ -20,7 +23,22 @@ public class RemoteSubjectIdentityMapper implements IdentityMapper {
 
     private static final Log logger = LogFactory.getLog(RemoteSubjectIdentityMapper.class);
 
-    private boolean useLocalId = false;
+    private boolean useLocalId = true;
+
+    private Set<String> roleAttributeNames = new HashSet<String>();
+
+    public RemoteSubjectIdentityMapper() {
+        roleAttributeNames.add(DCEPACAttributeDefinition.GROUPS.getValue());
+        roleAttributeNames.add(DCEPACAttributeDefinition.GROUP.getValue());
+    }
+
+    public Set<String> getRoleAttributeNames() {
+        return roleAttributeNames;
+    }
+
+    public void setRoleAttributeNames(Set<String> roleAttributeNames) {
+        this.roleAttributeNames = roleAttributeNames;
+    }
 
     public boolean isUseLocalId() {
         return useLocalId;
@@ -54,6 +72,15 @@ public class RemoteSubjectIdentityMapper implements IdentityMapper {
         for (Principal p : principals) {
             if (p instanceof SubjectNameID)
                 continue;
+
+            // If Subject attribute is configured as role name attribute, also add a SubjectRole
+            if (p instanceof SubjectAttribute) {
+                SubjectAttribute sa = (SubjectAttribute) p;
+                if (roleAttributeNames.contains(sa.getName())) {
+                    merged.add(new SubjectRole(sa.getValue()));
+                }
+            }
+
 
             merged.add(p);
         }

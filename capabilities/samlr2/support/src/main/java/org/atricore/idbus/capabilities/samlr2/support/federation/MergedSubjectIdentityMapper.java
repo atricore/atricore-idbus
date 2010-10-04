@@ -2,8 +2,11 @@ package org.atricore.idbus.capabilities.samlr2.support.federation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.support.profiles.DCEPACAttributeDefinition;
 import org.atricore.idbus.kernel.main.federation.IdentityMapper;
+import org.atricore.idbus.kernel.main.federation.SubjectAttribute;
 import org.atricore.idbus.kernel.main.federation.SubjectNameID;
+import org.atricore.idbus.kernel.main.federation.SubjectRole;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
@@ -22,6 +25,21 @@ public class MergedSubjectIdentityMapper implements IdentityMapper {
 
     private boolean useLocalId = true;
 
+    private Set<String> roleAttributeNames = new HashSet<String>();
+
+    public MergedSubjectIdentityMapper() {
+        roleAttributeNames.add(DCEPACAttributeDefinition.GROUPS.getValue());
+        roleAttributeNames.add(DCEPACAttributeDefinition.GROUP.getValue());
+    }
+
+    public Set<String> getRoleAttributeNames() {
+        return roleAttributeNames;
+    }
+
+    public void setRoleAttributeNames(Set<String> roleAttributeNames) {
+        this.roleAttributeNames = roleAttributeNames;
+    }
+
     public boolean isUseLocalId() {
         return useLocalId;
     }
@@ -29,7 +47,6 @@ public class MergedSubjectIdentityMapper implements IdentityMapper {
     public void setUseLocalId(boolean useLocalId) {
         this.useLocalId = useLocalId;
     }
-
 
     public Subject map(Subject remoteSubject, Subject localSubject) {
 
@@ -60,6 +77,14 @@ public class MergedSubjectIdentityMapper implements IdentityMapper {
             if (logger.isTraceEnabled())
                 logger.trace("Merging IDP principal " + p);
 
+            // If Subject attribute is configured as role name attribute, also add a SubjectRole
+            if (p instanceof SubjectAttribute) {
+                SubjectAttribute sa = (SubjectAttribute) p;
+                if (roleAttributeNames.contains(sa.getName())) {
+                    merged.add(new SubjectRole(sa.getValue()));
+                }
+            }
+
             merged.add(p);
         }
 
@@ -70,8 +95,21 @@ public class MergedSubjectIdentityMapper implements IdentityMapper {
             if (logger.isTraceEnabled())
                 logger.trace("Merging Local principal " + p);
 
-            merged.add(p);
+            if (!merged.contains (p))
+                merged.add(p);
         }
+
+        /*
+        // federated subject entitlements are the ones conveyed in the idp subject with
+        // an extra tag
+        for (SubjectAttribute sa : idpSubject.getPrincipals(SubjectAttribute.class)) {
+            // Map SAML 2.0 Groups as roles
+            if (sa.getName().equals("urn:oasis:names:tc:SAML:2.0:profiles:attribute:DCE:groups")) {
+                merged.add(new SubjectRole(sa.getValue()));
+            }
+        }
+
+         */
 
         federatedSubject = new Subject(true, merged,
                 localSubject.getPublicCredentials(),

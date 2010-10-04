@@ -99,4 +99,45 @@ public class SubjectNameID extends AbstractPrincipal {
 		this.nameQualifier = nameQualifier;
 	}
 
+    @Override
+    public boolean equals(Object another) {
+        if (!(another instanceof SubjectAttribute))
+            return false;
+
+        String anotherName = ((SubjectNameID) another).getName();
+        String anotherFormat = ((SubjectNameID) another).getFormat();
+        String anotherNameQualifier= ((SubjectNameID) another).getNameQualifier();
+        String anotherLocalNameQualifier= ((SubjectNameID) another).getLocalNameQualifier();
+
+        boolean equals = false;
+
+        if (getName() == null)
+            equals = anotherName == null;
+        else
+            equals = getName().equals(anotherName);
+
+        if (equals && getFormat() == null) {
+            equals = anotherFormat == null;
+        } else
+            equals = getFormat().equals(anotherFormat);
+
+        if (equals && getNameQualifier() == null) {
+            equals = anotherNameQualifier == null;
+        } else
+            equals = getNameQualifier().equals(anotherNameQualifier);
+
+        if (equals && getLocalNameQualifier() == null) {
+            equals = anotherLocalNameQualifier == null;
+        } else
+            equals = getLocalNameQualifier().equals(anotherLocalNameQualifier);
+
+        return equals;
+    }
+
+    @Override
+    public int hashCode() {
+        String str = getName() + ":" + getFormat() + ":" + getNameQualifier() + ":" + getLocalNameQualifier();
+        return str.hashCode(); 
+    }
+
 }
