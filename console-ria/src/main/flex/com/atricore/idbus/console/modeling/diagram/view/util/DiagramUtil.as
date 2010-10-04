@@ -43,10 +43,16 @@ public class DiagramUtil {
     public static function nodesCanBeLinkedWithIdentityLookup(node1:IVisualNode, node2:IVisualNode):Boolean {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
-            if ((node1.data is Provider && node2.data is IdentitySource) ||
-                (node1.data is IdentitySource && node2.data is Provider)) {
-
-                canBeLinked = true;
+            if (node1.data is Provider && node2.data is IdentitySource){
+                var prov:Provider = node1.data as Provider;
+                if(prov.identityLookup == null){
+                    canBeLinked = true;
+                }
+            } else if (node1.data is IdentitySource && node2.data is Provider) {
+                var prov:Provider = node2.data as Provider;
+                if(prov.identityLookup == null){
+                    canBeLinked = true;
+                }
             }
         }
         return canBeLinked;
