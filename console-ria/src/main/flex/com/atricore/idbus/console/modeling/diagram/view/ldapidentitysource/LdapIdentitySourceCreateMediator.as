@@ -70,22 +70,43 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
     private function resetForm():void {
         view.userRepositoryName.text = "";
         view.description.text = "";
-        view.initialContextFactory.text = "";
-        view.providerUrl.text = "";
-        view.securityPrincipal.text = "";
+        view.initialContextFactory.text = "com.sun.jndi.ldap.LdapCtxFactory";
+        view.providerUrl.text = "ldap://localhost:389";
+        view.securityPrincipal.text = "uid=admin,ou=system";
         view.securityCredential.text = "";
-        view.securityAuthentication.selectedIndex = 0;
-        view.ldapSearchScope.selectedIndex = 0;
-        view.usersCtxDN.text = "";
-        view.principalUidAttributeID.text = "";
+        view.securityAuthentication.selectedIndex = 1;
+        view.ldapSearchScope.selectedIndex = 2;
+        view.usersCtxDN.text = "ou=People,dc=my-domain,dc=com";
+        view.principalUidAttributeID.text = "uid";
         view.roleMatchingMode.selectedIndex = 0;
-        view.uidAttributeID.text = "";
-        view.rolesCtxDN.text = "";
-        view.roleAttributeID.text = "";
-        view.credentialQueryString.text = "";
+        view.uidAttributeID.text = "uniquemember";
+        view.rolesCtxDN.text = "ou=Roles,dc=my-domain,dc=com";
+        view.roleAttributeID.text = "cn";
+        view.credentialQueryString.text = "uid=username,userPassword=password";
         view.updateableCredentialAttribute.text = "";
-        view.userPropertiesQueryString.text = "";
+        view.userPropertiesQueryString.text = "mail=mail,cn=description";
         FormUtility.clearValidationErrors(_validators);
+    }
+
+    override public function bindForm():void {
+        view.userRepositoryName.text = "";
+        view.description.text = "";
+        view.initialContextFactory.text = "com.sun.jndi.ldap.LdapCtxFactory";
+        view.providerUrl.text = "ldap://localhost:389";
+        view.securityPrincipal.text = "uid=admin,ou=system";
+        view.securityCredential.text = "";
+        view.securityAuthentication.selectedIndex = 1;
+        view.ldapSearchScope.selectedIndex = 2;
+        view.usersCtxDN.text = "ou=People,dc=my-domain,dc=com";
+        view.principalUidAttributeID.text = "uid";
+        view.roleMatchingMode.selectedIndex = 0;
+        view.uidAttributeID.text = "uniquemember";
+        view.rolesCtxDN.text = "ou=Roles,dc=my-domain,dc=com";
+        view.roleAttributeID.text = "cn";
+        view.credentialQueryString.text = "uid=username,userPassword=password";
+        view.updateableCredentialAttribute.text = "";
+        view.userPropertiesQueryString.text = "mail=mail,cn=description";
+        FormUtility.clearValidationErrors(_validators);        
     }
 
     override public function bindModel():void {
@@ -161,6 +182,7 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
 
     override public function handleNotification(notification:INotification):void {
         super.handleNotification(notification);
+        bindForm();
     }
 }
 }

@@ -86,7 +86,7 @@
 
             <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.securityCredential')}:"
                          required="true">
-                <s:TextInput id="securityCredential" width="300"/>
+                <s:TextInput id="securityCredential" width="300" displayAsPassword="true"/>
             </mx:FormItem>
 
             <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.securityAuthentication')}:"
