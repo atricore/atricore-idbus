@@ -490,19 +490,25 @@
     </bean>
     <!--
     <bean name="sp3-identity-store"
-          class="org.atricore.idbus.idojos.dbidentitystore.JDBCIdentityStore">
-        <property name="driverName" value="org.apache.derby.jdbc.ClientDriver"/>
-        <property name="connectionURL" value="jdbc:derby://localhost:1527/console;create=false"/>
-        <property name="connectionName" value="admin"/>
-        <property name="connectionPassword" value="admin"/>
+          class="org.atricore.idbus.idojos.dbidentitystore.DynamicJDBCIdentityStore">
+        <property name="driverName" value="com.mysql.jdbc.Driver"/>
+        <property name="connectionURL" value="jdbc:mysql://localhost/idbus"/>
+        <property name="connectionUser" value="atricore"/>
+        <property name="connectionPassword" value="atricore"/>
+        <property name="classPath">
+            <list>
+                <value>file:///home/sgonzalez/.m2/repository/mysql/mysql-connector-java/5.1.10/mysql-connector-java-5.1.10.jar</value>
+            </list>
+        </property>
         <property name="userQueryString" value="SELECT USERNAME AS NAME FROM &quot;USER&quot; WHERE USERNAME = ?"/>
-        <property name="rolesQueryString" value="SELECT G.NAME FROM &quot;USER&quot; U JOIN USER_GROUPS UG ON U.id = UG.user_id JOIN &quot;GROUP&quot; G ON UG.GROUP_ID = G.id WHERE U.USERNAME = ?"/>
+        <property name="rolesQueryString" value="SELECT G.NAME FROM &quot;USER&quot; U JOIN USER_GROUPS UG ON U.id = UG.user_id JOIN &quot;GROUPS&quot; G ON UG.GROUP_ID = G.id WHERE U.USERNAME = ?"/>
         <property name="credentialsQueryString" value="SELECT USERNAME, USERPASSWORD AS PASSWORD FROM &quot;USER&quot; WHERE USERNAME = ?" />
 		<property name="userPropertiesQueryString" value="SELECT FIRSTNAME, SURENAME FROM &quot;USER&quot; WHERE USERNAME = ?"/>
         <property name="resetCredentialDml" value="UPDATE &quot;USER&quot; SET USERPASSWORD = ? WHERE USERNAME = ?"/>
         <property name="relayCredentialQueryString" value="SELECT USERNAME FROM &quot;USER&quot; WHERE #?# = ?"/>
     </bean>
     -->
+
     <!-- ================================================================== -->
     <!-- SP Planning                                                        -->
     <!-- ================================================================== -->

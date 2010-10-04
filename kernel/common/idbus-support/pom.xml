@@ -25,7 +25,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-
     <parent>
         <groupId>org.atricore.idbus.kernel.common</groupId>
         <artifactId>common</artifactId>
@@ -65,6 +64,20 @@
             <version>${commons-logging.version}</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Test dependencyes -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         
     </dependencies>
 
@@ -91,6 +104,38 @@
                     </instructions>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkMode>always</forkMode>
+                    <workingDirectory>${basedir}</workingDirectory>
+                    <systemProperties>
+                        <property>
+                            <name>log4j.configuration</name>
+                            <value>log4j-tests.properties</value>
+                        </property>
+                        <property>
+                            <name>derby.system.home</name>
+                            <value>${build.directory}/derby</value>
+                        </property>
+
+                        <property>
+                            <name>buildDir</name>
+                            <value>${build.directory}</value>
+                        </property>
+
+                        <property>
+                            <name>baseDir</name>
+                            <value>${basedir}</value>
+                        </property>
+
+                    </systemProperties>
+                    
+                </configuration>
+            </plugin>
+            
         </plugins>
     </build>
 </project>

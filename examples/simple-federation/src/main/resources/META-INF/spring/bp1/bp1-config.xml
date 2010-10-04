@@ -188,12 +188,12 @@
 
                 <entry>
                     <key>
-                        <value>MyPartnerApp1</value>
+                        <value>sp1</value>
                     </key>
                     <bean name="bp1-sp1-partnerapp-mapping"
                           class="org.atricore.idbus.capabilities.josso.main.PartnerAppMapping">
                         <!-- Partner app against sp1 -->
-                        <property name="partnerAppId" value="MyPartnerApp1"/>
+                        <property name="partnerAppId" value="sp1"/>
 
                         <property name="spAlias"
                                   value="http://localhost:8081/IDBUS/SP-1/SAML2/MD"/>
