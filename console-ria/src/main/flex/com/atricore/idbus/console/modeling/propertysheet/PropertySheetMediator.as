@@ -96,10 +96,15 @@ import flash.events.MouseEvent;
 import flash.net.FileFilter;
 import flash.net.FileReference;
 
+import flash.text.TextFormat;
 import flash.utils.ByteArray;
 
 import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
+import mx.controls.Alert;
+import mx.core.IUITextField;
+import mx.core.mx_internal;
+import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 import mx.events.ItemClickEvent;
 import mx.utils.StringUtil;
@@ -2581,16 +2586,37 @@ public class PropertySheetMediator extends IocMediator {
 
     private function activateExecutionEnvironment(event:Event):void {
         var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
-        var activateExecEnvReq:ActivateExecutionEnvironmentRequest = new ActivateExecutionEnvironmentRequest();
-        activateExecEnvReq.reactivate = _executionEnvironmentActivateSection.reactivate.selected;
-        activateExecEnvReq.replaceConfFiles = _executionEnvironmentActivateSection.replaceConfFiles.selected;
-        activateExecEnvReq.executionEnvironment = currentExecEnv;
-        activateExecEnvReq.installSamples = _executionEnvironmentActivateSection.installSamples.selected;
+        if(_executionEnvironmentActivateSection.reactivate.selected){
+            var text:String = currentExecEnv.name +  " execution environment is about to be activated.\nYou must restart the execution environment for the changes to take effect.";
+            var alert:Alert = Alert.show(text,
+                    "Confirm Activation", Alert.OK | Alert.CANCEL, null, activationConfirmationHandler, null, Alert.OK);
+            alert.width = 450;
+            alert.callLater(function():void {
+                var textField:IUITextField =  IUITextField(alert.mx_internal::alertForm.mx_internal::textField);
 
-        if(activateExecEnvReq.reactivate){
-            sendNotification(ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT, activateExecEnvReq);
-            _executionEnvironmentActivateSection.reactivate.selected = false;
+                var textFormat:TextFormat = new TextFormat();
+                textFormat.align = "center";
+
+                textField.width = alert.width - 10;
+                textField.x = 0;
+                textField.setTextFormat(textFormat);
+            });
         }
+    }
+
+
+    private function activationConfirmationHandler(event:CloseEvent):void {
+        if (event.detail == Alert.OK) {
+            var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
+            var activateExecEnvReq:ActivateExecutionEnvironmentRequest = new ActivateExecutionEnvironmentRequest();
+            activateExecEnvReq.reactivate = _executionEnvironmentActivateSection.reactivate.selected;
+            activateExecEnvReq.replaceConfFiles = _executionEnvironmentActivateSection.replaceConfFiles.selected;
+            activateExecEnvReq.executionEnvironment = currentExecEnv;
+            activateExecEnvReq.installSamples = _executionEnvironmentActivateSection.installSamples.selected;
+
+            sendNotification(ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT, activateExecEnvReq);
+        }
+        _executionEnvironmentActivateSection.reactivate.selected = false;
     }
 
     protected function enableIdentityLookupPropertyTabs():void {
