@@ -25,8 +25,8 @@ public class ProjectSetupTransformer extends AbstractTransformer {
         IdApplianceProject prj = event.getContext().getProject();
         IdentityApplianceDefinition appliance = (IdentityApplianceDefinition) event.getData();
 
-        String namespace = appliance.getNamespace() != null ?
-                appliance.getNamespace() : "org.atricore.idbus.appliance";
+        String namespace = prj.getIdAppliance().getNamespace() != null ?
+                prj.getIdAppliance().getNamespace() : "org.atricore.idbus.appliance";
 
         event.getContext().put("idaNS", namespace);
         event.getContext().put("idaBasePath", toFolderName(namespace));

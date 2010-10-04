@@ -44,6 +44,8 @@ import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
+import spark.events.IndexChangeEvent;
+
 public class UsersMediator extends IocMediator implements IDisposable{
 
     public static const BUNDLE:String = "console";
@@ -51,6 +53,8 @@ public class UsersMediator extends IocMediator implements IDisposable{
     private var _popupManager:AccountManagementPopUpManager;
     private var _accountManagementProxy:AccountManagementProxy;
     private var _userPropertiesMediator:IIocMediator;
+
+    private var _updatedUserIndex:Number;
 
     [Bindable]
 
@@ -140,6 +144,17 @@ public class UsersMediator extends IocMediator implements IDisposable{
             case ListUsersCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
                 view.userList.dataProvider = accountManagementProxy.userList;
+                if (_updatedUserIndex != -1)  {
+                    view.userList.selectedIndex = _updatedUserIndex;
+                    _updatedUserIndex = -1;
+                }
+                else {
+                    view.userList.selectedIndex = accountManagementProxy.userList.length - 1;
+                }
+                // dispatch index change.
+                view.userList.dispatchEvent(
+                        new ListEvent(ListEvent.ITEM_CLICK, false, false,view.userList.selectedIndex,-1,null,null)
+                        );
                 view.validateNow();
                 break;
             case ListUsersCommand.FAILURE:
@@ -160,6 +175,7 @@ public class UsersMediator extends IocMediator implements IDisposable{
                 break;
 
             case ApplicationFacade.DISPLAY_EDIT_USER:
+                _updatedUserIndex = view.userList.selectedIndex;
                 popupManager.showEditUserWindow(notification);
                 break;
             case ApplicationFacade.DISPLAY_SEARCH_USERS:

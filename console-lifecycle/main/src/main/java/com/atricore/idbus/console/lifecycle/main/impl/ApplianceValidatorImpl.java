@@ -80,6 +80,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
      * @param appliance
      */
     public void arrive(IdentityAppliance appliance) {
+        validatePackageName("Appliance namespace", appliance.getNamespace(), appliance.getId());
 
         if (getOperation().equals(Operation.UPDATE)) {
 
@@ -145,7 +146,6 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 
         validateName("Appliance name", node.getName(), node);
         validateDisplayName("Appliance display name", node.getDisplayName());
-        validatePackageName("Appliance namespace", node.getNamespace());
         validateLocation("Appliance", node.getLocation(), node, false);
 
         if (getOperation() == Operation.ADD ||
@@ -507,7 +507,7 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
     }
 
 
-    protected void validatePackageName(String propertyName, String pkgName) {
+    protected void validatePackageName(String propertyName, String pkgName, long applianceId) {
         if (pkgName == null || pkgName.length() == 0) {
             addError(propertyName + " cannot be null or empty");
             return;
@@ -521,7 +521,10 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                     return ;
                 }
             }
+        }
 
+        if (dao.namespaceExists(applianceId, pkgName)) {
+            addError(propertyName + " is already used in some other appliance");
         }
     }
 

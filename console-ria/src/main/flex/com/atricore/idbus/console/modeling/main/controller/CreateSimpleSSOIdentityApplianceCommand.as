@@ -65,7 +65,7 @@ public class CreateSimpleSSOIdentityApplianceCommand extends IocSimpleCommand im
         var identityAppliance:IdentityAppliance = notification.getBody() as IdentityAppliance;
 
         var req:CreateSimpleSsoRequest = new CreateSimpleSsoRequest();
-        req.identityApplianceDefinition = identityAppliance.idApplianceDefinition;
+        req.identityAppliance = identityAppliance;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
 

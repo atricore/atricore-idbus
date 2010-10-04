@@ -44,6 +44,7 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
 
         setPropertyValue(applianceBean, "id", appliance.getId() + "");
         setPropertyValue(applianceBean, "state", appliance.getState());
+        setPropertyValue(applianceBean, "namespace", appliance.getNamespace());
         
         applianceDefBean = newBean(beans, node.getName() + "applianceDefBean", node.getClass());
         setBeanDescription(applianceDefBean, node.toString());
@@ -52,7 +53,6 @@ public class ApplianceSpringMarshallerVisitor extends AbstractApplianceDefinitio
         setPropertyValue(applianceDefBean, "name", node.getName());
         setPropertyValue(applianceDefBean, "displayName", node.getDisplayName());
         setPropertyValue(applianceDefBean, "description", node.getDescription());
-        setPropertyValue(applianceDefBean, "namespace", node.getNamespace());
         setLocationPropertyValue(applianceDefBean, "location", node.getLocation());
         setPropertyValue(applianceDefBean, "revision" , node.getRevision() + "");
 

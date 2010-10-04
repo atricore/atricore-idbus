@@ -37,8 +37,6 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     private String displayName;
 
-    private String namespace;
-    
     private LocationDTO location;
 
     private String description;
@@ -165,14 +163,6 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     public void setKeystore(KeystoreDTO keystore) {
         this.keystore = keystore;
-    }
-
-    public String getNamespace() {
-        return namespace;
-    }
-
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
     }
 
     public Set<ExecutionEnvironmentDTO> getExecutionEnvironments() {

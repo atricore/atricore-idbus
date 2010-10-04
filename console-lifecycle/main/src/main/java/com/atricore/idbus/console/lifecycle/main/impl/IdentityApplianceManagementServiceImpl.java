@@ -1092,15 +1092,15 @@ public class IdentityApplianceManagementServiceImpl implements
         try {
 
 
-            String agentCfgLocation = appliance.getIdApplianceDefinition().getNamespace();
+            String agentCfgLocation = appliance.getNamespace();
             agentCfgLocation = agentCfgLocation.replace('.', '/');
 
             agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getName();
-            agentCfgLocation += "/" + appliance.getIdApplianceDefinition().getNamespace() +
+            agentCfgLocation += "/" + appliance.getNamespace() +
                     "." + appliance.getIdApplianceDefinition().getName() + ".idau";
             agentCfgLocation += "/1.0." + appliance.getIdApplianceDeployment().getDeployedRevision();
 
-            String agentCfgName = appliance.getIdApplianceDefinition().getNamespace() + "." +
+            String agentCfgName = appliance.getNamespace() + "." +
                     appliance.getIdApplianceDefinition().getName() + ".idau-1.0." +
                     appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase() + ".xml";
 
@@ -1295,7 +1295,7 @@ public class IdentityApplianceManagementServiceImpl implements
 
             // some units are left unremoved, e.g. after appliance is deployed/undeployed/deployed, so we have to remove all
             // units with the given group
-            String unitsGroup = appliance.getIdApplianceDefinition().getNamespace() + "." + appliance.getName();
+            String unitsGroup = appliance.getNamespace() + "." + appliance.getName();
 
             identityApplianceDAO.delete(appliance.getId());
 

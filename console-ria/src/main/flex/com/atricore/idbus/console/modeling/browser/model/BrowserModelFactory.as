@@ -157,6 +157,7 @@ public class BrowserModelFactory {
             connectionsNode.type = Constants.CONNECTIONS_DEEP;
             connectionsNode.selectable = selectable;
             connectionsNode.parentNode = parentNode;
+            connectionsNode.icon = EmbeddedIcons.connectionsMiniIcon;
             return connectionsNode;
         }
 

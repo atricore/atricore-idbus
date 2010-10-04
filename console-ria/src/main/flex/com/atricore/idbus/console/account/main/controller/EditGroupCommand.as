@@ -43,6 +43,7 @@ public class EditGroupCommand extends IocSimpleCommand implements IResponder {
 
     private var _registry:ServiceRegistry;
     private var _accountManagementProxy:AccountManagementProxy;
+    private var group:Group;
 
     public function get registry():ServiceRegistry {
         return _registry;
@@ -61,7 +62,7 @@ public class EditGroupCommand extends IocSimpleCommand implements IResponder {
     }
 
     override public function execute(notification:INotification):void {
-        var group:Group = notification.getBody() as Group;
+        group = notification.getBody() as Group;
         var req:UpdateGroupRequest = new UpdateGroupRequest();
         req.id = group.id;
         req.name = group.name;
@@ -74,6 +75,7 @@ public class EditGroupCommand extends IocSimpleCommand implements IResponder {
 
     public function result(data:Object):void {
         var resp:UpdateGroupResponse = data.result as UpdateGroupResponse;
+        accountManagementProxy.currentGroup = group;
         sendNotification(SUCCESS);
     }
 

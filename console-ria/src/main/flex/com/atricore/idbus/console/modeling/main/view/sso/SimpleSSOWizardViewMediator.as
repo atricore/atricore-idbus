@@ -105,6 +105,8 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         view.addEventListener(CloseEvent.CLOSE, handleClose);
         view.addEventListener(SsoEvent.VALIDATE_HOME_DIR, validateHomeDir);
 
+        view.steps[0].applianceNamespace.text = "com.mycompany.myrealm";
+        
         // upload bindings
         //view.steps[1].btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
         view.steps[1].certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);

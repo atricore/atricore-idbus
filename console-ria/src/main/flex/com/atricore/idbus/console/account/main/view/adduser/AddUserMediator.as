@@ -119,7 +119,6 @@ public class AddUserMediator extends IocFormMediator
         if (validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
-            _accountManagementProxy.currentUser = _newUser;
             sendNotification(ApplicationFacade.ADD_USER, _newUser);
             closeWindow();
         }
@@ -131,7 +130,6 @@ public class AddUserMediator extends IocFormMediator
     public function handleAddUserSuccess():void {
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.LIST_USERS);
-        //        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The user was successfully created.");
     }
 
     public function handleAddUserFailure():void {

@@ -124,6 +124,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
     private var _currentlySelectedEdge:IEdge;
     private var _projectProxy:ProjectProxy;
 
+    private var _currentIdentityApplianceId:Number;
+    
     public function get projectProxy():ProjectProxy {
         return _projectProxy;
     }
@@ -171,6 +173,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
         resetGraph();
         updateGraph();
+
+        _currentIdentityApplianceId = null;
     }
 
     override public function listNotificationInterests():Array {
@@ -191,12 +195,24 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         switch (notification.getName()) {
             case ApplicationFacade.UPDATE_IDENTITY_APPLIANCE:
                 updateIdentityAppliance();
-                //init();
                 break;
             case ApplicationFacade.REFRESH_DIAGRAM:
-                //init();
                 resetGraph();
                 updateGraph();
+                /*if (projectProxy.currentIdentityAppliance != null &&
+                        projectProxy.currentIdentityAppliance.id == _currentIdentityApplianceId) {
+                    updateGraphData();
+                    unselectAllNodes();
+                    unselectAllEdges();
+                } else {
+                    resetGraph();
+                    updateGraph();
+                }
+                if (_projectProxy.currentIdentityAppliance != null) {
+                    _currentIdentityApplianceId = _projectProxy.currentIdentityAppliance.id;
+                } else {
+                    _currentIdentityApplianceId = null;
+                }*/
                 break;
             case ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA:
                 updateGraphData();
@@ -487,6 +503,11 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 } else {
                     GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), element, null, null, null, null, true, Constants.IDENTITY_BUS_DEEP);
                 }
+
+                view.callLater(function () {
+                    sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_SELECTED);
+                });
+
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE:
                 var element:Object = notification.getBody();
@@ -752,9 +773,6 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         var node:INode = _identityApplianceDiagram.graph.nodeByStringId(event.vnodeId);
 
         if (node != null) {
-            toggleUnselectedNodesOff(_identityApplianceDiagram, event.target);
-            unselectAllEdges();
-            _currentlySelectedNode = node;
             _projectProxy.currentIdentityApplianceElement = node.data;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_SELECTED);
         }

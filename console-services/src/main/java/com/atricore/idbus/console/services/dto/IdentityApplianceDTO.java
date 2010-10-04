@@ -40,6 +40,8 @@ public class IdentityApplianceDTO implements Serializable {
 
     private String description;
 
+    private String namespace;
+    
     private IdentityApplianceDefinitionDTO idApplianceDefinition;
 
     private String idApplianceDefinitionBin;
@@ -108,6 +110,14 @@ public class IdentityApplianceDTO implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     @Override

@@ -67,7 +67,7 @@ public class IdentityApplianceDAOImpl extends GenericDAOImpl<IdentityAppliance, 
                 Query query = pm.newQuery("SELECT FROM com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance" +
                         //" WHERE this.idApplianceDeployment != null");
                         " WHERE this.state == '" + IdentityApplianceState.DEPLOYED + "'" +
-                        "or this.state == '" + IdentityApplianceState.STARTED + "'");
+                        " || this.state == '" + IdentityApplianceState.STARTED + "'");
 
                 return unmarshallAll(  (Collection<IdentityAppliance>) query.execute());
             } catch (IOException e) {
@@ -102,6 +102,44 @@ public class IdentityApplianceDAOImpl extends GenericDAOImpl<IdentityAppliance, 
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public IdentityAppliance findByNamespace(String namespace) throws ApplianceNotFoundException {
+        try {
+            PersistenceManager pm = getPersistenceManager();
+            Query query = pm.newQuery("SELECT FROM com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance" +
+                    " WHERE this.namespace == '" + namespace + "'");
+
+            Collection<IdentityAppliance> appliances = (Collection<IdentityAppliance>) query.execute();
+
+            if (appliances == null || appliances.size() < 1)
+                throw new ApplianceNotFoundException(namespace);
+
+            if (appliances.size() > 1) // TODO : Improve exception!
+                throw new RuntimeException("Too many appliances found for name '"+namespace+"'" + appliances.size());
+
+            return unmarshall(appliances.iterator().next());
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean namespaceExists(long applianceId, String namespace) {
+        boolean exists = true;
+        PersistenceManager pm = getPersistenceManager();
+        Query query = pm.newQuery("SELECT this.namespace FROM com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance" +
+                " WHERE this.id != " + applianceId +
+                " && this.namespace == '" + namespace + "'");
+        
+        Collection<String> namespaces = (Collection<String>) query.execute();
+
+        if (namespaces == null || namespaces.size() < 1)
+            exists = false;
+
+        return exists;
     }
 
     @Override

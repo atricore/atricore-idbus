@@ -43,6 +43,7 @@ public class EditUserCommand extends IocSimpleCommand implements IResponder {
 
     private var _registry:ServiceRegistry;
     private var _accountManagementProxy:AccountManagementProxy;
+    private var user:User; 
 
     public function get registry():ServiceRegistry {
         return _registry;
@@ -61,7 +62,7 @@ public class EditUserCommand extends IocSimpleCommand implements IResponder {
     }
 
     override public function execute(notification:INotification):void {
-        var user:User = notification.getBody() as User;
+        user = notification.getBody() as User;
         var req:UpdateUserRequest = new UpdateUserRequest();
         req.id = user.id;
         req.userName = user.userName;
@@ -110,6 +111,7 @@ public class EditUserCommand extends IocSimpleCommand implements IResponder {
 
     public function result(data:Object):void {
         var resp:UpdateUserResponse = data.result as UpdateUserResponse;
+        accountManagementProxy.currentUser = user;
         sendNotification(SUCCESS);
     }
 
