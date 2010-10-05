@@ -83,14 +83,7 @@
                     keystore.privateKeyPassword = keyPassword.text;
                     keystore.password = keystorePassword.text;
                     keystore.type = keystoreFormat.selectedItem.data;
-                    /*
-                    var resource:Resource = new Resource();
-                    resource.name = uploadedFileName.substring(0, uploadedFileName.lastIndexOf("."));
-                    resource.displayName = uploadedFileName;
-                    resource.uri = uploadedFileName;
-                    resource.value = uploadedFile;
-                    keystore.store = resource;
-                    */
+
                     obj.keystore = keystore;
 
                     obj.config = new SamlR2SPConfig();

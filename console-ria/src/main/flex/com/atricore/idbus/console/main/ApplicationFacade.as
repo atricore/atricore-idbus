@@ -86,9 +86,12 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const CLEAR_MSG:String = "clearMsg";
     public static const IDENTITY_APPLIANCE_CHANGED:String = "identityApplianceChanged";
     public static const UPDATE_IDENTITY_APPLIANCE:String = "updateIdentityAppliance";
+    public static const AUTOSAVE_IDENTITY_APPLIANCE:String = "autoSaveIdentityAppliance";
     public static const UPDATE_DIAGRAM_ELEMENTS_DATA:String = "updateDiagramElementsData";
     public static const DISPLAY_APPLIANCE_MODELER:String = "displayApplianceModeler";
     public static const DISPLAY_APPLIANCE_LIFECYCLE:String = "displayApplianceLifecycle";
+    public static const DISPLAY_APPLIANCE_ACCOUNT:String = "displayApplianceAccount";
+    public static const DISPLAY_VIEW:String = "displayView";
     public static const PALETTE_ELEMENT_SELECTED:String = "paletteElementSelected";
     public static const REFRESH_DIAGRAM:String = "refreshDiagram";
     public static const DIAGRAM_ELEMENT_REMOVE_COMPLETE:String = "diagramElementRemoveComplete";

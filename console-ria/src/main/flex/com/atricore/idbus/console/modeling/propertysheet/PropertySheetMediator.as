@@ -160,6 +160,7 @@ public class PropertySheetMediator extends IocMediator {
 
     protected var _validators : Array;
 
+    // keystore
     private var _uploadedFile:ByteArray;
     private var _uploadedFileName:String;
 
@@ -168,6 +169,16 @@ public class PropertySheetMediator extends IocMediator {
 
     [Bindable]
     public var _selectedFiles:ArrayCollection;
+
+    // jdbc driver
+    private var _uploadedDriver:ByteArray;
+    private var _uploadedDriverName:String;
+
+    [Bindable]
+    private var _driverFileRef:FileReference;
+
+    [Bindable]
+    public var _selectedDriverFiles:ArrayCollection;
 
     public function PropertySheetMediator(name : String = null, viewComp:PropertySheetView = null) {
         super(name, viewComp);
@@ -799,7 +810,6 @@ public class PropertySheetMediator extends IocMediator {
 
         _certificateSection.certificateManagementType.addEventListener(ItemClickEvent.ITEM_CLICK, handleCertManagementTypeClicked);
         _certificateSection.certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
-        //_certificateSection.btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
         BindingUtils.bindProperty(_certificateSection.certificateKeyPair, "dataProvider", this, "_selectedFiles");
 
         _validators = [];
@@ -865,6 +875,10 @@ public class PropertySheetMediator extends IocMediator {
             config.signer = keystore;
             config.encrypter = keystore;
         }
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _dirty = false;
     }
 
     private function handleServiceProviderCorePropertyTabCreationComplete(event:Event):void {
@@ -1075,9 +1089,6 @@ public class PropertySheetMediator extends IocMediator {
             } else {
                 updateSamlR2Config(provider, config);
             }
-
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
         }
     }
 
@@ -1186,6 +1197,8 @@ public class PropertySheetMediator extends IocMediator {
         // if dbIdentityVault is null that means some other element was selected before completing this
         if (dbIdentityVault != null) {
             // bind view
+            resetUploadDriverFields();
+
             _externalDbVaultCoreSection.userRepositoryName.text = dbIdentityVault.name;
             _externalDbVaultCoreSection.driverName.text = dbIdentityVault.driverName;
             _externalDbVaultCoreSection.connectionUrl.text = dbIdentityVault.connectionUrl;
@@ -1193,10 +1206,14 @@ public class PropertySheetMediator extends IocMediator {
             _externalDbVaultCoreSection.dbPassword.text = dbIdentityVault.password;
 
             _externalDbVaultCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalDbVaultCoreSection.driver.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.driverName.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.connectionUrl.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.dbUsername.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.dbPassword.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _externalDbVaultCoreSection.driver.addEventListener(MouseEvent.CLICK, browseDriverHandler);
+            BindingUtils.bindProperty(_externalDbVaultCoreSection.driver, "dataProvider", this, "_selectedDriverFiles");
 
             _validators = [];
             _validators.push(_externalDbVaultCoreSection.nameValidator);
@@ -1210,19 +1227,35 @@ public class PropertySheetMediator extends IocMediator {
     private function handleExternalDbVaultCorePropertyTabRollOut(e:Event):void {
         if (_dirty && validate(true)) {
             // bind model
-            var dbIdentityVault:DbIdentitySource;
-
-            dbIdentityVault = _currentIdentityApplianceElement as DbIdentitySource;
-            dbIdentityVault.name = _externalDbVaultCoreSection.userRepositoryName.text;
-            dbIdentityVault.driverName = _externalDbVaultCoreSection.driverName.text;
-            dbIdentityVault.connectionUrl = _externalDbVaultCoreSection.connectionUrl.text;
-            dbIdentityVault.admin = _externalDbVaultCoreSection.dbUsername.text;
-            dbIdentityVault.password = _externalDbVaultCoreSection.dbPassword.text;
-
-            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-            _dirty = false;
+            if (_selectedDriverFiles != null && _selectedDriverFiles.length > 0) {
+                _driverFileRef.load();
+            } else {
+                updateDbIdentitySource();
+            }
         }
+    }
+
+    private function updateDbIdentitySource():void {
+        var dbIdentityVault:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
+        
+        dbIdentityVault.name = _externalDbVaultCoreSection.userRepositoryName.text;
+        dbIdentityVault.driverName = _externalDbVaultCoreSection.driverName.text;
+        dbIdentityVault.connectionUrl = _externalDbVaultCoreSection.connectionUrl.text;
+        dbIdentityVault.admin = _externalDbVaultCoreSection.dbUsername.text;
+        dbIdentityVault.password = _externalDbVaultCoreSection.dbPassword.text;
+
+        if (_uploadedDriver != null && _uploadedDriverName != null) {
+            var driver:Resource = dbIdentityVault.driver;
+            driver.name = _uploadedDriverName.substring(0, _uploadedDriverName.lastIndexOf("."));
+            driver.displayName = _uploadedDriverName;
+            driver.uri = _uploadedDriverName;
+            driver.value = _uploadedDriver;
+            dbIdentityVault.driver = driver;
+        }
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _dirty = false;
     }
 
     private function handleExternalDbVaultLookupPropertyTabCreationComplete(event:Event):void {
@@ -2666,41 +2699,28 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
+    // keystore functions
     private function browseHandler(event:MouseEvent):void {
         if (_fileRef == null) {
             _fileRef = new FileReference();
             _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
-            //_fileRef.addEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
             _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
-            //_fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
         }
         var fileFilter:FileFilter = new FileFilter("JKS(*.jks)", "*.jks");
         var fileTypes:Array = new Array(fileFilter);
         _fileRef.browse(fileTypes);
     }
 
-    /*
-    private function handleUpload(event:MouseEvent):void {
-        _fileRef.load();  //this is available from flash player 10 and maybe flex sdk 3.4
-        //sendNotification(ApplicationFacade.SHOW_UPLOAD_PROGRESS, _fileRef);
-    }
-    */
-
     private function fileSelectHandler(evt:Event):void {
         _certificateSection.certificateKeyPair.prompt = null;
         _selectedFiles = new ArrayCollection();
         _selectedFiles.addItem(_fileRef.name);
         _certificateSection.certificateKeyPair.selectedIndex = 0;
-        //_certificateSection.btnUpload.enabled = true;
 
         _certificateSection.lblUploadMsg.text = "";
         _certificateSection.lblUploadMsg.visible = false;
 
         _dirty = true;
-        //if (validate(true)) {
-        //    sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
-        //    _dirty = false;
-        //}
     }
 
     private function uploadCompleteHandler(event:Event):void {
@@ -2712,11 +2732,9 @@ public class PropertySheetMediator extends IocMediator {
         _certificateSection.lblUploadMsg.visible = true;
         _certificateSection.fadeFx.play([_certificateSection.lblUploadMsg]);
 
-        //sendNotification(UploadProgressMediator.UPLOAD_COMPLETED);
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
         _certificateSection.certificateKeyPair.prompt = "Browse Key Pair";
-        //_certificateSection.btnUpload.enabled = false;
 
         var provider:Provider = _currentIdentityApplianceElement as Provider;
         var config:SamlR2ProviderConfig = provider.config as SamlR2ProviderConfig;
@@ -2769,6 +2787,53 @@ public class PropertySheetMediator extends IocMediator {
         _certificateSection.keyAlias.enabled = enable;
         _certificateSection.keystorePassword.enabled = enable;
         _certificateSection.keyPassword.enabled = enable;
+    }
+
+    // jdbc driver functions
+    private function browseDriverHandler(event:MouseEvent):void {
+        if (_driverFileRef == null) {
+            _driverFileRef = new FileReference();
+            _driverFileRef.addEventListener(Event.SELECT, driverSelectHandler);
+            _driverFileRef.addEventListener(Event.COMPLETE, uploadDriverCompleteHandler);
+        }
+        var fileFilter:FileFilter = new FileFilter("JAR(*.jar)", "*.jar");
+        var fileTypes:Array = new Array(fileFilter);
+        _driverFileRef.browse(fileTypes);
+    }
+
+    private function driverSelectHandler(evt:Event):void {
+        _externalDbVaultCoreSection.driver.prompt = null;
+        _selectedDriverFiles = new ArrayCollection();
+        _selectedDriverFiles.addItem(_driverFileRef.name);
+        _externalDbVaultCoreSection.driver.selectedIndex = 0;
+
+        _externalDbVaultCoreSection.lblUploadMsg.text = "";
+        _externalDbVaultCoreSection.lblUploadMsg.visible = false;
+
+        _dirty = true;
+    }
+
+    private function uploadDriverCompleteHandler(event:Event):void {
+        _uploadedDriver = _driverFileRef.data;
+        _uploadedDriverName = _driverFileRef.name;
+
+        _externalDbVaultCoreSection.lblUploadMsg.text = "Driver successfully saved.";
+        _externalDbVaultCoreSection.lblUploadMsg.setStyle("color", "Green");
+        _externalDbVaultCoreSection.lblUploadMsg.visible = true;
+        _externalDbVaultCoreSection.fadeFx.play([_externalDbVaultCoreSection.lblUploadMsg]);
+
+        _driverFileRef = null;
+        _selectedDriverFiles = new ArrayCollection();
+        _externalDbVaultCoreSection.driver.prompt = "Browse Driver";
+
+        updateDbIdentitySource();
+    }
+
+    private function resetUploadDriverFields():void {
+        _driverFileRef = null;
+        _selectedDriverFiles = new ArrayCollection();
+        _uploadedDriver = null;
+        _uploadedDriverName = null;
     }
 
     protected function clearPropertyTabs():void {

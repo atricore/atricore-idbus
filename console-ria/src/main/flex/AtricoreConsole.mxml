@@ -72,10 +72,6 @@
             m_facade.removeEventListener(Event.COMPLETE, startupApp);
             m_facade.notifyObservers(new Notification(ApplicationFacade.STARTUP, this));
         }
-
-        private function stackChanged():void {
-            modulesViewStack.selectedIndex = stackButtonBar.selectedIndex;
-        }
         ]]>
     </fx:Script>
 
@@ -119,7 +115,7 @@
 
         <login:LoginView id="loginView" includeIn="splash"/>
         <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name"
-                     change="stackChanged()" skinClass="com.atricore.idbus.console.skin.buttonbar.IconButtonBarSkin"
+                     skinClass="com.atricore.idbus.console.skin.buttonbar.IconButtonBarSkin" requireSelection="true"
                      includeIn="operation"/>
 
         <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%" includeIn="operation">
