@@ -197,9 +197,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 updateIdentityAppliance();
                 break;
             case ApplicationFacade.REFRESH_DIAGRAM:
-                resetGraph();
-                updateGraph();
-                /*if (projectProxy.currentIdentityAppliance != null &&
+                var redrawGraph:Boolean = notification.getBody() as Boolean;
+                if (!redrawGraph && projectProxy.currentIdentityAppliance != null &&
                         projectProxy.currentIdentityAppliance.id == _currentIdentityApplianceId) {
                     updateGraphData();
                     unselectAllNodes();
@@ -212,7 +211,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     _currentIdentityApplianceId = _projectProxy.currentIdentityAppliance.id;
                 } else {
                     _currentIdentityApplianceId = null;
-                }*/
+                }
                 break;
             case ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA:
                 updateGraphData();

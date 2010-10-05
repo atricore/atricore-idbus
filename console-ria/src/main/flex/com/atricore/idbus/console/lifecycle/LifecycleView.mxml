@@ -47,7 +47,7 @@
                                                headerText="Identity Appliance"
                                                headerStyleName="applianceHeader"
                                                showDataTips="true" dataField="name" wordWrap="true"/>
-                    <mx:AdvancedDataGridColumn headerText="Actions" width="50">
+                    <mx:AdvancedDataGridColumn headerText="Actions" width="70" sortable="false">
                         <mx:itemRenderer>
                             <fx:Component>
                                 <s:MXAdvancedDataGridItemRenderer>
@@ -69,12 +69,12 @@
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
                                                                toolTip="Edit Saved Identity Appliance"
                                                                click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
-                                        <!--components:IconButton iconUp="{EmbeddedIcons.trashApplianceIcon}"
+                                        <components:IconButton iconUp="{EmbeddedIcons.trashApplianceIcon}"
                                                                iconWidth="22" iconHeight="22"
                                                                paddingTop="3" paddingLeft="3"
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
                                                                toolTip="Remove Saved Identity Appliance"
-                                                               click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/-->
+                                                               click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
                                     </s:HGroup>
                                 </s:MXAdvancedDataGridItemRenderer>
                             </fx:Component>

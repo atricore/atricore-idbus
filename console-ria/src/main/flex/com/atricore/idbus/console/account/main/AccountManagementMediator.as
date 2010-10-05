@@ -106,36 +106,39 @@ public class AccountManagementMediator extends IocMediator implements IDisposabl
     }
 
     public function init():void {
-        var groupsTab:Group = new Group();
-        var usersTab:Group = new Group();
-        var gView:GroupsView  = new GroupsView();
-        var uView:UsersView  = new UsersView();
+        if (_created) {
+            var groupsTab:Group = new Group();
+            var usersTab:Group = new Group();
+            var gView:GroupsView  = new GroupsView();
+            var uView:UsersView  = new UsersView();
 
-        /* Remove unused title in account management panel */
-        view.titleDisplay.width = 0;
-        view.titleDisplay.height = 0;
+            /* Remove unused title in account management panel */
+            view.titleDisplay.width = 0;
+            view.titleDisplay.height = 0;
 
-        view.vsAccountMng.removeAllElements();
+            //view.vsAccountMng.removeAllElements();
+            view.vsAccountMng.removeAllChildren();
 
-        groupsTab.id = "groupsTab";
-        groupsTab.width = Number("100%");
-        groupsTab.height = Number("100%");
-        groupsTab.addElement(gView);
+            groupsTab.id = "groupsTab";
+            groupsTab.width = Number("100%");
+            groupsTab.height = Number("100%");
+            groupsTab.addElement(gView);
 
-        usersTab.id = "usersTab";
-        usersTab.width = Number("100%");
-        usersTab.height = Number("100%");
-        usersTab.addElement(uView);
+            usersTab.id = "usersTab";
+            usersTab.width = Number("100%");
+            usersTab.height = Number("100%");
+            usersTab.addElement(uView);
 
-        groupsMediator.setViewComponent(gView);
-        usersMediator.setViewComponent(uView);
+            groupsMediator.setViewComponent(gView);
+            usersMediator.setViewComponent(uView);
 
-        view.vsAccountMng.addNewChild(uView);
-        view.vsAccountMng.addNewChild(gView);
+            view.vsAccountMng.addNewChild(uView);
+            view.vsAccountMng.addNewChild(gView);
 
-        view.accountManagementTabBar.selectedIndex = 0;
-        view.vsAccountMng.selectedIndex = 0;
-        view.accountManagementTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
+            view.accountManagementTabBar.selectedIndex = 0;
+            view.vsAccountMng.selectedIndex = 0;
+            view.accountManagementTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
+        }
     }
 
     public function dispose():void {
@@ -146,6 +149,7 @@ public class AccountManagementMediator extends IocMediator implements IDisposabl
 
         view.accountManagementTabBar.removeEventListener(IndexChangeEvent.CHANGE, stackChanged);
         view = null;
+        _created = false;
     }
 
     private function stackChanged(event:IndexChangeEvent):void {

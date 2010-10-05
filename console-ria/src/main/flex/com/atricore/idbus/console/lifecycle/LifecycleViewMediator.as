@@ -209,6 +209,8 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
         view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_DROP, handleDropInDisposedGrid);
 
         view = null;
+
+        _created = false;
     }
 
 
@@ -479,30 +481,43 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 break;
             case LifecycleGridButtonEvent.ACTION_REMOVE :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
-                Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null, function(event:CloseEvent) {
-                    if (event.detail == Alert.YES) {
-                        // verify that a removal can be performed
-                        _removedApplianceId = appliance.id;
-                        sendNotification(ProcessingMediator.START, "Removing appliance ...");
-                        var ria:RemoveIdentityApplianceElementRequest = new RemoveIdentityApplianceElementRequest(appliance);
-                        sendNotification(ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT, ria);
-                    }
-                }, null, Alert.YES);
+                if(appliance.state.toString() == IdentityApplianceState.PROJECTED.toString()
+                        || appliance.state.toString() == IdentityApplianceState.DISPOSED.toString()){
+                    Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null, function(event:CloseEvent) {
+                        if (event.detail == Alert.YES) {
+                            // verify that a removal can be performed
+                            _removedApplianceId = appliance.id;
+                            sendNotification(ProcessingMediator.START, "Removing appliance ...");
+                            var ria:RemoveIdentityApplianceElementRequest = new RemoveIdentityApplianceElementRequest(appliance);
+                            sendNotification(ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT, ria);
+                        }
+                    }, null, Alert.YES);
+                } else {
+                    Alert.show("You can only delete projected and disposed appliances", "Removal information", Alert.OK);
+                }
                 break;
             case LifecycleGridButtonEvent.ACTION_START :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
-                sendNotification(ProcessingMediator.START, "Starting appliance ...");
-                sendNotification(ApplicationFacade.START_IDENTITY_APPLIANCE, appliance.id.toString());
+                if(appliance.state.toString() == IdentityApplianceState.DEPLOYED.toString()){
+                    sendNotification(ProcessingMediator.START, "Starting appliance ...");
+                    sendNotification(ApplicationFacade.START_IDENTITY_APPLIANCE, appliance.id.toString());
+                } else {
+                    Alert.show("Appliance is already started", "Information", Alert.OK);
+                }
                 break;
             case LifecycleGridButtonEvent.ACTION_STOP :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
-                sendNotification(ProcessingMediator.START, "Stopping appliance ...");
-                sendNotification(ApplicationFacade.STOP_IDENTITY_APPLIANCE, appliance.id.toString());
+                if(appliance.state.toString() == IdentityApplianceState.STARTED.toString()){
+                    sendNotification(ProcessingMediator.START, "Stopping appliance ...");
+                    sendNotification(ApplicationFacade.STOP_IDENTITY_APPLIANCE, appliance.id.toString());
+                } else {
+                    Alert.show("Appliance is already stopped", "Information", Alert.OK);
+                }
                 break;
             case LifecycleGridButtonEvent.ACTION_UNDEPLOY :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
                 sendNotification(ProcessingMediator.START, "Undeploying appliance ...");
-                sendNotification(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, appliance.id.toString());
+                sendNotification(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, appliance.id.toString());                
                 break;
             case LifecycleGridButtonEvent.ACTION_BUILD :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
