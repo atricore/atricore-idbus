@@ -40,7 +40,8 @@
         <!--mx:StringValidator id="driverNameValidator" source="{driverName}" required="true" property="text"
                 trigger="{btnOk}" triggerEvent="click"/-->
         <mx:NumberValidator id="driverValidator" source="{driver}" property="selectedIndex" minValue="0"
-                trigger="{btnOk}" triggerEvent="click"/>
+                trigger="{btnOk}" triggerEvent="click"
+                lowerThanMinError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.driverName.errorMsg')}"/>
         <mx:StringValidator id="connUrlValidator" source="{connectionUrl}" required="true" property="text"
                 trigger="{btnOk}" triggerEvent="click"/>
         <mx:StringValidator id="dbUsernameValidator" source="{dbUsername}" required="true" property="text"
