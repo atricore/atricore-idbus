@@ -20,17 +20,26 @@
   ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
-<s:beans xmlns="http://www.springframework.org/schema/beans"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns:osgi="http://www.springframework.org/schema/osgi"
-         xmlns:s="http://www.springframework.org/schema/beans"
-         xsi:schemaLocation="
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-        http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
-        >
 
-    <bean name="idServicesBootstrap" class="org.atricore.idbus.kernel.common.support.services.IdentityServiceBootstrap"/>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+       xmlns:ctx="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context.xsd
+                    http://www.springframework.org/schema/osgi-compendium
+                    http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd
+                    ">
+
+    <bean name="idServicesBootstrap"
+          class="org.atricore.idbus.kernel.common.support.services.IdentityServiceBootstrap"/>
 
     <osgi:service id="idServicesBootstrapExporter" ref="idServicesBootstrap"
-            interface="org.springframework.osgi.context.event.OsgiBundleApplicationContextListener" />
-</s:beans>
+                  interface="org.springframework.osgi.context.event.OsgiBundleApplicationContextListener"/>
+
+</beans>

@@ -4,27 +4,49 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.common.support.osgi.ExternalResourcesClassLoader;
 import org.osgi.framework.BundleContext;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.osgi.context.BundleContextAware;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.net.URL;
 import java.sql.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public class JDBCDriverManager implements BundleContextAware {
+public class JDBCDriverManager implements BundleContextAware, InitializingBean {
 
     private static final Log logger = LogFactory.getLog(JDBCDriverManager.class);
 
     private BundleContext bundleContext;
 
-    private ExternalResourcesClassLoader driverLoader = null;
+    private ExternalResourcesClassLoader defaultDriverLoader = null;
 
-    private Map<String, Driver> cachedDriver = new HashMap<String, Driver>();
+    private List<DriverDescriptor> configuredDrivers = new ArrayList<DriverDescriptor>();
+
+    private Map<String, Driver> cachedDrivers = new HashMap<String, Driver>();
+
+    private List<String> defaultDriversUrls;
+
+    private boolean loadDefaultDrivers;
+
+    public List<String> getDefaultDriversUrls() {
+        return defaultDriversUrls;
+    }
+
+    public void setDefaultDriversUrls(List<String> defaultDriversUrls) {
+        this.defaultDriversUrls = defaultDriversUrls;
+    }
+
+    public boolean isLoadDefaultDrivers() {
+        return loadDefaultDrivers;
+    }
+
+    public void setLoadDefaultDrivers(boolean loadDefaultDrivers) {
+        this.loadDefaultDrivers = loadDefaultDrivers;
+    }
 
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
@@ -34,7 +56,78 @@ public class JDBCDriverManager implements BundleContextAware {
         return bundleContext;
     }
 
-	public Connection getConnection( String driverClass, String url,
+    public void afterPropertiesSet() throws Exception {
+        if (defaultDriversUrls == null || defaultDriversUrls.size() == 0) {
+            defaultDriversUrls = new ArrayList<String>();
+            defaultDriversUrls.add("file://" + System.getProperty("karaf.base") + "/lib/jdbc" );
+        }
+
+        if (loadDefaultDrivers) {
+
+            StringBuffer sb = new StringBuffer();
+            for (String url : defaultDriversUrls) {
+                sb.append(":");
+                sb.append(url);
+            }
+            logger.info("Loading default drivers from " + sb);
+
+            boolean refresh = true;
+            for (DriverDescriptor ds : configuredDrivers) {
+                if (!isRegistered(ds)) {
+                    try {
+                        registerDriver(ds, refresh);
+                        refresh = false;
+                        logger.info(ds.getName() + "JDBC Driver found for " + ds.getDriverclassName());
+                    } catch (Exception e) {
+                        logger.info(ds.getName() + "JDBC Driver not found for " + ds.getDriverclassName());
+                    }
+                }
+            }
+        }
+    }
+
+    protected ExternalResourcesClassLoader getDefaultDriverLoader() throws Exception {
+        if (defaultDriverLoader == null) {
+            defaultDriverLoader  = doMakeDriverLoader(defaultDriversUrls);
+            defaultDriverLoader.refreshClasspath();
+        }
+
+        return defaultDriverLoader;
+    }
+
+    protected ExternalResourcesClassLoader doMakeDriverLoader(Collection<String> classPath) {
+
+        FileFilter filter = new FileFilter( ) {
+            public boolean accept( File pathname ) {
+                return pathname.isFile()
+                        && isDriverFile(pathname.getName());
+            }
+        };
+
+        return bundleContext != null ?
+            new ExternalResourcesClassLoader(bundleContext, classPath, filter) :
+            new ExternalResourcesClassLoader(getClass().getClassLoader(), classPath, filter) ;
+
+    }
+
+    public List<DriverDescriptor> getConfiguredDrivers() {
+        return configuredDrivers;
+    }
+
+    public List<DriverDescriptor> getRegisteredDrivers() {
+
+        List<DriverDescriptor> registered = new ArrayList<DriverDescriptor>();
+        for (String driverClass : cachedDrivers.keySet()) {
+            registered.add(getConfiguredDriver(driverClass));
+        }
+        return registered;
+    }
+
+    public void setConfiguredDrivers(List<DriverDescriptor> configuredDrivers) {
+        this.configuredDrivers = configuredDrivers;
+    }
+
+    public Connection getConnection( String driverClass, String url,
 			Properties connectionProperties, Collection<String> driverClassPath ) throws JDBCManagerException {
         try {
 
@@ -69,8 +162,25 @@ public class JDBCDriverManager implements BundleContextAware {
         // no JNDI Data Source URL defined, or
         // not able to get a JNDI data source connection,
         // use the JDBC DriverManager instead to get a JDBC connection
-        if (!isRegistered(driverClass))
-            registerDriver(driverClass, driverClassPath, false);
+        DriverDescriptor ds = getConfiguredDriver(driverClass);
+        if (ds == null) {
+
+            List<String> classPath = new ArrayList<String>();
+            classPath.addAll(driverClassPath);
+
+            ds = new DriverDescriptor();
+
+            ds.setName("Dyamically added driver : " + driverClass);
+            ds.setDriverclassName(driverClass);
+            ds.setJarFileNames(classPath);
+            ds.setUrl(url);
+
+            this.configuredDrivers.add(ds);
+        }
+
+        if (!isRegistered(ds)) {
+            registerDriver(ds, false);
+        }
 
         if (logger.isTraceEnabled())
             logger.trace("Calling DriverManager.getConnection. url=" + url);
@@ -81,9 +191,20 @@ public class JDBCDriverManager implements BundleContextAware {
         }
     }
 
-    protected boolean isRegistered(String driverClass) {
-        return cachedDriver.containsKey(driverClass);
+    protected DriverDescriptor getConfiguredDriver(String driverClass) {
+        for (DriverDescriptor ds : configuredDrivers) {
+            if (ds.getDriverclassName().equals(driverClass))
+                return ds;
+        }
+
+        return null;
     }
+
+
+    protected boolean isRegistered(DriverDescriptor ds) {
+        return cachedDrivers.get(ds.getDriverclassName()) != null ;
+    }
+
 
 
     /**
@@ -92,22 +213,21 @@ public class JDBCDriverManager implements BundleContextAware {
      * connections using such driver. To solve the problem, we create a wrapper Driver in
      * our class loader, and register it with DriverManager
      *
-     * @param className
-     * @param driverClassPath
+     * @param driverDescriptor
      * @param refreshClassLoader
      * @throws JDBCManagerException
      */
-    protected void registerDriver(String className, Collection<String> driverClassPath, boolean refreshClassLoader)
+    protected void registerDriver(DriverDescriptor driverDescriptor, boolean refreshClassLoader)
             throws JDBCManagerException {
 
         try {
-            Driver driver = findDriver(className, driverClassPath, refreshClassLoader);
+            Driver driver = findDriver(driverDescriptor,  refreshClassLoader);
             if (driver != null) {
                 try {
                     if (logger.isDebugEnabled())
-                        logger.debug("Registering with DriverManager: wrapped driver for " + className);
+                        logger.debug("Registering with DriverManager: wrapped driver for " + driverDescriptor.getDriverclassName());
 
-                    DriverManager.registerDriver(new WrappedDriver(driver, className));
+                    DriverManager.registerDriver(new WrappedDriver(driver, driverDescriptor.getDriverclassName()));
                 } catch (SQLException e) {
                     // This shouldn't happen
                     logger.error("Failed to register wrapped driver instance: " + e.getMessage(), e);
@@ -119,7 +239,9 @@ public class JDBCDriverManager implements BundleContextAware {
         }
     }
 
-    protected Driver findDriver(String className, Collection<String> driverClassPath, boolean refreshClassLoader) throws Exception {
+    protected Driver findDriver(DriverDescriptor driverDescriptor, boolean refreshClassLoader) throws Exception {
+
+        String className = driverDescriptor.getDriverclassName();
         Class driverClass = null;
 
         try {
@@ -139,7 +261,7 @@ public class JDBCDriverManager implements BundleContextAware {
             }
 
             // Driver not in plugin class path; find it in drivers directory
-            driverClass = loadDriver(className, true, refreshClassLoader, driverClassPath);
+            driverClass = loadDriver(driverDescriptor, true, refreshClassLoader);
 
             // If driver class still cannot be found, try context classloader
             if (driverClass == null) {
@@ -171,15 +293,42 @@ public class JDBCDriverManager implements BundleContextAware {
 
     }
 
-    protected Class loadDriver(String className, boolean refreshUrlsWhenFail, boolean refreshClassLoader, Collection<String> driverClassPath) throws Exception {
+    protected Class loadDriver(DriverDescriptor driverDescriptor, boolean refreshUrlsWhenFail, boolean refreshClassLoader) throws Exception {
 
+        String className = driverDescriptor.getDriverclassName();
         assert className != null;
 
+        ExternalResourcesClassLoader driverLoader = driverDescriptor.getDriverLoader();
         if (driverLoader == null || refreshClassLoader) {
-            driverLoader = bundleContext != null ?
-                    new ExternalResourcesClassLoader(bundleContext, driverClassPath) :
-                    new ExternalResourcesClassLoader(getClass().getClassLoader(), driverClassPath, null) ;
-            driverLoader.refreshClasspath();
+
+            if (logger.isDebugEnabled())
+                logger.debug("No loader configured for driver " + className);
+
+            // No driver loader configured, use default or create one with provided jar file names
+            if (driverDescriptor.getJarFileNames() != null &&  driverDescriptor.getJarFileNames().size() > 0) {
+
+                if (logger.isDebugEnabled()) {
+                    StringBuffer sb = new StringBuffer();
+                    for (String jarFile : driverDescriptor.getJarFileNames()) {
+                        sb.append(":").append(jarFile);
+                    }
+                    logger.debug("No loader configured for driver " + className + ", using class path " + sb.toString());
+                }
+
+                driverLoader = doMakeDriverLoader(driverDescriptor.getJarFileNames());
+                driverLoader.refreshClasspath();
+            } else {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("No loader configured for driver " + className + ", using default loader");
+
+                driverLoader = getDefaultDriverLoader();
+                if (refreshClassLoader)
+                    driverLoader.refreshClasspath();
+            }
+
+            driverDescriptor.setDriverLoader(driverLoader);
+
         }
 
         try {
@@ -187,24 +336,26 @@ public class JDBCDriverManager implements BundleContextAware {
         } catch (ClassNotFoundException e) {
 
             //re-scan resources.
-            if (refreshUrlsWhenFail && driverLoader.refreshClasspath()) {
+            if (refreshUrlsWhenFail && defaultDriverLoader.refreshClasspath()) {
 
                 if (logger.isDebugEnabled())
                     logger.debug("Cannot find dirver class, try again after refresh!");
                 // New driver not found; try loading again
-                return loadDriver(className, false, true, driverClassPath);
+                return loadDriver(driverDescriptor, false, true);
             }
 
-            logger.error("ExternalResourcesClassLoader failed to load class: " + className, e);
-            logger.error("refreshUrlsWhenFail: " + refreshUrlsWhenFail);
-            logger.error("driverClassPath: " + driverClassPath);
+            if (logger.isDebugEnabled()) {
+                logger.debug("ExternalResourcesClassLoader failed to load class: " + className, e);
+                logger.debug("refreshUrlsWhenFail: " + refreshUrlsWhenFail);
+                //logger.error("driverClassPath: " + );
 
-            StringBuffer sb = new StringBuffer();
-            for (URL url : driverLoader.getURLs()) {
-                sb.append("[").append(url).append("]");
+                StringBuffer sb = new StringBuffer();
+                for (URL url : driverLoader.getURLs()) {
+                    sb.append("[").append(url).append("]");
+                }
+                logger.debug("Registered URLs: " + sb.toString());
+
             }
-            logger.error("Registered URLs: " + sb.toString());
-
 
             // no new driver found; give up
             logger.warn("Driver class not found in drivers directory: " + className);
@@ -216,7 +367,7 @@ public class JDBCDriverManager implements BundleContextAware {
     protected Driver getDriverInstance(Class driver) throws Exception {
         String driverName = driver.getName();
 
-        if (!this.cachedDriver.containsKey(driverName)) {
+        if (!this.cachedDrivers.containsKey(driverName)) {
 
             Driver instance = null;
             try {
@@ -224,10 +375,15 @@ public class JDBCDriverManager implements BundleContextAware {
                 } catch (Exception e) {
                 throw new JDBCManagerException(e);
             }
-            this.cachedDriver.put(driverName, instance);
+            this.cachedDrivers.put(driverName, instance);
         }
 
-        return cachedDriver.get(driverName);
+        return cachedDrivers.get(driverName);
+    }
+
+    protected boolean isDriverFile(String fileName) {
+        String lcName = fileName.toLowerCase();
+        return lcName.endsWith(".jar") || lcName.endsWith(".zip");
     }
 
 
