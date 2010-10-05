@@ -498,18 +498,26 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 break;
             case LifecycleGridButtonEvent.ACTION_START :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
-                sendNotification(ProcessingMediator.START, "Starting appliance ...");
-                sendNotification(ApplicationFacade.START_IDENTITY_APPLIANCE, appliance.id.toString());
+                if(appliance.state.toString() == IdentityApplianceState.DEPLOYED.toString()){
+                    sendNotification(ProcessingMediator.START, "Starting appliance ...");
+                    sendNotification(ApplicationFacade.START_IDENTITY_APPLIANCE, appliance.id.toString());
+                } else {
+                    Alert.show("Appliance is already started", "Information", Alert.OK);
+                }
                 break;
             case LifecycleGridButtonEvent.ACTION_STOP :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
-                sendNotification(ProcessingMediator.START, "Stopping appliance ...");
-                sendNotification(ApplicationFacade.STOP_IDENTITY_APPLIANCE, appliance.id.toString());
+                if(appliance.state.toString() == IdentityApplianceState.STARTED.toString()){
+                    sendNotification(ProcessingMediator.START, "Stopping appliance ...");
+                    sendNotification(ApplicationFacade.STOP_IDENTITY_APPLIANCE, appliance.id.toString());
+                } else {
+                    Alert.show("Appliance is already stopped", "Information", Alert.OK);
+                }
                 break;
             case LifecycleGridButtonEvent.ACTION_UNDEPLOY :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
                 sendNotification(ProcessingMediator.START, "Undeploying appliance ...");
-                sendNotification(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, appliance.id.toString());
+                sendNotification(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, appliance.id.toString());                
                 break;
             case LifecycleGridButtonEvent.ACTION_BUILD :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
