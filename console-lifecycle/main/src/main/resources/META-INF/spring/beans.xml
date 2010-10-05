@@ -64,6 +64,8 @@
     <bean id="idApplianceManagementService"
           class="com.atricore.idbus.console.lifecycle.main.impl.IdentityApplianceManagementServiceImpl">
 
+        <property name="jdbcDriverManager" ref="jdbcDriverManager"/>
+
         <property name="lazySyncAppliances" value="true"/>
 
         <property name="validateAppliances" value="${lifecycle.validateAppliances}"/>
@@ -131,6 +133,8 @@
     <osgi:reference id="activationService" cardinality="1..1" timeout="60"
                     interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
 
+    <osgi:reference id="jdbcDriverManager" timeout="60" cardinality="1..1"
+                    interface="org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager"/>
 
     <bean name="servicesLifecycelMgr" class="com.atricore.idbus.console.lifecycle.main.boot.ServicesLifecycleManager"/>
 
