@@ -1045,6 +1045,11 @@ public class IdentityApplianceManagementServiceImpl implements
 
     protected void validateAppliance(IdentityAppliance appliance, ApplianceValidator.Operation operation) throws ApplianceValidationException {
 
+        IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
+
+        if (appliance.getName() == null)
+            appliance.setName(applianceDef.getName());
+
         if (!isValidateAppliances())
             return;
 

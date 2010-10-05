@@ -78,8 +78,9 @@ public class IdentityLookupTransformer extends AbstractTransformer {
             setPropertyRef(identityManager, "identityStore", providerBean.getName() + "-identity-store");
             setPropertyBean(identityManager, "identityStoreKeyAdapter", newAnonymousBean(SimpleIdentityStoreKeyAdapter.class));
 
-            // identity store
+            
 
+            // identity store (TODO : Move to specific transformers)
             if (identitySource instanceof DbIdentitySource) {
                 Bean identityStore = null;
                 // DB
