@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.services.impl;
 
+import com.atricore.idbus.console.lifecycle.main.domain.JDBCDriverDescriptor;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.impl.ValidationError;
 import com.atricore.idbus.console.services.spi.IdentityApplianceManagementAjaxService;
@@ -403,6 +404,37 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
     /****************************
      * List methods
      ***************************/
+
+    public ListAvailableJDBCDriversResponse listAvailableJDBCDrivers(ListAvaiableJDBCDriversRequest request) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ListAvailableJDBCDriversRequest beReq =
+           new com.atricore.idbus.console.lifecycle.main.spi.request.ListAvailableJDBCDriversRequest();
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ListAvailableJDBCDriversResponse beRes = null;
+
+        try {
+            beRes = idApplianceManagementService.listAvailableJDBCDrivers(beReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+
+        ListAvailableJDBCDriversResponse response = new ListAvailableJDBCDriversResponse();
+        List<JDBCDriverDescriptorDTO> drivers = new ArrayList<JDBCDriverDescriptorDTO>();
+        for (JDBCDriverDescriptor d: beRes.getDrivers()) {
+            JDBCDriverDescriptorDTO dto = new JDBCDriverDescriptorDTO();
+            dto.setName(d.getName());
+            dto.setClassName(d.getClassName());
+            dto.setDefaultUrl(d.getDefaultUrl());
+            dto.setWebSiteUrl(d.getWebSiteUrl());
+            drivers.add(dto);
+        }
+        response.setDrivers(drivers);
+        return response;
+
+    }
+
+
+
+
     public ListIdentityVaultsResponse listIdentityVaults(ListIdentityVaultsRequest req) throws IdentityServerException{
         com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityVaultsRequest beReq =
                 dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityVaultsRequest.class);
