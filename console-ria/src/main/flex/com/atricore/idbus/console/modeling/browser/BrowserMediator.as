@@ -104,7 +104,8 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                 // TODO: Dispatch change event to renderer so that it can update item's labels & icons without
                 // TODO: recreating the tree view.
                 updateIdentityAppliance();
-                bindApplianceBrowser(view.selectedIndex);
+                updateElementData();
+                //bindApplianceBrowser();
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
                 var treeNode:BrowserNode = findDataTreeNodeByData(_applianceRootNode, projectProxy.currentIdentityApplianceElement);
@@ -123,7 +124,7 @@ public class BrowserMediator extends IocMediator implements IDisposable {
         _identityAppliance = _projectProxy.currentIdentityAppliance;
     }
 
-    private function bindApplianceBrowser(selectedIndex:int = -1):void {
+    private function bindApplianceBrowser():void {
 
         if (_identityAppliance != null) {
             var identityApplianceDefinition:IdentityApplianceDefinition = _identityAppliance.idApplianceDefinition;
@@ -247,7 +248,7 @@ public class BrowserMediator extends IocMediator implements IDisposable {
             view.dataProvider = _applianceRootNode;
             view.validateNow();
             //view.callLater(expandCollapseTree, [true]);
-            view.callLater(expandTree, [_applianceRootNode, selectedIndex]);
+            view.callLater(expandTree, [_applianceRootNode]);
         } else {
             view.dataProvider = null;
             view.validateNow();
@@ -256,19 +257,45 @@ public class BrowserMediator extends IocMediator implements IDisposable {
 
     }
 
+    private function updateElementData():void {
+        if (view.selectedItem != null) {
+            var elementData:Object = projectProxy.currentIdentityApplianceElement;
+            var selectedItemName:String = view.selectedItem.label;
+            if (_applianceRootNode != null && elementData != null && selectedItemName != null) {
+                updateNodeData(_applianceRootNode, selectedItemName, elementData);
+                view.invalidateDisplayList();
+            }
+        }
+    }
+
+    private function updateNodeData(currentNode:BrowserNode, nodeName:String, newData:Object) {
+        if (currentNode.label == nodeName && currentNode.data != null) {
+            currentNode.label = newData.name;
+            currentNode.data = newData;
+        }
+        if (currentNode.children != null) {
+            for each (var childNode:BrowserNode in currentNode.children) {
+                updateNodeData(childNode, nodeName, newData);
+            }
+        }
+    }
+
     private function expandCollapseTree(open:Boolean):void {
         view.expandChildrenOf(_applianceRootNode, open);
     }
 
-    private function expandTree(startNode:BrowserNode, selectedIndex:int = -1):void {
+    private function expandTree(startNode:BrowserNode):void {
         view.expandItem(startNode, true);
         for each (var currentNode:BrowserNode in startNode.children) {
             if (currentNode.data is Provider) {
                 view.expandItem(currentNode, true);
             }
         }
-        if (selectedIndex != -1) {
-            view.selectedIndex = selectedIndex;
+        var treeNode:BrowserNode = findDataTreeNodeByData(_applianceRootNode, projectProxy.currentIdentityApplianceElement);
+        if (treeNode != null) {
+            _selectedItem = treeNode;
+            expandParentNodes(_selectedItem);
+            view.selectedItem = _selectedItem;
         }
     }
 
