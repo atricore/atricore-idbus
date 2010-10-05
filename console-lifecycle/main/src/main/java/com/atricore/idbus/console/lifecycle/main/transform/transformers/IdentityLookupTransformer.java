@@ -101,15 +101,6 @@ public class IdentityLookupTransformer extends AbstractTransformer {
                 setPropertyValue(identityStore, "resetCredentialDml", dbSource.getResetCredentialDml());
                 setPropertyValue(identityStore, "relayCredentialQueryString", dbSource.getRelayCredentialQueryString());
 
-                IdProjectResource<byte[]> driverResource = new IdProjectResource<byte[]>(idGen.generateId(),
-                        "lib/", dbSource.getDriver().getName(),
-                        "binary", dbSource.getDriver().getValue());
-
-                driverResource.setClassifier("byte");
-                event.getContext().getCurrentModule().addResource(driverResource);
-                event.getContext().getCurrentModule().addEmbeddedDependency(
-                        driverResource.getNameSpace() + driverResource.getName());
-
             } else if (identitySource instanceof LdapIdentitySource) {
                 Bean identityStore = null;
                 // LDAP
