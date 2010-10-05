@@ -1064,6 +1064,14 @@ public class IdentityApplianceManagementServiceImpl implements
         this.activationService = activationService;
     }
 
+    public JDBCDriverManager getJdbcDriverManager() {
+        return jdbcDriverManager;
+    }
+
+    public void setJdbcDriverManager(JDBCDriverManager jdbcDriverManager) {
+        this.jdbcDriverManager = jdbcDriverManager;
+    }
+
     // -------------------------------------------------< Protected Utils , they need transactional context !>
 
     protected void validateAppliance(IdentityAppliance appliance, ApplianceValidator.Operation operation) throws ApplianceValidationException {
