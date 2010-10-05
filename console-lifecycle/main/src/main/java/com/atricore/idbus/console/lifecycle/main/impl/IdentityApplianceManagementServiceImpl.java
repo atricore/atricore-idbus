@@ -1254,7 +1254,8 @@ public class IdentityApplianceManagementServiceImpl implements
             if (logger.isDebugEnabled())
                 logger.debug("Deleting Identity Appliance " + appliance.getId());
 
-            if (!appliance.getState().equals(IdentityApplianceState.DISPOSED.toString()))
+            if (!appliance.getState().equals(IdentityApplianceState.DISPOSED.toString())
+                    && !appliance.getState().equals(IdentityApplianceState.PROJECTED.toString()))
                 throw new IllegalStateException("Appliance in state " + appliance.getState() + " cannot be deleted");
 
             /*

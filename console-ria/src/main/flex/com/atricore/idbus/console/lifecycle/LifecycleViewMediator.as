@@ -479,15 +479,20 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 break;
             case LifecycleGridButtonEvent.ACTION_REMOVE :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
-                Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null, function(event:CloseEvent) {
-                    if (event.detail == Alert.YES) {
-                        // verify that a removal can be performed
-                        _removedApplianceId = appliance.id;
-                        sendNotification(ProcessingMediator.START, "Removing appliance ...");
-                        var ria:RemoveIdentityApplianceElementRequest = new RemoveIdentityApplianceElementRequest(appliance);
-                        sendNotification(ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT, ria);
-                    }
-                }, null, Alert.YES);
+                if(appliance.state.toString() == IdentityApplianceState.PROJECTED.toString()
+                        || appliance.state.toString() == IdentityApplianceState.DISPOSED.toString()){
+                    Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null, function(event:CloseEvent) {
+                        if (event.detail == Alert.YES) {
+                            // verify that a removal can be performed
+                            _removedApplianceId = appliance.id;
+                            sendNotification(ProcessingMediator.START, "Removing appliance ...");
+                            var ria:RemoveIdentityApplianceElementRequest = new RemoveIdentityApplianceElementRequest(appliance);
+                            sendNotification(ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT, ria);
+                        }
+                    }, null, Alert.YES);
+                } else {
+                    Alert.show("You can only delete projected and disposed appliances", "Removal information", Alert.OK);
+                }
                 break;
             case LifecycleGridButtonEvent.ACTION_START :
                 var appliance:IdentityAppliance = event.data as IdentityAppliance;
