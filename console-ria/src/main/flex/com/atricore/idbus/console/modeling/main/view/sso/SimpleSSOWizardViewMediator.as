@@ -40,7 +40,6 @@ import com.atricore.idbus.console.services.dto.SamlR2SPConfig;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
-import flash.events.DataEvent;
 import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.net.FileFilter;
@@ -61,6 +60,8 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
     private var _wizardDataModel:ObjectProxy = new ObjectProxy();
 
+    // keystore
+
     [Bindable]
     private var _fileRef:FileReference;
 
@@ -73,8 +74,20 @@ public class SimpleSSOWizardViewMediator extends IocMediator
     [Bindable]
     public var _uploadedFileName:String;
 
-    private var _processingStarted:Boolean;
+    // jdbc driver
 
+    [Bindable]
+    private var _driverFileRef:FileReference;
+
+    [Bindable]
+    public var _selectedDriverFiles:ArrayCollection;
+
+    [Bindable]
+    public var _uploadedDriver:ByteArray;
+
+    [Bindable]
+    public var _uploadedDriverName:String;
+    
     public function SimpleSSOWizardViewMediator(name:String = null, viewComp:SimpleSSOWizardView = null) {
         super(name, viewComp);
     }
@@ -87,9 +100,12 @@ public class SimpleSSOWizardViewMediator extends IocMediator
 
             if (_fileRef != null) {
                 _fileRef.removeEventListener(Event.SELECT, fileSelectHandler);
-                //_fileRef.removeEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
                 _fileRef.removeEventListener(Event.COMPLETE, uploadCompleteHandler);
-                //_fileRef.removeEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
+            }
+
+            if (_driverFileRef != null) {
+                _driverFileRef.removeEventListener(Event.SELECT, driverSelectHandler);
+                _driverFileRef.removeEventListener(Event.COMPLETE, uploadDriverCompleteHandler);
             }
         }
 
@@ -108,22 +124,21 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         view.steps[0].applianceNamespace.text = "com.mycompany.myrealm";
         
         // upload bindings
-        //view.steps[1].btnUpload.addEventListener(MouseEvent.CLICK, handleUpload);
         view.steps[1].certificateKeyPair.addEventListener(MouseEvent.CLICK, browseHandler);
-
-        //_fileRef = new FileReference();
-        //_fileRef.addEventListener(Event.SELECT, fileSelectHandler);
-        //_fileRef.addEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
-        //_fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
-        //_fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
-
         BindingUtils.bindProperty(view.steps[1], "uploadedFile", this, "_uploadedFile");
         BindingUtils.bindProperty(view.steps[1], "uploadedFileName", this, "_uploadedFileName");
         BindingUtils.bindProperty(view.steps[1].certificateKeyPair, "dataProvider", this, "_selectedFiles");
+
+        view.steps[3].driver.addEventListener(MouseEvent.CLICK, browseDriverHandler);
+        BindingUtils.bindProperty(view.steps[3], "uploadedDriver", this, "_uploadedDriver");
+        BindingUtils.bindProperty(view.steps[3], "uploadedDriverName", this, "_uploadedDriverName");
+        BindingUtils.bindProperty(view.steps[3].driver, "dataProvider", this, "_selectedDriverFiles");
+
         BindingUtils.bindProperty(view.steps[6].partnerappLocationDomain, "text", view.steps[0].applianceLocationDomain, "text");
         BindingUtils.bindProperty(view.steps[6], "tmpPartnerAppLocationDomain", view.steps[0].applianceLocationDomain, "text");
 
         resetUploadFields();
+        resetUploadDriverFields();
     }
 
     override public function listNotificationInterests():Array {
@@ -131,8 +146,6 @@ public class SimpleSSOWizardViewMediator extends IocMediator
             CreateSimpleSSOIdentityApplianceCommand.SUCCESS,
             FolderExistsCommand.FOLDER_EXISTS,
             FolderExistsCommand.FOLDER_DOESNT_EXISTS
-            //UploadProgressMediator.CREATED,
-            //UploadProgressMediator.UPLOAD_CANCELED
         ];
     }
 
@@ -158,26 +171,10 @@ public class SimpleSSOWizardViewMediator extends IocMediator
                     view.dispatchEvent(ssoEvent);
                 }
                 break;
-            /*
-            case UploadProgressMediator.CREATED:
-                // upload progress window created, start upload
-                if (_fileRef != null) {
-                    sendNotification(ApplicationFacade.UPLOAD, _fileRef);
-                } else {
-                    view.steps[1].lblUploadMsg.text = "Upload error";
-                    view.steps[1].lblUploadMsg.visible = true;
-                }
-                break;
-            case UploadProgressMediator.UPLOAD_CANCELED:
-                if (_fileRef != null)
-                    _fileRef.cancel();
-                break;
-            */
         }
     }
 
     private function onSimpleSSOWizardComplete(event:WizardEvent):void {
-        _processingStarted = true;
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
 
         sendNotification(ProcessingMediator.START, "Saving Identity Appliance...");
@@ -185,6 +182,8 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         var config:SamlR2SPConfig = _wizardDataModel.certificateData.config as SamlR2SPConfig;
         if (!config.useSampleStore && _selectedFiles != null && _selectedFiles.length > 0) {
             _fileRef.load();
+        } else if (_selectedDriverFiles != null && _selectedDriverFiles.length > 0) {
+            _driverFileRef.load();
         } else {
             saveIdentityAppliance();
         }
@@ -243,6 +242,12 @@ public class SimpleSSOWizardViewMediator extends IocMediator
             data = embeddedIdentitySource;
         } else if (_wizardDataModel.authData is DbIdentitySource) {
             data = _wizardDataModel.databaseData as DbIdentitySource;
+            var driver:Resource = new Resource();
+            driver.name = _uploadedDriverName.substring(0, _uploadedDriverName.lastIndexOf("."));
+            driver.displayName = _uploadedDriverName;
+            driver.uri = _uploadedDriverName;
+            driver.value = _uploadedDriver;
+            (data as DbIdentitySource).driver = driver;
         } else if (_wizardDataModel.authData is LdapIdentitySource) {
             data = _wizardDataModel.ldapData as LdapIdentitySource;
         } else if (_wizardDataModel.authData is XmlIdentitySource) {
@@ -267,24 +272,16 @@ public class SimpleSSOWizardViewMediator extends IocMediator
                 "There was an error creating simple SSO appliance.");
     }
 
-    // upload functions
+    // keystore upload functions
     private function browseHandler(event:MouseEvent):void {
         if (_fileRef == null) {
             _fileRef = new FileReference();
             _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
-            //_fileRef.addEventListener(ProgressEvent.PROGRESS, uploadProgressHandler);
             _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
-            //_fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadCompleteDataHandler);
         }
         var fileFilter:FileFilter = new FileFilter("JKS(*.jks)", "*.jks");
         var fileTypes:Array = new Array(fileFilter);
         _fileRef.browse(fileTypes);
-    }
-
-    private function handleUpload(event:MouseEvent):void {
-        _fileRef.load();  //this is available from flash player 10 and maybe flex sdk 3.4
-        //_fileRef.data;
-        //sendNotification(ApplicationFacade.SHOW_UPLOAD_PROGRESS, _fileRef);
     }
 
     private function fileSelectHandler(evt:Event):void {
@@ -292,34 +289,25 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         _selectedFiles = new ArrayCollection();
         _selectedFiles.addItem(_fileRef.name);
         view.steps[1].certificateKeyPair.selectedIndex = 0;
-        //view.steps[1].btnUpload.enabled = true;
 
         view.steps[1].lblUploadMsg.text = "";
         view.steps[1].lblUploadMsg.visible = false;
         view.steps[1].handleFormChange(null);
     }
 
-    /*
-    private function uploadProgressHandler(event:ProgressEvent):void {
-        var numPerc:Number = Math.round((Number(event.bytesLoaded) / Number(event.bytesTotal)) * 100);
-        sendNotification(UploadProgressMediator.UPDATE_PROGRESS, numPerc);
-    }
-    */
-
     private function uploadCompleteHandler(event:Event):void {
         _uploadedFile = _fileRef.data;
         _uploadedFileName = _fileRef.name;
 
-        //view.steps[1].lblUploadMsg.text = "Keystore successfully uploaded.";
-        //view.steps[1].lblUploadMsg.setStyle("color", "Green");
-        //view.steps[1].lblUploadMsg.visible = true;
-        
-        //sendNotification(UploadProgressMediator.UPLOAD_COMPLETED);
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
         view.steps[1].certificateKeyPair.prompt = "Browse Key Pair";
-        saveIdentityAppliance();
-        //view.steps[1].btnUpload.enabled = false;
+
+        if (_selectedDriverFiles != null && _selectedDriverFiles.length > 0) {
+            _driverFileRef.load();
+        } else {
+            saveIdentityAppliance();
+        }
     }
 
     private function resetUploadFields():void {
@@ -329,13 +317,47 @@ public class SimpleSSOWizardViewMediator extends IocMediator
         _selectedFiles = new ArrayCollection();
         view.steps[1].certificateKeyPair.prompt = "Browse Key Pair";
     }
-    
-    private function uploadCompleteDataHandler(event:DataEvent):void {
-        //var xmlResponse:XML = XML(event.data);
-        //resourceId = xmlResponse.elements("resource").attribute("id").toString();
-        //_resourceId = event.data;
-        //view.steps[1].lblUploadMsg.text = "Keystore successfully uploaded";
-        //view.steps[1].lblUploadMsg.visible = true;
+
+    // jdbc driver upload functions
+    private function browseDriverHandler(event:MouseEvent):void {
+        if (_driverFileRef == null) {
+            _driverFileRef = new FileReference();
+            _driverFileRef.addEventListener(Event.SELECT, driverSelectHandler);
+            _driverFileRef.addEventListener(Event.COMPLETE, uploadDriverCompleteHandler);
+        }
+        var fileFilter:FileFilter = new FileFilter("JAR(*.jar)", "*.jar");
+        var fileTypes:Array = new Array(fileFilter);
+        _driverFileRef.browse(fileTypes);
+    }
+
+    private function driverSelectHandler(evt:Event):void {
+        view.steps[3].driver.prompt = null;
+        _selectedDriverFiles = new ArrayCollection();
+        _selectedDriverFiles.addItem(_driverFileRef.name);
+        view.steps[3].driver.selectedIndex = 0;
+
+        view.steps[3].lblUploadMsg.text = "";
+        view.steps[3].lblUploadMsg.visible = false;
+        view.steps[3].handleFormChange(null);
+    }
+
+    private function uploadDriverCompleteHandler(event:Event):void {
+        _uploadedDriver = _driverFileRef.data;
+        _uploadedDriverName = _driverFileRef.name;
+
+        _driverFileRef = null;
+        _selectedDriverFiles = new ArrayCollection();
+        view.steps[3].driver.prompt = "Browse Driver";
+
+        saveIdentityAppliance();
+    }
+
+    private function resetUploadDriverFields():void {
+        _driverFileRef = null;
+        _uploadedDriver = null;
+        _uploadedDriverName = null;
+        _selectedDriverFiles = new ArrayCollection();
+        view.steps[3].driver.prompt = "Browse Driver";
     }
 
     private function handleClose(event:Event):void {

@@ -57,7 +57,7 @@ public class ApplicationMediator extends IocMediator {
 
     public static const MODELER_VIEW_INDEX:int = 0;
     public static const LIFECYCLE_VIEW_INDEX:int = 1;
-    public static const ACCOUNT_VIEW_INDEX:int = 4;
+    public static const ACCOUNT_VIEW_INDEX:int = 2;
 
     public var userProfileIcon:Class = EmbeddedIcons.userProfileIcon;
 
@@ -186,12 +186,17 @@ public class ApplicationMediator extends IocMediator {
     }
 
     public function handleStackChange(event:IndexChangeEvent):void {
-        var selectedIndex = (event.currentTarget as ButtonBar).selectedIndex;
-        if (selectedIndex == MODELER_VIEW_INDEX) {
+        var selectedIndex:int = (event.currentTarget as ButtonBar).selectedIndex;
+        if (event.oldIndex == MODELER_VIEW_INDEX) {
+            sendNotification(ApplicationFacade.AUTOSAVE_IDENTITY_APPLIANCE, selectedIndex);
+        } else if (selectedIndex == MODELER_VIEW_INDEX) {
+            app.modulesViewStack.selectedIndex = MODELER_VIEW_INDEX;
             sendNotification(ApplicationFacade.MODELER_VIEW_SELECTED);
         } else if (selectedIndex == LIFECYCLE_VIEW_INDEX) {
+            app.modulesViewStack.selectedIndex = LIFECYCLE_VIEW_INDEX;
             sendNotification(ApplicationFacade.LIFECYCLE_VIEW_SELECTED);
         } else if (selectedIndex == ACCOUNT_VIEW_INDEX) {
+            app.modulesViewStack.selectedIndex = ACCOUNT_VIEW_INDEX;
             sendNotification(ApplicationFacade.ACCOUNT_VIEW_SELECTED);
         }
     }
@@ -223,8 +228,10 @@ public class ApplicationMediator extends IocMediator {
             SetupWizardViewMediator.RUN,
             SimpleSSOWizardViewMediator.RUN,
             IdentityApplianceWizardViewMediator.RUN,
+            ApplicationFacade.DISPLAY_VIEW,
             ApplicationFacade.DISPLAY_APPLIANCE_MODELER,
             ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE,
+            ApplicationFacade.DISPLAY_APPLIANCE_ACCOUNT,
             ApplicationFacade.DISPLAY_CHANGE_PASSWORD,
             ProcessingMediator.START,
             ProcessingMediator.STOP
@@ -270,15 +277,36 @@ public class ApplicationMediator extends IocMediator {
             case ApplicationFacade.CLEAR_MSG :
                 //                app.messageBox.clearAndHide();
                 break;
+            case ApplicationFacade.DISPLAY_VIEW:
+                var viewIndex:int = notification.getBody() as int;
+                if (viewIndex == MODELER_VIEW_INDEX) {
+                    sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+                } else if (viewIndex == LIFECYCLE_VIEW_INDEX) {
+                    sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE);
+                } else if (viewIndex == ACCOUNT_VIEW_INDEX) {
+                    sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_ACCOUNT);
+                }
+                break;
             case ApplicationFacade.DISPLAY_APPLIANCE_MODELER:
                 app.stackButtonBar.selectedIndex = MODELER_VIEW_INDEX;
-                app.modulesViewStack.selectedIndex = MODELER_VIEW_INDEX;
-                sendNotification(ApplicationFacade.MODELER_VIEW_SELECTED);
+                if (app.modulesViewStack.selectedIndex != MODELER_VIEW_INDEX) {
+                    app.modulesViewStack.selectedIndex = MODELER_VIEW_INDEX;
+                    sendNotification(ApplicationFacade.MODELER_VIEW_SELECTED);
+                }
                 break;
             case ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE:
                 app.stackButtonBar.selectedIndex = LIFECYCLE_VIEW_INDEX;
-                app.modulesViewStack.selectedIndex = LIFECYCLE_VIEW_INDEX;
-                sendNotification(ApplicationFacade.LIFECYCLE_VIEW_SELECTED);
+                if (app.modulesViewStack.selectedIndex != LIFECYCLE_VIEW_INDEX) {
+                    app.modulesViewStack.selectedIndex = LIFECYCLE_VIEW_INDEX;
+                    sendNotification(ApplicationFacade.LIFECYCLE_VIEW_SELECTED);
+                }
+                break;
+            case ApplicationFacade.DISPLAY_APPLIANCE_ACCOUNT:
+                app.stackButtonBar.selectedIndex = ACCOUNT_VIEW_INDEX;
+                if (app.modulesViewStack.selectedIndex != ACCOUNT_VIEW_INDEX) {
+                    app.modulesViewStack.selectedIndex = ACCOUNT_VIEW_INDEX;
+                    sendNotification(ApplicationFacade.ACCOUNT_VIEW_SELECTED);
+                }
                 break;
             case ApplicationFacade.DISPLAY_CHANGE_PASSWORD:
                 popupManager.showChangePasswordWindow(notification);

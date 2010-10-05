@@ -124,6 +124,27 @@ public class AddUserMediator extends IocFormMediator
         }
         else {
             event.stopImmediatePropagation();
+
+            if (view.usernameUserValidator.source.errorString != "") {
+                view.tabNav.selectedIndex = 0;
+                view.focusManager.setFocus(view.userUsername);
+            }
+            if (view.pwvPasswords.source.errorString != "") {
+                view.tabNav.selectedIndex = 4;
+                view.focusManager.setFocus(view.userPassword);
+            }
+            if (view.firstnameUserValidator.source.errorString != "") {
+                view.tabNav.selectedIndex = 0;
+                view.focusManager.setFocus(view.userFirstName);
+            }
+            if (view.lastnameUserValidator.source.errorString !="") {
+                view.tabNav.selectedIndex = 0;
+                view.focusManager.setFocus(view.userLastName);
+            }
+            if (view.userEmailValidator.source.errorString != "") {
+                view.tabNav.selectedIndex = 0;
+                view.focusManager.setFocus(view.userEmail);
+            }
         }
     }
 

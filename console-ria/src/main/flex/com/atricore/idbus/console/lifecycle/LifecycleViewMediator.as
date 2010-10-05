@@ -209,6 +209,8 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
         view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_DROP, handleDropInDisposedGrid);
 
         view = null;
+
+        _created = false;
     }
 
 
