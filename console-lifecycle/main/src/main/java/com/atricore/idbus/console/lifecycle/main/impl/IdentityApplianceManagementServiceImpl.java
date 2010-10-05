@@ -623,6 +623,7 @@ public class IdentityApplianceManagementServiceImpl implements
             jdbcDs.setName(ds.getName());
             jdbcDs.setDefaultUrl(ds.getUrl());
             jdbcDs.setClassName(ds.getDriverclassName());
+            jdbcDs.setWebSiteUrl(ds.getWebSiteUrl());
             jdbcDss.add(jdbcDs);
         }
 

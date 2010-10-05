@@ -27,5 +27,7 @@ public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
         this.err = err;
     }
 
-
+    public void printError(Exception e) {
+        System.err.println("\u001B[31m" + e.getMessage() + "\u001B[0m");
+    }
 }
