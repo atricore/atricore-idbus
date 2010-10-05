@@ -1,3 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
@@ -1684,6 +1706,14 @@
                                     <outputDirectory>target/dependencies/lib</outputDirectory>
                                     <destFileName>idbus.jar</destFileName>
                                 </artifactItem>
+                                <!-- TODO : Only required for JDK 5 ? -->
+                                <artifactItem>
+                                    <groupId>org.apache.servicemix.bundles</groupId>
+                                    <artifactId>org.apache.servicemix.bundles.xerces</artifactId>
+                                    <outputDirectory>target/dependencies/lib/endorsed</outputDirectory>
+                                    <!--destFileName>karaf.jar</destFileName-->
+                                </artifactItem>
+                                
                                 <artifactItem>
                                     <groupId>org.apache.felix.karaf</groupId>
                                     <artifactId>manual</artifactId>

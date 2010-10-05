@@ -105,4 +105,5 @@ public class DynamicJDBCIdentityStore extends AbstractDBIdentityStore {
             throw new SSOIdentityException(e);
         }
     }
+
 }
