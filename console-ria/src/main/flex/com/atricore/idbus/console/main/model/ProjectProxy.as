@@ -42,6 +42,7 @@ public class ProjectProxy extends IocProxy implements IDisposable
     private var _currentView:String;
     private var _commandResultIdentityAppliance:IdentityAppliance;
     private var _identityApplianceValidationErrors:ArrayCollection;
+    private var _jdbcDrivers:ArrayCollection;
 
     public function ProjectProxy()
     {
@@ -112,6 +113,14 @@ public class ProjectProxy extends IocProxy implements IDisposable
         _identityApplianceValidationErrors = value;
     }
 
+    public function get jdbcDrivers():ArrayCollection {
+        return _jdbcDrivers;
+    }
+
+    public function set jdbcDrivers(value:ArrayCollection):void {
+        _jdbcDrivers = value;
+    }
+
     public function dispose():void {
         _identityApplianceList = null;
         _viewAction = 0;
@@ -121,6 +130,7 @@ public class ProjectProxy extends IocProxy implements IDisposable
         _currentView = "";
         _commandResultIdentityAppliance = null;
         _identityApplianceValidationErrors = null;
+        _jdbcDrivers = null;
     }
 }
 }

@@ -74,7 +74,8 @@ public class JBossExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleJbossExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
-        view.selectedHost.enabled = false;        
+        view.selectedHost.enabled = false;
+        view.instance.text = "default";
     }
 
     private function resetForm():void {
@@ -82,7 +83,7 @@ public class JBossExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.executionEnvironmentDescription.text = "";
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
-        view.instance.text = "";
+        view.instance.text = "default";
         view.replaceConfFiles.selected = false;
         view.installSamples.selected = false;
         
