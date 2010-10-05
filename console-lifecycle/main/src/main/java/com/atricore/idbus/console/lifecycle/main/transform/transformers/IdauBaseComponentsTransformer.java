@@ -183,6 +183,18 @@ public class IdauBaseComponentsTransformer extends AbstractTransformer {
 
         idauBeansOsgi.getImportsAndAliasAndBeen().add(cxfImporter);
 
+        // -------------------------------------------------------
+        // JDBC Driver Manager Importer
+        // -------------------------------------------------------
+        Reference jdbcManagerImporter = new Reference();
+        jdbcManagerImporter.setId("jdbc-manager");
+        jdbcManagerImporter.setCardinality("1..1");
+        jdbcManagerImporter.setTimeout(60L);
+        jdbcManagerImporter.setInterface("org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager");
+
+        idauBeansOsgi.getImportsAndAliasAndBeen().add(jdbcManagerImporter);
+
+
         // ----------------------------------------
         // BPMS Manager OSGI Importer
         // ----------------------------------------

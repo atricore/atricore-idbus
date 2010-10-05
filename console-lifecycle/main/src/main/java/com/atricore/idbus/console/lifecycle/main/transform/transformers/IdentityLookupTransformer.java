@@ -85,11 +85,13 @@ public class IdentityLookupTransformer extends AbstractTransformer {
                 Bean identityStore = null;
                 // DB
                 DbIdentitySource dbSource = (DbIdentitySource) identitySource;
-                identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.dbidentitystore.JDBCIdentityStore");
+                identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.dbidentitystore.DynamicJDBCIdentityStore");
+
+                setPropertyRef(identityStore, "manager", "jdbc-manager");
                 
                 setPropertyValue(identityStore, "driverName", dbSource.getDriverName());
                 setPropertyValue(identityStore, "connectionURL", dbSource.getConnectionUrl());
-                setPropertyValue(identityStore, "connectionName", dbSource.getAdmin());
+                setPropertyValue(identityStore, "connectionUser", dbSource.getAdmin());
                 setPropertyValue(identityStore, "connectionPassword", dbSource.getPassword());
 
                 setPropertyValue(identityStore, "userQueryString", dbSource.getUserQueryString());
