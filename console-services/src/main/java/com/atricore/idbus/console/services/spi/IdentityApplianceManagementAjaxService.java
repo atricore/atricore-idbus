@@ -65,7 +65,7 @@ public interface IdentityApplianceManagementAjaxService {
     /****************************
      * List methods
      ***************************/
-    ListAvailableJDBCDriversResponse listAvailableJDBCDrivers(ListAvaiableJDBCDriversRequest request) throws IdentityServerException;
+    ListAvailableJDBCDriversResponse listAvailableJDBCDrivers(ListAvailableJDBCDriversRequest request) throws IdentityServerException;
     ListIdentityVaultsResponse listIdentityVaults(ListIdentityVaultsRequest req) throws IdentityServerException;
     ListUserInformationLookupsResponse listUserInformationLookups(ListUserInformationLookupsRequest req) throws IdentityServerException;
     ListAccountLinkagePoliciesResponse listAccountLinkagePolicies(ListAccountLinkagePoliciesRequest req) throws IdentityServerException;

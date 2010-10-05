@@ -102,9 +102,9 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_UPDATED:
                 // TODO: Dispatch change event to renderer so that it can update item's labels & icons without
-                // TODO: recreating the tree view. 
+                // TODO: recreating the tree view.
                 updateIdentityAppliance();
-                bindApplianceBrowser();
+                bindApplianceBrowser(view.selectedIndex);
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
                 var treeNode:BrowserNode = findDataTreeNodeByData(_applianceRootNode, projectProxy.currentIdentityApplianceElement);
@@ -120,11 +120,10 @@ public class BrowserMediator extends IocMediator implements IDisposable {
     }
 
     private function updateIdentityAppliance():void {
-
         _identityAppliance = _projectProxy.currentIdentityAppliance;
     }
 
-    private function bindApplianceBrowser():void {
+    private function bindApplianceBrowser(selectedIndex:int = -1):void {
 
         if (_identityAppliance != null) {
             var identityApplianceDefinition:IdentityApplianceDefinition = _identityAppliance.idApplianceDefinition;
@@ -248,7 +247,7 @@ public class BrowserMediator extends IocMediator implements IDisposable {
             view.dataProvider = _applianceRootNode;
             view.validateNow();
             //view.callLater(expandCollapseTree, [true]);
-            view.callLater(expandTree, [_applianceRootNode]);
+            view.callLater(expandTree, [_applianceRootNode, selectedIndex]);
         } else {
             view.dataProvider = null;
             view.validateNow();
@@ -261,12 +260,15 @@ public class BrowserMediator extends IocMediator implements IDisposable {
         view.expandChildrenOf(_applianceRootNode, open);
     }
 
-    private function expandTree(startNode:BrowserNode):void {
+    private function expandTree(startNode:BrowserNode, selectedIndex:int = -1):void {
         view.expandItem(startNode, true);
         for each (var currentNode:BrowserNode in startNode.children) {
             if (currentNode.data is Provider) {
                 view.expandItem(currentNode, true);
             }
+        }
+        if (selectedIndex != -1) {
+            view.selectedIndex = selectedIndex;
         }
     }
 

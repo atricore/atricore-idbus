@@ -405,7 +405,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
      * List methods
      ***************************/
 
-    public ListAvailableJDBCDriversResponse listAvailableJDBCDrivers(ListAvaiableJDBCDriversRequest request) throws IdentityServerException {
+    public ListAvailableJDBCDriversResponse listAvailableJDBCDrivers(ListAvailableJDBCDriversRequest request) throws IdentityServerException {
         com.atricore.idbus.console.lifecycle.main.spi.request.ListAvailableJDBCDriversRequest beReq =
            new com.atricore.idbus.console.lifecycle.main.spi.request.ListAvailableJDBCDriversRequest();
 

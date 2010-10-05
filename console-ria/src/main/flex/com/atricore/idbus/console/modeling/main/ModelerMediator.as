@@ -35,6 +35,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityV
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
+import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.main.controller.LookupIdentityApplianceByIdCommand;
 import com.atricore.idbus.console.modeling.main.view.*;
 import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator;
@@ -301,7 +302,8 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             IdentityApplianceListLoadCommand.SUCCESS,
             IdentityApplianceListLoadCommand.FAILURE,
             IdentityApplianceUpdateCommand.SUCCESS,
-            IdentityApplianceUpdateCommand.FAILURE];
+            IdentityApplianceUpdateCommand.FAILURE,
+            JDBCDriversListCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -475,7 +477,8 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 view.btnSave.enabled = false;
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                sendNotification(ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA);
+                //sendNotification(ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA);
+                sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
                 if (_tempSelectedViewIndex != -1) {
                     sendNotification(ApplicationFacade.DISPLAY_VIEW, _tempSelectedViewIndex);
                     _tempSelectedViewIndex = -1;
@@ -518,6 +521,10 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 } else {
                     sendNotification(ApplicationFacade.DISPLAY_VIEW, selectedIndex);
                 }
+                break;
+            case JDBCDriversListCommand.FAILURE:
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                        "There was an error loading JDBC drivers list.");
                 break;
         }
 

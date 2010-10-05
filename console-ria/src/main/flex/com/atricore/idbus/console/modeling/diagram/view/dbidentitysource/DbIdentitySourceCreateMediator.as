@@ -24,18 +24,12 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
+import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 
-import com.atricore.idbus.console.services.dto.Resource;
-
 import flash.events.Event;
 import flash.events.MouseEvent;
-
-import flash.net.FileFilter;
-import flash.net.FileReference;
-
-import flash.utils.ByteArray;
 
 import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
@@ -49,6 +43,7 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
 
     private var _newDbIdentitySource:DbIdentitySource;
 
+    /*
     private var _uploadedFile:ByteArray;
     private var _uploadedFileName:String;
     
@@ -57,6 +52,10 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
 
     [Bindable]
     public var _selectedFiles:ArrayCollection;
+    */
+
+    [Bindable]
+    public var _jdbcDrivers:ArrayCollection;
 
     public function DbIdentitySourceCreateMediator(name:String = null, viewComp:DbIdentitySourceCreateForm = null) {
         super(name, viewComp);
@@ -74,10 +73,11 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         if (getViewComponent() != null) {
             view.btnOk.removeEventListener(MouseEvent.CLICK, handleDbIdentitySourceSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
-            if (_fileRef != null) {
+            /*if (_fileRef != null) {
                 _fileRef.removeEventListener(Event.SELECT, fileSelectHandler);
                 _fileRef.removeEventListener(Event.COMPLETE, uploadCompleteHandler);
-            }
+            }*/
+            view.driver.removeEventListener(Event.CHANGE, handleDriverChange);
         }
 
         super.setViewComponent(viewComponent);
@@ -89,14 +89,18 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleDbIdentitySourceSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
 
-        // upload bindings
+        /*// upload bindings
         view.driver.addEventListener(MouseEvent.CLICK, browseHandler);
-        BindingUtils.bindProperty(view.driver, "dataProvider", this, "_selectedFiles");
+        BindingUtils.bindProperty(view.driver, "dataProvider", this, "_selectedFiles");*/
+
+        BindingUtils.bindProperty(view.driver, "dataProvider", this, "_jdbcDrivers");
+        view.driver.addEventListener(Event.CHANGE, handleDriverChange);
+        sendNotification(ApplicationFacade.LIST_JDBC_DRIVERS);
     }
 
     private function resetForm():void {
         view.userRepositoryName.text = "";
-        view.driverName.text = "";
+        //view.driverName.text = "";
         view.connectionUrl.text = "";
         view.dbUsername.text = "";
         view.dbPassword.text = "";
@@ -108,23 +112,30 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         view.credentialsUpdate.text = "";
         view.relayCredentialQuery.text = "";
 
-        _fileRef = null;
+        _jdbcDrivers = new ArrayCollection();
+
+        /*_fileRef = null;
         _selectedFiles = new ArrayCollection();
         view.driver.prompt = "Browse Driver";
         view.lblUploadMsg.text = "";
         view.lblUploadMsg.visible = false;
 
         _uploadedFile = null;
-        _uploadedFileName = null;
+        _uploadedFileName = null;*/
 
         FormUtility.clearValidationErrors(_validators);
+    }
+
+    private function handleDriverChange(event:Event):void {
+        view.connectionUrl.text = view.driver.selectedItem.defaultUrl;
     }
 
     override public function bindModel():void {
         var dbIdentitySource:DbIdentitySource = new DbIdentitySource();
 
         dbIdentitySource.name = view.userRepositoryName.text;
-        dbIdentitySource.driverName = view.driverName.text;
+        //dbIdentitySource.driverName = view.driverName.text;
+        dbIdentitySource.driverName = view.driver.selectedItem.className;
         dbIdentitySource.connectionUrl = view.connectionUrl.text;
         dbIdentitySource.admin = view.dbUsername.text;
         dbIdentitySource.password = view.dbPassword.text;
@@ -136,19 +147,19 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         dbIdentitySource.resetCredentialDml = view.credentialsUpdate.text;
         dbIdentitySource.relayCredentialQueryString = view.relayCredentialQuery.text;
 
-        var driver:Resource = new Resource();
+        /*var driver:Resource = new Resource();
         driver.name = _uploadedFileName.substring(0, _uploadedFileName.lastIndexOf("."));
         driver.displayName = _uploadedFileName;
         driver.uri = _uploadedFileName;
         driver.value = _uploadedFile;
-        dbIdentitySource.driver = driver;
+        dbIdentitySource.driver = driver;*/
 
         _newDbIdentitySource = dbIdentitySource;
     }
 
     private function handleDbIdentitySourceSave(event:MouseEvent):void {
         if (validate(true)) {
-            if (_selectedFiles == null || _selectedFiles.length == 0) {
+            /*if (_selectedFiles == null || _selectedFiles.length == 0) {
                 view.lblUploadMsg.text = "You must select a jdbc driver!";
                 view.lblUploadMsg.setStyle("color", "Red");
                 view.lblUploadMsg.visible = true;
@@ -156,7 +167,8 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
                 return;
             } else {
                 _fileRef.load();
-            }
+            }*/
+            saveDbIdentitySource();
         }
         else {
             event.stopImmediatePropagation();
@@ -182,7 +194,7 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         sendNotification(PaletteMediator.DESELECT_PALETTE_ELEMENT);
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
-
+    /*
     // upload functions
     private function browseHandler(event:MouseEvent):void {
         if (_fileRef == null) {
@@ -215,25 +227,30 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         
         saveDbIdentitySource();
     }
-
+    */
     protected function get view():DbIdentitySourceCreateForm {
         return viewComponent as DbIdentitySourceCreateForm;
     }
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
-        _validators.push(view.driverNameValidator);
+        _validators.push(view.driverValidator);
         _validators.push(view.connUrlValidator);
         _validators.push(view.dbUsernameValidator);
         _validators.push(view.dbPasswordValidator);
     }
 
     override public function listNotificationInterests():Array {
-        return super.listNotificationInterests();
+        return [JDBCDriversListCommand.SUCCESS,
+            JDBCDriversListCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
-        super.handleNotification(notification);
+        switch (notification.getName()) {
+            case JDBCDriversListCommand.SUCCESS:
+                _jdbcDrivers = projectProxy.jdbcDrivers;
+                break;
+        }
     }
 }
 }
