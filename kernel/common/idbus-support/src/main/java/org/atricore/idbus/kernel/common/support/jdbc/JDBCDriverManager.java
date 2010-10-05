@@ -278,7 +278,6 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
         }
 
         if (driverClass == null) {
-            logger.error("Failed to load JDBC driver class: " + className);
             throw new JDBCManagerException("Cannot load driver class: " + className);
         }
 
@@ -345,7 +344,7 @@ public class JDBCDriverManager implements BundleContextAware, InitializingBean {
             }
 
             if (logger.isDebugEnabled()) {
-                logger.debug("ExternalResourcesClassLoader failed to load class: " + className, e);
+                logger.debug("ExternalResourcesClassLoader failed to load class " + className + " : " + e.getMessage());
                 logger.debug("refreshUrlsWhenFail: " + refreshUrlsWhenFail);
                 //logger.error("driverClassPath: " + );
 
