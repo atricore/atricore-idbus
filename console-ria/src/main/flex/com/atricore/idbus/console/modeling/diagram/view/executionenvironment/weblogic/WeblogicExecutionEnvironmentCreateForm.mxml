@@ -47,7 +47,7 @@
         <s:DropDownList id="platform" width="300" selectedIndex="1">
             <s:dataProvider>
                 <mx:ArrayCollection>
-                    <utils:ListItemValueObject label="9.2" data="wl9"/>
+                    <utils:ListItemValueObject label="9.2" data="wl92"/>
                     <utils:ListItemValueObject label="10.0" data="wl10"/>
                 </mx:ArrayCollection>
             </s:dataProvider>

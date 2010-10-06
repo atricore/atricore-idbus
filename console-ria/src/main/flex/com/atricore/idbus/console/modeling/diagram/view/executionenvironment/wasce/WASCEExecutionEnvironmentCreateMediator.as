@@ -92,7 +92,7 @@ public class WASCEExecutionEnvironmentCreateMediator extends IocFormMediator {
         executionEnvironment.installUri = view.homeDirectory.text;
         executionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
         executionEnvironment.installDemoApps = view.installSamples.selected;        
-        executionEnvironment.platformId = "2.1.1.x";
+        executionEnvironment.platformId = "wc21";
         _newExecutionEnvironment = executionEnvironment;
     }
 

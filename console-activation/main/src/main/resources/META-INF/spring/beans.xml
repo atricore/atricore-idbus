@@ -258,13 +258,13 @@
 
         <property name="binDir" value="${target}/${domain}/bin"/>
         <property name="libDir" value="${target}/${domain}/lib"/>
-        <property name="configDir" value="${target}/${domain}/conf"/>
+        <property name="configDir" value="${target}/${domain}/config"/>
         <property name="deployDir" value="${target}/${domain}/autodeploy"/>
         <property name="endorsedLibDir" value="${target}/${domain}/lib"/>
 
         <property name="JOSSOConfDir" value="${target}/${domain}"/>
         <property name="JOSSOLibDir" value="${target}/${domain}/lib"/>
-        <property name="JOSSOSharedLibDir" value="${target}/${domain}/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/${domain}/lib/"/>
 
         <property name="JOSSOWarName" value="josso.war"/>
         <property name="JOSSOWarExploded" value="false"/>
@@ -286,13 +286,13 @@
 
         <property name="binDir" value="${target}/${domain}/bin"/>
         <property name="libDir" value="${target}/${domain}/lib"/>
-        <property name="configDir" value="${target}/${domain}/conf"/>
+        <property name="configDir" value="${target}/${domain}/config"/>
         <property name="deployDir" value="${target}/${domain}/autodeploy"/>
         <property name="endorsedLibDir" value="${target}/${domain}/lib"/>
 
         <property name="JOSSOConfDir" value="${target}/${domain}"/>
         <property name="JOSSOLibDir" value="${target}/${domain}/lib"/>
-        <property name="JOSSOSharedLibDir" value="${target}/${domain}/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/${domain}/lib/"/>
 
         <property name="JOSSOWarName" value="josso.war"/>
         <property name="JOSSOWarExploded" value="false"/>
