@@ -2,7 +2,7 @@
 <%--
   ~ Atricore IDBus
   ~
-  ~ Copyright (c) 2009, Atricore Inc.
+  ~ Copyright (c) 2009-2010, Atricore Inc.
   ~
   ~ This is free software; you can redistribute it and/or modify it
   ~ under the terms of the GNU Lesser General Public License as
@@ -23,6 +23,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 	<head>
+        <title>Atricore Console</title>
 		<style type="text/css">
 			html {
 			  height: 100%;
@@ -34,55 +35,33 @@
 			  margin: 0;
 			  padding: 0;
 			}
-
-			#customRightClick {
-			  height: 100%;
-			}
 		</style>
-        <script type="text/javascript" src="<%=request.getContextPath()%>/js/swf/swfobject_1.5.js"></script>
-        <script type="text/javascript" src="<%=request.getContextPath()%>/js/rightClick.js"></script>
-        <script type="text/javascript" src="<%=request.getContextPath()%>/js/BrowserDetect.js"></script>
+        <script type="text/javascript" src="<%=request.getContextPath()%>/js/swf/swfobject.js"></script>
         <script type="text/javascript">
-            /*
             var flashvars = {};
             var params = {
                 play: "true",
                 loop: "false",
                 quality: "high",
                 allowscriptaccess: "always",
-                wmode: "opaque",
                 menu: "false",
                 scale: "noScale"
             };
             var attributes = {
-                id: "customRightClick",
-                name: "customRightClick"
+                id: "atricore-console",
+                name: "atricore-console"
             };
-            swfobject.embedSWF("<%=request.getContextPath()%>/idbus-server-ria-1.0.0-SNAPSHOT.swf", "flashcontent", "100%", "100%", "9.0.0", "<%=request.getContextPath()%>/js/swf/expressInstall.swf", flashvars, params, attributes);
-            //swfobject 2+ doesn't disable right click in IE
-            */
+            swfobject.embedSWF("<%=request.getContextPath()%>/console-ria-1.0.0-SNAPSHOT.swf", "flashcontent", "100%", "100%", "10.0.0", "<%=request.getContextPath()%>/js/swf/expressInstall.swf", flashvars, params, attributes);
+
             function init() {
-                //TODO commented for debug purposes
-//                RightClick.init();
-                var fl = document.getElementById("customRightClick");
+                var fl = document.getElementById("atricore-console");
                 if (fl) { fl.focus(); }
             }
 		</script>
     </head>
     <body scroll="no" onload="init();">
         <div id="flashcontent">
-            You either have JavaScript turned off or an old version of Adobe's Flash Player. <a href="http://www.adobe.com/go/getflashplayer/">Get the latest Flash player</a>.
+            You either have JavaScript turned off or an old version of Adobe's Flash Player. <a href="http://get.adobe.com/flashplayer/">Get the latest Flash player</a>.
         </div>
-        <script type="text/javascript">
-            var so = new SWFObject("<%=request.getContextPath()%>/console-ria-1.0.0-SNAPSHOT.swf", "customRightClick", "100%", "100%", "9");
-            so.addParam("quality", "high");
-            so.addParam("name", "customRightClick");
-            so.addParam("id", "customRightClick");
-            so.addParam("AllowScriptAccess", "always");
-//            so.addParam("wmode", "opaque");
-            so.addParam("menu", "false");
-            so.addParam("scale", "noScale");
-            so.write("flashcontent");
-        </script>
     </body>
 </html>

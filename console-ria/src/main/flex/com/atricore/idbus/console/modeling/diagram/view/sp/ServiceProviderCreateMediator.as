@@ -219,7 +219,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         accountLinkagePolicy.name = view.accountLinkagePolicyCombo.selectedItem.name;
         var selectedPolicy:String = view.accountLinkagePolicyCombo.selectedItem.data;
         if (selectedPolicy == "theirs") {
-            accountLinkagePolicy.mappingType = IdentityMappingType.CUSTOM;
+            accountLinkagePolicy.mappingType = IdentityMappingType.REMOTE;
         } else if (selectedPolicy == "ours") {
             accountLinkagePolicy.mappingType = IdentityMappingType.LOCAL;
         } else if (selectedPolicy == "aggregate") {
