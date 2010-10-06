@@ -392,6 +392,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
             case ApplicationFacade.DIAGRAM_ELEMENT_UPDATED:
                 _identityApplianceDiagram.dispatchEvent(new VGraphEvent(VGraphEvent.VGRAPH_CHANGED));
+                updateGraphTitle();
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_REMOVE:
                 if (_currentlySelectedNode != null) {
@@ -546,7 +547,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
         if (_identityAppliance != null) {
             _applianceId = _identityAppliance.id.toString();
-            view.title = _identityAppliance.idApplianceDefinition.name;
+            updateGraphTitle();
         } else {
             _applianceId = null;
         }
@@ -668,6 +669,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
     private function updateGraphData():void {
         var identityAppliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
         if (identityAppliance != null) {
+            updateGraphTitle();
+
             var identityApplianceDefinition:IdentityApplianceDefinition = identityAppliance.idApplianceDefinition;
 
             if (identityApplianceDefinition.identitySources != null) {
@@ -725,6 +728,12 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 edge.vedge.data.data = data;
                 break;
             }
+        }
+    }
+
+    private function updateGraphTitle():void {
+        if (projectProxy.currentIdentityAppliance != null) {
+            view.title = projectProxy.currentIdentityAppliance.idApplianceDefinition.name;
         }
     }
 

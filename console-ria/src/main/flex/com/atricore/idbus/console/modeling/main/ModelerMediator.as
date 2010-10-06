@@ -478,6 +478,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 //sendNotification(ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA);
+                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);  //appliance name might be changed
                 sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
                 if (_tempSelectedViewIndex != -1) {
                     sendNotification(ApplicationFacade.DISPLAY_VIEW, _tempSelectedViewIndex);

@@ -393,7 +393,8 @@ public class PropertySheetMediator extends IocMediator {
             var identityAppliance:IdentityAppliance;
             identityAppliance = projectProxy.currentIdentityAppliance;
 
-            identityAppliance.idApplianceDefinition.name = _iaCoreSection.applianceName.text;
+            identityAppliance.name = _iaCoreSection.applianceName.text;
+            identityAppliance.idApplianceDefinition.name = identityAppliance.name;
             identityAppliance.idApplianceDefinition.description = _iaCoreSection.applianceDescription.text;
             identityAppliance.namespace = _iaCoreSection.applianceNamespace.text;
             identityAppliance.idApplianceDefinition.location.protocol = _iaCoreSection.applianceLocationProtocol.selectedItem.label;
