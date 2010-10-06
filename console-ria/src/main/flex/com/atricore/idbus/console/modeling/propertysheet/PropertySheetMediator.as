@@ -27,6 +27,7 @@ import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.modeling.diagram.model.request.ActivateExecutionEnvironmentRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
+import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.certificate.CertificateSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
@@ -170,6 +171,7 @@ public class PropertySheetMediator extends IocMediator {
     [Bindable]
     public var _selectedFiles:ArrayCollection;
 
+    /*
     // jdbc driver
     private var _uploadedDriver:ByteArray;
     private var _uploadedDriverName:String;
@@ -179,7 +181,11 @@ public class PropertySheetMediator extends IocMediator {
 
     [Bindable]
     public var _selectedDriverFiles:ArrayCollection;
+    */
 
+    [Bindable]
+    public var _jdbcDrivers:ArrayCollection;
+    
     public function PropertySheetMediator(name : String = null, viewComp:PropertySheetView = null) {
         super(name, viewComp);
     }
@@ -221,7 +227,8 @@ public class PropertySheetMediator extends IocMediator {
             ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
             ApplicationFacade.DIAGRAM_ELEMENT_SELECTED,
             FolderExistsCommand.FOLDER_EXISTS,
-            FolderExistsCommand.FOLDER_DOESNT_EXISTS];
+            FolderExistsCommand.FOLDER_DOESNT_EXISTS,
+            JDBCDriversListCommand.SUCCESS];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -293,6 +300,23 @@ public class PropertySheetMediator extends IocMediator {
                     _execEnvHomeDir = null;
                     _execEnvSaveFunction = null;                    
                 }
+                break;
+            case JDBCDriversListCommand.SUCCESS:
+                _jdbcDrivers = projectProxy.jdbcDrivers;
+                var dbIdentitySource:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
+                if (dbIdentitySource != null) {
+                    for (var i:int = 0; i < _externalDbVaultCoreSection.driver.dataProvider.length; i++) {
+                        if (_externalDbVaultCoreSection.driver.dataProvider[i].className == dbIdentitySource.driverName) {
+                            _externalDbVaultCoreSection.driver.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                break;
+            case JDBCDriversListCommand.FAILURE:
+                _jdbcDrivers = new ArrayCollection();
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                        "There was an error loading JDBC drivers list.");
                 break;
         }
 
@@ -1197,41 +1221,57 @@ public class PropertySheetMediator extends IocMediator {
         // if dbIdentityVault is null that means some other element was selected before completing this
         if (dbIdentityVault != null) {
             // bind view
-            resetUploadDriverFields();
+            //resetUploadDriverFields();
 
             _externalDbVaultCoreSection.userRepositoryName.text = dbIdentityVault.name;
-            _externalDbVaultCoreSection.driverName.text = dbIdentityVault.driverName;
+            //_externalDbVaultCoreSection.driverName.text = dbIdentityVault.driverName;
+            /*if (_externalDbVaultCoreSection.driver.dataProvider != null) {
+                for (var i:int = 0; i < _externalDbVaultCoreSection.driver.dataProvider.length; i++) {
+                    if (_externalDbVaultCoreSection.driver.dataProvider[i].className == dbIdentityVault.driverName) {
+                        _externalDbVaultCoreSection.driver.selectedIndex = i;
+                        break;
+                    }
+                }
+            }*/
             _externalDbVaultCoreSection.connectionUrl.text = dbIdentityVault.connectionUrl;
             _externalDbVaultCoreSection.dbUsername.text = dbIdentityVault.admin;
             _externalDbVaultCoreSection.dbPassword.text = dbIdentityVault.password;
 
             _externalDbVaultCoreSection.userRepositoryName.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.driver.addEventListener(Event.CHANGE, handleSectionChange);
-            _externalDbVaultCoreSection.driverName.addEventListener(Event.CHANGE, handleSectionChange);
+            //_externalDbVaultCoreSection.driverName.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.connectionUrl.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.dbUsername.addEventListener(Event.CHANGE, handleSectionChange);
             _externalDbVaultCoreSection.dbPassword.addEventListener(Event.CHANGE, handleSectionChange);
 
-            _externalDbVaultCoreSection.driver.addEventListener(MouseEvent.CLICK, browseDriverHandler);
-            BindingUtils.bindProperty(_externalDbVaultCoreSection.driver, "dataProvider", this, "_selectedDriverFiles");
+            //_externalDbVaultCoreSection.driver.addEventListener(MouseEvent.CLICK, browseDriverHandler);
+            //BindingUtils.bindProperty(_externalDbVaultCoreSection.driver, "dataProvider", this, "_selectedDriverFiles");
+
+            BindingUtils.bindProperty(_externalDbVaultCoreSection.driver, "dataProvider", this, "_jdbcDrivers");
+            _externalDbVaultCoreSection.driver.addEventListener(Event.CHANGE, handleDriverChange);
+            sendNotification(ApplicationFacade.LIST_JDBC_DRIVERS);
 
             _validators = [];
             _validators.push(_externalDbVaultCoreSection.nameValidator);
-            _validators.push(_externalDbVaultCoreSection.driverNameValidator);
+            _validators.push(_externalDbVaultCoreSection.driverValidator);
             _validators.push(_externalDbVaultCoreSection.connUrlValidator);
             _validators.push(_externalDbVaultCoreSection.dbUsernameValidator);
             _validators.push(_externalDbVaultCoreSection.dbPasswordValidator);
         }
     }
 
+    private function handleDriverChange(event:Event):void {
+        _externalDbVaultCoreSection.connectionUrl.text = _externalDbVaultCoreSection.driver.selectedItem.defaultUrl;
+    }
+
     private function handleExternalDbVaultCorePropertyTabRollOut(e:Event):void {
         if (_dirty && validate(true)) {
             // bind model
-            if (_selectedDriverFiles != null && _selectedDriverFiles.length > 0) {
-                _driverFileRef.load();
-            } else {
+            //if (_selectedDriverFiles != null && _selectedDriverFiles.length > 0) {
+            //    _driverFileRef.load();
+            //} else {
                 updateDbIdentitySource();
-            }
+            //}
         }
     }
 
@@ -1239,19 +1279,20 @@ public class PropertySheetMediator extends IocMediator {
         var dbIdentityVault:DbIdentitySource = _currentIdentityApplianceElement as DbIdentitySource;
         
         dbIdentityVault.name = _externalDbVaultCoreSection.userRepositoryName.text;
-        dbIdentityVault.driverName = _externalDbVaultCoreSection.driverName.text;
+        //dbIdentityVault.driverName = _externalDbVaultCoreSection.driverName.text;
+        dbIdentityVault.driverName = _externalDbVaultCoreSection.driver.selectedItem.className;
         dbIdentityVault.connectionUrl = _externalDbVaultCoreSection.connectionUrl.text;
         dbIdentityVault.admin = _externalDbVaultCoreSection.dbUsername.text;
         dbIdentityVault.password = _externalDbVaultCoreSection.dbPassword.text;
 
-        if (_uploadedDriver != null && _uploadedDriverName != null) {
+        /*if (_uploadedDriver != null && _uploadedDriverName != null) {
             var driver:Resource = dbIdentityVault.driver;
             driver.name = _uploadedDriverName.substring(0, _uploadedDriverName.lastIndexOf("."));
             driver.displayName = _uploadedDriverName;
             driver.uri = _uploadedDriverName;
             driver.value = _uploadedDriver;
             dbIdentityVault.driver = driver;
-        }
+        }*/
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -1568,15 +1609,17 @@ public class PropertySheetMediator extends IocMediator {
     private function handleFederatedConnectionCorePropertyTabCreationComplete(event:Event):void {
         var connection:Connection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
 
-        // bind view
-        _federatedConnectionCoreSection.connectionName.text = connection.name;
-        _federatedConnectionCoreSection.connectionDescription.text = connection.description;
+        if (connection != null) {
+            // bind view
+            _federatedConnectionCoreSection.connectionName.text = connection.name;
+            _federatedConnectionCoreSection.connectionDescription.text = connection.description;
 
-        _federatedConnectionCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
-        _federatedConnectionCoreSection.connectionDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionCoreSection.connectionDescription.addEventListener(Event.CHANGE, handleSectionChange);
 
-        _validators = [];
-        _validators.push(_federatedConnectionCoreSection.nameValidator);
+            _validators = [];
+            _validators.push(_federatedConnectionCoreSection.nameValidator);
+        }
     }
 
     private function handleFederatedConnectionCorePropertyTabRollOut(e:Event):void {
@@ -1597,10 +1640,12 @@ public class PropertySheetMediator extends IocMediator {
         var spChannel:ServiceProviderChannel;
 
         var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
-        if(connection.channelA is ServiceProviderChannel){
-            spChannel = connection.channelA as ServiceProviderChannel;
-        } else if (connection.channelB is ServiceProviderChannel){
-            spChannel = connection.channelB as ServiceProviderChannel;
+        if (connection != null) {
+            if(connection.channelA is ServiceProviderChannel){
+                spChannel = connection.channelA as ServiceProviderChannel;
+            } else if (connection.channelB is ServiceProviderChannel){
+                spChannel = connection.channelB as ServiceProviderChannel;
+            }
         }
 
         // if spChannel is null that means some other element was selected before completing this
@@ -1690,12 +1735,13 @@ public class PropertySheetMediator extends IocMediator {
         var idpChannel:IdentityProviderChannel;
 
         var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
-        if(connection.channelA is IdentityProviderChannel){
-            idpChannel = connection.channelA as IdentityProviderChannel;
-        } else if (connection.channelB is IdentityProviderChannel){
-            idpChannel = connection.channelB as IdentityProviderChannel;
+        if (connection != null) {
+            if(connection.channelA is IdentityProviderChannel){
+                idpChannel = connection.channelA as IdentityProviderChannel;
+            } else if (connection.channelB is IdentityProviderChannel){
+                idpChannel = connection.channelB as IdentityProviderChannel;
+            }
         }
-
 
         // if idpChannel is null that means some other element was selected before completing this
         if (idpChannel != null) {
@@ -1825,48 +1871,50 @@ public class PropertySheetMediator extends IocMediator {
     private function handleJOSSOActivationCorePropertyTabCreationComplete(event:Event):void {
         var activation:JOSSOActivation = projectProxy.currentIdentityApplianceElement as JOSSOActivation;
 
-        // bind view
-        _jossoActivationCoreSection.connectionName.text = activation.name;
-        _jossoActivationCoreSection.connectionDescription.text = activation.description;
-        _jossoActivationCoreSection.partnerAppId.text = activation.partnerAppId;
+        if (activation != null) {
+            // bind view
+            _jossoActivationCoreSection.connectionName.text = activation.name;
+            _jossoActivationCoreSection.connectionDescription.text = activation.description;
+            _jossoActivationCoreSection.partnerAppId.text = activation.partnerAppId;
 
-        var location:Location = activation.partnerAppLocation;
-        for (var i:int = 0; i < _jossoActivationCoreSection.partnerAppLocationProtocol.dataProvider.length; i++) {
-            if (location != null && location.protocol == _jossoActivationCoreSection.partnerAppLocationProtocol.dataProvider[i].label) {
-                _jossoActivationCoreSection.partnerAppLocationProtocol.selectedIndex = i;
-                break;
-            }
-        }
-        _jossoActivationCoreSection.partnerAppLocationDomain.text = location.host;
-        _jossoActivationCoreSection.partnerAppLocationPort.text = location.port.toString() != "0" ?
-                location.port.toString() : "";
-        _jossoActivationCoreSection.partnerAppLocationPath.text = location.context;
-
-        var ignoredWebResources:String = "";
-        if (activation.ignoredWebResources != null) {
-            for (var j:int = 0; j < activation.ignoredWebResources.length; j++) {
-                if (ignoredWebResources != "") {
-                    ignoredWebResources += ", ";
+            var location:Location = activation.partnerAppLocation;
+            for (var i:int = 0; i < _jossoActivationCoreSection.partnerAppLocationProtocol.dataProvider.length; i++) {
+                if (location != null && location.protocol == _jossoActivationCoreSection.partnerAppLocationProtocol.dataProvider[i].label) {
+                    _jossoActivationCoreSection.partnerAppLocationProtocol.selectedIndex = i;
+                    break;
                 }
-                ignoredWebResources += activation.ignoredWebResources[j] as String;
             }
+            _jossoActivationCoreSection.partnerAppLocationDomain.text = location.host;
+            _jossoActivationCoreSection.partnerAppLocationPort.text = location.port.toString() != "0" ?
+                    location.port.toString() : "";
+            _jossoActivationCoreSection.partnerAppLocationPath.text = location.context;
+
+            var ignoredWebResources:String = "";
+            if (activation.ignoredWebResources != null) {
+                for (var j:int = 0; j < activation.ignoredWebResources.length; j++) {
+                    if (ignoredWebResources != "") {
+                        ignoredWebResources += ", ";
+                    }
+                    ignoredWebResources += activation.ignoredWebResources[j] as String;
+                }
+            }
+            _jossoActivationCoreSection.ignoredWebResources.text = ignoredWebResources;
+
+            _jossoActivationCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
+            _jossoActivationCoreSection.connectionDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _jossoActivationCoreSection.partnerAppId.addEventListener(Event.CHANGE, handleSectionChange);
+            _jossoActivationCoreSection.partnerAppLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
+            _jossoActivationCoreSection.partnerAppLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
+            _jossoActivationCoreSection.partnerAppLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
+            _jossoActivationCoreSection.partnerAppLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+            _jossoActivationCoreSection.ignoredWebResources.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_jossoActivationCoreSection.nameValidator);
+            _validators.push(_jossoActivationCoreSection.domainValidator);
+            _validators.push(_jossoActivationCoreSection.portValidator);
+            _validators.push(_jossoActivationCoreSection.pathValidator);
         }
-        _jossoActivationCoreSection.ignoredWebResources.text = ignoredWebResources;
-
-        _jossoActivationCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
-        _jossoActivationCoreSection.connectionDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        _jossoActivationCoreSection.partnerAppId.addEventListener(Event.CHANGE, handleSectionChange);
-        _jossoActivationCoreSection.partnerAppLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
-        _jossoActivationCoreSection.partnerAppLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
-        _jossoActivationCoreSection.partnerAppLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
-        _jossoActivationCoreSection.partnerAppLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
-        _jossoActivationCoreSection.ignoredWebResources.addEventListener(Event.CHANGE, handleSectionChange);
-
-        _validators = [];
-        _validators.push(_jossoActivationCoreSection.nameValidator);
-        _validators.push(_jossoActivationCoreSection.domainValidator);
-        _validators.push(_jossoActivationCoreSection.portValidator);
-        _validators.push(_jossoActivationCoreSection.pathValidator);
     }
 
     private function handleJOSSOActivationCorePropertyTabRollOut(e:Event):void {
@@ -1936,30 +1984,32 @@ public class PropertySheetMediator extends IocMediator {
     private function handleTomcatExecEnvCorePropertyTabCreationComplete(event:Event):void {
         var tomcatExecEnv:TomcatExecutionEnvironment = projectProxy.currentIdentityApplianceElement as TomcatExecutionEnvironment;
 
-        // bind view
-        _tomcatExecEnvCoreSection.executionEnvironmentName.text = tomcatExecEnv.name;
-        _tomcatExecEnvCoreSection.executionEnvironmentDescription.text = tomcatExecEnv.description;
+        if (tomcatExecEnv != null) {
+            // bind view
+            _tomcatExecEnvCoreSection.executionEnvironmentName.text = tomcatExecEnv.name;
+            _tomcatExecEnvCoreSection.executionEnvironmentDescription.text = tomcatExecEnv.description;
 
-        _tomcatExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _tomcatExecEnvCoreSection.selectedHost.enabled = false;
+            _tomcatExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _tomcatExecEnvCoreSection.selectedHost.enabled = false;
 
-        for(var i:int=0; i < _tomcatExecEnvCoreSection.platform.dataProvider.length; i++){
-            if(_tomcatExecEnvCoreSection.platform.dataProvider[i].data == tomcatExecEnv.platformId){
-                _tomcatExecEnvCoreSection.platform.selectedIndex = i;
+            for(var i:int=0; i < _tomcatExecEnvCoreSection.platform.dataProvider.length; i++){
+                if(_tomcatExecEnvCoreSection.platform.dataProvider[i].data == tomcatExecEnv.platformId){
+                    _tomcatExecEnvCoreSection.platform.selectedIndex = i;
+                }
             }
+            _tomcatExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _tomcatExecEnvCoreSection.homeDirectory.text = tomcatExecEnv.installUri;
+
+            _tomcatExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _tomcatExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _tomcatExecEnvCoreSection.platform.addEventListener(Event.CHANGE, handleSectionChange);
+            _tomcatExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _tomcatExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_tomcatExecEnvCoreSection.nameValidator);
+            _validators.push(_tomcatExecEnvCoreSection.homeDirValidator);
         }
-        _tomcatExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _tomcatExecEnvCoreSection.homeDirectory.text = tomcatExecEnv.installUri;
-
-        _tomcatExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
-        _tomcatExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        _tomcatExecEnvCoreSection.platform.addEventListener(Event.CHANGE, handleSectionChange);
-        _tomcatExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
-        _tomcatExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
-
-        _validators = [];
-        _validators.push(_tomcatExecEnvCoreSection.nameValidator);
-        _validators.push(_tomcatExecEnvCoreSection.homeDirValidator);
     }
 
     private function handleTomcatExecEnvCorePropertyTabRollOut(e:Event):void {
@@ -2026,33 +2076,35 @@ public class PropertySheetMediator extends IocMediator {
     private function handleWeblogicExecEnvCorePropertyTabCreationComplete(event:Event):void {
         var weblogicExecEnv:WeblogicExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WeblogicExecutionEnvironment;
 
-        // bind view
-        _weblogicExecEnvCoreSection.executionEnvironmentName.text = weblogicExecEnv.name;
-        _weblogicExecEnvCoreSection.executionEnvironmentDescription.text = weblogicExecEnv.description;
+        if (weblogicExecEnv != null) {
+            // bind view
+            _weblogicExecEnvCoreSection.executionEnvironmentName.text = weblogicExecEnv.name;
+            _weblogicExecEnvCoreSection.executionEnvironmentDescription.text = weblogicExecEnv.description;
 
-        _weblogicExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _weblogicExecEnvCoreSection.selectedHost.enabled = false;
+            _weblogicExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _weblogicExecEnvCoreSection.selectedHost.enabled = false;
 
-        for (var i:int=0; i < _weblogicExecEnvCoreSection.platform.dataProvider.length; i++){
-            if (_weblogicExecEnvCoreSection.platform.dataProvider[i].data == weblogicExecEnv.platformId) {
-                _weblogicExecEnvCoreSection.platform.selectedIndex = i;
+            for (var i:int=0; i < _weblogicExecEnvCoreSection.platform.dataProvider.length; i++){
+                if (_weblogicExecEnvCoreSection.platform.dataProvider[i].data == weblogicExecEnv.platformId) {
+                    _weblogicExecEnvCoreSection.platform.selectedIndex = i;
+                }
             }
+            _weblogicExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _weblogicExecEnvCoreSection.homeDirectory.text = weblogicExecEnv.installUri;
+            _weblogicExecEnvCoreSection.domain.text = weblogicExecEnv.domain;
+
+            _weblogicExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _weblogicExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _weblogicExecEnvCoreSection.platform.addEventListener(Event.CHANGE, handleSectionChange);
+            _weblogicExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _weblogicExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _weblogicExecEnvCoreSection.domain.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_weblogicExecEnvCoreSection.nameValidator);
+            _validators.push(_weblogicExecEnvCoreSection.homeDirValidator);
+            _validators.push(_weblogicExecEnvCoreSection.domainValidator);
         }
-        _weblogicExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _weblogicExecEnvCoreSection.homeDirectory.text = weblogicExecEnv.installUri;
-        _weblogicExecEnvCoreSection.domain.text = weblogicExecEnv.domain;
-
-        _weblogicExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
-        _weblogicExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        _weblogicExecEnvCoreSection.platform.addEventListener(Event.CHANGE, handleSectionChange);
-        _weblogicExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
-        _weblogicExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
-        _weblogicExecEnvCoreSection.domain.addEventListener(Event.CHANGE, handleSectionChange);
-
-        _validators = [];
-        _validators.push(_weblogicExecEnvCoreSection.nameValidator);
-        _validators.push(_weblogicExecEnvCoreSection.homeDirValidator);
-        _validators.push(_weblogicExecEnvCoreSection.domainValidator);
     }
 
     private function handleWeblogicExecEnvCorePropertyTabRollOut(e:Event):void {
@@ -2121,23 +2173,25 @@ public class PropertySheetMediator extends IocMediator {
     private function handleJBossPortalExecEnvCorePropertyTabCreationComplete(event:Event):void {
         var jbossPortalExecEnv:JBossPortalExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JBossPortalExecutionEnvironment;
 
-        // bind view
-        _jbossPortalExecEnvCoreSection.executionEnvironmentName.text = jbossPortalExecEnv.name;
-        _jbossPortalExecEnvCoreSection.executionEnvironmentDescription.text = jbossPortalExecEnv.description;
-        _jbossPortalExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _jbossPortalExecEnvCoreSection.homeDirectory.text = jbossPortalExecEnv.installUri;
+        if (jbossPortalExecEnv != null) {
+            // bind view
+            _jbossPortalExecEnvCoreSection.executionEnvironmentName.text = jbossPortalExecEnv.name;
+            _jbossPortalExecEnvCoreSection.executionEnvironmentDescription.text = jbossPortalExecEnv.description;
+            _jbossPortalExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _jbossPortalExecEnvCoreSection.homeDirectory.text = jbossPortalExecEnv.installUri;
 
-        _jbossPortalExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _jbossPortalExecEnvCoreSection.selectedHost.enabled = false;
+            _jbossPortalExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _jbossPortalExecEnvCoreSection.selectedHost.enabled = false;
 
-        _jbossPortalExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
-        _jbossPortalExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        _jbossPortalExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
-        _jbossPortalExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbossPortalExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbossPortalExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbossPortalExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbossPortalExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
 
-        _validators = [];
-        _validators.push(_jbossPortalExecEnvCoreSection.nameValidator);
-        _validators.push(_jbossPortalExecEnvCoreSection.homeDirValidator);
+            _validators = [];
+            _validators.push(_jbossPortalExecEnvCoreSection.nameValidator);
+            _validators.push(_jbossPortalExecEnvCoreSection.homeDirValidator);
+        }
     }
 
     private function handleJBossPortalExecEnvCorePropertyTabRollOut(e:Event):void {
@@ -2205,23 +2259,25 @@ public class PropertySheetMediator extends IocMediator {
     private function handleLiferayExecEnvCorePropertyTabCreationComplete(event:Event):void {
         var liferayExecEnv:LiferayExecutionEnvironment = projectProxy.currentIdentityApplianceElement as LiferayExecutionEnvironment;
 
-        // bind view
-        _liferayExecEnvCoreSection.executionEnvironmentName.text = liferayExecEnv.name;
-        _liferayExecEnvCoreSection.executionEnvironmentDescription.text = liferayExecEnv.description;
-        _liferayExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _liferayExecEnvCoreSection.homeDirectory.text = liferayExecEnv.installUri;
+        if (liferayExecEnv != null) {
+            // bind view
+            _liferayExecEnvCoreSection.executionEnvironmentName.text = liferayExecEnv.name;
+            _liferayExecEnvCoreSection.executionEnvironmentDescription.text = liferayExecEnv.description;
+            _liferayExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _liferayExecEnvCoreSection.homeDirectory.text = liferayExecEnv.installUri;
 
-        _liferayExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _liferayExecEnvCoreSection.selectedHost.enabled = false;
+            _liferayExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _liferayExecEnvCoreSection.selectedHost.enabled = false;
 
-        _liferayExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
-        _liferayExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        _liferayExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
-        _liferayExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _liferayExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _liferayExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _liferayExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _liferayExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
 
-        _validators = [];
-        _validators.push(_liferayExecEnvCoreSection.nameValidator);
-        _validators.push(_liferayExecEnvCoreSection.homeDirValidator);
+            _validators = [];
+            _validators.push(_liferayExecEnvCoreSection.nameValidator);
+            _validators.push(_liferayExecEnvCoreSection.homeDirValidator);
+        }
     }
 
     private function handleLiferayExecEnvCorePropertyTabRollOut(e:Event):void {
@@ -2289,23 +2345,25 @@ public class PropertySheetMediator extends IocMediator {
     private function handleWASCEExecEnvCorePropertyTabCreationComplete(event:Event):void {
         var wasceExecEnv:WASCEExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WASCEExecutionEnvironment;
 
-        // bind view
-        _wasceExecEnvCoreSection.executionEnvironmentName.text = wasceExecEnv.name;
-        _wasceExecEnvCoreSection.executionEnvironmentDescription.text = wasceExecEnv.description;
-        _wasceExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _wasceExecEnvCoreSection.homeDirectory.text = wasceExecEnv.installUri;
+        if (wasceExecEnv != null) {
+            // bind view
+            _wasceExecEnvCoreSection.executionEnvironmentName.text = wasceExecEnv.name;
+            _wasceExecEnvCoreSection.executionEnvironmentDescription.text = wasceExecEnv.description;
+            _wasceExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _wasceExecEnvCoreSection.homeDirectory.text = wasceExecEnv.installUri;
 
-        _wasceExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _wasceExecEnvCoreSection.selectedHost.enabled = false;
+            _wasceExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _wasceExecEnvCoreSection.selectedHost.enabled = false;
 
-        _wasceExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
-        _wasceExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        _wasceExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
-        _wasceExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _wasceExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _wasceExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _wasceExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _wasceExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
 
-        _validators = [];
-        _validators.push(_wasceExecEnvCoreSection.nameValidator);
-        _validators.push(_wasceExecEnvCoreSection.homeDirValidator);
+            _validators = [];
+            _validators.push(_wasceExecEnvCoreSection.nameValidator);
+            _validators.push(_wasceExecEnvCoreSection.homeDirValidator);
+        }
     }
 
     private function handleWASCEExecEnvCorePropertyTabRollOut(e:Event):void {
@@ -2374,33 +2432,35 @@ public class PropertySheetMediator extends IocMediator {
     private function handleJbossExecEnvCorePropertyTabCreationComplete(event:Event):void {
         var jbossExecEnv:JbossExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JbossExecutionEnvironment;
 
-        // bind view
-        _jbossExecEnvCoreSection.executionEnvironmentName.text = jbossExecEnv.name;
-        _jbossExecEnvCoreSection.executionEnvironmentDescription.text = jbossExecEnv.description;
+        if (jbossExecEnv != null) {
+            // bind view
+            _jbossExecEnvCoreSection.executionEnvironmentName.text = jbossExecEnv.name;
+            _jbossExecEnvCoreSection.executionEnvironmentDescription.text = jbossExecEnv.description;
 
-        _jbossExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _jbossExecEnvCoreSection.selectedHost.enabled = false;
+            _jbossExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _jbossExecEnvCoreSection.selectedHost.enabled = false;
 
-        for(var i:int=0; i < _jbossExecEnvCoreSection.platform.dataProvider.length; i++){
-            if(_jbossExecEnvCoreSection.platform.dataProvider[i].data == jbossExecEnv.platformId){
-                _jbossExecEnvCoreSection.platform.selectedIndex = i;
+            for(var i:int=0; i < _jbossExecEnvCoreSection.platform.dataProvider.length; i++){
+                if(_jbossExecEnvCoreSection.platform.dataProvider[i].data == jbossExecEnv.platformId){
+                    _jbossExecEnvCoreSection.platform.selectedIndex = i;
+                }
             }
+            _jbossExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _jbossExecEnvCoreSection.homeDirectory.text = jbossExecEnv.installUri;
+            _jbossExecEnvCoreSection.instance.text = jbossExecEnv.instance;
+
+            _jbossExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbossExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbossExecEnvCoreSection.platform.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbossExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbossExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _jbossExecEnvCoreSection.instance.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_jbossExecEnvCoreSection.nameValidator);
+            _validators.push(_jbossExecEnvCoreSection.homeDirValidator);
+            _validators.push(_jbossExecEnvCoreSection.instanceValidator);
         }
-        _jbossExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _jbossExecEnvCoreSection.homeDirectory.text = jbossExecEnv.installUri;
-        _jbossExecEnvCoreSection.instance.text = jbossExecEnv.instance;
-
-        _jbossExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
-        _jbossExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        _jbossExecEnvCoreSection.platform.addEventListener(Event.CHANGE, handleSectionChange);
-        _jbossExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
-        _jbossExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
-        _jbossExecEnvCoreSection.instance.addEventListener(Event.CHANGE, handleSectionChange);
-
-        _validators = [];
-        _validators.push(_jbossExecEnvCoreSection.nameValidator);
-        _validators.push(_jbossExecEnvCoreSection.homeDirValidator);
-        _validators.push(_jbossExecEnvCoreSection.instanceValidator);
     }
 
     private function handleJbossExecEnvCorePropertyTabRollOut(e:Event):void {
@@ -2470,23 +2530,25 @@ public class PropertySheetMediator extends IocMediator {
     private function handleApacheExecEnvCorePropertyTabCreationComplete(event:Event):void {
         var apacheExecEnv:ApacheExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ApacheExecutionEnvironment;
 
-        // bind view
-        _apacheExecEnvCoreSection.executionEnvironmentName.text = apacheExecEnv.name;
-        _apacheExecEnvCoreSection.executionEnvironmentDescription.text = apacheExecEnv.description;
-        _apacheExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _apacheExecEnvCoreSection.homeDirectory.text = apacheExecEnv.installUri;
+        if (apacheExecEnv != null) {
+            // bind view
+            _apacheExecEnvCoreSection.executionEnvironmentName.text = apacheExecEnv.name;
+            _apacheExecEnvCoreSection.executionEnvironmentDescription.text = apacheExecEnv.description;
+            _apacheExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _apacheExecEnvCoreSection.homeDirectory.text = apacheExecEnv.installUri;
 
-        _apacheExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _apacheExecEnvCoreSection.selectedHost.enabled = false;
+            _apacheExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _apacheExecEnvCoreSection.selectedHost.enabled = false;
 
-        _apacheExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
-        _apacheExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        _apacheExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
-        _apacheExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _apacheExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _apacheExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _apacheExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _apacheExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
 
-        _validators = [];
-        _validators.push(_apacheExecEnvCoreSection.nameValidator);
-        _validators.push(_apacheExecEnvCoreSection.homeDirValidator);
+            _validators = [];
+            _validators.push(_apacheExecEnvCoreSection.nameValidator);
+            _validators.push(_apacheExecEnvCoreSection.homeDirValidator);
+        }
     }
 
     private function handleApacheExecEnvCorePropertyTabRollOut(e:Event):void {
@@ -2557,23 +2619,25 @@ public class PropertySheetMediator extends IocMediator {
     private function handleWindowsIISExecEnvCorePropertyTabCreationComplete(event:Event):void {
         var windowsIISExecEnv:WindowsIISExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WindowsIISExecutionEnvironment;
 
-        // bind view
-        _windowsIISExecEnvCoreSection.executionEnvironmentName.text = windowsIISExecEnv.name;
-        _windowsIISExecEnvCoreSection.executionEnvironmentDescription.text = windowsIISExecEnv.description;
-        _windowsIISExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _windowsIISExecEnvCoreSection.homeDirectory.text = windowsIISExecEnv.installUri;
+        if (windowsIISExecEnv != null) {
+            // bind view
+            _windowsIISExecEnvCoreSection.executionEnvironmentName.text = windowsIISExecEnv.name;
+            _windowsIISExecEnvCoreSection.executionEnvironmentDescription.text = windowsIISExecEnv.description;
+            _windowsIISExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _windowsIISExecEnvCoreSection.homeDirectory.text = windowsIISExecEnv.installUri;
 
-        _windowsIISExecEnvCoreSection.selectedHost.selectedIndex = 0;
-        _windowsIISExecEnvCoreSection.selectedHost.enabled = false;
+            _windowsIISExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _windowsIISExecEnvCoreSection.selectedHost.enabled = false;
 
-        _windowsIISExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
-        _windowsIISExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
-        _windowsIISExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
-        _windowsIISExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIISExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIISExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIISExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _windowsIISExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
 
-        _validators = [];
-        _validators.push(_windowsIISExecEnvCoreSection.nameValidator);
-        _validators.push(_windowsIISExecEnvCoreSection.homeDirValidator);
+            _validators = [];
+            _validators.push(_windowsIISExecEnvCoreSection.nameValidator);
+            _validators.push(_windowsIISExecEnvCoreSection.homeDirValidator);
+        }
     }
 
     private function handleWindowsIISExecEnvCorePropertyTabRollOut(e:Event):void {
@@ -2607,8 +2671,10 @@ public class PropertySheetMediator extends IocMediator {
 
     private function handleExecEnvActivationPropertyTabCreationComplete(event:Event) {
         var execEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
-        _executionEnvironmentActivateSection.replaceConfFiles.selected = execEnv.overwriteOriginalSetup;
-        _executionEnvironmentActivateSection.installSamples.selected = execEnv.installDemoApps;
+        if (execEnv != null) {
+            _executionEnvironmentActivateSection.replaceConfFiles.selected = execEnv.overwriteOriginalSetup;
+            _executionEnvironmentActivateSection.installSamples.selected = execEnv.installDemoApps;
+        }
     }
 
     private function handleExecEnvActivationPropertyTabRollOut(event:Event):void {
@@ -2674,15 +2740,17 @@ public class PropertySheetMediator extends IocMediator {
     private function handleIdentityLookupCorePropertyTabCreationComplete(event:Event):void {
         var identityLookup:IdentityLookup = projectProxy.currentIdentityApplianceElement as IdentityLookup;
 
-        // bind view
-        _identityLookupCoreSection.connectionName.text = identityLookup.name;
-        _identityLookupCoreSection.connectionDescription.text = identityLookup.description;
+        if (identityLookup != null) {
+            // bind view
+            _identityLookupCoreSection.connectionName.text = identityLookup.name;
+            _identityLookupCoreSection.connectionDescription.text = identityLookup.description;
 
-        _identityLookupCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
-        _identityLookupCoreSection.connectionDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _identityLookupCoreSection.connectionName.addEventListener(Event.CHANGE, handleSectionChange);
+            _identityLookupCoreSection.connectionDescription.addEventListener(Event.CHANGE, handleSectionChange);
 
-        _validators = [];
-        _validators.push(_identityLookupCoreSection.nameValidator);
+            _validators = [];
+            _validators.push(_identityLookupCoreSection.nameValidator);
+        }
     }
 
     private function handleIdentityLookupCorePropertyTabRollOut(e:Event):void {
@@ -2789,6 +2857,7 @@ public class PropertySheetMediator extends IocMediator {
         _certificateSection.keyPassword.enabled = enable;
     }
 
+    /*
     // jdbc driver functions
     private function browseDriverHandler(event:MouseEvent):void {
         if (_driverFileRef == null) {
@@ -2835,7 +2904,8 @@ public class PropertySheetMediator extends IocMediator {
         _uploadedDriver = null;
         _uploadedDriverName = null;
     }
-
+    */
+    
     protected function clearPropertyTabs():void {
         // Attach appliance editor form to property tabbed view
         _propertySheetsViewStack.removeAllChildren();

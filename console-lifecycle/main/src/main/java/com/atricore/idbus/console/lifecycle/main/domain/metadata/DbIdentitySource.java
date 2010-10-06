@@ -20,6 +20,7 @@ public class DbIdentitySource extends IdentitySource {
     private String relayCredentialQueryString;
 
     protected Resource driver;
+    
     private static final long serialVersionUID = 952431562576391535L;
 
     public String getAdmin() {

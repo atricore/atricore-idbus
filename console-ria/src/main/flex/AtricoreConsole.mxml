@@ -119,9 +119,9 @@
                      includeIn="operation"/>
 
         <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%" includeIn="operation">
-            <modeler:ModelerView id="modelerView" name="Modeler"/>
-            <lifecycle:LifecycleView id="lifecycleView" name="Lifecycle"/>
-            <account:AccountManagementView id="accountManagementView" name="Account"/>
+            <modeler:ModelerView id="modelerView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.modelerTab.name')}"/>
+            <lifecycle:LifecycleView id="lifecycleView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.lifecycleTab.name')}"/>
+            <account:AccountManagementView id="accountManagementView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.accountTab.name')}"/>
             <!--setup:SetupView id="setupView" name="Setup"/-->
             <!--<s:Group width="95%" height="95%" name="Setup">-->
             <!--<s:Label text="Setup"/>-->

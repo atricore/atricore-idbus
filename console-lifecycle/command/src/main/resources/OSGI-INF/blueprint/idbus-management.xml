@@ -116,6 +116,13 @@
             <action class="com.atricore.idbus.console.lifecycle.command.ActivateExecEnvCommand"/>
         </command>
 
+        <command name="jdbc/list">
+            <action class="com.atricore.idbus.console.lifecycle.command.ListJDBCDriversCommand">
+                <property name="printer" ref="jdbcPrinter"/>
+            </action>
+        </command>
+
+
     </command-bundle>
 
     <bean id="buildApplianceCompleter"
@@ -147,6 +154,9 @@
     </bean>
 
     <bean id="appliancePrinter" class="com.atricore.idbus.console.lifecycle.command.printers.ApplianceCmdPrinter"/>
+
+
+    <bean id="jdbcPrinter" class="com.atricore.idbus.console.lifecycle.command.printers.JDBCDescriptorPrinter"/>
 
 
     <!-- Should be exported by Spring. Reference ID value must match the one used to export the service! -->

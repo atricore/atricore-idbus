@@ -102,9 +102,10 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_UPDATED:
                 // TODO: Dispatch change event to renderer so that it can update item's labels & icons without
-                // TODO: recreating the tree view. 
+                // TODO: recreating the tree view.
                 updateIdentityAppliance();
-                bindApplianceBrowser();
+                updateElementData();
+                //bindApplianceBrowser();
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_SELECTED:
                 var treeNode:BrowserNode = findDataTreeNodeByData(_applianceRootNode, projectProxy.currentIdentityApplianceElement);
@@ -120,7 +121,6 @@ public class BrowserMediator extends IocMediator implements IDisposable {
     }
 
     private function updateIdentityAppliance():void {
-
         _identityAppliance = _projectProxy.currentIdentityAppliance;
     }
 
@@ -257,6 +257,29 @@ public class BrowserMediator extends IocMediator implements IDisposable {
 
     }
 
+    private function updateElementData():void {
+        if (view.selectedItem != null) {
+            var elementData:Object = projectProxy.currentIdentityApplianceElement;
+            var selectedItemName:String = view.selectedItem.label;
+            if (_applianceRootNode != null && elementData != null && selectedItemName != null) {
+                updateNodeData(_applianceRootNode, selectedItemName, elementData);
+                view.invalidateDisplayList();
+            }
+        }
+    }
+
+    private function updateNodeData(currentNode:BrowserNode, nodeName:String, newData:Object) {
+        if (currentNode.label == nodeName && currentNode.data != null) {
+            currentNode.label = newData.name;
+            currentNode.data = newData;
+        }
+        if (currentNode.children != null) {
+            for each (var childNode:BrowserNode in currentNode.children) {
+                updateNodeData(childNode, nodeName, newData);
+            }
+        }
+    }
+
     private function expandCollapseTree(open:Boolean):void {
         view.expandChildrenOf(_applianceRootNode, open);
     }
@@ -267,6 +290,12 @@ public class BrowserMediator extends IocMediator implements IDisposable {
             if (currentNode.data is Provider) {
                 view.expandItem(currentNode, true);
             }
+        }
+        var treeNode:BrowserNode = findDataTreeNodeByData(_applianceRootNode, projectProxy.currentIdentityApplianceElement);
+        if (treeNode != null) {
+            _selectedItem = treeNode;
+            expandParentNodes(_selectedItem);
+            view.selectedItem = _selectedItem;
         }
     }
 

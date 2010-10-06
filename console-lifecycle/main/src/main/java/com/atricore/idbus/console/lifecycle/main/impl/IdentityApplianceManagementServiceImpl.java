@@ -33,6 +33,7 @@ import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentRes
 import com.atricore.idbus.console.activation.main.spi.response.PlatformSupportedResponse;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
+import com.atricore.idbus.console.lifecycle.main.domain.JDBCDriverDescriptor;
 import com.atricore.idbus.console.lifecycle.main.domain.dao.*;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceNotFoundException;
@@ -44,6 +45,8 @@ import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
+import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,6 +72,8 @@ public class IdentityApplianceManagementServiceImpl implements
     private ApplianceValidator validator;
 
     private ApplianceMarshaller marshaller;
+
+    private JDBCDriverManager jdbcDriverManager;
 
     private IdentityApplianceDAO identityApplianceDAO;
 
@@ -605,9 +610,28 @@ public class IdentityApplianceManagementServiceImpl implements
         return res;
     }
 
+
     /***************************************************************
      * List methods
      ***************************************************************/
+
+    @Transactional
+    public ListAvailableJDBCDriversResponse listAvailableJDBCDrivers(ListAvailableJDBCDriversRequest request) throws IdentityServerException {
+        List<JDBCDriverDescriptor> jdbcDss = new ArrayList<JDBCDriverDescriptor>();
+        for (DriverDescriptor ds : jdbcDriverManager.getRegisteredDrivers()) {
+            JDBCDriverDescriptor jdbcDs = new JDBCDriverDescriptor();
+            jdbcDs.setName(ds.getName());
+            jdbcDs.setDefaultUrl(ds.getUrl());
+            jdbcDs.setClassName(ds.getDriverclassName());
+            jdbcDs.setWebSiteUrl(ds.getWebSiteUrl());
+            jdbcDss.add(jdbcDs);
+        }
+
+        ListAvailableJDBCDriversResponse response = new ListAvailableJDBCDriversResponse();
+        response.setDrivers(jdbcDss);
+        return response;
+    }
+
 
     @Transactional
     public ListIdentityVaultsResponse listIdentityVaults(ListIdentityVaultsRequest req) throws IdentityServerException {
@@ -1041,9 +1065,22 @@ public class IdentityApplianceManagementServiceImpl implements
         this.activationService = activationService;
     }
 
+    public JDBCDriverManager getJdbcDriverManager() {
+        return jdbcDriverManager;
+    }
+
+    public void setJdbcDriverManager(JDBCDriverManager jdbcDriverManager) {
+        this.jdbcDriverManager = jdbcDriverManager;
+    }
+
     // -------------------------------------------------< Protected Utils , they need transactional context !>
 
     protected void validateAppliance(IdentityAppliance appliance, ApplianceValidator.Operation operation) throws ApplianceValidationException {
+
+        IdentityApplianceDefinition applianceDef = appliance.getIdApplianceDefinition();
+
+        if (appliance.getName() == null)
+            appliance.setName(applianceDef.getName());
 
         if (!isValidateAppliances())
             return;

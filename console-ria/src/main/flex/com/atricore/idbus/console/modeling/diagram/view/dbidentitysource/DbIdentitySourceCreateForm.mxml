@@ -37,8 +37,11 @@
     <fx:Declarations>
         <utils:NameValidator id="nameValidator" source="{userRepositoryName}" required="true" property="text"
                 trigger="{btnOk}" triggerEvent="click"/>
-        <mx:StringValidator id="driverNameValidator" source="{driverName}" required="true" property="text"
-                trigger="{btnOk}" triggerEvent="click"/>
+        <!--mx:StringValidator id="driverNameValidator" source="{driverName}" required="true" property="text"
+                trigger="{btnOk}" triggerEvent="click"/-->
+        <mx:NumberValidator id="driverValidator" source="{driver}" property="selectedIndex" minValue="0"
+                trigger="{btnOk}" triggerEvent="click"
+                lowerThanMinError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.driverName.errorMsg')}"/>
         <mx:StringValidator id="connUrlValidator" source="{connectionUrl}" required="true" property="text"
                 trigger="{btnOk}" triggerEvent="click"/>
         <mx:StringValidator id="dbUsernameValidator" source="{dbUsername}" required="true" property="text"
@@ -59,7 +62,7 @@
         <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.connectionTab')}">
             <s:VGroup width="100%" height="100%">
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.jdbcDriver')}:" required="true">
+                <!--mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.jdbcDriver')}:" required="true">
                     <s:HGroup>
                         <s:DropDownList id="driver" width="200" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.jdbcDriver.browse')}"
                                     requireSelection="true"/>
@@ -69,6 +72,10 @@
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.driverName')}:" required="true">
                     <s:TextInput id="driverName" width="200"/>
+                </mx:FormItem-->
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.driverName')}:" required="true">
+                    <s:DropDownList id="driver" width="200" labelField="name" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.driverName.prompt')}"/>
                 </mx:FormItem>
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.connectionUrl')}:" required="true">

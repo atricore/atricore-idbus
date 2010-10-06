@@ -243,6 +243,7 @@
                     <instructions>
                         <Bundle-SymbolicName>$module.getName()</Bundle-SymbolicName>
 
+                        <!-- TODO : Verify this ...
                         #if($hasEmbeddedDependencies)
                         <Bundle-ClassPath>
                             .,
@@ -251,6 +252,7 @@
                             #end
                         </Bundle-ClassPath>
                         #end
+                        -->
 
                         <Private-Package>!*</Private-Package>
 

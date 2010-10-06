@@ -22,8 +22,7 @@ import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2KeystoreKeyResolver;
 import org.atricore.idbus.capabilities.samlr2.support.core.encryption.XmlSecurityEncrypterImpl;
 import org.atricore.idbus.capabilities.samlr2.support.core.signature.JSR105SamlR2SignerImpl;
-import org.atricore.idbus.capabilities.samlr2.support.federation.OneToOneAccountLinkEmitter;
-import org.atricore.idbus.capabilities.samlr2.support.federation.OneToOneIdentityMapper;
+import org.atricore.idbus.capabilities.samlr2.support.federation.*;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.federation.AccountLinkLifecycleImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
@@ -315,14 +314,14 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         setPropertyValue(spMd, "id", spMd.getName());
         setPropertyValue(spMd, "alias", resolveLocationUrl(provider) + "/SAML2/MD");
         setPropertyValue(spMd, "resource", "classpath:" + idauPath + sp.getName() + "/" + sp.getName() + "-samlr2-metadata.xml");
-        
+
         // accountLinkLifecycle
         Bean accountLinkLifecycle = newBean(spBeans, sp.getName() + "-account-link-lifecycle", AccountLinkLifecycleImpl.class);
-
         if (provider.getIdentityLookup() != null) {
-            // TODO : Add identity store to SP
+            setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");
         }
 
+        // TODO : Support channel specific stores !?
         // TODO RETROFIT  : if (provider.getDefaultChannel() != null && ((IdentityProviderChannel)provider.getDefaultChannel()).getIdentityVault() != null) {
         // TODO RETROFIT  :     setPropertyRef(accountLinkLifecycle, "identityStore", sp.getName() + "-identity-store");
         // TODO RETROFIT  : }
@@ -331,7 +330,29 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         Bean accountLinkEmitter = newBean(spBeans, sp.getName() + "-account-link-emitter", OneToOneAccountLinkEmitter.class);
 
         // identityMapper
-        Bean identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", OneToOneIdentityMapper.class);
+        Bean identityMapper = null;
+        
+        AccountLinkagePolicy ac = provider.getAccountLinkagePolicy();
+        IdentityMappingType mappingType = ac != null ? ac.getMappingType() : IdentityMappingType.REMOTE;
+
+        switch (ac.getMappingType()) {
+            case REMOTE:
+                identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", RemoteSubjectIdentityMapper.class);
+                setPropertyValue(identityMapper, "useLocalId", ac.isUseLocalId());
+                break;
+            case LOCAL:
+                identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", LocalSubjectIdentityMapper.class);
+                break;
+            case MERGED:
+                identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", MergedSubjectIdentityMapper.class);
+                setPropertyValue(identityMapper, "useLocalId", ac.isUseLocalId());
+                break;
+            case CUSTOM:
+                identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", MergedSubjectIdentityMapper.class);
+                break;
+            default:
+                identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", OneToOneIdentityMapper.class);
+        }
 
         // idp channel plans
         Bean sloToSamlPlan = newBean(spBeans, sp.getName() + "-spsso-samlr2sloreq-to-samlr2resp-plan", SamlR2SloRequestToSamlR2RespPlan.class);

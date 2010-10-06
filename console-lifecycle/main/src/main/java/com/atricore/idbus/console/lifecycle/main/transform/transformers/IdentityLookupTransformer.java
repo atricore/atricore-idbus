@@ -78,17 +78,20 @@ public class IdentityLookupTransformer extends AbstractTransformer {
             setPropertyRef(identityManager, "identityStore", providerBean.getName() + "-identity-store");
             setPropertyBean(identityManager, "identityStoreKeyAdapter", newAnonymousBean(SimpleIdentityStoreKeyAdapter.class));
 
-            // identity store
+            
 
+            // identity store (TODO : Move to specific transformers)
             if (identitySource instanceof DbIdentitySource) {
                 Bean identityStore = null;
                 // DB
                 DbIdentitySource dbSource = (DbIdentitySource) identitySource;
-                identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.dbidentitystore.JDBCIdentityStore");
+                identityStore = newBean(providerBeans, providerBean.getName() + "-identity-store", "org.atricore.idbus.idojos.dbidentitystore.DynamicJDBCIdentityStore");
+
+                setPropertyRef(identityStore, "manager", "jdbc-manager");
                 
                 setPropertyValue(identityStore, "driverName", dbSource.getDriverName());
                 setPropertyValue(identityStore, "connectionURL", dbSource.getConnectionUrl());
-                setPropertyValue(identityStore, "connectionName", dbSource.getAdmin());
+                setPropertyValue(identityStore, "connectionUser", dbSource.getAdmin());
                 setPropertyValue(identityStore, "connectionPassword", dbSource.getPassword());
 
                 setPropertyValue(identityStore, "userQueryString", dbSource.getUserQueryString());
@@ -97,15 +100,6 @@ public class IdentityLookupTransformer extends AbstractTransformer {
                 setPropertyValue(identityStore, "userPropertiesQueryString", dbSource.getUserPropertiesQueryString());
                 setPropertyValue(identityStore, "resetCredentialDml", dbSource.getResetCredentialDml());
                 setPropertyValue(identityStore, "relayCredentialQueryString", dbSource.getRelayCredentialQueryString());
-
-                IdProjectResource<byte[]> driverResource = new IdProjectResource<byte[]>(idGen.generateId(),
-                        "lib/", dbSource.getDriver().getName(),
-                        "binary", dbSource.getDriver().getValue());
-
-                driverResource.setClassifier("byte");
-                event.getContext().getCurrentModule().addResource(driverResource);
-                event.getContext().getCurrentModule().addEmbeddedDependency(
-                        driverResource.getNameSpace() + driverResource.getName());
 
             } else if (identitySource instanceof LdapIdentitySource) {
                 Bean identityStore = null;

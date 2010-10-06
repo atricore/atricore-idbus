@@ -200,6 +200,11 @@
             class="com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand">
         <property name="registry" ref="serviceRegistry"/>
     </object>
+    <object id="jdbcDriversListCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
 
     <!-- Mediators -->
     <object id="manageCertificateMediator"
@@ -228,7 +233,9 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="simpleSSOWizardViewMediator"
-            class="com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator"/>
+            class="com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="identityApplianceWizardMediator"
             class="com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator"/>
     <object id="propertySheetMediator" class="com.atricore.idbus.console.modeling.propertysheet.PropertySheetMediator">
@@ -480,6 +487,7 @@
         <property name="createIdentityLookupCommand" ref="createIdentityLookupCommand" />
         <property name="activateExecEnvironmentCommand" ref="activateExecEnvironmentCommand" />
         <property name="folderExistsCommand" ref="folderExistsCommand" />
+        <property name="jdbcDriversListCommand" ref="jdbcDriversListCommand"/>
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>
