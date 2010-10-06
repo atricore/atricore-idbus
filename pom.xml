@@ -339,7 +339,7 @@
                 <type>swc</type>
             </dependency>
 
-            <!-- Flex Automation 
+            <!-- Flex Automation
             <dependency>
                 <groupId>com.adobe.flex.framework</groupId>
                 <artifactId>automation</artifactId>
