@@ -331,7 +331,10 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         // identityMapper
         Bean identityMapper = null;
+        
         AccountLinkagePolicy ac = provider.getAccountLinkagePolicy();
+        IdentityMappingType mappingType = ac != null ? ac.getMappingType() : IdentityMappingType.REMOTE;
+
         switch (ac.getMappingType()) {
             case REMOTE:
                 identityMapper = newBean(spBeans, sp.getName() + "-identity-mapper", RemoteSubjectIdentityMapper.class);
