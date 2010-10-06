@@ -137,17 +137,22 @@ public abstract class ActivatorSupport implements Activator {
                         installer.setProperty("password", request.getPassword());
                     }
 
-                    if (request.getTarget() != null)
-                        installer.setProperty("target", request.getTarget());
+                    if (request.getTarget() != null) {
+                        String target = normalizePath(request.getTarget());
+                        log.debug("Using 'target' " + request.getTarget() + "["+target+"]");
+                        installer.setProperty("target", target);
+                    }
 
                     if (request.getTomcatInstallDir() != null) {
-                        log.debug("Using 'tomcatInstallDir' " + request.getTomcatInstallDir());
-                        installer.setProperty("tomcatInstallDir", request.getTomcatInstallDir());
+                        String tomcatInstallDir = normalizePath(request.getTomcatInstallDir());
+                        log.debug("Using 'tomcatInstallDir' " + request.getTomcatInstallDir() + " ["+tomcatInstallDir+"]");
+                        installer.setProperty("tomcatInstallDir", tomcatInstallDir);
                     }
 
                     if (request.getJbossInstallDir() != null) {
-                        log.debug("Using 'jbossInstallDir' " + request.getJbossInstallDir());
-                        installer.setProperty("jbossInstallDir", request.getJbossInstallDir());
+                        String jbossInstallDir = normalizePath(request.getJbossInstallDir());
+                        log.debug("Using 'jbossInstallDir' " + request.getJbossInstallDir() + " ["+jbossInstallDir+"]");
+                        installer.setProperty("jbossInstallDir", jbossInstallDir);
                     }
 
                     return installer;
@@ -192,6 +197,10 @@ public abstract class ActivatorSupport implements Activator {
         if (log.isDebugEnabled())
             log.debug("Created artifact representation : " + artifact.toString());
         return artifact;
+    }
+
+    protected String normalizePath (String path) {
+        return path.replace("\\", "/");
     }
 
 }
