@@ -785,15 +785,43 @@
         <!-- =========================================================================== -->
 
         <dependency>
+            <groupId>org.atricore.idbus</groupId>
+            <artifactId>all</artifactId>
+            <version>${version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>common</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+        
+        <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.boot</artifactId>
             <version>${idbus.kernel.version}</version>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.boot</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.webconsole.branding</artifactId>
             <version>${idbus.kernel.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.webconsole.branding</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.planning</artifactId>
@@ -801,9 +829,23 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
+            <artifactId>org.atricore.idbus.kernel.planning</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
             <version>${idbus.kernel.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel</groupId>
+            <artifactId>org.atricore.idbus.kernel.main</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.samlr2</artifactId>
@@ -811,9 +853,23 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.samlr2</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.samlr11</artifactId>
             <version>${idbus.kernel.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.samlr11</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.sso</artifactId>
@@ -821,9 +877,23 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.sso</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.wst</artifactId>
             <version>${idbus.kernel.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.wst</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.html</artifactId>
@@ -831,13 +901,33 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.html</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.spml</artifactId>
+            <version>${idbus.kernel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.spml</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.support</artifactId>
             <version>${idbus.kernel.version}</version>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.support</artifactId>
             <version>${idbus.kernel.version}</version>
+            <type>pom</type>
         </dependency>
 
         <dependency>
@@ -847,8 +937,34 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.kernel.ha</groupId>
+            <artifactId>org.atricore.idbus.kernel.ha.web</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel</groupId>
+            <artifactId>kernel</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.ha</groupId>
+            <artifactId>ha</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.ha</groupId>
             <artifactId>org.atricore.idbus.kernel.ha.main</artifactId>
             <version>${idbus.kernel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel.ha</groupId>
+            <artifactId>org.atricore.idbus.kernel.ha.main</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
         </dependency>
 
         <dependency>
@@ -858,9 +974,23 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.examples</groupId>
+            <artifactId>org.atricore.idbus.examples.simplefederation.idau</artifactId>
+            <version>${idbus.examples.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.examples</groupId>
             <artifactId>org.atricore.idbus.examples.simpleprovisioning.idau</artifactId>
             <version>${idbus.examples.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.examples</groupId>
+            <artifactId>org.atricore.idbus.examples.simpleprovisioning.idau</artifactId>
+            <version>${idbus.examples.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.applications.server</groupId>
             <artifactId>org.atricore.idbus.applications.server.ui</artifactId>
@@ -868,10 +998,30 @@
             <type>war</type>
         </dependency>
         <dependency>
+            <groupId>org.atricore.idbus.applications.server</groupId>
+            <artifactId>org.atricore.idbus.applications.server.ui</artifactId>
+            <version>${idbus.app.server.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.web</artifactId>
             <version>${idbus.kernel.version}</version>
             <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.kernel</groupId>
+            <artifactId>org.atricore.idbus.kernel.web</artifactId>
+            <version>${idbus.kernel.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.sts</groupId>
+            <artifactId>sts</artifactId>
+            <version>${idbus.cap.sts.version}</version>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.capabilities.sts</groupId>
@@ -879,10 +1029,24 @@
             <version>${idbus.cap.sts.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.atricore.idbus.capabilities.sts</groupId>
+            <artifactId>org.atricore.idbus.capabilities.sts.main</artifactId>
+            <version>${idbus.cap.sts.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
             <groupId>org.atricore.idbus.connectors</groupId>
             <artifactId>org.atricore.idbus.connectors.jdoidentityvault</artifactId>
             <version>${idbus.connectors.jdoidentityvault.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.connectors</groupId>
+            <artifactId>org.atricore.idbus.connectors.jdoidentityvault</artifactId>
+            <version>${idbus.connectors.jdoidentityvault.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.josso-ws-v1_2</artifactId>
@@ -890,9 +1054,23 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.josso-ws-v1_2</artifactId>
+            <version>${idbus.bundle.josso-ws-v1_2.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.datanucleus-v2_0_3</artifactId>
             <version>${idbus.bundle.datanucleus-v2_0_3.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.datanucleus-v2_0_3</artifactId>
+            <version>${idbus.bundle.datanucleus-v2_0_3.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.apache-maven-v3_0</artifactId>
@@ -900,9 +1078,23 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.apache-maven-v3_0</artifactId>
+            <version>${idbus.bundle.apache-maven-v3_0.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.ehcache-v2_1_0</artifactId>
             <version>${idbus.bundle.ehcache-v2_1_0.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.ehcache-v2_1_0</artifactId>
+            <version>${idbus.bundle.ehcache-v2_1_0.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.pax-web-jetty-v0_7_2</artifactId>
@@ -910,8 +1102,21 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.pax-web-jetty-v0_7_2</artifactId>
+            <version>${idbus.bundle.pax-web-jetty-v0_7_2.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.wadi-v2_1_2</artifactId>
             <version>${idbus.bundle.wadi-v2_1_2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.wadi-v2_1_2</artifactId>
+            <version>${idbus.bundle.wadi-v2_1_2.version}</version>
+            <type>pom</type>
         </dependency>
 
         <dependency>
@@ -920,10 +1125,19 @@
             <version>${idbus.cap.josso.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
-            <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
+            <groupId>org.atricore.idbus.capabilities.josso</groupId>
+            <artifactId>org.atricore.idbus.capabilities.josso.main</artifactId>
+            <version>${idbus.cap.josso.version}</version>
+            <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.josso</groupId>
+            <artifactId>josso</artifactId>
+            <version>${idbus.cap.josso.version}</version>
+            <type>pom</type>
+        </dependency>
+        
+
         <dependency>
             <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
             <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
@@ -931,9 +1145,41 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.samlr2.support</artifactId>
+            <version>${idbus.cap.saml2.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
             <artifactId>org.atricore.idbus.capabilities.samlr2.management</artifactId>
             <version>${idbus.cap.saml2.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.samlr2.management</artifactId>
+            <version>${idbus.cap.saml2.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
+            <version>${idbus.cap.saml2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.samlr2.main</artifactId>
+            <version>${idbus.cap.saml2.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
+            <artifactId>samlr2</artifactId>
+            <version>${idbus.cap.saml2.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
             <artifactId>org.atricore.idbus.capabilities.spmlr2.main</artifactId>
@@ -941,9 +1187,29 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.spmlr2.main</artifactId>
+            <version>${idbus.cap.spml2.version}</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
+            <artifactId>spmlr2</artifactId>
+            <version>${idbus.cap.spml2.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
             <artifactId>org.atricore.idbus.capabilities.spmlr2.command</artifactId>
             <version>${idbus.cap.spml2.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>
+            <artifactId>org.atricore.idbus.capabilities.spmlr2.command</artifactId>
+            <version>${idbus.cap.spml2.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.dbidentitystore</artifactId>
@@ -951,9 +1217,23 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.dbidentitystore</artifactId>
+            <version>${idbus.idojo.dbidentitystore.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.ldapidentitystore</artifactId>
             <version>${idbus.idojo.ldapidentitystore.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.ldapidentitystore</artifactId>
+            <version>${idbus.idojo.ldapidentitystore.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.memoryidentitystore</artifactId>
@@ -961,9 +1241,23 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.memoryidentitystore</artifactId>
+            <version>${idbus.idojo.memoryidentitystore.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.memorysessionstore</artifactId>
             <version>${idbus.idojo.memorysessionstore.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.memorysessionstore</artifactId>
+            <version>${idbus.idojo.memorysessionstore.version}</version>
+            <type>pom</type>
+        </dependency>
+
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.ehcachesessionstore</artifactId>
@@ -971,9 +1265,26 @@
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.ehcachesessionstore</artifactId>
+            <version>${idbus.idojo.memorysessionstore.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.serializedsessionstore</artifactId>
             <version>${idbus.idojo.serializedsessionstore.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.serializedsessionstore</artifactId>
+            <version>${idbus.idojo.serializedsessionstore.version}</version>
+            <type>pom</type>
+        </dependency>
+
+        <!-- =============================== -->
+        <!-- Other dependencies              -->
+        <!-- =============================== -->
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
@@ -1535,43 +1846,6 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>maven-bundle-plugin</artifactId>
             <version>${felix.plugin.version}</version>
-        </dependency>
-
-
-        <!-- IDBus POMs -->
-        <dependency>
-            <groupId>org.atricore.idbus.kernel</groupId>
-            <artifactId>kernel</artifactId>
-            <version>${idbus.kernel.version}</version>
-            <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.atricore.idbus.kernel.common</groupId>
-            <artifactId>common</artifactId>
-            <version>${idbus.kernel.version}</version>
-            <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.atricore.idbus.capabilities.sts</groupId>
-            <artifactId>sts</artifactId>
-            <version>${idbus.cap.sts.version}</version>
-            <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.atricore.idbus.capabilities.sts</groupId>
-            <artifactId>sts</artifactId>
-            <version>${idbus.cap.josso.version}</version>
-            <type>pom</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.atricore.idbus.capabilities.sts</groupId>
-            <artifactId>sts</artifactId>
-            <version>${idbus.cap.saml2.version}</version>
-            <type>pom</type>
         </dependency>
 
     </dependencies>
