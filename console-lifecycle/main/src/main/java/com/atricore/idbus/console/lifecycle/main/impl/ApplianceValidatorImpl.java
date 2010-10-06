@@ -354,6 +354,16 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.getInstallUri() == null)
             addError("Execution Environment install URI cannot be null");
 
+        if (node instanceof JBossExecutionEnvironment) {
+            JBossExecutionEnvironment jbExecEnv = (JBossExecutionEnvironment) node;
+            if (jbExecEnv.getInstance() == null)
+                addError("JBoss Execution Environment instance name cannot be null");
+        } else if (node instanceof WeblogicExecutionEnvironment) {
+            WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) node;
+            if (wlExecEnv.getDomain() == null)
+                addError("Weblogic Execution Environment domain name cannot be null");
+        }
+
     }
 
     @Override
