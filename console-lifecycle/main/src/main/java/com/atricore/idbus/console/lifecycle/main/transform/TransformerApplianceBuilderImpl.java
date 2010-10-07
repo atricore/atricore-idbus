@@ -85,10 +85,21 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
             byte[] readBuffer = new byte[10240];
             int bytesIn = 0;
 
+
+            boolean hasPom = false;
+
+            for (FileObject file : files) {
+                if (file.getName().getBaseName().equals("pom.xml")) {
+                    hasPom = true;
+                    break;
+                }
+            }
+
             // loop through files and zip them
             for (FileObject file : files) {
+
                 String fileName = file.getName().getBaseName();
-                if (file.getType() == FileType.FOLDER && fileName.equals("target")) {
+                if (file.getType() == FileType.FOLDER && hasPom && fileName.equals("target")) {
                     // Do not zip any target folders ...
                     continue;
                 }
