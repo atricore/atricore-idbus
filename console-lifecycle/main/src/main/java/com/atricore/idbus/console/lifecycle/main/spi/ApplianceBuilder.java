@@ -13,4 +13,6 @@ public interface ApplianceBuilder {
 
     IdentityAppliance build(IdentityAppliance appliance) ;
 
+    public byte[] exportProject(IdentityAppliance appliance);
+
 }
