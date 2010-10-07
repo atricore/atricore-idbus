@@ -105,7 +105,9 @@ public class ChangePasswordMediator extends IocFormMediator
         }
         else {
             event.stopImmediatePropagation();
-            sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "Missing or invalid data entered");
+            if (view.pwvPasswords.source.errorString != "") {
+                view.focusManager.setFocus(view.newPassword);
+            }
         }
     }
 
@@ -114,8 +116,8 @@ public class ChangePasswordMediator extends IocFormMediator
     }
 
     public function handlePasswordChangeSuccess():void {
-//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
-//                "The user password changed succsessfuly.");
+        //        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
+        //                "The user password changed succsessfuly.");
     }
 
     public function handlePasswordChangeFailure():void {

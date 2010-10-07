@@ -23,7 +23,6 @@ package com.atricore.idbus.console.account.main.view.edituser {
 import com.atricore.idbus.console.account.main.controller.EditUserCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.services.dto.Group;
@@ -181,8 +180,6 @@ public class EditUserMediator extends IocFormMediator
 
         view.generatePasswordCheck.selected = _accountManagementProxy.currentUser.automaticallyGeneratePassword;
         view.emailNewPasswordCheck.selected = _accountManagementProxy.currentUser.emailNewPasword;
-
-        FormUtility.clearValidationErrors(_validators);
     }
 
     private function onSubmitEditUser(event:MouseEvent):void {
@@ -222,7 +219,6 @@ public class EditUserMediator extends IocFormMediator
 
     public function handleEditUserSuccess():void {
         sendNotification(ProcessingMediator.STOP);
-
         sendNotification(ApplicationFacade.LIST_USERS);
     }
 

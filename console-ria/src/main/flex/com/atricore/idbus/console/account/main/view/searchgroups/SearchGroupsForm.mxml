@@ -44,7 +44,7 @@
     </mx:FormItem>
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
-        <s:Button id="submitSearchGroupsButton"
+        <s:Button id="submitSearchGroupsButton" enabled="false"
                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.search')}" />
         <s:Button id="cancelSearchGroup" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
     </mx:ControlBar>

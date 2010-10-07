@@ -52,12 +52,12 @@
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.fullname')}:">
-        <mx:TextInput id="userFullname" editable="false" width="150"/>
+        <mx:TextInput id="userFullname" width="150"/>
     </mx:FormItem>
 
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
-        <s:Button id="submitSearchUsersButton"
+        <s:Button id="submitSearchUsersButton" enabled="false"
                   label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.search')}" />
         <s:Button id="cancelSearchUsers" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
     </mx:ControlBar>

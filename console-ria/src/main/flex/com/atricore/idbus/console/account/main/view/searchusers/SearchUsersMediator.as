@@ -62,6 +62,12 @@ public class SearchUsersMediator extends IocFormMediator
         if (getViewComponent() != null) {
             view.cancelSearchUsers.removeEventListener(MouseEvent.CLICK, handleCancel);
             view.submitSearchUsersButton.removeEventListener(MouseEvent.CLICK, onSubmitSearchUser);
+
+            view.userUsername.removeEventListener(Event.CHANGE, hasAtLeastOneCriteria);
+            view.userLastname.removeEventListener(Event.CHANGE, hasAtLeastOneCriteria);
+            view.userFirstName.removeEventListener(Event.CHANGE, hasAtLeastOneCriteria);
+            view.userFullname.removeEventListener(Event.CHANGE, hasAtLeastOneCriteria);
+
             if (view.parent != null) {
                 view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
             }
@@ -74,6 +80,12 @@ public class SearchUsersMediator extends IocFormMediator
     private function init():void {
         view.cancelSearchUsers.addEventListener(MouseEvent.CLICK, handleCancel);
         view.submitSearchUsersButton.addEventListener(MouseEvent.CLICK, onSubmitSearchUser);
+
+        view.userUsername.addEventListener(Event.CHANGE, hasAtLeastOneCriteria);
+        view.userLastname.addEventListener(Event.CHANGE, hasAtLeastOneCriteria);
+        view.userFirstName.addEventListener(Event.CHANGE, hasAtLeastOneCriteria);
+        view.userFullname.addEventListener(Event.CHANGE, hasAtLeastOneCriteria);
+
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
     }
 
@@ -132,6 +144,16 @@ public class SearchUsersMediator extends IocFormMediator
         else {
             event.stopImmediatePropagation();
         }
+    }
+
+    private function hasAtLeastOneCriteria(event:Event):void {
+        var retVal:Boolean = false;
+
+        if (view.userUsername.text != "" || view.userFirstName.text !="" ||
+                view.userLastname.text !="" || view.userFullname.text !="")
+            view.submitSearchUsersButton.enabled = true;
+        else
+            view.submitSearchUsersButton.enabled = false;
     }
 
     public function handleSearchUserSuccess():void {
