@@ -62,6 +62,9 @@ import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceView;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceView;
 
+import com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceMediator;
+import com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceView;
+
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
 
@@ -91,6 +94,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _deployApplianceMediator:DeployApplianceMediator;
     private var _activationCreateMediator:ActivationCreateMediator;
     private var _federatedConnectionCreateMediator:FederatedConnectionCreateMediator;
+    private var _exportIdentityApplianceMediator:ExportIdentityApplianceMediator;
 
     // views
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
@@ -113,6 +117,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _deployAppliance:DeployApplianceView;
     private var _activationCreateForm:ActivationCreateForm;
     private var _federatedConnectionCreateForm:FederatedConnectionCreateForm;
+    private var _exportIdentityApplianceView:ExportIdentityApplianceView;
 
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
@@ -277,6 +282,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set federatedConnectionCreateMediator(value:FederatedConnectionCreateMediator):void {
         _federatedConnectionCreateMediator = value;
+    }
+
+    public function get exportIdentityApplianceMediator():ExportIdentityApplianceMediator {
+        return _exportIdentityApplianceMediator;
+    }
+
+    public function set exportIdentityApplianceMediator(value:ExportIdentityApplianceMediator):void {
+        _exportIdentityApplianceMediator = value;
     }
 
     public function showCreateIdentityProviderWindow(notification:INotification):void {
@@ -699,5 +712,25 @@ public class ModelerPopUpManager extends BasePopUpManager {
         deployApplianceMediator.handleNotification(_lastWindowNotification);
     }
 
+    public function showCreateExportIdentityApplianceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createExportIdentityApplianceView();
+        _popup.title = "Export Identity Appliance";
+        _popup.width = 400;
+        _popup.height = 130;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_exportIdentityApplianceView);
+    }
+
+    private function createExportIdentityApplianceView():void {
+        _exportIdentityApplianceView = new ExportIdentityApplianceView();
+        _exportIdentityApplianceView.addEventListener(FlexEvent.CREATION_COMPLETE, handleExportIdentityApplianceViewCreated);
+    }
+
+    private function handleExportIdentityApplianceViewCreated(event:FlexEvent):void {
+        exportIdentityApplianceMediator.setViewComponent(_exportIdentityApplianceView);
+        exportIdentityApplianceMediator.handleNotification(_lastWindowNotification);
+    }
 }
 }

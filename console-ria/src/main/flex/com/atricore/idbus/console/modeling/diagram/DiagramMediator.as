@@ -543,16 +543,16 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         _identityAppliance = projectProxy.currentIdentityAppliance;
     }
 
-    private function updateGraph() {
+    private function updateGraph():void {
 
         if (_identityAppliance != null) {
             _applianceId = _identityAppliance.id.toString();
-            updateGraphTitle();
         } else {
             _applianceId = null;
         }
 
         resetGraph();
+        updateGraphTitle();
 
         var providerNodes:Dictionary = new Dictionary();
 
@@ -734,6 +734,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
     private function updateGraphTitle():void {
         if (projectProxy.currentIdentityAppliance != null) {
             view.title = projectProxy.currentIdentityAppliance.idApplianceDefinition.name;
+        } else {
+            view.title = "";
         }
     }
 
@@ -775,6 +777,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         view.graphCanvas.removeGraphGrid();
         _currentlySelectedNode = null;
         _currentlySelectedEdge = null;
+
+        view.title = "";
     }
 
     private function nodeSelectedEventHandler(event:VNodeSelectedEvent):void

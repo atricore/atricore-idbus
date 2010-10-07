@@ -48,10 +48,18 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceState;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import flash.external.ExternalInterface;
+
+import flash.net.FileReference;
+
 import mx.collections.ArrayCollection;
 import mx.controls.Alert;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
+
+import mx.rpc.events.FaultEvent;
+import mx.rpc.events.ResultEvent;
+import mx.rpc.http.HTTPService;
 
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
@@ -166,6 +174,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
 
         view.appliances.labelFunction = applianceListLabelFunc;
         view.btnSave.enabled = false;
+        view.btnExport.enabled = false;
 
         popupManager.init(iocFacade, view);
 
@@ -179,8 +188,10 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         if (_created) {
             sendNotification(ApplicationFacade.CLEAR_MSG);
             view.btnSave.enabled = false;
+            view.btnExport.enabled = false;
             if (projectProxy.currentIdentityAppliance != null &&
                     projectProxy.currentIdentityAppliance.state != IdentityApplianceState.DISPOSED.name) {
+                view.btnExport.enabled = true;
                 sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID,
                         projectProxy.currentIdentityAppliance.id.toString());
                 //sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
@@ -198,6 +209,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         view.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
         view.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
         view.btnSave.addEventListener(MouseEvent.CLICK, handleSaveClick);
+        view.btnExport.addEventListener(MouseEvent.CLICK, handleExportClick);
     }
     public function dispose():void {
         // Clean up:
@@ -208,10 +220,13 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         view.btnNew.removeEventListener(MouseEvent.CLICK, handleNewClick);
         view.btnOpen.removeEventListener(MouseEvent.CLICK, handleOpenClick);
         view.btnSave.removeEventListener(MouseEvent.CLICK, handleSaveClick);
+        view.btnExport.removeEventListener(MouseEvent.CLICK, handleExportClick);
 
         _identityAppliance = null;
         _tempSelectedViewIndex = -1;
         _created = null;
+        view.btnSave.enabled = false;
+        view.btnExport.enabled = false;
         view.appliances.selectedItem = null;
         (browserMediator as BrowserMediator).dispose();
         (diagramMediator as DiagramMediator).dispose();
@@ -261,6 +276,11 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
     }
 
+    private function handleExportClick(event:MouseEvent):void {
+        trace("Export Button Click: " + event);
+        sendNotification(ApplicationFacade.EXPORT_IDENTITY_APPLIANCE);
+    }
+
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.MODELER_VIEW_SELECTED,
             ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
@@ -295,6 +315,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             //ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT,
             ApplicationFacade.LOGOUT,
             ApplicationFacade.AUTOSAVE_IDENTITY_APPLIANCE,
+            ApplicationFacade.EXPORT_IDENTITY_APPLIANCE,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             LookupIdentityApplianceByIdCommand.SUCCESS,
@@ -440,12 +461,14 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             case LookupIdentityApplianceByIdCommand.SUCCESS:
                 var redrawGraph:Boolean = view.btnSave.enabled;
                 view.btnSave.enabled = false;
+                view.btnExport.enabled = true;
                 //view.btnLifecycle.enabled = false;
                 enableIdentityApplianceActionButtons();
                 sendNotification(ProcessingMediator.STOP);
                 if (projectProxy.currentIdentityAppliance != null &&
                         projectProxy.currentIdentityAppliance.state == IdentityApplianceState.DISPOSED.name) {
                     projectProxy.currentIdentityAppliance = null;
+                    view.btnExport.enabled = false;
                 }
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 sendNotification(ApplicationFacade.REFRESH_DIAGRAM, redrawGraph);
@@ -527,6 +550,11 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         "There was an error loading JDBC drivers list.");
                 break;
+            case ApplicationFacade.EXPORT_IDENTITY_APPLIANCE:
+                if (projectProxy.currentIdentityAppliance != null) {
+                    popupManager.showCreateExportIdentityApplianceWindow(notification);
+                }
+                break;
         }
 
     }
@@ -538,6 +566,11 @@ public class ModelerMediator extends IocMediator implements IDisposable {
 
     private function enableIdentityApplianceActionButtons():void {
         var appliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
+        if (appliance != null) {
+            view.btnExport.enabled = true;
+        } else {
+            view.btnExport.enabled = false;
+        }
         /*if (appliance != null && appliance.idApplianceDeployment == null) {
          view.btnLifecycle.enabled = true;
          }*/

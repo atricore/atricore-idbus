@@ -316,6 +316,10 @@
             class="com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+     <object id="exportIdentityApplianceMediator"
+            class="com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="browserMediator" class="com.atricore.idbus.console.modeling.browser.BrowserMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
@@ -422,7 +426,7 @@
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
         <property name="activationCreateMediator" ref="activationCreateMediator"/>
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
-
+        <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
     </object>
 
     <object id="accountManagementPopUpManager" class="com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager">
@@ -536,6 +540,7 @@
         <property name="searchUsersMediator" ref="searchUsersMediator"/>
         <property name="activationCreateMediator" ref="activationCreateMediator"/>
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
+        <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
 
     </object>
 

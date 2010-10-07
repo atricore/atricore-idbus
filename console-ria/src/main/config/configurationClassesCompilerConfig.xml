@@ -54,6 +54,7 @@
         <!--<symbol>com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator</symbol>-->
         <!--<symbol>com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator</symbol>-->
         <symbol>com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.browser.BrowserMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.palette.PaletteMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.AccountManagementMediator</symbol>

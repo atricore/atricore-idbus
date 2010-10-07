@@ -87,6 +87,12 @@
                                           toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'action.save')}"
                                           label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'action.save')}"/>
 
+                    <comp:IconLabelButton id="btnExport" isLinkButton="false" visible="false"
+                                          iconUp="{EmbeddedIcons.saveApplianceMiniIcon}"
+                                          skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
+                                          toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'action.export')}"
+                                          label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'action.export')}"/>
+
                 </s:HGroup>
                 <s:HGroup width="99%" height="65%">
                     <browser:BrowserView id="browser" height="99%" width="20%"/>
