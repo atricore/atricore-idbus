@@ -630,6 +630,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         sp.setIdentityAppliance(iad);
         sp.setDescription(sp.getName() + " description");
 
+        // set location
         LocationDTO location = new LocationDTO();
         location.setProtocol(iad.getLocation().getProtocol());
         location.setHost(iad.getLocation().getHost());
@@ -638,6 +639,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         location.setUri(iad.getLocation().getUri() + "/" + createUrlSafeString(sp.getName()).toUpperCase());
         sp.setLocation(location);
 
+        // set active bindings
         if (sp.getActiveBindings() == null) {
             sp.setActiveBindings(new HashSet<BindingDTO>());
         }
@@ -645,21 +647,14 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         sp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_REDIRECT);
         sp.getActiveBindings().add(BindingDTO.SAMLR2_HTTP_POST);
 
+        // set active profiles
         if (sp.getActiveProfiles() == null) {
             sp.setActiveProfiles(new HashSet<ProfileDTO>());
         }
         sp.getActiveProfiles().add(ProfileDTO.SSO);
         sp.getActiveProfiles().add(ProfileDTO.SSO_SLO);
 
-        //TODO CHECK IF LOCATION IS NEEDED
-//        LocationDTO idpLocation = new LocationDTO();
-//        idpLocation.setProtocol(iad.getLocation().getProtocol());
-//        idpLocation.setHost(iad.getLocation().getHost());
-//        idpLocation.setPort(iad.getLocation().getPort());
-//        idpLocation.setContext(iad.getLocation().getContext());
-//        idpLocation.setUri(createUrlSafeString(sp.getName()) + "/SAML2");
-//        idpChannel.setLocation(idpLocation);
-
+        // set saml config
         SamlR2SPConfigDTO spSamlConfig = new SamlR2SPConfigDTO();
         SamlR2ProviderConfigDTO originalConfig = (SamlR2ProviderConfigDTO)sp.getConfig();
         spSamlConfig.setName(sp.getName() + "-samlr2-config");
@@ -687,6 +682,12 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             spSamlConfig.setEncrypter(keystore);
         }
         sp.setConfig(spSamlConfig);
+
+        // set account linkage policy
+        AccountLinkagePolicyDTO accountLinkagePolicy = new AccountLinkagePolicyDTO();
+        accountLinkagePolicy.setName("Use Theirs");
+        accountLinkagePolicy.setMappingType(IdentityMappingTypeDTO.REMOTE);
+        sp.setAccountLinkagePolicy(accountLinkagePolicy);
     }
 
     private void createFederatedConnection(IdentityProviderDTO idp, ServiceProviderDTO sp){

@@ -13,6 +13,7 @@ import com.atricore.idbus.console.activation.main.spi.response.ConfigureAgentRes
 import com.atricore.idbus.console.activation.main.spi.response.PlatformSupportedResponse;
 import org.josso.tooling.gshell.core.support.MessagePrinter;
 import org.josso.tooling.gshell.install.installer.Installer;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.util.List;
 
@@ -20,13 +21,17 @@ import java.util.List;
 /**
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
-public class JOSSOActivationServiceImpl implements ActivationService {
+public class JOSSOActivationServiceImpl implements ActivationService, InitializingBean {
 
     private List<Installer> installers;
 
     private MessagePrinter printer;
 
     private String jossoVersion;
+
+    public void afterPropertiesSet() throws Exception {
+        System.setProperty("josso-gsh.home", System.getProperty("karaf.base") + "/josso");
+    }
 
     public PlatformSupportedResponse isSupported(PlatformSupportedRequest request) throws ActivationException {
         boolean supported = false;

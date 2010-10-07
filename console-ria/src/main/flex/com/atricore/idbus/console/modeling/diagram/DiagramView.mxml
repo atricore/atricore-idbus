@@ -22,18 +22,18 @@
 
 
 <s:Panel xmlns:mx="library://ns.adobe.com/flex/mx"
-          xmlns:fx="http://ns.adobe.com/mxml/2009"
-          xmlns:s="library://ns.adobe.com/flex/spark"
-          xmlns:components="com.atricore.idbus.console.components.*"
-          xmlns:comp="com.atricore.idbus.console.components.*"
-          xmlns:ravis="org.un.cava.birdeye.ravis.graphLayout.visual.*"
-          xmlns:graph-ctrl="com.atricore.idbus.console.modeling.diagram.ui.control.*"
-          xmlns:vc="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
-          xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
-          horizontalCenter="0" verticalCenter="0"
-          skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         xmlns:components="com.atricore.idbus.console.components.*"
+         xmlns:comp="com.atricore.idbus.console.components.*"
+         xmlns:ravis="org.un.cava.birdeye.ravis.graphLayout.visual.*"
+         xmlns:graph-ctrl="com.atricore.idbus.console.modeling.diagram.ui.control.*"
+         xmlns:vc="org.un.cava.birdeye.ravis.components.ui.controls.vgraphControls.*"
+         xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
+         horizontalCenter="0" verticalCenter="0"
+         skinClass="com.atricore.idbus.console.skin.panel.RightTitleBarPanelSkin"
         >
-    
+
     <s:layout>
         <s:VerticalLayout/>
     </s:layout>
@@ -50,10 +50,11 @@
 
     <comp:GraphCanvas id="graphCanvas" width="100%" height="100%">
         <comp:CustomVisualGraph id="identityApplianceDiagram" width="100%" height="100%"
-                           left="0" right="0" top="0" bottom="0" alpha="1"
-                           resize="identityApplianceDiagram.draw(VisualGraph.DF_RESET_LL)"
-                           visibilityLimitActive="true"
+                                left="0" right="0" top="0" bottom="0" alpha="1"
+                                resize="identityApplianceDiagram.draw(VisualGraph.DF_RESET_LL)"
+                                visibilityLimitActive="true"
                 >
         </comp:CustomVisualGraph>
     </comp:GraphCanvas>
 </s:Panel>
+

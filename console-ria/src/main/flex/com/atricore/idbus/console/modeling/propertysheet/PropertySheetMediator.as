@@ -393,7 +393,8 @@ public class PropertySheetMediator extends IocMediator {
             var identityAppliance:IdentityAppliance;
             identityAppliance = projectProxy.currentIdentityAppliance;
 
-            identityAppliance.idApplianceDefinition.name = _iaCoreSection.applianceName.text;
+            identityAppliance.name = _iaCoreSection.applianceName.text;
+            identityAppliance.idApplianceDefinition.name = identityAppliance.name;
             identityAppliance.idApplianceDefinition.description = _iaCoreSection.applianceDescription.text;
             identityAppliance.namespace = _iaCoreSection.applianceNamespace.text;
             identityAppliance.idApplianceDefinition.location.protocol = _iaCoreSection.applianceLocationProtocol.selectedItem.label;
@@ -929,13 +930,23 @@ public class PropertySheetMediator extends IocMediator {
             _spCoreSection.spLocationContext.text = serviceProvider.location.context;
             _spCoreSection.spLocationPath.text = serviceProvider.location.uri;
 
-            for (var i:int = 0; i < _spCoreSection.accountLinkagePolicyCombo.dataProvider.length; i++) {
+            if (serviceProvider.accountLinkagePolicy != null) {
+                if (serviceProvider.accountLinkagePolicy.mappingType.toString() == IdentityMappingType.REMOTE.toString()) {
+                    _spCoreSection.accountLinkagePolicyCombo.selectedIndex = 0;
+                } else if (serviceProvider.accountLinkagePolicy.mappingType.toString() == IdentityMappingType.LOCAL.toString()) {
+                    _spCoreSection.accountLinkagePolicyCombo.selectedIndex = 1;
+                } else if (serviceProvider.accountLinkagePolicy.mappingType.toString() == IdentityMappingType.MERGED.toString()) {
+                    _spCoreSection.accountLinkagePolicyCombo.selectedIndex = 2;
+                }
+            }
+
+            /*for (var i:int = 0; i < _spCoreSection.accountLinkagePolicyCombo.dataProvider.length; i++) {
                 if (serviceProvider.accountLinkagePolicy != null &&
                         _spCoreSection.accountLinkagePolicyCombo.dataProvider[i].name == serviceProvider.accountLinkagePolicy.name) {
                     _spCoreSection.accountLinkagePolicyCombo.selectedIndex = i;
                     break;
                 }
-            }
+            }*/
 
             _spCoreSection.serviceProvName.addEventListener(Event.CHANGE, handleSectionChange);
             _spCoreSection.serviceProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
@@ -978,7 +989,7 @@ public class PropertySheetMediator extends IocMediator {
             accountLinkagePolicy.name = _spCoreSection.accountLinkagePolicyCombo.selectedItem.name;
             var selectedPolicy:String = _spCoreSection.accountLinkagePolicyCombo.selectedItem.data;
             if (selectedPolicy == "theirs") {
-                accountLinkagePolicy.mappingType = IdentityMappingType.CUSTOM;
+                accountLinkagePolicy.mappingType = IdentityMappingType.REMOTE;
             } else if (selectedPolicy == "ours") {
                 accountLinkagePolicy.mappingType = IdentityMappingType.LOCAL;
             } else if (selectedPolicy == "aggregate") {

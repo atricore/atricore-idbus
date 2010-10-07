@@ -25,6 +25,22 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
     }
 
     public IdentityAppliance build(IdentityAppliance appliance) {
+        return buildAppliance(appliance).getProject().getIdAppliance();
+    }
+
+    public byte[] exportProject(IdentityAppliance appliance) {
+        IdApplianceTransformationContext ctx = buildAppliance(appliance);
+
+        IdApplianceProject prj = ctx.getProject();
+        IdProjectModule module = prj.getRootModule();
+        ProjectModuleLayout layout = prj.getRootModule().getLayout();
+
+        // TODO !!!!
+
+        return null;
+    }
+
+    protected IdApplianceTransformationContext buildAppliance(IdentityAppliance appliance) {
 
         try {
             IdentityApplianceDeployment deployment = appliance.getIdApplianceDeployment();
@@ -36,13 +52,12 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
                 appliance.setIdApplianceDeployment(deployment);
             }
 
-            IdApplianceTransformationContext ctx = engine.transform(appliance);
-
-            return ctx.getProject().getIdAppliance();
+            return engine.transform(appliance);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
 
 
 }

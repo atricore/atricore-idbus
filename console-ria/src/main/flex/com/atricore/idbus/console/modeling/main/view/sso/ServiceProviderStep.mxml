@@ -161,6 +161,7 @@
 
                 if (jossoSPPlatform.selectedItem.@data.indexOf("jb") == 0) {
                     sp.activation.executionEnv = new JbossExecutionEnvironment();
+                    (sp.activation.executionEnv as JbossExecutionEnvironment).instance = "default";
                 } else if (jossoSPPlatform.selectedItem.@data.indexOf("tc") == 0) {
                     sp.activation.executionEnv = new TomcatExecutionEnvironment();
                 }

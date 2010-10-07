@@ -125,7 +125,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
     private var _projectProxy:ProjectProxy;
 
     private var _currentIdentityApplianceId:Number;
-    
+
     public function get projectProxy():ProjectProxy {
         return _projectProxy;
     }
@@ -175,6 +175,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         updateGraph();
 
         _currentIdentityApplianceId = null;
+
+
     }
 
     override public function listNotificationInterests():Array {
@@ -390,6 +392,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
             case ApplicationFacade.DIAGRAM_ELEMENT_UPDATED:
                 _identityApplianceDiagram.dispatchEvent(new VGraphEvent(VGraphEvent.VGRAPH_CHANGED));
+                updateGraphTitle();
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_REMOVE:
                 if (_currentlySelectedNode != null) {
@@ -540,12 +543,11 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         _identityAppliance = projectProxy.currentIdentityAppliance;
     }
 
-
-
     private function updateGraph() {
 
         if (_identityAppliance != null) {
             _applianceId = _identityAppliance.id.toString();
+            updateGraphTitle();
         } else {
             _applianceId = null;
         }
@@ -667,6 +669,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
     private function updateGraphData():void {
         var identityAppliance:IdentityAppliance = projectProxy.currentIdentityAppliance;
         if (identityAppliance != null) {
+            updateGraphTitle();
+
             var identityApplianceDefinition:IdentityApplianceDefinition = identityAppliance.idApplianceDefinition;
 
             if (identityApplianceDefinition.identitySources != null) {
@@ -724,6 +728,12 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 edge.vedge.data.data = data;
                 break;
             }
+        }
+    }
+
+    private function updateGraphTitle():void {
+        if (projectProxy.currentIdentityAppliance != null) {
+            view.title = projectProxy.currentIdentityAppliance.idApplianceDefinition.name;
         }
     }
 
@@ -924,7 +934,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
     private function toggleGraphElementOnByData(semanticElement:Object):void {
         _currentlySelectedNode = null;
         _currentlySelectedEdge = null;
-        
+
         for each (var node:INode in _identityApplianceDiagram.graph.nodes) {
             if (node.data != null && node.data == semanticElement) {
                 (node.vnode.view as NodeDetailedRenderer).nodeBtn.selected = true;
