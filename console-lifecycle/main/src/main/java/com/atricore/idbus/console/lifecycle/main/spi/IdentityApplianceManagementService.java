@@ -40,6 +40,8 @@ public interface IdentityApplianceManagementService {
 
     ValidateApplianceResponse validateApplinace(ValidateApplianceRequest request) throws IdentityServerException;
 
+    ExportIdentityApplianceProjectResponse exportIdentityApplianceProject(ExportIdentityApplianceProjectRequest request) throws IdentityServerException;
+
     //-----------------------< CRUD Operations >
 
     /**

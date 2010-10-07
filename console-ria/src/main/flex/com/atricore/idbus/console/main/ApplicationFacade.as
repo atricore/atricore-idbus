@@ -59,6 +59,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const START_IDENTITY_APPLIANCE:String = "startIdentityAppliance";
     public static const STOP_IDENTITY_APPLIANCE:String = "stopIdentityAppliance";
     public static const DISPOSE_IDENTITY_APPLIANCE:String = "disposeIdentityAppliance";
+    public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
     public static const ADD_GROUP:String = "addGroup";
     public static const ADD_USER:String = "addUser";
     public static const DELETE_GROUP:String = "deleteGroup";

@@ -92,6 +92,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _searchUsersMediator:IIocMediator;
     private var _activationCreateMediator:IIocMediator;
     private var _federatedConnectionCreateMediator:IIocMediator;
+    private var _exportIdentityApplianceMediator:IIocMediator;
 
 
     /* Commands */
@@ -473,6 +474,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set federatedConnectionCreateMediator(value:IIocMediator):void {
         _federatedConnectionCreateMediator = value;
+    }
+
+    public function get exportIdentityApplianceMediator():IIocMediator {
+        return _exportIdentityApplianceMediator;
+    }
+
+    public function set exportIdentityApplianceMediator(value:IIocMediator):void {
+        _exportIdentityApplianceMediator = value;
     }
 
     public function get serviceRegistry():IIocProxy {
@@ -957,11 +966,12 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(apacheExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(windowsIISExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(uploadProgressMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(buildApplianceMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(deployApplianceMediator.getConfigName());
+        //iocFacade.registerMediatorByConfigName(buildApplianceMediator.getConfigName());
+        //iocFacade.registerMediatorByConfigName(deployApplianceMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(processingMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(activationCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(federatedConnectionCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(exportIdentityApplianceMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(changePasswordMediator.getConfigName());
 
         // IDENTITY_APPLIANCE_LIST_LOAD notification is sent from

@@ -62,6 +62,10 @@ public class SearchGroupsMediator extends IocFormMediator
         if (getViewComponent() != null) {
             view.cancelSearchGroup.removeEventListener(MouseEvent.CLICK, handleCancel);
             view.submitSearchGroupsButton.removeEventListener(MouseEvent.CLICK, onSubmitSearchGroup);
+
+            view.groupName.removeEventListener(Event.CHANGE, hasAtLeastOneCriteria);
+            view.groupDescription.removeEventListener(Event.CHANGE, hasAtLeastOneCriteria);
+
             if (view.parent != null) {
                 view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
             }
@@ -74,6 +78,10 @@ public class SearchGroupsMediator extends IocFormMediator
     private function init():void {
         view.cancelSearchGroup.addEventListener(MouseEvent.CLICK, handleCancel);
         view.submitSearchGroupsButton.addEventListener(MouseEvent.CLICK, onSubmitSearchGroup);
+
+        view.groupName.addEventListener(Event.CHANGE, hasAtLeastOneCriteria);
+        view.groupDescription.addEventListener(Event.CHANGE, hasAtLeastOneCriteria);
+
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
     }
 
@@ -125,6 +133,15 @@ public class SearchGroupsMediator extends IocFormMediator
         else {
             event.stopImmediatePropagation();
         }
+    }
+
+    private function hasAtLeastOneCriteria(event:Event):void {
+        var retVal:Boolean = false;
+
+        if (view.groupName.text != "" || view.groupDescription.text !="")
+            view.submitSearchGroupsButton.enabled = true;
+        else
+            view.submitSearchGroupsButton.enabled = false;
     }
 
     public function handleSearchGroupSuccess():void {

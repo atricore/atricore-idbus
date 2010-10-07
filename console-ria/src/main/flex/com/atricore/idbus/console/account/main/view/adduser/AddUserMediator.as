@@ -157,9 +157,6 @@ public class AddUserMediator extends IocFormMediator
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error adding user.");
     }
-    private function handleCancel(event:MouseEvent):void {
-        closeWindow();
-    }
 
     private function initGeneralSection(event:FlexEvent):void {
         view.focusManager.setFocus(view.userUsername);
@@ -187,6 +184,10 @@ public class AddUserMediator extends IocFormMediator
 
     private function closeWindow():void {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+    }
+
+    private function handleCancel(event:MouseEvent):void {
+        closeWindow();
     }
 
     private function handleClose(event:Event):void {

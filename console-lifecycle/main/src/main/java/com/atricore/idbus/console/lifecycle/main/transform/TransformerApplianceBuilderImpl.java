@@ -5,6 +5,12 @@ import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeploym
 import com.atricore.idbus.console.lifecycle.main.spi.ApplianceBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
+
+import java.io.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -32,10 +38,21 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
         IdApplianceTransformationContext ctx = buildAppliance(appliance);
 
         IdApplianceProject prj = ctx.getProject();
-        IdProjectModule module = prj.getRootModule();
         ProjectModuleLayout layout = prj.getRootModule().getLayout();
 
-        // TODO !!!!
+        if (layout.getWorkDir() != null) {
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            ZipOutputStream zout = new ZipOutputStream(bout);
+
+            try {
+                zipDir(layout.getWorkDir(), layout.getWorkDir().getName().getBaseName(), zout);
+                zout.finish();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            
+            return bout.toByteArray();
+        }
 
         return null;
     }
@@ -58,6 +75,44 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
         }
     }
 
+    private void zipDir(FileObject dir, String parentPath, ZipOutputStream zout) {
+        try {
+            // get a listing of the directory content
+            FileObject[] files = dir.getChildren();
+            byte[] readBuffer = new byte[10240];
+            int bytesIn = 0;
 
+            // loop through files and zip them
+            for (FileObject file : files) {
+                String fileName = file.getName().getBaseName();
+                if (file.getType() == FileType.FOLDER && fileName.equals("target") &&
+                        (parentPath.equals("project" + File.separator + "idau") ||
+                        parentPath.equals("project" + File.separator + "features"))) {
+                    continue;
+                }
+                String zipPath = parentPath + File.separator + fileName;
+                if (file.getType() == FileType.FOLDER) {
+                    // if the FileObject is a directory, call this
+                    // function again to add its content recursively
+                    zipDir(file, zipPath, zout);
+                    continue;
+                }
+                // FileObject is a file, add it as ZipEntry
+                InputStream fis = file.getContent().getInputStream();
+                ZipEntry anEntry = new ZipEntry(zipPath);
+                // place the zip entry in the ZipOutputStream object
+                zout.putNextEntry(anEntry);
+                // now write the content of the file to the ZipOutputStream
+                while ((bytesIn = fis.read(readBuffer)) != -1) {
+                    zout.write(readBuffer, 0, bytesIn);
+                }
+                zout.closeEntry();
+                // close the Stream
+                fis.close();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

@@ -241,6 +241,19 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     @Transactional
+    public ExportIdentityApplianceProjectResponse exportIdentityApplianceProject(ExportIdentityApplianceProjectRequest request) throws IdentityServerException {
+        try {
+            syncAppliances();
+            IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
+            byte[] zip = builder.exportProject(appliance);
+            return new ExportIdentityApplianceProjectResponse(zip);
+	    } catch (Exception e){
+	        logger.error("Error exporting identity appliance project", e);
+	        throw new IdentityServerException(e);
+        }
+    }
+
+    @Transactional
     public ImportApplianceDefinitionResponse importApplianceDefinition(ImportApplianceDefinitionRequest request) throws IdentityServerException {
 
         try {
