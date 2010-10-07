@@ -44,6 +44,7 @@ public class IdentityVaultCreateMediator extends IocFormMediator {
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleIdentityVaultSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+        view.focusManager.setFocus(view.identityVaultName);
     }
 
     private function resetForm():void {

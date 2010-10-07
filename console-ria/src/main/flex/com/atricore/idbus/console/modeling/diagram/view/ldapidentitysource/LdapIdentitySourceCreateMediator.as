@@ -65,6 +65,7 @@ public class LdapIdentitySourceCreateMediator extends IocFormMediator {
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleLdapIdentitySourceSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+        view.focusManager.setFocus(view.userRepositoryName);
     }
 
     private function resetForm():void {

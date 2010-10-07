@@ -76,6 +76,7 @@ public class JBossExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.selectedHost.selectedIndex = 0;
         view.selectedHost.enabled = false;
         view.instance.text = "default";
+        view.focusManager.setFocus(view.executionEnvironmentName);
     }
 
     private function resetForm():void {

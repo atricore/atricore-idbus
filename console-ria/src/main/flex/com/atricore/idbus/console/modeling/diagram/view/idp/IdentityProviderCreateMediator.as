@@ -109,6 +109,7 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         BindingUtils.bindProperty(view.certificateKeyPair, "dataProvider", this, "_selectedFiles");
         
         initLocation();
+        view.focusManager.setFocus(view.identityProviderName);
     }
 
     private function resetForm():void {

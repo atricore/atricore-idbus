@@ -57,7 +57,7 @@
                 identitySource.ldapSearchScope = ldapSearchScope.selectedItem.data;
                 identitySource.usersCtxDN = usersCtxDN.text;
                 identitySource.principalUidAttributeID = principalUidAttributeID.text;
-                identitySource.roleMatchingMode = roleMatchingMode.text;
+                identitySource.roleMatchingMode = roleMatchingMode.selectedItem.data as String;
                 identitySource.uidAttributeID = uidAttributeID.text;
                 identitySource.rolesCtxDN = rolesCtxDN.text;
                 identitySource.roleAttributeID = roleAttributeID.text;
@@ -74,8 +74,24 @@
 
             private function initFields():void {
                 callLater(function() {
-                    userRepositoryName.text = (previousStepData as IdentitySource).name;
+                    userRepositoryName.text = (previousStepData as IdentitySource).name;                    
+                    initialContextFactory.text = "com.sun.jndi.ldap.LdapCtxFactory";
+                    providerUrl.text = "ldap://localhost:389";
+                    securityPrincipal.text = "uid=admin,ou=system";
+                    securityCredential.text = "";
+                    securityAuthentication.selectedIndex = 1;
+                    ldapSearchScope.selectedIndex = 2;
+                    usersCtxDN.text = "ou=People,dc=my-domain,dc=com";
+                    principalUidAttributeID.text = "uid";
+                    roleMatchingMode.selectedIndex = 0;
+                    uidAttributeID.text = "uniquemember";
+                    rolesCtxDN.text = "ou=Roles,dc=my-domain,dc=com";
+                    roleAttributeID.text = "cn";
+                    credentialQueryString.text = "uid=username,userPassword=password";
+                    updateableCredentialAttribute.text = "";
+                    userPropertiesQueryString.text = "mail=mail,cn=description";
                 });
+                focusManager.setFocus(ldapIdentitySourceDescription);
             }
 
             private function initForm():void {
@@ -88,12 +104,12 @@
                     validators.push(securityCredentialValidator);
                     validators.push(usersCtxDNValidator);
                     validators.push(principalUidAttributeIDValidator);
-                    validators.push(roleMatchingModeValidator);
+//                    validators.push(roleMatchingModeValidator);
                     validators.push(uidAttributeIDValidator);
                     validators.push(rolesCtxDNValidator);
                     validators.push(roleAttributeIDValidator);
                     validators.push(credentialQueryStringValidator);
-                    validators.push(updateableCredentialAttributeValidator);
+//                    validators.push(updateableCredentialAttributeValidator);
                     validators.push(userPropertiesQueryStringValidator);
                 }
             }
@@ -119,12 +135,12 @@
         <mx:StringValidator id="securityCredentialValidator" source="{securityCredential}" required="true" property="text"/>
         <mx:StringValidator id="usersCtxDNValidator" source="{usersCtxDN}" required="true" property="text"/>
         <mx:StringValidator id="principalUidAttributeIDValidator" source="{principalUidAttributeID}" required="true" property="text"/>
-        <mx:StringValidator id="roleMatchingModeValidator" source="{roleMatchingMode}" required="true" property="text"/>
+        <!--<mx:StringValidator id="roleMatchingModeValidator" source="{roleMatchingMode}" required="true" property="text"/>-->
         <mx:StringValidator id="uidAttributeIDValidator" source="{uidAttributeID}" required="true" property="text"/>
         <mx:StringValidator id="rolesCtxDNValidator" source="{rolesCtxDN}" required="true" property="text"/>
         <mx:StringValidator id="roleAttributeIDValidator" source="{roleAttributeID}" required="true" property="text"/>
         <mx:StringValidator id="credentialQueryStringValidator" source="{credentialQueryString}" required="true" property="text"/>
-        <mx:StringValidator id="updateableCredentialAttributeValidator" source="{updateableCredentialAttribute}" required="true" property="text"/>
+        <!--<mx:StringValidator id="updateableCredentialAttributeValidator" source="{updateableCredentialAttribute}" required="true" property="text"/>-->
         <mx:StringValidator id="userPropertiesQueryStringValidator" source="{userPropertiesQueryString}" required="true" property="text"/>
     </fx:Declarations>
 
@@ -166,7 +182,7 @@
 
                         <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.securityCredential')}:"
                                      required="true">
-                            <s:TextInput id="securityCredential" width="300" change="handleFormChange(event);"/>
+                            <s:TextInput id="securityCredential" width="300" change="handleFormChange(event);" displayAsPassword="true"/>
                         </mx:FormItem>
 
                         <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.securityAuthentication')}:"
@@ -212,9 +228,17 @@
                             <s:TextInput id="principalUidAttributeID" width="300" change="handleFormChange(event);"/>
                         </mx:FormItem>
 
-                        <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.roleMatchingMode')}:"
-                                     required="true">
-                            <s:TextInput id="roleMatchingMode" width="300" change="handleFormChange(event);"/>
+                        <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.roleMatchingMode')}:">
+                            <!--<s:TextInput id="roleMatchingMode" width="300" change="handleFormChange(event);"/>-->
+                            <s:DropDownList id="roleMatchingMode" selectedIndex="0" width="300" change="handleFormChange(event);">
+                                <s:dataProvider>
+                                    <mx:ArrayCollection>
+                                        <fx:Object label="Distinguished Name" data="DN"/>
+                                        <fx:Object label="User Id" data="UID"/>
+                                        <fx:Object label="User Principal" data="PRINCIPAL"/>
+                                    </mx:ArrayCollection>
+                                </s:dataProvider>
+                            </s:DropDownList>
                         </mx:FormItem>
 
                         <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.uidAttributeID')}:"
@@ -232,8 +256,7 @@
                             <s:TextInput id="roleAttributeID" width="300" change="handleFormChange(event);"/>
                         </mx:FormItem>
 
-                        <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.updateableCredentialAttribute')}:"
-                                     required="true">
+                        <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'ldapIdentitySource.updateableCredentialAttribute')}:">
                             <s:TextInput id="updateableCredentialAttribute" width="300" change="handleFormChange(event);"/>
                         </mx:FormItem>
 

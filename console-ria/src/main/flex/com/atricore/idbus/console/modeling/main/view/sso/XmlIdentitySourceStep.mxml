@@ -59,6 +59,7 @@
             callLater(function() {
                 userRepositoryName.text = (previousStepData as IdentitySource).name;
             });
+            focusManager.setFocus(xmlUrl);
         }
 
         private function initForm():void {

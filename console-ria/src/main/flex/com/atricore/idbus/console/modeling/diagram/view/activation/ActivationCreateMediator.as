@@ -75,6 +75,7 @@ public class ActivationCreateMediator extends IocFormMediator {
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleJOSSOActivationSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+        view.focusManager.setFocus(view.activationContext);
     }
 
     private function resetForm():void {
@@ -87,6 +88,7 @@ public class ActivationCreateMediator extends IocFormMediator {
         view.activationPartnerAppId.text = "";
 
         FormUtility.clearValidationErrors(_validators);
+        view.focusManager.setFocus(view.activationName);
     }
 
     override public function bindForm():void {

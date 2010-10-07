@@ -66,6 +66,7 @@ public class XmlIdentitySourceCreateMediator extends IocFormMediator {
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleXmlIdentitySourceSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+        view.focusManager.setFocus(view.xmlIdentitySourceName);
     }
 
     private function resetForm():void {

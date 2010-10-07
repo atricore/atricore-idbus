@@ -83,6 +83,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
     private function init():void {
         view.btnOk.addEventListener(MouseEvent.CLICK, handleFederatedConnectionSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
+        view.focusManager.setFocus(view.federatedConnectionName);
     }
 
     public function registerListeners():void {

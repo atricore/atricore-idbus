@@ -27,7 +27,8 @@
         xmlns:s="library://ns.adobe.com/flex/spark"
         stepName="Basic Authentication"
         xmlns:utils="com.atricore.idbus.console.components.*"
-        creationComplete="initForm()">
+        creationComplete="initForm()"
+        show="initFields()">
 
         <fx:Script>
         <![CDATA[           
@@ -87,6 +88,10 @@
                     validators = new Array();
                     validators.push(nameValidator);
                 }
+            }
+
+            private function initFields():void {
+                focusManager.setFocus(userRepositoryName);
             }
 
             private function handleFormChange(event:Event):void {

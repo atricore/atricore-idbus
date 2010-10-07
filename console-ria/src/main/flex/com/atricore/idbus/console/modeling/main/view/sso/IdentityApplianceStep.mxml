@@ -27,7 +27,8 @@
         xmlns:s="library://ns.adobe.com/flex/spark"
         stepName="Identity Appliance"
         xmlns:utils="com.atricore.idbus.console.components.*"
-        creationComplete="initForm()">
+        creationComplete="initForm()"
+        show="initFields()">
 
         <fx:Script>
         <![CDATA[
@@ -84,6 +85,11 @@
 //                    validators.push(pathValidator);
                     validators.push(namespaceValidator);
                 }
+                focusManager.setFocus(applianceName);
+            }
+
+            private function initFields():void {
+                focusManager.setFocus(applianceName);
             }
 
             private function handleFormChange(event:Event):void {

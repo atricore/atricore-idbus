@@ -72,6 +72,7 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
         view.selectedHost.enabled = false;
+        view.focusManager.setFocus(view.executionEnvironmentName);
     }
 
     private function resetForm():void {

@@ -96,6 +96,7 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         BindingUtils.bindProperty(view.driver, "dataProvider", this, "_jdbcDrivers");
         view.driver.addEventListener(Event.CHANGE, handleDriverChange);
         sendNotification(ApplicationFacade.LIST_JDBC_DRIVERS);
+        view.focusManager.setFocus(view.userRepositoryName);
     }
 
     private function resetForm():void {

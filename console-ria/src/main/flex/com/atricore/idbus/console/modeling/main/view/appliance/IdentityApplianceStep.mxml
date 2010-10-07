@@ -90,6 +90,7 @@
                     //validators.push(pathValidator);
                     validators.push(namespaceValidator);
                 }
+                focusManager.setFocus(applianceName);
             }
 
             private function handleFormChange(event:Event):void {

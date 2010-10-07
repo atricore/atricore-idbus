@@ -77,6 +77,7 @@
                 lastSPCreated = false;
 
                 clearTheForm();
+                focusManager.setFocus(jossoSPName);
             }
 
             private function initForm():void {
@@ -163,7 +164,7 @@
                 } else if (jossoSPPlatform.selectedItem.@data.indexOf("tc") == 0) {
                     sp.activation.executionEnv = new TomcatExecutionEnvironment();
                 }
-                sp.activation.executionEnv.name = partnerappLocationProtocol.labelDisplay.text + "-execenv";
+                sp.activation.executionEnv.name = jossoSPPlatform.selectedItem.@data + "-execenv";
                 sp.activation.executionEnv.installUri = homeDir.text;
 
                 sp.activation.executionEnv.platformId = jossoSPPlatform.selectedItem.@data;
