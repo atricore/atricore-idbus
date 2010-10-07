@@ -45,7 +45,10 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
             ZipOutputStream zout = new ZipOutputStream(bout);
 
             try {
-                zipDir(layout.getWorkDir(), layout.getWorkDir().getName().getBaseName(), zout);
+                zipDir(layout.getWorkDir(),
+                        appliance.getName() + "-1.0." + appliance.getIdApplianceDefinition().getRevision(),
+                        zout);
+                
                 zout.finish();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -85,11 +88,11 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
             // loop through files and zip them
             for (FileObject file : files) {
                 String fileName = file.getName().getBaseName();
-                if (file.getType() == FileType.FOLDER && fileName.equals("target") &&
-                        (parentPath.equals("project" + File.separator + "idau") ||
-                        parentPath.equals("project" + File.separator + "features"))) {
+                if (file.getType() == FileType.FOLDER && fileName.equals("target")) {
+                    // Do not zip any target folders ...
                     continue;
                 }
+
                 String zipPath = parentPath + File.separator + fileName;
                 if (file.getType() == FileType.FOLDER) {
                     // if the FileObject is a directory, call this
