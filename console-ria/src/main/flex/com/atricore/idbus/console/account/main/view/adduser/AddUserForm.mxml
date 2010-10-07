@@ -31,8 +31,10 @@
         <mx:StringValidator id="usernameUserValidator" source="{userUsername}" required="true" property="text"/>
         <mx:StringValidator id="firstnameUserValidator" source="{userFirstName}" required="true" property="text"/>
         <mx:StringValidator id="lastnameUserValidator" source="{userLastName}" required="true" property="text"/>
-        <utils:PasswordValidator id="pwvPasswords" required="true" source="{userPassword}" property="text"
-                                 confirmationSource="{userRetypePassword}" confirmationProperty="text"/>
+        <utils:PasswordValidator id="pwvPasswords" source="{userPassword}" property="text" required="true"
+                                 matchSource="{userRetypePassword}" matchProperty="text"
+                                 noMatchError="Passwords do not match"/>
+
         <mx:EmailValidator id="userEmailValidator" source="{userEmail}" property="text" required="false"/>
     </fx:Declarations>
 
@@ -142,25 +144,25 @@
                 <mx:HRule width="100%"/>
 
                 <mx:FormItem labelWidth="250"
-                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.disabled')}:">
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.disabled')}:">
                     <mx:CheckBox id="accountDisabledCheck" x="300"/>
                 </mx:FormItem>
 
                 <mx:FormItem labelWidth="250"
-                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.expires')}:">
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.expires')}:">
                     <mx:CheckBox id="accountExpiresCheck" x="300"
                                  click="{accountExpiresDateItem.enabled = accountExpiresCheck.selected}"/>
                 </mx:FormItem>
 
                 <mx:FormItem labelWidth="250"
-                        id="accountExpiresDateItem"
+                             id="accountExpiresDateItem"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.expires.date')}:"
                              enabled="false">
                     <mx:DateField id="accountExpiresDate" width="150" x="300"/>
                 </mx:FormItem>
 
                 <mx:FormItem labelWidth="250"
-                        label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.limit.login')}:">
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.account.limit.login')}:">
                     <mx:CheckBox id="accountLimitLoginCheck" x="300"
                                  click="{accountLimitLoginSection.enabled = accountLimitLoginCheck.selected}"/>
                 </mx:FormItem>
