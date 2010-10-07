@@ -164,11 +164,13 @@
             <version>1.11</version>
         </dependency>
 
+
         <dependency>
             <groupId>org.sonatype.plexus</groupId>
             <artifactId>plexus-sec-dispatcher</artifactId>
             <version>1.3</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
@@ -320,12 +322,11 @@
                             org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
                             org.osgi.service.command,
                             org.apache.maven.*,
-                            org.codehaus.plexus,
-                            org.codehaus.plexus.util,
-                            org.sonatype.plexus.components.sec.dispatcher; resolution:=optional,
-                            org.sonatype.plexus.components.cipher; resolution:=optional,
-                            junit.framework; resolution:=optional,
-                            org.cyberneko.html; resolution:=optional,
+                            org.codehaus.plexus.*,
+                            org.sonatype.plexus.components.sec.dispatcher.*; resolution:=optional,
+                            org.sonatype.plexus.components.cipher.*; resolution:=optional,
+                            junit.framework.*; resolution:=optional,
+                            org.cyberneko.html.*; resolution:=optional,
                             *
                         </Import-Package>
                         
