@@ -130,6 +130,7 @@
         <idbus.idojo.ldapidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
         <idbus.idojo.memoryidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.memoryidentitystore.version>
         <idbus.idojo.memorysessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.memorysessionstore.version>
+        <idbus.idojo.dbsessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.dbsessionstore.version>
         <idbus.idojo.ehcachesessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.ehcachesessionstore.version>
         <idbus.idojo.serializedsessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
         <idbus.idojo.strongauthscheme.version>1.0.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
@@ -1260,13 +1261,26 @@
 
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.dbsessionstore</artifactId>
+            <version>${idbus.idojo.dbsessionstore.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
+            <artifactId>org.atricore.idbus.idojos.dbsessionstore</artifactId>
+            <version>${idbus.idojo.dbsessionstore.version}</version>
+            <type>pom</type>
+        </dependency>
+        
+
+        <dependency>
+            <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.ehcachesessionstore</artifactId>
-            <version>${idbus.idojo.memorysessionstore.version}</version>
+            <version>${idbus.idojo.ehcachesessionstore.version}</version>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
             <artifactId>org.atricore.idbus.idojos.ehcachesessionstore</artifactId>
-            <version>${idbus.idojo.memorysessionstore.version}</version>
+            <version>${idbus.idojo.ehcachesessionstore.version}</version>
             <type>pom</type>
         </dependency>
 
