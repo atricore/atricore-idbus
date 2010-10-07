@@ -1071,6 +1071,12 @@
             <version>${idbus.bundle.datanucleus-v2_0_3.version}</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>datanucleus-v2_0_3</artifactId>
+            <version>${idbus.bundle.datanucleus-v2_0_3.version}</version>
+            <type>pom</type>
+        </dependency>
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
