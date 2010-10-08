@@ -67,7 +67,7 @@ public class IdentityProviderRemoveCommand extends IocSimpleCommand {
             }
         }
 
-        projectProxy.currentIdentityApplianceElement = false;
+        projectProxy.currentIdentityApplianceElement = null;
         // reflect removal in views and diagram editor
         sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

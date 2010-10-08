@@ -246,7 +246,10 @@ public class IdentityApplianceManagementServiceImpl implements
             syncAppliances();
             IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
             byte[] zip = builder.exportProject(appliance);
-            return new ExportIdentityApplianceProjectResponse(zip);
+            return new ExportIdentityApplianceProjectResponse(appliance.getName(),
+                    appliance.getIdApplianceDefinition().getRevision(),
+                    zip);
+
 	    } catch (Exception e){
 	        logger.error("Error exporting identity appliance project", e);
 	        throw new IdentityServerException(e);

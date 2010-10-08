@@ -76,8 +76,8 @@ public class IdentityApplianceRemoveCommand extends IocSimpleCommand implements 
     public function result(data:Object):void {
         var resp:RemoveIdentityApplianceResponse = data.result as RemoveIdentityApplianceResponse;
         projectProxy.currentIdentityAppliance = null;
-        projectProxy.currentIdentityApplianceElementOwner = false;
-        projectProxy.currentIdentityApplianceElement = false;
+        projectProxy.currentIdentityApplianceElementOwner = null;
+        projectProxy.currentIdentityApplianceElement = null;
         projectProxy.commandResultIdentityAppliance = null;
         sendNotification(SUCCESS);
         //sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);

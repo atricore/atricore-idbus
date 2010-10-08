@@ -74,7 +74,8 @@ public class ExportIdentityApplianceMediator extends IocMediator {
             var request:URLRequest = new URLRequest(url);
             var variables:URLVariables = new URLVariables();
             variables.applianceId = projectProxy.currentIdentityAppliance.id;;
-            variables.name = projectProxy.currentIdentityAppliance.idApplianceDefinition.name;
+            variables.name = projectProxy.currentIdentityAppliance.idApplianceDefinition.name + "-1.0." +
+                    projectProxy.currentIdentityAppliance.idApplianceDefinition.revision;
             request.data = variables;
             request.method = URLRequestMethod.GET;
             _urlLoader.load(request);
@@ -86,7 +87,8 @@ public class ExportIdentityApplianceMediator extends IocMediator {
     private function handleSave(event:MouseEvent):void {
         _fileRef = new FileReference();
         _fileRef.addEventListener(Event.COMPLETE, saveCompleteHandler);
-        _fileRef.save(_exportedAppliance, projectProxy.currentIdentityAppliance.idApplianceDefinition.name + ".zip");
+        _fileRef.save(_exportedAppliance, projectProxy.currentIdentityAppliance.idApplianceDefinition.name + "-1.0." +
+                    projectProxy.currentIdentityAppliance.idApplianceDefinition.revision + ".zip");
     }
 
     private function saveCompleteHandler(event:Event):void {

@@ -33,7 +33,7 @@ public class ExportIdentityApplianceController {
             byte[] zip = exportResp.getZip();
             if (zip != null) {
                 response.setContentType("application/zip");
-                response.setHeader("Content-Disposition","inline; filename=" + name + ".zip;");
+                response.setHeader("Content-Disposition","inline; filename=" + exportResp.getName() + "-1.0." + exportResp.getRevision() + ".zip;");
                 ServletOutputStream out = response.getOutputStream();
                 out.write(zip);
                 out.flush();

@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
@@ -180,6 +181,8 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         setPropertyValue(spMediator, "preferredIdpSLOBinding", SamlR2Binding.SAMLR2_POST.getValue());
 
         ExecutionEnvironment execEnv = provider.getActivation().getExecutionEnv();
+
+        IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
         IdentityApplianceDefinition applianceDef = provider.getIdentityAppliance();
 
         String bpLocationPath = resolveLocationPath(applianceDef.getLocation()) + "/" + execEnv.getName().toUpperCase();
@@ -205,7 +208,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         Bean spLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         spLogger.setName(sp.getName() + "-mediation-logger");
-        setPropertyValue(spLogger, "category", "idbus.mediation.wire." + sp.getName());
+        setPropertyValue(spLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + sp.getName());
         setPropertyAsBeans(spLogger, "messageBuilders", spLogBuilders);
         setPropertyBean(spMediator, "logger", spLogger);
 
@@ -374,7 +377,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         List<Entry> mBeans = new ArrayList<Entry>();
         
         Bean mBeanKey = newBean(spBeans, mBean.getName() + "-key", String.class);
-        setConstructorArg(mBeanKey, 0, "java.lang.String", "org.atricore.idbus." +
+        setConstructorArg(mBeanKey, 0, "java.lang.String", appliance.getNamespace() +  "." +
                 event.getContext().getCurrentModule().getId() +
                 ":type=ServiceProvider,name=" + applianceDef.getName() + "." + sp.getName());
 

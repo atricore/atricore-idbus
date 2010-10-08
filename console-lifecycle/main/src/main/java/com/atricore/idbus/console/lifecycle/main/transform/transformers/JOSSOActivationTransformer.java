@@ -1,10 +1,11 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ExecutionEnvironment;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.JOSSOActivation;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.josso.main.JossoMediator;
 import org.atricore.idbus.capabilities.josso.main.PartnerAppMapping;
 import org.atricore.idbus.kernel.main.mediation.provider.BindingProviderImpl;
@@ -17,6 +18,8 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
 public class JOSSOActivationTransformer extends AbstractTransformer {
+
+    private static final Log logger = LogFactory.getLog(JOSSOActivationTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {
@@ -65,9 +68,8 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
         String spAlias = resolveLocationUrl(activation.getSp()) + "/SAML2/MD";
         setPropertyValue(partnerappBean, "spAlias", spAlias);
 
-        // TODO : Support different execution environments like ISAPI, PHP, etc ....
-        setPropertyValue(partnerappBean, "partnerAppSLO", resolveLocationUrl(activation.getPartnerAppLocation()));
-        setPropertyValue(partnerappBean, "partnerAppACS", resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso_security_check");
+        setPropertyValue(partnerappBean, "partnerAppSLO", resolveSLOLocationUrl(activation));
+        setPropertyValue(partnerappBean, "partnerAppACS", resolveACSLocationUrl(activation));
 
         Entry partnerappMapping = new Entry();
         partnerappMapping.setKey(partnerappKeyBean);
@@ -100,4 +102,44 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
     public Object after(TransformEvent event) throws TransformException {
         return null;
     }
+
+    protected String resolveACSLocationUrl(JOSSOActivation activation) {
+
+        // TODO : Support different execution environments like ISAPI, PHP, etc ....
+        ExecutionEnvironment execEnv = activation.getExecutionEnv();
+        if (execEnv == null)
+            return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso_security_check";
+
+        if (execEnv instanceof Apache2ExecutionEnvironment) {
+            return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso_security_check";
+
+        } else if (execEnv instanceof ApacheExecutionEnvironment) {
+            return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso_security_check";
+
+        } else if (execEnv instanceof JEEExecutionEnvironment) {
+            logger.error("Execution Environment NOT supported by this transformer " + execEnv.getName() + " ["+execEnv.getPlatformId()+"]");
+
+        } else if (execEnv instanceof IISExecutionEnvironment) {
+            return resolveLocationBaseUrl(activation.getPartnerAppLocation()) + "/josso/JOSSOIsapiAgent.dll?josso_security_check";
+
+        } else if (execEnv instanceof WindowsIISExecutionEnvironment) {
+            return resolveLocationBaseUrl(activation.getPartnerAppLocation()) + "/josso/JOSSOIsapiAgent.dll?josso_security_check";
+
+        } else if (execEnv instanceof PHPExecutionEnvironment) {
+            return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso-security-check.php";
+
+        } else if (execEnv instanceof WeblogicExecutionEnvironment) {
+            return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso-wls/josso_security_check.jsp";
+
+        }
+
+        // Defautl value
+        return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso_security_check";
+
+    }
+
+    protected String resolveSLOLocationUrl(JOSSOActivation activation) {
+        return resolveLocationUrl(activation.getPartnerAppLocation());
+    }
+
 }

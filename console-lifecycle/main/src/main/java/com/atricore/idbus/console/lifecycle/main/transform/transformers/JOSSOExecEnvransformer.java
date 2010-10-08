@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
@@ -53,6 +54,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
         ExecutionEnvironment execEnv = (ExecutionEnvironment) event.getData();
         IdentityApplianceDefinition applianceDef = (IdentityApplianceDefinition) event.getContext().getParentNode();
+        IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
 
         Date now = new Date();
 
@@ -104,7 +106,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
         setPropertyRef(mBeanExporter, "server", "mBeanServer");
 
         Bean mBeanEntryKeyBean = newBean(bpBeans, mBean.getName() + "-key", String.class);
-        setConstructorArg(mBeanEntryKeyBean, 0, "java.lang.String", "org.atricore.idbus." +
+        setConstructorArg(mBeanEntryKeyBean, 0, "java.lang.String", appliance.getNamespace() + "." +
                 event.getContext().getCurrentModule().getId() + ":type=BindingProvider,name=" + applianceDef.getName() + "." + bpBean.getName());
 
         Entry mBeanEntry = new Entry();
@@ -225,7 +227,7 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
         Bean bpLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         bpLogger.setName(bpBean.getName() + "-mediation-logger");
-        setPropertyValue(bpLogger, "category", "idbus.mediation.wire." + bpBean.getName());
+        setPropertyValue(bpLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + bpBean.getName());
         setPropertyAsBeans(bpLogger, "messageBuilders", bpLogBuilders);
         setPropertyBean(bindingMediator, "logger", bpLogger);
 
@@ -302,6 +304,8 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                 Bean parnterAppConfigBean = newAnonymousBean("org.josso.agent.SSOAgentConfigurationImpl");
                 setPropertyBean(agentBean, "configuration", parnterAppConfigBean);
             }
+
+            // TODO : Generate agent config files for non-java agentes : IIS, PHP, Apache, etc
 
         }
     }

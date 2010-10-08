@@ -20,6 +20,7 @@ public class GraphCanvas extends Canvas {
     }
 
     protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
+        removeGraphGrid();
         super.updateDisplayList(unscaledWidth, unscaledHeight);
         if (unscaledWidth != _lastWidth || unscaledHeight != _lastHeight) {
             _lastWidth = unscaledWidth;
@@ -37,15 +38,15 @@ public class GraphCanvas extends Canvas {
         graphics.lineStyle(1, _gridDotColor);
         graphics.beginFill(_gridDotColor);
 
-        for (var y:int=_gridSquareSize; y<height; y=y+_gridSquareSize) {
-            for (var x:int=0; x<width; x=x+_gridDotDistance) {
+        for (var y:int=_gridSquareSize; y<unscaledHeight; y=y+_gridSquareSize) {
+            for (var x:int=0; x<unscaledWidth; x=x+_gridDotDistance) {
                 graphics.drawRect(x - 0.5, y - 0.5, 0.7, 0.7);
                 //graphics.drawCircle(x, y, 0.5);
             }
         }
 
-        for (var x:int=_gridSquareSize; x<width; x=x+_gridSquareSize) {
-            for (var y:int=0; y<height; y=y+_gridDotDistance) {
+        for (var x:int=_gridSquareSize; x<unscaledWidth; x=x+_gridSquareSize) {
+            for (var y:int=0; y<unscaledHeight; y=y+_gridDotDistance) {
                 graphics.drawRect(x - 0.5, y - 0.5, 0.7, 0.7);
                 //graphics.drawCircle(x, y, 0.5);
             }
