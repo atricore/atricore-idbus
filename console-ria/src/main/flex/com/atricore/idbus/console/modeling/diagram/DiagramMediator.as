@@ -517,22 +517,20 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     var identityLookup:IdentityLookup = element as IdentityLookup;
                     var edge:IVisualEdge = findEdgeElementBySemanticElement(identityLookup);
                     GraphDataManager.removeVEdge(_identityApplianceDiagram, edge, true);
-                    _currentlySelectedEdge = null;
                 } else if (element is FederatedConnection) {
                     var federatedConnection:FederatedConnection = element as FederatedConnection;
                     var edge:IVisualEdge = findEdgeElementBySemanticElement(federatedConnection);
                     GraphDataManager.removeVEdge(_identityApplianceDiagram, edge, true);
-                    _currentlySelectedEdge = null;
                 } else if (element is JOSSOActivation) {
                     var activation:JOSSOActivation = element as JOSSOActivation;
                     var edge:IVisualEdge = findEdgeElementBySemanticElement(activation);
                     GraphDataManager.removeVEdge(_identityApplianceDiagram, edge, true);
-                    _currentlySelectedEdge = null;
                 } else {
                     var node:IVisualNode = findNodeElementBySemanticElement(element);
                     GraphDataManager.removeNode(_identityApplianceDiagram, node, true);
-                    _currentlySelectedNode = null;
                 }
+                unselectAllNodes();
+                unselectAllEdges();
                 break;
         }
 
