@@ -17,6 +17,7 @@ public class JOSSOActivation extends Activation {
     private Set<String> ignoredWebResources;
 
     // TODO : Add other properties used to create JOSSO Agent config (PHP, ISAPI, Java, etc)
+    // TODO : Add ACS location, SLO location (SEE JOSSOActivationTransformer)
 
     public String getPartnerAppId() {
         return partnerAppId;

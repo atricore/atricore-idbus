@@ -85,9 +85,7 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
             byte[] readBuffer = new byte[10240];
             int bytesIn = 0;
 
-
             boolean hasPom = false;
-
             for (FileObject file : files) {
                 if (file.getName().getBaseName().equals("pom.xml")) {
                     hasPom = true;
