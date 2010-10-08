@@ -87,6 +87,7 @@ public class SearchUsersMediator extends IocFormMediator
         view.userFullname.addEventListener(Event.CHANGE, hasAtLeastOneCriteria);
 
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+        view.focusManager.setFocus(view.userUsername);
     }
 
     override public function registerValidators():void {

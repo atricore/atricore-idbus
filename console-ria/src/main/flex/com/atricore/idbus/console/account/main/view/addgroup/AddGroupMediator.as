@@ -71,11 +71,12 @@ public class AddGroupMediator extends IocFormMediator
         view.cancelAddGroup.addEventListener(MouseEvent.CLICK, handleCancel);
         view.submitAddGroupButton.addEventListener(MouseEvent.CLICK, onSubmitAddGroup);
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+        view.focusManager.setFocus(view.groupName);
     }
 
     override public function registerValidators():void {
         _validators.push(view.nameGroupValidator);
-        _validators.push(view.groupDescriptionValidator);
+//        _validators.push(view.groupDescriptionValidator);
     }
 
     override public function listNotificationInterests():Array {

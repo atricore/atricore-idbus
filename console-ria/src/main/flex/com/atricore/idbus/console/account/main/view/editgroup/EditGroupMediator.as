@@ -73,11 +73,12 @@ public class EditGroupMediator extends IocFormMediator
 
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
         bindForm();
+        view.focusManager.setFocus(view.groupName);
     }
 
     override public function registerValidators():void {
         _validators.push(view.nameGroupValidator);
-        _validators.push(view.groupDescriptionValidator);
+//        _validators.push(view.groupDescriptionValidator);
     }
 
     override public function listNotificationInterests():Array {

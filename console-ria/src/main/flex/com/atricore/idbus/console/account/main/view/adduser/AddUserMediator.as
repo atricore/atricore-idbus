@@ -87,6 +87,7 @@ public class AddUserMediator extends IocFormMediator
         view.passwordSection.addEventListener(FlexEvent.SHOW, initPasswordSection);
 
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+        view.focusManager.setFocus(view.userUsername);
     }
 
     override public function registerValidators():void {

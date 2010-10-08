@@ -74,6 +74,7 @@ public class EditUserMediator extends IocFormMediator
 
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
         bindForm();
+        view.focusManager.setFocus(view.userUsername);
     }
 
     override public function registerValidators():void {

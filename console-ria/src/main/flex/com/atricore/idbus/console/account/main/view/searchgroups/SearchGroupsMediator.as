@@ -83,11 +83,12 @@ public class SearchGroupsMediator extends IocFormMediator
         view.groupDescription.addEventListener(Event.CHANGE, hasAtLeastOneCriteria);
 
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
+        view.focusManager.setFocus(view.groupName);
     }
 
     override public function registerValidators():void {
         _validators.push(view.nameGroupValidator);
-        _validators.push(view.groupDescriptionValidator);
+//        _validators.push(view.groupDescriptionValidator);
     }
 
     override public function listNotificationInterests():Array {

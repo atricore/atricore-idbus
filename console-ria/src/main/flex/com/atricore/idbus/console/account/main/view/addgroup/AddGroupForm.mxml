@@ -29,7 +29,7 @@
 
     <fx:Declarations>
         <mx:StringValidator id="nameGroupValidator"  source="{groupName}" required="true" property="text" />
-        <mx:StringValidator id="groupDescriptionValidator"  source="{groupDescription}" required="true" property="text" />
+        <!--<mx:StringValidator id="groupDescriptionValidator"  source="{groupDescription}" required="true" property="text" />-->
     </fx:Declarations>
 
     <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.groups.add.form.heading')}"/>
