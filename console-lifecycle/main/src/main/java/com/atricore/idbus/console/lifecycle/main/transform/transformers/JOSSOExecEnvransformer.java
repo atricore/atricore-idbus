@@ -305,6 +305,8 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                 setPropertyBean(agentBean, "configuration", parnterAppConfigBean);
             }
 
+            // TODO : Generate agent config files for non-java agentes : IIS, PHP, Apache, etc
+
         }
     }
 

@@ -111,9 +111,11 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
             return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso_security_check";
 
         if (execEnv instanceof Apache2ExecutionEnvironment) {
-            logger.error("Execution Environment NOT supported by this transformer " + execEnv.getName() + " ["+execEnv.getPlatformId()+"]");
+            return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso_security_check";
+
         } else if (execEnv instanceof ApacheExecutionEnvironment) {
-            logger.error("Execution Environment NOT supported by this transformer " + execEnv.getName() + " ["+execEnv.getPlatformId()+"]");
+            return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso_security_check";
+
         } else if (execEnv instanceof JEEExecutionEnvironment) {
             logger.error("Execution Environment NOT supported by this transformer " + execEnv.getName() + " ["+execEnv.getPlatformId()+"]");
 
