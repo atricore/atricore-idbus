@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
@@ -45,6 +46,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         Beans idpBeans = (Beans) event.getContext().get("idpBeans");
 
         IdentityProvider provider = (IdentityProvider) event.getData();
+        IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
 
         if (logger.isTraceEnabled())
             logger.trace("Generating Claims Channel Beans for IDP Channel " + provider.getName());
@@ -117,7 +119,7 @@ public class ClaimsChannelTransformer extends AbstractTransformer {
         ccLogBuilders.add(newAnonymousBean(HttpLogMessageBuilder.class));
 
         Bean ccLogger = newBean(idpBeans, idpBean.getName() + "-cc-mediation-logger", DefaultMediationLogger.class.getName());
-        setPropertyValue(ccLogger, "category", "org.atricore.idbus.mediation.wire.cc1");
+        setPropertyValue(ccLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire.cc1");
         setPropertyAsBeans(ccLogger, "messageBuilders", ccLogBuilders);
 
         // logger

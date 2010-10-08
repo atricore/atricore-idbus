@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityProvider;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.ProviderRole;
@@ -98,6 +99,8 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         if (logger.isDebugEnabled())
             logger.debug("Generating IDP " + provider.getName() + " configuration model");
 
+        IdentityAppliance appliance = event.getContext().getProject().getIdAppliance();
+
         // Define all required beans! (We cab break down this in the future ...)
 
         // ----------------------------------------
@@ -156,7 +159,7 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
 
         Bean idpLogger = newAnonymousBean(DefaultMediationLogger.class.getName());
         idpLogger.setName(idpBean.getName() + "-mediation-logger");
-        setPropertyValue(idpLogger, "category", "org.atricore.idbus.mediation.wire." + idpBean.getName());
+        setPropertyValue(idpLogger, "category", appliance.getNamespace() + "." + appliance.getName() + ".wire." + idpBean.getName());
         setPropertyAsBeans(idpLogger, "messageBuilders", idpLogBuilders);
         setPropertyBean(idpMediator, "logger", idpLogger);
 
@@ -278,7 +281,7 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         List<Entry> mBeans = new ArrayList<Entry>();
 
         Bean mBeanKey = newBean(idpBeans, mBean.getName() + "-key", String.class);
-        setConstructorArg(mBeanKey, 0, "java.lang.String", "org.atricore.idbus." +
+        setConstructorArg(mBeanKey, 0, "java.lang.String", appliance.getNamespace() + "." +
                 event.getContext().getCurrentModule().getId() +
                 ":type=IdentityProvider,name=" + provider.getIdentityAppliance().getName() + "." + idpBean.getName());
 

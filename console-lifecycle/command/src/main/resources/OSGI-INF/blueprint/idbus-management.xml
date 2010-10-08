@@ -41,7 +41,6 @@
             </action>
         </command>
 
-
         <command name="appliance/deploy">
             <action class="com.atricore.idbus.console.lifecycle.command.DeployApplianceCommand"/>
             <completers>
@@ -154,7 +153,6 @@
     </bean>
 
     <bean id="appliancePrinter" class="com.atricore.idbus.console.lifecycle.command.printers.ApplianceCmdPrinter"/>
-
 
     <bean id="jdbcPrinter" class="com.atricore.idbus.console.lifecycle.command.printers.JDBCDescriptorPrinter"/>
 

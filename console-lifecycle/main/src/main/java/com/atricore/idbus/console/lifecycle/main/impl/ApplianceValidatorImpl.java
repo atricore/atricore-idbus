@@ -102,11 +102,11 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                 addError("Identity Appliance state cannot be modified");
 
             if (oldAppliance.getIdApplianceDefinition() == null &&
-                    appliance.getIdApplianceDefinition() !=null)
+                    appliance.getIdApplianceDefinition() != null)
                 addError("Identity Appliance deployment information cannot be added");
 
             if (oldAppliance.getIdApplianceDefinition() != null &&
-                    appliance.getIdApplianceDefinition() ==null)
+                    appliance.getIdApplianceDefinition() == null)
                 addError("Identity Appliance deployment information cannot be deleted");
 
         }
@@ -127,7 +127,9 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
                     addError("Identity Appliance deployed revision cannot be modified");
 
                 if (oldApplianceDep.getDeploymentTime() != null && !oldApplianceDep.getDeploymentTime().equals(applianceDep.getDeploymentTime()))
-                    addError("Identity Appliance deployment time cannot be modified");
+                    addError("Identity Appliance deployment time cannot be modified [ " +
+                            oldApplianceDep.getDeploymentTime() + " to " +
+                            applianceDep.getDeploymentTime() + "]");
                 break;
             case ADD:
             case IMPORT:
