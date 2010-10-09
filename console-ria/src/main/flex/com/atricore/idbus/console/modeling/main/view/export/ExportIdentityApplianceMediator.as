@@ -56,6 +56,8 @@ public class ExportIdentityApplianceMediator extends IocMediator {
     private function init():void {
         view.btnSave.addEventListener(MouseEvent.CLICK, handleSave);
 
+        _exportedAppliance = null;
+        
         if (projectProxy.currentIdentityAppliance != null) {
 
             view.progBar.setProgress(0, 0);

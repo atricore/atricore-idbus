@@ -20,7 +20,6 @@ public class GraphCanvas extends Canvas {
     }
 
     protected override function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
-        removeGraphGrid();
         super.updateDisplayList(unscaledWidth, unscaledHeight);
         if (unscaledWidth != _lastWidth || unscaledHeight != _lastHeight) {
             _lastWidth = unscaledWidth;
@@ -35,6 +34,8 @@ public class GraphCanvas extends Canvas {
     }
 
     public function drawGraphGrid(unscaledWidth:Number, unscaledHeight:Number):void {
+        removeGraphGrid();
+        
         graphics.lineStyle(1, _gridDotColor);
         graphics.beginFill(_gridDotColor);
 
