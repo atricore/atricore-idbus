@@ -16,6 +16,9 @@ public class URLMultipartValidator extends Validator {
         if (results.length > 0)
             return results;
 
+        if (!required && (value == null || String(value) == ""))
+            return results;
+
         var pattern:RegExp = new RegExp("^(?!/)(([\\w.-])*/?(?!/)([\\w.-])*)*\\b$");
 
         var patternResult:Object = pattern.exec(String(value));

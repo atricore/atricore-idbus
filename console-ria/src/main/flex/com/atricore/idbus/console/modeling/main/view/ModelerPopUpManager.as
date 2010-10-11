@@ -487,7 +487,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         createLiferayPortalExecutionEnvironmentCreateForm();
         _popup.title = "Create Liferay Portal Execution Environment";
         _popup.width = 500;
-        _popup.height = 260;
+        _popup.height = 310;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_liferayPortalExecutionEnvironmentCreateForm);

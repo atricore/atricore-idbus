@@ -40,6 +40,9 @@ public class URLPartValidator extends Validator	{
 			if (results.length > 0)
 				return results;
 
+            if (!required && (value == null || String(value) == ""))
+                return results;
+
             /*"^(http(s?)://)(www.)?([A-Za-z0-9\\.\\-_]+)+([A-Za-z]{2,3})?(:[\\d]{1,5})?(/[A-Za-z0-9\\.\\-_]*)*"*/
 			var pattern:RegExp = new RegExp("^(([\\w.-])*)*\\b$");
 

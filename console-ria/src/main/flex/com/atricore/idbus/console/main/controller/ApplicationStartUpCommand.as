@@ -137,6 +137,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _activateExecEnvironmentCommand:IIocCommand;
     private var _createIdentityLookupCommand:IIocCommand;
     private var _folderExistsCommand:IIocCommand;
+    private var _foldersExistsCommand:IIocCommand;
     private var _jdbcDriversListCommand:IIocCommand;
 
 
@@ -861,6 +862,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _folderExistsCommand = value;
     }
 
+    public function get foldersExistsCommand():IIocCommand {
+        return _foldersExistsCommand;
+    }
+
+    public function set foldersExistsCommand(value:IIocCommand):void {
+        _foldersExistsCommand = value;
+    }
+
     public function get jdbcDriversListCommand():IIocCommand {
         return _jdbcDriversListCommand;
     }
@@ -915,6 +924,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.ACTIVATE_EXEC_ENVIRONMENT, activateExecEnvironmentCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_LOOKUP, createIdentityLookupCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, folderExistsCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, foldersExistsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_JDBC_DRIVERS, jdbcDriversListCommand.getConfigName());
 
         // setup for first level mediators
