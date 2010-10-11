@@ -31,6 +31,8 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const PROFILE_MANAGEMENT_SERVICE:String = "profileManagementService";
     public static const SIGN_ON_SERVICE:String = "signOnService";
 
+    public static const ADMIN_GROUP:String = "Administrators";
+
     // Notification name constants application
 
     // command-backed notifications

@@ -25,6 +25,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.model.request.LoginRequest;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
+import com.atricore.idbus.console.services.dto.Group;
 import com.atricore.idbus.console.services.dto.User;
 import com.atricore.idbus.console.services.spi.request.SignOnRequest;
 import com.atricore.idbus.console.services.spi.response.SignOnResponse;
@@ -76,7 +77,16 @@ public class LoginCommand extends IocSimpleCommand implements IResponder
     public function result(data:Object):void {
         var signOnResponse:SignOnResponse = data.result as SignOnResponse;
         var user:User = signOnResponse.authenticatedUser;
-        secureContext.currentUser = user;
+
+        if (user!=null && user.groups!=null) {
+            for(var i:uint = 0; i < user.groups.length; i++) {
+                var grp = user.groups[i];
+                if (grp.name == ApplicationFacade.ADMIN_GROUP) {
+                    secureContext.currentUser = user;
+                    break;
+                }
+            }
+        }
 
         if (secureContext.currentUser !=null)
             sendNotification(SUCCESS);
