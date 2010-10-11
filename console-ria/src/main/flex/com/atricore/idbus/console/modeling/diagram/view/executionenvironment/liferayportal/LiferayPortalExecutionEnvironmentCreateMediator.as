@@ -99,7 +99,7 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
         executionEnvironment.containerPath = view.containerPath.text;
         executionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
         executionEnvironment.installDemoApps = view.installSamples.selected;
-        executionEnvironment.platformId = "5.2.x";
+        executionEnvironment.platformId = "liferay";
         _newExecutionEnvironment = executionEnvironment;
     }
 

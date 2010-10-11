@@ -2252,7 +2252,7 @@ public class PropertySheetMediator extends IocMediator {
         var jbossPortalExecEnv:JBossPortalExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JBossPortalExecutionEnvironment;
         jbossPortalExecEnv.name = _jbossPortalExecEnvCoreSection.executionEnvironmentName.text;
         jbossPortalExecEnv.description = _jbossPortalExecEnvCoreSection.executionEnvironmentDescription.text;
-        jbossPortalExecEnv.platformId = "";
+        //jbossPortalExecEnv.platformId = "jbp";
         jbossPortalExecEnv.installUri = _jbossPortalExecEnvCoreSection.homeDirectory.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -2348,7 +2348,7 @@ public class PropertySheetMediator extends IocMediator {
         var liferayExecEnv:LiferayExecutionEnvironment = projectProxy.currentIdentityApplianceElement as LiferayExecutionEnvironment;
         liferayExecEnv.name = _liferayExecEnvCoreSection.executionEnvironmentName.text;
         liferayExecEnv.description = _liferayExecEnvCoreSection.executionEnvironmentDescription.text;
-        liferayExecEnv.platformId = "5.2.x";
+        liferayExecEnv.platformId = "liferay";
         liferayExecEnv.installUri = _liferayExecEnvCoreSection.homeDirectory.text;
         liferayExecEnv.containerType = _liferayExecEnvCoreSection.containerType.selectedItem.data;
         liferayExecEnv.containerPath = _liferayExecEnvCoreSection.containerPath.text;
@@ -2436,7 +2436,7 @@ public class PropertySheetMediator extends IocMediator {
         var wasceExecEnv:WASCEExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WASCEExecutionEnvironment;
         wasceExecEnv.name = _wasceExecEnvCoreSection.executionEnvironmentName.text;
         wasceExecEnv.description = _wasceExecEnvCoreSection.executionEnvironmentDescription.text;
-        wasceExecEnv.platformId = "";
+        //wasceExecEnv.platformId = "wc21";
         wasceExecEnv.installUri = _wasceExecEnvCoreSection.homeDirectory.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -2725,6 +2725,10 @@ public class PropertySheetMediator extends IocMediator {
         if (execEnv != null) {
             _executionEnvironmentActivateSection.replaceConfFiles.selected = execEnv.overwriteOriginalSetup;
             _executionEnvironmentActivateSection.installSamples.selected = execEnv.installDemoApps;
+            if (execEnv is LiferayExecutionEnvironment) {
+                _executionEnvironmentActivateSection.installSamples.selected = false;
+                _executionEnvironmentActivateSection.installSamples.enabled = false;
+            }
         }
     }
 
