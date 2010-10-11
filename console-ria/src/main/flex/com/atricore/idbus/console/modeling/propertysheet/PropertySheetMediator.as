@@ -25,6 +25,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.modeling.diagram.model.request.ActivateExecutionEnvironmentRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CheckFoldersRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
 import com.atricore.idbus.console.modeling.diagram.model.response.CheckFoldersResponse;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
@@ -306,6 +307,24 @@ public class PropertySheetMediator extends IocMediator {
                 break;
             case FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED:
                 var checkFoldersResp:CheckFoldersResponse = notification.getBody() as CheckFoldersResponse;
+                var currentElement:Object = projectProxy.currentIdentityApplianceElement;
+                if (_execEnvSaveFunction != null && currentElement != null && checkFoldersResp.environmentName == "n/a") {
+                    if (checkFoldersResp.invalidFolders != null && checkFoldersResp.invalidFolders.length > 0) {
+                        for each (var invalidFolder:String in checkFoldersResp.invalidFolders) {
+                            if (currentElement is LiferayExecutionEnvironment) {
+                                if (_liferayExecEnvCoreSection.homeDirectory.text == invalidFolder) {
+                                    _liferayExecEnvCoreSection.homeDirectory.errorString = "Directory doesn't exist";
+                                }
+                                if (_liferayExecEnvCoreSection.containerPath.text == invalidFolder) {
+                                    _liferayExecEnvCoreSection.containerPath.errorString = "Directory doesn't exist";
+                                }
+                            }
+                        }
+                    } else {
+                        _execEnvSaveFunction.call();
+                        _execEnvSaveFunction = null;
+                    }
+                }
                 break;
             case JDBCDriversListCommand.SUCCESS:
                 _jdbcDrivers = projectProxy.jdbcDrivers;
@@ -2313,13 +2332,14 @@ public class PropertySheetMediator extends IocMediator {
         _liferayExecEnvCoreSection.containerPath.errorString = "";
         if (_dirty && validate(true)) {
             _execEnvSaveFunction = liferaySave;
-            _execEnvHomeDir = _liferayExecEnvCoreSection.homeDirectory;
-
-            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-            cif.homeDir = _liferayExecEnvCoreSection.homeDirectory.text;
-            cif.environmentName = "n/a";
-            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _liferayExecEnvCoreSection.homeDirectory.text);
+            
+            var cf:CheckFoldersRequest = new CheckFoldersRequest();
+            var folders:ArrayCollection = new ArrayCollection();
+            folders.addItem(_liferayExecEnvCoreSection.homeDirectory.text);
+            folders.addItem(_liferayExecEnvCoreSection.containerPath.text);
+            cf.folders = folders;
+            cf.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, cf);
         }
     }
 
