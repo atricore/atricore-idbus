@@ -122,7 +122,6 @@ public class ProjectProxy extends IocProxy implements IDisposable
     }
 
     public function dispose():void {
-        _identityApplianceList = null;
         _viewAction = 0;
         _currentIdentityAppliance = null;
         _currentIdentityApplianceElement = null;

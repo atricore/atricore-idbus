@@ -186,31 +186,7 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
         //      - Remove event listeners
         //      - Stop timers
         //      - Set references to null
-
-        view.grdSavedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-        view.grdSavedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-        view.grdSavedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-        view.grdSavedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
-        view.grdStagedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-        view.grdStagedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-        view.grdStagedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-        view.grdStagedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
-        view.grdStagedAppliances.removeEventListener(DragEvent.DRAG_DROP, handleDropInStagedGrid);
-        view.grdDeployedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-        view.grdDeployedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-        view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-        view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
-        view.grdDeployedAppliances.removeEventListener(DragEvent.DRAG_DROP, handleDropInDeployedGrid);
-        view.grdDeployedAppliances.labelFunction = identityApplianceNameLabel;
-        view.grdDisposedAppliances.removeEventListener(LifecycleGridButtonEvent.CLICK, handleGridButton);
-        //view.grdDisposedAppliances.removeEventListener(MouseEvent.DOUBLE_CLICK, handleGridDoubleClick);
-        view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
-        view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_OVER, handleDragOver);
-        view.grdDisposedAppliances.removeEventListener(DragEvent.DRAG_DROP, handleDropInDisposedGrid);
-
-        view = null;
-
-        _created = false;
+       
     }
 
 
