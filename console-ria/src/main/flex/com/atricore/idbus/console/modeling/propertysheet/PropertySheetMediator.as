@@ -25,8 +25,11 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.modeling.diagram.model.request.ActivateExecutionEnvironmentRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CheckFoldersRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
+import com.atricore.idbus.console.modeling.diagram.model.response.CheckFoldersResponse;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
+import com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.certificate.CertificateSection;
@@ -161,7 +164,7 @@ public class PropertySheetMediator extends IocMediator {
 
     private var _execEnvSaveFunction:Function;
     private var _execEnvHomeDir:TextInput;
-
+    
     protected var _validators : Array;
 
     // keystore
@@ -231,6 +234,7 @@ public class PropertySheetMediator extends IocMediator {
             ApplicationFacade.DIAGRAM_ELEMENT_SELECTED,
             FolderExistsCommand.FOLDER_EXISTS,
             FolderExistsCommand.FOLDER_DOESNT_EXISTS,
+            FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED,
             JDBCDriversListCommand.SUCCESS];
     }
 
@@ -304,6 +308,27 @@ public class PropertySheetMediator extends IocMediator {
                     _execEnvHomeDir.errorString = "Directory doesn't exist";
                     _execEnvHomeDir = null;
                     _execEnvSaveFunction = null;                    
+                }
+                break;
+            case FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED:
+                var checkFoldersResp:CheckFoldersResponse = notification.getBody() as CheckFoldersResponse;
+                var currentElement:Object = projectProxy.currentIdentityApplianceElement;
+                if (_execEnvSaveFunction != null && currentElement != null && checkFoldersResp.environmentName == "n/a") {
+                    if (checkFoldersResp.invalidFolders != null && checkFoldersResp.invalidFolders.length > 0) {
+                        for each (var invalidFolder:String in checkFoldersResp.invalidFolders) {
+                            if (currentElement is LiferayExecutionEnvironment) {
+                                if (_liferayExecEnvCoreSection.homeDirectory.text == invalidFolder) {
+                                    _liferayExecEnvCoreSection.homeDirectory.errorString = "Directory doesn't exist";
+                                }
+                                if (_liferayExecEnvCoreSection.containerPath.text == invalidFolder) {
+                                    _liferayExecEnvCoreSection.containerPath.errorString = "Directory doesn't exist";
+                                }
+                            }
+                        }
+                    } else {
+                        _execEnvSaveFunction.call();
+                        _execEnvSaveFunction = null;
+                    }
                 }
                 break;
             case JDBCDriversListCommand.SUCCESS:
@@ -2011,6 +2036,7 @@ public class PropertySheetMediator extends IocMediator {
             for(var i:int=0; i < _tomcatExecEnvCoreSection.platform.dataProvider.length; i++){
                 if(_tomcatExecEnvCoreSection.platform.dataProvider[i].data == tomcatExecEnv.platformId){
                     _tomcatExecEnvCoreSection.platform.selectedIndex = i;
+                    break;
                 }
             }
             _tomcatExecEnvCoreSection.selectedHost.selectedIndex = 0;
@@ -2103,6 +2129,7 @@ public class PropertySheetMediator extends IocMediator {
             for (var i:int=0; i < _weblogicExecEnvCoreSection.platform.dataProvider.length; i++){
                 if (_weblogicExecEnvCoreSection.platform.dataProvider[i].data == weblogicExecEnv.platformId) {
                     _weblogicExecEnvCoreSection.platform.selectedIndex = i;
+                    break;
                 }
             }
             _weblogicExecEnvCoreSection.selectedHost.selectedIndex = 0;
@@ -2230,7 +2257,7 @@ public class PropertySheetMediator extends IocMediator {
         var jbossPortalExecEnv:JBossPortalExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JBossPortalExecutionEnvironment;
         jbossPortalExecEnv.name = _jbossPortalExecEnvCoreSection.executionEnvironmentName.text;
         jbossPortalExecEnv.description = _jbossPortalExecEnvCoreSection.executionEnvironmentDescription.text;
-        jbossPortalExecEnv.platformId = "";
+        //jbossPortalExecEnv.platformId = "jbp";
         jbossPortalExecEnv.installUri = _jbossPortalExecEnvCoreSection.homeDirectory.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -2280,34 +2307,44 @@ public class PropertySheetMediator extends IocMediator {
             _liferayExecEnvCoreSection.executionEnvironmentName.text = liferayExecEnv.name;
             _liferayExecEnvCoreSection.executionEnvironmentDescription.text = liferayExecEnv.description;
             _liferayExecEnvCoreSection.selectedHost.selectedIndex = 0;
-            _liferayExecEnvCoreSection.homeDirectory.text = liferayExecEnv.installUri;
-
-            _liferayExecEnvCoreSection.selectedHost.selectedIndex = 0;
             _liferayExecEnvCoreSection.selectedHost.enabled = false;
+            _liferayExecEnvCoreSection.homeDirectory.text = liferayExecEnv.installUri;
+            for (var i:int=0; i < _liferayExecEnvCoreSection.containerType.dataProvider.length; i++){
+                if (_liferayExecEnvCoreSection.containerType.dataProvider[i].data == liferayExecEnv.containerType) {
+                    _liferayExecEnvCoreSection.containerType.selectedIndex = i;
+                    break;
+                }
+            }
+            _liferayExecEnvCoreSection.containerPath.text = liferayExecEnv.containerPath;
 
             _liferayExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
             _liferayExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
             _liferayExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
             _liferayExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _liferayExecEnvCoreSection.containerType.addEventListener(Event.CHANGE, handleSectionChange);
+            _liferayExecEnvCoreSection.containerPath.addEventListener(Event.CHANGE, handleSectionChange);
 
             _validators = [];
             _validators.push(_liferayExecEnvCoreSection.nameValidator);
             _validators.push(_liferayExecEnvCoreSection.homeDirValidator);
+            _validators.push(_liferayExecEnvCoreSection.containerPathValidator);
         }
     }
 
     private function handleLiferayExecEnvCorePropertyTabRollOut(e:Event):void {
         trace(e);
         _liferayExecEnvCoreSection.homeDirectory.errorString = "";
+        _liferayExecEnvCoreSection.containerPath.errorString = "";
         if (_dirty && validate(true)) {
             _execEnvSaveFunction = liferaySave;
-            _execEnvHomeDir = _liferayExecEnvCoreSection.homeDirectory;
-
-            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-            cif.homeDir = _liferayExecEnvCoreSection.homeDirectory.text;
-            cif.environmentName = "n/a";
-            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _liferayExecEnvCoreSection.homeDirectory.text);
+            
+            var cf:CheckFoldersRequest = new CheckFoldersRequest();
+            var folders:ArrayCollection = new ArrayCollection();
+            folders.addItem(_liferayExecEnvCoreSection.homeDirectory.text);
+            folders.addItem(_liferayExecEnvCoreSection.containerPath.text);
+            cf.folders = folders;
+            cf.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, cf);
         }
     }
 
@@ -2316,8 +2353,10 @@ public class PropertySheetMediator extends IocMediator {
         var liferayExecEnv:LiferayExecutionEnvironment = projectProxy.currentIdentityApplianceElement as LiferayExecutionEnvironment;
         liferayExecEnv.name = _liferayExecEnvCoreSection.executionEnvironmentName.text;
         liferayExecEnv.description = _liferayExecEnvCoreSection.executionEnvironmentDescription.text;
-        liferayExecEnv.platformId = "";
+        liferayExecEnv.platformId = "liferay";
         liferayExecEnv.installUri = _liferayExecEnvCoreSection.homeDirectory.text;
+        liferayExecEnv.containerType = _liferayExecEnvCoreSection.containerType.selectedItem.data;
+        liferayExecEnv.containerPath = _liferayExecEnvCoreSection.containerPath.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -2402,7 +2441,7 @@ public class PropertySheetMediator extends IocMediator {
         var wasceExecEnv:WASCEExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WASCEExecutionEnvironment;
         wasceExecEnv.name = _wasceExecEnvCoreSection.executionEnvironmentName.text;
         wasceExecEnv.description = _wasceExecEnvCoreSection.executionEnvironmentDescription.text;
-        wasceExecEnv.platformId = "";
+        //wasceExecEnv.platformId = "wc21";
         wasceExecEnv.installUri = _wasceExecEnvCoreSection.homeDirectory.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -2459,6 +2498,7 @@ public class PropertySheetMediator extends IocMediator {
             for(var i:int=0; i < _jbossExecEnvCoreSection.platform.dataProvider.length; i++){
                 if(_jbossExecEnvCoreSection.platform.dataProvider[i].data == jbossExecEnv.platformId){
                     _jbossExecEnvCoreSection.platform.selectedIndex = i;
+                    break;
                 }
             }
             _jbossExecEnvCoreSection.selectedHost.selectedIndex = 0;
@@ -2779,6 +2819,10 @@ public class PropertySheetMediator extends IocMediator {
         if (execEnv != null) {
             _executionEnvironmentActivateSection.replaceConfFiles.selected = execEnv.overwriteOriginalSetup;
             _executionEnvironmentActivateSection.installSamples.selected = execEnv.installDemoApps;
+            if (execEnv is LiferayExecutionEnvironment) {
+                _executionEnvironmentActivateSection.installSamples.selected = false;
+                _executionEnvironmentActivateSection.installSamples.enabled = false;
+            }
         }
     }
 

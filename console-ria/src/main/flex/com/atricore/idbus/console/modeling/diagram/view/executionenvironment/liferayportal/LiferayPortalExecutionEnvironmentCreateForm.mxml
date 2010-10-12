@@ -31,6 +31,8 @@
                         triggerEvent="click"/>
         <mx:StringValidator id="homeDirValidator" source="{homeDirectory}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
+        <mx:StringValidator id="containerPathValidator" source="{containerPath}" required="true" property="text" trigger="{btnOk}"
+                        triggerEvent="click"/>
     </fx:Declarations>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.name')}:" required="true">
@@ -56,12 +58,27 @@
         <s:TextInput id="homeDirectory" width="300"/>
     </mx:FormItem>
 
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.container.type')}:" required="true">
+        <s:DropDownList id="containerType" width="300" selectedIndex="0">
+            <s:dataProvider>
+                <mx:ArrayCollection>
+                    <fx:Object label="Tomcat" data="tomcat"/>
+                    <fx:Object label="JBoss" data="jboss"/>
+                </mx:ArrayCollection>
+            </s:dataProvider>
+        </s:DropDownList>
+    </mx:FormItem>
+
+    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.container.path')}:" required="true">
+        <s:TextInput id="containerPath" width="300"/>
+    </mx:FormItem>
+
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.activation.replaceconffiles')}:">
         <s:CheckBox id="replaceConfFiles" />
     </mx:FormItem>
 
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.activation.installsamples')}:">
-        <s:CheckBox id="installSamples" />
+        <s:CheckBox id="installSamples" enabled="false"/>
     </mx:FormItem>    
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">

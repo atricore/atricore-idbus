@@ -200,6 +200,10 @@
             class="com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand">
         <property name="registry" ref="serviceRegistry"/>
     </object>
+    <object id="foldersExistsCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand">
+        <property name="registry" ref="serviceRegistry"/>
+    </object>
     <object id="jdbcDriversListCommand"
             class="com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -496,6 +500,7 @@
         <property name="createIdentityLookupCommand" ref="createIdentityLookupCommand" />
         <property name="activateExecEnvironmentCommand" ref="activateExecEnvironmentCommand" />
         <property name="folderExistsCommand" ref="folderExistsCommand" />
+        <property name="foldersExistsCommand" ref="foldersExistsCommand" />
         <property name="jdbcDriversListCommand" ref="jdbcDriversListCommand"/>
 
         <!-- Mediators wiring -->

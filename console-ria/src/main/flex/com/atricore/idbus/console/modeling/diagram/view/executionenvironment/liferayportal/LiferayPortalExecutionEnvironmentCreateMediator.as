@@ -24,8 +24,9 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
-import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
-import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
+import com.atricore.idbus.console.modeling.diagram.model.request.CheckFoldersRequest;
+import com.atricore.idbus.console.modeling.diagram.model.response.CheckFoldersResponse;
+import com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
 
@@ -72,6 +73,7 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
         view.selectedHost.enabled = false;
+        view.containerType.selectedIndex = 0;
         view.focusManager.setFocus(view.executionEnvironmentName);
     }
 
@@ -80,6 +82,8 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
         view.executionEnvironmentDescription.text = "";
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
+        view.containerType.selectedIndex = 0;
+        view.containerPath.text = "";
         view.replaceConfFiles.selected = false;
         view.installSamples.selected = false;         
 
@@ -91,19 +95,25 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
         executionEnvironment.name = view.executionEnvironmentName.text;
         executionEnvironment.description = view.executionEnvironmentDescription.text;
         executionEnvironment.installUri = view.homeDirectory.text;
+        executionEnvironment.containerType = view.containerType.selectedItem.data;
+        executionEnvironment.containerPath = view.containerPath.text;
         executionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
-        executionEnvironment.installDemoApps = view.installSamples.selected;             
-        executionEnvironment.platformId = "5.x";
+        executionEnvironment.installDemoApps = view.installSamples.selected;
+        executionEnvironment.platformId = "liferay";
         _newExecutionEnvironment = executionEnvironment;
     }
 
     private function handleLiferayPortalExecutionEnvironmentSave(event:MouseEvent):void {
         view.homeDirectory.errorString = "";
+        view.containerPath.errorString = "";
         if (validate(true)) {
-            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-            cif.homeDir = view.homeDirectory.text;
-            cif.environmentName = _environmentName;
-            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+            var folders:ArrayCollection = new ArrayCollection();
+            folders.addItem(view.homeDirectory.text);
+            folders.addItem(view.containerPath.text);
+            var cf:CheckFoldersRequest = new CheckFoldersRequest();
+            cf.folders = folders;
+            cf.environmentName = _environmentName;
+            sendNotification(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, cf);
         }
     }
 
@@ -137,27 +147,31 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
         _validators.push(view.homeDirValidator);
+        _validators.push(view.containerPathValidator);
     }
 
     override public function listNotificationInterests():Array {
-        return [super.listNotificationInterests(),
-                FolderExistsCommand.FOLDER_EXISTS,
-                FolderExistsCommand.FOLDER_DOESNT_EXISTS];
+        return [FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED,
+                FoldersExistsCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case FolderExistsCommand.FOLDER_EXISTS:
-                var envName:String = notification.getBody() as String;
-                if(envName == _environmentName){
-                    view.homeDirectory.errorString = "";
-                    save();
-                }
-                break;
-            case FolderExistsCommand.FOLDER_DOESNT_EXISTS:
-                envName = notification.getBody() as String;
-                if(envName == _environmentName){
-                    view.homeDirectory.errorString = "Directory doesn't exist";
+            case FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED:
+                var resp:CheckFoldersResponse = notification.getBody() as CheckFoldersResponse;
+                if (resp.environmentName == _environmentName) {
+                    if (resp.invalidFolders != null && resp.invalidFolders.length > 0) {
+                        for each (var invalidFolder:String in resp.invalidFolders) {
+                            if (view.homeDirectory.text == invalidFolder) {
+                                view.homeDirectory.errorString = "Directory doesn't exist";
+                            }
+                            if (view.containerPath.text == invalidFolder) {
+                                view.containerPath.errorString = "Directory doesn't exist";
+                            }
+                        }
+                    } else {
+                        save();
+                    }
                 }
                 break;
         }

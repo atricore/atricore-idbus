@@ -1057,6 +1057,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         //      - Stop timers
         //      - Set references to null
         resetGraph();
+        _currentIdentityApplianceId= -1;
     }
 }
 }

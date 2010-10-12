@@ -69,7 +69,7 @@
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'connection.activation.josso.ignoredWebResources')}:">
             <s:HGroup>
                 <s:TextInput id="ignoredWebResources" width="420"/>
-                <s:Label text="(comma separated)" paddingTop="5"/>
+                <!--s:Label text="(comma separated)" paddingTop="5"/-->
             </s:HGroup>
         </mx:FormItem>
     </mx:Form>

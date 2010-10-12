@@ -401,6 +401,21 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return res;
     }
 
+    public CheckFoldersExistenceResponse checkFoldersExistence(CheckFoldersExistenceRequest req) throws IdentityServerException {
+        List<String> invalidFolders = new ArrayList<String>();
+        if (req.getFolders() != null) {
+            for (String folder : req.getFolders()) {
+                if (!new File(folder).exists()) {
+                    invalidFolders.add(folder);
+                }
+            }
+        }
+        CheckFoldersExistenceResponse res = new CheckFoldersExistenceResponse();
+        res.setInvalidFolders(invalidFolders);
+        res.setEnvironmentName(req.getEnvironmentName());
+        return res;
+    }
+
     /****************************
      * List methods
      ***************************/
