@@ -230,7 +230,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createSearchGroupsForm();
 
-        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.search.form.heading');
+        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.search.panel.title');
         _popup.width = 400;
         _popup.height =200;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -252,7 +252,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createSearchUserForm();
         
-        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.search.form.heading');
+        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.search.panel.title');
         _popup.width = 300;
         _popup.height = 235;
         _popup.x = (_popupParent.width / 2) - 225;
