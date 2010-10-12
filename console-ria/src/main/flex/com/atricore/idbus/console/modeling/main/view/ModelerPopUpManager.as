@@ -29,6 +29,8 @@ import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCre
 import com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.dbidentitysource.DbIdentitySourceCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alfresco.AlfrescoExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alfresco.AlfrescoExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateForm;
@@ -89,6 +91,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _wasceExecutionEnvironmentCreateMediator:WASCEExecutionEnvironmentCreateMediator;
     private var _apacheExecutionEnvironmentCreateMediator:ApacheExecutionEnvironmentCreateMediator;
     private var _windowsIISExecutionEnvironmentCreateMediator:WindowsIISExecutionEnvironmentCreateMediator;
+	private var _alfrescoExecutionEnvironmentCreateMediator:AlfrescoExecutionEnvironmentCreateMediator;
     private var _uploadProgressMediator:UploadProgressMediator;
     private var _buildApplianceMediator:BuildApplianceMediator;
     private var _deployApplianceMediator:DeployApplianceMediator;
@@ -111,6 +114,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _wasceExecutionEnvironmentCreateForm:WASCEExecutionEnvironmentCreateForm;
     private var _apacheExecutionEnvironmentCreateForm:ApacheExecutionEnvironmentCreateForm;
     private var _windowsIISExecutionEnvironmentCreateForm:WindowsIISExecutionEnvironmentCreateForm;
+    private var _alfrescoExecutionEnvironmentCreateForm:AlfrescoExecutionEnvironmentCreateForm;
     private var _manageCertificateForm:ManageCertificateView;
     private var _uploadProgress:UploadProgress;
     private var _buildAppliance:BuildApplianceView;
@@ -266,6 +270,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set apacheExecutionEnvironmentCreateMediator(value:ApacheExecutionEnvironmentCreateMediator):void {
         _apacheExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get alfrescoExecutionEnvironmentCreateMediator():AlfrescoExecutionEnvironmentCreateMediator {
+        return _alfrescoExecutionEnvironmentCreateMediator;
+    }
+
+    public function set alfrescoExecutionEnvironmentCreateMediator(value:AlfrescoExecutionEnvironmentCreateMediator):void {
+        _alfrescoExecutionEnvironmentCreateMediator = value;
     }
 
     public function get activationCreateMediator():ActivationCreateMediator {
@@ -564,6 +576,27 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleWindowsIISExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
         windowsIISExecutionEnvironmentCreateMediator.setViewComponent(_windowsIISExecutionEnvironmentCreateForm);
         windowsIISExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateAlfrescoExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createAlfrescoExecutionEnvironmentCreateForm();
+        _popup.title = "Create Alfresco Execution Environment";
+        _popup.width = 500;
+        _popup.height = 320;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_alfrescoExecutionEnvironmentCreateForm);
+    }
+
+    private function createAlfrescoExecutionEnvironmentCreateForm():void {
+        _alfrescoExecutionEnvironmentCreateForm = new AlfrescoExecutionEnvironmentCreateForm();
+        _alfrescoExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleAlfrescoExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handleAlfrescoExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        alfrescoExecutionEnvironmentCreateMediator.setViewComponent(_alfrescoExecutionEnvironmentCreateForm);
+        alfrescoExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateFederatedConnectionWindow(notification:INotification):void {

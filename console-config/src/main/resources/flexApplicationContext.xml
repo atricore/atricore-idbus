@@ -296,6 +296,10 @@
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="alfrescoExecutionEnvironmentCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alfresco.AlfrescoExecutionEnvironmentCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <!--<object id="idpChannelCreateMediator"-->
             <!--class="com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator">-->
         <!--<property name="projectProxy" ref="projectProxy"/>-->
@@ -424,6 +428,7 @@
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
+        <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator" />
         <property name="activationCreateMediator" ref="activationCreateMediator"/>
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
@@ -522,6 +527,7 @@
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
+        <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator" />        
         <!--<property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>-->
         <!--<property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>-->
         <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>

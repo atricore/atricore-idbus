@@ -1,10 +1,10 @@
-package com.atricore.idbus.console.lifecycle.main.domain.metadata;
+package com.atricore.idbus.console.services.dto;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * Author: Dejan Maric
  */
-public class AlfrescoExecutionEnvironment extends ExecutionEnvironment {
-
+public class AlfrescoExecutionEnvironmentDTO extends ExecutionEnvironmentDTO {
+    
     private static final long serialVersionUID = 3324230985098604032L;
     private String tomcatInstallDir;
 

@@ -383,6 +383,14 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // the corresponding form
                         sendNotification(ApplicationFacade.CREATE_WINDOWS_IIS_EXECUTION_ENVIRONMENT_ELEMENT, cwiiseenv);
                         break;
+                    case DiagramElementTypes.ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT_TYPE:
+                        var calfenv:CreateExecutionEnvironmentElementRequest = new CreateExecutionEnvironmentElementRequest(
+                                );
+                        _projectProxy.currentIdentityAppliance = _identityAppliance;
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT, calfenv);
+                        break;
                 }
 
                 break;

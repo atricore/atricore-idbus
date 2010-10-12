@@ -38,6 +38,7 @@
         import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
         import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
         import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
+        import com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.BindingProvider;
         import com.atricore.idbus.console.services.dto.Channel;
@@ -158,6 +159,8 @@
                                                 _linkIcon = EmbeddedIcons.apacheEnvironmentIcon;
                                             } else if (obj is WindowsIISExecutionEnvironment){
                                                 _linkIcon = EmbeddedIcons.windowsEnvironmentIcon;
+                                            } else if (obj is AlfrescoExecutionEnvironment){
+                                                _linkIcon = EmbeddedIcons.alfrescoEnvironmentIcon
                                             } else {
                                                 _linkIcon = EmbeddedIcons.executionEnvironmentIcon;
                                             }

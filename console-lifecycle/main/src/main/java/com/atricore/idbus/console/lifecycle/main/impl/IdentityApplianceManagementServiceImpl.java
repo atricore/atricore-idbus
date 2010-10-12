@@ -1517,7 +1517,11 @@ public class IdentityApplianceManagementServiceImpl implements
         } else if (execEnv instanceof WeblogicExecutionEnvironment) {
             WeblogicExecutionEnvironment wlExecEnv = (WeblogicExecutionEnvironment) execEnv;
             req.setWeblogicDomain(wlExecEnv.getDomain());
-        } // TODO : Add support for Liferay, JBPortal, Alfresco, PHP, PHPBB, etc ...
+        } else if (execEnv instanceof AlfrescoExecutionEnvironment){
+            AlfrescoExecutionEnvironment alfExecEnv = (AlfrescoExecutionEnvironment)execEnv;
+            req.setTomcatInstallDir(alfExecEnv.getTomcatInstallDir());
+        }
+        // TODO : Add support for Liferay, JBPortal, Alfresco, PHP, PHPBB, etc ...
 
         return req;
     }

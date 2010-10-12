@@ -31,6 +31,7 @@ import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListComman
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.certificate.CertificateSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.alfresco.AlfrescoExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.apache.ApacheExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jboss.JBossExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jbossportal.JBossPortalExecEnvCoreSection;
@@ -56,6 +57,7 @@ import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProvider
 import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.xmlidentitysource.XmlIdentitySourceCoreSection;
 import com.atricore.idbus.console.services.dto.AccountLinkagePolicy;
+import com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.AuthenticationMechanism;
 import com.atricore.idbus.console.services.dto.BasicAuthentication;
@@ -150,6 +152,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _jbossExecEnvCoreSection:JBossExecEnvCoreSection;
     private var _apacheExecEnvCoreSection:ApacheExecEnvCoreSection;
     private var _windowsIISExecEnvCoreSection:WindowsIISExecEnvCoreSection;
+    private var _alfrescoExecEnvCoreSection:AlfrescoExecEnvCoreSection;    
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
     private var _authenticationPropertyTab:Group;
     private var _basicAuthenticationSection:BasicAuthenticationSection;
@@ -283,6 +286,8 @@ public class PropertySheetMediator extends IocMediator {
                         enableApacheExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is WindowsIISExecutionEnvironment){
                         enableWindowsIISExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is AlfrescoExecutionEnvironment) {
+                        enableAlfrescoExecEnvPropertyTabs();
                     }
                 }
                 break;
@@ -2674,6 +2679,95 @@ public class PropertySheetMediator extends IocMediator {
         //TODO CHECK PLATFORM ID
         windowsIISExecEnv.platformId = "iis";
         windowsIISExecEnv.installUri = _windowsIISExecEnvCoreSection.homeDirectory.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _dirty = false;
+    }
+
+    /***ALFRESCO***/
+    private function enableAlfrescoExecEnvPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _alfrescoExecEnvCoreSection = new AlfrescoExecEnvCoreSection();
+        corePropertyTab.addElement(_alfrescoExecEnvCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _alfrescoExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleAlfrescoExecEnvCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleAlfrescoExecEnvCorePropertyTabRollOut);
+
+        // Exec.Environment Activation Tab
+        var execEnvActivationPropertyTab:Group = new Group();
+        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
+        execEnvActivationPropertyTab.name = "Activation";
+        execEnvActivationPropertyTab.width = Number("100%");
+        execEnvActivationPropertyTab.height = Number("100%");
+        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
+
+        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
+        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
+        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
+        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+
+    }
+
+    private function handleAlfrescoExecEnvCorePropertyTabCreationComplete(event:Event):void {
+        var alfrescoExecEnv:AlfrescoExecutionEnvironment = projectProxy.currentIdentityApplianceElement as AlfrescoExecutionEnvironment;
+
+        if (alfrescoExecEnv != null) {
+            // bind view
+            _alfrescoExecEnvCoreSection.executionEnvironmentName.text = alfrescoExecEnv.name;
+            _alfrescoExecEnvCoreSection.executionEnvironmentDescription.text = alfrescoExecEnv.description;
+            _alfrescoExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _alfrescoExecEnvCoreSection.homeDirectory.text = alfrescoExecEnv.installUri;
+            _alfrescoExecEnvCoreSection.tomcatInstallDir.text = alfrescoExecEnv.tomcatInstallDir;
+
+            _alfrescoExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _alfrescoExecEnvCoreSection.selectedHost.enabled = false;
+
+            _alfrescoExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _alfrescoExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _alfrescoExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _alfrescoExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+            _alfrescoExecEnvCoreSection.tomcatInstallDir.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_alfrescoExecEnvCoreSection.nameValidator);
+            _validators.push(_alfrescoExecEnvCoreSection.homeDirValidator);
+            _validators.push(_alfrescoExecEnvCoreSection.containerDirValidator);
+        }
+    }
+
+    private function handleAlfrescoExecEnvCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        _alfrescoExecEnvCoreSection.homeDirectory.errorString = "";
+        if (_dirty && validate(true)) {
+            _execEnvSaveFunction = alfrescoSave;
+            _execEnvHomeDir = _alfrescoExecEnvCoreSection.homeDirectory;
+
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = _alfrescoExecEnvCoreSection.homeDirectory.text;
+            cif.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+        }
+    }
+
+    private function alfrescoSave(): void {
+         // bind model
+        var alfrescoExecEnv:AlfrescoExecutionEnvironment = projectProxy.currentIdentityApplianceElement as AlfrescoExecutionEnvironment;
+        alfrescoExecEnv.name = _alfrescoExecEnvCoreSection.executionEnvironmentName.text;
+        alfrescoExecEnv.description = _alfrescoExecEnvCoreSection.executionEnvironmentDescription.text;
+        alfrescoExecEnv.platformId = "alfresco";
+        alfrescoExecEnv.installUri = _alfrescoExecEnvCoreSection.homeDirectory.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);

@@ -69,6 +69,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _liferayPortalExecutionEnvironmentCreateMediator:IIocMediator;
     private var _wasceExecutionEnvironmentCreateMediator:IIocMediator;
     private var _apacheExecutionEnvironmentCreateMediator:IIocMediator;
+    private var _alfrescoExecutionEnvironmentCreateMediator:IIocMediator;
     private var _windowsIISExecutionEnvironmentCreateMediator:IIocMediator;
     private var _uploadProgressMediator:IIocMediator;
     private var _buildApplianceMediator:IIocMediator;
@@ -298,6 +299,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set apacheExecutionEnvironmentCreateMediator(value:IIocMediator):void {
         _apacheExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get alfrescoExecutionEnvironmentCreateMediator():IIocMediator {
+        return _alfrescoExecutionEnvironmentCreateMediator;
+    }
+
+    public function set alfrescoExecutionEnvironmentCreateMediator(value:IIocMediator):void {
+        _alfrescoExecutionEnvironmentCreateMediator = value;
     }
 
     public function get windowsIISExecutionEnvironmentCreateMediator():IIocMediator {
@@ -964,6 +973,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(liferayPortalExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(wasceExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(apacheExecutionEnvironmentCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(alfrescoExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(windowsIISExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(uploadProgressMediator.getConfigName());
         //iocFacade.registerMediatorByConfigName(buildApplianceMediator.getConfigName());

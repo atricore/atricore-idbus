@@ -42,6 +42,7 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alfresco.AlfrescoExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator</symbol>

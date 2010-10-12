@@ -24,6 +24,7 @@ package com.atricore.idbus.console.modeling.browser.model {
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.main.view.util.Constants;
 import com.atricore.idbus.console.services.dto.Activation;
+import com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.BindingProvider;
 import com.atricore.idbus.console.services.dto.Connection;
@@ -144,7 +145,9 @@ public class BrowserModelFactory {
             } else if(executionEnvironment is ApacheExecutionEnvironment){
                 execEnvironmentNode.icon = EmbeddedIcons.apacheEnvironmentMiniIcon;
             }else if(executionEnvironment is WindowsIISExecutionEnvironment){
-                execEnvironmentNode.icon = EmbeddedIcons.windowsEnvironmentMiniIcon;                
+                execEnvironmentNode.icon = EmbeddedIcons.windowsEnvironmentMiniIcon;
+            } else if (executionEnvironment is AlfrescoExecutionEnvironment){
+                execEnvironmentNode.icon = EmbeddedIcons.alfrescoEnvironmentMiniIcon; 
             } else {
                 execEnvironmentNode.icon = EmbeddedIcons.executionEnvironmentMiniIcon;
             }
