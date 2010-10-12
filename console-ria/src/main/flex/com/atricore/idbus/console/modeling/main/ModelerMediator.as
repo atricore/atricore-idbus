@@ -217,14 +217,9 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         //      - Stop timers
         //      - Set references to null
 
-        view.btnNew.removeEventListener(MouseEvent.CLICK, handleNewClick);
-        view.btnOpen.removeEventListener(MouseEvent.CLICK, handleOpenClick);
-        view.btnSave.removeEventListener(MouseEvent.CLICK, handleSaveClick);
-        view.btnExport.removeEventListener(MouseEvent.CLICK, handleExportClick);
-
         _identityAppliance = null;
         _tempSelectedViewIndex = -1;
-        _created = null;
+        
         view.btnSave.enabled = false;
         view.btnExport.enabled = false;
         view.appliances.selectedItem = null;

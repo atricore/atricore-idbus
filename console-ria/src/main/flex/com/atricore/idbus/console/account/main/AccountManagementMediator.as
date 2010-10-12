@@ -149,7 +149,6 @@ public class AccountManagementMediator extends IocMediator implements IDisposabl
 
         view.accountManagementTabBar.removeEventListener(IndexChangeEvent.CHANGE, stackChanged);
         view = null;
-        _created = false;
     }
 
     private function stackChanged(event:IndexChangeEvent):void {
