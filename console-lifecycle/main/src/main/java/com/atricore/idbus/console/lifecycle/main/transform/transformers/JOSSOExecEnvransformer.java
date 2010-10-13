@@ -291,12 +291,14 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
 
                 // AutomaticLoginStrategy, disabled for liferay
                 List<Bean> autoLoginStrats = new ArrayList<Bean>();
-                if (execEnvProps.getPlatformId().equals("liferay")) {
+                if (!execEnvProps.isEnableAutoLogin()) {
                     Bean disabledAutomaticLoginStrategy = newAnonymousBean("org.josso.agent.http.DisableAutomaticLoginStrategy");
                     setPropertyValue(disabledAutomaticLoginStrategy, "mode", "REQUIRED");
+                    autoLoginStrats.add(disabledAutomaticLoginStrategy);
                 } else {
                     Bean defaultAutomaticLoginStrategyBean = newAnonymousBean("org.josso.agent.http.DefaultAutomaticLoginStrategy");
                     setPropertyValue(defaultAutomaticLoginStrategyBean, "mode", "REQUIRED");
+
                     List<String> ignoredReferers = new ArrayList<String>();
                     ignoredReferers.add(resolveLocationUrl(applianceDef.getLocation()));
                     setPropertyAsValues(defaultAutomaticLoginStrategyBean, "ignoredReferrers", ignoredReferers);
