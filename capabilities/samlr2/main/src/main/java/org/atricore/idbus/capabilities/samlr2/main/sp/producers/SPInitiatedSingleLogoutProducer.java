@@ -85,8 +85,28 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
                     (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
             if (secCtx == null || secCtx.getSessionIndex() == null) {
-                logger.error("No SSO Session found SLO Request");
-                // TODO : Go back to partner application ?
+                // No SSO Session found SLO Request
+                // Go back to partner application
+
+                SSOResponseType ssoResponse = new SSOResponseType();
+                ssoResponse.setID(uuidGenerator.generateId());
+                String destinationLocation = ((SamlR2SPMediator) channel.getIdentityMediator()).getSpBindingSLO();
+
+                EndpointDescriptor destination =
+                        new EndpointDescriptorImpl("EmbeddedSPAcs",
+                                "SingleLogoutService",
+                                SamlR2Binding.SSO_ARTIFACT.getValue(),
+                                destinationLocation, null);
+
+                logger.debug("Sending JOSSO SLO Response to " + destination);
+
+                CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
+                out.setMessage(new MediationMessageImpl(ssoResponse.getID(),
+                        ssoResponse, "SPLogoutResponse", null, destination, in.getMessage().getState()));
+
+                exchange.setOut(out);
+                return;
+
             }
 
             if (logger.isDebugEnabled())

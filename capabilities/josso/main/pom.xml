@@ -51,7 +51,7 @@
         <idbus.bundle.josso-ws-v1_2.version>1.0.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
         
         <!-- local party -->
-        <josso.version>1.8.2</josso.version>
+        <josso.version>1.8.3</josso.version>
 
         <!-- some standards -->
         <servlet.version>2.3</servlet.version>
