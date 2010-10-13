@@ -583,7 +583,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         createAlfrescoExecutionEnvironmentCreateForm();
         _popup.title = "Create Alfresco Execution Environment";
         _popup.width = 500;
-        _popup.height = 320;
+        _popup.height = 290;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_alfrescoExecutionEnvironmentCreateForm);
