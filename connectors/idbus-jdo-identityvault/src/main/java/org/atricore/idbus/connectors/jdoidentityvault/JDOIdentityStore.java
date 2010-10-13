@@ -10,6 +10,7 @@ import org.atricore.idbus.kernel.main.store.AbstractStore;
 import org.atricore.idbus.kernel.main.store.UserKey;
 import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
+import org.springframework.beans.BeanUtils;
 
 import java.util.Collection;
 
@@ -86,7 +87,33 @@ public class JDOIdentityStore extends AbstractStore
     protected BaseUser toSSOUser(User jdoUser) {
         BaseUser ssoUser = new BaseUserImpl();
         ssoUser.setName(jdoUser.getUserName());
-        // Todo add JDO User properties as SSOUser properties ?
+
+        // Email
+        SSONameValuePair email = new SSONameValuePair("email", jdoUser.getEmail());
+        ssoUser.addProperty(email);
+
+        // First Name
+        SSONameValuePair firstName = new SSONameValuePair("firstName", jdoUser.getFirstName());
+        ssoUser.addProperty(firstName);
+
+        // Last Name
+        SSONameValuePair lastName = new SSONameValuePair("lastName", jdoUser.getSurename());
+        ssoUser.addProperty(lastName);
+
+        // Common Name
+        SSONameValuePair commonName = new SSONameValuePair("commonName", jdoUser.getCommonName());
+        ssoUser.addProperty(commonName);
+
+        // Country Name
+        SSONameValuePair countryName = new SSONameValuePair("countryName", jdoUser.getCountryName());
+        ssoUser.addProperty(countryName);
+
+        // Language
+        SSONameValuePair language = new SSONameValuePair("language", jdoUser.getLanguage()); 
+        ssoUser.addProperty(language);
+
+        // TODO : Use configuraiton/reflexion to add more properties.
+
         return ssoUser;
 
     }

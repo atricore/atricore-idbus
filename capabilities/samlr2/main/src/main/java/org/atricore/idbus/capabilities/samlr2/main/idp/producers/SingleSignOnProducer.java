@@ -643,7 +643,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
         ClaimChannel claimChannel = ( (SPChannel) channel ).getClaimsProvider();
 
         if (status.getAuthnRequest() != null && status.getAuthnRequest().getRequestedAuthnContext() != null) {
-            logger.warn("<RequestedAuthnContext> element not supported! Ignoring ...");
+            // TODO !
+            logger.warn("<RequestedAuthnContext> element not supported! Ignoring : " +
+                    status.getAuthnRequest().getRequestedAuthnContext());
         }
 
         // Passive endpoints are only tryed out once!
@@ -652,7 +654,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
             AuthnCtxClass authnCtxClass = AuthnCtxClass.asEnum(status.getCurrentClaimsEndpoint().getType());
 
             // Passive auth schemese endpoints are tested only once!
-            if (authnCtxClass.isPassive() || status.getCurrentClaimsEndpointTryCount() >= 5) { // TODO : Make configurable?
+            // TODO : Make configurable, per authctx
+            if (authnCtxClass.isPassive() || status.getCurrentClaimsEndpointTryCount() >= 5) {
                 status.getUsedClaimsEndpoints().add(status.getCurrentClaimsEndpoint().getName());
                 status.setCurrentClaimsEndpoint(null);
             }

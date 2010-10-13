@@ -65,15 +65,20 @@ public class UsernamePasswordClaimsProducer extends SamlR2Producer
     @Override
     protected void doProcess ( CamelMediationExchange exchange) throws Exception {
 
-        logger.debug("Collecting Password claims");
+        if (logger.isDebugEnabled())
+            logger.debug("Collecting Password claims");
+
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
         // -------------------------------------------------------------------------
         // Collect claims
         // -------------------------------------------------------------------------
-        logger.debug("Starting to collect password claims");
+        if (logger.isDebugEnabled())
+            logger.debug("Starting to collect password claims");
         SamlR2ClaimsRequest claimsRequest = (SamlR2ClaimsRequest) in.getMessage().getContent();
-        logger.debug("Storing claims request as local variable, id:" + claimsRequest.getId());
+
+        if (logger.isDebugEnabled())
+            logger.debug("Storing claims request as local variable, id:" + claimsRequest.getId());
         in.getMessage().getState().setLocalVariable("urn:org:atricore:idbus:claims-request", claimsRequest);
         doProcessClaimsRequest(exchange, claimsRequest);
 
@@ -84,7 +89,8 @@ public class UsernamePasswordClaimsProducer extends SamlR2Producer
         // -------------------------------------------------------------------------
         // Process collected claims
         // -------------------------------------------------------------------------
-        logger.debug("Received username/password claims");
+        if (logger.isDebugEnabled())
+            logger.debug("Received username/password claims");
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
@@ -93,7 +99,8 @@ public class UsernamePasswordClaimsProducer extends SamlR2Producer
         if (claimsRequest == null)
             throw new IllegalStateException("Claims request not found!");
 
-        logger.debug("Recovered claims request from local variable, id:" + claimsRequest.getId());
+        if (logger.isDebugEnabled())
+            logger.debug("Recovered claims request from local variable, id:" + claimsRequest.getId());
 
         doProcessReceivedClaims(exchange, claimsRequest, claimsResponse.getClaimSet());
 
