@@ -89,28 +89,40 @@ public class JDOIdentityStore extends AbstractStore
         ssoUser.setName(jdoUser.getUserName());
 
         // Email
-        SSONameValuePair email = new SSONameValuePair("email", jdoUser.getEmail());
-        ssoUser.addProperty(email);
+        if (jdoUser.getEmail() != null) {
+            SSONameValuePair email = new SSONameValuePair("email", jdoUser.getEmail());
+            ssoUser.addProperty(email);
+        }
 
         // First Name
-        SSONameValuePair firstName = new SSONameValuePair("firstName", jdoUser.getFirstName());
-        ssoUser.addProperty(firstName);
+        if (jdoUser.getFirstName() != null) {
+            SSONameValuePair firstName = new SSONameValuePair("firstName", jdoUser.getFirstName());
+            ssoUser.addProperty(firstName);
+        }
 
         // Last Name
-        SSONameValuePair lastName = new SSONameValuePair("lastName", jdoUser.getSurename());
-        ssoUser.addProperty(lastName);
+        if (jdoUser.getSurename() != null) {
+            SSONameValuePair lastName = new SSONameValuePair("lastName", jdoUser.getSurename());
+            ssoUser.addProperty(lastName);
+        }
 
         // Common Name
-        SSONameValuePair commonName = new SSONameValuePair("commonName", jdoUser.getCommonName());
-        ssoUser.addProperty(commonName);
+        if (jdoUser.getCommonName() != null) {
+            SSONameValuePair commonName = new SSONameValuePair("commonName", jdoUser.getCommonName());
+            ssoUser.addProperty(commonName);
+        }
 
         // Country Name
-        SSONameValuePair countryName = new SSONameValuePair("countryName", jdoUser.getCountryName());
-        ssoUser.addProperty(countryName);
+        if (jdoUser.getCountryName() != null) {
+            SSONameValuePair countryName = new SSONameValuePair("countryName", jdoUser.getCountryName());
+            ssoUser.addProperty(countryName);
+        }
 
         // Language
-        SSONameValuePair language = new SSONameValuePair("language", jdoUser.getLanguage()); 
-        ssoUser.addProperty(language);
+        if (jdoUser.getLanguage() != null) {
+            SSONameValuePair language = new SSONameValuePair("language", jdoUser.getLanguage());
+            ssoUser.addProperty(language);
+        }
 
         // TODO : Use configuraiton/reflexion to add more properties.
 

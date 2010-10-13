@@ -79,7 +79,7 @@ public class SubjectAttribute extends AbstractPrincipal {
         if (equals && getValue() == null) {
             equals = anotherValue == null;
         } else
-            equals = getValue().equals(anotherValue);
+            equals = equals && getValue().equals(anotherValue);
 
         return equals;
     }

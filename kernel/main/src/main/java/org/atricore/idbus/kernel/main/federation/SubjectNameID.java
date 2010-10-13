@@ -119,17 +119,17 @@ public class SubjectNameID extends AbstractPrincipal {
         if (equals && getFormat() == null) {
             equals = anotherFormat == null;
         } else
-            equals = getFormat().equals(anotherFormat);
+            equals = equals && getFormat().equals(anotherFormat);
 
         if (equals && getNameQualifier() == null) {
             equals = anotherNameQualifier == null;
         } else
-            equals = getNameQualifier().equals(anotherNameQualifier);
+            equals = equals && getNameQualifier().equals(anotherNameQualifier);
 
         if (equals && getLocalNameQualifier() == null) {
             equals = anotherLocalNameQualifier == null;
         } else
-            equals = getLocalNameQualifier().equals(anotherLocalNameQualifier);
+            equals = equals && getLocalNameQualifier().equals(anotherLocalNameQualifier);
 
         return equals;
     }
