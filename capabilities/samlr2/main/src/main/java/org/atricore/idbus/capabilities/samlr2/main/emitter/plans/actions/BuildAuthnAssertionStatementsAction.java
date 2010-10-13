@@ -79,6 +79,8 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSAMLR2Assertion
                 attrProp.setName(SAMLR2Constants.SSOUSER_PROPERTY_NS + ":" + property.getName());
                 attrProp.setNameFormat(AttributeNameFormat.URI.getValue());
                 attrProp.getAttributeValue().add(property.getValue());
+
+                attrProps.add(attrProp);
             }
         }
 
