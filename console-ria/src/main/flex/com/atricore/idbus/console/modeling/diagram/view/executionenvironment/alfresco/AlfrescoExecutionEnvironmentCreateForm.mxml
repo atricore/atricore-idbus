@@ -89,9 +89,9 @@
         <s:CheckBox id="replaceConfFiles" />
     </mx:FormItem>
 
-    <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.activation.installsamples')}:">
-        <s:CheckBox id="installSamples" />
-    </mx:FormItem>    
+    <!--<mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'executionenvironment.activation.installsamples')}:">-->
+        <!--<s:CheckBox id="installSamples" />-->
+    <!--</mx:FormItem>    -->
 
     <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
         <s:Button id="btnOk" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.ok')}"/>

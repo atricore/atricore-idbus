@@ -25,8 +25,11 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 
+import com.atricore.idbus.console.modeling.diagram.model.request.CheckFoldersRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
+import com.atricore.idbus.console.modeling.diagram.model.response.CheckFoldersResponse;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
+import com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
 import com.atricore.idbus.console.services.dto.AlfrescoExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
@@ -83,7 +86,6 @@ public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator 
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
         view.replaceConfFiles.selected = false;
-        view.installSamples.selected = false;         
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -96,7 +98,7 @@ public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator 
         alfrescoExecutionEnvironment.description = view.executionEnvironmentDescription.text;
         alfrescoExecutionEnvironment.installUri = view.homeDirectory.text;
         alfrescoExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
-        alfrescoExecutionEnvironment.installDemoApps = view.installSamples.selected;
+        alfrescoExecutionEnvironment.installDemoApps = false;
         alfrescoExecutionEnvironment.platformId = "alfresco";
         alfrescoExecutionEnvironment.tomcatInstallDir = view.tomcatInstallDir.text;
         _newExecutionEnvironment = alfrescoExecutionEnvironment;
@@ -105,10 +107,13 @@ public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator 
     private function handleAlfrescoExecutionEnvironmentSave(event:MouseEvent):void {
         view.homeDirectory.errorString = "";
         if (validate(true)) {
-            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-            cif.homeDir = view.homeDirectory.text;
-            cif.environmentName = _environmentName;
-            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+            var folders:ArrayCollection = new ArrayCollection();
+            folders.addItem(view.homeDirectory.text);
+            folders.addItem(view.tomcatInstallDir.text);
+            var cf:CheckFoldersRequest = new CheckFoldersRequest();
+            cf.folders = folders;
+            cf.environmentName = _environmentName;
+            sendNotification(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, cf);
         }        
     }
 
@@ -149,23 +154,27 @@ public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator 
 
     override public function listNotificationInterests():Array {
         return [super.listNotificationInterests(),
-                FolderExistsCommand.FOLDER_EXISTS,
-                FolderExistsCommand.FOLDER_DOESNT_EXISTS];
+                FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED,
+                FoldersExistsCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case FolderExistsCommand.FOLDER_EXISTS:
-                var envName:String = notification.getBody() as String;
-                if(envName == _environmentName){
-                    view.homeDirectory.errorString = "";
-                    save();
-                }
-                break;
-            case FolderExistsCommand.FOLDER_DOESNT_EXISTS:
-                envName = notification.getBody() as String;
-                if(envName == _environmentName){
-                    view.homeDirectory.errorString = "Directory doesn't exist";
+            case FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED:
+                var resp:CheckFoldersResponse = notification.getBody() as CheckFoldersResponse;
+                if (resp.environmentName == _environmentName) {
+                    if (resp.invalidFolders != null && resp.invalidFolders.length > 0) {
+                        for each (var invalidFolder:String in resp.invalidFolders) {
+                            if (view.homeDirectory.text == invalidFolder) {
+                                view.homeDirectory.errorString = "Directory doesn't exist";
+                            }
+                            if (view.tomcatInstallDir.text == invalidFolder) {
+                                view.tomcatInstallDir.errorString = "Directory doesn't exist";
+                            }
+                        }
+                    } else {
+                        save();
+                    }
                 }
                 break;
         }

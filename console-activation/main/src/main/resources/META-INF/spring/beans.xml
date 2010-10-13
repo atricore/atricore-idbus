@@ -343,7 +343,7 @@
     </bean>
 
     <!-- Alfresco 3.3 -->
-    <bean name="alfresco-installer" class="org.josso.tooling.gshell.install.installer.LiferayInstaller">
+    <bean name="alfresco-installer" class="org.josso.tooling.gshell.install.installer.AlfrescoInstaller">
         <constructor-arg index="0" ref="alfresco"/>
         <property name="printer" ref="printerServiceBean"/>
     </bean>
@@ -356,6 +356,7 @@
 
         <property name="libDir" value="${target}/WEB-INF/lib"/>
         <property name="configDir" value="${target}/WEB-INF/classes"/>
+        <!--<property name="JOSSOConfDir" value="${target}/WEB-INF/classes"/>-->
     </bean>
     
 

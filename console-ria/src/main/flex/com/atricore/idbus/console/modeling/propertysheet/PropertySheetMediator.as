@@ -323,6 +323,13 @@ public class PropertySheetMediator extends IocMediator {
                                 if (_liferayExecEnvCoreSection.containerPath.text == invalidFolder) {
                                     _liferayExecEnvCoreSection.containerPath.errorString = "Directory doesn't exist";
                                 }
+                            } else if (currentElement is AlfrescoExecutionEnvironment){
+                                if (_alfrescoExecEnvCoreSection.homeDirectory.text == invalidFolder) {
+                                    _alfrescoExecEnvCoreSection.homeDirectory.errorString = "Directory doesn't exist";
+                                }
+                                if (_alfrescoExecEnvCoreSection.tomcatInstallDir.text == invalidFolder) {
+                                    _alfrescoExecEnvCoreSection.tomcatInstallDir.errorString = "Directory doesn't exist";
+                                }
                             }
                         }
                     } else {
@@ -2790,14 +2797,17 @@ public class PropertySheetMediator extends IocMediator {
     private function handleAlfrescoExecEnvCorePropertyTabRollOut(e:Event):void {
         trace(e);
         _alfrescoExecEnvCoreSection.homeDirectory.errorString = "";
+        _alfrescoExecEnvCoreSection.tomcatInstallDir.errorString = "";        
         if (_dirty && validate(true)) {
             _execEnvSaveFunction = alfrescoSave;
-            _execEnvHomeDir = _alfrescoExecEnvCoreSection.homeDirectory;
 
-            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
-            cif.homeDir = _alfrescoExecEnvCoreSection.homeDirectory.text;
-            cif.environmentName = "n/a";
-            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+            var cf:CheckFoldersRequest = new CheckFoldersRequest();
+            var folders:ArrayCollection = new ArrayCollection();
+            folders.addItem(_alfrescoExecEnvCoreSection.homeDirectory.text);
+            folders.addItem(_alfrescoExecEnvCoreSection.tomcatInstallDir.text);
+            cf.folders = folders;
+            cf.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, cf);
         }
     }
 
@@ -2808,6 +2818,7 @@ public class PropertySheetMediator extends IocMediator {
         alfrescoExecEnv.description = _alfrescoExecEnvCoreSection.executionEnvironmentDescription.text;
         alfrescoExecEnv.platformId = "alfresco";
         alfrescoExecEnv.installUri = _alfrescoExecEnvCoreSection.homeDirectory.text;
+        alfrescoExecEnv.tomcatInstallDir = _alfrescoExecEnvCoreSection.tomcatInstallDir.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
@@ -2819,7 +2830,7 @@ public class PropertySheetMediator extends IocMediator {
         if (execEnv != null) {
             _executionEnvironmentActivateSection.replaceConfFiles.selected = execEnv.overwriteOriginalSetup;
             _executionEnvironmentActivateSection.installSamples.selected = execEnv.installDemoApps;
-            if (execEnv is LiferayExecutionEnvironment) {
+            if (execEnv is LiferayExecutionEnvironment || execEnv is AlfrescoExecutionEnvironment) {
                 _executionEnvironmentActivateSection.installSamples.selected = false;
                 _executionEnvironmentActivateSection.installSamples.enabled = false;
             }
