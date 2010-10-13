@@ -87,7 +87,7 @@
                                     label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.groups.search.panel.label')}" />
         <components:IconLabelButton id="btnClearSearch"
                                     iconUp="@Embed('/images/icons/close.png')"
-                                    iconWidth="22"  iconHeight="22"
+                                    iconWidth="16"  iconHeight="16" compHeight="22"
                                     paddingTop="3" paddingLeft="3" isLinkButton="false"  visible="false"
                                     skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
                                     toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.search.filters.remove')}"

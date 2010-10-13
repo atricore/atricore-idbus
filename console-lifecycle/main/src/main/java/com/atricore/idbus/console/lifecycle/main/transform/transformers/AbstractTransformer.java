@@ -137,23 +137,28 @@ public abstract class AbstractTransformer implements Transformer {
         if (location.getContext() != null) {
             contextString = (location.getContext().startsWith("/") ? location.getContext().substring(1) : location.getContext());
             contextString = (contextString.endsWith("/") ? contextString.substring(0, contextString.length() - 1) : contextString);
-            contextString = "/" + contextString;
         }
 
 
         String uriString = "";
         if (location.getUri() != null) {
-            uriString = "/" +
-            (location.getUri() != null ? location.getUri() : "");
 
-            if (uriString.startsWith("//"))
+            uriString = location.getUri() != null ? location.getUri() : "";
+
+            if (uriString.startsWith("/"))
                 uriString = uriString.substring(1);
 
             if (uriString.endsWith("/"))
                 uriString = uriString.substring(0, uriString.length() - 1);
+
+            return "/" + contextString + "/" + uriString;
+        } else {
+
+            return "/" + contextString;
         }
 
-        return contextString + uriString;
+
+
 
     }
 

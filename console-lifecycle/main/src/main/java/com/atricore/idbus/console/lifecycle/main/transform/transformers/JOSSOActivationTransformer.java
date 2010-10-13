@@ -107,34 +107,44 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
 
         // TODO : Support different execution environments like ISAPI, PHP, etc ....
         ExecutionEnvironment execEnv = activation.getExecutionEnv();
+
+        String appLocation = resolveLocationUrl(activation.getPartnerAppLocation());
+        if (!appLocation.endsWith("/"))
+            appLocation = appLocation + "/";
+
+
+        String baseLocation = resolveLocationBaseUrl(activation.getPartnerAppLocation());
+        if (!baseLocation.endsWith("/"))
+            baseLocation += "/";
+
         if (execEnv == null)
-            return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso_security_check";
+            return  appLocation + "josso_security_check";
 
         if (execEnv instanceof Apache2ExecutionEnvironment) {
-            return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso_security_check";
+            return  appLocation + "josso_security_check";
 
         } else if (execEnv instanceof ApacheExecutionEnvironment) {
-            return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso_security_check";
+            return  appLocation + "josso_security_check";
 
         } else if (execEnv instanceof JEEExecutionEnvironment) {
             logger.error("Execution Environment NOT supported by this transformer " + execEnv.getName() + " ["+execEnv.getPlatformId()+"]");
 
         } else if (execEnv instanceof IISExecutionEnvironment) {
-            return resolveLocationBaseUrl(activation.getPartnerAppLocation()) + "/josso/JOSSOIsapiAgent.dll?josso_security_check";
+            return baseLocation + "josso/JOSSOIsapiAgent.dll?josso_security_check";
 
         } else if (execEnv instanceof WindowsIISExecutionEnvironment) {
-            return resolveLocationBaseUrl(activation.getPartnerAppLocation()) + "/josso/JOSSOIsapiAgent.dll?josso_security_check";
+            return baseLocation + "josso/JOSSOIsapiAgent.dll?josso_security_check";
 
         } else if (execEnv instanceof PHPExecutionEnvironment) {
-            return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso-security-check.php";
+            return appLocation + "josso-security-check.php";
 
         } else if (execEnv instanceof WeblogicExecutionEnvironment) {
-            return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso-wls/josso_security_check.jsp";
+            return appLocation + "josso-wls/josso_security_check.jsp";
 
         }
 
         // Defautl value
-        return resolveLocationUrl(activation.getPartnerAppLocation()) + "/josso_security_check";
+        return appLocation + "josso_security_check";
 
     }
 

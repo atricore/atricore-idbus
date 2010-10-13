@@ -14,6 +14,9 @@ import spark.components.Button;
 [Style(name="paddingRight",type="Number")]
 [Style(name="paddingTop",type="Number")]
 [Style(name="paddingBottom",type="Number")]
+
+[Style(name="compHeight",type="Number")]
+[Style(name="compWidth",type="Number")]
 public class IconLabelButton extends Button
 {
     private var _selected:Boolean;

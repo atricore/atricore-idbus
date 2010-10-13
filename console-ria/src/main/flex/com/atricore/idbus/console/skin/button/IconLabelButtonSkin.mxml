@@ -187,7 +187,10 @@
 
     <s:HGroup horizontalCenter="0" verticalCenter="1"
               left="10" right="10" top="2" bottom="2"
-              creationComplete="gr_creationComplete(event);">
+              creationComplete="gr_creationComplete(event);"
+              verticalAlign="middle"
+              width="{hostComponent.getStyle('compWidth')}"
+              height="{hostComponent.getStyle('compHeight')}">
         <!--creationComplete="img.source = hostComponent.data;">-->
         <!-- layer 8: icon -->
         <s:BitmapImage id="img"
@@ -200,7 +203,7 @@
                  textAlign="center"
                  verticalAlign="middle"
                  maxDisplayedLines="1"
-                 height="100%"/>
+                 height="100%" />
     </s:HGroup>
 
 

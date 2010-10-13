@@ -7,6 +7,8 @@ public class ExecutionEnvironmentProperties {
 
     private String platformId;
 
+    private boolean enableAutoLogin = true;
+
     private String javaAgentClass;
 
     public String getPlatformId() {
@@ -23,5 +25,13 @@ public class ExecutionEnvironmentProperties {
 
     public void setJavaAgentClass(String javaAgentClass) {
         this.javaAgentClass = javaAgentClass;
+    }
+
+    public boolean isEnableAutoLogin() {
+        return enableAutoLogin;
+    }
+
+    public void setEnableAutoLogin(boolean enableAutoLogin) {
+        this.enableAutoLogin = enableAutoLogin;
     }
 }
