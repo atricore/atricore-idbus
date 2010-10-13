@@ -357,7 +357,7 @@
 
         <property name="libDir" value="${target}/WEB-INF/lib"/>
         <property name="configDir" value="${target}/WEB-INF/classes"/>
-        <!--<property name="JOSSOConfDir" value="${target}/WEB-INF/classes"/>-->
+        <property name="JOSSOConfDir" value="${target}/WEB-INF/classes"/>
     </bean>
 
 </beans>
