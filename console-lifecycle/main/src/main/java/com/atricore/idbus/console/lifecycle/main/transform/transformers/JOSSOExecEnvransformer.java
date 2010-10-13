@@ -289,15 +289,20 @@ public class JOSSOExecEnvransformer extends AbstractTransformer {
                 parametersBuildersBeans.add(appIdParamsBuilderBean);
                 setPropertyAsBeans(agentBean, "parametersBuilders", parametersBuildersBeans);
 
-                // AutomaticLoginStrategy
-                Bean defaultAutomaticLoginStrategyBean = newAnonymousBean("org.josso.agent.http.DefaultAutomaticLoginStrategy");
-                setPropertyValue(defaultAutomaticLoginStrategyBean, "mode", "REQUIRED");
-                List<String> ignoredReferers = new ArrayList<String>();
-                ignoredReferers.add(resolveLocationUrl(applianceDef.getLocation()));
-                setPropertyAsValues(defaultAutomaticLoginStrategyBean, "ignoredReferrers", ignoredReferers);
-
+                // AutomaticLoginStrategy, disabled for liferay
                 List<Bean> autoLoginStrats = new ArrayList<Bean>();
-                autoLoginStrats.add(defaultAutomaticLoginStrategyBean);
+                if (execEnvProps.getPlatformId().equals("liferay")) {
+                    Bean disabledAutomaticLoginStrategy = newAnonymousBean("org.josso.agent.http.DisableAutomaticLoginStrategy");
+                    setPropertyValue(disabledAutomaticLoginStrategy, "mode", "REQUIRED");
+                } else {
+                    Bean defaultAutomaticLoginStrategyBean = newAnonymousBean("org.josso.agent.http.DefaultAutomaticLoginStrategy");
+                    setPropertyValue(defaultAutomaticLoginStrategyBean, "mode", "REQUIRED");
+                    List<String> ignoredReferers = new ArrayList<String>();
+                    ignoredReferers.add(resolveLocationUrl(applianceDef.getLocation()));
+                    setPropertyAsValues(defaultAutomaticLoginStrategyBean, "ignoredReferrers", ignoredReferers);
+                    autoLoginStrats.add(defaultAutomaticLoginStrategyBean);
+                }
+
 
                 setPropertyAsBeans(agentBean, "automaticLoginStrategies", autoLoginStrats);
 
