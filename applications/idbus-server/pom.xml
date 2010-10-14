@@ -28,39 +28,39 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <groupId>org.atricore.idbus.applications.server</groupId>
     <artifactId>server</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>Atricore IDBus :: Application : Server POM</name>
     <packaging>pom</packaging>
 
     <properties>
 
-        <atricore.idbus.version>1.0.0-SNAPSHOT</atricore.idbus.version>
+        <atricore.idbus.version>1.0.0</atricore.idbus.version>
 
-        <idbus.kernel.version>1.0.0-SNAPSHOT</idbus.kernel.version>
-        <idbus.cap.saml2.version>1.0.0-SNAPSHOT</idbus.cap.saml2.version>
-        <idbus.cap.josso.version>1.0.0-SNAPSHOT</idbus.cap.josso.version>
-        <idbus.cap.sts.version>1.0.0-SNAPSHOT</idbus.cap.sts.version>
-        <idbus.cap.management.version>1.0.0-SNAPSHOT</idbus.cap.management.version>
+        <idbus.kernel.version>1.0.0</idbus.kernel.version>
+        <idbus.cap.saml2.version>1.0.0</idbus.cap.saml2.version>
+        <idbus.cap.josso.version>1.0.0</idbus.cap.josso.version>
+        <idbus.cap.sts.version>1.0.0</idbus.cap.sts.version>
+        <idbus.cap.management.version>1.0.0</idbus.cap.management.version>
 
-        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.0.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
-        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
-        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.datanucleus-core-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_3.version>
-        <idbus.bundle.datanucleus-rdbms-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_3.version>
-        <idbus.bundle.apache-maven-v3_0.version>1.0.0-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
-        <idbus.bundle.josso-ws-v1_2.version>1.0.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
+        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.0.0</idbus.bundle.javax-jdo2-v2_3-ec.version>
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.0</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
+        <idbus.bundle.datanucleus-core-v2_0_3.version>1.0.0</idbus.bundle.datanucleus-core-v2_0_3.version>
+        <idbus.bundle.datanucleus-rdbms-v2_0_3.version>1.0.0</idbus.bundle.datanucleus-rdbms-v2_0_3.version>
+        <idbus.bundle.apache-maven-v3_0.version>1.0.0</idbus.bundle.apache-maven-v3_0.version>
+        <idbus.bundle.josso-ws-v1_2.version>1.0.0</idbus.bundle.josso-ws-v1_2.version>
 
-        <idbus.idojo.dbidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.dbidentitystore.version>
-        <idbus.idojo.ldapidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
-        <idbus.idojo.memoryidentitystore.version>1.0.0-SNAPSHOT</idbus.idojo.memoryidentitystore.version>
-        <idbus.idojo.memorysessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.memorysessionstore.version>
-        <idbus.idojo.serializedsessionstore.version>1.0.0-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
-        <idbus.idojo.strongauthscheme.version>1.0.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
+        <idbus.idojo.dbidentitystore.version>1.0.0</idbus.idojo.dbidentitystore.version>
+        <idbus.idojo.ldapidentitystore.version>1.0.0</idbus.idojo.ldapidentitystore.version>
+        <idbus.idojo.memoryidentitystore.version>1.0.0</idbus.idojo.memoryidentitystore.version>
+        <idbus.idojo.memorysessionstore.version>1.0.0</idbus.idojo.memorysessionstore.version>
+        <idbus.idojo.serializedsessionstore.version>1.0.0</idbus.idojo.serializedsessionstore.version>
+        <idbus.idojo.strongauthscheme.version>1.0.0</idbus.idojo.strongauthscheme.version>
         
         <apache.derby.version>10.5.3.0_1</apache.derby.version>
         <apache.tiles.version>2.0.6</apache.tiles.version>
@@ -317,7 +317,7 @@
             <dependency>
                 <groupId>org.atricore.idbus.kernel.common</groupId>
                 <artifactId>org.atricore.idbus.kernel.common.samlr2</artifactId>
-                <version>1.0.0-SNAPSHOT</version>
+                <version>1.0.0</version>
             </dependency>
 
             <dependency>

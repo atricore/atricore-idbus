@@ -28,12 +28,12 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <groupId>org.atricore.idbus.kernel</groupId>
     <artifactId>kernel</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>Atricore IDBus :: Kernel : POM</name>
 
@@ -43,14 +43,14 @@
 
     <properties>
 
-        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
-        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.ehcache-v2_1_0.version>1.0.0-SNAPSHOT</idbus.bundle.ehcache-v2_1_0.version>
-        <idbus.bundle.pax-web-jetty-v0_7_2.version>1.0.0-SNAPSHOT</idbus.bundle.pax-web-jetty-v0_7_2.version>
-        <idbus.bundle.wadi-v2_1_2.version>1.0.0-SNAPSHOT</idbus.bundle.wadi-v2_1_2.version>
-        <idbus.bundle.datanucleus-core-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_3.version>
-        <idbus.bundle.datanucleus-rdbms-v2_0_3.version>1.0.0-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_3.version>
-        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.0.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.0</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.0</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
+        <idbus.bundle.ehcache-v2_1_0.version>1.0.0</idbus.bundle.ehcache-v2_1_0.version>
+        <idbus.bundle.pax-web-jetty-v0_7_2.version>1.0.0</idbus.bundle.pax-web-jetty-v0_7_2.version>
+        <idbus.bundle.wadi-v2_1_2.version>1.0.0</idbus.bundle.wadi-v2_1_2.version>
+        <idbus.bundle.datanucleus-core-v2_0_3.version>1.0.0</idbus.bundle.datanucleus-core-v2_0_3.version>
+        <idbus.bundle.datanucleus-rdbms-v2_0_3.version>1.0.0</idbus.bundle.datanucleus-rdbms-v2_0_3.version>
+        <idbus.bundle.javax-jdo2-v2_3-ec.version>1.0.0</idbus.bundle.javax-jdo2-v2_3-ec.version>
         
         <activemq.version>5.3.2</activemq.version>
 
