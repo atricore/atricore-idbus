@@ -17,7 +17,7 @@ Import-Package: org.apache.camel;version="1.6",org.apache.camel.impl;v
 Spring-Context: *;timeout:=60;wait-for-dependencies:=true;create-async
  hronously:=false
 Bnd-LastModified: 1260193523468
-Bundle-Version: 1.0.0.SNAPSHOT
+Bundle-Version: 1.1.0-SNAPSHOT.SNAPSHOT
 Bundle-Name: Atricore IDBus :: Example : Simple Federation Identity Ap
  pliance Unit @@idau-identifier@@
 Bundle-Description: Identity Bus Simple Federation Example Identity Ap
