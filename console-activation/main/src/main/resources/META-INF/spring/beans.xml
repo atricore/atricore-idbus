@@ -17,7 +17,7 @@
           class="com.atricore.idbus.console.activation.main.impl.JOSSOActivationServiceImpl" >
 
         <!-- TODO : Improve -->
-        <property name="jossoVersion" value="1.8.2"/>
+        <property name="jossoVersion" value="1.8.3"/>
         <property name="printer" ref="printerServiceBean"/>
         <property name="installers">
             <list>
