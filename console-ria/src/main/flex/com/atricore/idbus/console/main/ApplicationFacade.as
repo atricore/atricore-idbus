@@ -150,6 +150,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const LIFECYCLE_VIEW_SELECTED:String = "lifecycleViewSelected";
     public static const ACCOUNT_VIEW_SELECTED:String = "accountViewSelected";
     public static const APPLIANCE_VALIDATION_ERRORS:String = "applianceValidationErrors";
+    public static const APPLIANCE_SAVED:String = "applianceSaved";
 
 
     public function ApplicationFacade(p_configuration:* = null) {

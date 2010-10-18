@@ -460,6 +460,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             case LookupIdentityApplianceByIdCommand.SUCCESS:
                 var redrawGraph:Boolean = view.btnSave.enabled;
                 view.btnSave.enabled = false;
+                sendNotification(ApplicationFacade.APPLIANCE_SAVED);
                 view.btnExport.enabled = true;
                 //view.btnLifecycle.enabled = false;
                 enableIdentityApplianceActionButtons();
@@ -497,6 +498,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             case IdentityApplianceUpdateCommand.SUCCESS:
                 var reopenGraph = view.btnSave.enabled;
                 view.btnSave.enabled = false;
+                sendNotification(ApplicationFacade.APPLIANCE_SAVED);
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                 //sendNotification(ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA);

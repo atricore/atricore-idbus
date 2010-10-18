@@ -161,6 +161,7 @@ public class PropertySheetMediator extends IocMediator {
     private var _basicAuthenticationSection:BasicAuthenticationSection;
     private var _certificateSection:CertificateSection;
     private var _dirty:Boolean;
+    private var _applianceSaved:Boolean;
 
     private var _execEnvSaveFunction:Function;
     private var _execEnvHomeDir:TextInput;
@@ -216,6 +217,7 @@ public class PropertySheetMediator extends IocMediator {
         _tabbedPropertiesTabBar = view.tabbedPropertiesTabBar;
         _propertySheetsViewStack = view.propertySheetsViewStack;
         _dirty = false;
+        _applianceSaved = true;
         _validators = [];
         _tabbedPropertiesTabBar.selectedIndex = 0;
         _tabbedPropertiesTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
@@ -232,6 +234,7 @@ public class PropertySheetMediator extends IocMediator {
         return [ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE,
             ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
             ApplicationFacade.DIAGRAM_ELEMENT_SELECTED,
+            ApplicationFacade.APPLIANCE_SAVED,
             FolderExistsCommand.FOLDER_EXISTS,
             FolderExistsCommand.FOLDER_DOESNT_EXISTS,
             FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED,
@@ -355,6 +358,9 @@ public class PropertySheetMediator extends IocMediator {
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         "There was an error loading JDBC drivers list.");
                 break;
+            case ApplicationFacade.APPLIANCE_SAVED:
+                _applianceSaved = true;
+                break;
         }
 
     }
@@ -441,6 +447,7 @@ public class PropertySheetMediator extends IocMediator {
             identityAppliance.idApplianceDefinition.location.uri = _iaCoreSection.applianceLocationPath.text;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -672,6 +679,7 @@ public class PropertySheetMediator extends IocMediator {
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -764,6 +772,7 @@ public class PropertySheetMediator extends IocMediator {
             identityProvider.encryptAuthenticationAssertions = _ipContractSection.encryptAuthAssertionCheck.selected;
 
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -842,6 +851,7 @@ public class PropertySheetMediator extends IocMediator {
 
                 sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
                 sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+                _applianceSaved = false;
                 _dirty = false;
             }
         }
@@ -940,6 +950,7 @@ public class PropertySheetMediator extends IocMediator {
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
         _dirty = false;
     }
 
@@ -1036,6 +1047,7 @@ public class PropertySheetMediator extends IocMediator {
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -1120,6 +1132,7 @@ public class PropertySheetMediator extends IocMediator {
             }
 
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -1224,6 +1237,7 @@ public class PropertySheetMediator extends IocMediator {
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -1344,6 +1358,7 @@ public class PropertySheetMediator extends IocMediator {
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
         _dirty = false;
     }
 
@@ -1384,6 +1399,7 @@ public class PropertySheetMediator extends IocMediator {
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -1482,6 +1498,7 @@ public class PropertySheetMediator extends IocMediator {
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -1545,6 +1562,7 @@ public class PropertySheetMediator extends IocMediator {
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -1602,6 +1620,7 @@ public class PropertySheetMediator extends IocMediator {
 
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -1680,6 +1699,7 @@ public class PropertySheetMediator extends IocMediator {
             connection.description = _federatedConnectionCoreSection.connectionDescription.text;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -1775,6 +1795,7 @@ public class PropertySheetMediator extends IocMediator {
 //            }
 
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -1893,6 +1914,7 @@ public class PropertySheetMediator extends IocMediator {
             }
 
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -1991,6 +2013,7 @@ public class PropertySheetMediator extends IocMediator {
             }
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
@@ -2085,6 +2108,7 @@ public class PropertySheetMediator extends IocMediator {
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
         _dirty = false;
     }
 
@@ -2183,6 +2207,7 @@ public class PropertySheetMediator extends IocMediator {
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
         _dirty = false;
     }
 
@@ -2269,6 +2294,7 @@ public class PropertySheetMediator extends IocMediator {
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
         _dirty = false;
     }
 
@@ -2367,6 +2393,7 @@ public class PropertySheetMediator extends IocMediator {
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
         _dirty = false;
     }
 
@@ -2453,6 +2480,7 @@ public class PropertySheetMediator extends IocMediator {
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
         _dirty = false;
     }
 
@@ -2552,6 +2580,7 @@ public class PropertySheetMediator extends IocMediator {
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
         _dirty = false;
     }
 
@@ -2641,6 +2670,7 @@ public class PropertySheetMediator extends IocMediator {
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
         _dirty = false;
     }
 
@@ -2729,6 +2759,7 @@ public class PropertySheetMediator extends IocMediator {
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
         _dirty = false;
     }
 
@@ -2822,6 +2853,7 @@ public class PropertySheetMediator extends IocMediator {
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
         _dirty = false;
     }
 
@@ -2834,6 +2866,8 @@ public class PropertySheetMediator extends IocMediator {
                 _executionEnvironmentActivateSection.installSamples.selected = false;
                 _executionEnvironmentActivateSection.installSamples.enabled = false;
             }
+            //TODO add click handler for _executionEnvironmentActivateSection.activate checkbox
+            _executionEnvironmentActivateSection.reactivate.addEventListener(MouseEvent.CLICK, reactivateClickHandler);
         }
     }
 
@@ -2843,9 +2877,17 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
+    private function reactivateClickHandler(event:Event):void {
+        if(!_applianceSaved){
+            Alert.show("The Identity Appliance needs to be saved first in order to be able to run activation procedures onto execution environments",
+                    "Information", Alert.OK, null, null, null, Alert.OK);
+            _executionEnvironmentActivateSection.reactivate.selected = false;
+        }
+    }
+
     private function activateExecutionEnvironment(event:Event):void {
         var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
-        if(_executionEnvironmentActivateSection.reactivate.selected){
+        if(_executionEnvironmentActivateSection.reactivate.selected && _applianceSaved){
             var text:String = currentExecEnv.name +  " execution environment is about to be activated.\nYou must restart the execution environment for the changes to take effect.";
             var alert:Alert = Alert.show(text,
                     "Confirm Activation", Alert.OK | Alert.CANCEL, null, activationConfirmationHandler, null, Alert.OK);
@@ -2923,6 +2965,7 @@ public class PropertySheetMediator extends IocMediator {
             identityLookup.description = _identityLookupCoreSection.connectionDescription.text;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
             _dirty = false;
         }
     }
