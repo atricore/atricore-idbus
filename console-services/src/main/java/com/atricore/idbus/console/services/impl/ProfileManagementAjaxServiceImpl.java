@@ -42,15 +42,19 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 /**
  * Author: Dusan Fisic
  */
-public class ProfileManagementAjaxServiceImpl implements ProfileManagementAjaxService, SpmlAjaxClient {
+public class ProfileManagementAjaxServiceImpl implements
+        ProfileManagementAjaxService,
+        SpmlAjaxClient {
+
     private static Log logger = LogFactory.getLog(ProfileManagementAjaxServiceImpl.class);
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
+
     private UserProvisioningAjaxService usrProvService;
 
     private SpmlR2Client spmlService;
-    private String pspTargetId;
 
+    private String pspTargetId;
 
     public UpdateUserProfileResponse updateUserProfile(UpdateUserProfileRequest updateProfileRequest) throws IdentityServerException {
         try {
