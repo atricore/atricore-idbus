@@ -43,7 +43,7 @@
         <xbean-version>3.4.3</xbean-version>
         <datanucleus-version>2.0.3</datanucleus-version>
         -->
-        <idbus.cap.spml2.version>1.1.0-SNAPSHOT</idbus.cap.spml2.version>
+        <idbus.cap.spml2.version>1.0.0</idbus.cap.spml2.version>
     </properties>
 
     <dependencies>
