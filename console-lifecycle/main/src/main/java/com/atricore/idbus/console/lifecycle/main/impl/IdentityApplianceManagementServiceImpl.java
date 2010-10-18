@@ -1158,6 +1158,7 @@ public class IdentityApplianceManagementServiceImpl implements
                     appliance.getIdApplianceDeployment().getDeployedRevision() + "-" + execEnv.getName().toLowerCase() + ".xml";
 
             String agentCfg = agentCfgLocation + "/" + agentCfgName;
+            agentCfg = agentCfg.toLowerCase();
 
             if (logger.isDebugEnabled())
                 logger.debug("Activating Execution Environment " + execEnv.getName() + " using JOSSO Agent Config file  : " + agentCfg );

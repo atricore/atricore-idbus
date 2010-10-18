@@ -53,7 +53,11 @@ import java.util.List;
 /**
  * Author: Dusan Fisic
  */
-public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxService, InitializingBean, SpmlAjaxClient {
+public class UserProvisioningAjaxServiceImpl implements
+        UserProvisioningAjaxService,
+        SpmlAjaxClient,
+        InitializingBean {
+
     private static Log logger = LogFactory.getLog(UserProvisioningAjaxServiceImpl.class);
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
@@ -63,7 +67,15 @@ public class UserProvisioningAjaxServiceImpl implements UserProvisioningAjaxServ
     private SpmlR2Client spmlService;
 
     public void afterPropertiesSet() throws Exception {
-
+        // Work-around for JDO CLASSLOADER issues !?
+        try {
+            logger.info("Initializing User Provisioning Ajax service (triggering JDO Classloader problems workaround)");
+            FindGroupByNameRequest req = new FindGroupByNameRequest ();
+            req.setName("Administrator");
+            findGroupByName(req);
+        } catch (Exception e) {
+            logger.warn (e.getMessage(), e);
+        }
     }
 
     public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws UserProvisioningAjaxException {

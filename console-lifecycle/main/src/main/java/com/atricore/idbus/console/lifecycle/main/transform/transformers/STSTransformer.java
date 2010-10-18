@@ -118,7 +118,7 @@ public class STSTransformer extends AbstractTransformer {
                 setPropertyValue(basicAuthnBean, "ignorePasswordCase", false); // Dangerous
                 setPropertyValue(basicAuthnBean, "ignoreUserCase", basicAuthn.isIgnoreUsernameCase());
 
-                setPropertyRef(basicAuthnBean, "credentialStore", provider.getName() + "-identity-store");
+                setPropertyRef(basicAuthnBean, "credentialStore", idpBean.getName() + "-identity-store");
                 setPropertyBean(basicAuthnBean, "credentialStoreKeyAdapter", newAnonymousBean(SimpleIdentityStoreKeyAdapter.class));
 
                 Ref basicAuthnRef = new Ref();
