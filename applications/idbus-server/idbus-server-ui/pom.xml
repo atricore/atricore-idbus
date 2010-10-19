@@ -28,12 +28,12 @@
     <parent>
         <groupId>org.atricore.idbus.applications.server</groupId>
         <artifactId>server</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.atricore.idbus.applications.server</groupId>
     <artifactId>org.atricore.idbus.applications.server.ui</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <name>Atricore IDBus :: Application : Server UI Web distribution</name>
     <packaging>war</packaging>
 

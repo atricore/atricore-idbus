@@ -30,7 +30,9 @@ import java.util.List;
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
 public class JDOIdentityPartition extends AbstractIdentityPartition
-        implements InitializingBean, DisposableBean, IdentityServiceLifecycle {
+        implements InitializingBean,
+        DisposableBean,
+        IdentityServiceLifecycle {
 
     private JDOUserDAOImpl userDao;
     private JDOGroupDAOImpl groupDao;
@@ -52,11 +54,20 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     }
 
     public void boot() throws Exception {
+        // TODO : Work around for JDO Classloader issues!
         try {
             this.findUserByUserName("admin");
         } catch (Exception e) {
             /* Ignore this ... */
         }
+
+        // TODO : Work around for JDO Classloader issues!
+        try {
+            this.findGroupByName("Administrator");
+        } catch (Exception e) {
+            /* Ignore this ... */
+        }
+
     }
 
     public void afterPropertiesSet() throws ProvisioningException {
