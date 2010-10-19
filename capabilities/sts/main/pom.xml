@@ -115,6 +115,24 @@
         <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.aop</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.context</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.core</artifactId>
+                </exclusion>
+            </exclusions>
             <scope>provided</scope>
         </dependency>
 
@@ -224,6 +242,7 @@
                             org.apache.cxf.workqueue,
                             org.apache.cxf.wsdl11,
                             org.springframework.beans.factory.config,
+                            org.springframework.aop,
                             *
                         </Import-Package>
                         <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>

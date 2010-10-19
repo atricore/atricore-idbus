@@ -46,6 +46,12 @@
 
         <dependency>
             <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
             <scope>provided</scope>
         </dependency>
@@ -60,6 +66,25 @@
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-core</artifactId>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.aop</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.context</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.core</artifactId>
+                </exclusion>
+            </exclusions>
+            
         </dependency>
 
         <dependency>
@@ -106,11 +131,11 @@
                             org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
                             javax.xml.*,
                             javax.naming.*,
-                            org.springframework.instrument.*; resolution:=optional; version="${spring.version}",
-                            org.springframework.osgi.*; version="${spring.osgi.version}",
-                            org.springframework.core.*; version="${spring.version}",
-                            org.springframework.context.*; version="${spring.version}",
+                            org.springframework.aop; version="${spring.version}",
                             org.springframework.beans.*; version="${spring.version}",
+                            org.springframework.context.*; version="${spring.version}",
+                            org.springframework.core.*; version="${spring.version}",
+                            org.springframework.instrument; resolution:=optional; version="${spring.version}",
                             org.springframework.jmx; version="${spring.version}",
                             org.springframework.jmx.access; version="${spring.version}",
                             org.springframework.jmx.export; version="${spring.version}",
@@ -120,13 +145,14 @@
                             org.springframework.jmx.export.naming; version="${spring.version}",
                             org.springframework.jmx.export.notification; version="${spring.version}",
                             org.springframework.jmx.support; version="${spring.version}",
+                            org.springframework.osgi.*; version="${spring.osgi.version}",
                             org.osgi.*,
                             org.w3c.*,
                             org.xml.*,
                             !*
                         </Import-Package>
                         <Embed-Dependency>
-                            *;artifactId=!xml-apis|spring-beans|spring-context|spring-core|xercesImpl|commons-logging|org.springframework.*|org.osgi.*|spring-osgi-*|com.springsource.*|org.atricore.*
+                            *;artifactId=!xml-apis|xbean-spring|spring-aop|spring-asm|spring-expression|spring-beans|spring-context|spring-core|xercesImpl|commons-logging|org.springframework.*|org.osgi.*|spring-osgi-*|com.springsource.*|org.atricore.*
                         </Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>

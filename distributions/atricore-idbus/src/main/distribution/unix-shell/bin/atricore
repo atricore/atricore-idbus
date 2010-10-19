@@ -136,6 +136,16 @@ locateBase() {
     fi
 }
 
+locateData() {
+    if [ "x$KARAF_DATA" != "x" ]; then
+        if [ ! -d "$KARAF_DATA" ]; then
+            die "KARAF_DATA is not valid: $KARAF_DATA"
+        fi
+    else
+        KARAF_DATA=$KARAF_BASE/data
+    fi
+}
+
 setupNativePath() {
     # Support for loading native libraries
     LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:$KARAF_BASE/lib:$KARAF_HOME/lib"
@@ -159,7 +169,6 @@ pathCanonical() {
         else
             dst="`dirname "${dst}"`/$link"
         fi
-		dst=`pathCanonicalSimple "${linkDst}"`
     done
 	local bas=`basename "${dst}"`
 	local dir=`dirname "${dst}"`

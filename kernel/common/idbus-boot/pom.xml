@@ -38,8 +38,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.felix.karaf</groupId>
-            <artifactId>org.apache.felix.karaf.main</artifactId>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.main</artifactId>
             <version>${karaf.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -70,7 +70,7 @@
                         <Import-Package>*</Import-Package>
                         <Private-Package>!*</Private-Package>
                         <Export-Package>
-                            org.apache.felix.karaf.branding, org.atricore.*
+                            org.apache.karaf.branding, org.atricore.*
                         </Export-Package>
                     </instructions>
                 </configuration>

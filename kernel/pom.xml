@@ -57,7 +57,7 @@
         <camel.version>1.6.1</camel.version>
         <commons-codec.version>1.3</commons-codec.version>
         <commons-dbcp.version>1.3</commons-dbcp.version>
-        <commons-logging.version>1.3_3</commons-logging.version>
+        <commons-logging.version>1.1.1</commons-logging.version>
         <!--cglib.nodep.version>2.1_3</cglib.nodep.version-->
         <cxf.version>2.2.2</cxf.version>
 

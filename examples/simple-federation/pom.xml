@@ -51,6 +51,7 @@
         <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.1.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
         <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.1.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
         <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.1.0-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
+        <idbus.bundle.apache-tiles-jsp-v2_2_2.version>1.1.0-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_2_2.version>
         <idbus.bundle.datanucleus-core-v2_0_0-m2.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_0-m2.version>
         <idbus.bundle.datanucleus-rdbms-v2_0_0-m2.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_0-m2.version>
         <idbus.bundle.javax-jdo2-v2_3_ec.version>1.1.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3_ec.version>

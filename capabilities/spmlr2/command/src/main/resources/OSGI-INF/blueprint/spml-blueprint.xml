@@ -17,10 +17,9 @@
     limitations under the License.
 
 -->
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-        xmlns:bp="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
-    <command-bundle xmlns="http://felix.apache.org/karaf/xmlns/shell/v1.0.0">
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
 
         <!-- TODO : Implement completers :) -->
 
@@ -110,6 +109,5 @@
 
     <bean id="userPrinter" class="org.atricore.idbus.capabilities.spmlr2.command.printer.UserPrinter"/>
 
-
-
 </blueprint>
+

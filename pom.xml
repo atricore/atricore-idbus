@@ -38,6 +38,7 @@
 
         <module>bundles/josso-ws-v1_2</module>
         <module>bundles/apache-tiles-jsp-v2_0_6</module>
+        <module>bundles/apache-tiles-jsp-v2_2_2</module>
         <module>bundles/javax-jdo2-v2_3-eb</module>
         <module>bundles/javax-jdo2-v2_3-ec</module>
         <module>bundles/javax-jstl-v1_2</module>
@@ -205,12 +206,22 @@
             <url>http://people.apache.org/repo/m2-incubating-repository</url>
         </repository>
 
-        <!-- Apache ServiceMix  -->
+        <repository>
+            <id>apache-snapshots</id>
+            <name>Apache Snapshots Repository</name>
+            <url>http://repository.apache.org/content/groups/snapshots-group</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
 
         <!-- ServiceMix repo -->
         <repository>
-            <id>apach-servicemix</id>
-            <name>Apache ServiceMix</name>
+            <id>servicemix</id>
+            <name>Apache ServiceMix Repository</name>
             <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
             <releases>
                 <enabled>true</enabled>
@@ -219,8 +230,19 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>jansi.release.m2</id>
+            <name>jansi Release Repository</name>
+            <url>http://jansi.fusesource.org/repo/release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
 
-        <!-- Spring Milestones -->
+        <!-- Spring Milestones
         <repository>
             <id>spring-milestones</id>
             <name>Spring Milestones</name>
@@ -232,6 +254,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        -->
 
         <repository>
             <id>spring</id>
@@ -246,10 +269,12 @@
 
         </repository>
 
+        <!--
         <repository>
             <id>springsource-bundles-milestone</id>
             <url>http://repository.springsource.com/maven/bundles/milestone</url>
         </repository>
+        -->
 
         <repository>
             <id>springsource-bundles-release</id>
@@ -263,6 +288,7 @@
 
         </repository>
 
+        <!--
         <repository>
             <id>springsource-bundles-snapshot</id>
             <url>http://repository.springsource.com/maven/bundles/snapshot</url>
@@ -270,6 +296,7 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        -->
 
         <repository>
             <id>spring-bundles-external</id>
@@ -286,7 +313,7 @@
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
         </repository>
         <!-- Java.net -->
@@ -339,7 +366,7 @@
                 <enabled>true</enabled>
             </releases>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
         </repository>
 
@@ -347,7 +374,7 @@
             <id>forge</id>
             <url>http://repository.sonatype.org/content/groups/public</url>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
             <releases>
                 <enabled>true</enabled>

@@ -7,7 +7,7 @@ import oasis.names.tc.spml._2._0.search.SearchRequestType;
 import oasis.names.tc.spml._2._0.search.SearchResponseType;
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Option;
-import org.apache.felix.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.atricore.idbus.capabilities.spmlr2.command.printer.CmdPrinter;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Service;

@@ -58,6 +58,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.apache-tiles-jsp-v2_2_2</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>

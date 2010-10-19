@@ -9,15 +9,15 @@ public class Bootstrap {
 
     public static void main(String[] args) {
         try {
-            org.apache.felix.karaf.main.Main.main(args);
+            org.apache.karaf.main.Main.main(args);
         } catch (Throwable t) {
             t.printStackTrace();
             System.exit(-1);
         }
     }
 
-    public static org.apache.felix.karaf.main.Main launch(String[] args) throws Exception {
-        org.apache.felix.karaf.main.Main main = new org.apache.felix.karaf.main.Main(args);
+    public static org.apache.karaf.main.Main launch(String[] args) throws Exception {
+        org.apache.karaf.main.Main main = new org.apache.karaf.main.Main(args);
         main.launch();
         return main;
     }

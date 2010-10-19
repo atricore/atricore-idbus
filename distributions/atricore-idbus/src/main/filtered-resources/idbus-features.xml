@@ -180,10 +180,11 @@
 
     <feature name="web" version="${version}">
         <feature version="${version}">web-core</feature>
-        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apache-tiles-jsp-v2_0_6/${idbus.bundle.apache-tiles-jsp-v2_0_6.version}</bundle>
-        <bundle>mvn:org.springframework/spring-web/2.5.6.SEC01</bundle>
-        <bundle>mvn:org.springframework/spring-webmvc/2.5.6.SEC01</bundle>
-        <bundle>mvn:org.springframework.osgi/spring-osgi-web/1.2.0</bundle>
+        <!--bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apache-tiles-jsp-v2_0_6/${idbus.bundle.apache-tiles-jsp-v2_0_6.version}</bundle-->
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apache-tiles-jsp-v2_2_2/${idbus.bundle.apache-tiles-jsp-v2_2_2.version}</bundle>
+        <bundle>mvn:org.springframework/spring-web/${spring.version}</bundle>
+        <bundle>mvn:org.springframework/spring-webmvc/${spring.version}</bundle>
+        <bundle>mvn:org.springframework.osgi/spring-osgi-web/${spring.osgi.version}</bundle>
     </feature>
 
      <feature name="activemq" version="${activemq.version}">
@@ -230,20 +231,20 @@
         <bundle>mvn:org.apache.geronimo.specs/geronimo-j2ee-connector_1.5_spec/${geronimo.j2ee.connector.version}</bundle>
         <bundle>mvn:org.apache.geronimo.components/geronimo-connector/${geronimo.connector.version}</bundle>
         <bundle>mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimo.jms.version}</bundle>
-        <bundle>mvn:org.apache.geronimo.specs/geronimo-servlet_2.5_spec/${geronimo.servlet.version}</bundle>  <!-- looks like Jencks 2.2 needs this -->
-        <bundle>mvn:org.springframework/spring-tx/${spring.version}</bundle>                                  <!-- looks like Jencks 2.2 needs this -->
-        <bundle>mvn:org.jencks/jencks/${jencks.version}</bundle>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-servlet_2.5_spec/${geronimo.servlet.version}</bundle>
+        <bundle>mvn:org.springframework/spring-tx/${spring.version}</bundle>
+        <!--bundle>mvn:org.jencks/jencks/${jencks.version}</bundle-->
     </feature>
 
     <feature name="transaction" version="${version}">
-        <bundle>mvn:org.springframework/spring-tx/2.5.6.SEC01</bundle>
+        <bundle>mvn:org.springframework/spring-tx/${spring.version}</bundle>
         <bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/1.1.1</bundle>
         <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.javax-jdo2-v2_3-ec/${idbus.bundle.javax-jdo2-v2_3_ec.version}</bundle>
         <bundle>mvn:javax.persistence/com.springsource.javax.persistence/1.0.0</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.howl/1.0.1-1_1</bundle>
-        <bundle>mvn:org.springframework/spring-tx/2.5.6.SEC01</bundle>
-        <bundle>mvn:org.springframework/spring-jdbc/2.5.6.SEC01</bundle>
-        <bundle>mvn:org.springframework/spring-orm/2.5.6.SEC01</bundle>
+        <bundle>mvn:org.springframework/spring-tx/${spring.version}</bundle>
+        <bundle>mvn:org.springframework/spring-jdbc/${spring.version}</bundle>
+        <bundle>mvn:org.springframework/spring-orm/${spring.version}</bundle>
     </feature>
 
     <feature name="common" version="${version}">

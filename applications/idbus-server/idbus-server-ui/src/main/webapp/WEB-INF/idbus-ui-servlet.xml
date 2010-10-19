@@ -53,7 +53,7 @@
         <property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView"/>
     </bean>
 
-    <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+    <bean id="tilesConfigurer" class="org.atricore.idbus.bundles.apache.tiles.OsgiTilesConfigurer">
         <!--
         <property name="definitions">
             <list>
@@ -63,8 +63,8 @@
         -->
         <property name="preparerFactoryClass"
                 value="org.springframework.web.servlet.view.tiles2.SpringBeanPreparerFactory"/>
-        <property name="definitionsFactoryClass"
-                  value="org.atricore.idbus.bundles.apache.tiles.OsgiDefinitionsFactory"/>
+
+
     </bean>
 
 

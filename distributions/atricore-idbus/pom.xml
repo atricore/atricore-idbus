@@ -52,7 +52,7 @@
         <jetty.bundle.version>6.1.22_2</jetty.bundle.version>
         <junit.bundle.version>4.7_1</junit.bundle.version>
 
-        <commons.logging.version>1.3_3</commons.logging.version>
+        <commons.logging.version>1.1.1</commons.logging.version>
         <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
         <depends.maven.plugin.version>1.0</depends.maven.plugin.version>
         <easymock.version>2.4</easymock.version>
@@ -106,6 +106,7 @@
         <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.1.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
         <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.1.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
         <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.1.0-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
+        <idbus.bundle.apache-tiles-jsp-v2_2_2.version>1.1.0-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_2_2.version>
         <idbus.bundle.datanucleus-core-v2_0_0-m2.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_0-m2.version>
         <idbus.bundle.datanucleus-rdbms-v2_0_0-m2.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_0-m2.version>
         <idbus.bundle.datanucleus-v2_0_3.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-v2_0_3.version>
@@ -118,7 +119,8 @@
         <idbus.bundle.wadi-v2_1_2.version>1.1.0-SNAPSHOT</idbus.bundle.wadi-v2_1_2.version>
 
 
-        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.1.0-SNAPSHOT</idbus.fragment.mysql-connector-java_v5_1_10.version>
+        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.1.0-SNAPSHOT
+        </idbus.fragment.mysql-connector-java_v5_1_10.version>
         <idbus.connectors.jdoidentityvault.version>1.1.0-SNAPSHOT</idbus.connectors.jdoidentityvault.version>
 
         <idbus.idojo.dbidentitystore.version>1.1.0-SNAPSHOT</idbus.idojo.dbidentitystore.version>
@@ -130,7 +132,8 @@
         <idbus.idojo.serializedsessionstore.version>1.1.0-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
         <idbus.idojo.strongauthscheme.version>1.1.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
 
-        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.1.0-SNAPSHOT</idbus.fragment.mysql-connector-java_v5_1_10.version>
+        <idbus.fragment.mysql-connector-java_v5_1_10.version>1.1.0-SNAPSHOT
+        </idbus.fragment.mysql-connector-java_v5_1_10.version>
 
         <idbus.extensions.version>1.1.0-SNAPSHOT</idbus.extensions.version>
 
@@ -195,155 +198,203 @@
         <!-- KARAF DEPENDENCIES -->
 
         <dependency>
-            <groupId>org.apache.felix.karaf</groupId>
+            <groupId>org.apache.karaf</groupId>
             <artifactId>manual</artifactId>
             <type>pdf</type>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf</groupId>
+            <groupId>org.apache.karaf</groupId>
             <artifactId>manual</artifactId>
             <type>html</type>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf</groupId>
-            <artifactId>org.apache.felix.karaf.main</artifactId>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.main</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf</groupId>
-            <artifactId>org.apache.felix.karaf.exception</artifactId>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.util</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf</groupId>
-            <artifactId>org.apache.felix.karaf.client</artifactId>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.exception</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf</groupId>
-            <artifactId>org.apache.felix.karaf.commons</artifactId>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.client</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.deployer</groupId>
-            <artifactId>org.apache.felix.karaf.deployer.spring</artifactId>
+            <groupId>org.apache.karaf.deployer</groupId>
+            <artifactId>org.apache.karaf.deployer.spring</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.deployer</groupId>
-            <artifactId>org.apache.felix.karaf.deployer.blueprint</artifactId>
+            <groupId>org.apache.karaf.deployer</groupId>
+            <artifactId>org.apache.karaf.deployer.blueprint</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.deployer</groupId>
-            <artifactId>org.apache.felix.karaf.deployer.features</artifactId>
+            <groupId>org.apache.karaf.deployer</groupId>
+            <artifactId>org.apache.karaf.deployer.features</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.deployer</groupId>
-            <artifactId>org.apache.felix.karaf.deployer.war</artifactId>
+            <groupId>org.apache.karaf.deployer</groupId>
+            <artifactId>org.apache.karaf.deployer.war</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf</groupId>
-            <artifactId>org.apache.felix.karaf.management</artifactId>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.management</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.features</groupId>
-            <artifactId>org.apache.felix.karaf.features.core</artifactId>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>org.apache.karaf.features.core</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.features</groupId>
-            <artifactId>org.apache.felix.karaf.features.command</artifactId>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>org.apache.karaf.features.command</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.features</groupId>
-            <artifactId>org.apache.felix.karaf.features.management</artifactId>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>org.apache.karaf.features.management</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.admin</groupId>
-            <artifactId>org.apache.felix.karaf.admin.core</artifactId>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>org.apache.karaf.features.obr</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.admin</groupId>
-            <artifactId>org.apache.felix.karaf.admin.command</artifactId>
+            <groupId>org.apache.karaf.admin</groupId>
+            <artifactId>org.apache.karaf.admin.core</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.admin</groupId>
-            <artifactId>org.apache.felix.karaf.admin.management</artifactId>
+            <groupId>org.apache.karaf.admin</groupId>
+            <artifactId>org.apache.karaf.admin.command</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.shell</groupId>
-            <artifactId>org.apache.felix.karaf.shell.console</artifactId>
+            <groupId>org.apache.karaf.admin</groupId>
+            <artifactId>org.apache.karaf.admin.management</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.shell</groupId>
-            <artifactId>org.apache.felix.karaf.shell.obr</artifactId>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.console</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.shell</groupId>
-            <artifactId>org.apache.felix.karaf.shell.osgi</artifactId>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.obr</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.shell</groupId>
-            <artifactId>org.apache.felix.karaf.shell.log</artifactId>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.osgi</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.shell</groupId>
-            <artifactId>org.apache.felix.karaf.shell.config</artifactId>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.log</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.shell</groupId>
-            <artifactId>org.apache.felix.karaf.shell.packages</artifactId>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.config</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.shell</groupId>
-            <artifactId>org.apache.felix.karaf.shell.ssh</artifactId>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.packages</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.shell</groupId>
-            <artifactId>org.apache.felix.karaf.shell.commands</artifactId>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.ssh</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.shell</groupId>
-            <artifactId>org.apache.felix.karaf.shell.dev</artifactId>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.commands</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.jaas</groupId>
-            <artifactId>org.apache.felix.karaf.jaas.boot</artifactId>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.dev</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.jaas</groupId>
-            <artifactId>org.apache.felix.karaf.jaas.config</artifactId>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.boot</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.jaas</groupId>
-            <artifactId>org.apache.felix.karaf.jaas.modules</artifactId>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.config</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.tooling</groupId>
-            <artifactId>org.apache.felix.karaf.tooling.testing</artifactId>
+            <groupId>org.apache.karaf.jaas</groupId>
+            <artifactId>org.apache.karaf.jaas.modules</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.webconsole</groupId>
+            <artifactId>org.apache.karaf.webconsole.admin</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.webconsole</groupId>
+            <artifactId>org.apache.karaf.webconsole.branding</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.webconsole</groupId>
+            <artifactId>org.apache.karaf.webconsole.features</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.webconsole</groupId>
+            <artifactId>org.apache.karaf.webconsole.gogo</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <!--dependency>
+            <groupId>org.apache.karaf.demos</groupId>
+            <artifactId>web</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>apache-karaf</artifactId>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>apache-karaf</artifactId>
+            <type>zip</type>
+            <version>${karaf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>apache-karaf</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <version>${karaf.version}</version>
+        </dependency-->
+        <dependency>
+            <groupId>org.apache.karaf.tooling</groupId>
+            <artifactId>org.apache.karaf.tooling.testing</artifactId>
             <version>${karaf.version}</version>
         </dependency>
         <dependency>
@@ -384,11 +435,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.prefs</artifactId>
-            <version>${felix.prefs.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.bundlerepository</artifactId>
             <version>${felix.bundlerepository.version}</version>
             <exclusions>
@@ -410,6 +456,11 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.metatype</artifactId>
             <version>${felix.metatype.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.utils</artifactId>
+            <version>${felix.utils.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -527,7 +578,7 @@
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.junit</artifactId>
-            <version>${junit.version}</version>
+            <version>${junit.bundle.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
@@ -741,26 +792,50 @@
             <artifactId>pax-web-extender-whiteboard</artifactId>
             <version>${pax.web.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-finder-shaded</artifactId>
+            <version>${xbean.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>tanukisoft</groupId>
+            <artifactId>wrapper</artifactId>
+            <version>${jsw.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.commons-codec</artifactId>
+            <version>${commons-codec.bundle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.commons-lang</artifactId>
+            <version>${commons-lang.bundle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.jasypt</artifactId>
+            <version>${jasypt.bundle.version}</version>
+        </dependency>
 
         <!-- =========================================================================== -->
         <!-- KARAF DEPENDENCIES, NOT IN KARAF LIST -->
         <!-- =========================================================================== -->
         <dependency>
-            <groupId>org.apache.felix.karaf.webconsole</groupId>
-            <artifactId>org.apache.felix.karaf.webconsole.admin</artifactId>
+            <groupId>org.apache.karaf.webconsole</groupId>
+            <artifactId>org.apache.karaf.webconsole.admin</artifactId>
             <version>${karaf.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.felix.karaf.webconsole</groupId>
-            <artifactId>org.apache.felix.karaf.webconsole.features</artifactId>
+            <groupId>org.apache.karaf.webconsole</groupId>
+            <artifactId>org.apache.karaf.webconsole.features</artifactId>
             <version>${karaf.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.felix.karaf.webconsole</groupId>
-            <artifactId>org.apache.felix.karaf.webconsole.gogo</artifactId>
+            <groupId>org.apache.karaf.webconsole</groupId>
+            <artifactId>org.apache.karaf.webconsole.gogo</artifactId>
             <version>${karaf.version}</version>
         </dependency>
 
@@ -773,7 +848,7 @@
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.aopalliance</artifactId>
-            <version>${aopalliance.version}</version>
+            <version>${aopalliance.bundle.version}</version>
         </dependency>
 
         <!-- =========================================================================== -->
@@ -793,7 +868,7 @@
             <version>${idbus.kernel.version}</version>
             <type>pom</type>
         </dependency>
-        
+
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.boot</artifactId>
@@ -1138,7 +1213,7 @@
             <version>${idbus.cap.josso.version}</version>
             <type>pom</type>
         </dependency>
-        
+
 
         <dependency>
             <groupId>org.atricore.idbus.capabilities.samlr2</groupId>
@@ -1271,7 +1346,7 @@
             <version>${idbus.idojo.dbsessionstore.version}</version>
             <type>pom</type>
         </dependency>
-        
+
 
         <dependency>
             <groupId>org.atricore.idbus.idojos</groupId>
@@ -1300,6 +1375,7 @@
         <!-- =============================== -->
         <!-- Other dependencies              -->
         <!-- =============================== -->
+        
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
@@ -1385,25 +1461,59 @@
             <version>${pax.url.version}</version>
         </dependency>
 
-        <dependency>
+        <!--dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.apache-tiles-jsp-v2_0_6</artifactId>
             <version>${idbus.bundle.apache-tiles-jsp-v2_0_6.version}</version>
+        </dependency-->
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.apache-tiles-jsp-v2_2_2</artifactId>
+            <version>${idbus.bundle.apache-tiles-jsp-v2_2_2.version}</version>
+        </dependency>
+
+        <!-- SPRING -->
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.osgi</groupId>
+            <artifactId>spring-osgi-web</artifactId>
+            <version>${spring.osgi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>2.5.6.SEC01</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>2.5.6.SEC01</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-web</artifactId>
-            <version>1.2.0</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -1554,23 +1664,13 @@
             <artifactId>geronimo-servlet_2.5_spec</artifactId>
             <version>${geronimo.servlet.version}</version>
         </dependency>
-        <!-- looks like Jencks 2.2 needs this -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <version>${spring.version}</version>
-        </dependency>
-        <!-- looks like Jencks 2.2 needs this -->
+        <!--
         <dependency>
             <groupId>org.jencks</groupId>
             <artifactId>jencks</artifactId>
             <version>${jencks.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <version>2.5.6.SEC01</version>
-        </dependency>
+        -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
@@ -1590,21 +1690,6 @@
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.howl</artifactId>
             <version>1.0.1-1_1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <version>2.5.6.SEC01</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>2.5.6.SEC01</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-orm</artifactId>
-            <version>2.5.6.SEC01</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
@@ -1757,9 +1842,9 @@
             <version>${commons-digester.version}</version>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.apache.servicemix.bundles</groupId>-->
-            <!--<artifactId>org.apache.servicemix.bundles.commons-beanutils</artifactId>-->
-            <!--<version>${commons-beanutils.version}</version>-->
+        <!--<groupId>org.apache.servicemix.bundles</groupId>-->
+        <!--<artifactId>org.apache.servicemix.bundles.commons-beanutils</artifactId>-->
+        <!--<version>${commons-beanutils.version}</version>-->
         <!--</dependency>-->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -1971,20 +2056,20 @@
                             <excludeTransitive>false</excludeTransitive>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.apache.felix.karaf</groupId>
-                                    <artifactId>org.apache.felix.karaf.main</artifactId>
+                                    <groupId>org.apache.karaf</groupId>
+                                    <artifactId>org.apache.karaf.main</artifactId>
                                     <outputDirectory>target/dependencies/lib</outputDirectory>
                                     <destFileName>karaf.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.apache.felix.karaf</groupId>
-                                    <artifactId>org.apache.felix.karaf.client</artifactId>
+                                    <groupId>org.apache.karaf</groupId>
+                                    <artifactId>org.apache.karaf.client</artifactId>
                                     <outputDirectory>target/dependencies/lib</outputDirectory>
                                     <destFileName>karaf-client.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.apache.felix.karaf.jaas</groupId>
-                                    <artifactId>org.apache.felix.karaf.jaas.boot</artifactId>
+                                    <groupId>org.apache.karaf.jaas</groupId>
+                                    <artifactId>org.apache.karaf.jaas.boot</artifactId>
                                     <outputDirectory>target/dependencies/lib</outputDirectory>
                                     <destFileName>karaf-jaas-boot.jar</destFileName>
                                 </artifactItem>
@@ -2002,16 +2087,16 @@
                                     <outputDirectory>target/dependencies/lib/endorsed</outputDirectory>
                                     <!--destFileName>karaf.jar</destFileName-->
                                 </artifactItem>
-                                
+
                                 <artifactItem>
-                                    <groupId>org.apache.felix.karaf</groupId>
+                                    <groupId>org.apache.karaf</groupId>
                                     <artifactId>manual</artifactId>
                                     <type>pdf</type>
                                     <outputDirectory>target/dependencies/doc</outputDirectory>
                                     <destFileName>karaf-${karaf.version}-manual.pdf</destFileName>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.apache.felix.karaf</groupId>
+                                    <groupId>org.apache.karaf</groupId>
                                     <artifactId>manual</artifactId>
                                     <type>html</type>
                                     <outputDirectory>target/dependencies/doc</outputDirectory>
