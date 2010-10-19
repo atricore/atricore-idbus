@@ -748,12 +748,12 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateExportIdentityApplianceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createExportIdentityApplianceView();
-        _popup.title = "Export Identity Appliance";
-        _popup.width = 400;
-        _popup.height = 130;
-        _popup.x = (_popupParent.width / 2) - 225;
-        _popup.y = 80;
-        showPopup(_exportIdentityApplianceView);
+        _progress.title = "Export Identity Appliance";
+        _progress.width = 300;
+        _progress.height = 200;
+//        _popup.x = (_popupParent.width / 2) - 225;
+//        _popup.y = 80;
+        showProgress(_exportIdentityApplianceView);
     }
 
     private function createExportIdentityApplianceView():void {

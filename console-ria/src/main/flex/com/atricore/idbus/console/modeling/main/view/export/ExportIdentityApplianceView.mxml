@@ -20,16 +20,17 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<mx:Form xmlns:mx="library://ns.adobe.com/flex/mx"
+
+<s:VGroup xmlns:mx="library://ns.adobe.com/flex/mx"
          xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
-         xmlns:utils="com.atricore.idbus.console.components.*"
-         defaultButton="{btnSave}" width="100%" height="100%" verticalGap="8">
+         left="10" top="10" right="10" bottom="10" paddingLeft="30" paddingTop="40" horizontalAlign="center" verticalAlign="middle">
+    <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'processing.request.title')}" />
 
-	<mx:ProgressBar width="100%" id="progBar" mode="manual" indeterminate="true"
-                    minimum="0" maximum="100" labelPlacement="center" height="30"/>
+    <mx:ProgressBar id="progBar" indeterminate="true"  width="75%"
+                    label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'processing.request.label')}"/>
 
-    <mx:ControlBar horizontalAlign="right" width="100%" height="100%">
-        <s:Button id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.save')}" enabled="false"/>
-    </mx:ControlBar>
-</mx:Form>
+    <!--<mx:ControlBar horizontalAlign="right" width="100%" height="100%">-->
+        <s:Button left="70" id="btnSave" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.save')}" enabled="false"/>
+    <!--</mx:ControlBar>-->
+</s:VGroup>

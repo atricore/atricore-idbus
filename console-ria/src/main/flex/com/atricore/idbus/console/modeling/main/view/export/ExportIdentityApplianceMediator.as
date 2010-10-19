@@ -75,7 +75,7 @@ public class ExportIdentityApplianceMediator extends IocMediator {
 
             var request:URLRequest = new URLRequest(url);
             var variables:URLVariables = new URLVariables();
-            variables.applianceId = projectProxy.currentIdentityAppliance.id;;
+            variables.applianceId = projectProxy.currentIdentityAppliance.id;
             variables.name = projectProxy.currentIdentityAppliance.idApplianceDefinition.name + "-1.0." +
                     projectProxy.currentIdentityAppliance.idApplianceDefinition.revision;
             request.data = variables;
@@ -102,17 +102,17 @@ public class ExportIdentityApplianceMediator extends IocMediator {
         view.progBar.indeterminate = false;
         view.progBar.setProgress(100, 100);
         if (_exportedAppliance != null && _exportedAppliance.length > 0) {
-            view.progBar.label = "Identity Appliance successfully exported";
+            view.progBar.label = "Appliance successfully exported";
             view.btnSave.enabled = true;
         } else {
-            view.progBar.label = "Error exporting Identity Appliance!!!";
+            view.progBar.label = "Error exporting Appliance!!!";
         }
     }
 
     public function errorHandler(event:ErrorEvent):void {
         view.progBar.indeterminate = false;
         view.progBar.setProgress(100, 100);
-        view.progBar.label = "Error exporting Identity Appliance!!!";
+        view.progBar.label = "Error exporting Appliance!!!";
     }
     
     private function closeWindow():void {
