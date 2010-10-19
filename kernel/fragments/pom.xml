@@ -37,7 +37,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <felix.karaf.version>1.6.0</felix.karaf.version>
+        <karaf.version>2.1.0</karaf.version>
     </properties>
 
     <profiles>

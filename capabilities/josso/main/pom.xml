@@ -62,8 +62,8 @@
         <gshell.version>1.0-alpha-2-r654638</gshell.version>
         <plexus-classworlds.version>1.2-alpha-12</plexus-classworlds.version>
 
-        <xbean.version>3.4.3</xbean.version>
-        <spring.version>2.5.6.SEC01</spring.version>
+        <xbean.version>3.7</xbean.version>
+        <spring.version>3.0.3.RELEASE</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.16</log4j.version>

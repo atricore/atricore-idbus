@@ -149,22 +149,24 @@ setupNativePath() {
     export LD_LIBRARY_PATH
 }
 
-pathCanonicalSimple() {
-	local dst="${1}"
-	cd -P -- "$(dirname -- "${dst}")" &> /dev/null && echo "$(pwd -P)/$(basename -- "${dst}")"
-}
-
 pathCanonical() {
-	local dst=`pathCanonicalSimple "${1}"`
-	while [[ -h "${dst}" ]]; do
-		local linkDst="$(ls -l "${dst}" | sed -e 's/^.*[[:space:]]*->[[:space:]]*\(.*\)[[:space:]]*$/\1/g')"
-		if [[ -z "$(echo "${linkDst}" | grep -E '^/')" ]]; then
-			# relative link destination
-			linkDst="$(dirname "${dst}")/${linkDst}"
-		fi
+    local dst="${1}"
+    while [ -h "${dst}" ] ; do
+        ls=`ls -ld "${dst}"`
+        link=`expr "$ls" : '.*-> \(.*\)$'`
+        if expr "$link" : '/.*' > /dev/null; then
+            dst="$link"
+        else
+            dst="`dirname "${dst}"`/$link"
+        fi
 		dst=`pathCanonicalSimple "${linkDst}"`
-	done
-	echo "${dst}"
+    done
+	local bas=`basename "${dst}"`
+	local dir=`dirname "${dst}"`
+    if [ "$bas" != "$dir" ]; then
+		dst="`pathCanonical "$dir"`/$bas"
+    fi
+    echo "${dst}" | sed -e 's#//#/#g' -e 's#/./#/#g' -e 's#/[^/]*/../#/#g'
 }
 
 locateJava() {
@@ -177,6 +179,9 @@ locateJava() {
 	if [ "x$JAVA_HOME" = "x" ] && [ "$darwin" = "true" ]; then
 		JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home
 	fi
+    if [ "x$JAVA" = "x" ] && [ -r /etc/gentoo-release ] ; then
+        JAVA_HOME=`java-config --jre-home`
+    fi
     if [ "x$JAVA" = "x" ]; then
         if [ "x$JAVA_HOME" != "x" ]; then
             if [ ! -d "$JAVA_HOME" ]; then
@@ -185,14 +190,15 @@ locateJava() {
             JAVA="$JAVA_HOME/bin/java"
         else
             warn "JAVA_HOME not set; results may vary"
-            JAVA=`which java`
+            JAVA=`type java`
+            JAVA=`expr "$JAVA" : '.*is \(.*\)$'`
             if [ "x$JAVA" = "x" ]; then
                 die "java command not found"
             fi
         fi
     fi
     if [ "x$JAVA_HOME" = "x" ]; then
-        JAVA_HOME=$(dirname $(pathCanonical "$JAVA"))
+        JAVA_HOME="$(dirname $(dirname $(pathCanonical "$JAVA")))"
     fi
 }
 
@@ -282,6 +288,9 @@ init() {
     # Locate the Karaf base directory
     locateBase
 
+    # Locate the Karaf data directory
+    locateData
+
     # Setup the native library path
     setupNativePath
 
@@ -304,10 +313,10 @@ init() {
 
 run() {
     OPTS="-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=true"
-    MAIN=org.apache.felix.karaf.main.Main
+    MAIN=org.apache.karaf.main.Main
     case "$1" in
         'stop')
-            MAIN=org.apache.felix.karaf.main.Stop
+            MAIN=org.apache.karaf.main.Stop
             shift
             ;;
         'console')
@@ -321,15 +330,20 @@ run() {
             OPTS="-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=false"
             shift
             ;;
+        'clean')
+            rm -Rf $KARAF_DATA
+            shift
+            ;;
     esac
 
     if $cygwin; then
         KARAF_HOME=`cygpath --path --windows "$KARAF_HOME"`
         KARAF_BASE=`cygpath --path --windows "$KARAF_BASE"`
+        KARAF_DATA=`cygpath --path --windows "$KARAF_DATA"`
         CLASSPATH=`cygpath --path --windows "$CLASSPATH"`
     fi
     cd $KARAF_BASE
-    exec $JAVA $JAVA_OPTS -Djavax.xml.parsers.DocumentBuilderFactory=org.apache.xerces.jaxp.DocumentBuilderFactoryImpl -Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl -Djava.endorsed.dirs="${JAVA_HOME}/lib/endorsed:${KARAF_HOME}/lib/endorsed" -Djava.ext.dirs="${JAVA_HOME}/lib/ext:${JAVA_HOME}/jre/lib/ext:${KARAF_HOME}/lib/ext" -Dstorage.location="${KARAF_HOME}/instances" -Dkaraf.home="$KARAF_HOME" -Dkaraf.base="$KARAF_BASE" -Djava.util.logging.config.file=$KARAF_BASE/etc/java.util.logging.properties -Dderby.system.home=$KARAF_HOME/data/derby $OPTS -classpath "$CLASSPATH" $MAIN "$@"
+    exec $JAVA $JAVA_OPTS -Djava.endorsed.dirs="${JAVA_HOME}/jre/lib/endorsed:${JAVA_HOME}/lib/endorsed:${KARAF_HOME}/lib/endorsed" -Djava.ext.dirs="${JAVA_HOME}/jre/lib/ext:${JAVA_HOME}/lib/ext:${KARAF_HOME}/lib/ext" -Dkaraf.instances="${KARAF_HOME}/instances" -Dkaraf.home="$KARAF_HOME" -Dkaraf.base="$KARAF_BASE" -Dkaraf.data="$KARAF_DATA" -Djava.util.logging.config.file=$KARAF_BASE/etc/java.util.logging.properties $OPTS -classpath "$CLASSPATH" $MAIN "$@"
 }
 
 main() {

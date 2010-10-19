@@ -58,8 +58,18 @@ if "%KARAF_BASE%" == "" (
   set KARAF_BASE=%KARAF_HOME%
 )
 
+if not "%KARAF_DATA%" == "" (
+    if not exist "%KARAF_DATA%" (
+        call :warn KARAF_DATA is not valid: %KARAF_DATA%
+        goto END
+    )
+)
+if "%KARAF_DATA%" == "" (
+    set KARAF_DATA=%KARAF_BASE%\data
+)
+
 set LOCAL_CLASSPATH=%CLASSPATH%
-set DEFAULT_JAVA_OPTS=-server -Xmx768M -XX:MaxPermSize=512M -Dderby.system.home="%KARAF_BASE%\data\derby" -Dderby.storage.fileSyncTransactionLog=true -Dcom.sun.management.jmxremote
+set DEFAULT_JAVA_OPTS=-server -Xmx768M -XX:MaxPermSize=512M -Dderby.system.home="%KARAF_DATA%\derby" -Dderby.storage.fileSyncTransactionLog=true -Dcom.sun.management.jmxremote
 set CLASSPATH=%LOCAL_CLASSPATH%;%KARAF_BASE%\conf
 set DEFAULT_JAVA_DEBUG_OPTS=-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005
 
@@ -202,39 +212,47 @@ if "%KARAF_PROFILER%" == "" goto :RUN
     rmdir /S /Q %KARAF_BASE%\data\cache\
 
     SET OPTS=-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=true
-    SET MAIN=org.apache.felix.karaf.main.Main
+    SET MAIN=org.apache.karaf.main.Main
     SET SHIFT=false
+
+:RUN_LOOP
     if "%1" == "stop" goto :EXECUTE_STOP
     if "%1" == "console" goto :EXECUTE_CONSOLE
     if "%1" == "server" goto :EXECUTE_SERVER
     if "%1" == "client" goto :EXECUTE_CLIENT
+    if "%1" == "clean" goto :EXECUTE_CLEAN
     goto :EXECUTE
 
 :EXECUTE_STOP
-    SET MAIN=org.apache.felix.karaf.main.Stop
-    SET SHIFT=true
-    goto :EXECUTE
+    SET MAIN=org.apache.karaf.main.Stop
+    shift
+    goto :RUN_LOOP
 
 :EXECUTE_CONSOLE
-    SET SHIFT=true
-    goto :EXECUTE
+    shift
+    goto :RUN_LOOP
 
 :EXECUTE_SERVER
     SET OPTS=-Dkaraf.startLocalConsole=false -Dkaraf.startRemoteShell=true
-    SET SHIFT=true
-    goto :EXECUTE
+    shift
+    goto :RUN_LOOP
 
 :EXECUTE_CLIENT
     SET OPTS=-Dkaraf.startLocalConsole=true -Dkaraf.startRemoteShell=false
-    SET SHIFT=true
-    goto :EXECUTE
+    shift
+    goto :RUN_LOOP
+
+:EXECUTE_CLEAN
+    rmdir /S /Q %KARAF_DATA%
+    shift
+    goto :RUN_LOOP
+
 
 :EXECUTE
-    if "%SHIFT%" == "true" SET ARGS=%2 %3 %4 %5 %6 %7 %8
-    if not "%SHIFT%" == "true" SET ARGS=%1 %2 %3 %4 %5 %6 %7 %8
+    SET ARGS=%1 %2 %3 %4 %5 %6 %7 %8
     rem Execute the Java Virtual Machine
     cd %KARAF_BASE%
-    "%JAVA%" %JAVA_OPTS% %OPTS% -classpath "%CLASSPATH%" -Djavax.xml.parsers.DocumentBuilderFactory=org.apache.xerces.jaxp.DocumentBuilderFactoryImpl -Djavax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl -Djava.endorsed.dirs="%JAVA_HOME%\lib\endorsed;%KARAF_HOME%\lib\endorsed" -Djava.ext.dirs="%JAVA_HOME%\lib\ext;%JAVA_HOME%\jre\lib\ext;%KARAF_HOME%\lib\ext" -Dstorage.location="%KARAF_HOME%\instances" -Dkaraf.home="%KARAF_HOME%" -Dkaraf.base="%KARAF_BASE%" -Djava.util.logging.config.file="%KARAF_BASE%\etc\java.util.logging.properties" %MAIN% %ARGS%
+    "%JAVA%" %JAVA_OPTS% %OPTS% -classpath "%CLASSPATH%" -Djava.endorsed.dirs="%JAVA_HOME%\jre\lib\endorsed;%JAVA_HOME%\lib\endorsed;%KARAF_HOME%\lib\endorsed" -Djava.ext.dirs="%JAVA_HOME%\jre\lib\ext;%JAVA_HOME%\lib\ext;%KARAF_HOME%\lib\ext" -Dkaraf.instances="%KARAF_HOME%\instances" -Dkaraf.home="%KARAF_HOME%" -Dkaraf.base="%KARAF_BASE%" -Dkaraf.data="%KARAF_DATA%" -Djava.util.logging.config.file="%KARAF_BASE%\etc\java.util.logging.properties" %MAIN% %ARGS%
 
 rem # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

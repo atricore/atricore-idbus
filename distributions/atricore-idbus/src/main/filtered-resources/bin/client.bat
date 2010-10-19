@@ -81,13 +81,16 @@ if "%KARAF_DEBUG%" == "" goto :KARAF_DEBUG_END
     call :warn Enabling Java debug options: %JAVA_DEBUG_OPTS%
 :KARAF_DEBUG_END
 
-set CLASSPATH=%KARAF_HOME%\system\org\apache\karaf\admin\org.apache.karaf.admin.command\${project.version}\org.apache.karaf.admin.command-${project.version}.jar;%KARAF_HOME%\system\org\apache\karaf\admin\org.apache.karaf.admin.core\${project.version}\org.apache.karaf.admin.core-${project.version}.jar;%KARAF_HOME%\system\org\apache\karaf\shell\org.apache.karaf.shell.console\${project.version}\org.apache.karaf.shell.console-${project.version}.jar;%KARAF_HOME%\system\org\apache\aries\blueprint\org.apache.aries.blueprint\${aries.blueprint.version}\org.apache.aries.blueprint-${aries.blueprint.version}.jar;%KARAF_HOME%\system\org\ops4j\pax\logging\pax-logging-api\${pax.logging.version}\pax-logging-api-${pax.logging.version}.jar;%KARAF_HOME%\system\org\apache\felix\org.apache.felix.framework\${felix.framework.version}\org.apache.felix.framework-${felix.framework.version}.jar
+set CLASSPATH=%KARAF_HOME%\lib\karaf-client.jar
+set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\org\apache\sshd\sshd-core\${sshd.version}\sshd-core-${sshd.version}.jar
+set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\org\apache\mina\mina-core\${mina.version}\mina-core-${mina.version}.jar
+set CLASSPATH=%CLASSPATH%;%KARAF_HOME%\system\org\apache\karaf\shell\org.apache.karaf.shell.console\${project.version}\org.apache.karaf.shell.console-${project.version}.jar
 
 :EXECUTE
     if "%SHIFT%" == "true" SET ARGS=%2 %3 %4 %5 %6 %7 %8
     if not "%SHIFT%" == "true" SET ARGS=%1 %2 %3 %4 %5 %6 %7 %8
     rem Execute the Java Virtual Machine
-    "%JAVA%" %JAVA_OPTS% %OPTS% -classpath "%CLASSPATH%" -Dkaraf.instances="%KARAF_HOME%\instances" -Dkaraf.home="%KARAF_HOME%" -Dkaraf.base="%KARAF_BASE%" -Djava.util.logging.config.file="%KARAF_BASE%\etc\java.util.logging.properties" org.apache.karaf.admin.main.Execute %ARGS%
+    "%JAVA%" %JAVA_OPTS% %OPTS% -classpath "%CLASSPATH%" -Dkaraf.instances="%KARAF_HOME%\instances" -Dkaraf.home="%KARAF_HOME%" -Dkaraf.base="%KARAF_BASE%" -Djava.util.logging.config.file="%KARAF_BASE%\etc\java.util.logging.properties" org.apache.karaf.client.Main %ARGS%
 
 rem # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 

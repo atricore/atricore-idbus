@@ -44,57 +44,52 @@
 
         <!-- KARAF -->
 
-        <aopalliance.version>1.0_3</aopalliance.version>
-        <cglib.version>2.1_3_4</cglib.version>
-        <commons.logging.version>1.1.1</commons.logging.version>
+        <aopalliance.bundle.version>1.0_4</aopalliance.bundle.version>
+        <cglib.bundle.version>2.1_3_6</cglib.bundle.version>
+        <commons-codec.bundle.version>1.3_3</commons-codec.bundle.version>
+        <commons-lang.bundle.version>2.4_4</commons-lang.bundle.version>
+        <jasypt.bundle.version>1.6_1</jasypt.bundle.version>
+        <jetty.bundle.version>6.1.22_2</jetty.bundle.version>
+        <junit.bundle.version>4.7_1</junit.bundle.version>
+
+        <commons.logging.version>1.3_3</commons.logging.version>
+        <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
         <depends.maven.plugin.version>1.0</depends.maven.plugin.version>
         <easymock.version>2.4</easymock.version>
-        <equinox.version>3.5.1.v20090827</equinox.version>
+        <equinox.version>3.6.0.v20100517</equinox.version>
         <felix.bundlerepository.version>1.6.4</felix.bundlerepository.version>
         <felix.compendium.version>1.2.0</felix.compendium.version>
         <felix.configadmin.version>1.2.4</felix.configadmin.version>
-        <felix.fileinstall.version>3.0.0</felix.fileinstall.version>
-        <!-- since 1.6.0 -->
-        <felix.framework.version>2.0.5</felix.framework.version>
-        <!-- since 1.6.0  -->
+        <felix.fileinstall.version>3.0.2</felix.fileinstall.version>
+        <felix.framework.version>3.0.2</felix.framework.version>
         <felix.gogo.version>0.4.0</felix.gogo.version>
-        <!-- since 1.6.0 -->
         <felix.osgi.version>1.4.0</felix.osgi.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
-        <!-- since 1.6.0 -->
-        <felix.prefs.version>1.0.4</felix.prefs.version>
         <felix.utils.version>1.0.0</felix.utils.version>
-        <felix.webconsole.version>3.1.0</felix.webconsole.version>
-        <!-- since 1.6.2 -->
-        <felix.metatype.version>1.0.2</felix.metatype.version>
-        <aries.blueprint.version>0.1-incubating</aries.blueprint.version>
-        <!-- since 1.6.0 -->
-        <aries.jmx.version>0.1-incubating</aries.jmx.version>
-        <!-- since 1.6.0 -->
+        <felix.webconsole.version>3.1.2</felix.webconsole.version>
+        <felix.metatype.version>1.0.4</felix.metatype.version>
+        <aries.blueprint.version>0.2-incubating</aries.blueprint.version>
+        <aries.jmx.version>0.2-incubating</aries.jmx.version>
         <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
         <jansi.version>1.2</jansi.version>
-        <jetty.bundle.version>6.1.22_1</jetty.bundle.version>
-        <junit.version>4.7_1</junit.version>
         <jline.version>0.9.95.20100209</jline.version>
+        <jsw.version>3.2.3</jsw.version>
         <log4j.version>1.2.16</log4j.version>
-        <!-- since 1.6.0 -->
         <maven.version>2.0.9</maven.version>
         <mina.version>2.0.0-RC1</mina.version>
-        <pax.exam.version>1.2.0</pax.exam.version>
-        <!-- since 1.6.0 -->
-        <pax.logging.version>1.5.1</pax.logging.version>
-        <!-- since 1.6.2 -->
-        <pax.runner.version>1.4.0</pax.runner.version>
-        <!-- since 1.6.0 -->
-        <pax.url.version>1.1.2</pax.url.version>
-        <pax.web.version>0.7.2</pax.web.version>
+        <pax.exam.version>1.2.2</pax.exam.version>
+        <pax.logging.version>1.5.3</pax.logging.version>
+        <pax.runner.version>1.5.0</pax.runner.version>
+        <pax.url.version>1.1.3</pax.url.version>
+        <pax.web.version>0.7.3</pax.web.version>
         <servlet.api.version>2.5</servlet.api.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
-        <spring.version>2.5.6.SEC01</spring.version>
+        <spring2.version>2.5.6.SEC01</spring2.version>
+        <spring.version>3.0.3.RELEASE</spring.version>
         <sshd.version>0.4.0</sshd.version>
-        <!-- since 1.6.0 -->
+        <xbean.version>3.7</xbean.version>
 
-        <felix.karaf.version>1.6.0</felix.karaf.version>
+        <karaf.version>2.1.0</karaf.version>
 
         <!-- IDBUS -->
         <idbus.kernel.version>1.1.0-SNAPSHOT</idbus.kernel.version>
@@ -185,7 +180,7 @@
         <wsdl4j.version>1.6.2_2</wsdl4j.version>
         <wss4j.version>1.5.8</wss4j.version>
         <xalan.version>2.7.1_2</xalan.version>
-        <xbean.version>3.5</xbean.version>
+        <xbean.version>3.7</xbean.version>
         <xerces.version>2.9.1_3</xerces.version>
         <xmlbeans.version>2.4.0_2</xmlbeans.version>
         <xmlresolver.version>1.2_1</xmlresolver.version>
@@ -203,153 +198,153 @@
             <groupId>org.apache.felix.karaf</groupId>
             <artifactId>manual</artifactId>
             <type>pdf</type>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf</groupId>
             <artifactId>manual</artifactId>
             <type>html</type>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf</groupId>
             <artifactId>org.apache.felix.karaf.main</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf</groupId>
             <artifactId>org.apache.felix.karaf.exception</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf</groupId>
             <artifactId>org.apache.felix.karaf.client</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf</groupId>
             <artifactId>org.apache.felix.karaf.commons</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.deployer</groupId>
             <artifactId>org.apache.felix.karaf.deployer.spring</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.deployer</groupId>
             <artifactId>org.apache.felix.karaf.deployer.blueprint</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.deployer</groupId>
             <artifactId>org.apache.felix.karaf.deployer.features</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.deployer</groupId>
             <artifactId>org.apache.felix.karaf.deployer.war</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf</groupId>
             <artifactId>org.apache.felix.karaf.management</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.features</groupId>
             <artifactId>org.apache.felix.karaf.features.core</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.features</groupId>
             <artifactId>org.apache.felix.karaf.features.command</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.features</groupId>
             <artifactId>org.apache.felix.karaf.features.management</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.admin</groupId>
             <artifactId>org.apache.felix.karaf.admin.core</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.admin</groupId>
             <artifactId>org.apache.felix.karaf.admin.command</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.admin</groupId>
             <artifactId>org.apache.felix.karaf.admin.management</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.shell</groupId>
             <artifactId>org.apache.felix.karaf.shell.console</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.shell</groupId>
             <artifactId>org.apache.felix.karaf.shell.obr</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.shell</groupId>
             <artifactId>org.apache.felix.karaf.shell.osgi</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.shell</groupId>
             <artifactId>org.apache.felix.karaf.shell.log</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.shell</groupId>
             <artifactId>org.apache.felix.karaf.shell.config</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.shell</groupId>
             <artifactId>org.apache.felix.karaf.shell.packages</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.shell</groupId>
             <artifactId>org.apache.felix.karaf.shell.ssh</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.shell</groupId>
             <artifactId>org.apache.felix.karaf.shell.commands</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.shell</groupId>
             <artifactId>org.apache.felix.karaf.shell.dev</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.jaas</groupId>
             <artifactId>org.apache.felix.karaf.jaas.boot</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.jaas</groupId>
             <artifactId>org.apache.felix.karaf.jaas.config</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.jaas</groupId>
             <artifactId>org.apache.felix.karaf.jaas.modules</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf.tooling</groupId>
             <artifactId>org.apache.felix.karaf.tooling.testing</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -754,25 +749,25 @@
         <dependency>
             <groupId>org.apache.felix.karaf.webconsole</groupId>
             <artifactId>org.apache.felix.karaf.webconsole.admin</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.felix.karaf.webconsole</groupId>
             <artifactId>org.apache.felix.karaf.webconsole.features</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.felix.karaf.webconsole</groupId>
             <artifactId>org.apache.felix.karaf.webconsole.gogo</artifactId>
-            <version>${felix.karaf.version}</version>
+            <version>${karaf.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
-            <version>2.1_3_4</version>
+            <version>2.1_3_6</version>
         </dependency>
 
         <dependency>
@@ -1896,7 +1891,7 @@
                                          classpathref="maven.plugin.classpath"/>
                                 <property name="ant.regexp.regexpimpl"
                                           value="org.apache.tools.ant.util.regexp.Jdk14RegexpRegexp"/>
-                                <property name="mv" value="${felix.karaf.version}"/>
+                                <property name="mv" value="${karaf.version}"/>
                                 <echo message="Maven version: ${mv}"/>
                                 <propertyregex property="ov.p1" input="${mv}"
                                                regexp="(\d+)(?:\.(\d+)(?:\.(\d+))?)?(?:[^a-zA-Z0-9](.*))?" replace="\1"
@@ -2013,14 +2008,14 @@
                                     <artifactId>manual</artifactId>
                                     <type>pdf</type>
                                     <outputDirectory>target/dependencies/doc</outputDirectory>
-                                    <destFileName>karaf-${felix.karaf.version}-manual.pdf</destFileName>
+                                    <destFileName>karaf-${karaf.version}-manual.pdf</destFileName>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.felix.karaf</groupId>
                                     <artifactId>manual</artifactId>
                                     <type>html</type>
                                     <outputDirectory>target/dependencies/doc</outputDirectory>
-                                    <destFileName>karaf-${felix.karaf.version}-manual.html</destFileName>
+                                    <destFileName>karaf-${karaf.version}-manual.html</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
