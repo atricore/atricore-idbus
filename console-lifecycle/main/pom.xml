@@ -28,7 +28,7 @@
     <parent>
         <groupId>com.atricore.idbus.console.lifecycle</groupId>
         <artifactId>console-lifecycle</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>com.atricore.idbus.console.lifecycle.main</artifactId>
@@ -51,8 +51,8 @@
 
 
         <dependency>
-            <groupId>org.apache.felix.karaf.features</groupId>
-            <artifactId>org.apache.felix.karaf.features.core</artifactId>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>org.apache.karaf.features.core</artifactId>
             <version>${felix.karaf.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -330,17 +330,17 @@
                             org.apache.derby.jdbc,
                             org.hsqldb,
                             org.aopalliance.aop,
-                            org.springframework.aop; version="[2.5.6.SEC01,2.5.6.SEC01]",
-                            org.springframework.aop.framework; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                            org.springframework.aop; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
+                            org.springframework.aop.framework; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
                             org.springframework.core.io,
-                            org.springframework.context; version="[2.5.6.SEC01,2.5.6.SEC01]",
-                            org.springframework.beans; version="[2.5.6.SEC01,2.5.6.SEC01]",
-                            org.springframework.beans.factory; version="[2.5.6.SEC01,2.5.6.SEC01]",
-                            org.springframework.beans.factory.config; version="[2.5.6.SEC01,2.5.6.SEC01]",
-                            org.springframework.web.context; version="[2.5.6.SEC01,2.5.6.SEC01]",
-                            org.springframework.web.context.support; version="[2.5.6.SEC01,2.5.6.SEC01]",
-                            org.springframework.orm.jdo; version="[2.5.6.SEC01,2.5.6.SEC01]",
-                            org.springframework.orm.jdo.support; version="[2.5.6.SEC01,2.5.6.SEC01]",
+                            org.springframework.context; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
+                            org.springframework.beans; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
+                            org.springframework.beans.factory; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
+                            org.springframework.beans.factory.config; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
+                            org.springframework.web.context; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
+                            org.springframework.web.context.support; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
+                            org.springframework.orm.jdo; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
+                            org.springframework.orm.jdo.support; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
                             org.springframework.osgi.web.context.support; version=["1.2.0,1.2.0"],
                             org.springframework.osgi.context; version=["1.2.0,1.2.0"],
                             org.osgi.framework,

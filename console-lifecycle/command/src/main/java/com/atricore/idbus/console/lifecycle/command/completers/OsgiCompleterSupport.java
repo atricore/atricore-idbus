@@ -1,7 +1,7 @@
 package com.atricore.idbus.console.lifecycle.command.completers;
 
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
-import org.apache.felix.karaf.shell.console.Completer;
+import org.apache.karaf.shell.console.Completer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -11,7 +11,7 @@ import java.util.List;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public abstract class OsgiCompleterSupport implements Completer, org.apache.felix.karaf.shell.console.BundleContextAware {
+public abstract class OsgiCompleterSupport implements Completer, org.apache.karaf.shell.console.BundleContextAware {
 
     private BundleContext bundleContext;
 

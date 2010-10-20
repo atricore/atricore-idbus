@@ -28,12 +28,12 @@
     <parent>
         <groupId>com.atricore.idbus.console.activation</groupId>
         <artifactId>console-activation</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>com.atricore.idbus.console.activation.main</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <name>Atricore Console :: Activation</name>
 
@@ -275,7 +275,7 @@
                             org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
                             org.osgi.service.command,
                             org.apache.felix.gogo.commands,
-                            org.apache.felix.karaf.shell.console,
+                            org.apache.karaf.shell.console,
                             org.codehaus.plexus.*; resolution:=optional,
                             org.apache.geronimo.gshell.support.plexus; resolution:=optional,
                             org.apache.commons.jexl.*; resolution:=optional,
