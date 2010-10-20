@@ -57,7 +57,7 @@
         <bundle>mvn:org.ops4j.pax.web/pax-web-spi/${pax.web.version}</bundle>
         <bundle>mvn:org.ops4j.pax.web/pax-web-runtime/${pax.web.version}</bundle>
         <!--bundle>mvn:org.ops4j.pax.web/pax-web-jetty/${pax.web.version}</bundle-->
-        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.pax-web-jetty-v0_7_2/${idbus.bundle.pax-web-jetty-v0_7_2.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.pax-web-jetty-v0_7_3/${idbus.bundle.pax-web-jetty-v0_7_3.version}</bundle>
     </feature>
     <feature name="war" version="${karaf.version}">
         <feature version="${karaf.version}">http</feature>
@@ -73,7 +73,7 @@
             realm=karaf
         </config>
         <bundle>mvn:org.apache.felix/org.apache.felix.metatype/${felix.metatype.version}</bundle>
-        <bundle>mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.branding/${karaf.version}</bundle>
+        <!--bundle>mvn:org.apache.karaf.webconsole/org.apache.karaf.webconsole.branding/${karaf.version}</bundle-->
         <bundle>mvn:org.apache.felix/org.apache.felix.webconsole/${felix.webconsole.version}</bundle>
     </feature>
     <feature name="webconsole" version="${karaf.version}">

@@ -115,7 +115,7 @@
         <idbus.bundle.josso-ws-v1_2.version>1.1.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
         <idbus.bundle.apache-maven-v3_0.version>1.1.0-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
         <idbus.bundle.ehcache-v2_1_0.version>1.1.0-SNAPSHOT</idbus.bundle.ehcache-v2_1_0.version>
-        <idbus.bundle.pax-web-jetty-v0_7_2.version>1.1.0-SNAPSHOT</idbus.bundle.pax-web-jetty-v0_7_2.version>
+        <idbus.bundle.pax-web-jetty-v0_7_3.version>1.1.0-SNAPSHOT</idbus.bundle.pax-web-jetty-v0_7_3.version>
         <idbus.bundle.wadi-v2_1_2.version>1.1.0-SNAPSHOT</idbus.bundle.wadi-v2_1_2.version>
 
 
@@ -174,7 +174,7 @@
         <jencks.version>2.2</jencks.version>
         <jettison.version>1.1</jettison.version>
         <neethi.version>2.0.4_1</neethi.version>
-        <pax.web.extender.version>0.7.2</pax.web.extender.version>
+        <pax.web.extender.version>0.7.3</pax.web.extender.version>
         <saaj.impl.version>1.3_1</saaj.impl.version>
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <velocity.version>1.6.2</velocity.version>
@@ -1174,13 +1174,13 @@
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.pax-web-jetty-v0_7_2</artifactId>
-            <version>${idbus.bundle.pax-web-jetty-v0_7_2.version}</version>
+            <artifactId>org.atricore.idbus.bundles.pax-web-jetty-v0_7_3</artifactId>
+            <version>${idbus.bundle.pax-web-jetty-v0_7_3.version}</version>
         </dependency>
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.pax-web-jetty-v0_7_2</artifactId>
-            <version>${idbus.bundle.pax-web-jetty-v0_7_2.version}</version>
+            <artifactId>org.atricore.idbus.bundles.pax-web-jetty-v0_7_3</artifactId>
+            <version>${idbus.bundle.pax-web-jetty-v0_7_3.version}</version>
             <type>pom</type>
         </dependency>
 
@@ -2041,7 +2041,7 @@
                             <useRepositoryLayout>true</useRepositoryLayout>
                             <outputDirectory>target/dependencies/system</outputDirectory>
                             <excludeTransitive>false</excludeTransitive>
-                            <excludeArtifactIds>apache-felix-karaf</excludeArtifactIds>
+                            <excludeArtifactIds>apache-karaf</excludeArtifactIds>
                         </configuration>
 
                     </execution>
