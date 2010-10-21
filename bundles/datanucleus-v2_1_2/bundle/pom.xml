@@ -186,8 +186,9 @@
                             org.apache.tools.ant.taskdefs;resolution:=optional,
                             org.apache.tools.ant.types;resolution:=optional
                         </Import-Package>
-                        <!-- TODO : Review this !!! -->
+                        <!--  
                         <DynamicImport-Package>com.atricore.*,org.atricore.*</DynamicImport-Package>
+                        -->
 
                     </instructions>
                 </configuration>

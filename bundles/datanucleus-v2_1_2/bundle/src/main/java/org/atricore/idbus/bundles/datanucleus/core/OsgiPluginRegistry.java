@@ -30,7 +30,7 @@ import java.util.jar.Manifest;
  */
 public class OsgiPluginRegistry implements PluginRegistry {
     
-    private static final Log logger = LogFactory.getLog(OsgiJDOPersistenceManagerFactoryBean.class);
+    private static final Log logger = LogFactory.getLog(OsgiPluginRegistry.class);
     
     protected static final Localiser LOCALISER = Localiser.getInstance("org.datanucleus.Localisation",
         OMFContext.class.getClassLoader());
