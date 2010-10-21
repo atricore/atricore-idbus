@@ -2098,14 +2098,6 @@
                                     <outputDirectory>target/dependencies/lib</outputDirectory>
                                     <destFileName>idbus.jar</destFileName>
                                 </artifactItem>
-                                <!-- TODO : Only required for JDK 5 ? -->
-                                <artifactItem>
-                                    <groupId>org.apache.servicemix.bundles</groupId>
-                                    <artifactId>org.apache.servicemix.bundles.xerces</artifactId>
-                                    <outputDirectory>target/dependencies/lib/endorsed</outputDirectory>
-                                    <!--destFileName>karaf.jar</destFileName-->
-                                </artifactItem>
-
                                 <artifactItem>
                                     <groupId>org.apache.karaf</groupId>
                                     <artifactId>manual</artifactId>
