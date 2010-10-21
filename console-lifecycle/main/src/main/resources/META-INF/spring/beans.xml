@@ -171,6 +171,8 @@
         <prop key="lifecycle.validateAppliances">true</prop>
         <prop key="lifecycle.enableDebugValidation">false</prop>
 
+        <prop key="datanucleus.metadata.autoregistration">false</prop>
+
     </osgix:cm-properties>
 
     <ctx:property-placeholder properties-ref="lifecycleProps" />

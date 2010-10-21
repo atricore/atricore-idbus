@@ -33,6 +33,12 @@
                 <!--column jdbc-type="BLOB" length="1048576" /-->
                 <!--column jdbc-type="CLOB" /-->
             </field>
+            <field name="idApplianceDeploymentBin">
+                <column jdbc-type="LONGVARCHAR" />
+                <!--column jdbc-type="BLOB" length="1048576" /-->
+                <!--column jdbc-type="CLOB" /-->
+            </field>
+
         </class>
 
         <class name="IdentityApplianceDeployment" table="ATC_ID_APPLIANCE_DEPLOYMENT"/>

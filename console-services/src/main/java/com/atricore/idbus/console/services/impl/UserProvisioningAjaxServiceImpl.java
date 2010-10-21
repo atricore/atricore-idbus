@@ -68,6 +68,7 @@ public class UserProvisioningAjaxServiceImpl implements
 
     public void afterPropertiesSet() throws Exception {
         // Work-around for JDO CLASSLOADER issues !?
+        /*
         try {
             logger.info("Initializing User Provisioning Ajax service (triggering JDO Classloader problems workaround)");
             FindGroupByNameRequest req = new FindGroupByNameRequest ();
@@ -75,7 +76,7 @@ public class UserProvisioningAjaxServiceImpl implements
             findGroupByName(req);
         } catch (Exception e) {
             logger.warn (e.getMessage(), e);
-        }
+        } */
     }
 
     public RemoveGroupResponse removeGroup(RemoveGroupRequest groupRequest) throws UserProvisioningAjaxException {
