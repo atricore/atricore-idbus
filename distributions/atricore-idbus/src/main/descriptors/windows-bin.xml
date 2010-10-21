@@ -57,6 +57,8 @@
           <lineEnding>dos</lineEnding>
           <includes>
               <include>admin.bat</include>
+              <include>client.bat</include>
+              <include>shell.bat</include>
           </includes>
       </fileSet>
       <fileSet>
