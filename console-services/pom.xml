@@ -110,7 +110,7 @@
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.datanucleus-v2_0_3</artifactId>
+            <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
             <scope>provided</scope>
         </dependency>
 

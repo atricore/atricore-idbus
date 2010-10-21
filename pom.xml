@@ -48,7 +48,7 @@
         </idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
         <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.1.0-SNAPSHOT
         </idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.datanucleus-v2_0_3.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-v2_0_3.version>
+        <idbus.bundle.datanucleus-v2_1_2.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-v2_1_2.version>
         <idbus.bundle.apache-maven-v3_0.version>1.1.0-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
         <idbus.bundle.josso-ws-v1_2.version>1.1.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
 
@@ -72,7 +72,7 @@
         <commons-vfs.version>1.0_1</commons-vfs.version>
         <commons-lang.version>2.4</commons-lang.version>
         <commons-fileupload.version>1.2.1</commons-fileupload.version>
-        <datanucleus.version>2.0.3</datanucleus.version>
+        <datanucleus.version>2.1.2</datanucleus.version>
         <dozer.version>5.2.2_1</dozer.version>
         <camel.version>1.6.1</camel.version>
 
@@ -197,8 +197,8 @@
 
             <dependency>
                 <groupId>org.atricore.idbus.bundles</groupId>
-                <artifactId>org.atricore.idbus.bundles.datanucleus-v2_0_3</artifactId>
-                <version>${idbus.bundle.datanucleus-v2_0_3.version}</version>
+                <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
+                <version>${idbus.bundle.datanucleus-v2_1_2.version}</version>
             </dependency>
 
             <dependency>
