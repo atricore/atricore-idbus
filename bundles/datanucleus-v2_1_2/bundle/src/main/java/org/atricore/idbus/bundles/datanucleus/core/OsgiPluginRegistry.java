@@ -1,28 +1,28 @@
 package org.atricore.idbus.bundles.datanucleus.core;
 
-import org.datanucleus.plugin.*;
-import org.datanucleus.ClassLoaderResolver;
-import org.datanucleus.OMFContext;
-import org.datanucleus.util.NucleusLogger;
-import org.datanucleus.util.Localiser;
-import org.datanucleus.util.StringUtils;
-import org.datanucleus.exceptions.NucleusException;
-import org.datanucleus.jdo.JDOPersistenceManagerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.datanucleus.ClassLoaderResolver;
+import org.datanucleus.OMFContext;
+import org.datanucleus.exceptions.NucleusException;
+import org.datanucleus.jdo.JDOPersistenceManagerFactory;
+import org.datanucleus.plugin.*;
+import org.datanucleus.util.Localiser;
+import org.datanucleus.util.NucleusLogger;
+import org.datanucleus.util.StringUtils;
 
 import javax.xml.parsers.DocumentBuilder;
-import java.net.*;
-import java.util.*;
-import java.util.jar.Manifest;
-import java.util.jar.JarFile;
-import java.util.jar.JarInputStream;
-import java.io.IOException;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.net.*;
+import java.util.*;
+import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -273,7 +273,7 @@ public class OsgiPluginRegistry implements PluginRegistry {
 
     /**
      * Search and retrieve the URL for the "/plugin.xml" files located in the classpath.
-     * @return a set of {@link URL}
+     * @return a set of {@link java.net.URL}
      */
     private Set<URL> getPluginURLs()
     {
@@ -604,7 +604,7 @@ public class OsgiPluginRegistry implements PluginRegistry {
     }
 
     /**
-     * Loads a class (do not initialize) from an attribute of {@link ConfigurationElement}
+     * Loads a class (do not initialize) from an attribute of {@link org.datanucleus.plugin.ConfigurationElement}
      * @param confElm the configuration element
      * @param name the attribute name
      * @return the Class
@@ -639,7 +639,7 @@ public class OsgiPluginRegistry implements PluginRegistry {
      * Converts a URL that uses a user-defined protocol into a URL that uses the file protocol.
      * @param url the url to be converted
      * @return the converted URL
-     * @throws IOException
+     * @throws java.io.IOException
      */
     public URL resolveURLAsFileURL(URL url) throws IOException
     {

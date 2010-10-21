@@ -1,26 +1,26 @@
 package org.atricore.idbus.bundles.datanucleus.core;
 
-import org.datanucleus.util.Localiser;
-import org.datanucleus.util.NucleusLogger;
-import org.datanucleus.ObjectManagerFactoryImpl;
 import org.datanucleus.ClassLoaderResolver;
+import org.datanucleus.ObjectManagerFactoryImpl;
 import org.datanucleus.exceptions.NucleusException;
 import org.datanucleus.exceptions.NucleusUserException;
 import org.datanucleus.plugin.*;
+import org.datanucleus.util.Localiser;
+import org.datanucleus.util.NucleusLogger;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.util.jar.Manifest;
-import java.util.*;
-import java.net.URL;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
+import java.net.URL;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
-import java.math.BigInteger;
+import java.util.*;
+import java.util.jar.Manifest;
 
 /**
  * Parser for manifest.mf and plugin.xml files
@@ -108,7 +108,7 @@ class PluginParser
      * @param plugin the plugin bundle
      * @param clr the ClassLoaderResolver
      * @return a List of extensions, if any
-     * @throws NucleusException if an error occurs during parsing
+     * @throws org.datanucleus.exceptions.NucleusException if an error occurs during parsing
      */
     private static List parseExtensions(Element rootElement, Bundle plugin, ClassLoaderResolver clr)
     {
@@ -229,7 +229,7 @@ class PluginParser
      * @param fileUrl URL of the plugin.xml file
      * @param clr the ClassLoaderResolver
      * @return array of 2 elements. first element is a List of extensionPoints, and 2nd element is a List of Extension
-     * @throws NucleusException if an error occurs during parsing
+     * @throws org.datanucleus.exceptions.NucleusException if an error occurs during parsing
      */
     public static List[] parsePluginElements(DocumentBuilder db, PluginRegistry mgr, URL fileUrl,
             Bundle plugin, ClassLoaderResolver clr)
@@ -285,7 +285,7 @@ class PluginParser
     /**
      * Convenience method to create a document builder for parsing.
      * @return The document builder
-     * @throws NucleusException if an error occurs creating the instance
+     * @throws org.datanucleus.exceptions.NucleusException if an error occurs creating the instance
      */
     public static DocumentBuilder getDocumentBuilder()
     {
@@ -305,7 +305,7 @@ class PluginParser
 
     /**
      * Parses the current element and children, creating a ConfigurationElement object
-     * @param ex the {@link Extension}
+     * @param ex the {@link org.datanucleus.plugin.Extension}
      * @param element the current element
      * @param parent the parent. null if the parent is Extension
      * @return the ConfigurationElement for the element
@@ -825,7 +825,7 @@ class PluginParser
         /**
          * Parse a escaped character
          * @return the escaped char
-         * @throws NucleusUserException if a escaped character is not valid
+         * @throws org.datanucleus.exceptions.NucleusUserException if a escaped character is not valid
          */
         private char parseEscapedCharacter()
         {

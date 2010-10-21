@@ -107,10 +107,10 @@
         <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.1.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
         <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.1.0-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
         <idbus.bundle.apache-tiles-jsp-v2_2_2.version>1.1.0-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_2_2.version>
-        <idbus.bundle.datanucleus-core-v2_0_0-m2.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_0-m2.version>
-        <idbus.bundle.datanucleus-rdbms-v2_0_0-m2.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_0-m2.version>
         <idbus.bundle.datanucleus-v2_0_3.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-v2_0_3.version>
+        <idbus.bundle.datanucleus-v2_1_2.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-v2_1_2.version>
         <idbus.bundle.javax-jdo2-v2_3_ec.version>1.1.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3_ec.version>
+        <idbus.bundle.javax-jdo-v3_0.version>1.1.0-SNAPSHOT</idbus.bundle.javax-jdo-v3_0.version>
         <idbus.bundle.javax-jstl-v1_2.version>1.1.0-SNAPSHOT</idbus.bundle.javax-jstl-v1_2.version>
         <idbus.bundle.josso-ws-v1_2.version>1.1.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
         <idbus.bundle.apache-maven-v3_0.version>1.1.0-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
@@ -1141,6 +1141,19 @@
             <version>${idbus.bundle.datanucleus-v2_0_3.version}</version>
             <type>pom</type>
         </dependency>
+
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
+            <version>${idbus.bundle.datanucleus-v2_1_2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
+            <version>${idbus.bundle.datanucleus-v2_1_2.version}</version>
+            <type>pom</type>
+        </dependency>
+        
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>datanucleus-v2_0_3</artifactId>
@@ -1680,6 +1693,11 @@
             <groupId>org.atricore.idbus.bundles</groupId>
             <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
             <version>${idbus.bundle.javax-jdo2-v2_3_ec.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.atricore.idbus.bundles</groupId>
+            <artifactId>org.atricore.idbus.bundles.javax-jdo-v3_0</artifactId>
+            <version>${idbus.bundle.javax-jdo-v3_0.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.persistence</groupId>

@@ -41,10 +41,10 @@
         <module>bundles/apache-tiles-jsp-v2_2_2</module>
         <module>bundles/javax-jdo2-v2_3-eb</module>
         <module>bundles/javax-jdo2-v2_3-ec</module>
+        <module>bundles/javax-jdo-v3_0</module>
         <module>bundles/javax-jstl-v1_2</module>
-        <module>bundles/datanucleus-core-v2_0_3</module>
-        <module>bundles/datanucleus-rdbms-v2_0_3</module>
         <module>bundles/datanucleus-v2_0_3</module>
+        <module>bundles/datanucleus-v2_1_2</module>
         <module>bundles/apache-derby-network-v10_5_3_0_1</module>
         <module>bundles/apache-derby-client-v10_5_3_0_1</module>
         <module>bundles/apache-maven-v3_0</module>

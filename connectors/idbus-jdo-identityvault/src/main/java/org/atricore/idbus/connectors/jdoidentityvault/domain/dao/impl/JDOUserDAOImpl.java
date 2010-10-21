@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserDAO;
-import org.atricore.idbus.kernel.main.provisioning.domain.User;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import javax.jdo.PersistenceManager;

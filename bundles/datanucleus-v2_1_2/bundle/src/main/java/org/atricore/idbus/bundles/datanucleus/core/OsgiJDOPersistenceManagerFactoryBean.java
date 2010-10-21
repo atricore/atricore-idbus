@@ -1,15 +1,15 @@
 package org.atricore.idbus.bundles.datanucleus.core;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.common.support.osgi.OsgiBundleClassLoader;
 import org.atricore.idbus.kernel.common.support.osgi.OsgiBundlespaceClassLoader;
+import org.osgi.framework.BundleContext;
 import org.springframework.orm.jdo.LocalPersistenceManagerFactoryBean;
 import org.springframework.osgi.context.BundleContextAware;
-import org.osgi.framework.BundleContext;
-import org.atricore.idbus.kernel.common.support.osgi.OsgiBundleClassLoader;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 
-import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.JDOHelper;
+import javax.jdo.PersistenceManagerFactory;
 import java.util.Map;
 
 /**

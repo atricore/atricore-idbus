@@ -1,0 +1,1071 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<!--**********************************************************************
+Copyright (c) 2006 Erik Bengtson and others. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Contributors:
+2006 Andy Jefferson - added enhancer extension point
+2006 Andy Jefferson - added datasource extension point
+2006 Andy Jefferson - added L2 cache, value generators, etc
+2008 Andy Jefferson - added SQL Expressions, SQL Methods, SQL Operations, SQL TableNamer
+2009 Andy Jefferson - added RDBMS Request plugins
+    ...
+**********************************************************************-->
+<plugin id="org.datanucleus.store.rdbms" provider-name="DataNucleus">
+    <extension-point id="connectionprovider" name="Connection Provider" schema="schema/connectionprovider.exsd"/>
+    <extension-point id="datasource" name="Datasource" schema="schema/datasource.exsd"/>
+    <extension-point id="sql_expression" name="SQL Expressions" schema="schema/sql_expression.exsd"/>
+    <extension-point id="sql_method" name="SQL Methods" schema="schema/sql_method.exsd"/>
+    <extension-point id="sql_operation" name="SQL Expressions" schema="schema/sql_operation.exsd"/>
+    <extension-point id="sql_tablenamer" name="SQL Table Namer" schema="schema/sql_tablenamer.exsd"/>
+    <extension-point id="rdbms_request" name="RDBMS Request" schema="schema/rdbms_request.exsd"/>
+    <extension-point id="rdbms_mapping" name="RDBMS Mapping" schema="schema/rdbms_mapping.exsd"/>
+    <extension-point id="rdbms_scalarexpression" name="RDBMS Scalar Expression" schema="schema/scalarexpression.exsd"/>
+
+    <!-- STORE MANAGER -->
+    <extension point="org.datanucleus.store_manager">
+        <store-manager class-name="org.datanucleus.store.rdbms.RDBMSStoreManager" url-key="jdbc" key="rdbms"/>
+    </extension>
+
+    <!-- JDOQL EXPRESSIONS (LEGACY) -->
+    <extension point="org.datanucleus.store.rdbms.rdbms_scalarexpression">
+        <scalar-expression literal-class="java.lang.Math"
+            scalar-expression-class="org.datanucleus.store.mapped.expression.MathExpression"/>
+        <scalar-expression literal-class="javax.jdo.JDOHelper"
+            scalar-expression-class="org.datanucleus.store.mapped.expression.JDOHelperExpression"/>
+        <!-- there is no literal expression for analysis, so we put the name -->
+        <scalar-expression name="Analysis" scalar-expression-class="org.datanucleus.store.mapped.expression.AnalysisExpression"/>
+    </extension>
+
+    <!-- PERSISTENCE PROPERTIES -->
+    <extension point="org.datanucleus.persistence_properties">
+        <persistence-property name="datanucleus.rdbms.dynamicSchemaUpdates" datastore="true" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.tableColumnOrder" datastore="true" value="owner-first"/>
+        <persistence-property name="datanucleus.rdbms.query.fetchDirection" datastore="true" value="forward"
+            validator="org.datanucleus.store.rdbms.RDBMSPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.query.resultSetType" datastore="true" value="forward-only"
+            validator="org.datanucleus.store.rdbms.RDBMSPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.query.resultSetConcurrency" datastore="true" value="read-only"
+            validator="org.datanucleus.store.rdbms.RDBMSPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.stringDefaultLength" datastore="true" value="255"
+            validator="org.datanucleus.properties.IntegerPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.jdoql.joinType" datastore="true"
+            validator="org.datanucleus.store.rdbms.RDBMSPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.jdoql.existsIncludesConstraints" datastore="true" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.query.containsUsesExistsAlways" datastore="true" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.classAdditionMaxRetries" datastore="true" value="3"
+            validator="org.datanucleus.properties.IntegerPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.statementBatchLimit" datastore="true" value="50"
+            validator="org.datanucleus.properties.IntegerPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.oracleNlsSortOrder" datastore="true" value="LATIN"/>
+        <persistence-property name="datanucleus.rdbms.discriminatorPerSubclassTable" datastore="true" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.constraintCreateMode" datastore="true" value="DataNucleus"
+            validator="org.datanucleus.store.rdbms.RDBMSPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.uniqueConstraints.mapInverse" datastore="true" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.initializeColumnInfo" datastore="true" value="ALL"
+            validator="org.datanucleus.store.rdbms.RDBMSPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.stringLengthExceededAction" datastore="true" value="EXCEPTION"
+            validator="org.datanucleus.store.rdbms.RDBMSPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.persistEmptyStringAsNull" datastore="true" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.checkExistTablesOrViews" datastore="true" value="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.useUpdateLock" datastore="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.schemaTable.tableName" datastore="true"/>
+        <persistence-property name="datanucleus.rdbms.connectionProviderName" datastore="true" value="PriorityList"/>
+        <persistence-property name="datanucleus.rdbms.connectionProviderFailOnError" datastore="true" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.datastoreAdapterClassName" datastore="true"/>
+        <persistence-property name="datanucleus.rdbms.omitDatabaseMetaDataGetColumns" datastore="true" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.sqlTableNamingStrategy" datastore="true" value="alpha-scheme"/>
+        <persistence-property name="datanucleus.rdbms.request.insert" datastore="true" value="default"/>
+        <persistence-property name="datanucleus.rdbms.request.update" datastore="true" value="default"/>
+        <persistence-property name="datanucleus.rdbms.request.delete" datastore="true" value="default"/>
+        <persistence-property name="datanucleus.rdbms.request.fetch" datastore="true" value="default"/>
+        <persistence-property name="datanucleus.rdbms.request.locate" datastore="true" value="default"/>
+        <persistence-property name="datanucleus.rdbms.adapter.informixUseSerialForIdentity" datastore="true"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.rdbms.sqlParamValuesInBrackets" datastore="true" value="true"/>
+        <persistence-property name="datanucleus.rdbms.fetchUnloadedAutomatically" datastore="true" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+
+        <!-- Deprecated. Remove at some point. Map to correct property name. -->
+        <persistence-property name="datanucleus.rdbms.CheckExistTablesOrViews" datastore="true" value="true"
+            internal-name="datanucleus.rdbms.checkExistTablesOrViews"/>
+
+        <!-- SchemaTool properties -->
+        <persistence-property name="datanucleus.schemaTool.mode" datastore="true"
+            validator="org.datanucleus.properties.CorePropertyValidator"/>
+        <persistence-property name="datanucleus.schemaTool.verbose" datastore="true" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.schemaTool.propertiesFile" datastore="true"/>
+        <persistence-property name="datanucleus.schemaTool.ddlFile" datastore="true"/>
+        <persistence-property name="datanucleus.schemaTool.dumpDdl" datastore="true"/>
+        <persistence-property name="datanucleus.schemaTool.completeDdl" datastore="true" value="false"
+            validator="org.datanucleus.properties.BooleanPropertyValidator"/>
+        <persistence-property name="datanucleus.schemaTool.help" datastore="true"/>
+    </extension>
+
+    <!-- VALUE GENERATORS -->
+    <extension point="org.datanucleus.store_valuegenerator">
+        <valuegenerator name="datastore-uuid-hex" class-name="org.datanucleus.store.rdbms.valuegenerator.DatastoreUUIDHexGenerator" datastore="rdbms"/>
+        <valuegenerator name="increment" class-name="org.datanucleus.store.rdbms.valuegenerator.TableGenerator" datastore="rdbms"/>
+        <valuegenerator name="max" class-name="org.datanucleus.store.rdbms.valuegenerator.MaxGenerator" datastore="rdbms"/>
+        <valuegenerator name="sequence" class-name="org.datanucleus.store.rdbms.valuegenerator.SequenceGenerator" datastore="rdbms"/>
+        <valuegenerator name="table-sequence" class-name="org.datanucleus.store.rdbms.valuegenerator.TableGenerator" datastore="rdbms"/>
+    </extension>
+
+    <!-- RDBMS MAPPING -->
+    <!--
+    DB2 : JDBC TINYINT, BIT not supported
+    Derby : JDBC TINYINT, BIT not supported, SQL INT types are alias to the SQL INTEGER type
+    Firebird : JDBC BIT not supported
+    H2 : JDBC BIT not supported
+    HSQL : JDBC BIT not supported
+    MSSQL : JDBC TINYINT, DOUBLE, DATE, TIME not supported, JDBC INTEGER not supported (uses INT instead)
+    Informix : JDBC DOUBLE not supported
+    Oracle : JDBC DOUBLE not supported
+    Pointbase : JDBC BIT not supported
+    PostgreSQL : JDBC TINYINT, DECIMAL, FLOAT not supported
+    MaxDB/SAPDB : JDBC TINYINT, BIT, BIGINT, NUMERIC not supported, SQL INT types are alias to the SQL INTEGER type
+    Sybase : JDBC FLOAT, BIGINT not supported, SQL INT types are alias to the SQL INTEGER type
+    -->
+    <extension point="org.datanucleus.store.rdbms.rdbms_mapping">
+        <mapping java-type="java.lang.Boolean" jdbc-type="BIT" sql-type="BIT" default="true"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.BitRDBMSMapping">
+            <excludes vendor-id="db2"/>
+            <excludes vendor-id="derby"/>
+            <excludes vendor-id="firebird"/>
+            <excludes vendor-id="h2"/>
+            <excludes vendor-id="hsql"/>
+            <excludes vendor-id="pointbase"/>
+            <excludes vendor-id="sapdb"/>
+        </mapping>
+        <mapping java-type="java.lang.Boolean" jdbc-type="CHAR" sql-type="CHAR" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.CharRDBMSMapping"/>
+        <mapping java-type="java.lang.Boolean" jdbc-type="BOOLEAN" sql-type="BOOLEAN" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.BooleanRDBMSMapping"/>
+        <mapping java-type="java.lang.Boolean" jdbc-type="TINYINT" sql-type="TINYINT" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.TinyIntRDBMSMapping">
+            <excludes vendor-id="db2"/>
+            <excludes vendor-id="derby"/>
+            <excludes vendor-id="postgresql"/>
+            <excludes vendor-id="sapdb"/>
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.lang.Boolean" jdbc-type="SMALLINT" sql-type="SMALLINT" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.SmallIntRDBMSMapping"/>
+        <mapping java-type="java.lang.Boolean" jdbc-type="CHAR" sql-type="CHAR" default="true"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.CharRDBMSMapping">
+            <includes vendor-id="db2"/>
+            <includes vendor-id="derby"/>
+            <includes vendor-id="firebird"/>
+            <includes vendor-id="pointbase"/>
+            <includes vendor-id="sapdb"/>
+        </mapping>
+        <mapping java-type="java.lang.Boolean" jdbc-type="BOOLEAN" sql-type="BOOLEAN" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.CharRDBMSMapping">
+            <includes vendor-id="hsql"/>
+        </mapping>
+        <mapping java-type="java.lang.Boolean" jdbc-type="NUMERIC" sql-type="NUMERIC" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+
+        <mapping java-type="java.lang.Byte" jdbc-type="TINYINT" sql-type="TINYINT" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.TinyIntRDBMSMapping">
+            <excludes vendor-id="db2"/>
+            <excludes vendor-id="derby"/>
+            <excludes vendor-id="postgresql"/>
+            <excludes vendor-id="sapdb"/>
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.lang.Byte" jdbc-type="SMALLINT" sql-type="SMALLINT" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.SmallIntRDBMSMapping"/>
+        <mapping java-type="java.lang.Byte" jdbc-type="NUMERIC" sql-type="NUMERIC" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+
+        <mapping java-type="java.lang.Character" jdbc-type="CHAR" sql-type="CHAR" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.CharRDBMSMapping"/>
+        <mapping java-type="java.lang.Character" jdbc-type="INTEGER" sql-type="INTEGER" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.IntegerRDBMSMapping">
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.lang.Character" jdbc-type="INTEGER" sql-type="INT" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.IntegerRDBMSMapping">
+            <includes vendor-id="derby"/>
+            <includes vendor-id="sapdb"/>
+            <includes vendor-id="sqlserver"/>
+            <includes vendor-id="sybase"/>
+        </mapping>
+        <mapping java-type="java.lang.Character" jdbc-type="NUMERIC" sql-type="NUMERIC" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+
+        <mapping java-type="java.lang.Double" jdbc-type="DOUBLE" sql-type="DOUBLE" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.DoubleRDBMSMapping">
+            <excludes vendor-id="informix"/>
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.lang.Double" jdbc-type="DECIMAL" sql-type="DECIMAL" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.DecimalRDBMSMapping">
+            <excludes vendor-id="postgresql"/>
+        </mapping>
+        <mapping java-type="java.lang.Double" jdbc-type="FLOAT" sql-type="FLOAT" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.FloatRDBMSMapping">
+            <includes vendor-id="informix"/>
+            <includes vendor-id="oracle"/>
+            <includes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.lang.Double" jdbc-type="NUMERIC" sql-type="NUMBER" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+
+        <mapping java-type="java.lang.Float" jdbc-type="FLOAT" sql-type="FLOAT" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.FloatRDBMSMapping">
+            <excludes vendor-id="postgresql"/>
+            <excludes vendor-id="sybase"/>
+        </mapping>
+        <mapping java-type="java.lang.Float" jdbc-type="DOUBLE" sql-type="DOUBLE" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.DoubleRDBMSMapping">
+            <excludes vendor-id="informix"/>
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.lang.Float" jdbc-type="REAL" sql-type="REAL" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.RealRDBMSMapping"/>
+        <mapping java-type="java.lang.Float" jdbc-type="DECIMAL" sql-type="DECIMAL" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.DecimalRDBMSMapping">
+            <excludes vendor-id="postgresql"/>
+        </mapping>
+        <mapping java-type="java.lang.Float" jdbc-type="DOUBLE" sql-type="DOUBLE" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.DoubleRDBMSMapping">
+            <includes vendor-id="postgresql"/>
+            <includes vendor-id="sybase"/>
+        </mapping>
+        <mapping java-type="java.lang.Float" jdbc-type="NUMERIC" sql-type="NUMBER" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+
+        <mapping java-type="java.lang.Integer" jdbc-type="INTEGER" sql-type="INTEGER" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.IntegerRDBMSMapping">
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.lang.Integer" jdbc-type="BIGINT" sql-type="BIGINT" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.BigIntRDBMSMapping">
+            <excludes vendor-id="sapdb"/>
+            <excludes vendor-id="sybase"/>
+        </mapping>
+        <mapping java-type="java.lang.Integer" jdbc-type="NUMERIC" sql-type="NUMERIC" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <excludes vendor-id="sapdb"/>
+        </mapping>
+        <mapping java-type="java.lang.Integer" jdbc-type="INTEGER" sql-type="INT" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.IntegerRDBMSMapping">
+            <includes vendor-id="derby"/>
+            <includes vendor-id="sapdb"/>
+            <includes vendor-id="sqlserver"/>
+            <includes vendor-id="sybase"/>
+        </mapping>
+        <mapping java-type="java.lang.Integer" jdbc-type="NUMERIC" sql-type="NUMERIC" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+        <mapping java-type="java.lang.Integer" jdbc-type="NUMERIC" sql-type="NUMBER" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+        <mapping java-type="java.lang.Integer" jdbc-type="TINYINT" sql-type="TINYINT" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.TinyIntRDBMSMapping">
+            <excludes vendor-id="db2"/>
+            <excludes vendor-id="derby"/>
+            <excludes vendor-id="postgresql"/>
+            <excludes vendor-id="sapdb"/>
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.lang.Integer" jdbc-type="SMALLINT" sql-type="SMALLINT" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.SmallIntRDBMSMapping"/>
+        <mapping java-type="java.lang.Integer" jdbc-type="BIGINT" sql-type="BIGINT" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.BigIntRDBMSMapping">
+            <excludes vendor-id="sapdb"/>
+            <excludes vendor-id="sybase"/>
+        </mapping>
+
+        <mapping java-type="java.lang.Long" jdbc-type="BIGINT" sql-type="BIGINT" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.BigIntRDBMSMapping">
+            <excludes vendor-id="sapdb"/>
+            <excludes vendor-id="sybase"/>
+        </mapping>
+        <mapping java-type="java.lang.Long" jdbc-type="INTEGER" sql-type="INT" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.IntegerRDBMSMapping">
+            <excludes vendor-id="sybase"/>
+        </mapping>
+        <mapping java-type="java.lang.Long" jdbc-type="NUMERIC" sql-type="NUMERIC" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <excludes vendor-id="sapdb"/>
+        </mapping>
+        <mapping java-type="java.lang.Long" jdbc-type="DOUBLE" sql-type="DOUBLE" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.DoubleRDBMSMapping">
+            <includes vendor-id="sapdb"/>
+        </mapping>
+        <mapping java-type="java.lang.Long" jdbc-type="DECIMAL" sql-type="NUMERIC" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.DecimalRDBMSMapping">
+            <includes vendor-id="sapdb"/>
+        </mapping>
+        <mapping java-type="java.lang.Long" jdbc-type="INTEGER" sql-type="INT" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.IntegerRDBMSMapping">
+            <includes vendor-id="sybase"/>
+        </mapping>
+        <mapping java-type="java.lang.Long" jdbc-type="NUMERIC" sql-type="NUMERIC" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+        <mapping java-type="java.lang.Long" jdbc-type="NUMERIC" sql-type="NUMBER" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+        <mapping java-type="java.lang.Long" jdbc-type="TINYINT" sql-type="TINYINT" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.TinyIntRDBMSMapping">
+            <excludes vendor-id="db2"/>
+            <excludes vendor-id="derby"/>
+            <excludes vendor-id="postgresql"/>
+            <excludes vendor-id="sapdb"/>
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.lang.Long" jdbc-type="SMALLINT" sql-type="SMALLINT" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.SmallIntRDBMSMapping"/>
+
+        <mapping java-type="java.lang.Short" jdbc-type="SMALLINT" sql-type="SMALLINT" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.SmallIntRDBMSMapping"/>
+        <mapping java-type="java.lang.Short" jdbc-type="INTEGER" sql-type="INTEGER" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.IntegerRDBMSMapping">
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.lang.Short" jdbc-type="INTEGER" sql-type="INT" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.IntegerRDBMSMapping">
+            <includes vendor-id="derby"/>
+            <includes vendor-id="sapdb"/>
+            <includes vendor-id="sqlserver"/>
+            <includes vendor-id="sybase"/>
+        </mapping>
+        <mapping java-type="java.lang.Short" jdbc-type="NUMERIC" sql-type="NUMERIC" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+        <mapping java-type="java.lang.Short" jdbc-type="NUMERIC" sql-type="NUMBER" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+        <mapping java-type="java.lang.Short" jdbc-type="TINYINT" sql-type="TINYINT" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.TinyIntRDBMSMapping">
+            <excludes vendor-id="db2"/>
+            <excludes vendor-id="derby"/>
+            <excludes vendor-id="postgresql"/>
+            <excludes vendor-id="sapdb"/>
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+
+        <mapping java-type="java.lang.String" jdbc-type="VARCHAR" sql-type="VARCHAR" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.VarCharRDBMSMapping"/>
+        <mapping java-type="java.lang.String" jdbc-type="CHAR" sql-type="CHAR" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.CharRDBMSMapping"/>
+        <mapping java-type="java.lang.String" jdbc-type="LONGVARCHAR" sql-type="LONGVARCHAR" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.LongVarcharRDBMSMapping"/>
+        <mapping java-type="java.lang.String" jdbc-type="CLOB" sql-type="CLOB" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.ClobRDBMSMapping">
+            <excludes vendor-id="oracle"/>
+        </mapping>
+        <mapping java-type="java.lang.String" jdbc-type="CLOB" sql-type="CLOB" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.oracle.OracleClobRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+        <mapping java-type="java.lang.String" jdbc-type="BLOB" sql-type="BLOB" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.BlobRDBMSMapping">
+            <excludes vendor-id="oracle"/>
+        </mapping>
+        <mapping java-type="java.lang.String" jdbc-type="BLOB" sql-type="BLOB" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.oracle.OracleBlobRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+        <mapping java-type="java.lang.String" jdbc-type="DATALINK" sql-type="DATALINK" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.DatalinkRDBMSMapping">
+            <includes vendor-id="db2"/>
+        </mapping>
+        <mapping java-type="java.lang.String" jdbc-type="CHAR" sql-type="UNIQUEIDENTIFIER" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.CharRDBMSMapping">
+            <includes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.lang.String" jdbc-type="SQLXML" sql-type="SQLXML" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.SqlXmlRDBMSMapping">
+            <includes vendor-id="db2"/>
+        </mapping>
+
+        <mapping java-type="java.math.BigDecimal" jdbc-type="DECIMAL" sql-type="DECIMAL" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.DecimalRDBMSMapping">
+            <excludes vendor-id="postgresql"/>
+        </mapping>
+        <mapping java-type="java.math.BigDecimal" jdbc-type="NUMERIC" sql-type="NUMERIC" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <excludes vendor-id="sapdb"/>
+        </mapping>
+        <mapping java-type="java.math.BigDecimal" jdbc-type="NUMERIC" sql-type="NUMERIC" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="postgresql"/>
+        </mapping>
+        <mapping java-type="java.math.BigDecimal" jdbc-type="NUMERIC" sql-type="NUMERIC" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+        <mapping java-type="java.math.BigDecimal" jdbc-type="NUMERIC" sql-type="NUMBER" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+
+        <mapping java-type="java.math.BigInteger" jdbc-type="NUMERIC" sql-type="NUMERIC" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <excludes vendor-id="sapdb"/>
+        </mapping>
+        <mapping java-type="java.math.BigInteger" jdbc-type="DECIMAL" sql-type="NUMERIC" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.DecimalRDBMSMapping">
+            <includes vendor-id="sapdb"/>
+        </mapping>
+        <mapping java-type="java.math.BigInteger" jdbc-type="NUMERIC" sql-type="NUMBER" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+
+        <mapping java-type="java.sql.Date" jdbc-type="DATE" sql-type="DATE" default="true"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.DateRDBMSMapping">
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.sql.Date" jdbc-type="TIMESTAMP" sql-type="TIMESTAMP" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.TimestampRDBMSMapping"/>
+        <mapping java-type="java.sql.Date" jdbc-type="CHAR" sql-type="CHAR" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.CharRDBMSMapping"/>
+        <mapping java-type="java.sql.Date" jdbc-type="VARCHAR" sql-type="VARCHAR" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.VarCharRDBMSMapping"/>
+        <mapping java-type="java.sql.Date" jdbc-type="BIGINT" sql-type="BIGINT" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.BigIntRDBMSMapping">
+            <excludes vendor-id="sapdb"/>
+            <excludes vendor-id="sybase"/>
+        </mapping>
+
+        <mapping java-type="java.sql.Time" jdbc-type="TIME" sql-type="TIME" default="true"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.TimeRDBMSMapping">
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.sql.Time" jdbc-type="TIMESTAMP" sql-type="TIMESTAMP" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.TimestampRDBMSMapping"/>
+        <mapping java-type="java.sql.Time" jdbc-type="CHAR" sql-type="CHAR" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.CharRDBMSMapping"/>
+        <mapping java-type="java.sql.Time" jdbc-type="VARCHAR" sql-type="VARCHAR" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.VarCharRDBMSMapping"/>
+        <mapping java-type="java.sql.Time" jdbc-type="BIGINT" sql-type="BIGINT" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.BigIntRDBMSMapping">
+            <excludes vendor-id="sapdb"/>
+            <excludes vendor-id="sybase"/>
+        </mapping>
+
+        <mapping java-type="java.sql.Timestamp" jdbc-type="TIMESTAMP" sql-type="TIMESTAMP" default="true"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.TimestampRDBMSMapping"/>
+        <mapping java-type="java.sql.Timestamp" jdbc-type="CHAR" sql-type="CHAR" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.CharRDBMSMapping"/>
+        <mapping java-type="java.sql.Timestamp" jdbc-type="VARCHAR" sql-type="VARCHAR" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.VarCharRDBMSMapping"/>
+
+        <mapping java-type="java.util.Date" jdbc-type="TIMESTAMP" sql-type="TIMESTAMP" default="true"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.TimestampRDBMSMapping"/>
+        <mapping java-type="java.util.Date" jdbc-type="DATE" sql-type="DATE" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.DateRDBMSMapping">
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="java.util.Date" jdbc-type="CHAR" sql-type="CHAR" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.CharRDBMSMapping"/>
+        <mapping java-type="java.util.Date" jdbc-type="VARCHAR" sql-type="VARCHAR" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.VarCharRDBMSMapping"/>
+        <mapping java-type="java.util.Date" jdbc-type="BIGINT" sql-type="BIGINT" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.BigIntRDBMSMapping">
+            <excludes vendor-id="sapdb"/>
+            <excludes vendor-id="sybase"/>
+        </mapping>
+
+        <mapping java-type="java.io.Serializable" jdbc-type="LONGVARBINARY" sql-type="LONGVARBINARY" default="true"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.LongVarBinaryRDBMSMapping">
+        </mapping>
+        <mapping java-type="java.io.Serializable" jdbc-type="BLOB" sql-type="BLOB" default="false"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.BlobRDBMSMapping">
+            <excludes vendor-id="oracle"/>
+        </mapping>
+        <mapping java-type="java.io.Serializable" jdbc-type="BLOB" sql-type="BLOB" default="true"
+            rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.oracle.OracleBlobRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+        <mapping java-type="java.io.Serializable" jdbc-type="VARBINARY" sql-type="VARBINARY" default="false"
+                 rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.VarBinaryRDBMSMapping">
+            <excludes vendor-id="timesten"/>
+        </mapping>
+        <mapping java-type="java.io.Serializable" jdbc-type="VARBINARY" sql-type="VARBINARY" default="true"
+                 rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.TimesTenVarBinaryRDBMSMapping">
+            <includes vendor-id="timesten"/>
+        </mapping>
+
+        <mapping java-type="org.datanucleus.identity.OID" jdbc-type="BIGINT" sql-type="BIGINT" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.BigIntRDBMSMapping">
+            <excludes vendor-id="sapdb"/>
+            <excludes vendor-id="sybase"/>
+        </mapping>
+        <mapping java-type="org.datanucleus.identity.OID" jdbc-type="INTEGER" sql-type="INTEGER" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.IntegerRDBMSMapping">
+            <excludes vendor-id="sqlserver"/>
+        </mapping>
+        <mapping java-type="org.datanucleus.identity.OID" jdbc-type="NUMERIC" sql-type="NUMERIC" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <excludes vendor-id="sapdb"/>
+        </mapping>
+        <mapping java-type="org.datanucleus.identity.OID" jdbc-type="CHAR" sql-type="CHAR" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.CharRDBMSMapping"/>
+        <mapping java-type="org.datanucleus.identity.OID" jdbc-type="VARCHAR" sql-type="VARCHAR" default="false"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.VarCharRDBMSMapping"/>
+        <mapping java-type="org.datanucleus.identity.OID" jdbc-type="INTEGER" sql-type="INT" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.IntegerRDBMSMapping">
+            <includes vendor-id="sapdb"/>
+            <includes vendor-id="sqlserver"/>
+            <includes vendor-id="sybase"/>
+        </mapping>
+        <mapping java-type="org.datanucleus.identity.OID" jdbc-type="NUMERIC" sql-type="NUMERIC" default="true"
+             rdbms-mapping-class="org.datanucleus.store.rdbms.mapping.NumericRDBMSMapping">
+            <includes vendor-id="oracle"/>
+        </mapping>
+    </extension>
+
+    <!-- SQL EXPRESSIONS -->
+    <extension point="org.datanucleus.store.rdbms.sql_expression">
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.ArrayMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ArrayLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ArrayExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.rdbms.mapping.oracle.OracleArrayMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ArrayLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ArrayExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.BigDecimalMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.FloatingPointLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.NumericExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.BigIntegerMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.IntegerLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.NumericExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.BooleanMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.BooleanLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.BooleanExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.ByteMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ByteLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ByteExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.CharacterMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.CharacterLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.CharacterExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.CollectionMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.CollectionLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.CollectionExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.rdbms.mapping.oracle.OracleCollectionMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.CollectionLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.CollectionExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.CurrencyMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.StringLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.StringExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.DateMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.TemporalLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.TemporalExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.DiscriminatorLongMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.IntegerLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.NumericExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.DiscriminatorStringMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.StringLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.StringExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.DoubleMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.FloatingPointLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.NumericExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.EnumMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.EnumLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.EnumExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.FloatMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.FloatingPointLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.NumericExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.GregorianCalendarMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.TemporalLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.TemporalExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.IndexMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.IntegerLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.NumericExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.IntegerMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.IntegerLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.NumericExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.LocaleMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.StringLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.StringExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.LongMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.IntegerLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.NumericExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.MapMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.MapLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.MapExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.rdbms.mapping.oracle.OracleMapMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.MapLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.MapExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.NumberMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.FloatingPointLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.NumericExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.OIDMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ObjectLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ObjectExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.PersistableMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ObjectLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ObjectExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.PersistableIdMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ObjectLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ObjectExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.ReferenceIdMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ObjectLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ObjectExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.ObjectMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ObjectLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ObjectExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.EmbeddedPCMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ObjectLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ObjectExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.EmbeddedElementPCMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ObjectLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ObjectExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.EmbeddedKeyPCMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ObjectLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ObjectExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.EmbeddedValuePCMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ObjectLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ObjectExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.ReferenceMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ObjectLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ObjectExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.InterfaceMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.ObjectLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.ObjectExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.ShortMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.IntegerLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.NumericExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.SqlDateMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.TemporalLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.TemporalExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.SqlTimeMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.TemporalLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.TemporalExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.SqlTimestampMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.TemporalLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.TemporalExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.StringMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.StringLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.StringExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.rdbms.mapping.oracle.OracleStringMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.StringLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.StringExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.StringBufferMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.StringLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.StringExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.TimeZoneMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.StringLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.StringExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.URLMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.StringLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.StringExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.URIMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.StringLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.StringExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.UUIDMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.StringLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.StringExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.VersionLongMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.IntegerLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.NumericExpression"/>
+        <sql-expression mapping-class="org.datanucleus.store.mapped.mapping.VersionTimestampMapping"
+            literal-class="org.datanucleus.store.rdbms.sql.expression.TemporalLiteral"
+            expression-class="org.datanucleus.store.rdbms.sql.expression.TemporalExpression"/>
+    </extension>
+
+    <!-- SQL METHODS -->
+    <extension point="org.datanucleus.store.rdbms.sql_method">
+        <sql-method method="abs" evaluator="org.datanucleus.store.rdbms.sql.method.AbsFunction"/>
+        <sql-method method="acos" evaluator="org.datanucleus.store.rdbms.sql.method.AcosFunction"/>
+        <sql-method method="asin" evaluator="org.datanucleus.store.rdbms.sql.method.AsinFunction"/>
+        <sql-method method="atan" evaluator="org.datanucleus.store.rdbms.sql.method.AtanFunction"/>
+        <sql-method method="avg" evaluator="org.datanucleus.store.rdbms.sql.method.AvgFunction"/>
+        <sql-method method="ceil" evaluator="org.datanucleus.store.rdbms.sql.method.CeilFunction"/>
+        <sql-method method="cos" evaluator="org.datanucleus.store.rdbms.sql.method.CosFunction"/>
+        <sql-method method="count" evaluator="org.datanucleus.store.rdbms.sql.method.CountFunction"/>
+        <sql-method method="exp" evaluator="org.datanucleus.store.rdbms.sql.method.ExpFunction"/>
+        <sql-method method="floor" evaluator="org.datanucleus.store.rdbms.sql.method.FloorFunction"/>
+        <sql-method method="log" evaluator="org.datanucleus.store.rdbms.sql.method.LogFunction"/>
+        <sql-method method="max" evaluator="org.datanucleus.store.rdbms.sql.method.MaxFunction"/>
+        <sql-method method="min" evaluator="org.datanucleus.store.rdbms.sql.method.MinFunction"/>
+        <sql-method method="sin" evaluator="org.datanucleus.store.rdbms.sql.method.SinFunction"/>
+        <sql-method method="sqrt" evaluator="org.datanucleus.store.rdbms.sql.method.SqrtFunction"/>
+        <sql-method method="sum" evaluator="org.datanucleus.store.rdbms.sql.method.SumFunction"/>
+        <sql-method method="tan" evaluator="org.datanucleus.store.rdbms.sql.method.TanFunction"/>
+        <sql-method method="ABS" evaluator="org.datanucleus.store.rdbms.sql.method.AbsFunction"/>
+        <sql-method method="ACOS" evaluator="org.datanucleus.store.rdbms.sql.method.AcosFunction"/>
+        <sql-method method="ASIN" evaluator="org.datanucleus.store.rdbms.sql.method.AsinFunction"/>
+        <sql-method method="ATAN" evaluator="org.datanucleus.store.rdbms.sql.method.AtanFunction"/>
+        <sql-method method="AVG" evaluator="org.datanucleus.store.rdbms.sql.method.AvgFunction"/>
+        <sql-method method="CEIL" evaluator="org.datanucleus.store.rdbms.sql.method.CeilFunction"/>
+        <sql-method method="COS" evaluator="org.datanucleus.store.rdbms.sql.method.CosFunction"/>
+        <sql-method method="COUNT" evaluator="org.datanucleus.store.rdbms.sql.method.CountFunction"/>
+        <sql-method method="EXP" evaluator="org.datanucleus.store.rdbms.sql.method.ExpFunction"/>
+        <sql-method method="FLOOR" evaluator="org.datanucleus.store.rdbms.sql.method.FloorFunction"/>
+        <sql-method method="LOG" evaluator="org.datanucleus.store.rdbms.sql.method.LogFunction"/>
+        <sql-method method="MAX" evaluator="org.datanucleus.store.rdbms.sql.method.MaxFunction"/>
+        <sql-method method="MIN" evaluator="org.datanucleus.store.rdbms.sql.method.MinFunction"/>
+        <sql-method method="SIN" evaluator="org.datanucleus.store.rdbms.sql.method.SinFunction"/>
+        <sql-method method="SQRT" evaluator="org.datanucleus.store.rdbms.sql.method.SqrtFunction"/>
+        <sql-method method="SUM" evaluator="org.datanucleus.store.rdbms.sql.method.SumFunction"/>
+        <sql-method method="TAN" evaluator="org.datanucleus.store.rdbms.sql.method.TanFunction"/>
+        <sql-method method="COALESCE" evaluator="org.datanucleus.store.rdbms.sql.method.CoalesceFunction"/>
+        <sql-method method="NULLIF" evaluator="org.datanucleus.store.rdbms.sql.method.NullIfFunction"/>
+        <sql-method method="INDEX" evaluator="org.datanucleus.store.rdbms.sql.method.IndexFunction"/>
+        <sql-method method="CURRENT_DATE" evaluator="org.datanucleus.store.rdbms.sql.method.CurrentDateFunction"/>
+        <sql-method method="CURRENT_TIME" evaluator="org.datanucleus.store.rdbms.sql.method.CurrentTimeFunction"/>
+        <sql-method method="CURRENT_TIMESTAMP" evaluator="org.datanucleus.store.rdbms.sql.method.CurrentTimestampFunction"/>
+        <sql-method method="Math.abs" evaluator="org.datanucleus.store.rdbms.sql.method.MathAbsMethod"/>
+        <sql-method method="Math.acos" evaluator="org.datanucleus.store.rdbms.sql.method.MathAcosMethod"/>
+        <sql-method method="Math.asin" evaluator="org.datanucleus.store.rdbms.sql.method.MathAsinMethod"/>
+        <sql-method method="Math.atan" evaluator="org.datanucleus.store.rdbms.sql.method.MathAtanMethod"/>
+        <sql-method method="Math.ceil" evaluator="org.datanucleus.store.rdbms.sql.method.MathCeilMethod"/>
+        <sql-method method="Math.cos" evaluator="org.datanucleus.store.rdbms.sql.method.MathCosMethod"/>
+        <sql-method method="Math.exp" evaluator="org.datanucleus.store.rdbms.sql.method.MathExpMethod"/>
+        <sql-method method="Math.floor" evaluator="org.datanucleus.store.rdbms.sql.method.MathFloorMethod"/>
+        <sql-method method="Math.log" evaluator="org.datanucleus.store.rdbms.sql.method.MathLogMethod"/>
+        <sql-method method="Math.sin" evaluator="org.datanucleus.store.rdbms.sql.method.MathSinMethod"/>
+        <sql-method method="Math.sqrt" evaluator="org.datanucleus.store.rdbms.sql.method.MathSqrtMethod"/>
+        <sql-method method="Math.tan" evaluator="org.datanucleus.store.rdbms.sql.method.MathTanMethod"/>
+        <sql-method method="JDOHelper.getObjectId"
+            evaluator="org.datanucleus.store.rdbms.sql.method.JDOHelperGetObjectIdMethod"/>
+        <sql-method method="JDOHelper.getVersion"
+            evaluator="org.datanucleus.store.rdbms.sql.method.JDOHelperGetVersionMethod"/>
+        <sql-method method="SQL_cube" datastore="db2"
+            evaluator="org.datanucleus.store.rdbms.sql.method.SQLCubeFunction"/>
+        <sql-method method="SQL_cube" datastore="oracle"
+            evaluator="org.datanucleus.store.rdbms.sql.method.SQLCubeFunction"/>
+        <sql-method method="SQL_cube" datastore="sqlserver"
+            evaluator="org.datanucleus.store.rdbms.sql.method.SQLCubeFunction"/>
+        <sql-method method="SQL_rollup" datastore="db2"
+            evaluator="org.datanucleus.store.rdbms.sql.method.SQLRollupFunction"/>
+        <sql-method method="SQL_rollup" datastore="oracle"
+            evaluator="org.datanucleus.store.rdbms.sql.method.SQLRollupFunction"/>
+        <sql-method method="SQL_rollup" datastore="sqlserver"
+            evaluator="org.datanucleus.store.rdbms.sql.method.SQLRollupFunction"/>
+        <sql-method method="SQL_boolean" evaluator="org.datanucleus.store.rdbms.sql.method.SQLBooleanMethod"/>
+        <sql-method method="SQL_numeric" evaluator="org.datanucleus.store.rdbms.sql.method.SQLNumericMethod"/>
+
+        <sql-method class="java.lang.Enum" method="ordinal"
+            evaluator="org.datanucleus.store.rdbms.sql.method.EnumOrdinalMethod"/>
+        <sql-method class="java.lang.Enum" method="toString"
+            evaluator="org.datanucleus.store.rdbms.sql.method.EnumToStringMethod"/>
+        <sql-method class="java.lang.Object" method="getClass"
+            evaluator="org.datanucleus.store.rdbms.sql.method.ObjectGetClassMethod"/>
+        <sql-method class="java.lang.String" method="charAt"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringCharAtMethod"/>
+        <sql-method class="java.lang.String" method="endsWith"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringEndsWithMethod"/>
+        <sql-method class="java.lang.String" method="equals"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringEqualsMethod"/>
+        <sql-method class="java.lang.String" method="indexOf"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringIndexOfMethod"/>
+        <sql-method class="java.lang.String" method="indexOf" datastore="oracle"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringIndexOf2Method"/>
+        <sql-method class="java.lang.String" method="indexOf" datastore="db2"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringIndexOf3Method"/>
+        <sql-method class="java.lang.String" method="indexOf" datastore="sqlserver"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringIndexOf4Method"/>
+        <sql-method class="java.lang.String" method="indexOf" datastore="postgresql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringIndexOf5Method"/>
+        <sql-method class="java.lang.String" method="indexOf" datastore="sybase"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringIndexOf4Method"/>
+        <sql-method class="java.lang.String" method="length"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringLengthMethod"/>
+        <sql-method class="java.lang.String" method="length" datastore="derby"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringLength3Method"/>
+        <sql-method class="java.lang.String" method="length" datastore="db2"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringLength3Method"/>
+        <sql-method class="java.lang.String" method="length" datastore="mckoi"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringLength3Method"/>
+        <sql-method class="java.lang.String" method="length" datastore="firebird"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringLength2Method"/>
+        <sql-method class="java.lang.String" method="length" datastore="oracle"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringLength3Method"/>
+        <sql-method class="java.lang.String" method="length" datastore="sapdb"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringLength3Method"/>
+        <sql-method class="java.lang.String" method="matches"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringMatchesMethod"/>
+        <sql-method class="java.lang.String" method="matches" datastore="derby"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringMatchesDerbyMethod"/>
+        <sql-method class="java.lang.String" method="replaceAll"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringReplaceAllMethod"/>
+
+        <sql-method class="java.lang.String" method="startsWith"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringStartsWithMethod"/>
+        <sql-method class="java.lang.String" method="startsWith" datastore="sqlserver"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringStartsWith2Method"/>
+        <sql-method class="java.lang.String" method="startsWith" datastore="mysql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringStartsWith3Method"/>
+        <sql-method class="java.lang.String" method="startsWith" datastore="hsql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringStartsWith3Method"/>
+        <sql-method class="java.lang.String" method="substring"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringSubstringMethod"/>
+        <sql-method class="java.lang.String" method="substring" datastore="mckoi"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringSubstring2Method"/>
+        <sql-method class="java.lang.String" method="substring" datastore="sqlserver"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringSubstring2Method"/>
+        <sql-method class="java.lang.String" method="substring" datastore="sybase"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringSubstring2Method"/>
+        <sql-method class="java.lang.String" method="substring" datastore="db2"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringSubstring3Method"/>
+        <sql-method class="java.lang.String" method="substring" datastore="derby"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringSubstring3Method"/>
+        <sql-method class="java.lang.String" method="substring" datastore="firebird"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringSubstring3Method"/>
+        <sql-method class="java.lang.String" method="substring" datastore="informix"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringSubstring3Method"/>
+        <sql-method class="java.lang.String" method="substring" datastore="oracle"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringSubstring3Method"/>
+        <sql-method class="java.lang.String" method="substring" datastore="sapdb"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringSubstring3Method"/>
+        <sql-method class="java.lang.String" method="toUpperCase"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringToUpperMethod"/>
+        <sql-method class="java.lang.String" method="toLowerCase"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringToLowerMethod"/>
+        <sql-method class="java.lang.String" method="translate"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTranslateMethod" datastore="postgresql"/>
+        <sql-method class="java.lang.String" method="translate"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTranslateMethod" datastore="oracle"/>
+        <sql-method class="java.lang.String" method="translate"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTranslateMethod" datastore="db2"/>
+
+        <sql-method class="java.lang.String" method="trim"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTrimMethod"/>
+        <sql-method class="java.lang.String" method="trim" datastore="derby"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTrim2Method"/>
+        <sql-method class="java.lang.String" method="trim" datastore="db2"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTrim2Method"/>
+        <sql-method class="java.lang.String" method="trim" datastore="hsql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTrim2Method"/>
+        <sql-method class="java.lang.String" method="trim" datastore="sqlserver"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTrim2Method"/>
+        <sql-method class="java.lang.String" method="trim" datastore="mysql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTrim3Method"/>
+        <sql-method class="java.lang.String" method="trim" datastore="postgresql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTrim3Method"/>
+
+        <sql-method class="java.lang.String" method="trimLeft"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTrimLeftMethod"/>
+        <sql-method class="java.lang.String" method="trimLeft" datastore="mysql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTrimLeft3Method"/>
+        <sql-method class="java.lang.String" method="trimLeft" datastore="postgresql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTrimLeft3Method"/>
+
+        <sql-method class="java.lang.String" method="trimRight"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTrimRightMethod"/>
+        <sql-method class="java.lang.String" method="trimRight" datastore="mysql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTrimRight3Method"/>
+        <sql-method class="java.lang.String" method="trimRight" datastore="postgresql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.StringTrimRight3Method"/>
+
+        <sql-method class="java.util.Collection" method="contains"
+            evaluator="org.datanucleus.store.rdbms.sql.method.CollectionContainsMethod"/>
+        <sql-method class="java.util.Collection" method="isEmpty"
+            evaluator="org.datanucleus.store.rdbms.sql.method.CollectionIsEmptyMethod"/>
+        <sql-method class="java.util.Collection" method="size"
+            evaluator="org.datanucleus.store.rdbms.sql.method.CollectionSizeMethod"/>
+        <sql-method class="java.util.Collection" method="get"
+            evaluator="org.datanucleus.store.rdbms.sql.method.ListGetMethod"/>
+        <sql-method class="java.util.Date" method="getDay"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetDayMethod"/>
+        <sql-method class="java.util.Date" method="getDay" datastore="oracle"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetDay2Method"/>
+        <sql-method class="java.util.Date" method="getDay" datastore="postgresql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetDay3Method"/>
+        <sql-method class="java.util.Date" method="getMonth"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetMonthMethod"/>
+        <sql-method class="java.util.Date" method="getMonth" datastore="oracle"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetMonth2Method"/>
+        <sql-method class="java.util.Date" method="getMonth" datastore="postgresql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetMonth3Method"/>
+        <sql-method class="java.util.Date" method="getYear"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetYearMethod"/>
+        <sql-method class="java.util.Date" method="getYear" datastore="oracle"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetYear2Method"/>
+        <sql-method class="java.util.Date" method="getYear" datastore="postgresql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetYear3Method"/>
+        <sql-method class="java.util.Date" method="getHour"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetHourMethod"/>
+        <sql-method class="java.util.Date" method="getHour" datastore="oracle"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetHour2Method"/>
+        <sql-method class="java.util.Date" method="getHour" datastore="postgresql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetHour3Method"/>
+        <sql-method class="java.util.Date" method="getHour" datastore="sqlserver"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetHour4Method"/>
+        <sql-method class="java.util.Date" method="getMinute"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetMinuteMethod"/>
+        <sql-method class="java.util.Date" method="getMinute" datastore="oracle"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetMinute2Method"/>
+        <sql-method class="java.util.Date" method="getMinute" datastore="postgresql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetMinute3Method"/>
+        <sql-method class="java.util.Date" method="getMinute" datastore="sqlserver"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetMinute4Method"/>
+        <sql-method class="java.util.Date" method="getSecond"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetSecondMethod"/>
+        <sql-method class="java.util.Date" method="getSecond" datastore="oracle"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetSecond2Method"/>
+        <sql-method class="java.util.Date" method="getSecond" datastore="postgresql"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetSecond3Method"/>
+        <sql-method class="java.util.Date" method="getSecond" datastore="sqlserver"
+            evaluator="org.datanucleus.store.rdbms.sql.method.DateGetSecond4Method"/>
+        <sql-method class="java.util.Map" method="containsEntry"
+            evaluator="org.datanucleus.store.rdbms.sql.method.MapContainsEntryMethod"/>
+        <sql-method class="java.util.Map" method="containsKey"
+            evaluator="org.datanucleus.store.rdbms.sql.method.MapContainsKeyMethod"/>
+        <sql-method class="java.util.Map" method="containsValue"
+            evaluator="org.datanucleus.store.rdbms.sql.method.MapContainsValueMethod"/>
+        <sql-method class="java.util.Map" method="get"
+            evaluator="org.datanucleus.store.rdbms.sql.method.MapGetMethod"/>
+        <sql-method class="java.util.Map" method="isEmpty"
+            evaluator="org.datanucleus.store.rdbms.sql.method.MapIsEmptyMethod"/>
+        <sql-method class="java.util.Map" method="size"
+            evaluator="org.datanucleus.store.rdbms.sql.method.MapSizeMethod"/>
+        <sql-method class="ARRAY" method="contains"
+            evaluator="org.datanucleus.store.rdbms.sql.method.ArrayContainsMethod"/>
+        <sql-method class="ARRAY" method="isEmpty"
+            evaluator="org.datanucleus.store.rdbms.sql.method.ArrayIsEmptyMethod"/>
+        <sql-method class="ARRAY" method="size"
+            evaluator="org.datanucleus.store.rdbms.sql.method.ArraySizeMethod"/>
+        <sql-method class="ARRAY" method="length"
+            evaluator="org.datanucleus.store.rdbms.sql.method.ArraySizeMethod"/>
+    </extension>
+
+    <!-- SQL OPERATIONS -->
+    <extension point="org.datanucleus.store.rdbms.sql_operation">
+        <sql-operation name="mod" datastore="derby"
+            evaluator="org.datanucleus.store.rdbms.sql.operation.Mod2Operation"/>
+        <sql-operation name="mod" datastore="h2"
+            evaluator="org.datanucleus.store.rdbms.sql.operation.Mod2Operation"/>
+        <sql-operation name="mod" datastore="hsql"
+            evaluator="org.datanucleus.store.rdbms.sql.operation.Mod2Operation"/>
+        <sql-operation name="mod" datastore="informix"
+            evaluator="org.datanucleus.store.rdbms.sql.operation.Mod2Operation"/>
+        <sql-operation name="mod" datastore="oracle"
+            evaluator="org.datanucleus.store.rdbms.sql.operation.Mod2Operation"/>
+        <sql-operation name="mod" datastore="db2"
+            evaluator="org.datanucleus.store.rdbms.sql.operation.Mod3Operation"/>
+
+        <sql-operation name="concat" datastore="mysql"
+            evaluator="org.datanucleus.store.rdbms.sql.operation.Concat2Operation"/>
+        <sql-operation name="concat" datastore="derby"
+            evaluator="org.datanucleus.store.rdbms.sql.operation.Concat3Operation"/>
+        <sql-operation name="concat" datastore="db2"
+            evaluator="org.datanucleus.store.rdbms.sql.operation.Concat3Operation"/>
+
+        <sql-operation name="numericToString"
+            evaluator="org.datanucleus.store.rdbms.sql.operation.NumericToStringOperation"/>
+        <sql-operation name="numericToString" datastore="mysql"
+            evaluator="org.datanucleus.store.rdbms.sql.operation.NumericToString2Operation"/>
+        <sql-operation name="numericToString" datastore="derby"
+            evaluator="org.datanucleus.store.rdbms.sql.operation.NumericToString3Operation"/>
+    </extension>
+
+    <!-- SQL TABLE NAMING -->
+    <extension point="org.datanucleus.store.rdbms.sql_tablenamer">
+        <sql-tablenamer name="t-scheme" class="org.datanucleus.store.rdbms.sql.SQLTableTNamer"/>
+        <sql-tablenamer name="alpha-scheme" class="org.datanucleus.store.rdbms.sql.SQLTableAlphaNamer"/>
+    </extension>
+
+    <!-- DATASTORE ADAPTERS -->
+    <extension point="org.datanucleus.store_datastoreadapter">
+        <datastore-adapter vendor-id="Adaptive Server Anywhere" class-name="org.datanucleus.store.rdbms.adapter.SybaseAdapter" priority="0"/>
+        <datastore-adapter vendor-id="Adaptive Server Enterprise" class-name="org.datanucleus.store.rdbms.adapter.SybaseAdapter" priority="0"/>
+        <datastore-adapter vendor-id="Adaptive Server IQ" class-name="org.datanucleus.store.rdbms.adapter.SybaseAdapter" priority="0"/>
+        <datastore-adapter vendor-id="as/400" class-name="org.datanucleus.store.rdbms.adapter.DB2AS400Adapter" priority="1"/>
+        <datastore-adapter vendor-id="cloudscape" class-name="org.datanucleus.store.rdbms.adapter.DerbyAdapter" priority="0"/>
+        <datastore-adapter vendor-id="db2" class-name="org.datanucleus.store.rdbms.adapter.DB2Adapter" priority="0"/>
+        <datastore-adapter vendor-id="derby" class-name="org.datanucleus.store.rdbms.adapter.DerbyAdapter" priority="0"/>
+        <datastore-adapter vendor-id="firebird" class-name="org.datanucleus.store.rdbms.adapter.FirebirdAdapter" priority="0"/>
+        <datastore-adapter vendor-id="h2" class-name="org.datanucleus.store.rdbms.adapter.H2Adapter" priority="0"/>
+        <datastore-adapter vendor-id="hsql" class-name="org.datanucleus.store.rdbms.adapter.HSQLAdapter" priority="0"/>
+        <datastore-adapter vendor-id="informix" class-name="org.datanucleus.store.rdbms.adapter.InformixAdapter" priority="0"/>
+        <datastore-adapter vendor-id="interbase" class-name="org.datanucleus.store.rdbms.adapter.FirebirdAdapter" priority="0"/>
+        <datastore-adapter vendor-id="mckoi" class-name="org.datanucleus.store.rdbms.adapter.McKoiAdapter" priority="0"/>
+        <datastore-adapter vendor-id="microsoft" class-name="org.datanucleus.store.rdbms.adapter.MSSQLServerAdapter" priority="0"/>
+        <datastore-adapter vendor-id="mysql" class-name="org.datanucleus.store.rdbms.adapter.MySQLAdapter" priority="0"/>
+        <datastore-adapter vendor-id="oracle" class-name="org.datanucleus.store.rdbms.adapter.OracleAdapter" priority="0"/>
+        <datastore-adapter vendor-id="pointbase" class-name="org.datanucleus.store.rdbms.adapter.PointbaseAdapter" priority="0"/>
+        <datastore-adapter vendor-id="postgresql" class-name="org.datanucleus.store.rdbms.adapter.PostgreSQLAdapter" priority="0"/>
+        <datastore-adapter vendor-id="sap db" class-name="org.datanucleus.store.rdbms.adapter.SAPDBAdapter" priority="0"/>
+        <datastore-adapter vendor-id="sapdb" class-name="org.datanucleus.store.rdbms.adapter.SAPDBAdapter" priority="0"/>
+        <datastore-adapter vendor-id="sybase" class-name="org.datanucleus.store.rdbms.adapter.SybaseAdapter" priority="0"/>
+        <datastore-adapter vendor-id="timesten" class-name="org.datanucleus.store.rdbms.adapter.TimesTenAdapter" priority="0"/>
+    </extension>
+
+    <!-- QUERY LANGUAGES -->
+    <extension point="org.datanucleus.store_query_query">
+        <query class-name="org.datanucleus.store.rdbms.query.JDOQLQuery" datastore="rdbms" name="JDOQL"/>
+        <query class-name="org.datanucleus.store.rdbms.query.JPQLQuery" datastore="rdbms" name="JPQL"/>
+        <query class-name="org.datanucleus.store.rdbms.query.SQLQuery" datastore="rdbms" name="SQL"/>
+
+        <query class-name="org.datanucleus.store.rdbms.query.legacy.JDOQLQuery" datastore="rdbms" name="JDOQL-Legacy"/>
+    </extension>
+
+    <!-- AUTOSTART MECHANISMS -->
+    <extension point="org.datanucleus.autostart">
+        <autostart class-name="org.datanucleus.store.rdbms.autostart.SchemaAutoStarter" name="SchemaTable"/>
+    </extension>
+
+    <!-- CONNECTION FACTORY -->
+    <extension point="org.datanucleus.store_connectionfactory">
+        <connectionfactory name="rdbms/tx" class-name="org.datanucleus.store.rdbms.ConnectionFactoryImpl" transactional="true"
+            datastore="rdbms"/>
+        <connectionfactory name="rdbms/nontx" class-name="org.datanucleus.store.rdbms.ConnectionFactoryImpl" transactional="false"
+            datastore="rdbms"/>
+    </extension>
+
+    <!-- DATASOURCES -->
+    <extension point="org.datanucleus.store.rdbms.datasource">
+       <datasource-factory class-name="org.datanucleus.store.rdbms.datasource.DefaultDataSourceFactory" name="default"/>
+    </extension>
+
+    <!-- CONNECTION PROVIDER -->
+    <extension point="org.datanucleus.store.rdbms.connectionprovider">
+        <connection-provider class-name="org.datanucleus.store.rdbms.ConnectionProviderPriorityList" name="PriorityList"/>
+    </extension>
+
+    <!-- RDBMS REQUESTS -->
+    <extension point="org.datanucleus.store.rdbms.rdbms_request">
+        <rdbms-request name="default" type="insert" class="org.datanucleus.store.rdbms.request.InsertRequest"/>
+        <rdbms-request name="default" type="update" class="org.datanucleus.store.rdbms.request.UpdateRequest"/>
+        <rdbms-request name="default" type="delete" class="org.datanucleus.store.rdbms.request.DeleteRequest"/>
+        <rdbms-request name="default" type="fetch" class="org.datanucleus.store.rdbms.request.FetchRequest"/>
+        <rdbms-request name="default" type="locate" class="org.datanucleus.store.rdbms.request.LocateRequest"/>
+    </extension>
+</plugin>

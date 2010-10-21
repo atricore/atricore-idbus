@@ -44,7 +44,7 @@
         <ehcache.core.version>2.1.0</ehcache.core.version>
         <ehcache.jms.version>0.4</ehcache.jms.version>
         <idbus.kernel.version>1.1.0-SNAPSHOT</idbus.kernel.version>
-        <idbus.bundle.javax-jdo2-v2_3_ec.version>1.1.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3_ec.version>
+        <idbus.bundle.javax-jdo-v3_0.version>1.1.0-SNAPSHOT</idbus.bundle.javax-jdo-v3_0.version>
 
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <spring.version>3.0.3.RELEASE</spring.version>

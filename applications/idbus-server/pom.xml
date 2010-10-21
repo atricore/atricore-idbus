@@ -50,8 +50,6 @@
         <idbus.bundle.javax-jdo2-v2_3-ec.version>1.1.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3-ec.version>
         <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.1.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
         <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.1.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.datanucleus-core-v2_0_3.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-core-v2_0_3.version>
-        <idbus.bundle.datanucleus-rdbms-v2_0_3.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-rdbms-v2_0_3.version>
         <idbus.bundle.apache-maven-v3_0.version>1.1.0-SNAPSHOT</idbus.bundle.apache-maven-v3_0.version>
         <idbus.bundle.josso-ws-v1_2.version>1.1.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
         <idbus.bundle.apache-tiles-jsp-v2_2_2.version>1.1.0-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_2_2.version>
@@ -71,14 +69,14 @@
         <commons-lang.version>2.4</commons-lang.version>
         <commons-jxpath.version>1.3</commons-jxpath.version>
         <commons-fileupload.version>1.2.1</commons-fileupload.version>
-        <datanucleus.version>2.0.3</datanucleus.version>
+        <datanucleus.version>2.1.2</datanucleus.version>
         <dozer.version>5.2.2</dozer.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
         <flex.framework.version>3.2.0.3958</flex.framework.version>
         <flexlib.version>2.4.0</flexlib.version>
         <hsqldb.version>1.8.0.9</hsqldb.version>
-        <javax.jdo2.version>2.3-ec</javax.jdo2.version>
+        <javax.jdo.version>2.3-ec</javax.jdo.version>
         <javax.portlet.version>1.0.0</javax.portlet.version>
         <javax.servlet.version>2.5</javax.servlet.version>
         <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
@@ -167,22 +165,9 @@
 
             <dependency>
                 <groupId>org.atricore.idbus.bundles</groupId>
-                <artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>
-                <version>${idbus.bundle.datanucleus-core-v2_0_3.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.bundles</groupId>
-                <artifactId>org.atricore.idbus.bundles.datanucleus-rdbms-v2_0_3</artifactId>
-                <version>${idbus.bundle.datanucleus-rdbms-v2_0_3.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.atricore.idbus.bundles</groupId>
                 <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
                 <version>${idbus.bundle.javax-jdo2-v2_3-ec.version}</version>
             </dependency>
-
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -233,10 +218,15 @@
                 <version>${pom.version}</version>
             </dependency>
 
+            <!--dependency>
+                <groupId>javax.jdo</groupId>
+                <artifactId>jdo-api</artifactId>
+                <version>${javax.jdo.version}</version>
+            </dependency-->
             <dependency>
                 <groupId>javax.jdo</groupId>
                 <artifactId>jdo2-api</artifactId>
-                <version>${javax.jdo2.version}</version>
+                <version>${javax.jdo.version}</version>
             </dependency>
 
             <dependency>
