@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.lifecycle.main.domain.dao.impl;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
 import com.atricore.idbus.console.lifecycle.main.domain.dao.IdentityApplianceDAO;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
@@ -175,38 +176,58 @@ public class IdentityApplianceDAOImpl extends GenericDAOImpl<IdentityAppliance, 
 
     public IdentityAppliance unmarshall(IdentityAppliance a) throws IOException, ClassNotFoundException {
 
-        String text = a.getIdApplianceDefinitionBin();
-        byte[] bytes = Base64.decodeBase64(text.getBytes());
-
-        if (bytes == null || bytes.length == 0)
-            return a;
-
-        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        ObjectInputStream ois;
-        ois = new ObjectInputStream(bais);
-
-        IdentityApplianceDefinition ad = (IdentityApplianceDefinition) ois.readObject();
-        a.setIdApplianceDefinition(ad);
+        String defStr = a.getIdApplianceDefinitionBin();
+        if (defStr != null) {
+            byte[] defBytes = Base64.decodeBase64(defStr.getBytes());
+            ByteArrayInputStream defBais = new ByteArrayInputStream(defBytes);
+            ObjectInputStream defOis;
+            defOis = new ObjectInputStream(defBais);
+            IdentityApplianceDefinition definition = (IdentityApplianceDefinition) defOis.readObject();
+            a.setIdApplianceDefinition(definition);
+        }
+        
+        String depStr = a.getIdApplianceDeploymentBin();
+        if (depStr != null) {
+            byte[] depBytes = Base64.decodeBase64(depStr.getBytes());
+            ByteArrayInputStream depBais = new ByteArrayInputStream(depBytes);
+            ObjectInputStream depOis;
+            depOis = new ObjectInputStream(depBais);
+            IdentityApplianceDeployment deployment = (IdentityApplianceDeployment) depOis.readObject();
+            a.setIdApplianceDeployment(deployment);
+        }
 
         return a;
     }
 
     public IdentityAppliance marshall(IdentityAppliance a) throws IOException {
-        IdentityApplianceDefinition obj = a.getIdApplianceDefinition();
-        if (obj == null)
-            return a;
+        IdentityApplianceDefinition definition = a.getIdApplianceDefinition();
+        if (definition != null) {
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(obj);
-        byte[] bytes = baos.toByteArray();
-        byte[] enc = Base64.encodeBase64(bytes);
-        String ad = new String(enc);
+            ByteArrayOutputStream defBaos = new ByteArrayOutputStream();
+            ObjectOutputStream defOs = new ObjectOutputStream(defBaos);
+            defOs.writeObject(definition);
+            byte[] defBytes = defBaos.toByteArray();
+            byte[] defEnc = Base64.encodeBase64(defBytes);
+            String defStr = new String(defEnc);
 
-        a.setIdApplianceDefinitionBin(ad);
-        a.setIdApplianceDefinition(null);
+            a.setIdApplianceDefinitionBin(defStr);
+            a.setIdApplianceDefinition(null);
+        }
 
+        IdentityApplianceDeployment deployment = a.getIdApplianceDeployment();
+        if (deployment != null) {
+
+            ByteArrayOutputStream depBaos = new ByteArrayOutputStream();
+            ObjectOutputStream depOs = new ObjectOutputStream(depBaos);
+            depOs.writeObject(deployment);
+            byte[] depBytes = depBaos.toByteArray();
+            byte[] depEnc = Base64.encodeBase64(depBytes);
+            String depStr = new String(depEnc);
+
+            a.setIdApplianceDeploymentBin(depStr);
+            a.setIdApplianceDeployment(null);
+        }
+        
         return a;
-
     }
 }

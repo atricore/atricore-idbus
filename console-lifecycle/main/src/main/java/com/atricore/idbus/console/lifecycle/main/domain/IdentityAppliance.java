@@ -30,13 +30,7 @@ public class IdentityAppliance implements Serializable {
 
     private IdentityApplianceDeployment idApplianceDeployment;
 
-    public String getIdApplianceDefinitionBin() {
-        return idApplianceDefinitionBin;
-    }
-
-    public void setIdApplianceDefinitionBin(String idApplianceDefinitionBin) {
-        this.idApplianceDefinitionBin = idApplianceDefinitionBin;
-    }
+    private String idApplianceDeploymentBin;
 
     public long getId() {
         return id;
@@ -94,12 +88,28 @@ public class IdentityAppliance implements Serializable {
         this.idApplianceDefinition = idApplianceDefinition;
     }
 
+    public String getIdApplianceDefinitionBin() {
+        return idApplianceDefinitionBin;
+    }
+
+    public void setIdApplianceDefinitionBin(String idApplianceDefinitionBin) {
+        this.idApplianceDefinitionBin = idApplianceDefinitionBin;
+    }
+
     public IdentityApplianceDeployment getIdApplianceDeployment() {
         return idApplianceDeployment;
     }
 
     public void setIdApplianceDeployment(IdentityApplianceDeployment idAppliance) {
         this.idApplianceDeployment = idAppliance;
+    }
+
+    public String getIdApplianceDeploymentBin() {
+        return idApplianceDeploymentBin;
+    }
+
+    public void setIdApplianceDeploymentBin(String idApplianceDeploymentBin) {
+        this.idApplianceDeploymentBin = idApplianceDeploymentBin;
     }
 
     @Override

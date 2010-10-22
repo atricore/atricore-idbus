@@ -30,8 +30,9 @@
         <class name="IdentityAppliance" table="ATC_ID_APPLIANCE" >
             <field name="idApplianceDefinitionBin">
                 <column jdbc-type="LONGVARCHAR" />
-                <!--column jdbc-type="BLOB" length="1048576" /-->
-                <!--column jdbc-type="CLOB" /-->
+            </field>
+            <field name="idApplianceDeploymentBin">
+                <column jdbc-type="LONGVARCHAR" />
             </field>
         </class>
 
