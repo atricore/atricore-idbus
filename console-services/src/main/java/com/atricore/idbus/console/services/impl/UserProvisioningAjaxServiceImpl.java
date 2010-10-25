@@ -672,12 +672,7 @@ public class UserProvisioningAjaxServiceImpl implements
             modifyUserRequest.setRequestID(uuidGenerator.generateId());
             modifyUserRequest.getOtherAttributes().put(SPMLR2Constants.userAttr, "true");
 
-            PSOType psoUser = null;
-            try {
-                psoUser = lookupUser(userRequest.getId());
-            } catch (IdentityMediationException e) {
-                e.printStackTrace();
-            }
+            PSOType psoUser = lookupUser(userRequest.getId());
 
             UserType spmlUser = toUserType(userRequest);
             if (userRequest.getGroups() != null) {

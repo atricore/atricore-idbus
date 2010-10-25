@@ -233,7 +233,10 @@ public class IdentityApplianceDAOImpl extends GenericDAOImpl<IdentityAppliance, 
         }
 
 
+            a.setIdApplianceDeploymentBin(depStr);
+            a.setIdApplianceDeployment(null);
+        }
+        
         return a;
-
     }
 }
