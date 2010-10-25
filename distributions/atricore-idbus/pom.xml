@@ -61,7 +61,7 @@
         <felix.compendium.version>1.2.0</felix.compendium.version>
         <felix.configadmin.version>1.2.4</felix.configadmin.version>
         <felix.fileinstall.version>3.0.2</felix.fileinstall.version>
-        <felix.framework.version>3.0.2</felix.framework.version>
+        <felix.framework.version>3.0.5</felix.framework.version>
         <felix.gogo.version>0.4.0</felix.gogo.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
@@ -81,7 +81,7 @@
         <pax.logging.version>1.5.3</pax.logging.version>
         <pax.runner.version>1.5.0</pax.runner.version>
         <pax.url.version>1.1.3</pax.url.version>
-        <pax.web.version>0.7.3</pax.web.version>
+        <pax.web.version>0.7.2</pax.web.version>
         <servlet.api.version>2.5</servlet.api.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
         <spring2.version>2.5.6.SEC01</spring2.version>
@@ -174,7 +174,7 @@
         <jencks.version>2.2</jencks.version>
         <jettison.version>1.1</jettison.version>
         <neethi.version>2.0.4_1</neethi.version>
-        <pax.web.extender.version>0.7.3</pax.web.extender.version>
+        <pax.web.extender.version>0.7.2</pax.web.extender.version>
         <saaj.impl.version>1.3_1</saaj.impl.version>
         <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <velocity.version>1.6.2</velocity.version>
