@@ -30,10 +30,14 @@ import java.util.List;
  * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
  */
 public class JDOIdentityPartition extends AbstractIdentityPartition
-        implements InitializingBean, DisposableBean, IdentityServiceLifecycle {
+        implements InitializingBean,
+        DisposableBean,
+        IdentityServiceLifecycle {
 
     private JDOUserDAOImpl userDao;
     private JDOGroupDAOImpl groupDao;
+
+
 
     public void setUserDao(JDOUserDAOImpl userDao) {
         this.userDao = userDao;
@@ -52,11 +56,20 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     }
 
     public void boot() throws Exception {
+        // TODO : Work around for JDO Classloader issues!
         try {
             this.findUserByUserName("admin");
         } catch (Exception e) {
             /* Ignore this ... */
         }
+
+        // TODO : Work around for JDO Classloader issues!
+        try {
+            this.findGroupByName("Administrator");
+        } catch (Exception e) {
+            /* Ignore this ... */
+        }
+
     }
 
     public void afterPropertiesSet() throws ProvisioningException {
@@ -209,7 +222,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
             JDOUser jdoUser = userDao.findById(id);
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
-            return toUser(jdoUser);
+            return toUser(jdoUser, true);
         } catch (IncorrectResultSizeDataAccessException e) {
             if (e.getActualSize() == 0)
                 throw new UserNotFoundException(id);
@@ -232,7 +245,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         try {
             JDOUser jdoUser = userDao.findByUserName(username);
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
-            return toUser(jdoUser);
+            return toUser(jdoUser, true);
         } catch (IncorrectResultSizeDataAccessException e) {
             if (e.getActualSize() == 0)
                 throw new UserNotFoundException(username);
@@ -248,7 +261,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         try {
             Collection<JDOUser> jdoUsers = userDao.findAll();
             jdoUsers = userDao.detachCopyAll(jdoUsers, FetchPlan.FETCH_SIZE_GREEDY);
-            return toUsers(jdoUsers);
+            return toUsers(jdoUsers, true);
         } catch (Exception e) {
             throw new ProvisioningException(e);
         }
@@ -257,10 +270,10 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     @Transactional
     public User addUser(User user) throws ProvisioningException {
         try {
-            JDOUser jdoUser = toJDOUser(user);
+            JDOUser jdoUser = toJDOUser(user, false);
             jdoUser = userDao.save(jdoUser);
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
-            return toUser(jdoUser);
+            return toUser(jdoUser, true);
 
         } catch (Exception e) {
             throw new ProvisioningException(e);
@@ -271,10 +284,12 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     public User updateUser(User user) throws ProvisioningException {
         try {
             JDOUser jdoUser = userDao.findById(user.getId());
-            toJDOUser(jdoUser, user);
+            
+            // Do not let users to change the password!
+            toJDOUser(jdoUser, user, true);
             jdoUser = userDao.save(jdoUser);
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
-            return toUser(jdoUser);
+            return toUser(jdoUser, true);
         } catch (JdoObjectRetrievalFailureException e) {
             throw new UserNotFoundException(user.getId());
         } catch (JDOObjectNotFoundException e) {
@@ -348,15 +363,21 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     }
 
-    protected JDOUser toJDOUser(User user) {
+    protected JDOUser toJDOUser(User user, boolean keepUserPassword) {
         JDOUser jdoUser = new JDOUser();
         jdoUser.setId(user.getId());
-        return toJDOUser(jdoUser, user);
+        return toJDOUser(jdoUser, user, keepUserPassword);
     }
 
-    protected JDOUser toJDOUser(JDOUser jdoUser, User user) {
+    protected JDOUser toJDOUser(JDOUser jdoUser, User user, boolean keepUserPassword) {
+
+
+        String pwd = jdoUser.getUserPassword();
 
         BeanUtils.copyProperties(user, jdoUser, new String[] {"id", "groups"});
+
+        if (keepUserPassword)
+            jdoUser.setUserPassword(pwd);
 
         if (user.getGroups() != null) {
             JDOGroup[] jdoGroups = new JDOGroup[user.getGroups().length];
@@ -367,12 +388,16 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             }
             jdoUser.setGroups(jdoGroups);
         }
+
         return jdoUser;
     }
 
-    protected User toUser(JDOUser jdoUser) {
+    protected User toUser(JDOUser jdoUser, boolean retrieveUserPassword) {
         User user = new User();
-        BeanUtils.copyProperties(jdoUser, user, new String[] {"groups"});
+        BeanUtils.copyProperties(jdoUser, user, new String[] {"group"});
+
+        if (!retrieveUserPassword)
+            user.setUserPassword(null);
 
         if (jdoUser.getGroups() != null) {
             Group[] groups = new Group[jdoUser.getGroups().length];
@@ -393,10 +418,10 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     }
     
-    protected Collection<User> toUsers(Collection<JDOUser> jdoUsers) {
+    protected Collection<User> toUsers(Collection<JDOUser> jdoUsers, boolean retrieveUserPassword) {
         List<User> users = new ArrayList<User>(jdoUsers.size());
         for (JDOUser jdoUser : jdoUsers) {
-            users.add(toUser(jdoUser));
+            users.add(toUser(jdoUser, retrieveUserPassword));
         }
 
         return users;

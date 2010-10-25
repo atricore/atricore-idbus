@@ -248,6 +248,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             BeanUtils.copyProperties(userRequest, user, new String[] {"groups", "userPassword"});
 
+            // TODO : Apply password validation rules
             user.setUserPassword(createPasswordHash(userRequest.getUserPassword()));
                 
             Group[] groups = userRequest.getGroups();
@@ -319,9 +320,15 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
 
             User oldUser = identityPartition.findUserById(user.getId());
 
-            // Can't modify password using this operation
+
             BeanUtils.copyProperties(user, oldUser, new String[] {"groups", "userPassword", "id"});
             oldUser.setGroups(user.getGroups());
+
+            if (user.getUserPassword() != null && !"".equals(user.getUserPassword())) {
+                // TODO : Apply password validation rules
+                oldUser.setUserPassword(createPasswordHash(user.getUserPassword()));
+            }
+
             user = identityPartition.updateUser(oldUser);
 
             UpdateUserResponse userResponse = new UpdateUserResponse();
@@ -345,12 +352,14 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     public SetPasswordResponse setPassword(SetPasswordRequest setPwdRequest) throws ProvisioningException {
         try {
             User user = identityPartition.findUserById(setPwdRequest.getUserId());
-            
+
+
             String currentPwd = createPasswordHash(setPwdRequest.getCurrentPassword());
             if (!user.getUserPassword().equals(currentPwd)) {
                 throw new ProvisioningException("Provided password is invalid");
             }
-            
+
+            // TODO : Apply password validation rules
             String newPwd = createPasswordHash(setPwdRequest.getNewPassword());
             user.setUserPassword(newPwd);
             identityPartition.updateUser(user);
