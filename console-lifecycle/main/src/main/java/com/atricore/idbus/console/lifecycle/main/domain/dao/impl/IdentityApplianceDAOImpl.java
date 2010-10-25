@@ -232,11 +232,6 @@ public class IdentityApplianceDAOImpl extends GenericDAOImpl<IdentityAppliance, 
             a.setIdApplianceDeployment(null);
         }
 
-
-            a.setIdApplianceDeploymentBin(depStr);
-            a.setIdApplianceDeployment(null);
-        }
-        
         return a;
     }
 }
