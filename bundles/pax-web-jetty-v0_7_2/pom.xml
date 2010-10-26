@@ -28,17 +28,17 @@
     <parent>
         <groupId>org.atricore.idbus</groupId>
         <artifactId>all</artifactId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1</version>
     </parent>
 
     <groupId>org.atricore.idbus.bundles</groupId>
     <artifactId>org.atricore.idbus.bundles.pax-web-jetty-v0_7_2</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <packaging>bundle</packaging>
     <name>Atricore IDBus :: Bundle : Pax Web Jetty v0.7.2</name>
 
     <properties>
-        <idbus.kernel.version>1.0.1-SNAPSHOT</idbus.kernel.version>
+        <idbus.kernel.version>1.0.1</idbus.kernel.version>
 
         <ehcache.version>2.1.0</ehcache.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
@@ -51,7 +51,7 @@
         <wadi.version>2.1.2</wadi.version>
 
         <bundle.symbolicName>org.ops4j.pax.web.pax-web-jetty</bundle.symbolicName>
-        <idbus.bundles.bundles.wadi-v2_1_2.version>1.0.1-SNAPSHOT</idbus.bundles.bundles.wadi-v2_1_2.version>
+        <idbus.bundles.bundles.wadi-v2_1_2.version>1.0.1</idbus.bundles.bundles.wadi-v2_1_2.version>
 
     </properties>
 
