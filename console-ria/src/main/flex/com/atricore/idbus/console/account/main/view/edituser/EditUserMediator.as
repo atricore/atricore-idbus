@@ -59,6 +59,9 @@ public class EditUserMediator extends IocFormMediator
         if (getViewComponent() != null) {
             view.cancelEditUser.removeEventListener(MouseEvent.CLICK, handleCancel);
             view.submitEditUserButton.removeEventListener(MouseEvent.CLICK, onSubmitEditUser);
+
+            view.userPassword.removeEventListener(Event.CHANGE, passwordChange);
+            view.userRetypePassword.removeEventListener(Event.CHANGE, passwordChange);
             if (view.parent != null) {
                 view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
             }
@@ -72,6 +75,9 @@ public class EditUserMediator extends IocFormMediator
         view.cancelEditUser.addEventListener(MouseEvent.CLICK, handleCancel);
         view.submitEditUserButton.addEventListener(MouseEvent.CLICK, onSubmitEditUser);
 
+        view.userPassword.addEventListener(Event.CHANGE, passwordChange);
+        view.userRetypePassword.addEventListener(Event.CHANGE, passwordChange);
+
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
         bindForm();
         view.focusManager.setFocus(view.userUsername);
@@ -79,7 +85,6 @@ public class EditUserMediator extends IocFormMediator
 
     override public function registerValidators():void {
         _validators.push(view.usernameUserValidator);
-        _validators.push(view.pwvPasswords);
         _validators.push(view.firstnameUserValidator);
         _validators.push(view.lastnameUserValidator);
         _validators.push(view.userEmailValidator);
@@ -176,9 +181,6 @@ public class EditUserMediator extends IocFormMediator
         if (_accountManagementProxy.currentUser.notifyPasswordExpiration)  // If password notication change is enabled
             view.notifyPasswordExpirationDay.value = _accountManagementProxy.currentUser.daysBeforeExpiration;
 
-        view.userPassword.text = _accountManagementProxy.currentUser.userPassword;
-        view.userRetypePassword.text = _accountManagementProxy.currentUser.userPassword;
-
         view.generatePasswordCheck.selected = _accountManagementProxy.currentUser.automaticallyGeneratePassword;
         view.emailNewPasswordCheck.selected = _accountManagementProxy.currentUser.emailNewPasword;
     }
@@ -238,6 +240,10 @@ public class EditUserMediator extends IocFormMediator
     private function handleClose(event:Event):void {
     }
 
+    private function passwordChange(event:Event):void {
+        view.pwvPasswords.validate();
+    }
+
     override public function bindModel():void {
         var newUserDef:User = new User();
         newUserDef.userName = view.userUsername.text;
@@ -284,7 +290,9 @@ public class EditUserMediator extends IocFormMediator
             if (view.notifyPasswordExpirationCheck.selected) {
                 newUserDef.daysBeforeExpiration = view.notifyPasswordExpirationDay.value;
             }
-            newUserDef.userPassword = view.userPassword.text;
+            if (view.userPassword.text != "") { //update password only if changed
+                newUserDef.userPassword = view.userPassword.text;
+            }
             newUserDef.automaticallyGeneratePassword = view.generatePasswordCheck.selected;
             newUserDef.emailNewPasword = view.emailNewPasswordCheck.selected;
         }
