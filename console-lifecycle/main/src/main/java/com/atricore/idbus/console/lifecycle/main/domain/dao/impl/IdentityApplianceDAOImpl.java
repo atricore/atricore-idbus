@@ -177,21 +177,25 @@ public class IdentityApplianceDAOImpl extends GenericDAOImpl<IdentityAppliance, 
     public IdentityAppliance unmarshall(IdentityAppliance a) throws IOException, ClassNotFoundException {
 
         String defStr = a.getIdApplianceDefinitionBin();
+
         if (defStr != null) {
             byte[] defBytes = Base64.decodeBase64(defStr.getBytes());
             ByteArrayInputStream defBais = new ByteArrayInputStream(defBytes);
             ObjectInputStream defOis;
             defOis = new ObjectInputStream(defBais);
+
             IdentityApplianceDefinition definition = (IdentityApplianceDefinition) defOis.readObject();
             a.setIdApplianceDefinition(definition);
         }
-        
+
         String depStr = a.getIdApplianceDeploymentBin();
+
         if (depStr != null) {
             byte[] depBytes = Base64.decodeBase64(depStr.getBytes());
             ByteArrayInputStream depBais = new ByteArrayInputStream(depBytes);
             ObjectInputStream depOis;
             depOis = new ObjectInputStream(depBais);
+
             IdentityApplianceDeployment deployment = (IdentityApplianceDeployment) depOis.readObject();
             a.setIdApplianceDeployment(deployment);
         }
@@ -227,7 +231,7 @@ public class IdentityApplianceDAOImpl extends GenericDAOImpl<IdentityAppliance, 
             a.setIdApplianceDeploymentBin(depStr);
             a.setIdApplianceDeployment(null);
         }
-        
+
         return a;
     }
 }

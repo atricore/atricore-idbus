@@ -1,7 +1,7 @@
 package com.atricore.idbus.console.lifecycle.command.completers;
 
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
-import org.apache.felix.karaf.shell.console.completer.StringsCompleter;
+import org.apache.karaf.shell.console.completer.StringsCompleter;
 
 import java.util.List;
 

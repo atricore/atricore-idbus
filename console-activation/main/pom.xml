@@ -275,7 +275,7 @@
                             org.apache.log4j; version="[1.2,1.3)"; provider=paxlogging,
                             org.osgi.service.command,
                             org.apache.felix.gogo.commands,
-                            org.apache.felix.karaf.shell.console,
+                            org.apache.karaf.shell.console,
                             org.codehaus.plexus.*; resolution:=optional,
                             org.apache.geronimo.gshell.support.plexus; resolution:=optional,
                             org.apache.commons.jexl.*; resolution:=optional,

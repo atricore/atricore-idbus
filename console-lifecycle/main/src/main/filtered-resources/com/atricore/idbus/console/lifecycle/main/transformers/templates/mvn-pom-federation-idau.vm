@@ -189,8 +189,8 @@
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.datanucleus-v2_0_3</artifactId>
-            <version>${idbus.bundle.datanucleus-v2_0_3.version}</version>
+            <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
+            <version>${idbus.bundle.datanucleus-v2_1_2.version}</version>
             <scope>provided</scope>
         </dependency>
 

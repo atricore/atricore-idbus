@@ -4,7 +4,7 @@ import com.atricore.idbus.console.lifecycle.command.printers.CmdPrinter;
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
 import org.apache.felix.gogo.commands.Option;
-import org.apache.felix.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.osgi.framework.ServiceReference;
 
 /**

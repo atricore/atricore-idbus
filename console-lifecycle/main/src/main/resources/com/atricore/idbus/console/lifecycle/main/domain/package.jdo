@@ -29,7 +29,7 @@
             <field name="id" value-strategy="native" primary-key="true"/>
             <field name="idApplianceDefinition" persistence-modifier="none" />
             <field name="idApplianceDeployment" persistence-modifier="none" />
-            
+            <!--field name="idApplianceDeployment" default-fetch-group="true" dependent="true" /-->
         </class>
 
         <!--

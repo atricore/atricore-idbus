@@ -36,11 +36,11 @@
     <name>Atricore Console :: Lifecycle Spring MD</name>
 
     <properties>
-        <spring.version>2.5.6.SEC01</spring.version>
+        <spring.version>3.0.3.RELEASE</spring.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.16</log4j.version>
-        <xbean.version>3.4.3</xbean.version>
-        <datanucleus.version>2.0.3</datanucleus.version>
+        <xbean.version>3.7</xbean.version>
+        <datanucleus.version>2.1.2</datanucleus.version>
     </properties>
 
     <dependencies>
@@ -89,7 +89,7 @@
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.datanucleus-v2_0_3</artifactId>
+            <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -326,7 +326,7 @@
                     <dependency>
                         <groupId>org.datanucleus</groupId>
                         <artifactId>datanucleus-enhancer</artifactId>
-                        <version>[2.0, 2.0.99)</version>
+                        <version>[2.1, 2.2)</version>
                         <scope>runtime</scope>
                     </dependency>
 
