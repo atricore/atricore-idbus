@@ -26,7 +26,7 @@
     <parent>
         <groupId>com.atricore.idbus.console</groupId>
         <artifactId>console</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-m2</version>
     </parent>
 
     <!--artifactId>idbus-server-web</artifactId-->
@@ -593,7 +593,7 @@
                                     WEB-INF/lib/blazeds-common-3.0.jar,
                                     WEB-INF/lib/blazeds-core-3.0.jar,
                                     WEB-INF/lib/blazeds-remoting-3.0.jar,
-                                    WEB-INF/lib/console-services-1.0.0-SNAPSHOT.jar,
+                                    WEB-INF/lib/console-services-1.0.0-m2.jar,
                                 </Bundle-ClassPath>
                                 <Require-Bundle>
                                     com.atricore.idbus.console.lifecycle.main
