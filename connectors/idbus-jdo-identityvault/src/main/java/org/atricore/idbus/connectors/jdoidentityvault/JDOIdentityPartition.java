@@ -56,19 +56,6 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     }
 
     public void boot() throws Exception {
-        // TODO : Work around for JDO Classloader issues!
-        try {
-            this.findUserByUserName("admin");
-        } catch (Exception e) {
-            /* Ignore this ... */
-        }
-
-        // TODO : Work around for JDO Classloader issues!
-        try {
-            this.findGroupByName("Administrator");
-        } catch (Exception e) {
-            /* Ignore this ... */
-        }
 
     }
 
@@ -286,7 +273,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             JDOUser jdoUser = userDao.findById(user.getId());
             
             // Do not let users to change the password!
-            toJDOUser(jdoUser, user, true);
+            toJDOUser(jdoUser, user, false);
             jdoUser = userDao.save(jdoUser);
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
             return toUser(jdoUser, true);
@@ -394,7 +381,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     protected User toUser(JDOUser jdoUser, boolean retrieveUserPassword) {
         User user = new User();
-        BeanUtils.copyProperties(jdoUser, user, new String[] {"group"});
+        BeanUtils.copyProperties(jdoUser, user, new String[] {"groups"});
 
         if (!retrieveUserPassword)
             user.setUserPassword(null);
