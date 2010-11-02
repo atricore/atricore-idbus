@@ -42,6 +42,21 @@
         through the /META-INF/webconsole.properties.
     </description>
 
+    <dependencies>
+        <dependency>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.apache.felix.webconsole</artifactId>
+          <version>3.1.2</version>  
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.4.3</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>    
+
     <build>
         <plugins>
             <plugin>
@@ -53,7 +68,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-DocURL>http://felix.apache.org/site/apache-felix-karaf.html</Bundle-DocURL>
-                        <Fragment-Host>org.apache.felix.webconsole</Fragment-Host>
+                        <Fragment-Host>org.apache.felix.webconsole;bundle-version="[3,4)"</Fragment-Host>
                         <Export-Package>!*</Export-Package>
                     </instructions>
                 </configuration>
