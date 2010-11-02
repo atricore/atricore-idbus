@@ -1359,6 +1359,7 @@
         <module>console-ria</module>
         <module>console-web</module>
         <module>console-appliance/console-default-idau</module>
+        <module>console-appliance/console-jaas</module>
     </modules>
 
     <profiles>

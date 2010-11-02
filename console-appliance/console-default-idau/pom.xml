@@ -321,6 +321,8 @@
                             org.apache.camel.impl,
                             org.osgi.framework,
                             org.apache.derby.jdbc,
+                            org.apache.commons.dbcp,
+                            javax.sql,
                         </Import-Package>
                         <Require-Bundle>
                            org.atricore.idbus.kernel.common.support,
@@ -348,7 +350,7 @@
                            org.apache.activemq.activemq-core,
                            org.atricore.idbus.bundles.ehcache-v2_1_0,
                            org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1,
-                           org.apache.servicemix.specs.jaxb-api-2.1
+                           org.apache.servicemix.specs.jaxb-api-2.1                           
                         </Require-Bundle>
                         <!--DynamicImport-Package>*</DynamicImport-Package-->
                         <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
