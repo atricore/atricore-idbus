@@ -16,6 +16,9 @@ public class IdentitySource implements Serializable {
 
     private String description;
 
+    private double x;
+    private double y;
+    
     private static final long serialVersionUID = -1499654004861436370L;
 
     public long getId() {
@@ -48,6 +51,22 @@ public class IdentitySource implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 
     @Override

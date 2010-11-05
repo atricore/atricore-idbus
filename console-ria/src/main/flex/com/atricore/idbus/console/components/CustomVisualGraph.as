@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.components {
 import com.atricore.idbus.console.modeling.diagram.event.VEdgeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeCreationEvent;
+import com.atricore.idbus.console.modeling.diagram.event.VNodeMovedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
@@ -85,6 +86,13 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
             }
             resetConnectionModeParameters();
             _canvas.removeEventListener(MouseEvent.MOUSE_UP, dragEnd);
+        } else {
+            var draggedNode = data as IVisualNode;
+            if (draggedNode != null) {
+                draggedNode.node.data.x = draggedNode.viewX;
+                draggedNode.node.data.y = draggedNode.viewY;
+                dispatchEvent(new VNodeMovedEvent(VNodeMovedEvent.VNODE_MOVED, draggedNode.node.stringid, true, false, 0));
+            }
         }
     }
 
@@ -205,6 +213,10 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         (document as DisplayObject).removeEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
     }
 
+    public function resetGraph():void {
+        _nodeCreationPosition = null;
+    }
+
     private function mouseClickHandler(event:MouseEvent):void {
         if (_isConnectionMode && !_connectionDragInProgress) {
             exitConnectionMode();
@@ -262,6 +274,12 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
                 //vnode.viewY = _nodeCreationPosition.y - vnode.view.height / 2;
                 vnode.viewX = _nodeCreationPosition.x - 32;
                 vnode.viewY = _nodeCreationPosition.y - 22;
+                _nodeCreationPosition = null;
+                node.data.x = vnode.viewX;
+                node.data.y = vnode.viewY;
+            } else {
+                vnode.viewX = node.data.x;
+                vnode.viewY = node.data.y;
             }
         }
         return vnode;

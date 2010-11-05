@@ -31,6 +31,7 @@ import com.atricore.idbus.console.main.view.util.Constants;
 import com.atricore.idbus.console.modeling.diagram.event.VEdgeRemoveEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VEdgeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeCreationEvent;
+import com.atricore.idbus.console.modeling.diagram.event.VNodeMovedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeRemoveEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodeSelectedEvent;
 import com.atricore.idbus.console.modeling.diagram.event.VNodesLinkedEvent;
@@ -77,6 +78,8 @@ import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
 import flash.utils.Dictionary;
+
+import flash.utils.setTimeout;
 
 import mx.collections.ArrayCollection;
 import mx.controls.Button;
@@ -151,6 +154,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             _identityApplianceDiagram.removeEventListener(VEdgeRemoveEvent.VEDGE_REMOVE, edgeRemoveEventHandler);
             _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.LINKING_CANCELED, linkingCanceledEventHandler);
             _identityApplianceDiagram.removeEventListener(VNodeCreationEvent.OPEN_CREATION_FORM, openDialogElementCreationFormEventHandler);
+            _identityApplianceDiagram.removeEventListener(VNodeMovedEvent.VNODE_MOVED, nodeMovedEventHandler);
         }
 
         super.setViewComponent(viewComponent);
@@ -169,6 +173,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         _identityApplianceDiagram.addEventListener(VEdgeRemoveEvent.VEDGE_REMOVE, edgeRemoveEventHandler);
         _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.LINKING_CANCELED, linkingCanceledEventHandler);
         _identityApplianceDiagram.addEventListener(VNodeCreationEvent.OPEN_CREATION_FORM, openDialogElementCreationFormEventHandler);
+        _identityApplianceDiagram.addEventListener(VNodeMovedEvent.VNODE_MOVED, nodeMovedEventHandler);
         _emptyNotationModel = <Graph/>;
 
         resetGraph();
@@ -188,8 +193,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             ApplicationFacade.DIAGRAM_ELEMENT_REMOVE,
             ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE,
             ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE,
-            ApplicationFacade.REFRESH_DIAGRAM,
-            ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA
+            ApplicationFacade.REFRESH_DIAGRAM
+            //ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA
         ];
     }
 
@@ -199,6 +204,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 updateIdentityAppliance();
                 break;
             case ApplicationFacade.REFRESH_DIAGRAM:
+                /*
                 var redrawGraph:Boolean = notification.getBody() as Boolean;
                 if (!redrawGraph && projectProxy.currentIdentityAppliance != null &&
                         projectProxy.currentIdentityAppliance.id == _currentIdentityApplianceId) {
@@ -208,7 +214,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 } else {
                     resetGraph();
                     updateGraph();
-                }
+                }*/
+                var circularLayout:Boolean = notification.getBody() as Boolean;
+                resetGraph(circularLayout);
+                updateGraph(circularLayout);
                 if (_projectProxy.currentIdentityAppliance != null) {
                     _currentIdentityApplianceId = _projectProxy.currentIdentityAppliance.id;
                 } else {
@@ -549,7 +558,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         _identityAppliance = projectProxy.currentIdentityAppliance;
     }
 
-    private function updateGraph():void {
+    private function updateGraph(circularLayout:Boolean = false):void {
 
         if (_identityAppliance != null) {
             _applianceId = _identityAppliance.id.toString();
@@ -557,7 +566,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             _applianceId = null;
         }
 
-        resetGraph();
+        resetGraph(circularLayout);
         updateGraphTitle();
 
         var providerNodes:Dictionary = new Dictionary();
@@ -662,6 +671,11 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 }
             }
 
+            if (_identityApplianceDiagram.layouter is CircularLayouter) {
+                // make sure circular positioning finished
+                setTimeout(updateElementsPosition, 1000);
+            }
+            
             var layouter:BaseLayouter = new BaseLayouter(_identityApplianceDiagram);
             layouter.autoFitEnabled = _autoFitEnabled;
             _identityApplianceDiagram.layouter = layouter;
@@ -745,7 +759,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         }
     }
 
-    private function resetGraph():void {
+    private function resetGraph(circularLayout:Boolean = false):void {
         var graph:IGraph = new EnhancedGraph("Graph", true);
         var vo:Object = TypeUtil.deserializeXMLString(_emptyNotationModel);
         EnhancedGraph(graph).initFromVO(vo);
@@ -755,15 +769,17 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         _identityApplianceDiagram.newNodesDefaultVisible = true;
 
         _autoFitEnabled = true;
-        //        _selectedOrientation = HierarchicalLayouter.ORIENT_TOP_DOWN;
-        //        var layouter:HierarchicalLayouter = new HierarchicalLayouter(_identityApplianceDiagram);
-        //        layouter.autoFitEnabled = _autoFitEnabled;
-        //        layouter.orientation = _selectedOrientation;
-        var layouter:CircularLayouter = new CircularLayouter(_identityApplianceDiagram);
-        layouter.autoFitEnabled = _autoFitEnabled;
-        //        layouter.orientation = _selectedOrientation;
 
-        _identityApplianceDiagram.layouter = layouter;
+        if (circularLayout) {
+            var circularLayouter:CircularLayouter = new CircularLayouter(_identityApplianceDiagram);
+            circularLayouter.disableAnimation = true;
+            circularLayouter.autoFitEnabled = _autoFitEnabled;
+            _identityApplianceDiagram.layouter = circularLayouter;
+        } else {
+            var baseLayouter:BaseLayouter = new BaseLayouter(_identityApplianceDiagram);
+            baseLayouter.autoFitEnabled = _autoFitEnabled;
+            _identityApplianceDiagram.layouter = baseLayouter;
+        }
 
         var nodeRenderer:ClassFactory = new ClassFactory(NodeDetailedRenderer);
         _identityApplianceDiagram.itemRenderer = nodeRenderer;
@@ -784,6 +800,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         _currentlySelectedNode = null;
         _currentlySelectedEdge = null;
 
+        _identityApplianceDiagram.resetGraph();
+        
         view.title = "";
     }
 
@@ -795,6 +813,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             _projectProxy.currentIdentityApplianceElement = node.data;
             sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_SELECTED);
         }
+    }
+
+    private function nodeMovedEventHandler(event:VNodeMovedEvent):void {
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
     }
 
     private function nodeRemoveEventHandler(event:VNodeRemoveEvent):void
@@ -1008,6 +1030,21 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         return foundEdge;
     }
 
+    /*
+     * Update all elements position and silently save identity appliance
+     * (this is used in case identity appliance was created using SSO wizard,
+     * because positions will be known at the end of circular layout animation).
+     */
+    private function updateElementsPosition():void {
+        for each (var node:INode in _identityApplianceDiagram.graph.nodes) {
+            if (node.vnode.view is NodeDetailedRenderer) {
+                node.data.x = node.vnode.viewX;
+                node.data.y = node.vnode.viewY;
+            }
+        }
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE, true);
+    }
+    
     /**
      * Event handler to be triggered in case the
      * layouter in VGraph has changed.

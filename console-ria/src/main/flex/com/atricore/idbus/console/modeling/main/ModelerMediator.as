@@ -471,7 +471,8 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                     view.btnExport.enabled = false;
                 }
                 sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                sendNotification(ApplicationFacade.REFRESH_DIAGRAM, redrawGraph);
+                //sendNotification(ApplicationFacade.REFRESH_DIAGRAM, redrawGraph);
+                sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
                 break;
             case LookupIdentityApplianceByIdCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
@@ -496,17 +497,26 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                         "There was an error retrieving list of appliances.");
                 break;
             case IdentityApplianceUpdateCommand.SUCCESS:
-                var reopenGraph = view.btnSave.enabled;
-                view.btnSave.enabled = false;
-                sendNotification(ApplicationFacade.APPLIANCE_SAVED);
-                sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-                //sendNotification(ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA);
-                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);  //appliance name might be changed
-                sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
-                if (_tempSelectedViewIndex != -1) {
-                    sendNotification(ApplicationFacade.DISPLAY_VIEW, _tempSelectedViewIndex);
-                    _tempSelectedViewIndex = -1;
+                var silentUpdate:Boolean = notification.getBody() as Boolean;
+                if (!silentUpdate) {
+                    var reopenGraph = view.btnSave.enabled;
+                    view.btnSave.enabled = false;
+                    sendNotification(ApplicationFacade.APPLIANCE_SAVED);
+                    sendNotification(ProcessingMediator.STOP);
+                    sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                    //sendNotification(ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA);
+                    sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);  //appliance name might be changed
+                    sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
+                    if (_tempSelectedViewIndex != -1) {
+                        sendNotification(ApplicationFacade.DISPLAY_VIEW, _tempSelectedViewIndex);
+                        _tempSelectedViewIndex = -1;
+                    }
+                } else {
+                    // TODO: refactor this
+                    // this will cause a diagram refresh (everything will be redrawn)
+                    // but it's necessary if appliance was created using SSO wizard
+                    sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                    sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
                 }
                 break;
             case IdentityApplianceUpdateCommand.FAILURE:

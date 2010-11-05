@@ -21,6 +21,9 @@ public class ExecutionEnvironmentDTO implements Serializable {
 
     private Set<ActivationDTO> activations;
 
+    private double x;
+    private double y;
+    
     private static final long serialVersionUID = 175340870033867780L;
 
     public long getId() {
@@ -104,6 +107,22 @@ public class ExecutionEnvironmentDTO implements Serializable {
 
     public void setInstallDemoApps(boolean installDemoApps) {
         this.installDemoApps = installDemoApps;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 
     @Override
