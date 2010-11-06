@@ -572,6 +572,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         var providerNodes:Dictionary = new Dictionary();
 
         if (_identityAppliance != null) {
+            
+            view.graphViewport.horizontalScrollPosition = (view.graphCanvas.width - view.graphScroller.horizontalScrollBar.width) / 2;
+            view.graphViewport.verticalScrollPosition = (view.graphCanvas.height - view.graphScroller.verticalScrollBar.height) / 2;
+            view.graphScroller.visible = true;
 
             view.graphCanvas.redrawGraphGrid();
             view.graphCanvas.drawGrid = true;
@@ -682,6 +686,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         } else {
             view.graphCanvas.drawGrid = false;
             view.graphCanvas.removeGraphGrid();
+            view.graphScroller.visible = false;
         }
 
     }
@@ -1095,6 +1100,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         //      - Set references to null
         resetGraph();
         _currentIdentityApplianceId= -1;
+        view.graphScroller.visible = false;
     }
 }
 }
