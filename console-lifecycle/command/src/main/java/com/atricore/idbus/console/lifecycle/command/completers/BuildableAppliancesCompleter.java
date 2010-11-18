@@ -6,7 +6,7 @@ import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerExcepti
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
 import com.atricore.idbus.console.lifecycle.main.spi.request.ListIdentityAppliancesByStateRequest;
 import com.atricore.idbus.console.lifecycle.main.spi.response.ListIdentityAppliancesByStateResponse;
-import org.apache.karaf.shell.console.completer.StringsCompleter;
+import org.apache.felix.karaf.shell.console.completer.StringsCompleter;
 
 import java.util.List;
 

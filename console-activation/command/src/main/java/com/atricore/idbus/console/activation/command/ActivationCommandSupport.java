@@ -2,7 +2,7 @@ package com.atricore.idbus.console.activation.command;
 
 import com.atricore.idbus.console.activation.main.spi.ActivationService;
 import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.felix.karaf.shell.console.OsgiCommandSupport;
 import org.osgi.framework.ServiceReference;
 
 /**

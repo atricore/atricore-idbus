@@ -28,12 +28,12 @@
     <parent>
         <groupId>com.atricore.idbus.console</groupId>
         <artifactId>console</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0-m3</version>
     </parent>
 
     <groupId>com.atricore.idbus.console.appliance</groupId>
     <artifactId>com.atricore.idbus.console.appliance.console-default-idau</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0-m3</version>
     <packaging>bundle</packaging>
     <name>Atricore Console :: Default Identity Appliance Unit</name>
 
@@ -42,34 +42,33 @@
         <!--felix.plugin.version>2.1.0-SNAPSHOT</felix.plugin.version-->
 
         <!-- IDBUS -->
+        <idbus.kernel.version>1.0.1</idbus.kernel.version>
+        <idbus.examples.version>1.0.1</idbus.examples.version>
+        <idbus.app.server.version>1.0.1</idbus.app.server.version>
 
-        <idbus.kernel.version>1.1.0-SNAPSHOT</idbus.kernel.version>
-        <idbus.examples.version>1.1.0-SNAPSHOT</idbus.examples.version>
-        <idbus.app.server.version>1.1.0-SNAPSHOT</idbus.app.server.version>
+        <idbus.cap.josso.version>1.0.1</idbus.cap.josso.version>
+        <idbus.cap.saml2.version>1.0.1</idbus.cap.saml2.version>
+        <idbus.cap.spml2.version>1.0.1</idbus.cap.spml2.version>
+        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.0.1</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
+        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.0.1</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
+        <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.0.1</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
+        <idbus.bundle.datanucleus-v2_0_3.version>1.0.1</idbus.bundle.datanucleus-v2_0_3.version>
+        <idbus.bundle.javax-jdo2-v2_3_ec.version>1.0.1</idbus.bundle.javax-jdo2-v2_3_ec.version>
+        <idbus.bundle.javax-jstl-v1_2.version>1.0.1</idbus.bundle.javax-jstl-v1_2.version>
+        <idbus.bundle.josso-ws-v1_2.version>1.0.1</idbus.bundle.josso-ws-v1_2.version>
 
-        <idbus.cap.josso.version>1.1.0-SNAPSHOT</idbus.cap.josso.version>
-        <idbus.cap.saml2.version>1.1.0-SNAPSHOT</idbus.cap.saml2.version>
-        <idbus.cap.spml2.version>1.1.0-SNAPSHOT</idbus.cap.spml2.version>
-        <idbus.bundle.apache-derby-network-v10_5_3_0_1.version>1.1.0-SNAPSHOT</idbus.bundle.apache-derby-network-v10_5_3_0_1.version>
-        <idbus.bundle.apache-derby-client-v10_5_3_0_1.version>1.1.0-SNAPSHOT</idbus.bundle.apache-derby-client-v10_5_3_0_1.version>
-        <idbus.bundle.apache-tiles-jsp-v2_0_6.version>1.1.0-SNAPSHOT</idbus.bundle.apache-tiles-jsp-v2_0_6.version>
-        <idbus.bundle.datanucleus-v2_1_2.version>1.1.0-SNAPSHOT</idbus.bundle.datanucleus-v2_1_2.version>
-        <idbus.bundle.javax-jdo2-v2_3_ec.version>1.1.0-SNAPSHOT</idbus.bundle.javax-jdo2-v2_3_ec.version>
-        <idbus.bundle.javax-jstl-v1_2.version>1.1.0-SNAPSHOT</idbus.bundle.javax-jstl-v1_2.version>
-        <idbus.bundle.josso-ws-v1_2.version>1.1.0-SNAPSHOT</idbus.bundle.josso-ws-v1_2.version>
+        <idbus.connector.jdoidentityvault.version>1.0.1</idbus.connector.jdoidentityvault.version>
 
-        <idbus.connector.jdoidentityvault.version>1.1.0-SNAPSHOT</idbus.connector.jdoidentityvault.version>
+        <idbus.idojo.dbidentitystore.version>1.0.1</idbus.idojo.dbidentitystore.version>
+        <idbus.idojo.dbsessionstore.version>1.0.1</idbus.idojo.dbsessionstore.version>
+        <idbus.idojo.ehcachesessionstore.version>1.0.1</idbus.idojo.ehcachesessionstore.version>
+        <idbus.idojo.ldapidentitystore.version>1.0.1</idbus.idojo.ldapidentitystore.version>
+        <idbus.idojo.memoryidentitystore.version>1.0.1</idbus.idojo.memoryidentitystore.version>
+        <idbus.idojo.memorysessionstore.version>1.0.1</idbus.idojo.memorysessionstore.version>
+        <idbus.idojo.serializedsessionstore.version>1.0.1</idbus.idojo.serializedsessionstore.version>
+        <idbus.idojo.strongauthscheme.version>1.0.1</idbus.idojo.strongauthscheme.version>
 
-        <idbus.idojo.dbidentitystore.version>1.1.0-SNAPSHOT</idbus.idojo.dbidentitystore.version>
-        <idbus.idojo.dbsessionstore.version>1.1.0-SNAPSHOT</idbus.idojo.dbsessionstore.version>
-        <idbus.idojo.ehcachesessionstore.version>1.1.0-SNAPSHOT</idbus.idojo.ehcachesessionstore.version>
-        <idbus.idojo.ldapidentitystore.version>1.1.0-SNAPSHOT</idbus.idojo.ldapidentitystore.version>
-        <idbus.idojo.memoryidentitystore.version>1.1.0-SNAPSHOT</idbus.idojo.memoryidentitystore.version>
-        <idbus.idojo.memorysessionstore.version>1.1.0-SNAPSHOT</idbus.idojo.memorysessionstore.version>
-        <idbus.idojo.serializedsessionstore.version>1.1.0-SNAPSHOT</idbus.idojo.serializedsessionstore.version>
-        <idbus.idojo.strongauthscheme.version>1.1.0-SNAPSHOT</idbus.idojo.strongauthscheme.version>
-
-        <spring.version>3.0.3.RELEASE</spring.version>
+        <spring.version>2.5.6.SEC01</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
 
         <apache.derby.version>10.5.3.0_1</apache.derby.version>
@@ -246,8 +245,8 @@
 
         <dependency>
             <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.datanucleus-v2_1_2</artifactId>
-            <version>${idbus.bundle.datanucleus-v2_1_2.version}</version>
+            <artifactId>org.atricore.idbus.bundles.datanucleus-core-v2_0_3</artifactId>
+            <version>${idbus.bundle.datanucleus-v2_0_3.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -321,8 +320,6 @@
                             org.apache.camel.impl,
                             org.osgi.framework,
                             org.apache.derby.jdbc,
-                            org.apache.commons.dbcp,
-                            javax.sql,
                         </Import-Package>
                         <Require-Bundle>
                            org.atricore.idbus.kernel.common.support,
@@ -350,7 +347,7 @@
                            org.apache.activemq.activemq-core,
                            org.atricore.idbus.bundles.ehcache-v2_1_0,
                            org.atricore.idbus.bundles.apache-derby-network-v10_5_3_0_1,
-                           org.apache.servicemix.specs.jaxb-api-2.1                           
+                           org.apache.servicemix.specs.jaxb-api-2.1
                         </Require-Bundle>
                         <!--DynamicImport-Package>*</DynamicImport-Package-->
                         <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
