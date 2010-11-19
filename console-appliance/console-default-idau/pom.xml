@@ -320,6 +320,7 @@
                             org.apache.camel.impl,
                             org.osgi.framework,
                             org.apache.derby.jdbc,
+                            javax.sql,
                         </Import-Package>
                         <Require-Bundle>
                            org.atricore.idbus.kernel.common.support,
