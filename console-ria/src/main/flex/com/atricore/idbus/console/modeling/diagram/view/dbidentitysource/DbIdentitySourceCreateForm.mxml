@@ -87,7 +87,7 @@
                 </mx:FormItem>
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.dbPassword')}:" required="true">
-                    <s:TextInput id="dbPassword" width="200"/>
+                    <s:TextInput id="dbPassword" width="200" displayAsPassword="true"/>
                 </mx:FormItem>
 
                 <mx:FormItem>
