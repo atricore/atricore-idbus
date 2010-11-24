@@ -1,0 +1,1690 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs='http://www.w3.org/2001/XMLSchema' elementFormDefault='qualified'
+           targetNamespace='http://apacheds.org/config/core'
+           xmlns:directory='http://apacheds.org/config/core'
+           xmlns:spring='http://www.springframework.org/schema/beans'>
+    <!--
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:s="http://www.springframework.org/schema/beans"
+    -->
+
+    <xs:import namespace="http://www.springframework.org/schema/beans"/>
+
+    <!-- element for type: org.apache.directory.server.core.authz.AciAuthorizationInterceptor -->
+    <xs:element name='aciAuthorizationInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An ACI based authorization service.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.configuration.ApacheDS -->
+    <xs:element name='apacheDS'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          Apache Directory Server top level.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='ldapServer' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:ldapServer'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='ldapServer' type='xs:string'/>
+            <xs:attribute name='ldifDirectory' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Get the directory where
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='synchPeriodMillis' type='xs:long'/>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.authn.AuthenticationInterceptor -->
+    <xs:element name='authenticationInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An {@link Interceptor} that authenticates users.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='authenticators' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='unbounded'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.handlers.extended.CertGenerationRequestHandler -->
+    <xs:element name='certGenerationRequestHandler'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An extended handler for digital certificate generation
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='ldapServer' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:ldapServer'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='ldapServer' type='xs:string'/>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.changelog.ChangeLogInterceptor -->
+    <xs:element name='changeLogInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An interceptor which intercepts write operations to the directory and
+  logs them with the server's ChangeLog service.
+  Note: Adding/deleting a tag is not recorded as a change
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.changepw.ChangePasswordServer -->
+    <xs:element name='changePasswordServer'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          Contains the configuration parameters for the Change Password protocol provider.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='encryptionTypes' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Returns the encryption types.
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='unbounded'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='transports' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Set the underlying transports
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:tcpTransport'/>
+                            <xs:element ref='directory:udpTransport'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='allowableClockSkew' type='xs:long'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns the allowable clock skew.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='catelogBased' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Gets true if this service uses a catalog for searching different
+  regions of the DIT for its data.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='emptyAddressesAllowed' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns whether empty addresses are allowed.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='enabled' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='policyCategoryCount' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Sets the policy category count - what's this?
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='policyPasswordLength' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Sets the policy's minimum?? password length.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='policyTokenSize' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Sets the policy token size - what's this?
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='primaryRealm' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns the primary realm.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='searchBaseDn' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns the search base DN.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='servicePrincipal' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns the Change Password service principal.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='transports' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Set the underlying transports
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.collective.CollectiveAttributeInterceptor -->
+    <xs:element name='collectiveAttributeInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An interceptor based service dealing with collective attribute
+  management. This service intercepts read operations on entries to
+  inject collective attribute value pairs into the response based on
+  the entires inclusion within collectiveAttributeSpecificAreas and
+  collectiveAttributeInnerAreas.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.handlers.bind.cramMD5.CramMd5MechanismHandler -->
+    <xs:element name='cramMd5MechanismHandler'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          The CRAM-MD Sasl mechanism handler.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.authz.DefaultAuthorizationInterceptor -->
+    <xs:element name='defaultAuthorizationInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An {@link Interceptor} that controls access to {@link DefaultPartitionNexus}.
+  If a user tries to perform any operations that requires
+  permission he or she doesn't have, {@link NoPermissionException} will be
+  thrown and therefore the current invocation chain will terminate.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.DefaultDirectoryService -->
+    <xs:element name='defaultDirectoryService'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          Default implementation of {@link DirectoryService}.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='changeLog' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                {@inheritDoc}
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='1'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='eventService' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='1'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='interceptors' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Returns interceptors in the server.
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='unbounded'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='journal' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                {@inheritDoc}
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='1'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='partitions' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Gets the {@link Partition}s used by this DirectoryService.
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='unbounded'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='referralManager' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Set the referralManager
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='1'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='replicationConfiguration' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='1'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='schemaManager' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Set the SchemaManager instance.
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='1'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='schemaService' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='1'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='systemPartition' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:jdbmPartition'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='testEntries' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Returns test directory entries({@link LdifEntry}) to be loaded while
+  bootstrapping.
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='unbounded'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='accessControlEnabled' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns <tt>true</tt> if access control checks are enabled.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='allowAnonymousAccess' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns <tt>true</tt> if anonymous access is allowed on entries besides the RootDSE.
+  If the access control subsystem is enabled then access to some entries may not be
+  allowed even when full anonymous access is enabled.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='changeLog' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='denormalizeOpAttrsEnabled' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              return true if the operational attributes must be normalized when returned
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='eventService' type='xs:string'/>
+            <xs:attribute name='exitVmOnShutdown' type='xs:boolean'/>
+            <xs:attribute name='instanceId' type='xs:string'/>
+            <xs:attribute name='journal' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='maxPDUSize' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Set the maximum allowed size for an incoming PDU
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='passwordHidden' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='referralManager' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Set the referralManager
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='replicaId' type='xs:integer'/>
+            <xs:attribute name='replicationConfiguration' type='xs:string'/>
+            <xs:attribute name='schemaManager' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Set the SchemaManager instance.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='schemaService' type='xs:string'/>
+            <xs:attribute name='shutdownHookEnabled' type='xs:boolean'/>
+            <xs:attribute name='syncPeriodMillis' type='xs:long'/>
+            <xs:attribute name='systemPartition' type='xs:string'/>
+            <xs:attribute name='workingDirectory' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns working directory (counterpart of <tt>var/lib</tt>) where partitions are
+  stored by default.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.journal.DefaultJournalStore -->
+    <xs:element name='defaultJournalStore'>
+        <xs:complexType>
+            <xs:attribute name='fileName' type='xs:string'/>
+            <xs:attribute name='workingDirectory' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.handlers.bind.digestMD5.DigestMd5MechanismHandler -->
+    <xs:element name='digestMd5MechanismHandler'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          The DIGEST-MD5 mechanism handler.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.dns.DnsServer -->
+    <xs:element name='dnsServer'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          Contains the configuration parameters for the DNS protocol provider.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='transports' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Set the underlying transports
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:tcpTransport'/>
+                            <xs:element ref='directory:udpTransport'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='catelogBased' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Gets true if this service uses a catalog for searching different
+  regions of the DIT for its data.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='enabled' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='searchBaseDn' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns the search base DN.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='transports' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Set the underlying transports
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.event.EventInterceptor -->
+    <xs:element name='eventInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An {@link Interceptor} based service for notifying {@link
+  DirectoryListener}s of changes to the DIT.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.exception.ExceptionInterceptor -->
+    <xs:element name='exceptionInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An {@link org.apache.directory.server.core.interceptor.Interceptor} that detects any operations that breaks integrity
+  of {@link Partition} and terminates the current invocation chain by
+  throwing a {@link Exception}. Those operations include when an entry
+  already exists at a DN and is added once again to the same DN.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.ExtendedOperationHandler -->
+    <xs:element name='extendedOperationHandler'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An extension (hook) point that enables an implementor to provide his or her
+  own LDAP 'Extended' operation.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='ldapServer' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Sets the LDAP server for this extendedOperation handler.
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:ldapServer'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='ldapServer' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Sets the LDAP server for this extendedOperation handler.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.handlers.extended.GracefulShutdownHandler -->
+    <xs:element name='gracefulShutdownHandler'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='ldapServer' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:ldapServer'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='ldapServer' type='xs:string'/>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.handlers.bind.gssapi.GssapiMechanismHandler -->
+    <xs:element name='gssapiMechanismHandler'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          The GSSAPI Sasl mechanism handler.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.integration.http.HttpServer -->
+    <xs:element name='httpServer'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          Class to start the jetty http server
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='webApps' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='unbounded'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='confFile' type='xs:string'/>
+            <xs:attribute name='port' type='xs:integer'/>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.partition.impl.btree.jdbm.JdbmIndex -->
+    <xs:element name='jdbmIndex'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          A Jdbm based index implementation.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='attributeId' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Gets the attribute identifier set at configuration time for this index which may not
+  be the OID but an alias name for the attributeType associated with this Index
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='cacheSize' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Gets the size of the index cache in terms of the number of index entries to be cached.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='numDupLimit' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Gets the threshold at which point duplicate keys use btree indirection to store
+  their values.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='wkDirPath' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Gets the working directory path to something other than the default. Sometimes more
+  performance is gained by locating indices on separate disk spindles.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.partition.impl.btree.jdbm.JdbmPartition -->
+    <xs:element name='jdbmPartition'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          A {@link Partition} that stores entries in
+  <a href="http://jdbm.sourceforge.net/">JDBM</a> database.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='aliasIndexOn' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:jdbmIndex'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='indexedAttributes' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='unbounded'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='ndnIndexOn' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:jdbmIndex'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='oneAliasIndexOn' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:jdbmIndex'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='oneLevelIndexOn' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:jdbmIndex'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='presenceIndexOn' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:jdbmIndex'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='schemaManager' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='1'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='subAliasIndexOn' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:jdbmIndex'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='updnIndexOn' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:jdbmIndex'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='aliasIndexOn' type='xs:string'/>
+            <xs:attribute name='cacheSize' type='xs:integer'/>
+            <xs:attribute name='id' type='xs:string'/>
+            <xs:attribute name='ndnIndexOn' type='xs:string'/>
+            <xs:attribute name='oneAliasIndexOn' type='xs:string'/>
+            <xs:attribute name='oneLevelIndexOn' type='xs:string'/>
+            <xs:attribute name='optimizerEnabled' type='xs:boolean'/>
+            <xs:attribute name='partitionDir' type='xs:string'/>
+            <xs:attribute name='presenceIndexOn' type='xs:string'/>
+            <xs:attribute name='schemaManager' type='xs:string'/>
+            <xs:attribute name='subAliasIndexOn' type='xs:string'/>
+            <xs:attribute name='suffix' type='xs:string'/>
+            <xs:attribute name='syncOnWrite' type='xs:boolean'/>
+            <xs:attribute name='updnIndexOn' type='xs:string'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.journal.JournalInterceptor -->
+    <xs:element name='journalInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An interceptor which intercepts write operations to the directory and
+  logs them into a journal.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.kerberos.kdc.KdcServer -->
+    <xs:element name='kdcServer'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          Contains the configuration parameters for the Kerberos protocol provider.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='encryptionTypes' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Returns the encryption types.
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='unbounded'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='transports' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Set the underlying transports
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:tcpTransport'/>
+                            <xs:element ref='directory:udpTransport'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='allowableClockSkew' type='xs:long'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns the allowable clock skew.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='bodyChecksumVerified' type='xs:boolean'/>
+            <xs:attribute name='catelogBased' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Gets true if this service uses a catalog for searching different
+  regions of the DIT for its data.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='emptyAddressesAllowed' type='xs:boolean'/>
+            <xs:attribute name='enabled' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='forwardableAllowed' type='xs:boolean'/>
+            <xs:attribute name='kdcPrincipal' type='xs:string'/>
+            <xs:attribute name='maximumRenewableLifetime' type='xs:long'/>
+            <xs:attribute name='maximumTicketLifetime' type='xs:long'/>
+            <xs:attribute name='paEncTimestampRequired' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns whether pre-authentication by encrypted timestamp is required.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='postdatedAllowed' type='xs:boolean'/>
+            <xs:attribute name='primaryRealm' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns the primary realm.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='proxiableAllowed' type='xs:boolean'/>
+            <xs:attribute name='renewableAllowed' type='xs:boolean'/>
+            <xs:attribute name='searchBaseDn' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns the search base DN.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='transports' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Set the underlying transports
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.kerberos.KeyDerivationInterceptor -->
+    <xs:element name='keyDerivationInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An {@link Interceptor} that creates symmetric Kerberos keys for users. When a
+  'userPassword' is added or modified, the 'userPassword' and 'krb5PrincipalName'
+  are used to derive Kerberos keys. If the 'userPassword' is the special keyword
+  'randomKey', a random key is generated and used as the Kerberos key.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.handlers.extended.LaunchDiagnosticUiHandler -->
+    <xs:element name='launchDiagnosticUiHandler'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='ldapServer' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:ldapServer'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='ldapServer' type='xs:string'/>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.LdapServer -->
+    <xs:element name='ldapServer'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An LDAP protocol provider implementation which dynamically associates
+  handlers.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='directoryService' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:defaultDirectoryService'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='extendedOperationHandlers' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Gets the {@link ExtendedOperationHandler}s.
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='unbounded'>
+                            <xs:element ref='directory:certGenerationRequestHandler'/>
+                            <xs:element ref='directory:extendedOperationHandler'/>
+                            <xs:element ref='directory:gracefulShutdownHandler'/>
+                            <xs:element ref='directory:launchDiagnosticUiHandler'/>
+                            <xs:element ref='directory:startTlsHandler'/>
+                            <xs:element ref='directory:storedProcedureExtendedOperationHandler'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='replicationSystem' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:replicationSystem'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='saslMechanismHandlers' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='unbounded'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='saslRealms' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Returns the realms serviced by this SASL host, used by DIGEST-MD5 and GSSAPI.
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='unbounded'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='transports' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Set the underlying transports
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:tcpTransport'/>
+                            <xs:element ref='directory:udpTransport'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='allowAnonymousAccess' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns <code>true</code> if anonymous access is allowed.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='catelogBased' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Gets true if this service uses a catalog for searching different
+  regions of the DIT for its data.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='certificatePassword' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Set the certificate passord.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='confidentialityRequired' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Gets whether or not TLS secured connections are required to perform
+  operations on this LdapServer.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='directoryService' type='xs:string'/>
+            <xs:attribute name='enabled' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='keystoreFile' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Set the external keystore path
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='maxSizeLimit' type='xs:long'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns the maximum size limit in number of entries to return for search.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='maxTimeLimit' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns the maximum time limit in milliseconds to conduct a search.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='replicationSystem' type='xs:string'/>
+            <xs:attribute name='saslHost' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns the FQDN of this SASL host, validated during SASL negotiation.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='saslMechanismHandlers' type='xs:string'/>
+            <xs:attribute name='saslPrincipal' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns the Kerberos principal name for this LDAP service, used by GSSAPI.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='searchBaseDn' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Returns the search base DN.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='transports' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Set the underlying transports
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.changelog.MemoryChangeLogStore -->
+    <xs:element name='memoryChangeLogStore'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          A change log store that keeps it's information in memory.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.normalization.NormalizationInterceptor -->
+    <xs:element name='normalizationInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          A name normalization service. This service makes sure all relative and distinguished
+  names are normalized before calls are made against the respective interface methods
+  on {@link DefaultPartitionNexus}.
+
+  The Filters are also normalized.
+
+  If the RDN AttributeTypes are not present in the entry for an Add request,
+  they will be added.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.handlers.bind.ntlm.NtlmMechanismHandler -->
+    <xs:element name='ntlmMechanismHandler'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          A handler for the NTLM Sasl and GSS-SPNEGO mechanism. Note that both
+  mechanisms require an NTLM mechanism provider which could be implemented
+  using jCIFS or native Win32 system calls via a JNI wrapper.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='ntlmProvider' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='1'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='ntlmProvider' type='xs:string'/>
+            <xs:attribute name='ntlmProviderFqcn' type='xs:string'/>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ntp.NtpServer -->
+    <xs:element name='ntpServer'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          Contains the configuration parameters for the NTP protocol provider.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='transports' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Set the underlying transports
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:tcpTransport'/>
+                            <xs:element ref='directory:udpTransport'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='enabled' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='transports' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Set the underlying transports
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.operational.OperationalAttributeInterceptor -->
+    <xs:element name='operationalAttributeInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An {@link Interceptor} that adds or modifies the default attributes
+  of entries. There are four default attributes for now;
+  <tt>'creatorsName'</tt>, <tt>'createTimestamp'</tt>, <tt>'modifiersName'</tt>,
+  and <tt>'modifyTimestamp'</tt>.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.kerberos.PasswordPolicyInterceptor -->
+    <xs:element name='passwordPolicyInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An {@link Interceptor} that enforces password policy for users. Add or modify operations
+  on the 'userPassword' attribute are checked against a password policy. The password is
+  rejected if it does not pass the password policy checks. The password MUST be passed to
+  the core as plaintext.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.handlers.bind.plain.PlainMechanismHandler -->
+    <xs:element name='plainMechanismHandler'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          A handler for the PLAIN Sasl mechanism.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.referral.ReferralInterceptor -->
+    <xs:element name='referralInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An service which is responsible referral handling behavoirs. It manages
+  referral handling behavoir when the {@link Context#REFERRAL} is implicitly
+  or explicitly set to "ignore", when set to "throw" and when set to "follow".
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.replication.ReplicaPeerConfiguration -->
+    <xs:element name='replicaPeerConfiguration'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          A configuration for a replica peer. We may have many replications relation
+  set for a server, each one of them being described with this structure.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='principalDN' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='1'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name='producer' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='1'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='interval' type='xs:long'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Set the delay between two RefreshOnly replication. Its given in seconds.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='password' type='xs:string'/>
+            <xs:attribute name='principalDN' type='xs:string'/>
+            <xs:attribute name='producer' type='xs:string'/>
+            <xs:attribute name='refreshOnly' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Set the type of replication wanted. If false, it will default
+  to RefreshAndPersist.
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.replication.ReplicationSystem -->
+    <xs:element name='replicationSystem'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          The replication sub-system.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='replicaPeers' minOccurs='0' maxOccurs='1'>
+                    <xs:annotation>
+                        <xs:documentation><![CDATA[
+                Set the list of replica peers this server is connected to
+              ]]></xs:documentation>
+                    </xs:annotation>
+                    <xs:complexType>
+                        <xs:sequence minOccurs='0' maxOccurs='unbounded'>
+                            <xs:any minOccurs='0' maxOccurs='unbounded'/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.schema.SchemaInterceptor -->
+    <xs:element name='schemaInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          An {@link org.apache.directory.server.core.interceptor.Interceptor} that manages and enforces schemas.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.handlers.bind.SimpleMechanismHandler -->
+    <xs:element name='simpleMechanismHandler'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          A Dummy mechanism handler for Simple mechanism: not really used but needed
+  for the mechanism map.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.protocol.shared.StandardThreadPool -->
+    <xs:element name='standardThreadPool'>
+        <xs:complexType>
+            <xs:attribute name='maxThreads' type='xs:integer'/>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.handlers.extended.StartTlsHandler -->
+    <xs:element name='startTlsHandler'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          Handler for the StartTLS extended operation.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='ldapServer' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:ldapServer'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='ldapServer' type='xs:string'/>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.ldap.handlers.extended.StoredProcedureExtendedOperationHandler -->
+    <xs:element name='storedProcedureExtendedOperationHandler'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name='ldapServer' minOccurs='0' maxOccurs='1'>
+                    <xs:complexType>
+                        <xs:choice minOccurs='0' maxOccurs='1'>
+                            <xs:element ref='directory:ldapServer'/>
+                            <xs:any namespace='##other'/>
+                        </xs:choice>
+                    </xs:complexType>
+                </xs:element>
+                <xs:any namespace='##other' minOccurs='0' maxOccurs='unbounded'/>
+            </xs:sequence>
+            <xs:attribute name='ldapServer' type='xs:string'/>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.subtree.SubentryInterceptor -->
+    <xs:element name='subentryInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          The Subentry interceptor service which is responsible for filtering
+  out subentries on search operations and injecting operational attributes
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.protocol.shared.transport.TcpTransport -->
+    <xs:element name='tcpTransport'>
+        <xs:complexType>
+            <xs:attribute name='address' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='backLog' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='enableSSL' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Enable or disable SSL
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='nbThreads' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='port' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='tcpPort' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              The port
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.core.trigger.TriggerInterceptor -->
+    <xs:element name='triggerInterceptor'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          The Trigger Service based on the Trigger Specification.
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.protocol.shared.transport.UdpTransport -->
+    <xs:element name='udpTransport'>
+        <xs:complexType>
+            <xs:attribute name='address' type='xs:string'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='backLog' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='enableSSL' type='xs:boolean'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              Enable or disable SSL
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='nbThreads' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='port' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              {@inheritDoc}
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='udpPort' type='xs:integer'>
+                <xs:annotation>
+                    <xs:documentation><![CDATA[
+              The port
+            ]]></xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- element for type: org.apache.directory.server.integration.http.WebApp -->
+    <xs:element name='webApp'>
+        <xs:annotation>
+            <xs:documentation><![CDATA[
+          A class to configure a web application
+        ]]></xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:attribute name='contextPath' type='xs:string'/>
+            <xs:attribute name='warFile' type='xs:string'/>
+            <xs:attribute name='id' type='xs:ID'/>
+            <xs:anyAttribute namespace='##other' processContents='lax'/>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

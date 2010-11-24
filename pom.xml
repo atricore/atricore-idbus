@@ -47,6 +47,7 @@
         <module>bundles/datanucleus-v2_1_2</module>
         <module>bundles/apache-derby-network-v10_5_3_0_1</module>
         <module>bundles/apache-derby-client-v10_5_3_0_1</module>
+        <module>bundles/apache-ds-v1_5_7</module>
         <module>bundles/apache-maven-v3_0</module>
         <module>bundles/ehcache-v2_1_0</module>
         <module>bundles/pax-web-jetty-v0_7_2</module>

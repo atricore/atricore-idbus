@@ -124,6 +124,14 @@
         <bundle>mvn:com.atricore.idbus.capabilities.management/com.atricore.idbus.applications.shell.mvn/${idbus.extensions.version}</bundle>
     </feature>
 
+    <feature name="apache-ds" version="${apache.directory.version}">
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.antlr/${antlr.bundle.version}</bundle>
+        <bundle>mvn:org.bouncycastle/com.springsource.org.bouncycastle.jce/${bouncycastle.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dom4j/${domj4.bundle.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xmlpull/${xmlpull.bundle.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.apacheds-v1_5_7.server/${idbus.bundle.apacheds-v1_5_7.version}</bundle>
+    </feature>
+
     <feature name="ehcache" version="${ehcache.version}">
         <bundle>mvn:org.atricore.idbus.bundles/org.atricore.idbus.bundles.ehcache-v2_1_0/${idbus.bundle.ehcache-v2_1_0.version}</bundle>
     </feature>

@@ -120,6 +120,17 @@ public class CamelIdentityMediationUnitContainer implements IdentityMediationUni
             ConduitInitiatorManager cim = bus.getExtension(ConduitInitiatorManager.class);
             cim.registerConduitInitiator(CamelTransportFactory.TRANSPORT_ID, camelTransportFactory);
 
+            /*
+                org.apache.cxf.transport.http_jetty.JettyHTTPTransportFactory
+
+                <value>http://schemas.xmlsoap.org/wsdl/http/</value>
+                <value>http://schemas.xmlsoap.org/wsdl/soap/http</value>
+ 	            <value>http://www.w3.org/2003/05/soap/bindings/HTTP/</value>
+                <value>http://cxf.apache.org/transports/http/configuration</value>
+                <value>http://cxf.apache.org/bindings/xformat</value>
+
+             */
+
             // register the destination factory
             DestinationFactoryManager dfm = bus.getExtension(DestinationFactoryManager.class);
             dfm.registerDestinationFactory(CamelTransportFactory.TRANSPORT_ID, camelTransportFactory);

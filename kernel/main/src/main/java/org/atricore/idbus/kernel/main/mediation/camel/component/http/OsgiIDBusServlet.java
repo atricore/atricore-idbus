@@ -43,7 +43,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collection;
@@ -140,7 +142,7 @@ public class OsgiIDBusServlet extends CamelContinuationServlet {
         Collection<IdentityMediationUnit> identityMediationUnits = registry.getIdentityMediationUnits();
 
         if (logger.isDebugEnabled())
-            logger.debug("Scanning in "+ identityMediationUnits.size() +" Identity Mediation Units " +
+            logger.debug("Scanning in " + identityMediationUnits.size() + " Identity Mediation Units " +
                     "for IDBus Http Camel Consumer [" + consumerKey + "]");
 
         for (IdentityMediationUnit identityMediationUnit : identityMediationUnits) {
@@ -193,7 +195,7 @@ public class OsgiIDBusServlet extends CamelContinuationServlet {
 
         org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext wac =
                 (org.springframework.osgi.web.context.support.OsgiBundleXmlWebApplicationContext)
-                WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+                        WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 
         if (wac == null) {
             logger.error("Spring application context not found in servlet context");
@@ -202,7 +204,7 @@ public class OsgiIDBusServlet extends CamelContinuationServlet {
 
         BundleContext bc = wac.getBundleContext();
 
-        for (Bundle b : bc.getBundles()) {  
+        for (Bundle b : bc.getBundles()) {
             if (b.getRegisteredServices() != null) {
 
                 if (logger.isTraceEnabled())
@@ -229,10 +231,10 @@ public class OsgiIDBusServlet extends CamelContinuationServlet {
                     if (logger.isTraceEnabled())
                         logger.trace("ServiceReference:<<" + r + ">> [" + r.getProperty("service.id") + "]" + props);
                 }
-                
+
             } else {
                 if (logger.isTraceEnabled())
-                    logger.trace("(" + b.getBundleId() + ") " + b.getSymbolicName() + "services:<null>");  
+                    logger.trace("(" + b.getBundleId() + ") " + b.getSymbolicName() + "services:<null>");
             }
         }
 
