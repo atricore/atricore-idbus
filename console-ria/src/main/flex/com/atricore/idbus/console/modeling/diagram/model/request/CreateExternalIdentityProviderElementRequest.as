@@ -20,17 +20,24 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.model.request {
-import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.IdentityAppliance;
 
-public class RemoveServiceProviderElementRequest {
-    private var _serviceProvider:ServiceProvider;
+public class CreateExternalIdentityProviderElementRequest {
+    private var _identityAppliance:IdentityAppliance;
+    private var _notationalElementId:String;
 
-    public function RemoveServiceProviderElementRequest(serviceProvider:ServiceProvider) {
-        _serviceProvider = serviceProvider;
+    public function CreateExternalIdentityProviderElementRequest(identityAppliance:IdentityAppliance, notationalElementId:String) {
+        _identityAppliance = identityAppliance;
+        _notationalElementId = notationalElementId;
     }
 
-    public function get serviceProvider():ServiceProvider {
-        return _serviceProvider;
+    public function get identityAppliance():IdentityAppliance {
+        return _identityAppliance;
     }
+
+    public function get notationalElementId():String {
+        return _notationalElementId;
+    }
+
 }
 }

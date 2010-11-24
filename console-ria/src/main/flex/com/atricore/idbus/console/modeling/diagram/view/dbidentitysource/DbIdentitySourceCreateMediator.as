@@ -44,15 +44,15 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
     private var _newDbIdentitySource:DbIdentitySource;
 
     /*
-    private var _uploadedFile:ByteArray;
-    private var _uploadedFileName:String;
-    
-    [Bindable]
-    private var _fileRef:FileReference;
+     private var _uploadedFile:ByteArray;
+     private var _uploadedFileName:String;
 
-    [Bindable]
-    public var _selectedFiles:ArrayCollection;
-    */
+     [Bindable]
+     private var _fileRef:FileReference;
+
+     [Bindable]
+     public var _selectedFiles:ArrayCollection;
+     */
 
     [Bindable]
     public var _jdbcDrivers:ArrayCollection;
@@ -74,9 +74,9 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
             view.btnOk.removeEventListener(MouseEvent.CLICK, handleDbIdentitySourceSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
             /*if (_fileRef != null) {
-                _fileRef.removeEventListener(Event.SELECT, fileSelectHandler);
-                _fileRef.removeEventListener(Event.COMPLETE, uploadCompleteHandler);
-            }*/
+             _fileRef.removeEventListener(Event.SELECT, fileSelectHandler);
+             _fileRef.removeEventListener(Event.COMPLETE, uploadCompleteHandler);
+             }*/
             view.driver.removeEventListener(Event.CHANGE, handleDriverChange);
         }
 
@@ -90,13 +90,14 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
 
         /*// upload bindings
-        view.driver.addEventListener(MouseEvent.CLICK, browseHandler);
-        BindingUtils.bindProperty(view.driver, "dataProvider", this, "_selectedFiles");*/
+         view.driver.addEventListener(MouseEvent.CLICK, browseHandler);
+         BindingUtils.bindProperty(view.driver, "dataProvider", this, "_selectedFiles");*/
 
         BindingUtils.bindProperty(view.driver, "dataProvider", this, "_jdbcDrivers");
         view.driver.addEventListener(Event.CHANGE, handleDriverChange);
         sendNotification(ApplicationFacade.LIST_JDBC_DRIVERS);
         view.focusManager.setFocus(view.userRepositoryName);
+        resetForm();
     }
 
     private function resetForm():void {
@@ -105,24 +106,24 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         view.connectionUrl.text = "";
         view.dbUsername.text = "";
         view.dbPassword.text = "";
-        
-        view.userQuery.text = "";
-        view.rolesQuery.text = "";
-        view.credentialsQuery.text = "";
-        view.propertiesQuery.text = "";
-        view.credentialsUpdate.text = "";
-        view.relayCredentialQuery.text = "";
+
+        view.userQuery.text = "SELECT LOGIN AS NAME FROM JOSSO_USER WHERE LOGIN = ?";
+        view.rolesQuery.text = "SELECT NAME AS ROLE FROM JOSSO_USER_ROLE WHERE LOGIN = ?";
+        view.credentialsQuery.text = "SELECT LOGIN AS USERNAME, PASSWORD FROM JOSSO_USER WHERE LOGIN = ?";
+        view.propertiesQuery.text = "SELECT NAME, VALUE FROM JOSSO_USER_PROPERTY WHERE LOGIN = ?";
+        view.credentialsUpdate.text = "UPDATE JOSSO_USER SET PASSWORD = ? WHERE LOGIN = ?";
+        view.relayCredentialQuery.text = "SELECT LOGIN FROM JOSSO_USER WHERE #?# = ?";
 
         _jdbcDrivers = new ArrayCollection();
 
         /*_fileRef = null;
-        _selectedFiles = new ArrayCollection();
-        view.driver.prompt = "Browse Driver";
-        view.lblUploadMsg.text = "";
-        view.lblUploadMsg.visible = false;
+         _selectedFiles = new ArrayCollection();
+         view.driver.prompt = "Browse Driver";
+         view.lblUploadMsg.text = "";
+         view.lblUploadMsg.visible = false;
 
-        _uploadedFile = null;
-        _uploadedFileName = null;*/
+         _uploadedFile = null;
+         _uploadedFileName = null;*/
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -149,11 +150,11 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         dbIdentitySource.relayCredentialQueryString = view.relayCredentialQuery.text;
 
         /*var driver:Resource = new Resource();
-        driver.name = _uploadedFileName.substring(0, _uploadedFileName.lastIndexOf("."));
-        driver.displayName = _uploadedFileName;
-        driver.uri = _uploadedFileName;
-        driver.value = _uploadedFile;
-        dbIdentitySource.driver = driver;*/
+         driver.name = _uploadedFileName.substring(0, _uploadedFileName.lastIndexOf("."));
+         driver.displayName = _uploadedFileName;
+         driver.uri = _uploadedFileName;
+         driver.value = _uploadedFile;
+         dbIdentitySource.driver = driver;*/
 
         _newDbIdentitySource = dbIdentitySource;
     }
@@ -161,18 +162,21 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
     private function handleDbIdentitySourceSave(event:MouseEvent):void {
         if (validate(true)) {
             /*if (_selectedFiles == null || _selectedFiles.length == 0) {
-                view.lblUploadMsg.text = "You must select a jdbc driver!";
-                view.lblUploadMsg.setStyle("color", "Red");
-                view.lblUploadMsg.visible = true;
-                event.stopImmediatePropagation();
-                return;
-            } else {
-                _fileRef.load();
-            }*/
+             view.lblUploadMsg.text = "You must select a jdbc driver!";
+             view.lblUploadMsg.setStyle("color", "Red");
+             view.lblUploadMsg.visible = true;
+             event.stopImmediatePropagation();
+             return;
+             } else {
+             _fileRef.load();
+             }*/
             saveDbIdentitySource();
         }
         else {
             event.stopImmediatePropagation();
+            if (view.pwvPasswords.source.errorString != "") {
+                view.focusManager.setFocus(view.dbPassword);
+            }
         }
     }
 
@@ -196,39 +200,39 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
     /*
-    // upload functions
-    private function browseHandler(event:MouseEvent):void {
-        if (_fileRef == null) {
-            _fileRef = new FileReference();
-            _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
-            _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
-        }
-        var fileFilter:FileFilter = new FileFilter("JAR(*.jar)", "*.jar");
-        var fileTypes:Array = new Array(fileFilter);
-        _fileRef.browse(fileTypes);
-    }
+     // upload functions
+     private function browseHandler(event:MouseEvent):void {
+     if (_fileRef == null) {
+     _fileRef = new FileReference();
+     _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
+     _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
+     }
+     var fileFilter:FileFilter = new FileFilter("JAR(*.jar)", "*.jar");
+     var fileTypes:Array = new Array(fileFilter);
+     _fileRef.browse(fileTypes);
+     }
 
-    private function fileSelectHandler(evt:Event):void {
-        view.driver.prompt = null;
-        _selectedFiles = new ArrayCollection();
-        _selectedFiles.addItem(_fileRef.name);
-        view.driver.selectedIndex = 0;
-        
-        view.lblUploadMsg.text = "";
-        view.lblUploadMsg.visible = false;
-    }
+     private function fileSelectHandler(evt:Event):void {
+     view.driver.prompt = null;
+     _selectedFiles = new ArrayCollection();
+     _selectedFiles.addItem(_fileRef.name);
+     view.driver.selectedIndex = 0;
 
-    private function uploadCompleteHandler(event:Event):void {
-        _uploadedFile = _fileRef.data;
-        _uploadedFileName = _fileRef.name;
+     view.lblUploadMsg.text = "";
+     view.lblUploadMsg.visible = false;
+     }
 
-        _fileRef = null;
-        _selectedFiles = new ArrayCollection();
-        view.driver.prompt = "Browse Driver";
-        
-        saveDbIdentitySource();
-    }
-    */
+     private function uploadCompleteHandler(event:Event):void {
+     _uploadedFile = _fileRef.data;
+     _uploadedFileName = _fileRef.name;
+
+     _fileRef = null;
+     _selectedFiles = new ArrayCollection();
+     view.driver.prompt = "Browse Driver";
+
+     saveDbIdentitySource();
+     }
+     */
     protected function get view():DbIdentitySourceCreateForm {
         return viewComponent as DbIdentitySourceCreateForm;
     }
@@ -238,7 +242,7 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         _validators.push(view.driverValidator);
         _validators.push(view.connUrlValidator);
         _validators.push(view.dbUsernameValidator);
-        _validators.push(view.dbPasswordValidator);
+        _validators.push(view.pwvPasswords);
     }
 
     override public function listNotificationInterests():Array {

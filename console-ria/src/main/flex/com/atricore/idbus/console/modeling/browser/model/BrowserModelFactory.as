@@ -30,6 +30,8 @@ import com.atricore.idbus.console.services.dto.BindingProvider;
 import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
+import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
@@ -101,6 +103,10 @@ public class BrowserModelFactory {
             if (provider is ServiceProvider) {
                 providerNode.icon = EmbeddedIcons.spMiniIcon;
             } else if (provider is IdentityProvider) {
+                providerNode.icon = EmbeddedIcons.idpMiniIcon;
+            } else if (provider is ExternalServiceProvider) {
+                providerNode.icon = EmbeddedIcons.spMiniIcon;
+            } else if (provider is ExternalIdentityProvider) {
                 providerNode.icon = EmbeddedIcons.idpMiniIcon;
             } else if (provider is BindingProvider) {
                 providerNode.icon = EmbeddedIcons.bpMiniIcon;

@@ -24,8 +24,8 @@ public class DiagramElementTypes {
     public static const IDENTITY_PROVIDER_ELEMENT_TYPE:int = 0;
     public static const SERVICE_PROVIDER_ELEMENT_TYPE:int = 1;
     public static const IDENTITY_APPLIANCE_ELEMENT_TYPE = 2;
-//    public static const IDP_CHANNEL_ELEMENT_TYPE:int = 3;
-//    public static const SP_CHANNEL_ELEMENT_TYPE:int = 4;
+    public static const EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE:int = 3;
+    public static const EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE:int = 4;
     public static const DB_IDENTITY_SOURCE_ELEMENT_TYPE = 5;
     public static const FEDERATED_CONNECTION_ELEMENT_TYPE = 6;
     public static const LDAP_IDENTITY_SOURCE_ELEMENT_TYPE = 7;

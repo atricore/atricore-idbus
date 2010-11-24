@@ -88,6 +88,7 @@ public class EditUserMediator extends IocFormMediator
         _validators.push(view.firstnameUserValidator);
         _validators.push(view.lastnameUserValidator);
         _validators.push(view.userEmailValidator);
+        _validators.push(view.pwvPasswords);
     }
 
     override public function listNotificationInterests():Array {

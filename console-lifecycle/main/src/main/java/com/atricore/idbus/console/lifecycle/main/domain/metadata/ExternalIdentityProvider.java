@@ -9,13 +9,4 @@ package com.atricore.idbus.console.lifecycle.main.domain.metadata;
  */
 public class ExternalIdentityProvider extends FederatedProvider {
 
-    private Resource metadata;
-
-    public Resource getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Resource metadata) {
-        this.metadata = metadata;
-    }
 }
