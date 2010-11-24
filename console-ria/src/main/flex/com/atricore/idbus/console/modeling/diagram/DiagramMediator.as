@@ -39,6 +39,8 @@ import com.atricore.idbus.console.modeling.diagram.model.GraphDataManager;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateDbIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecutionEnvironmentElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalIdentityProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
@@ -48,6 +50,8 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateServicePr
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateXmlIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalIdentityProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityLookupElementRequest;
@@ -61,6 +65,8 @@ import com.atricore.idbus.console.services.dto.Activation;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
+import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
@@ -284,6 +290,44 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
 
                         break;
+                    case DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE:
+                        // assert that source end is an Identity Appliance
+                        //                            if (_currentlySelectedNode.data is IdentityAppliance) {
+                        //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
+                        var ownerIdentityAppliance:IdentityAppliance = _identityAppliance;
+
+                        var ceip:CreateExternalIdentityProviderElementRequest = new CreateExternalIdentityProviderElementRequest(
+                                ownerIdentityAppliance,
+                            //                                        _currentlySelectedNode.stringid
+                                null
+                                );
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT, ceip);
+                        //                            }
+
+
+                        break;
+                    case DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE:
+                        // assert that source end is an Identity Appliance
+                        //                            if (_currentlySelectedNode.data is IdentityAppliance) {
+                        //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
+                        ownerIdentityAppliance = _identityAppliance;
+
+                        var cesp:CreateExternalServiceProviderElementRequest = new CreateExternalServiceProviderElementRequest(
+                                ownerIdentityAppliance,
+                            //                                        _currentlySelectedNode.stringid
+                                null
+                                );
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_EXTERNAL_SERVICE_PROVIDER_ELEMENT, cesp);
+                        //                            }
+
+
+                        break;
                     case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                         ownerIdentityAppliance = _identityAppliance;
 
@@ -440,6 +484,24 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT, rsp);
+                            break;
+                        case DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE:
+                            var externalIdentityProvider:ExternalIdentityProvider = _currentlySelectedNode.data as ExternalIdentityProvider;
+
+                            var reip:RemoveExternalIdentityProviderElementRequest = new RemoveExternalIdentityProviderElementRequest(externalIdentityProvider);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT, reip);
+                            break;
+                        case DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE:
+                            var externalServiceProvider:ExternalServiceProvider = _currentlySelectedNode.data as ExternalServiceProvider;
+
+                            var resp:RemoveExternalServiceProviderElementRequest = new RemoveExternalServiceProviderElementRequest(externalServiceProvider);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT, resp);
                             break;
                         case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                             var identityVault:EmbeddedIdentitySource = _currentlySelectedNode.data as EmbeddedIdentitySource;
@@ -839,6 +901,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 elementType = DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE;
             } else if (node.data is ServiceProvider) {
                 elementType = DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE;
+            } else if (node.data is ExternalIdentityProvider) {
+                elementType = DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE;
+            } else if (node.data is ExternalServiceProvider) {
+                elementType = DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE;
             } else if (node.data is DbIdentitySource) {
                 elementType = DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE;
             } else if (node.data is EmbeddedIdentitySource) {

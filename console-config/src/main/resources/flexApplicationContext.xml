@@ -68,6 +68,10 @@
             class="com.atricore.idbus.console.modeling.main.controller.ServiceProviderRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="externalServiceProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ExternalServiceProviderRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="deployIdentityApplianceCommand"
             class="com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -108,6 +112,10 @@
     <!--</object>-->
     <object id="identityProviderRemoveCommand"
             class="com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="externalIdentityProviderRemoveCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ExternalIdentityProviderRemoveCommand">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="activationRemoveCommand"
@@ -252,6 +260,10 @@
             class="com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="externalIdentityProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.externalidp.ExternalIdentityProviderCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="identityVaultCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -314,6 +326,10 @@
     <!--</object>-->
     <object id="serviceProviderCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="externalServiceProviderCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.externalsp.ExternalServiceProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="activationCreateMediator"
@@ -414,6 +430,8 @@
         <property name="manageCertificateMediator" ref="manageCertificateMediator"/>
         <property name="identityProviderMediator" ref="identityProviderCreateMediator"/>
         <property name="serviceProviderMediator" ref="serviceProviderCreateMediator"/>
+        <property name="externalIdentityProviderMediator" ref="externalIdentityProviderCreateMediator"/>
+        <property name="externalServiceProviderMediator" ref="externalServiceProviderCreateMediator"/>
         <!--<property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>-->
         <!--<property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>-->
         <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
@@ -472,6 +490,7 @@
         <property name="identityApplianceListLoadCommand" ref="identityApplianceListLoadCommand"/>
         <property name="identityApplianceRemoveCommand" ref="identityApplianceRemoveCommand"/>
         <property name="serviceProviderRemoveCommand" ref="serviceProviderRemoveCommand"/>
+        <property name="externalServiceProviderRemoveCommand" ref="externalServiceProviderRemoveCommand"/>
         <property name="deployIdentityApplianceCommand" ref="deployIdentityApplianceCommand"/>
         <property name="undeployIdentityApplianceCommand" ref="undeployIdentityApplianceCommand"/>
         <property name="startIdentityApplianceCommand" ref="startIdentityApplianceCommand"/>
@@ -481,6 +500,7 @@
         <!--<property name="spChannelRemoveCommand" ref="spChannelRemoveCommand"/>-->
         <!--<property name="idpChannelRemoveCommand" ref="idpChannelRemoveCommand"/>-->
         <property name="identityProviderRemoveCommand" ref="identityProviderRemoveCommand"/>
+        <property name="externalIdentityProviderRemoveCommand" ref="externalIdentityProviderRemoveCommand"/>
         <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
         <property name="identityLookupRemoveCommand" ref="identityLookupRemoveCommand"/>
         <property name="federatedConnectionRemoveCommand" ref="federatedConnectionRemoveCommand"/>
@@ -520,6 +540,7 @@
         <property name="propertySheetMediator" ref="propertySheetMediator"/>
         <property name="diagramMediator" ref="diagramMediator"/>
         <property name="identityProviderCreateMediator" ref="identityProviderCreateMediator"/>
+        <property name="externalIdentityProviderCreateMediator" ref="externalIdentityProviderCreateMediator"/>
         <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator" />
         <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator" />
@@ -536,6 +557,7 @@
         <!--<property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>-->
         <!--<property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>-->
         <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>
+        <property name="externalServiceProviderCreateMediator" ref="externalServiceProviderCreateMediator"/>
         <property name="browserMediator" ref="browserMediator"/>
         <property name="paletteMediator" ref="paletteMediator"/>
         <property name="accountManagementMediator" ref="accountManagementMediator"/>

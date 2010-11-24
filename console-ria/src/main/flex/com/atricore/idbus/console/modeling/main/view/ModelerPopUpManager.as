@@ -47,6 +47,10 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.web
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.externalidp.ExternalIdentityProviderCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.externalidp.ExternalIdentityProviderCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.externalsp.ExternalServiceProviderCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.externalsp.ExternalServiceProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateForm;
@@ -79,6 +83,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _manageCertificateMediator:ManageCertificateMediator;
     private var _identityProviderMediator:IdentityProviderCreateMediator;
     private var _serviceProviderMediator:ServiceProviderCreateMediator;
+    private var _externalIdentityProviderMediator:ExternalIdentityProviderCreateMediator;
+    private var _externalServiceProviderMediator:ExternalServiceProviderCreateMediator;
     private var _identityVaultCreateMediator:IdentityVaultCreateMediator;
     private var _dbIdentitySourceCreateMediator:DbIdentitySourceCreateMediator;
     private var _ldapIdentitySourceCreateMediator:LdapIdentitySourceCreateMediator;
@@ -102,6 +108,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     // views
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
     private var _serviceProviderCreateForm:ServiceProviderCreateForm;
+    private var _externalIdentityProviderCreateForm:ExternalIdentityProviderCreateForm;
+    private var _externalServiceProviderCreateForm:ExternalServiceProviderCreateForm;
     private var _identityVaultCreateForm:IdentityVaultCreateForm;
     private var _dbIdentitySourceCreateForm:DbIdentitySourceCreateForm;
     private var _ldapIdentitySourceCreateForm:LdapIdentitySourceCreateForm;
@@ -150,6 +158,22 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set serviceProviderMediator(value:ServiceProviderCreateMediator):void {
         _serviceProviderMediator = value;
+    }
+
+    public function get externalIdentityProviderMediator():ExternalIdentityProviderCreateMediator {
+        return _externalIdentityProviderMediator;
+    }
+
+    public function set externalIdentityProviderMediator(value:ExternalIdentityProviderCreateMediator):void {
+        _externalIdentityProviderMediator = value;
+    }
+
+    public function get externalServiceProviderMediator():ExternalServiceProviderCreateMediator {
+        return _externalServiceProviderMediator;
+    }
+
+    public function set externalServiceProviderMediator(value:ExternalServiceProviderCreateMediator):void {
+        _externalServiceProviderMediator = value;
     }
 
     public function get identityVaultCreateMediator():IdentityVaultCreateMediator {
@@ -345,6 +369,49 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleServiceProviderCreateFormCreated(event:FlexEvent):void {
         serviceProviderMediator.setViewComponent(_serviceProviderCreateForm);
         serviceProviderMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateExternalIdentityProviderWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createExternalIdentityProviderCreateForm();
+        _popup.title = "New External Identity Provider Definition";
+        _popup.width = 410;
+        _popup.height = 190;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_externalIdentityProviderCreateForm);
+        //on show call bindForm()
+    }
+
+    private function createExternalIdentityProviderCreateForm():void {
+        _externalIdentityProviderCreateForm = new ExternalIdentityProviderCreateForm();
+        _externalIdentityProviderCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalIdentityProviderCreateFormCreated);
+    }
+
+    private function handleExternalIdentityProviderCreateFormCreated(event:FlexEvent):void {
+        externalIdentityProviderMediator.setViewComponent(_externalIdentityProviderCreateForm);
+        externalIdentityProviderMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateExternalServiceProviderWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createExternalServiceProviderCreateForm();
+        _popup.title = "New External Service Provider Definition";
+        _popup.width = 410;
+        _popup.height = 190;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_externalServiceProviderCreateForm);
+    }
+
+    private function createExternalServiceProviderCreateForm():void {
+        _externalServiceProviderCreateForm = new ExternalServiceProviderCreateForm();
+        _externalServiceProviderCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalServiceProviderCreateFormCreated);
+    }
+
+    private function handleExternalServiceProviderCreateFormCreated(event:FlexEvent):void {
+        externalServiceProviderMediator.setViewComponent(_externalServiceProviderCreateForm);
+        externalServiceProviderMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateIdentityVaultWindow(notification:INotification):void {

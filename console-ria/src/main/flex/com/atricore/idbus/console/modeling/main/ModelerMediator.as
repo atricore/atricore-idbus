@@ -27,6 +27,8 @@ import com.atricore.idbus.console.modeling.browser.BrowserMediator;
 import com.atricore.idbus.console.modeling.diagram.DiagramMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecutionEnvironmentElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalIdentityProviderElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityLookupElementRequest;
@@ -284,6 +286,10 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             ApplicationFacade.REMOVE_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.CREATE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT,
+            ApplicationFacade.CREATE_EXTERNAL_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT,
             ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.REMOVE_IDENTITY_SOURCE_ELEMENT,
@@ -370,6 +376,20 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             //                //                 TODO: Perform UI handling for confirming removal action
             //                sendNotification(ApplicationFacade.SP_CHANNEL_REMOVE, rspc.spChannel);
             //                break;
+            case ApplicationFacade.CREATE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT:
+                popupManager.showCreateExternalIdentityProviderWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT:
+                var reip:RemoveExternalIdentityProviderElementRequest = RemoveExternalIdentityProviderElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.EXTERNAL_IDENTITY_PROVIDER_REMOVE, reip.identityProvider);
+                break;
+            case ApplicationFacade.CREATE_EXTERNAL_SERVICE_PROVIDER_ELEMENT:
+                popupManager.showCreateExternalServiceProviderWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT:
+                var resp:RemoveExternalServiceProviderElementRequest = RemoveExternalServiceProviderElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, resp.serviceProvider);
+                break;
             case ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT:
                 popupManager.showCreateIdentityVaultWindow(notification);
                 break;
