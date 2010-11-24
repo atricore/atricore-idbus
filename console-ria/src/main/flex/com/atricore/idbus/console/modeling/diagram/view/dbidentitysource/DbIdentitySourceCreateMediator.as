@@ -97,6 +97,7 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         view.driver.addEventListener(Event.CHANGE, handleDriverChange);
         sendNotification(ApplicationFacade.LIST_JDBC_DRIVERS);
         view.focusManager.setFocus(view.userRepositoryName);
+        resetForm();
     }
 
     private function resetForm():void {
@@ -126,11 +127,6 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
 
         FormUtility.clearValidationErrors(_validators);
     }
-
-    override public function bindForm():void {
-        resetForm();
-    }
-
 
     private function handleDriverChange(event:Event):void {
         view.connectionUrl.text = view.driver.selectedItem.defaultUrl;
@@ -178,6 +174,9 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         }
         else {
             event.stopImmediatePropagation();
+            if (view.pwvPasswords.source.errorString != "") {
+                view.focusManager.setFocus(view.dbPassword);
+            }
         }
     }
 
@@ -243,7 +242,7 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
         _validators.push(view.driverValidator);
         _validators.push(view.connUrlValidator);
         _validators.push(view.dbUsernameValidator);
-        _validators.push(view.dbPasswordValidator);
+        _validators.push(view.pwvPasswords);
     }
 
     override public function listNotificationInterests():Array {
@@ -257,7 +256,6 @@ public class DbIdentitySourceCreateMediator extends IocFormMediator {
                 _jdbcDrivers = projectProxy.jdbcDrivers;
                 break;
         }
-        bindForm();
     }
 }
 }

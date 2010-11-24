@@ -46,8 +46,11 @@
                 trigger="{btnOk}" triggerEvent="click"/>
         <mx:StringValidator id="dbUsernameValidator" source="{dbUsername}" required="true" property="text"
                 trigger="{btnOk}" triggerEvent="click"/>
-        <mx:StringValidator id="dbPasswordValidator" source="{dbPassword}" required="true" property="text"
-                trigger="{btnOk}" triggerEvent="click"/>
+
+        <utils:PasswordValidator id="pwvPasswords" source="{dbPassword}" property="text" required="true"
+                                 matchSource="{dbPasswordRetype}" matchProperty="text" defaultLength="-1"
+                                 noMatchError="Passwords do not match"/>
+
     </fx:Declarations>
 
     <s:HGroup>
@@ -86,8 +89,12 @@
                     <s:TextInput id="dbUsername" width="200"/>
                 </mx:FormItem>
 
-                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.dbPassword')}:" required="true">
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.dbPassword')}:" >
                     <s:TextInput id="dbPassword" width="200" displayAsPassword="true"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'dbIdentitySource.dbPasswordRetype')}:" >
+                    <mx:TextInput id="dbPasswordRetype" width="200" displayAsPassword="true"/>
                 </mx:FormItem>
 
                 <mx:FormItem>

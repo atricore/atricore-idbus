@@ -9,6 +9,7 @@ public class PasswordValidator extends Validator
     private var _matchSource: Object = null;
     private var _matchProperty: String = null;
     private var _noMatchError: String;
+    private var _defaultLength: Number;
 
     [Inspectable(category="General", defaultValue="Fields did not match")]
     public function set noMatchError( argError:String):void{
@@ -16,6 +17,14 @@ public class PasswordValidator extends Validator
     }
     public function get noMatchError():String{
         return _noMatchError;
+    }
+
+    [Inspectable(category="General", defaultValue="-1")]
+    public function set defaultLength( argNum:Number):void{
+        _defaultLength = argNum;
+    }
+    public function get defaultLength():Number{
+        return _defaultLength;
     }
 
     [Inspectable(category="General", defaultValue="null")]
@@ -40,24 +49,20 @@ public class PasswordValidator extends Validator
         // Call base class doValidation().
         var results:Array = super.doValidation(value.ours);
         var val:String = value.ours ? String(value.ours) : "";
-     
+
         if (results.length > 0 || ((val.length == 0) && !required)) {
             return results;
         }else{
             if(val != value.toMatch){
                 results.length = 0;
                 results.push( new ValidationResult(true,null,"mismatch",_noMatchError));
-                return results;
             }
-            if (val.length < 8) {
+            if (_defaultLength!=-1 && val.length < _defaultLength) {
                 results.push( new ValidationResult(true, null, "Password length",
-                        "Password must have at least 8 characters."));
-                return results;
-            }
-            else{
-                return results;
+                        "Password must have at least " + _defaultLength + " characters."));
             }
         }
+        return results;
     }
 
     override protected function getValueFromSource():Object {
