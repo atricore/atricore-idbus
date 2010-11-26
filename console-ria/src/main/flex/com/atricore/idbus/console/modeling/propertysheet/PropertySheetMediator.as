@@ -43,6 +43,8 @@ import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironme
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.wasce.WASCEExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.weblogic.WeblogicExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.windowsiis.WindowsIISExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.externalidp.ExternalIdentityProviderCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.externalsp.ExternalServiceProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultLookupSection;
@@ -69,6 +71,8 @@ import com.atricore.idbus.console.services.dto.Connection;
 import com.atricore.idbus.console.services.dto.DbIdentitySource;
 import com.atricore.idbus.console.services.dto.EmbeddedIdentitySource;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
+import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceState;
@@ -133,6 +137,8 @@ public class PropertySheetMediator extends IocMediator {
     private var _iaCoreSection:IdentityApplianceCoreSection;
     private var _ipCoreSection:IdentityProviderCoreSection;
     private var _spCoreSection:ServiceProviderCoreSection;
+    private var _externalIdpCoreSection:ExternalIdentityProviderCoreSection;
+    private var _externalSpCoreSection:ExternalServiceProviderCoreSection;
     private var _embeddedDbVaultCoreSection:EmbeddedDBIdentityVaultCoreSection;
     private var _externalDbVaultCoreSection:ExternalDBIdentityVaultCoreSection;
     private var _ldapIdentitySourceCoreSection:LdapIdentitySourceCoreSection;
@@ -168,6 +174,9 @@ public class PropertySheetMediator extends IocMediator {
     
     protected var _validators : Array;
 
+    [Bindable]
+    public var _jdbcDrivers:ArrayCollection;
+    
     // keystore
     private var _uploadedFile:ByteArray;
     private var _uploadedFileName:String;
@@ -178,21 +187,16 @@ public class PropertySheetMediator extends IocMediator {
     [Bindable]
     public var _selectedFiles:ArrayCollection;
 
-    /*
-    // jdbc driver
-    private var _uploadedDriver:ByteArray;
-    private var _uploadedDriverName:String;
+    // metadata file
+    private var _uploadedMetadata:ByteArray;
+    private var _uploadedMetadataName:String;
 
     [Bindable]
-    private var _driverFileRef:FileReference;
+    private var _metadataFileRef:FileReference;
 
     [Bindable]
-    public var _selectedDriverFiles:ArrayCollection;
-    */
+    public var _selectedMetadataFiles:ArrayCollection;
 
-    [Bindable]
-    public var _jdbcDrivers:ArrayCollection;
-    
     public function PropertySheetMediator(name : String = null, viewComp:PropertySheetView = null) {
         super(name, viewComp);
     }
@@ -260,6 +264,10 @@ public class PropertySheetMediator extends IocMediator {
 //                    enableIdpChannelPropertyTabs();
 //                } else if (_currentIdentityApplianceElement is ServiceProviderChannel) {
 //                    enableSpChannelPropertyTabs();
+                } else if (_currentIdentityApplianceElement is ExternalIdentityProvider) {
+                    enableExternalIdentityProviderPropertyTabs();
+                } else if (_currentIdentityApplianceElement is ExternalServiceProvider) {
+                    enableExternalServiceProviderPropertyTabs();
                 } else if (_currentIdentityApplianceElement is IdentitySource) {
                     if (_currentIdentityApplianceElement is EmbeddedIdentitySource) {
                         enableIdentityVaultPropertyTabs();
@@ -1177,6 +1185,170 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
+    protected function enableExternalIdentityProviderPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        // Core Tab
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _externalIdpCoreSection = new ExternalIdentityProviderCoreSection();
+        corePropertyTab.addElement(_externalIdpCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _externalIdpCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalIdentityProviderCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalIdentityProviderCorePropertyTabRollOut);
+    }
+
+    private function handleExternalIdentityProviderCorePropertyTabCreationComplete(event:Event):void {
+        var identityProvider:ExternalIdentityProvider;
+
+        identityProvider = _currentIdentityApplianceElement as ExternalIdentityProvider;
+
+        // if identityProvider is null that means some other element was selected before completing this
+        if (identityProvider != null) {
+            resetUploadMetadataFields();
+            
+            // bind view
+            _externalIdpCoreSection.identityProviderName.text = identityProvider.name;
+            _externalIdpCoreSection.identityProvDescription.text = identityProvider.description;
+
+            _externalIdpCoreSection.identityProviderName.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalIdpCoreSection.identityProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _externalIdpCoreSection.metadataFile.addEventListener(MouseEvent.CLICK, browseMetadataHandler);
+            BindingUtils.bindProperty(_externalIdpCoreSection.metadataFile, "dataProvider", this, "_selectedMetadataFiles");
+
+            //clear all existing validators and add idp core section validators
+            _validators = [];
+            _validators.push(_externalIdpCoreSection.nameValidator);
+        }
+    }
+
+    private function handleExternalIdentityProviderCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+
+            if (_selectedMetadataFiles != null && _selectedMetadataFiles.length > 0) {
+                _metadataFileRef.load();
+            } else {
+                updateExternalIdentityProvider();
+            }
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+    }
+
+    private function updateExternalIdentityProvider():void {
+        var identityProvider:ExternalIdentityProvider = _currentIdentityApplianceElement as ExternalIdentityProvider;
+
+        identityProvider.name = _externalIdpCoreSection.identityProviderName.text;
+        identityProvider.description = _externalIdpCoreSection.identityProvDescription.text;
+
+        if (_uploadedMetadata != null && _uploadedMetadataName != null) {
+            var resource:Resource = identityProvider.metadata;
+            resource.name = _uploadedMetadataName.substring(0, _uploadedMetadataName.lastIndexOf("."));
+            resource.displayName = _uploadedMetadataName;
+            resource.uri = _uploadedMetadataName;
+            resource.value = _uploadedMetadata;
+            identityProvider.metadata = resource;
+        }
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
+
+    protected function enableExternalServiceProviderPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        // Core Tab
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _externalSpCoreSection = new ExternalServiceProviderCoreSection();
+        corePropertyTab.addElement(_externalSpCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _externalSpCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalServiceProviderCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalServiceProviderCorePropertyTabRollOut);
+    }
+
+    private function handleExternalServiceProviderCorePropertyTabCreationComplete(event:Event):void {
+        var serviceProvider:ExternalServiceProvider;
+
+        serviceProvider = _currentIdentityApplianceElement as ExternalServiceProvider;
+
+        // if serviceProvider is null that means some other element was selected before completing this
+        if (serviceProvider != null) {
+            resetUploadMetadataFields();
+
+            // bind view
+            _externalSpCoreSection.serviceProviderName.text = serviceProvider.name;
+            _externalSpCoreSection.serviceProvDescription.text = serviceProvider.description;
+
+            _externalSpCoreSection.serviceProviderName.addEventListener(Event.CHANGE, handleSectionChange);
+            _externalSpCoreSection.serviceProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _externalSpCoreSection.metadataFile.addEventListener(MouseEvent.CLICK, browseMetadataHandler);
+            BindingUtils.bindProperty(_externalSpCoreSection.metadataFile, "dataProvider", this, "_selectedMetadataFiles");
+
+            //clear all existing validators and add idp core section validators
+            _validators = [];
+            _validators.push(_externalSpCoreSection.nameValidator);
+        }
+    }
+
+    private function handleExternalServiceProviderCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+
+            if (_selectedMetadataFiles != null && _selectedMetadataFiles.length > 0) {
+                _metadataFileRef.load();
+            } else {
+                updateExternalServiceProvider();
+            }
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+    }
+
+    private function updateExternalServiceProvider():void {
+        var serviceProvider:ExternalServiceProvider = _currentIdentityApplianceElement as ExternalServiceProvider;
+
+        serviceProvider.name = _externalSpCoreSection.serviceProviderName.text;
+        serviceProvider.description = _externalSpCoreSection.serviceProvDescription.text;
+
+        if (_uploadedMetadata != null && _uploadedMetadataName != null) {
+            var resource:Resource = serviceProvider.metadata;
+            resource.name = _uploadedMetadataName.substring(0, _uploadedMetadataName.lastIndexOf("."));
+            resource.displayName = _uploadedMetadataName;
+            resource.uri = _uploadedMetadataName;
+            resource.value = _uploadedMetadata;
+            serviceProvider.metadata = resource;
+        }
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
+
     protected function enableIdentityVaultPropertyTabs():void {
         // Attach embedded DB identity vault editor form to property tabbed view
         _propertySheetsViewStack.removeAllChildren();
@@ -1644,33 +1816,39 @@ public class PropertySheetMediator extends IocMediator {
         _federatedConnectionCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleFederatedConnectionCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleFederatedConnectionCorePropertyTabRollOut);
 
-        // SP Channel Tab
-        var spChannelPropertyTab:Group = new Group();
-        spChannelPropertyTab.id = "propertySheetSPChannelSection";
-        spChannelPropertyTab.name = "SP Channel";
-        spChannelPropertyTab.width = Number("100%");
-        spChannelPropertyTab.height = Number("100%");
-        spChannelPropertyTab.setStyle("borderStyle", "solid");
+        var connection:FederatedConnection = projectProxy.currentIdentityApplianceElement as FederatedConnection;
 
-        _federatedConnectionSPChannelSection = new FederatedConnectionSPChannelSection();
-        spChannelPropertyTab.addElement(_federatedConnectionSPChannelSection);
-        _propertySheetsViewStack.addNewChild(spChannelPropertyTab);
-        _federatedConnectionSPChannelSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleFederatedConnectionSpChannelPropertyTabCreationComplete);
-        spChannelPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleFederatedConnectionSpChannelPropertyTabRollOut);
+        // SP Channel Tab
+        if (connection.roleA is IdentityProvider || connection.roleB is IdentityProvider) {
+            var spChannelPropertyTab:Group = new Group();
+            spChannelPropertyTab.id = "propertySheetSPChannelSection";
+            spChannelPropertyTab.name = "SP Channel";
+            spChannelPropertyTab.width = Number("100%");
+            spChannelPropertyTab.height = Number("100%");
+            spChannelPropertyTab.setStyle("borderStyle", "solid");
+
+            _federatedConnectionSPChannelSection = new FederatedConnectionSPChannelSection();
+            spChannelPropertyTab.addElement(_federatedConnectionSPChannelSection);
+            _propertySheetsViewStack.addNewChild(spChannelPropertyTab);
+            _federatedConnectionSPChannelSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleFederatedConnectionSpChannelPropertyTabCreationComplete);
+            spChannelPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleFederatedConnectionSpChannelPropertyTabRollOut);
+        }
 
         //IDP Channel Tab
-        var idpChannelPropertyTab:Group = new Group();
-        idpChannelPropertyTab.id = "propertySheetIDPChannelSection";
-        idpChannelPropertyTab.name = "IDP Channel";
-        idpChannelPropertyTab.width = Number("100%");
-        idpChannelPropertyTab.height = Number("100%");
-        idpChannelPropertyTab.setStyle("borderStyle", "solid");
+        if (connection.roleA is ServiceProvider || connection.roleB is ServiceProvider) {
+            var idpChannelPropertyTab:Group = new Group();
+            idpChannelPropertyTab.id = "propertySheetIDPChannelSection";
+            idpChannelPropertyTab.name = "IDP Channel";
+            idpChannelPropertyTab.width = Number("100%");
+            idpChannelPropertyTab.height = Number("100%");
+            idpChannelPropertyTab.setStyle("borderStyle", "solid");
 
-        _federatedConnectionIDPChannelSection = new FederatedConnectionIDPChannelSection();
-        idpChannelPropertyTab.addElement(_federatedConnectionIDPChannelSection);
-        _propertySheetsViewStack.addNewChild(idpChannelPropertyTab);
-        _federatedConnectionIDPChannelSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleFederatedConnectionIdpChannelPropertyTabCreationComplete);
-        idpChannelPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleFederatedConnectionIdpChannelPropertyTabRollOut);
+            _federatedConnectionIDPChannelSection = new FederatedConnectionIDPChannelSection();
+            idpChannelPropertyTab.addElement(_federatedConnectionIDPChannelSection);
+            _propertySheetsViewStack.addNewChild(idpChannelPropertyTab);
+            _federatedConnectionIDPChannelSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleFederatedConnectionIdpChannelPropertyTabCreationComplete);
+            idpChannelPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleFederatedConnectionIdpChannelPropertyTabRollOut);
+        }
     }
 
     private function handleFederatedConnectionCorePropertyTabCreationComplete(event:Event):void {
@@ -3060,55 +3238,69 @@ public class PropertySheetMediator extends IocMediator {
         _certificateSection.keyPassword.enabled = enable;
     }
 
-    /*
-    // jdbc driver functions
-    private function browseDriverHandler(event:MouseEvent):void {
-        if (_driverFileRef == null) {
-            _driverFileRef = new FileReference();
-            _driverFileRef.addEventListener(Event.SELECT, driverSelectHandler);
-            _driverFileRef.addEventListener(Event.COMPLETE, uploadDriverCompleteHandler);
+    // metadata file upload functions
+    private function browseMetadataHandler(event:MouseEvent):void {
+        if (_metadataFileRef == null) {
+            _metadataFileRef = new FileReference();
+            _metadataFileRef.addEventListener(Event.SELECT, metadataSelectHandler);
+            _metadataFileRef.addEventListener(Event.COMPLETE, uploadMetadataCompleteHandler);
         }
-        var fileFilter:FileFilter = new FileFilter("JAR(*.jar)", "*.jar");
+        var fileFilter:FileFilter = new FileFilter("XML(*.xml)", "*.xml");
         var fileTypes:Array = new Array(fileFilter);
-        _driverFileRef.browse(fileTypes);
+        _metadataFileRef.browse(fileTypes);
     }
 
-    private function driverSelectHandler(evt:Event):void {
-        _externalDbVaultCoreSection.driver.prompt = null;
-        _selectedDriverFiles = new ArrayCollection();
-        _selectedDriverFiles.addItem(_driverFileRef.name);
-        _externalDbVaultCoreSection.driver.selectedIndex = 0;
-
-        _externalDbVaultCoreSection.lblUploadMsg.text = "";
-        _externalDbVaultCoreSection.lblUploadMsg.visible = false;
+    private function metadataSelectHandler(evt:Event):void {
+        if (_currentIdentityApplianceElement is ExternalIdentityProvider) {
+            _externalIdpCoreSection.metadataFile.prompt = null;
+            _selectedMetadataFiles = new ArrayCollection();
+            _selectedMetadataFiles.addItem(_metadataFileRef.name);
+            _externalIdpCoreSection.metadataFile.selectedIndex = 0;
+            _externalIdpCoreSection.lblUploadMsg.text = "";
+            _externalIdpCoreSection.lblUploadMsg.visible = false;
+        } else if (_currentIdentityApplianceElement is ExternalServiceProvider) {
+            _externalSpCoreSection.metadataFile.prompt = null;
+            _selectedMetadataFiles = new ArrayCollection();
+            _selectedMetadataFiles.addItem(_metadataFileRef.name);
+            _externalSpCoreSection.metadataFile.selectedIndex = 0;
+            _externalSpCoreSection.lblUploadMsg.text = "";
+            _externalSpCoreSection.lblUploadMsg.visible = false;
+        }
 
         _dirty = true;
     }
 
-    private function uploadDriverCompleteHandler(event:Event):void {
-        _uploadedDriver = _driverFileRef.data;
-        _uploadedDriverName = _driverFileRef.name;
+    private function uploadMetadataCompleteHandler(event:Event):void {
+        _uploadedMetadata = _metadataFileRef.data;
+        _uploadedMetadataName = _metadataFileRef.name;
 
-        _externalDbVaultCoreSection.lblUploadMsg.text = "Driver successfully saved.";
-        _externalDbVaultCoreSection.lblUploadMsg.setStyle("color", "Green");
-        _externalDbVaultCoreSection.lblUploadMsg.visible = true;
-        _externalDbVaultCoreSection.fadeFx.play([_externalDbVaultCoreSection.lblUploadMsg]);
+        _metadataFileRef = null;
+        _selectedMetadataFiles = new ArrayCollection();
 
-        _driverFileRef = null;
-        _selectedDriverFiles = new ArrayCollection();
-        _externalDbVaultCoreSection.driver.prompt = "Browse Driver";
-
-        updateDbIdentitySource();
+        if (_currentIdentityApplianceElement is ExternalIdentityProvider) {
+            _externalIdpCoreSection.lblUploadMsg.text = "Metadata file successfully saved.";
+            _externalIdpCoreSection.lblUploadMsg.setStyle("color", "Green");
+            _externalIdpCoreSection.lblUploadMsg.visible = true;
+            _externalIdpCoreSection.fadeFx.play([_externalIdpCoreSection.lblUploadMsg]);
+            _externalIdpCoreSection.metadataFile.prompt = "Browse metadata file";
+            updateExternalIdentityProvider();
+        } else if (_currentIdentityApplianceElement is ExternalServiceProvider) {
+            _externalSpCoreSection.lblUploadMsg.text = "Metadata file successfully saved.";
+            _externalSpCoreSection.lblUploadMsg.setStyle("color", "Green");
+            _externalSpCoreSection.lblUploadMsg.visible = true;
+            _externalSpCoreSection.fadeFx.play([_externalSpCoreSection.lblUploadMsg]);
+            _externalSpCoreSection.metadataFile.prompt = "Browse metadata file";
+            updateExternalServiceProvider();
+        }
     }
 
-    private function resetUploadDriverFields():void {
-        _driverFileRef = null;
-        _selectedDriverFiles = new ArrayCollection();
-        _uploadedDriver = null;
-        _uploadedDriverName = null;
+    private function resetUploadMetadataFields():void {
+        _metadataFileRef = null;
+        _selectedMetadataFiles = new ArrayCollection();
+        _uploadedMetadata = null;
+        _uploadedMetadataName = null;
     }
-    */
-    
+
     protected function clearPropertyTabs():void {
         // Attach appliance editor form to property tabbed view
         _propertySheetsViewStack.removeAllChildren();

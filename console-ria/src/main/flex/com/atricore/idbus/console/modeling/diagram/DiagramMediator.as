@@ -161,6 +161,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             _identityApplianceDiagram.removeEventListener(VNodesLinkedEvent.LINKING_CANCELED, linkingCanceledEventHandler);
             _identityApplianceDiagram.removeEventListener(VNodeCreationEvent.OPEN_CREATION_FORM, openDialogElementCreationFormEventHandler);
             _identityApplianceDiagram.removeEventListener(VNodeMovedEvent.VNODE_MOVED, nodeMovedEventHandler);
+            _identityApplianceDiagram.removeEventListener(VNodeMovedEvent.ALL_VNODES_MOVED, allNodesMovedEventHandler);
         }
 
         super.setViewComponent(viewComponent);
@@ -180,6 +181,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         _identityApplianceDiagram.addEventListener(VNodesLinkedEvent.LINKING_CANCELED, linkingCanceledEventHandler);
         _identityApplianceDiagram.addEventListener(VNodeCreationEvent.OPEN_CREATION_FORM, openDialogElementCreationFormEventHandler);
         _identityApplianceDiagram.addEventListener(VNodeMovedEvent.VNODE_MOVED, nodeMovedEventHandler);
+        _identityApplianceDiagram.addEventListener(VNodeMovedEvent.ALL_VNODES_MOVED, allNodesMovedEventHandler);
         _emptyNotationModel = <Graph/>;
 
         resetGraph();
@@ -883,6 +885,21 @@ public class DiagramMediator extends IocMediator implements IDisposable {
     }
 
     private function nodeMovedEventHandler(event:VNodeMovedEvent):void {
+        var node:INode = _identityApplianceDiagram.graph.nodeByStringId(event.vnodeId);
+        if (node != null) {
+            node.data.x = node.vnode.viewX + (0.2 * node.vnode.view.width) / 2.4;
+            node.data.y = node.vnode.viewY + (0.2 * node.vnode.view.height) / 2.4;;
+        }
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+    }
+
+    private function allNodesMovedEventHandler(event:VNodeMovedEvent):void {
+        for each (var node:INode in _identityApplianceDiagram.graph.nodes) {
+            if (node.vnode.view is NodeDetailedRenderer) {
+                node.data.x = node.vnode.viewX;
+                node.data.y = node.vnode.viewY;
+            }
+        }
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
     }
 

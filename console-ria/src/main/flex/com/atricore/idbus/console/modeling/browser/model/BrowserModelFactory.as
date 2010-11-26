@@ -105,9 +105,9 @@ public class BrowserModelFactory {
             } else if (provider is IdentityProvider) {
                 providerNode.icon = EmbeddedIcons.idpMiniIcon;
             } else if (provider is ExternalServiceProvider) {
-                providerNode.icon = EmbeddedIcons.spMiniIcon;
+                providerNode.icon = EmbeddedIcons.externalSpMiniIcon;
             } else if (provider is ExternalIdentityProvider) {
-                providerNode.icon = EmbeddedIcons.idpMiniIcon;
+                providerNode.icon = EmbeddedIcons.externalIdpMiniIcon;
             } else if (provider is BindingProvider) {
                 providerNode.icon = EmbeddedIcons.bpMiniIcon;
             }

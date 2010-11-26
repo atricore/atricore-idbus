@@ -2,7 +2,8 @@ package com.atricore.idbus.console.modeling.diagram.view.util {
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.modeling.diagram.DiagramElementTypes;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
-import com.atricore.idbus.console.services.dto.FederatedProvider;
+import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
+import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 
 import com.atricore.idbus.console.services.dto.IdentitySource;
@@ -21,8 +22,10 @@ public class DiagramUtil {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id && !nodeLinkExists(node1.node, node2.node) && !nodeLinkExists(node2.node, node1.node)) {
             // TODO: finish this
-            if ((node1.data is ServiceProvider && node2.data is IdentityProvider)
-                    || (node1.data is IdentityProvider && node2.data is ServiceProvider)) {                    
+            if ((node1.data is ServiceProvider && (node2.data is IdentityProvider || node2.data is ExternalIdentityProvider))
+                    || (node1.data is IdentityProvider && (node2.data is ServiceProvider || node2.data is ExternalServiceProvider))
+                    || (node1.data is ExternalServiceProvider && node2.data is IdentityProvider)
+                    || (node1.data is ExternalIdentityProvider && node2.data is ServiceProvider)) {
                 canBeLinked = true;
             }
         }
@@ -79,9 +82,9 @@ public class DiagramUtil {
             case DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.spMiniIcon;
             case DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE:
-                return EmbeddedIcons.idpMiniIcon;
+                return EmbeddedIcons.externalIdpMiniIcon;
             case DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE:
-                return EmbeddedIcons.spMiniIcon;
+                return EmbeddedIcons.externalSpMiniIcon;
             case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                 return EmbeddedIcons.vaultMiniIcon;
             case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:

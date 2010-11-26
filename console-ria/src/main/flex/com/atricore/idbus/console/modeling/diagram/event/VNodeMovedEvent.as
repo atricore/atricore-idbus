@@ -31,6 +31,8 @@ public class VNodeMovedEvent extends VGraphEvent{
          * */
         public static const VNODE_MOVED:String = "vnodeMoved";
 
+        public static const ALL_VNODES_MOVED:String = "allVnodesMoved";
+
         private var _vnodeId:String;
 
         public function VNodeMovedEvent(type:String, vnodeId:String, bubbles:Boolean=false, cancelable:Boolean=false, subtype:uint = VEST_DEFAULT) {

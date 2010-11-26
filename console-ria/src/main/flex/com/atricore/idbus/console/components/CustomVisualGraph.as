@@ -47,6 +47,9 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     private var _nodeCreationPosition:Point;
     private var _nodeCreationElementIcon:Class;
 
+    private var _nodeMoved:Boolean;
+    private var _allNodesMoved:Boolean;
+
     public function CustomVisualGraph() {
         super();
         _nodeCreationElementType = -1;
@@ -54,6 +57,8 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
     }
 
     override protected function dragBegin(event:MouseEvent):void {
+        _nodeMoved = false;
+        _allNodesMoved = false;
         super.dragBegin(event);
         if (event.currentTarget is NodeDetailedRenderer && _isConnectionMode) {
             _connectionDragInProgress = true;
@@ -61,6 +66,16 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
             _connectionStartPoint = new Point(_canvas.contentMouseX, _canvas.contentMouseY);
             _canvas.addEventListener(MouseEvent.MOUSE_UP, dragEnd);
         }
+    }
+
+    protected override function handleDrag(event:MouseEvent):void {
+        super.handleDrag(event);
+        _nodeMoved = true;
+    }
+
+    override protected function backgroundDragContinue(event:MouseEvent):void {
+        super.backgroundDragContinue(event);
+        _allNodesMoved = true;
     }
 
     override protected function dragEnd(event:MouseEvent):void {
@@ -88,12 +103,14 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
             _canvas.removeEventListener(MouseEvent.MOUSE_UP, dragEnd);
         } else {
             var draggedNode = data as IVisualNode;
-            if (draggedNode != null) {
-                draggedNode.node.data.x = draggedNode.viewX;
-                draggedNode.node.data.y = draggedNode.viewY;
+            if (draggedNode != null && _nodeMoved) {
                 dispatchEvent(new VNodeMovedEvent(VNodeMovedEvent.VNODE_MOVED, draggedNode.node.stringid, true, false, 0));
+            } else if (_allNodesMoved) {
+                dispatchEvent(new VNodeMovedEvent(VNodeMovedEvent.ALL_VNODES_MOVED, null, true, false, 0));
             }
         }
+        _nodeMoved = false;
+        _allNodesMoved = false;
     }
 
     override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {

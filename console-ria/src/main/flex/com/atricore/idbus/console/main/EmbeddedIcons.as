@@ -187,6 +187,14 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
     public static var spIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/identity_provider.png")]
+    public static var externalIdpIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
+    public static var externalSpIcon:Class;
+
     //TODO add BP icon
     [Bindable]
     [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
@@ -228,6 +236,14 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
     public static var spMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/identity_provider.png")]
+    public static var externalIdpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
+    public static var externalSpMiniIcon:Class;
 
     //TODO add BP icon
     [Bindable]
