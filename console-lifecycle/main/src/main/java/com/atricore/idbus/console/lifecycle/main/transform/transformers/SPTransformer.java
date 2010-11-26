@@ -6,6 +6,7 @@ import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
+import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Bean;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Beans;
 import com.atricore.idbus.console.lifecycle.support.springmetadata.model.Description;
@@ -27,6 +28,7 @@ import org.atricore.idbus.capabilities.samlr2.support.federation.*;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.federation.AccountLinkLifecycleImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
+import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
@@ -50,7 +52,7 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
  */
 public class SPTransformer extends AbstractTransformer implements InitializingBean {
     
-    private static final Log logger = LogFactory.getLog(IdPLocalTransformer.class);
+    private static final Log logger = LogFactory.getLog(SPTransformer.class);
 
     private Keystore sampleKeystore;
 
@@ -83,11 +85,11 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         ServiceProvider provider = (ServiceProvider) event.getData();
 
-        IdentityProvider preferredIdp = null;
+        FederatedProvider preferredIdp = null;
         for (FederatedConnection fc : provider.getFederatedConnectionsA()) {
             IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelA();
             if (idpc.isPreferred()) {
-                preferredIdp = (IdentityProvider) fc.getRoleB();
+                preferredIdp = (FederatedProvider) fc.getRoleB();
                 break;
             }
         }
@@ -96,7 +98,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
             for (FederatedConnection fc : provider.getFederatedConnectionsB()) {
                 IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelB();
                 if (idpc.isPreferred()) {
-                    preferredIdp = (IdentityProvider) fc.getRoleA();
+                    preferredIdp = (FederatedProvider) fc.getRoleA();
                     break;
                 }
             }
@@ -174,8 +176,18 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         */
 
-        if (preferredIdp != null)
-            setPropertyValue(spMediator, "preferredIdpAlias", resolveLocationUrl(preferredIdp) + "/SAML2/MD");
+        if (preferredIdp != null) {
+            if (preferredIdp instanceof IdentityProvider) {
+                setPropertyValue(spMediator, "preferredIdpAlias", resolveLocationUrl(preferredIdp) + "/SAML2/MD");
+            } else if (preferredIdp instanceof ExternalIdentityProvider) {
+                try {
+                    MetadataDefinition md = MetadataUtil.loadMetadataDefinition(preferredIdp.getMetadata().getValue());
+                    setPropertyValue(spMediator, "preferredIdpAlias", MetadataUtil.findEntityId(md));
+                } catch (Exception e) {
+                    throw new TransformException("Error loading metadata definition for " + preferredIdp.getName());
+                }
+            }
+        }
 
         setPropertyValue(spMediator, "preferredIdpSSOBinding", SamlR2Binding.SAMLR2_POST.getValue());
         setPropertyValue(spMediator, "preferredIdpSLOBinding", SamlR2Binding.SAMLR2_POST.getValue());

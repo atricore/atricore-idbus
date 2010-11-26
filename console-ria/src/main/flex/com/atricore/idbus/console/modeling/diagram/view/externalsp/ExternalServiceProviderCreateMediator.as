@@ -115,6 +115,7 @@ public class ExternalServiceProviderCreateMediator extends IocFormMediator {
 
         serviceProvider.name = view.serviceProvName.text;
         serviceProvider.description = view.serviceProvDescription.text;
+        serviceProvider.isRemote = true;
 
         var resource:Resource = new Resource();
         resource.name = _uploadedFileName.substring(0, _uploadedFileName.lastIndexOf("."));

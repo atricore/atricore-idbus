@@ -73,6 +73,11 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         _nodeMoved = true;
     }
 
+    protected override function backgroundDragBegin(event:MouseEvent):void {
+        super.backgroundDragBegin(event);
+        _allNodesMoved = false;
+    }
+
     override protected function backgroundDragContinue(event:MouseEvent):void {
         super.backgroundDragContinue(event);
         _allNodesMoved = true;

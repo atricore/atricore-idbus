@@ -44,6 +44,30 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;  
     }
 
+    public void arrive(ExternalServiceProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(ExternalServiceProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(ExternalServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(ExternalIdentityProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(ExternalIdentityProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(ExternalIdentityProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
     public void arrive(IdentityProviderChannel node) throws Exception {
         
     }

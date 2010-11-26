@@ -36,6 +36,9 @@
     <bean name="idpTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer"/>
 
+    <bean name="idpRemoteTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPRemoteTransformer"/>
+
     <bean name="idpFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
@@ -54,6 +57,9 @@
 
     <bean name="spTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer"/>
+
+    <bean name="spRemoteTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPRemoteTransformer"/>
 
     <bean name="spFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
@@ -198,6 +204,7 @@
 
                                         <!-- IDP Transformers -->
                                         <ref bean="idpTransformer"/>
+                                        <ref bean="idpRemoteTransformer"/>
                                         <ref bean="samlr2IdPTransformer"/>
 
                                         <ref bean="idpFederatedConnectionATransformer"/>
@@ -208,6 +215,7 @@
 
                                         <!-- SP Transformers -->
                                         <ref bean="spTransformer"/>
+                                        <ref bean="spRemoteTransformer"/>
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
                                         <ref bean="spJOSSOActivationTransformer"/>

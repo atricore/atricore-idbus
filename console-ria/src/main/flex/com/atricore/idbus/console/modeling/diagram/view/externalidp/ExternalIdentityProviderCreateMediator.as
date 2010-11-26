@@ -117,6 +117,7 @@ public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
 
         identityProvider.name = view.identityProviderName.text;
         identityProvider.description = view.identityProvDescription.text;
+        identityProvider.isRemote = true;
 
         var resource:Resource = new Resource();
         resource.name = _uploadedFileName.substring(0, _uploadedFileName.lastIndexOf("."));

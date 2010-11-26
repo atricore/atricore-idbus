@@ -76,11 +76,11 @@ public class PaletteMediator extends IocMediator {
 
                 );
         saml2PaletteDrawer.add(
-                new PaletteEntry("Service Provider", EmbeddedIcons.spMiniIcon, "Service Provider Entry", DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("Identity Provider (external)", EmbeddedIcons.externalIdpMiniIcon, "External Identity Provider Entry", DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE)
 
                 );
         saml2PaletteDrawer.add(
-                new PaletteEntry("Identity Provider (external)", EmbeddedIcons.externalIdpMiniIcon, "External Identity Provider Entry", DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE)
+                new PaletteEntry("Service Provider", EmbeddedIcons.spMiniIcon, "Service Provider Entry", DiagramElementTypes.SERVICE_PROVIDER_ELEMENT_TYPE)
 
                 );
         saml2PaletteDrawer.add(
