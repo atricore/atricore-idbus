@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.lifecycle.main.util;
 
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.SSODescriptorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
@@ -134,6 +135,27 @@ public class MetadataUtil {
         EntityDescriptorType descriptor = (EntityDescriptorType) elements.get(0).getValue();
 
         return descriptor.getEntityID();
+    }
+
+    public static SSODescriptorType findSSODescriptor(MetadataDefinition md, String descriptorName) throws Exception {
+        Document doc = (Document) md.getDefinition();
+
+        String xpathExpr = "//" + SAMLR2_MD_LOCAL_NS + ":EntityDescriptor/" + SAMLR2_MD_LOCAL_NS + ":" + descriptorName;
+        if (logger.isDebugEnabled())
+            logger.debug("Looking descriptor using xpath: " + xpathExpr);
+
+        List<JAXBElement> elements = searchMetadata(doc, xpathExpr);
+
+        if (elements.size() > 1)
+            throw new Exception("Too many SSO descriptors found");
+
+        if (elements.size() < 1) {
+            throw new Exception("No SSO descriptor found");
+        }
+
+        SSODescriptorType descriptor = (SSODescriptorType) elements.get(0).getValue();
+
+        return descriptor;
     }
 
     protected static List<JAXBElement> searchMetadata(Document doc, String xpathExpr) throws CircleOfTrustManagerException {

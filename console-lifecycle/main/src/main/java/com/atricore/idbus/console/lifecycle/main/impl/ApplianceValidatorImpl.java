@@ -8,9 +8,11 @@ import com.atricore.idbus.console.lifecycle.main.exception.ApplianceNotFoundExce
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.spi.ApplianceValidator;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionWalker;
+import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -275,6 +277,20 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         if (node.getActivation() == null) {
             addError("Local Serivice Provider requires an activation connection " + node.getName());
         }
+    }
+
+    @Override
+    public void arrive(ExternalIdentityProvider node) throws Exception {
+        validateName("IDP name", node.getName(), node);
+        validateDisplayName("IDP display name", node.getDisplayName());
+        validateMetadata("Metadata", node.getMetadata(), node);
+    }
+
+    @Override
+    public void arrive(ExternalServiceProvider node) throws Exception {
+        validateName("SP name", node.getName(), node);
+        validateDisplayName("SP display name", node.getDisplayName());
+        validateMetadata("Metadata", node.getMetadata(), node);
     }
 
     @Override
@@ -580,6 +596,40 @@ public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
 
         ctx.get().registerLocation(locationStr, obj);
 
+    }
+
+    protected void validateMetadata(String propertyName, Resource metadata, Object obj) {
+        if (metadata == null) {
+            addError(propertyName + " cannot be null");
+            return;
+        }
+
+        if (metadata.getName() == null)
+            addError(propertyName + " name cannot be null");
+
+        if (metadata.getUri() == null)
+            addError(propertyName + " uri cannot be null");
+
+        if (metadata.getValue() == null)
+            addError(propertyName + " value cannot be null");
+        else {
+            try {
+                // load metadata definition
+                MetadataDefinition md = MetadataUtil.loadMetadataDefinition(metadata.getValue());
+                // find entityID
+                MetadataUtil.findEntityId(md);
+                // find SSODescriptor
+                String descriptorName = null;
+                if (obj instanceof ExternalIdentityProvider) {
+                    descriptorName = "IDPSSODescriptor";
+                } else if (obj instanceof ExternalServiceProvider) {
+                    descriptorName = "SPSSODescriptor";
+                }
+                MetadataUtil.findSSODescriptor(md, descriptorName);
+            } catch (Exception e) {
+                addError(propertyName + " is not valid");
+            }
+        }
     }
 
     protected boolean isNumeric(String v) {
