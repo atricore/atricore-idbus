@@ -23,7 +23,6 @@ public class SamlR2ArtifactEncoderImpl extends AbstractSamlArtifactEncoder {
 
         // TODO : Make sure that each byte[] is exactly 20 bytes length.
 
-
         byte[] messageHandleBin = toBin(artifact.getMessageHandle(), 20);
         byte[] sourceIdBin = toBin(artifact.getSourceID(), 20);
 

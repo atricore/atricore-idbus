@@ -64,7 +64,7 @@ public enum SamlR2Binding {
 
     SSO_LOCAL("urn:org:atricore:idbus:sso:bindings:LOCAL", false),
 
-    /** URI for IdP initiated bindings */
+    /** URI for SAML 2.0 IdP initiated bindings */ // TODO : Generalize this into Provider Initiated HTTP binding or something ?
     SSO_IDP_INITIATED_SSO_HTTP_SAML2("urn:org:atricore:idbus:sso:bindings:SAML:2:0:IDP-Initiated-SSO-http", true),
 
     /** URI for SAML 1.1 IdP initiated endpoints */
