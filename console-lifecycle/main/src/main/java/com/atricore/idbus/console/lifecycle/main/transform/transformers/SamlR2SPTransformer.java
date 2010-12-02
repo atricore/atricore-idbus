@@ -202,7 +202,7 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
         artifactResolutionService1.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
         artifactResolutionService1.setLocation(resolveLocationUrl(location) + "/SAML2/ARTIFACT/LOCAL");
         artifactResolutionService1.setIndex(1);
-        artifactResolutionService1.setIsDefault(true);
+        //artifactResolutionService1.setIsDefault(true);
         spSSODescriptor.getArtifactResolutionService().add(artifactResolutionService1);
 
         // SingleLogoutService
@@ -267,7 +267,7 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
         assertionConsumerService1.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
         assertionConsumerService1.setLocation(resolveLocationUrl(location) + "/SAML2/ACS/POST");
         assertionConsumerService1.setIndex(1);
-        assertionConsumerService1.setIsDefault(true);
+        //assertionConsumerService1.setIsDefault(false);
         spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService1);
 
         /*
