@@ -200,7 +200,7 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
 
         IndexedEndpointType artifactResolutionService1 = new IndexedEndpointType();
         artifactResolutionService1.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
-        artifactResolutionService1.setLocation(resolveLocationUrl(location) + "/SAML2/ARTIFACT/LOCAL");
+        artifactResolutionService1.setLocation("local://" + location.getUri().toUpperCase() + "/SAML2/ARTIFACT/LOCAL");
         artifactResolutionService1.setIndex(1);
         artifactResolutionService1.setIsDefault(true);
         spSSODescriptor.getArtifactResolutionService().add(artifactResolutionService1);
