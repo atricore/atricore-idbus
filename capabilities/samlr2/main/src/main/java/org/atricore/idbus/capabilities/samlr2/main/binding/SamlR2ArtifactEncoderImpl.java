@@ -60,16 +60,16 @@ public class SamlR2ArtifactEncoderImpl implements SamlArtifactEncoder {
         String sourceId = null;
         String messageHandle = null;
 
-        byte[] remainingArtBin = java.util.Arrays.copyOfRange(samlArtBin, 4, samlArtBin.length);
+        byte[] remainingArtBin = copyOfRange(samlArtBin, 4, samlArtBin.length);
         if (remainingArtBin.length == 40) {
             // Assume SAML 2.0 Recommended remaining
             if (logger.isTraceEnabled())
                 logger.trace("Assuming SAML 2.0 Recommended artifact format");
 
-            byte[] sourceIdBin = java.util.Arrays.copyOfRange(remainingArtBin, 0, 20);
+            byte[] sourceIdBin = copyOfRange(remainingArtBin, 0, 20);
             sourceId = toString(sourceIdBin);
 
-            byte[] messageHandleBin = java.util.Arrays.copyOfRange(remainingArtBin, -20, 40);
+            byte[] messageHandleBin = copyOfRange(remainingArtBin, -20, 40);
             messageHandle = toString(messageHandleBin);
 
         } else {
@@ -106,7 +106,7 @@ public class SamlR2ArtifactEncoderImpl implements SamlArtifactEncoder {
     protected byte[] toBin(int i) {
 
         byte[] bytes = ByteBuffer.allocate(4).putInt(i).array();
-        return java.util.Arrays.copyOfRange(bytes, 2, 4);
+        return copyOfRange(bytes, 2, 4);
     }
 
     protected byte[] toBin(String value, int length) {
@@ -129,5 +129,17 @@ public class SamlR2ArtifactEncoderImpl implements SamlArtifactEncoder {
     protected String toString(byte[] b) {
         return new String(b).trim();
     }
+
+    // To provide JDK 5 Compat
+    protected byte[] copyOfRange(byte[] original, int from, int to) {
+        int newLength = to - from;
+        if (newLength < 0)
+            throw new IllegalArgumentException(from + " > " + to);
+        byte[] copy = new byte[newLength];
+        System.arraycopy(original, from, copy, 0,
+                         Math.min(original.length - from, newLength));
+        return copy;
+    }
+
 
 }
