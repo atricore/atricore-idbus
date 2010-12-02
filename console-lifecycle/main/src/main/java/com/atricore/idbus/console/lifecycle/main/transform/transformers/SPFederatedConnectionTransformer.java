@@ -234,7 +234,8 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         plansList.add(plan);
         setPropertyRefs(sloLocal, "identityPlans", plansList);
         endpoints.add(sloLocal);
-        
+
+        // AssertionConsumerService
         Bean acHttpPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
         acHttpPost.setName(spBean.getName() + "-saml2-ac-http-post");
         setPropertyValue(acHttpPost, "name", acHttpPost.getName());
@@ -246,6 +247,13 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         plansList.add(plan);
         setPropertyRefs(acHttpPost, "identityPlans", plansList);
         endpoints.add(acHttpPost);
+
+        // TODO : Artifact
+
+        // ArtifactResolveService
+
+        // TODO
+        
         
         setPropertyAsBeans(idpChannelBean, "endpoints", endpoints);
 

@@ -193,6 +193,8 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         // -------------------------------------------------------
         List<Bean> endpoints = new ArrayList<Bean>();
 
+        // SingleLogoutService
+
         // SAML2 SLO HTTP POST
         Bean sloHttpPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
         sloHttpPost.setName(spChannelBean.getName() + "-saml2-slo-http-post");
@@ -273,6 +275,8 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyRefs(sloLocal, "identityPlans", plansList);
         endpoints.add(sloLocal);
 
+        // SingleSignOnService
+
         // SAML2 SSO HTTP POST
         Bean ssoHttpPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
         ssoHttpPost.setName(spChannelBean.getName() + "-saml2-sso-http-post");
@@ -320,6 +324,12 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         plansList.add(plan2);
         setPropertyRefs(ssoHttpRedirect, "identityPlans", plansList);
         endpoints.add(ssoHttpRedirect);
+
+        // ArtifactResolveService
+
+        // TODO
+        
+        // SessionHeartBeatService (non-saml)
 
         // SSO SHB SOAP
         Bean shbSOAP = newAnonymousBean(IdentityMediationEndpointImpl.class);
