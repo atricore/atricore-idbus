@@ -26,6 +26,7 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.main.binding.endpoints.ArtifactResolutionEndpoint;
 import org.atricore.idbus.capabilities.samlr2.main.idp.endpoints.SessionHeartBeatEndpoint;
 import org.atricore.idbus.capabilities.samlr2.main.idp.endpoints.SingleLogoutEndpoint;
 import org.atricore.idbus.capabilities.samlr2.main.idp.endpoints.SingleSignOnEndpoint;
@@ -66,6 +67,9 @@ public class SamlR2IDPComponent extends DefaultComponent {
                 break;
             case SingleLogoutService:
                 endpoint = new SingleLogoutEndpoint( uri, this, parameters );
+                break;
+            case ArtifactResolutionService:
+                endpoint = new ArtifactResolutionEndpoint( uri, this, parameters);
                 break;
             case IDPInitiatedSingleLogoutService:
                 endpoint = new SingleLogoutEndpoint( uri, this, parameters );

@@ -26,6 +26,7 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.main.binding.endpoints.ArtifactResolutionEndpoint;
 import org.atricore.idbus.capabilities.samlr2.main.sp.endpoints.*;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SamlR2Service;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
@@ -63,6 +64,9 @@ public class SamlR2SPComponent extends DefaultComponent {
                 break;
             case AssertionConsumerService:
                 endpoint = new AssertionConsumerEndpoint( uri, this, parameters );
+                break;
+            case ArtifactResolutionService:
+                endpoint = new ArtifactResolutionEndpoint( uri, this, parameters);
                 break;
             case SPInitiatedSingleSignOnService:
                 endpoint = new SPInitiatedSingleSignOnEndpoint(uri, this, parameters);

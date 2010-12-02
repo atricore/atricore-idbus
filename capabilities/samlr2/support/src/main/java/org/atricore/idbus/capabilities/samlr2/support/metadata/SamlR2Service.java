@@ -37,6 +37,8 @@ public enum SamlR2Service {
 
     AssertionConsumerService(SAMLR2MetadataConstants.AssertionConsumerService_QNAME),
 
+    ArtifactResolutionService(SAMLR2MetadataConstants.ArtifactResolutionService_QNAME),
+
     AttributeService(SAMLR2MetadataConstants.AttributeService_QNAME),
 
     AssertionIDRequestService(SAMLR2MetadataConstants.AssertionIDRequestService_QNAME),
