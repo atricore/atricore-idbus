@@ -326,9 +326,36 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         endpoints.add(ssoHttpRedirect);
 
         // ArtifactResolveService
+        Bean arSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
+        arSoap.setName(spChannelBean.getName() + "-saml2-ar-soap");
+        setPropertyValue(arSoap, "name", arSoap.getName());
+        setPropertyValue(arSoap, "type", SAMLR2MetadataConstants.ArtifactResolutionService_QNAME.toString());
+        setPropertyValue(arSoap, "binding", SamlR2Binding.SAMLR2_SOAP.getValue());
+        plansList = new ArrayList<Ref>();
+        plan = new Ref();
+        plan.setBean(idpBean.getName() + "-samlr2artresolve-to-samlr2artresponse-plan");
+        plansList.add(plan);
+        plan2 = new Ref();
+        plan2.setBean(idpBean.getName() + "-samlr2art-to-samlr2artresolve-plan");
+        plansList.add(plan2);
+        setPropertyRefs(arSoap, "identityPlans", plansList);
+        endpoints.add(arSoap);
 
-        // TODO
-        
+        Bean arLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
+        arLocal.setName(spChannelBean.getName() + "-saml2-ar-local");
+        setPropertyValue(arLocal, "name", arLocal.getName());
+        setPropertyValue(arLocal, "type", SAMLR2MetadataConstants.ArtifactResolutionService_QNAME.toString());
+        setPropertyValue(arLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
+        plansList = new ArrayList<Ref>();
+        plan = new Ref();
+        plan.setBean(idpBean.getName() + "-samlr2artresolve-to-samlr2artresponse-plan");
+        plansList.add(plan);
+        plan2 = new Ref();
+        plan2.setBean(idpBean.getName() + "-samlr2art-to-samlr2artresolve-plan");
+        plansList.add(plan2);
+        setPropertyRefs(arLocal, "identityPlans", plansList);
+        endpoints.add(arLocal);
+
         // SessionHeartBeatService (non-saml)
 
         // SSO SHB SOAP

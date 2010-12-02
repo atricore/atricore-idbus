@@ -17,6 +17,8 @@ import org.atricore.idbus.capabilities.samlr2.main.SamlR2CircleOfTrustManager;
 import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2BindingFactory;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SSOLogMessageBuilder;
 import org.atricore.idbus.capabilities.samlr2.main.binding.logging.SamlR2LogMessageBuilder;
+import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan;
+import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
 import org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SPInitiatedAuthnReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan;
@@ -45,6 +47,7 @@ import java.util.Date;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -375,6 +378,12 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         
         Bean spAuthnToSamlPlan = newBean(spBeans, sp.getName() + "-idpunsolicitedresponse-to-subject-plan", SPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
         setPropertyRef(spAuthnToSamlPlan, "bpmsManager", "bpms-manager");
+
+        Bean samlArtResToSamlArtRespPlan = newBean(spBeans, sp.getName() + "-samlr2artresolve-to-samlr2artresponse-plan", SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan.class);
+        setPropertyRef(samlArtResToSamlArtRespPlan, "bpmsManager", "bpms-manager");
+
+        Bean samlArtToSamlArtResPlan = newBean(spBeans, sp.getName() + "-samlr2art-to-samlr2artresolve-plan", SamlR2ArtifactToSamlR2ArtifactResolvePlan.class);
+        setPropertyRef(samlArtToSamlArtResPlan, "bpmsManager", "bpms-manager");
         
         // ----------------------------------------
         // MBean
