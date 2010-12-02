@@ -33,9 +33,7 @@ public class AbstractSpmlR2Mediator extends AbstractCamelMediator {
         super.setLogMessages(logMessages);
     }
 
-    @Override
     public EndpointDescriptor resolveEndpoint(Channel channel, IdentityMediationEndpoint endpoint) throws IdentityMediationException {
-
 
         if (channel instanceof PsPChannel) {
 

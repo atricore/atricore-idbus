@@ -61,9 +61,13 @@ public interface SamlR2PlanningConstants {
 
     static final String VAR_SAMLR2_ASSERTION = SAMLR2Constants.SAML_ASSERTION_NS + ":Assertion";
 
-    static final String VAR_SAMLR2_RESPONSE =  SAMLR2Constants.SAML_ASSERTION_NS + ":Response";
+    static final String VAR_SAMLR2_RESPONSE =  SAMLR2Constants.SAML_PROTOCOL_NS + ":Response";
+
+    static final String VAR_SAMLR2_REQUEST =  SAMLR2Constants.SAML_PROTOCOL_NS + ":Request";
 
     static final String VAR_SAMLR2_SIGNER = "urn:org:atricore:idbus:samlr2:support:Encrypter";
+
+    static final String VAR_SAMLR2_ARTIFACT =  "urn:org:atricore:idbus:samlr2:support:SamlArtifact";
 
     static final String VAR_SAMLR2_ENCRYPTER = "urn:org:atricore:idbus:samlr2:support:Signer";
 

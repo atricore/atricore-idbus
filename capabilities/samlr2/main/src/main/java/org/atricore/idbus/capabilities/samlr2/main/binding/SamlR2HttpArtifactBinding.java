@@ -11,7 +11,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
 import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
-import org.atricore.idbus.capabilities.samlr2.main.common.AbstractSamlR2Mediator;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils;
@@ -26,7 +25,6 @@ import org.atricore.idbus.kernel.planning.*;
 import static org.atricore.idbus.capabilities.samlr2.main.common.plans.SamlR2PlanningConstants.*;
 
 import javax.xml.namespace.QName;
-import java.util.Collection;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -91,7 +89,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             EndpointDescriptor samlResolverEd = resolveEntityResolverEndpoint(samlMd,
                     samlArtifact.getEndpointIndex());
 
-            ArtifactResolveType req = buildArtifactResolveType(
+            ArtifactResolveType req = buildArtifactResolve(
                     memberDescr,
                     resolverMemberDescr,
                     samlArtifact,
@@ -295,7 +293,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
     }
 
 
-    protected ArtifactResolveType buildArtifactResolveType(CircleOfTrustMemberDescriptor member,
+    protected ArtifactResolveType buildArtifactResolve(CircleOfTrustMemberDescriptor member,
                                                  CircleOfTrustMemberDescriptor destMember,
                                                  SamlArtifact samlArt,
                                                  EndpointDescriptor ed,

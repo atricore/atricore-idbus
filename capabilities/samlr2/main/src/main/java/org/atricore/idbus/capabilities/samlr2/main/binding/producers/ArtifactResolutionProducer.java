@@ -23,6 +23,7 @@ import org.atricore.idbus.kernel.main.mediation.MessageQueueManager;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 
@@ -64,14 +65,14 @@ public class ArtifactResolutionProducer extends SamlR2Producer {
             Object samlMsg = aqm.pullMessage(new ArtifactImpl(samlArt.getMessageHandle()));
 
             // Create resposne
-            ArtifactResponseType response = buildArtifactResponse(exchange, samlMsg);
+            SamlR2Binding binding = SamlR2Binding.asEnum(endpoint.getBinding());
+            EndpointDescriptor ed = resolveSpSloEndpoint(request.getIssuer(), new SamlR2Binding [] { binding } , true);
+
+            ArtifactResponseType response = buildArtifactResponse(exchange, ed, samlMsg);
 
             // --------------------------------------------------------------------
             // Send Response to requester (this is SOAP or LOCAL)
             // --------------------------------------------------------------------
-
-            SamlR2Binding binding = SamlR2Binding.asEnum(endpoint.getBinding());
-            EndpointDescriptor ed = resolveSpSloEndpoint(request.getIssuer(), new SamlR2Binding [] { binding } , true);
 
             CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
             out.setMessage(new MediationMessageImpl(response.getID(),
@@ -93,18 +94,21 @@ public class ArtifactResolutionProducer extends SamlR2Producer {
 
     protected ArtifactResponseType buildArtifactResponse(
             CamelMediationExchange exchange,
+            EndpointDescriptor ed,
             java.lang.Object samlMsg) throws IdentityPlanningException, SamlR2Exception {
 
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2ArtifactResolveToSamlR2ArtifactResponsePlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
 
+        FederationChannel fChannel = (FederationChannel) channel;
+
         // Publish IdP Metadata
-        /* TODO :
-        idPlanExchange.setProperty(VAR_DESTINATION_COT_MEMBER, idp);
+
+        //idPlanExchange.setProperty(VAR_DESTINATION_COT_MEMBER, idp);
         idPlanExchange.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, ed);
-        idPlanExchange.setProperty(VAR_COT_MEMBER, spChannel.getMember());
-        idPlanExchange.setProperty(VAR_RESPONSE_CHANNEL, spChannel);
-        */
+        idPlanExchange.setProperty(VAR_COT_MEMBER, fChannel.getMember());
+        //idPlanExchange.setProperty(VAR_RESPONSE_CHANNEL, spChannel);
+
 
         // Get SPInitiated authn request, if any!
         ArtifactResolveType request =
