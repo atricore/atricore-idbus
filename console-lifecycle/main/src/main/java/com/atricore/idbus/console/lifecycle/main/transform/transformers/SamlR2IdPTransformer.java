@@ -289,6 +289,8 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         idpSSODescriptor.getKeyDescriptor().add(encryptionKeyDescriptor);
 
         // services
+
+        // ArtifactResolutionService
         IndexedEndpointType artifactResolutionService = new IndexedEndpointType();
         artifactResolutionService.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
         artifactResolutionService.setLocation(resolveLocationUrl(provider) + "/SAML2/ARTIFACT/SOAP");
@@ -303,6 +305,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         artifactResolutionServiceLocal.setIsDefault(true);
         idpSSODescriptor.getArtifactResolutionService().add(artifactResolutionServiceLocal);
 
+        // SingleLogoutService
         EndpointType singleLogoutServicePost = new EndpointType();
         singleLogoutServicePost.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
         singleLogoutServicePost.setLocation(resolveLocationUrl(provider) + "/SAML2/SLO/POST");
@@ -330,6 +333,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         singleLogoutServiceRedirect.setResponseLocation(resolveLocationUrl(provider) + "/SAML2/SLO_RESPONSE/REDIR");
         idpSSODescriptor.getSingleLogoutService().add(singleLogoutServiceRedirect);
 
+        // ManageNameIDService
         EndpointType manageNameIDServiceSOAP = new EndpointType();
         manageNameIDServiceSOAP.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
         manageNameIDServiceSOAP.setLocation(resolveLocationUrl(provider) + "/SAML2/MNI/SOAP");
@@ -347,9 +351,11 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         manageNameIDServiceRedirect.setResponseLocation(resolveLocationUrl(provider) + "/SAML2/MNI_RESPONSE/REDIR");
         idpSSODescriptor.getManageNameIDService().add(manageNameIDServiceRedirect);
 
+        // TODO : Make configurable
         idpSSODescriptor.getNameIDFormat().add("urn:oasis:names:tc:SAML:2.0:nameid-format:persistent");
         idpSSODescriptor.getNameIDFormat().add("urn:oasis:names:tc:SAML:2.0:nameid-format:transient");
 
+        // SingleSignOnService
         EndpointType singleSignOnServicePost = new EndpointType();
         singleSignOnServicePost.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
         singleSignOnServicePost.setLocation(resolveLocationUrl(provider) + "/SAML2/SSO/POST");

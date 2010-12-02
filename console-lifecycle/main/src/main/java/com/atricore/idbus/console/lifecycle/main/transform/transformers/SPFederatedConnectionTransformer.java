@@ -187,6 +187,7 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         // endpoints
         List<Bean> endpoints = new ArrayList<Bean>();
 
+        // SingleLogoutService
         Bean sloHttpPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
         sloHttpPost.setName(spBean.getName() + "-saml2-slo-http-post");
         setPropertyValue(sloHttpPost, "name", sloHttpPost.getName());
