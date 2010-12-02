@@ -300,7 +300,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
 
         IndexedEndpointType artifactResolutionServiceLocal = new IndexedEndpointType();
         artifactResolutionServiceLocal.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
-        artifactResolutionServiceLocal.setLocation(resolveLocationUrl(provider) + "/SAML2/ARTIFACT/LOCAL");
+        artifactResolutionServiceLocal.setLocation("local://" + provider.getLocation().getUri() + "/SAML2/ARTIFACT/LOCAL");
         artifactResolutionServiceLocal.setIndex(1);
         artifactResolutionServiceLocal.setIsDefault(true);
         idpSSODescriptor.getArtifactResolutionService().add(artifactResolutionServiceLocal);
