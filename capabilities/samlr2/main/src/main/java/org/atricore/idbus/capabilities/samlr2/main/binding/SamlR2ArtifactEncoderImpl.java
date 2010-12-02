@@ -21,8 +21,7 @@ public class SamlR2ArtifactEncoderImpl extends AbstractSamlArtifactEncoder {
         byte[] typeCodeBin = toBin(artifact.getType());
         byte[] endpointIdxBin = toBin(artifact.getEndpointIndex());
 
-        // TODO : Make sure that each byte[] is exactly 20 bytes length.
-
+        // Make sure that each byte[] is exactly 20 bytes length.
         byte[] messageHandleBin = toBin(artifact.getMessageHandle(), 20);
         byte[] sourceIdBin = toBin(artifact.getSourceID(), 20);
 
@@ -68,7 +67,7 @@ public class SamlR2ArtifactEncoderImpl extends AbstractSamlArtifactEncoder {
             byte[] sourceIdBin = copyOfRange(remainingArtBin, 0, 20);
             sourceId = toString(sourceIdBin);
 
-            byte[] messageHandleBin = copyOfRange(remainingArtBin, -20, 40);
+            byte[] messageHandleBin = copyOfRange(remainingArtBin, 20, 40);
             messageHandle = toString(messageHandleBin);
 
         } else {

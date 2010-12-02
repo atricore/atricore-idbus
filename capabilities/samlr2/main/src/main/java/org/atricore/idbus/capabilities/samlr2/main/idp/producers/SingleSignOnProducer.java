@@ -967,6 +967,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             IndexedEndpointType acEndpoint = null;
             IndexedEndpointType defaultAcEndpoint = null;
             IndexedEndpointType postAcEndpoint = null;
+            IndexedEndpointType artifactAcEndpoint = null;
 
             for (IndexedEndpointType ac : samlr2sp.getAssertionConsumerService()) {
 
@@ -991,6 +992,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
                 if (ac.getBinding().equals(SamlR2Binding.SAMLR2_POST.getValue()))
                     postAcEndpoint = ac;
 
+                if (ac.getBinding().equals(SamlR2Binding.SAMLR2_ARTIFACT.getValue()))
+                    artifactAcEndpoint = ac;
+
                 if (requestedBinding != null && ac.getBinding().equals(requestedBinding)) {
                     acEndpoint = ac;
                     break;
@@ -1000,6 +1004,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
             if (acEndpoint == null)
                 acEndpoint = defaultAcEndpoint;
+
+            if (acEndpoint == null)
+                acEndpoint = artifactAcEndpoint;
 
             if (acEndpoint == null)
                 acEndpoint = postAcEndpoint;

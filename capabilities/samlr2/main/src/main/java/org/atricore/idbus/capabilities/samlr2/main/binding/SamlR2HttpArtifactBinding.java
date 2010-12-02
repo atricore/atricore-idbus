@@ -109,7 +109,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
                 logger.debug("Received SAML Request " + samlRequest.getID());
                 return new MediationMessageImpl<RequestAbstractType>(httpMsg.getMessageId(),
                         samlRequest,
-                        XmlUtils.marshallSamlR2Request(samlRequest, false), // TODO : Comment if too slow!
+                        null,
                         null,
                         relayState,
                         null,
@@ -120,7 +120,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
                 logger.debug("Received SAML Response " + samlResponse.getID());
                 return new MediationMessageImpl<StatusResponseType>(httpMsg.getMessageId(),
                         samlResponse,
-                        XmlUtils.marshallSamlR2Response(samlResponse, false), // TODO : Comment if too slow!
+                        null,
                         null,
                         relayState,
                         null,
@@ -251,11 +251,19 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
         for (RoleDescriptorType roleDescriptor : samlMd.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
 
             if (roleDescriptor instanceof SSODescriptorType) {
+
                 SSODescriptorType ssoDescriptor = (SSODescriptorType) roleDescriptor;
+                EndpointType localSamlEndpoint = null;
+                EndpointType defaultSamlEndpoint = null;
+
                 for (IndexedEndpointType samlIdxEndpoint : ssoDescriptor.getArtifactResolutionService()) {
 
-                    if (edIdx > 0) {
 
+
+                    if (samlIdxEndpoint.isIsDefault() != null && samlIdxEndpoint.isIsDefault())
+                        defaultSamlEndpoint = samlIdxEndpoint;
+
+                    if (edIdx > 0) {
                         if (edIdx == samlIdxEndpoint.getIndex()) {
                             samlEndpoint = samlIdxEndpoint;
                             break;
@@ -263,10 +271,8 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
 
                     } else {
 
-                        if (preferLocalBindings &&
-                            samlIdxEndpoint.getBinding().equals(SamlR2Binding.SAMLR2_LOCAL.getValue())) {
-                            samlEndpoint = samlIdxEndpoint;
-                            break;
+                        if (samlIdxEndpoint.getBinding().equals(SamlR2Binding.SAMLR2_LOCAL.getValue())) {
+                            localSamlEndpoint = samlIdxEndpoint;
                         }
 
                         if (samlIdxEndpoint.getBinding().equals(SamlR2Binding.SAMLR2_SOAP.getValue())) {
@@ -275,9 +281,21 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
                         }
                     }
                 }
+
+                if (preferLocalBindings && localSamlEndpoint != null)
+                    samlEndpoint = localSamlEndpoint;
+
+                if (samlEndpoint == null)
+                    samlEndpoint = defaultSamlEndpoint;
+
+                if (samlEndpoint != null)
+                    break;
+
             }
+
             if (samlEndpoint != null)
                 break;
+
         }
 
         if (samlEndpoint == null)

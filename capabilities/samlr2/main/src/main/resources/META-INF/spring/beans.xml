@@ -33,6 +33,9 @@
     <!-- Fragments -->
     <!--           -->
 
+    <!-- SAML Binding Fragments -->
+    <s:import resource="fragments/samlr2-bind/jbpm-process-fragment-samlr2-bind.xml" />
+
     <!-- SAML SP Fragments -->
     <s:import resource="fragments/samlr2-sp/jbpm-process-fragment-samlr2-sp.xml" />
 
@@ -45,6 +48,10 @@
     <!--                  -->
     <!--      Plans       -->
     <!--                  -->
+
+    <!-- Bindings -->
+    <s:import resource="plans/bind-samlr2art-to-samlr2artresolve-plan.xml" />
+    <s:import resource="plans/bind-samlr2artresolve-to-samlr2artresponse-plan.xml" />
 
     <!-- Emitter -->
     <s:import resource="plans/emitter-securitytoken-to-authnassertion-plan.xml" />
@@ -62,7 +69,6 @@
     <s:import resource="plans/idpsso-samlr2sloreq-to-samlr2response-plan.xml" />
     <s:import resource="plans/idpsso-samlr2sloreq-to-samlr2sloreq-plan.xml"/>
     <s:import resource="plans/idpsso-idpinitiatedauthnreq-to-samlr2authnreq-plan.xml" />
-
 
     <!--                  -->
     <!--      Actions     -->

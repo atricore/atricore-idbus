@@ -145,8 +145,9 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
     }
 
     /**
-     * This finds the ACS endpoint where we want responses, based on the destination IDP, the channel used to receive
-     * requests from that IdP and the endpoint where the incoming message was received, if any.
+     * This finds the ACS endpoint where we want IDP to send responses, based on the destination IDP,
+     * the channel used to receive requests from that IdP and the endpoint where the incoming message was received, if any.
+     * 
      * @param idpChannel The channel we're mediating
      * @param idp the identity provider metadata
      * @return
