@@ -209,6 +209,22 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyRefs(sloHttpPost, "identityPlans", plansList);
         endpoints.add(sloHttpPost);
 
+        // SAML2 SLO HTTP ARTIFACT
+        Bean sloHttpArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
+        sloHttpArtifact.setName(spChannelBean.getName() + "-saml2-slo-http-artifact");
+        setPropertyValue(sloHttpArtifact, "name", sloHttpArtifact.getName());
+        setPropertyValue(sloHttpArtifact, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
+        setPropertyValue(sloHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+        plansList = new ArrayList<Ref>();
+        plan = new Ref();
+        plan.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2resp-plan");
+        plansList.add(plan);
+        plan2 = new Ref();
+        plan2.setBean(idpBean.getName() + "-samlr2sloreq-to-samlr2spsloreq-plan");
+        plansList.add(plan2);
+        setPropertyRefs(sloHttpArtifact, "identityPlans", plansList);
+        endpoints.add(sloHttpArtifact);
+
         // SAML2 SLO HTTP REDIRECT
         Bean sloHttpRedirect = newAnonymousBean(IdentityMediationEndpointImpl.class);
         sloHttpRedirect.setName(spChannelBean.getName() + "-saml2-slo-http-redirect");

@@ -296,11 +296,23 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         artifactResolutionService.setIsDefault(true);
         idpSSODescriptor.getArtifactResolutionService().add(artifactResolutionService);
 
+        IndexedEndpointType artifactResolutionServiceLocal = new IndexedEndpointType();
+        artifactResolutionServiceLocal.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
+        artifactResolutionServiceLocal.setLocation(resolveLocationUrl(provider) + "/SAML2/ARTIFACT/LOCAL");
+        artifactResolutionServiceLocal.setIndex(0);
+        artifactResolutionServiceLocal.setIsDefault(true);
+        idpSSODescriptor.getArtifactResolutionService().add(artifactResolutionServiceLocal);
+
         EndpointType singleLogoutServicePost = new EndpointType();
         singleLogoutServicePost.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
         singleLogoutServicePost.setLocation(resolveLocationUrl(provider) + "/SAML2/SLO/POST");
         singleLogoutServicePost.setResponseLocation(resolveLocationUrl(provider) + "/SAML2/SLO_RESPONSE/POST");
         idpSSODescriptor.getSingleLogoutService().add(singleLogoutServicePost);
+
+        EndpointType singleLogoutServiceArtifact = new EndpointType();
+        singleLogoutServiceArtifact.setBinding(SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+        singleLogoutServiceArtifact.setLocation(resolveLocationUrl(provider) + "/SAML2/SLO/ARTIFACT");
+        idpSSODescriptor.getSingleLogoutService().add(singleLogoutServiceArtifact);
 
         EndpointType singleLogoutServiceSOAP = new EndpointType();
         singleLogoutServiceSOAP.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
@@ -355,7 +367,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
 
         EndpointType singleSignOnServiceSOAP = new EndpointType();
         singleSignOnServiceSOAP.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
-        singleSignOnServiceArtifact.setLocation(resolveLocationUrl(provider) + "/SAML2/SSO/SOAP");
+        singleSignOnServiceSOAP.setLocation(resolveLocationUrl(provider) + "/SAML2/SSO/SOAP");
         idpSSODescriptor.getSingleSignOnService().add(singleSignOnServiceSOAP);
 
         entityDescriptor.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor().add(idpSSODescriptor);

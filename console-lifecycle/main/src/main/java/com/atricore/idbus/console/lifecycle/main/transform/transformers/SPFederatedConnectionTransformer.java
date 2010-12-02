@@ -194,6 +194,13 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyValue(sloHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
         endpoints.add(sloHttpPost);
 
+        Bean sloHttpArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
+        sloHttpArtifact.setName(spBean.getName() + "-saml2-slo-http-artifact");
+        setPropertyValue(sloHttpArtifact, "name", sloHttpArtifact.getName());
+        setPropertyValue(sloHttpArtifact, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
+        setPropertyValue(sloHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+        endpoints.add(sloHttpArtifact);
+
         Bean sloHttpRedirect = newAnonymousBean(IdentityMediationEndpointImpl.class);
         sloHttpRedirect.setName(spBean.getName() + "-saml2-slo-http-redirect");
         setPropertyValue(sloHttpRedirect, "name", sloHttpRedirect.getName());

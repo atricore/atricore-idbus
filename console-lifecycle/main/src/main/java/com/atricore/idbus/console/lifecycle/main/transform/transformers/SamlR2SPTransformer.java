@@ -196,11 +196,23 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
         artifactResolutionService.setIsDefault(true);
         spSSODescriptor.getArtifactResolutionService().add(artifactResolutionService);
 
+        IndexedEndpointType artifactResolutionServiceLocal = new IndexedEndpointType();
+        artifactResolutionServiceLocal.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
+        artifactResolutionServiceLocal.setLocation(resolveLocationUrl(location) + "/SAML2/ARTIFACT/LOCAL");
+        artifactResolutionServiceLocal.setIndex(0);
+        artifactResolutionServiceLocal.setIsDefault(true);
+        spSSODescriptor.getArtifactResolutionService().add(artifactResolutionServiceLocal);
+
         EndpointType singleLogoutServicePost = new EndpointType();
         singleLogoutServicePost.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
         singleLogoutServicePost.setLocation(resolveLocationUrl(location) + "/SAML2/SLO/POST");
         singleLogoutServicePost.setResponseLocation(resolveLocationUrl(location) + "/SAML2/SLO_RESPONSE/POST");
         spSSODescriptor.getSingleLogoutService().add(singleLogoutServicePost);
+
+        EndpointType singleLogoutServiceArtifact = new EndpointType();
+        singleLogoutServiceArtifact.setBinding(SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+        singleLogoutServiceArtifact.setLocation(resolveLocationUrl(location) + "/SAML2/SLO/ARTIFACT");
+        spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceArtifact);
 
         EndpointType singleLogoutServiceSOAP = new EndpointType();
         singleLogoutServiceSOAP.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
