@@ -14,7 +14,6 @@ import org.atricore.idbus.kernel.main.mediation.camel.CamelIdentityMediationUnit
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
-import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.state.LocalState;
 import org.atricore.idbus.kernel.main.mediation.state.ProviderStateContext;
 

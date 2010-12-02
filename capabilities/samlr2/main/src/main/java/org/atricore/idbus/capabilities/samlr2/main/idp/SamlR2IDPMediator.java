@@ -25,6 +25,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
+import org.atricore.idbus.capabilities.samlr2.main.common.AbstractSamlR2Mediator;
 import org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
@@ -43,11 +44,19 @@ import java.util.Collection;
  * @version $Id: SamlR2IDPMediator.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
 // TODO : Extend SamlR2AbstractMediator
-public class SamlR2IDPMediator extends SamlR2SPMediator {
+public class SamlR2IDPMediator extends AbstractSamlR2Mediator {
 
     private static final Log logger = LogFactory.getLog( SamlR2IDPMediator.class );
 
     private String preferredSpAlias;
+
+    private String preferredIdpAlias;
+
+    private String preferredNameIdPolicy;
+
+    private SamlR2Binding preferredIdpSSOBinding = SamlR2Binding.SAMLR2_ARTIFACT;
+
+    private SamlR2Binding preferredIdpSLOBinding = SamlR2Binding.SAMLR2_ARTIFACT;
 
     @Override
     protected RouteBuilder createIdPRoutes(final SPChannel spChannel) throws Exception {
@@ -282,4 +291,47 @@ public class SamlR2IDPMediator extends SamlR2SPMediator {
     public void setPreferredSpAlias(String preferredSpAlias) {
         this.preferredSpAlias = preferredSpAlias;
     }
+
+    public String getPreferredNameIdPolicy() {
+        return preferredNameIdPolicy;
+    }
+
+    public void setPreferredNameIdPolicy(String preferredNameIdPolicy) {
+        this.preferredNameIdPolicy = preferredNameIdPolicy;
+    }
+
+
+
+    public String getPreferredIdpAlias() {
+        return preferredIdpAlias;
+    }
+
+    public void setPreferredIdpAlias(String preferredIdpAlias) {
+        this.preferredIdpAlias = preferredIdpAlias;
+    }
+
+    public String getPreferredIdpSSOBinding() {
+        return this.preferredIdpSSOBinding.getValue();
+    }
+
+    public void setPreferredIdpSSOBinding(String binding) {
+        this.preferredIdpSSOBinding = SamlR2Binding.asEnum(binding);
+    }
+
+    public SamlR2Binding getPreferredIdpSSOBindingValue() {
+        return preferredIdpSSOBinding;
+    }
+
+    public String getPreferredIdpSLOBinding() {
+        return this.preferredIdpSLOBinding.getValue();
+    }
+
+    public void setPreferredIdpSLOBinding(String binding) {
+        this.preferredIdpSLOBinding = SamlR2Binding.asEnum(binding);
+    }
+
+    public SamlR2Binding getPreferredIdpSLOBindingValue() {
+        return preferredIdpSLOBinding;
+    }
+
 }

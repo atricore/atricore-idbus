@@ -107,9 +107,7 @@ public class SamlR11SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBind
         if (logger.isDebugEnabled())
             logger.debug("Creating HTML Redirect to " + ed.getLocation());
 
-        String ssoQryString = "";
-
-        ssoQryString += "?ResponseMode=unsolicited&ResponseFormat=SAML11";
+        String ssoQryString = "?ResponseMode=unsolicited&ResponseFormat=SAML11";
 
         if (out.getRelayState() != null) {
             ssoQryString += "&relayState=" + out.getRelayState() ;

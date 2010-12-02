@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright (c) 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<process-definition name='Saml Artifact to SAMLR2 ArtifactResolve'>
+
+    <start-state name="start">
+        <transition to="initializeArtifactResponse" />
+    </start-state>
+
+
+    <!--
+     Initialize the new Request
+    -->
+    <process-fragment-state name="initializeArtifactResponse">
+        <process-fragment lifecycle="generate-artifactresponse" phase="initialize"/>
+        <transition to="provideArtifactResponseContent"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:cot" access="read" />
+        <variable name="urn:org:atricore:idbus:channel" access="read" />
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+
+    </process-fragment-state>
+
+    <!--
+     Create the new Artifact Resolve Request content
+    -->
+    <process-fragment-state name="provideArtifactResponseContent">
+        <process-fragment lifecycle="generate-artifactresponse" phase="provide-content"/>
+        <transition to="ensureContentConfidentiality"/>
+
+        <variable name="urn:org:atricore:idbus:samlr2artifact" access="read" />
+    </process-fragment-state>
+
+
+    <!--
+    Encrypt request content (attributes, etc)
+    -->
+    <process-fragment-state name="ensureContentConfidentiality">
+        <process-fragment lifecycle="generate-artifactresponse" phase="ensure-content-confidentiality"/>
+        <transition to="ensureAuthenticity"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:channel" access="read" />
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+
+    </process-fragment-state>
+
+    <!--
+    Add authenticity mechanism like checksums, signatures, etc
+    -->
+    <process-fragment-state name="ensureAuthenticity">
+        <process-fragment lifecycle="generate-artifactresponse" phase="ensure-authenticity"/>
+        <transition to="validateArtifactResponse"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:channel" access="read" />
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read" />
+
+    </process-fragment-state>
+
+    <!--
+    Validate the generated token
+    -->
+    <process-fragment-state name="validateArtifactResponse">
+        <process-fragment lifecycle="generate-artifactresponse" phase="validate"/>
+        <transition to="ensureConfidentiality"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:channel" access="read" />
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+
+    </process-fragment-state>
+
+    <!--
+    Encrypt the entire token ?
+    -->
+    <process-fragment-state name="ensureConfidentiality">
+        <process-fragment lifecycle="generate-artifactresponse" phase="ensure-confidentiality"/>
+        <transition to="end"/>
+
+        <variable name="urn:org:atricore:idbus:cot-member" access="read" />
+        <variable name="urn:org:atricore:idbus:channel" access="read" />
+        <variable name="urn:org:atricore:idbus:response-channel" access="read"/>
+        <variable name="urn:org:atricore:idbus:endpoint" access="read" />
+        <variable name="urn:org:atricore:idbus:dest-endpoint-descr" access="read"/>
+        
+    </process-fragment-state>
+
+    <end-state name="end"/>
+    
+</process-definition>

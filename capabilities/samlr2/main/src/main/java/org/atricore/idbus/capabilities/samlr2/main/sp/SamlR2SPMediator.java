@@ -50,9 +50,9 @@ public class SamlR2SPMediator extends AbstractSamlR2Mediator {
 
     private String preferredNameIdPolicy;
 
-    private SamlR2Binding preferredIdpSSOBinding = SamlR2Binding.SAMLR2_POST;
+    private SamlR2Binding preferredIdpSSOBinding = SamlR2Binding.SAMLR2_ARTIFACT;
 
-    private SamlR2Binding preferredIdpSLOBinding = SamlR2Binding.SAMLR2_POST;
+    private SamlR2Binding preferredIdpSLOBinding = SamlR2Binding.SAMLR2_ARTIFACT;
 
     private String spBindingACS;
 

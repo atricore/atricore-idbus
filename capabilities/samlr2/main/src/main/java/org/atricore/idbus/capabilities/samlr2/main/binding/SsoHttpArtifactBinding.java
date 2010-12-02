@@ -89,9 +89,9 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
         }
     }
 
-    public void copyMessageToExchange(CamelMediationMessage samlOut, Exchange exchange) {
+    public void copyMessageToExchange(CamelMediationMessage ssoOut, Exchange exchange) {
 
-        MediationMessage out = samlOut.getMessage();
+        MediationMessage out = ssoOut.getMessage();
         EndpointDescriptor ed = out.getDestination();
 
         // ------------------------------------------------------------
@@ -100,7 +100,7 @@ public class SsoHttpArtifactBinding extends AbstractMediationHttpBinding {
         assert ed != null : "Mediation Response MUST Provide a destination";
 
         if (out.getContent() == null) {
-            throw new NullPointerException("Cannot Create HTTP Redirect Artifact with null destination for action " +
+            throw new NullPointerException("Cannot Create HTTP Redirect Artifact with null content for action " +
                     ed.getLocation());
         }
 

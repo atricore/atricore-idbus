@@ -221,6 +221,15 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
 
     }
 
+    public boolean isLocalMember(String alias) throws CircleOfTrustManagerException {
+        for (Provider p : cot.getProviders()) {
+            if (p.getName().equals(alias)) {
+                return !(p instanceof FederatedRemoteProvider);
+            }
+        }
+        throw new CircleOfTrustManagerException("Unknonw entity " + alias);
+    }
+
     public Collection<CircleOfTrustMemberDescriptor> lookupMembersForProvider(Provider provider, String role)
             throws CircleOfTrustManagerException {
 
@@ -288,6 +297,25 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
 
     }
 
+    public CircleOfTrustMemberDescriptor loolkupMemberById(String id) {
+        for (FederatedProvider provider : cot.getProviders()) {
+
+            for (CircleOfTrustMemberDescriptor member : provider.getMembers()) {
+                if (member.getId().equals(id)) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Specific COT Member found for " + id + " in provider " + provider.getName());
+                    return member;
+                }
+            }
+        }
+
+
+        if (logger.isDebugEnabled())
+            logger.debug("No COT Member registered with ID" + id);
+
+        // Not found !?
+        return null;
+    }
 
     /**
      * The member alias must match a MD Definition ID.

@@ -70,8 +70,8 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
             case SAMLR2_REDIRECT: 
                 mb = new SamlR2HttpRedirectBinding(channel);
                 break;
-            case SAMLR2_ARTIFACT: // TODO
-                mb = null;
+            case SAMLR2_ARTIFACT:
+                mb = new SamlR2HttpArtifactBinding(channel);
                 break;
             case SAMLR2_SOAP: 
                 mb = new SamlR2SoapBinding(channel);

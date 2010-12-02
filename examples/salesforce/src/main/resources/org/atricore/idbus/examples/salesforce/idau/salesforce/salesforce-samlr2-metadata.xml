@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://saml.salesforce.com" validUntil="2020-03-15T20:11:08.690Z">
+
    <md:SPSSODescriptor WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
       <md:KeyDescriptor use="signing">
          <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
@@ -28,5 +29,9 @@ rMzNbLsCtLDTyoBJSFLR57xhfQTbprGskoDbzTXsQbTYhCIqtQ==</ds:X509Certificate>
       <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://login.salesforce.com/?saml=02HKiPoin4CdIrGDqhMi3IGLo7EO79VBPT3mQNHT5JiaKSPz8f2XLUNBnQ" index="0" isDefault="true"/>
       -->
 
+
+
    </md:SPSSODescriptor>
+
+
 </md:EntityDescriptor>

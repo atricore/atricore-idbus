@@ -308,7 +308,7 @@ public class SPInitiatedSingleLogoutProducer extends SamlR2Producer {
                             return idpSloEndpoint;
                         }
 
-                        // If POST is available, use it : TODO : Make this configurable.
+                        // If POST is available, use it
                         if (b.equals(SamlR2Binding.SAMLR2_POST))
                             endpoint = idpSloEndpoint;
 

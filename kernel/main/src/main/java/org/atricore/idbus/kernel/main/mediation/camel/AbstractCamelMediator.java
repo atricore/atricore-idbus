@@ -306,8 +306,6 @@ public abstract class AbstractCamelMediator implements IdentityMediator {
         this.mediationLogger = mediationLogger;
     }
 
-    public abstract EndpointDescriptor resolveEndpoint(Channel channel, IdentityMediationEndpoint endpoint) throws IdentityMediationException ;
-
     public Object sendMessage(Object content, EndpointDescriptor destination, Channel channel) throws IdentityMediationException {
 
         if (!isInitialized())

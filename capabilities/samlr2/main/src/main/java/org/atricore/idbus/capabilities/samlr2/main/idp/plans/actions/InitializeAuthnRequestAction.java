@@ -160,6 +160,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
 
         IdentityMediationEndpoint acsEndpoint = null;
         IdentityMediationEndpoint acsPostEndpoint = null;
+        IdentityMediationEndpoint acsArtEndpoint = null;
 
         String acsEndpointType = SamlR2Service.AssertionConsumerService.toString();
 
@@ -194,9 +195,16 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
 
                     if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_POST.getValue()))
                         acsPostEndpoint = endpoint;
+
+                    if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_ARTIFACT.getValue()))
+                        acsArtEndpoint = endpoint;
+
                 }
             }
         }
+
+        if (acsEndpoint == null)
+            acsEndpoint = acsArtEndpoint;
 
         if (acsEndpoint == null)
             acsEndpoint = acsPostEndpoint;

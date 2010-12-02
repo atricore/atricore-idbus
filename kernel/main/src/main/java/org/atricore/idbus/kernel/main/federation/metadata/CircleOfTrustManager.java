@@ -91,6 +91,16 @@ public interface CircleOfTrustManager {
      */
     CircleOfTrustMemberDescriptor loolkupMemberByAlias(String memberAlias);
 
+    CircleOfTrustMemberDescriptor loolkupMemberById(String hash);
+
+    /**
+     * True if the COT member is running in the same identity appliance..
+     * @param alias
+     * @return
+     * @throws CircleOfTrustManagerException
+     */
+    boolean isLocalMember(String alias) throws CircleOfTrustManagerException;
+
     MetadataEntry findEntityMetadata(String memberAlias)
             throws CircleOfTrustManagerException;
 

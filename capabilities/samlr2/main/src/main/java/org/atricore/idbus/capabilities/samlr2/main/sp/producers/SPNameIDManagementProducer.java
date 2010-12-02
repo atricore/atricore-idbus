@@ -225,6 +225,8 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
                     IDPSSODescriptorType idpSsoRole = (IDPSSODescriptorType) role;
 
                     EndpointType defaultEndpoint = null;
+                    EndpointType postEndpoint = null;
+                    EndpointType artEndpoint = null;
 
                     for (EndpointType idpMnidEndpoint : idpSsoRole.getManageNameIDService()) {
 
@@ -232,12 +234,21 @@ public class SPNameIDManagementProducer extends SamlR2Producer {
                         if (b.equals(preferredBinding))
                             return idpMnidEndpoint;
 
+                        if (b.equals(SamlR2Binding.SAMLR2_ARTIFACT))
+                            artEndpoint = idpMnidEndpoint;
+
                         if (b.equals(SamlR2Binding.SAMLR2_POST))
-                            defaultEndpoint = idpMnidEndpoint;
+                            postEndpoint = idpMnidEndpoint;
 
                         if (defaultEndpoint == null)
                             defaultEndpoint = idpMnidEndpoint;
                     }
+
+                    if (artEndpoint != null)
+                        defaultEndpoint = artEndpoint;
+                    else if (postEndpoint != null)
+                        defaultEndpoint = postEndpoint;
+
                     return defaultEndpoint;
                 }
             }

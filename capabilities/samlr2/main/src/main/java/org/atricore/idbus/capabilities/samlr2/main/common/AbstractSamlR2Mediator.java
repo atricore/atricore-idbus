@@ -24,6 +24,8 @@ package org.atricore.idbus.capabilities.samlr2.main.common;
 import oasis.names.tc.saml._2_0.metadata.EndpointType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.main.binding.SamlArtifactEncoder;
+import org.atricore.idbus.capabilities.samlr2.main.binding.SamlR2ArtifactEncoderImpl;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.core.encryption.SamlR2Encrypter;
 import org.atricore.idbus.capabilities.samlr2.support.core.signature.SamlR2Signer;
@@ -54,6 +56,10 @@ public abstract class AbstractSamlR2Mediator extends AbstractCamelMediator {
     private SamlR2Signer signer;
 
     private SamlR2Encrypter encrypter;
+
+    protected AbstractSamlR2Mediator() {
+
+    }
 
     /**
      * This util will create an EndpointDescriptor based on the received channel and endpoint information.
@@ -268,5 +274,4 @@ public abstract class AbstractSamlR2Mediator extends AbstractCamelMediator {
         this.requestTimeToLive = requestTimeToLive;
     }
 
-    
 }
