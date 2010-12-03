@@ -59,10 +59,11 @@ public class DefaultMediationLogger implements MediationLogger, InitializingBean
     }
 
     public void logOutgoing(Message message) {
-        if (logger.isDebugEnabled())
-            logger.debug("Logging outgoing ...");
 
         if (log.isTraceEnabled()) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Logging outgoing ...");
 
             StringBuffer logEntry = new StringBuffer(2048);
             logEntry.append("\n<message id=\"").append(message.getMessageId()).append("\"direction=\"OUT\">");
@@ -95,10 +96,12 @@ public class DefaultMediationLogger implements MediationLogger, InitializingBean
     }
 
     public void logFault(Message message) {
-        if (logger.isDebugEnabled())
-            logger.debug("Logging fault ...");
 
         if (log.isTraceEnabled()) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Logging fault ...");
+
             StringBuffer logEntry = new StringBuffer(2048);
             logEntry.append("\n<message id=\"").append(message.getMessageId()).append("\"direction=\"OUT\" fault=\"true\" >");
 
@@ -125,30 +128,34 @@ public class DefaultMediationLogger implements MediationLogger, InitializingBean
     }
 
     public void logIncomming(Message message) {
-        if (logger.isDebugEnabled())
-            logger.debug("Logging incoming ...");
+        if (log.isTraceEnabled()) {
 
-        StringBuffer logEntry = new StringBuffer(2048);
-        logEntry.append("\n<message id=\"").append(message.getMessageId()).append("\" direction=\"IN\">");
+            if (logger.isDebugEnabled())
+                logger.debug("Logging incoming ...");
 
-        if (message instanceof CamelMediationMessage) {
+            StringBuffer logEntry = new StringBuffer(2048);
+            logEntry.append("\n<message id=\"").append(message.getMessageId()).append("\" direction=\"IN\">");
 
-            CamelMediationMessage camlMsg = (CamelMediationMessage) message;
-            CamelMediationExchange camlExchange = camlMsg.getExchange();
-            CamelMediationEndpoint camlEndpoint = camlExchange.getEndpoint();
+            if (message instanceof CamelMediationMessage) {
 
-            logEntry.append("\n\t<message-destination>");
-            logEntry.append("\n\t\t<endpoint>");
-            logEntry.append("\n\t\t\t<uri>").append(camlEndpoint.getEndpointUri()).append("</uri>");
-            logEntry.append("\n\t\t\t<binding>").append(camlEndpoint.getBinding()).append("</binding>");
-            logEntry.append("\n\t\t</endpoint>");
-            logEntry.append("\n\t</message-destination>");
+                CamelMediationMessage camlMsg = (CamelMediationMessage) message;
+                CamelMediationExchange camlExchange = camlMsg.getExchange();
+                CamelMediationEndpoint camlEndpoint = camlExchange.getEndpoint();
 
+                logEntry.append("\n\t<message-destination>");
+                logEntry.append("\n\t\t<endpoint>");
+                logEntry.append("\n\t\t\t<uri>").append(camlEndpoint.getEndpointUri()).append("</uri>");
+                logEntry.append("\n\t\t\t<binding>").append(camlEndpoint.getBinding()).append("</binding>");
+                logEntry.append("\n\t\t</endpoint>");
+                logEntry.append("\n\t</message-destination>");
+
+            }
+
+            logMessageDetails(message, logEntry);
+            logEntry.append("\n</message>");
+            log.trace(logEntry.toString());
+            
         }
-
-        logMessageDetails(message, logEntry);
-        logEntry.append("\n</message>");
-        log.trace(logEntry.toString());
 
     }
 
