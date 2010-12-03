@@ -192,8 +192,11 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
             }
         }
 
-        setPropertyValue(spMediator, "preferredIdpSSOBinding", SamlR2Binding.SAMLR2_POST.getValue());
-        setPropertyValue(spMediator, "preferredIdpSLOBinding", SamlR2Binding.SAMLR2_POST.getValue());
+
+        //setPropertyValue(spMediator, "preferredIdpSSOBinding", SamlR2Binding.SAMLR2_POST.getValue());
+        //setPropertyValue(spMediator, "preferredIdpSLOBinding", SamlR2Binding.SAMLR2_POST.getValue());
+        setPropertyValue(spMediator, "preferredIdpSSOBinding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+        setPropertyValue(spMediator, "preferredIdpSLOBinding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
 
         ExecutionEnvironment execEnv = provider.getActivation().getExecutionEnv();
 
