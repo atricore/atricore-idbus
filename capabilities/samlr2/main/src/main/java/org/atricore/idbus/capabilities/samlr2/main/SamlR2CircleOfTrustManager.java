@@ -227,9 +227,10 @@ public class SamlR2CircleOfTrustManager extends AbstractCircleOfTrustManager {
         }
     }
 
+    // XML Utils
+
     protected JAXBContext createJAXBContext() throws JAXBException {
         return JAXBContext.newInstance(SAMLR2Constants.SAML_METADATA_PKG);
-
     }
 
     protected Document marshalDefinition(JAXBElement jb) throws Exception {

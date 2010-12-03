@@ -40,6 +40,7 @@
         <property name="activeProcessFragments">
             <list>
                 <value>samlr2-init-artresolve-process-fragment</value>
+                <value>samlr2-add-artifact-to-artresolve-process-fragment</value>
                 <value>samlr2-sign-artresolve-process-fragment</value>
             </list>
         </property>

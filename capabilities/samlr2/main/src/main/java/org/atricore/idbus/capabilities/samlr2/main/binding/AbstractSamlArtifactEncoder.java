@@ -39,9 +39,7 @@ public abstract class AbstractSamlArtifactEncoder implements SamlArtifactEncoder
         int pad = length - b.length;
 
         ByteBuffer bf = ByteBuffer.allocate(length);
-
         for (int i = 0; i < pad; i++) {
-            System.out.println(i);
             bf.put((byte) 0x0);
         }
         bf.put(b);

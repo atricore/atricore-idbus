@@ -13,17 +13,19 @@ import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
 import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
 import org.atricore.idbus.kernel.main.mediation.*;
+import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelMediator;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
+import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.planning.*;
 import static org.atricore.idbus.capabilities.samlr2.main.common.plans.SamlR2PlanningConstants.*;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 /**
@@ -65,20 +67,19 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             if (samlArtStr == null || "".equals(samlArtStr))
                 throw new IllegalArgumentException("'"+artifactParameterName+"' parameter not found!");
 
-            // TODO : Use planning instead of builder :)
-            SamlArtifact samlArtifact = getEncoder().decode(samlArtStr);
-
             // Access issuer Reolver endpoint to get value!
-            String sourceId = samlArtifact.getSourceID();
+            SamlArtifact samlArtifact = getEncoder().decode(samlArtStr);
+            String sourceId = samlArtifact.getSourceID(); // Here, we assume that our artifacts always have sourceId
             CircleOfTrustMemberDescriptor resolverMemberDescr = this.getProvider().getCotManager().loolkupMemberById(sourceId);
             if (resolverMemberDescr == null) {
                 /* Unknown SOURCE ID! */
                 logger.warn("Unkonw SAML Artifact SourceID ["+sourceId+"]");
-                throw new RuntimeException("Unkonw SAML Artifact SourceID ["+sourceId+"]");
+                throw new SamlR2Exception("Unkonw SAML Artifact SourceID ["+sourceId+"]");
             }
 
-            FederationChannel fChannel= (FederationChannel) channel;
 
+            // Since this is the destination channel of a SAML Message, it MUST  be a FederationChannel
+            FederationChannel fChannel = (FederationChannel) channel;
             CircleOfTrustMemberDescriptor memberDescr = fChannel.getMember();
 
             // Find SAML 2.0 Metadata
@@ -92,7 +93,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             ArtifactResolveType req = buildArtifactResolve(
                     memberDescr,
                     resolverMemberDescr,
-                    samlArtifact,
+                    samlArtStr,
                     samlResolverEd,
                     fChannel);
 
@@ -103,6 +104,10 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
                 logger.trace("Received SAML Message : " + msgValue);
 
             // See if we're dealing with a request or a response
+            if (msgValue instanceof JAXBElement) {
+                msgValue = ((JAXBElement)msgValue).getValue();
+            }
+
             if (msgValue instanceof RequestAbstractType) {
 
                 RequestAbstractType samlRequest = (RequestAbstractType) msgValue;
@@ -155,9 +160,8 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             if (logger.isDebugEnabled())
                 logger.debug("Creating HTML Artifact to " + ed.getLocation());
 
-
-
             String msgName = null;
+            String destAlias = null;
             java.lang.Object msgValue = out.getContent();
             String element = out.getContentType();
             boolean isResponse = false;
@@ -176,8 +180,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             MessageQueueManager aqm = getArtifactQueueManager();
             Artifact artifact = aqm.pushMessage(msgValue);
 
-            FederationChannel fChannel = (FederationChannel) channel;
-            CircleOfTrustMemberDescriptor cotMember = fChannel.getMember();
+            CircleOfTrustMemberDescriptor cotMember = getCotMember(destAlias);
 
             SamlArtifact samlArtifact = new SamlArtifact(4,
                     0,
@@ -313,7 +316,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
 
     protected ArtifactResolveType buildArtifactResolve(CircleOfTrustMemberDescriptor member,
                                                  CircleOfTrustMemberDescriptor destMember,
-                                                 SamlArtifact samlArt,
+                                                 String samlArtEnc,
                                                  EndpointDescriptor ed,
                                                  FederationChannel channel
     ) throws IdentityPlanningException, SamlR2Exception {
@@ -342,7 +345,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
         // saml artifact
         IdentityArtifact in =
             new IdentityArtifactImpl(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, "SAMLArt"),
-                    samlArt );
+                    samlArtEnc );
         idPlanExchange.setIn(in);
 
         // ArtifactResolve
@@ -371,6 +374,9 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
     protected IdentityPlan findIdentityPlanOfType(Class planClass) throws SamlR2Exception {
 
         for (IdentityMediationEndpoint e : channel.getEndpoints()) {
+            if (e.getIdentityPlans() == null)
+                continue;
+            
             for (IdentityPlan p : e.getIdentityPlans()) {
                 if (planClass.isInstance(p))
                     return p;
@@ -381,6 +387,63 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
                 SamlR2HttpArtifactBinding.class.getSimpleName());
 
         return null;
+
+    }
+
+    protected CircleOfTrustMemberDescriptor getCotMember(String destAlias) throws SamlR2Exception {
+        FederationChannel fc = getFederationChannel(destAlias);
+        return fc.getMember();
+    }
+
+    /**
+     * Gest the FederationChannel that is used to send a message using HTTP-Artifact binding.
+     */
+    protected FederationChannel getFederationChannel(String destAlias) throws SamlR2Exception {
+
+        // We're bound to a FederationChannel, return it
+        if (channel instanceof FederationChannel) {
+            // The binding is working with a FC
+            return (FederationChannel) channel;
+        }
+
+        // We're bound to a different type of channel,
+        // try to get the federation channel based on the destination entity
+
+        // Federated Provdier
+        FederatedLocalProvider provider = getFederatedProvider();
+
+        // Default FederationChannel
+        FederationChannel fChannel = provider.getChannel();
+
+        // Specific FederationChannels
+        for (FederationChannel f : provider.getChannels()) {
+            if (f.getMember().getAlias().equals(destAlias))
+                fChannel = f;
+        }
+
+        return fChannel;
+
+    }
+
+    /**
+     * Returns the FederatedLocalProvider used to send a SAML Message using HTTP-Artifact Binding
+     * @return
+     * @throws SamlR2Exception
+     */
+    protected FederatedLocalProvider getFederatedProvider() throws SamlR2Exception {
+        if (channel instanceof FederationChannel) {
+            // The binding is working with a FC
+            FederationChannel fChannel = (FederationChannel) channel;
+            return fChannel.getProvider();
+        }
+
+        if (channel instanceof BindingChannel) {
+            BindingChannel bChannel = (BindingChannel) channel;
+            FederatedLocalProvider provider = bChannel.getProvider();
+            return provider;
+        }
+
+        throw new SamlR2Exception("Unsupported channel type : " + channel);
 
     }
 

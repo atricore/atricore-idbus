@@ -23,7 +23,7 @@ package org.atricore.idbus.capabilities.samlr2.main.common.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.NameIDType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
-import oasis.names.tc.saml._2_0.protocol.ResponseType;
+import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.common.plans.SamlR2PlanningConstants;
@@ -52,7 +52,7 @@ public class InitializeResponseAction extends AbstractSamlR2Action {
 
     protected void doExecute(IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext) throws Exception {
 
-        ResponseType response = (ResponseType) out.getContent();
+        StatusResponseType response = (StatusResponseType) out.getContent();
         RequestAbstractType request = (RequestAbstractType) executionContext.getContextInstance().getVariable(VAR_REQUEST);
         String responseMode = (String) executionContext.getContextInstance().getVariable(VAR_RESPONSE_MODE);
 

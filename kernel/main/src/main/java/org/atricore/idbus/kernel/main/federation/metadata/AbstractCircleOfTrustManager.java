@@ -222,9 +222,12 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
     }
 
     public boolean isLocalMember(String alias) throws CircleOfTrustManagerException {
-        for (Provider p : cot.getProviders()) {
-            if (p.getName().equals(alias)) {
-                return !(p instanceof FederatedRemoteProvider);
+        for (FederatedProvider p : cot.getProviders()) {
+
+            for (CircleOfTrustMemberDescriptor m : p.getMembers()) {
+                if (m.getAlias().equals(alias)) {
+                    return !(p instanceof FederatedRemoteProvider);
+                }
             }
         }
         throw new CircleOfTrustManagerException("Unknonw entity " + alias);
@@ -287,7 +290,6 @@ public abstract class AbstractCircleOfTrustManager implements CircleOfTrustManag
                 }
             }
         }
-
 
         if (logger.isDebugEnabled())
             logger.debug("No COT Member registered with alias " + alias);

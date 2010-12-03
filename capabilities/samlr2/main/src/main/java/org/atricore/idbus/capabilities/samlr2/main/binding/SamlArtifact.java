@@ -4,7 +4,7 @@ package org.atricore.idbus.capabilities.samlr2.main.binding;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SamlArtifact {
+public class SamlArtifact implements java.io.Serializable {
 
     private int type;
 

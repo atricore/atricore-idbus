@@ -16,6 +16,7 @@ import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.core.StatusCode;
 import org.atricore.idbus.capabilities.samlr2.support.core.StatusDetails;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.ArtifactImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
@@ -53,6 +54,8 @@ public class ArtifactResolutionProducer extends SamlR2Producer {
         if (content instanceof ArtifactResolveType) {
 
             ArtifactResolveType request = (ArtifactResolveType) content;
+            if (logger.isTraceEnabled())
+                logger.trace("Received ArtifactResolve request " + request.getID());
 
             String samlArtEnc = request.getArtifact();
 
@@ -64,9 +67,15 @@ public class ArtifactResolutionProducer extends SamlR2Producer {
             MessageQueueManager aqm = getArtifactQueueManager();
             Object samlMsg = aqm.pullMessage(new ArtifactImpl(samlArt.getMessageHandle()));
 
-            // Create resposne
-            SamlR2Binding binding = SamlR2Binding.asEnum(endpoint.getBinding());
-            EndpointDescriptor ed = resolveSpSloEndpoint(request.getIssuer(), new SamlR2Binding [] { binding } , true);
+            if (logger.isTraceEnabled())
+                logger.trace("Resolved SAML Artifact " + samlArt + " to " + samlMsg);
+
+            // We're on a back-channel service, there's no actual destination endpoint
+            EndpointDescriptor ed = new EndpointDescriptorImpl(endpoint.getName(),
+                    endpoint.getType(),
+                    endpoint.getBinding(),
+                    endpoint.getLocation(),
+                    endpoint.getResponseLocation());
 
             ArtifactResponseType response = buildArtifactResponse(exchange, ed, samlMsg);
 
@@ -107,8 +116,7 @@ public class ArtifactResolutionProducer extends SamlR2Producer {
         //idPlanExchange.setProperty(VAR_DESTINATION_COT_MEMBER, idp);
         idPlanExchange.setProperty(VAR_DESTINATION_ENDPOINT_DESCRIPTOR, ed);
         idPlanExchange.setProperty(VAR_COT_MEMBER, fChannel.getMember());
-        //idPlanExchange.setProperty(VAR_RESPONSE_CHANNEL, spChannel);
-
+        idPlanExchange.setProperty(VAR_SAMLR2_ARTIFACT, samlMsg);
 
         // Get SPInitiated authn request, if any!
         ArtifactResolveType request =

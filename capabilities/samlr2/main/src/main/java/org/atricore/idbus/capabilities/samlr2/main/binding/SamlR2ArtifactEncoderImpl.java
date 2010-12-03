@@ -18,6 +18,9 @@ public class SamlR2ArtifactEncoderImpl extends AbstractSamlArtifactEncoder {
     public String encode(SamlArtifact artifact) {
         // Use SAML 2.0 Recommended format
 
+        if (logger.isTraceEnabled())
+            logger.trace("Encoding SAML 2.0 Artifact " + artifact);
+
         byte[] typeCodeBin = toBin(artifact.getType());
         byte[] endpointIdxBin = toBin(artifact.getEndpointIndex());
 
@@ -30,20 +33,30 @@ public class SamlR2ArtifactEncoderImpl extends AbstractSamlArtifactEncoder {
                 messageHandleBin.length +
                 sourceIdBin.length);
 
+        // Be carefull with the order
         bf.put(typeCodeBin);
         bf.put(endpointIdxBin);
-        bf.put(messageHandleBin);
         bf.put(sourceIdBin);
+        bf.put(messageHandleBin);
 
-        return new String(Base64.encodeBase64(bf.array()));
+        String s = new String(Base64.encodeBase64(bf.array()));
+
+        if (logger.isTraceEnabled())
+            logger.trace("Encoded SAML 2.0 Artifact " + s);
+
+        return s;
 
     }
 
     public SamlArtifact decode(String samlArtStr) throws SamlR2Exception {
+
+        if (logger.isTraceEnabled())
+            logger.trace("Decoding SAML 2.0 Artifact " + samlArtStr);
+
         byte[] samlArtBin = Base64.decodeBase64(samlArtStr.getBytes());
 
-        if (samlArtBin.length < 5)
-            throw new SamlR2Exception("Invalid SamlArtifact length " + samlArtBin.length);
+        if (samlArtBin.length < 44) // Using SAML 2.0 Recommended format !
+            throw new SamlR2Exception("Invalid Saml 2.0 Artifact format " + samlArtBin.length);
 
         byte[] typeCodeBin = new byte[2];
         typeCodeBin[0] = samlArtBin[0];
@@ -59,25 +72,24 @@ public class SamlR2ArtifactEncoderImpl extends AbstractSamlArtifactEncoder {
         String messageHandle = null;
 
         byte[] remainingArtBin = copyOfRange(samlArtBin, 4, samlArtBin.length);
-        if (remainingArtBin.length == 40) {
-            // Assume SAML 2.0 Recommended remaining
-            if (logger.isTraceEnabled())
-                logger.trace("Assuming SAML 2.0 Recommended artifact format");
+        // Assume SAML 2.0 Recommended remaining
+        if (logger.isTraceEnabled())
+            logger.trace("Assuming SAML 2.0 Recommended artifact format");
 
-            byte[] sourceIdBin = copyOfRange(remainingArtBin, 0, 20);
-            sourceId = toString(sourceIdBin);
+        // First 20 bytes are sourceId
+        byte[] sourceIdBin = copyOfRange(remainingArtBin, 0, 20);
+        sourceId = toString(sourceIdBin);
 
-            byte[] messageHandleBin = copyOfRange(remainingArtBin, 20, 40);
-            messageHandle = toString(messageHandleBin);
+        // Last 20 bytes are messageHandle
+        byte[] messageHandleBin = copyOfRange(remainingArtBin, 21, 40);
+        messageHandle = toString(messageHandleBin);
 
-        } else {
-            if (logger.isTraceEnabled())
-                logger.trace("Assuming non SAML 2.0 artifact format");
+        SamlArtifact a = new SamlArtifact(typeCode, endpointIndex, sourceId, messageHandle);
 
-            messageHandle = toString(remainingArtBin);
-        }
+        if (logger.isTraceEnabled())
+            logger.trace("Decoded SAML 2.0 artifact " + a);
 
-        return new SamlArtifact(typeCode, endpointIndex, sourceId, messageHandle);
+        return a;   
 
 
     }

@@ -21,7 +21,7 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<process-definition name='Saml Artifact to SAMLR2 ArtifactResolve'>
+<process-definition name='SAMLR2 ArtifactResolve to SAMLR2 ArtifactResponse'>
 
     <start-state name="start">
         <transition to="initializeArtifactResponse" />
@@ -52,7 +52,7 @@
         <process-fragment lifecycle="generate-artifactresponse" phase="provide-content"/>
         <transition to="ensureContentConfidentiality"/>
 
-        <variable name="urn:org:atricore:idbus:samlr2artifact" access="read" />
+        <variable name="urn:org:atricore:idbus:samlr2:support:SamlArtifact" access="read" />
     </process-fragment-state>
 
 

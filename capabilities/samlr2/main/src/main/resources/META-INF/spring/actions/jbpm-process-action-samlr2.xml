@@ -211,4 +211,21 @@
                   ref="samlr2-idp-initialize-authn-request-action"
                   interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
 
+
+    <!-- Set SAMLR2 Artifact Resolve artifact -->
+    <bean name="samlr2-set-artifact-resolve-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.binding.plans.actions.AddArtifactToArtifactResolveAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-set-artifact-resolve-action"
+                  ref="samlr2-set-artifact-resolve-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Set SAMLR2 Artifact Response content -->
+    <bean name="samlr2-set-content-artifact-response-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.binding.plans.actions.AddContentToArtifactResponseAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-set-content-artifact-response-action"
+                  ref="samlr2-set-content-artifact-response-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
 </s:beans>
