@@ -83,14 +83,12 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
 
         assert spCotMember != null : "Destination SP for IDP Initiated SSO not found!";
 
-
-
         // Issuer is destination SP for IdP-initiated SSO
         NameIDType issuer = new NameIDType();
         issuer.setFormat(NameIDFormat.ENTITY.getValue());
         issuer.setValue(spCotMember.getAlias());
         authn.setIssuer(issuer);
-
+        
         String nameIdPolicyFormat = resolveNameIdFormat(idp, mediator.getPreferredNameIdPolicy());
         NameIDPolicyType nameIdPolicy = new NameIDPolicyType();
         nameIdPolicy.setFormat(nameIdPolicyFormat);

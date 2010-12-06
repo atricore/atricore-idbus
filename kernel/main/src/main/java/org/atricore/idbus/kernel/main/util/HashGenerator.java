@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class HahsGenerator {
+public class HashGenerator {
 
     public static String md5(String value)
             throws UnsupportedEncodingException, NoSuchAlgorithmException {

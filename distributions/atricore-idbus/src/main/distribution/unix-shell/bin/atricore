@@ -275,7 +275,7 @@ setupDefaults() {
     ## TODO: Move to conf/profiler/yourkit.{sh|cmd}
     ##
     # Uncomment to enable YourKit profiling
-    #DEFAULT_JAVA_DEBUG_OPTS="-agentlib:yjpagent -Dorg.osgi.framework.bootdelegation=com.yourkit.*,sun.*,com.sun.*"
+    # DEFAULT_JAVA_DEBUG_OPTS="-agentlib:yjpagent -Dorg.osgi.framework.bootdelegation=com.yourkit.*,sun.*,com.sun.*"
 }
 
 cleanUp() {
