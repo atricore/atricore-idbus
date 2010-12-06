@@ -38,21 +38,23 @@
     <description>SAML 1.1 Protocol Binding</description>
     <packaging>bundle</packaging>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>java.net</id>
-            <name>java.net Maven Repository</name>
-            <url>https://maven-repository.dev.java.net/nonav/repository</url>
-            <layout>legacy</layout>
-        </pluginRepository>
-    </pluginRepositories>
-
     <dependencies>
 
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.1</version>
+            <groupId>org.apache.servicemix.specs</groupId>
+            <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.servicemix.specs</groupId>
+            <artifactId>org.apache.servicemix.specs.jaxws-api-${jaxws.api.version}</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-ws-metadata_2.0_spec</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -61,21 +63,7 @@
 
     <build>
         <plugins>
-            <!--plugin>
-                <groupId>com.sun.tools.xjc.maven2</groupId>
-                <artifactId>maven-jaxb-plugin</artifactId>
-                <configuration>
-                    <extension>true</extension>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
 
-            </plugin-->
             <plugin>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-codegen-plugin</artifactId>
@@ -123,12 +111,19 @@
                         <Export-Package>
                               oasis.names.tc.saml._1_0.assertion;version=${pom.version},
                               oasis.names.tc.saml._1_0.protocol;version=${pom.version},
-                            oasis.names.tc.saml._1_0.wsdl;version=${pom.version},
+                              oasis.names.tc.saml._1_0.wsdl;version=${pom.version},
                               !org.w3.*
                         </Export-Package>
-                        <!--
-                        <Import-Package>!*</Import-Package>
-                        -->
+                        <Import-Package>
+                            javax.xml.bind,
+                            javax.jws,
+                            javax.jws.soap,
+                            javax.xml.bind.annotation,
+                            javax.xml.namespace,
+                            javax.xml.ws,
+                            !javax.xml.bind.annotation.adapters,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
