@@ -34,6 +34,7 @@ import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SamlR2Service;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedAuthnRequestType;
+import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManager;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
@@ -79,7 +80,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
 
         SamlR2IDPMediator mediator = (SamlR2IDPMediator) spChannel.getIdentityMediator();
 
-        CircleOfTrustMemberDescriptor spCotMember = resolveSpAlias(channel);
+        CircleOfTrustMemberDescriptor spCotMember = resolveSpAlias(channel, ssoAuthnReq);
 
         assert spCotMember != null : "Destination SP for IDP Initiated SSO not found!";
 
@@ -266,7 +267,7 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
     }
 
 
-    protected CircleOfTrustMemberDescriptor resolveSpAlias(SPChannel spChannel) {
+    protected CircleOfTrustMemberDescriptor resolveSpAlias(SPChannel spChannel, IDPInitiatedAuthnRequestType ssoAuthnReq) throws SamlR2Exception {
 
         CircleOfTrustMemberDescriptor spDescr = null;
 
@@ -319,14 +320,37 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
 
         } else {
 
+            // Try to get SP Alias from request:
             String spAlias = mediator.getPreferredSpAlias();
+            CircleOfTrustManager cotManager = spChannel.getProvider().getCotManager();
+
+            if (ssoAuthnReq != null) {
+                for (RequestAttributeType a : ssoAuthnReq.getRequestAttribute()) {
+                    if (a.getName().equals("atricore_sp_id")) {
+                        // get cot manager
+                        spDescr = cotManager.loolkupMemberById(a.getValue());
+                        break;
+                    }
+
+                    if (a.getName().equals("atricore_sp_alias")) {
+                        spDescr = cotManager.loolkupMemberByAlias(a.getValue());
+                        break;
+                    }
+
+
+                }
+            }
+
+            if (spDescr == null)
+                spDescr = cotManager.loolkupMemberByAlias(spAlias);
 
             if (logger.isTraceEnabled())
                 logger.trace("Using Preferred SP Alias " + spAlias);
 
-            CircleOfTrustManager cotManager = spChannel.getProvider().getCotManager();
+            if (spDescr == null) {
+                throw new SamlR2Exception("Cannot find SP for AuthnRequest ");
+            }
 
-            spDescr = cotManager.loolkupMemberByAlias(spAlias);
 
         }
 

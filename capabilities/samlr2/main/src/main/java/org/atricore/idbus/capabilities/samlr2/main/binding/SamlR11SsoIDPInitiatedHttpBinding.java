@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedAuthnRequestType;
+import org.atricore.idbus.common.sso._1_0.protocol.RequestAttributeType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
@@ -63,9 +64,9 @@ public class SamlR11SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBind
         if (httpMsg.getHeader("http.requestMethod") == null) {
 
             if (logger.isDebugEnabled()) {
-                Map <String, Object> h = httpMsg.getHeaders();
+                Map<String, Object> h = httpMsg.getHeaders();
                 for (String key : h.keySet()) {
-                    logger.debug("CAMEL Header:" + key + ":"+ h.get(key));
+                    logger.debug("CAMEL Header:" + key + ":" + h.get(key));
                 }
             }
 
@@ -76,16 +77,33 @@ public class SamlR11SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBind
         idpInitReq.setID(uuidGenerator.generateId());
         idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:1.1");
 
+
         // HTTP Request Parameters from HTTP Request body
         MediationState state = createMediationState(exchange);
         String relayState = state.getTransientVariable("RelayState");
 
+        String spAlias = state.getTransientVariable("atricore_sp_alias");
+        if (spAlias != null) {
+            RequestAttributeType a = new RequestAttributeType();
+            a.setName("atricore_sp_alias");
+            a.setValue(spAlias);
+            idpInitReq.getRequestAttribute().add(a);
+        }
+
+        String spId = state.getTransientVariable("atricore_sp_id");
+        if (spId != null) {
+            RequestAttributeType a = new RequestAttributeType();
+            a.setName("atricore_sp_id");
+            a.setValue(spId);
+            idpInitReq.getRequestAttribute().add(a);
+        }
+
         return new MediationMessageImpl<IDPInitiatedAuthnRequestType>(message.getMessageId(),
-                        idpInitReq,
-                        null,
-                        relayState,
-                        null,
-                        state);
+                idpInitReq,
+                null,
+                relayState,
+                null,
+                state);
 
     }
 
@@ -110,7 +128,7 @@ public class SamlR11SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBind
         String ssoQryString = "?ResponseMode=unsolicited&ResponseFormat=SAML11";
 
         if (out.getRelayState() != null) {
-            ssoQryString += "&relayState=" + out.getRelayState() ;
+            ssoQryString += "&relayState=" + out.getRelayState();
         }
 
         Message httpIn = exchange.getIn();
