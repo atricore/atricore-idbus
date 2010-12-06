@@ -356,6 +356,64 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         setPropertyRefs(arLocal, "identityPlans", plansList);
         endpoints.add(arLocal);
 
+        Bean arSoap11 = newAnonymousBean(IdentityMediationEndpointImpl.class);
+        arSoap11.setName(spChannelBean.getName() + "-saml11-ar-soap");
+        setPropertyValue(arSoap11, "name", arSoap11.getName());
+        setPropertyValue(arSoap11, "type", SAMLR2MetadataConstants.ArtifactResolutionService_QNAME.toString());
+        setPropertyValue(arSoap11, "binding", SamlR2Binding.SAMLR11_SOAP.getValue());
+        plansList = new ArrayList<Ref>();
+        plan = new Ref();
+        plan.setBean(idpBean.getName() + "-samlr2artresolve-to-samlr2artresponse-plan");
+        plansList.add(plan);
+        plan2 = new Ref();
+        plan2.setBean(idpBean.getName() + "-samlr2art-to-samlr2artresolve-plan");
+        plansList.add(plan2);
+        setPropertyRefs(arSoap11, "identityPlans", plansList);
+        endpoints.add(arSoap11);
+
+        // IDP Initiated SSO
+        Bean idpSsoInit = newAnonymousBean(IdentityMediationEndpointImpl.class);
+        idpSsoInit.setName(spChannelBean.getName() + "-idp-initiated-saml2");
+        setPropertyValue(idpSsoInit, "name", idpSsoInit.getName());
+        setPropertyValue(idpSsoInit, "type", SAMLR2MetadataConstants.SingleSignOnService_QNAME.toString());
+        setPropertyValue(idpSsoInit, "binding", SamlR2Binding.SSO_IDP_INITIATED_SSO_HTTP_SAML11.getValue());
+        setPropertyValue(idpSsoInit, "location", "/SAML11/SSO/IDP_INITIATE");
+        plansList = new ArrayList<Ref>();
+        plan = new Ref();
+        plan.setBean(idpBean.getName() + "-samlr2idpinitiatedauthnreq-to-samlr2authnreq-plan");
+        plansList.add(plan);
+        setPropertyRefs(idpSsoInit, "identityPlans", plansList);
+        endpoints.add(idpSsoInit);
+
+        Bean idpSsoInit11 = newAnonymousBean(IdentityMediationEndpointImpl.class);
+        idpSsoInit11.setName(spChannelBean.getName() + "-idp-initiated-saml11");
+        setPropertyValue(idpSsoInit11, "name", idpSsoInit11.getName());
+        setPropertyValue(idpSsoInit11, "type", SAMLR2MetadataConstants.SingleSignOnService_QNAME.toString());
+        setPropertyValue(idpSsoInit11, "binding", SamlR2Binding.SSO_IDP_INITIATED_SSO_HTTP_SAML2.getValue());
+        setPropertyValue(idpSsoInit11, "location", "/SAML2/SSO/IDP_INITIATE");
+        plansList = new ArrayList<Ref>();
+        plan = new Ref();
+        plan.setBean(idpBean.getName() + "-samlr2idpinitiatedauthnreq-to-samlr2authnreq-plan");
+        plansList.add(plan);
+        setPropertyRefs(idpSsoInit11, "identityPlans", plansList);
+        endpoints.add(idpSsoInit11);
+
+        /*
+                <!-- IdP-initiated SSO SAML 1.1 -->
+                <bean name="idp1-sso-idp-initiated-saml11"
+                      class="org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl">
+                    <property name="name" value="idp1-sso-idp-initiated-saml11"/>
+                    <property name="type" value="{urn:oasis:names:tc:SAML:2.0:metadata}SingleSignOnService"/>
+                    <property name="binding" value="urn:org:atricore:idbus:sso:bindings:SAML:1:1:IDP-Initiated-SSO-http"/>
+                    <property name="location" value="/IDBUS/SSO/SAML11_INITIATE"/>
+                    <property name="identityPlans">
+                        <list>
+                            <ref bean="samlr2idpinitiatedauthnreq-to-samlr2authnreq-plan"/>
+                        </list>
+                    </property>
+                </bean>
+         */
+
         // SessionHeartBeatService (non-saml)
 
         // SSO SHB SOAP

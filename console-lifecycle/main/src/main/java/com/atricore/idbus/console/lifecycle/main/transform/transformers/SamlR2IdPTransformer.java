@@ -305,6 +305,13 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         artifactResolutionServiceLocal.setIsDefault(true);
         idpSSODescriptor.getArtifactResolutionService().add(artifactResolutionServiceLocal);
 
+        IndexedEndpointType artifactResolutionService11 = new IndexedEndpointType();
+        artifactResolutionService11.setBinding(SamlR2Binding.SAMLR11_SOAP.getValue());
+        artifactResolutionService11.setLocation(resolveLocationUrl(provider) + "/SAML11/ARTIFACT/SOAP");
+        artifactResolutionService11.setIndex(0);
+        artifactResolutionService11.setIsDefault(true);
+        idpSSODescriptor.getArtifactResolutionService().add(artifactResolutionService11);
+
         // SingleLogoutService
         EndpointType singleLogoutServicePost = new EndpointType();
         singleLogoutServicePost.setBinding(SamlR2Binding.SAMLR2_POST.getValue());

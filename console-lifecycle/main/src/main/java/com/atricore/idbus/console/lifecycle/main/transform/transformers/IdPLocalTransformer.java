@@ -24,6 +24,7 @@ import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactT
 import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.IdPSessionEventListener;
 import org.atricore.idbus.capabilities.samlr2.main.idp.SamlR2IDPMediator;
+import org.atricore.idbus.capabilities.samlr2.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2AuthnRequestToSamlR2ResponsePlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
@@ -313,6 +314,18 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
 
         Bean samlArtToSamlArtResPlan = newBean(idpBeans, idpBean.getName() + "-samlr2art-to-samlr2artresolve-plan", SamlR2ArtifactToSamlR2ArtifactResolvePlan.class);
         setPropertyRef(samlArtToSamlArtResPlan, "bpmsManager", "bpms-manager");
+
+        Bean samlr2IdpInitToSamlr2AuthnReqPlan = newBean(idpBeans, idpBean.getName() + "-samlr2idpinitiatedauthnreq-to-samlr2authnreq-plan", IDPInitiatedAuthnReqToSamlR2AuthnReqPlan.class);
+        setPropertyRef(samlr2IdpInitToSamlr2AuthnReqPlan, "bpmsManager", "bpms-manager");
+
+
+        /*
+    <bean name="samlr2idpinitiatedauthnreq-to-samlr2authnreq-plan"
+          class="org.atricore.idbus.capabilities.samlr2.main.idp.plans.IDPInitiatedAuthnReqToSamlR2AuthnReqPlan">
+        <property name="bpmsManager" ref="bpms-manager"/>
+    </bean>
+
+         */
         
         //Bean authnToSamlResponsePlan = newBean(idpBeans, "samlr2authnreq-to-samlr2response-plan", SamlR2AuthnReqToSamlR2RespPlan.class);
         //setPropertyRef(authnToSamlResponsePlan, "bpmsManager", "bpms-manager");
