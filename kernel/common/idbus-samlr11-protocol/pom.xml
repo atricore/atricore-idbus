@@ -61,7 +61,7 @@
 
     <build>
         <plugins>
-            <plugin>
+            <!--plugin>
                 <groupId>com.sun.tools.xjc.maven2</groupId>
                 <artifactId>maven-jaxb-plugin</artifactId>
                 <configuration>
@@ -75,7 +75,43 @@
                     </execution>
                 </executions>
 
+            </plugin-->
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-codegen-plugin</artifactId>
+                <version>${cxf.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-protocol-sources</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <sourceRoot>${basedir}/target/generated</sourceRoot>
+                            <wsdlOptions>
+                                <wsdlOption>
+                                    <wsdl>
+                                        ${basedir}/src/main/resources/org/atricore/idbus/kernel/common/samlr11/samlv11.wsdl
+                                    </wsdl>
+                                    <extraargs>
+                                        <extraarg>-impl</extraarg>
+                                        <extraarg>-verbose</extraarg>
+                                        <extraarg>-client</extraarg>
+                                        <extraarg>-b</extraarg>
+                                        <extraarg>
+                                            ${basedir}/src/main/resources/org/atricore/idbus/kernel/common/samlr11/samlv11_binding.xml
+                                        </extraarg>
+                                        <extraarg>-catalog</extraarg>
+                                        <extraarg>${basedir}/src/main/resources/catalog.xml</extraarg>
+                                    </extraargs>
+                                </wsdlOption>
+                            </wsdlOptions>
+                        </configuration>
+                        <goals>
+                            <goal>wsdl2java</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -87,6 +123,7 @@
                         <Export-Package>
                               oasis.names.tc.saml._1_0.assertion;version=${pom.version},
                               oasis.names.tc.saml._1_0.protocol;version=${pom.version},
+                            oasis.names.tc.saml._1_0.wsdl;version=${pom.version},
                               !org.w3.*
                         </Export-Package>
                         <!--
@@ -96,22 +133,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <sourceDirectory>target/jaxws</sourceDirectory>
-        <testSourceDirectory>src/test/java</testSourceDirectory>
-        <resources>
-            <resource>
-                <directory>src/main</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                    <include>**/*.xsd</include>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-        </resources>
-        <testResources>
-            <testResource>
-                <directory>src/test/resources</directory>
-            </testResource>
-        </testResources>
+
     </build>
 </project>

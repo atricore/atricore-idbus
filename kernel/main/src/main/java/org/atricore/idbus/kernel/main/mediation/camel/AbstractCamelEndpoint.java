@@ -21,13 +21,12 @@
 
 package org.atricore.idbus.kernel.main.mediation.camel;
 
-import org.apache.camel.Component;
-import org.apache.camel.Consumer;
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
+import org.apache.camel.*;
 import org.apache.camel.impl.DefaultEndpoint;
+import org.apache.camel.spi.Registry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
 
@@ -46,6 +45,7 @@ public abstract class AbstractCamelEndpoint<E extends Exchange> extends DefaultE
 
     protected AbstractCamelEndpoint(String endpointURI, Component component, Map parameters) throws Exception {
         super(endpointURI, component);
+        CamelContext ctx = component.getCamelContext();
     }
 
     public Consumer createConsumer(Processor processor) throws Exception {

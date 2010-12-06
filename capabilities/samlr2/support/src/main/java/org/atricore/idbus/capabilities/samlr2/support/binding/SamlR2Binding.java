@@ -67,6 +67,14 @@ public enum SamlR2Binding {
     /** URI for SAML 2.0 IdP initiated bindings */ // TODO : Generalize this into Provider Initiated HTTP binding or something ?
     SSO_IDP_INITIATED_SSO_HTTP_SAML2("urn:org:atricore:idbus:sso:bindings:SAML:2:0:IDP-Initiated-SSO-http", true),
 
+
+    /** URI for IDBUS HTTP Artifact binding, this is NOT SAML Normative*/
+    SAMLR11_ARTIFACT("urn:oasis:names:tc:SAML:1.1:bindings:HTTP-Artifact", true),
+
+    /** URI for SAML 2 SOAP binding. [SAMLBinding 3.2]*/
+    SAMLR11_SOAP("urn:oasis:names:tc:SAML:1.1:bindings:SOAP", false),
+
+
     /** URI for SAML 1.1 IdP initiated endpoints */
     SSO_IDP_INITIATED_SSO_HTTP_SAML11("urn:org:atricore:idbus:sso:bindings:SAML:1:1:IDP-Initiated-SSO-http", true),
 

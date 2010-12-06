@@ -84,6 +84,7 @@ public class SamlR2IDPMediator extends AbstractSamlR2Mediator {
                     switch (binding) {
                         // http endpoints
                         case SAMLR2_ARTIFACT:
+                        case SAMLR11_ARTIFACT:
                         case SAMLR2_POST:
                         case SAMLR2_REDIRECT:
                         case SSO_ARTIFACT:
@@ -124,6 +125,65 @@ public class SamlR2IDPMediator extends AbstractSamlR2Mediator {
                                                 "&endpointRef=" + endpoint.getName() +
                                                 "&response=true");
                              }
+                            break;
+
+                        case SAMLR11_SOAP:
+                            // ----------------------------------------------------------
+                            // SOAP Incomming messages:
+                            // ==> idbus-http ==> cxf ==> idbus-bind ==> samlr2-idp
+                            // ----------------------------------------------------------
+
+                            // FROM idbus-http TO cxf (through direct component)
+                            from("idbus-http:" + ed.getLocation()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("direct:" + ed.getName() + "-cxf");
+
+                            // FROM cxf TO idbus-bind (through direct component)
+                            from("cxf:camel://direct:"+ed.getName()+"-cxf" +
+                                    "?serviceClass=org.atricore.idbus.capabilities.samlr2.main.binding.services.SamlR11ServiceImpl" +
+                                    "&serviceName={urn:oasis:names:tc:SAML:1.0:wsdl}SAMLService" +
+                                    "&portName={urn:oasis:names:tc:SAML:1.0:wsdl}soap" +
+                                    "&dataFormat=POJO").
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("direct:" + ed.getName());
+
+
+                            // FROM samlr-bind TO samlr2-idp
+                            from("idbus-bind:camel://direct:" + ed.getName() +
+                                "?binding=" + ed.getBinding() +
+                                "&channelRef=" + spChannel.getName()).
+                                    process(new LoggerProcessor(getLogger())).
+                                    to("samlr2-idp:" + ed.getType() +
+                                            "?channelRef=" + spChannel.getName() +
+                                            "&endpointRef=" + endpoint.getName());
+
+
+                            if (ed.getResponseLocation() != null) {
+
+                                // FROM idbus-http TO samlr2-binding (through direct component)
+                                from("idbus-http:" + ed.getResponseLocation()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("direct:" + ed.getName() + "-cxf-response");
+
+                                // Receive HTTP requests and handle them as SOAP messages.
+                                from("cxf:camel://direct:"+ed.getName()+"-cxf-response" +
+                                        "?serviceClass=org.atricore.idbus.capabilities.samlr2.main.binding.services.SamlR11ServiceImpl" +
+                                        "&serviceName={urn:oasis:names:tc:SAML:1.0:wsdl}SAMLService" +
+                                        "&portName={urn:oasis:names:tc:SAML:1.0:wsdl}soap" +
+                                        "&dataFormat=POJO").
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("direct:" + ed.getName() + "-response");
+
+                                // FROM SAMLR1 SamlR2Binding TO samlr2-idp
+                                from("idbus-bind:camel://" + ed.getName() + "-response" +
+                                    "?binding=" + ed.getBinding() +
+                                    "&channelRef=" + spChannel.getName()).
+                                        process(new LoggerProcessor(getLogger())).
+                                        to("samlr2-idp:" + ed.getType() +
+                                                "?channelRef=" + spChannel.getName() +
+                                                "&endpointRef=" + endpoint.getName() +
+                                                "&response=true");
+                            }
                             break;
                         case SAMLR2_SOAP:
                             // ----------------------------------------------------------
