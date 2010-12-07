@@ -27,7 +27,7 @@ public class HashGenerator {
 
         byte[] md5 = md5(value.getBytes(charset));
         if (encoding != null)
-            encode(md5, encoding);
+            return encode(md5, encoding);
         return new String(md5, charset);
     }
 
@@ -51,7 +51,7 @@ public class HashGenerator {
 
         byte[] sha1 = sha1(value.getBytes(charset));
         if (encoding != null)
-            encode(sha1, encoding);
+            return encode(sha1, encoding);
         return new String(sha1, charset);
     }
 
