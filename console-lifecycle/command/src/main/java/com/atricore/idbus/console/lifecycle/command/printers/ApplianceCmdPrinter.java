@@ -8,6 +8,7 @@ import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationEx
 import com.atricore.idbus.console.lifecycle.main.impl.ValidationError;
 
 import java.util.Collection;
+import java.util.Map;
 
 
 /**
