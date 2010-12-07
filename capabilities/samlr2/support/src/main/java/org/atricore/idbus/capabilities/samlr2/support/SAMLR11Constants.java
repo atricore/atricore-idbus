@@ -29,6 +29,8 @@ public interface SAMLR11Constants {
 
     static final String SAML_VERSION = "1.0";
 
+    static final Integer SAML_ARTIFACT_TYPE = 1;
+
     static final String SAML_ASSERTION_PKG = "oasis.names.tc.saml._1_0.assertion";
 
     static final String SAML_ASSERTION_NS = "urn:oasis:names:tc:SAML:1.0:assertion";
@@ -37,5 +39,6 @@ public interface SAMLR11Constants {
 
     static final String SAML_PROTOCOL_NS = "urn:oasis:names:tc:SAML:1.0:protocol";
 
+    static final String SAML_STATUS_NS = "urn:oasis:names:tc:SAML:1.0:status"; 
 
 }

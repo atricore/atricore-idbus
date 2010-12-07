@@ -50,7 +50,7 @@ public class SamlR2ServiceImpl implements SAMLRequestPortType {
     /* (non-Javadoc)
      * @see oasis.names.tc.saml._2_0.wsdl.SAMLRequestPortType#samlArtifactResolveRequest(oasis.names.tc.saml._2_0.protocol.ArtifactResolveType  body )*
      */
-    public oasis.names.tc.saml._2_0.protocol.ArtifactResponseType samlArtifactResolveRequest(oasis.names.tc.saml._2_0.protocol.ArtifactResolveType body) {
+    public oasis.names.tc.saml._2_0.protocol.ArtifactResponseType samlArtifactResolve(oasis.names.tc.saml._2_0.protocol.ArtifactResolveType body) {
         LOG.info("Executing operation samlArtifactResolveRequest");
         throw new UnsupportedOperationException("This service is not meant to be invoked");
     }

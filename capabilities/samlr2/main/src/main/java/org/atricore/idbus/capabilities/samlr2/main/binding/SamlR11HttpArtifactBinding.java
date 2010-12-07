@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
 import org.atricore.idbus.capabilities.samlr2.main.binding.plans.SamlR2ArtifactToSamlR2ArtifactResolvePlan;
+import org.atricore.idbus.capabilities.samlr2.support.SAMLR11Constants;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.kernel.main.federation.metadata.*;
@@ -38,7 +39,7 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
 
     private static final Log logger = LogFactory.getLog(SamlR2HttpArtifactBinding.class);
 
-    private String artifactParameterName = "SAMLArt";
+    private String artifactParameterName = "SAMLart";
 
     private SamlArtifactEncoder artifactEncoder;
 
@@ -89,7 +90,7 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
             EntityDescriptorType samlMd = (EntityDescriptorType) md.getEntry();
 
             // Find ArtifactResolutionService endpoint
-            EndpointDescriptor samlResolverEd = resolveEntityResolverEndpoint(samlMd,
+            EndpointDescriptor samlResolverEd = resolveArtifactResolveEndpoint(samlMd,
                     samlArtifact.getEndpointIndex());
 
             ArtifactResolveType req = buildArtifactResolve(
@@ -184,7 +185,8 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
 
             CircleOfTrustMemberDescriptor cotMember = getCotMember(destAlias);
 
-            SamlArtifact samlArtifact = new SamlArtifact(4,
+            SamlArtifact samlArtifact = new SamlArtifact(
+                    SAMLR11Constants.SAML_ARTIFACT_TYPE,
                     0,
                     cotMember.getId(),
                     artifact.getContent());
@@ -246,11 +248,8 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
         this.artifactEncoder = artifactEncoder;
     }
 
-    protected EndpointDescriptor resolveEntityResolverEndpoint(EntityDescriptorType samlMd,
+    protected EndpointDescriptor resolveArtifactResolveEndpoint(EntityDescriptorType samlMd,
                                                                int edIdx) throws CircleOfTrustManagerException {
-
-        // We need to find out if the entity is external or not !
-        boolean preferLocalBindings = this.getProvider().getCotManager().isLocalMember(samlMd.getEntityID());
 
         EndpointType samlEndpoint = null;
         for (RoleDescriptorType roleDescriptor : samlMd.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
@@ -258,15 +257,18 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
             if (roleDescriptor instanceof SSODescriptorType) {
 
                 SSODescriptorType ssoDescriptor = (SSODescriptorType) roleDescriptor;
-                EndpointType localSamlEndpoint = null;
+                EndpointType soapSamlEndpoint = null;
                 EndpointType defaultSamlEndpoint = null;
 
                 for (IndexedEndpointType samlIdxEndpoint : ssoDescriptor.getArtifactResolutionService()) {
 
 
+                    if (samlIdxEndpoint.isIsDefault() != null &&
+                            samlIdxEndpoint.isIsDefault() &&
+                            (samlIdxEndpoint.getBinding().equals(SamlR2Binding.SAMLR11_SOAP.getValue()))) {
 
-                    if (samlIdxEndpoint.isIsDefault() != null && samlIdxEndpoint.isIsDefault())
                         defaultSamlEndpoint = samlIdxEndpoint;
+                    }
 
                     if (edIdx > 0) {
                         if (edIdx == samlIdxEndpoint.getIndex()) {
@@ -276,19 +278,14 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
 
                     } else {
 
-                        if (samlIdxEndpoint.getBinding().equals(SamlR2Binding.SAMLR2_LOCAL.getValue())) {
-                            localSamlEndpoint = samlIdxEndpoint;
-                        }
-
-                        if (samlIdxEndpoint.getBinding().equals(SamlR2Binding.SAMLR2_SOAP.getValue())) {
-                            if (samlEndpoint == null)
-                                samlEndpoint = samlIdxEndpoint;
+                        if (samlIdxEndpoint.getBinding().equals(SamlR2Binding.SAMLR11_SOAP.getValue())) {
+                            soapSamlEndpoint = samlIdxEndpoint;
                         }
                     }
                 }
 
-                if (preferLocalBindings && localSamlEndpoint != null)
-                    samlEndpoint = localSamlEndpoint;
+                if (samlEndpoint == null)
+                    samlEndpoint = soapSamlEndpoint;
 
                 if (samlEndpoint == null)
                     samlEndpoint = defaultSamlEndpoint;
@@ -346,7 +343,7 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
 
         // saml artifact
         IdentityArtifact in =
-            new IdentityArtifactImpl(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, "SAMLArt"),
+            new IdentityArtifactImpl(new QName(SAMLR2Constants.SAML_PROTOCOL_NS, "SAMLart"),
                     samlArtEnc );
         idPlanExchange.setIn(in);
 

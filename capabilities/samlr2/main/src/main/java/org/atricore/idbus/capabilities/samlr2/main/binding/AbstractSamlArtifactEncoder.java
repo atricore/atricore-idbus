@@ -13,8 +13,8 @@ public abstract class AbstractSamlArtifactEncoder implements SamlArtifactEncoder
      */
     protected int toInt(byte[] b) {
         ByteBuffer bb = ByteBuffer.allocate(4);
-        bb.put((byte) 0x00);
-        bb.put((byte) 0x00);
+        bb.put((byte) 0);
+        bb.put((byte) 0);
         bb.put(b[0]);
         bb.put(b[1]);
 
@@ -32,12 +32,15 @@ public abstract class AbstractSamlArtifactEncoder implements SamlArtifactEncoder
         byte[] bytes = ByteBuffer.allocate(4).putInt(i).array();
         return copyOfRange(bytes, 2, 4);
     }
+    
+    protected byte[] toBin(byte[] b, int length) {
 
-    protected byte[] toBin(String value, int length) {
+        if (length < b.length) {
+            throw new IllegalArgumentException("Cannot create binary value of lengt " + length +
+                    " for value " + b.length + " bytes long");
+        }
 
-        byte[] b = value.getBytes();
         int pad = length - b.length;
-
         ByteBuffer bf = ByteBuffer.allocate(length);
         for (int i = 0; i < pad; i++) {
             bf.put((byte) 0x0);
@@ -46,6 +49,10 @@ public abstract class AbstractSamlArtifactEncoder implements SamlArtifactEncoder
 
         return bf.array();
 
+    }
+
+    protected byte[] toBin(String value, int length) {
+        return toBin(value.getBytes(), length);
     }
 
     protected String toString(byte[] b) {

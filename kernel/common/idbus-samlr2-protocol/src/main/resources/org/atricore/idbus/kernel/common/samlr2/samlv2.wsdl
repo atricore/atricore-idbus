@@ -146,7 +146,7 @@
                          message="tns:SAMLResponseMessage"/>
         </wsdl:operation>
 
-        <wsdl:operation name="SAMLArtifactResolveRequest">
+        <wsdl:operation name="SAMLArtifactResolve">
             <wsdl:input name="SAMLArtifactResolveInput"
                         message="tns:SAMLArtifactResolveMessage"/>
             <wsdl:output name="SAMLArtifactResponseOutput"
@@ -249,7 +249,7 @@
             </wsdl:output>
         </wsdl:operation>
 
-        <wsdl:operation name="SAMLArtifactResolveRequest">
+        <wsdl:operation name="SAMLArtifactResolve">
             <soap:operation style="document"
                             soapAction="http://www.oasis-open.org/committees/security"/>
 

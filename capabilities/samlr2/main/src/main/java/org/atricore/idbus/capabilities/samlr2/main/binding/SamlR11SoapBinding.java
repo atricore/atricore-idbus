@@ -1,7 +1,7 @@
 package org.atricore.idbus.capabilities.samlr2.main.binding;
 
-import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
-import oasis.names.tc.saml._2_0.wsdl.SAMLRequestPortType;
+import oasis.names.tc.saml._1_0.protocol.RequestAbstractType;
+import oasis.names.tc.saml._1_0.wsdl.SAMLRequestPortType;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.commons.logging.Log;

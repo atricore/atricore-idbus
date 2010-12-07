@@ -29,6 +29,8 @@ public interface SAMLR2Constants {
 
     static final String SAML_VERSION = "2.0";
 
+    static final Integer SAML_ARTIFACT_TYPE = 4;
+
     static final String SAML_ASSERTION_PKG = "oasis.names.tc.saml._2_0.assertion";
 
     static final String SAML_ASSERTION_NS = "urn:oasis:names:tc:SAML:2.0:assertion";

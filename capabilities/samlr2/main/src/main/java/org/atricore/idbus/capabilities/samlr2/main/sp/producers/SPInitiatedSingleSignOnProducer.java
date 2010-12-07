@@ -241,14 +241,15 @@ public class SPInitiatedSingleSignOnProducer extends SamlR2Producer {
         // --------------------------------------------------------------
         // Try with the received IdP alias, if any
         // --------------------------------------------------------------
-        for (int i = 0; i < ssoAuthnReq.getRequestAttribute().size(); i++) {
-            RequestAttributeType a = ssoAuthnReq.getRequestAttribute().get(i);
-            if (a.getName().equals("atricore_idp_alias"))
-                idpAlias = a.getValue();
+        if (ssoAuthnReq.getRequestAttribute() != null) {
+            for (int i = 0; i < ssoAuthnReq.getRequestAttribute().size(); i++) {
+                RequestAttributeType a = ssoAuthnReq.getRequestAttribute().get(i);
+                if (a.getName().equals("atricore_idp_alias"))
+                    idpAlias = a.getValue();
+            }
         }
 
         if (idpAlias != null) {
-
             if (logger.isDebugEnabled())
                 logger.debug("Using IdP alias from request attribute " + idpAlias);
 

@@ -5,6 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 
 /**
@@ -26,7 +27,10 @@ public class SamlR2ArtifactEncoderImpl extends AbstractSamlArtifactEncoder {
 
         // Make sure that each byte[] is exactly 20 bytes length.
         byte[] messageHandleBin = toBin(artifact.getMessageHandle(), 20);
-        byte[] sourceIdBin = toBin(artifact.getSourceID(), 20);
+        // Source is base 64 encoded
+        byte[] sourceIdBin = Base64.decodeBase64(artifact.getSourceID().getBytes());
+        if (sourceIdBin.length != 20)
+            throw new IllegalArgumentException("SourceID value must be SHA-1 hash (20 bytes length), found " + sourceIdBin.length);
 
         ByteBuffer bf = ByteBuffer.allocate(typeCodeBin.length +
                 endpointIdxBin.length +
@@ -40,6 +44,11 @@ public class SamlR2ArtifactEncoderImpl extends AbstractSamlArtifactEncoder {
         bf.put(messageHandleBin);
 
         String s = new String(Base64.encodeBase64(bf.array()));
+        try {
+            s = java.net.URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new  RuntimeException(e);
+        }
 
         if (logger.isTraceEnabled())
             logger.trace("Encoded SAML 2.0 Artifact " + s);
@@ -64,8 +73,8 @@ public class SamlR2ArtifactEncoderImpl extends AbstractSamlArtifactEncoder {
         int typeCode = toInt(typeCodeBin);
 
         byte[] endpointIdxBin = new byte[2];
-        endpointIdxBin[0] = samlArtBin[3];
-        endpointIdxBin[1] = samlArtBin[4];
+        endpointIdxBin[0] = samlArtBin[2];
+        endpointIdxBin[1] = samlArtBin[3];
         int endpointIndex = toInt(endpointIdxBin);
 
         String sourceId = null;
@@ -78,10 +87,11 @@ public class SamlR2ArtifactEncoderImpl extends AbstractSamlArtifactEncoder {
 
         // First 20 bytes are sourceId
         byte[] sourceIdBin = copyOfRange(remainingArtBin, 0, 20);
+        sourceIdBin = Base64.encodeBase64(sourceIdBin);
         sourceId = toString(sourceIdBin);
 
         // Last 20 bytes are messageHandle
-        byte[] messageHandleBin = copyOfRange(remainingArtBin, 21, 40);
+        byte[] messageHandleBin = copyOfRange(remainingArtBin, 20, 40);
         messageHandle = toString(messageHandleBin);
 
         SamlArtifact a = new SamlArtifact(typeCode, endpointIndex, sourceId, messageHandle);
