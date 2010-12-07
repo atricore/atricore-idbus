@@ -43,6 +43,7 @@
         <feature version="${camel.version}">camel</feature>
         <feature version="${ehcache.version}">ehcache</feature>
         <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.support/${idbus.kernel.version}</bundle>
+        <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.xmldsig/${idbus.kernel.version}</bundle>
         <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.spml/${idbus.kernel.version}</bundle>
         <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.samlr2/${idbus.kernel.version}</bundle>
         <bundle>mvn:org.atricore.idbus.kernel.common/org.atricore.idbus.kernel.common.samlr11/${idbus.kernel.version}</bundle>

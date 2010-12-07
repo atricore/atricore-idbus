@@ -47,6 +47,7 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -71,8 +72,11 @@ public class OsgiIDBusServlet extends CamelContinuationServlet {
     }
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse res)
+    protected void service(HttpServletRequest req, HttpServletResponse r)
             throws ServletException, IOException {
+
+        // FIX For a bug in CXF!
+        HttpServletResponse res = new WHttpServletResponse(r);
 
         // Lookup identity mediation registry
         if (registry == null)
@@ -95,7 +99,7 @@ public class OsgiIDBusServlet extends CamelContinuationServlet {
         final Continuation continuation = ContinuationSupport.getContinuation(req, null);
         if (continuation.isNew()) {
 
-            // Have the camel process the HTTP exchange.
+            // Have camel process the HTTP exchange.
             final HttpExchange exchange = new HttpExchange(endpoint, req, res);
 
             boolean sync = consumer.getAsyncProcessor().process(exchange, new AsyncCallback() {
@@ -255,5 +259,28 @@ public class OsgiIDBusServlet extends CamelContinuationServlet {
             logger.debug("Found Identity Mediation Unit Registry " + r);
         return r;
 
+    }
+
+    protected class WHttpServletResponse extends HttpServletResponseWrapper {
+
+        public WHttpServletResponse(HttpServletResponse response) {
+            super(response);
+        }
+
+        @Override
+        public void addHeader(String name, String value) {
+            if (name.equalsIgnoreCase("content.type"))
+                super.addHeader("Content-Type", value);
+
+            super.addHeader(name, value);
+        }
+
+        @Override
+        public void setHeader(String name, String value) {
+            if (name.equalsIgnoreCase("content.type")) {
+                super.setHeader("Content-Type", value);
+            }
+            super.setHeader(name, value);
+        }
     }
 }

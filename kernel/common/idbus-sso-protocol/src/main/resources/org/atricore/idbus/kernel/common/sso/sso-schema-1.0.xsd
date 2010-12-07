@@ -58,6 +58,8 @@
             <extension base="ssop:SSORequestAbstractType">
                 <attribute name="Passive" type="boolean" use="required"/>
                 <attribute name="PreferredResponseFormat" type="string" use="required"/>
+                <attribute name="ProtocolBinding" type="string" use="optional"/>
+                <attribute name="AssertionConsumerServiceURL" type="string" use="optional"/>
             </extension>
         </complexContent>
     </complexType>

@@ -77,11 +77,11 @@ public class SamlR11SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBind
         idpInitReq.setID(uuidGenerator.generateId());
         idpInitReq.setPreferredResponseFormat("urn:oasis:names:tc:SAML:1.1");
 
-
         // HTTP Request Parameters from HTTP Request body
         MediationState state = createMediationState(exchange);
         String relayState = state.getTransientVariable("RelayState");
 
+        // We can send several attributes within the request.
         String spAlias = state.getTransientVariable("atricore_sp_alias");
         if (spAlias != null) {
             RequestAttributeType a = new RequestAttributeType();
@@ -126,7 +126,6 @@ public class SamlR11SsoIDPInitiatedHttpBinding extends AbstractMediationHttpBind
             logger.debug("Creating HTML Redirect to " + ed.getLocation());
 
         String ssoQryString = "?ResponseMode=unsolicited&ResponseFormat=SAML11";
-
         if (out.getRelayState() != null) {
             ssoQryString += "&relayState=" + out.getRelayState();
         }

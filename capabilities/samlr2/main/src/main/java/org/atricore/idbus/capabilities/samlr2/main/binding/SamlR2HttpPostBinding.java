@@ -147,26 +147,6 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             if (out.getContent() instanceof RequestAbstractType) {
                 msgName = "SAMLRequest";
                 msgValue = XmlUtils.marshallSamlR2Request((RequestAbstractType) out.getContent(), element, true);
-
-                if ( out.getState().getLocalVariable(
-                            "urn:org:atricore:idbus:sso:protocol:IDPInitiatedAuthnRequest"
-                            ) != null
-                    ) {
-
-                    IDPInitiatedAuthnRequestType idpInitiatedAuthnRequest = (IDPInitiatedAuthnRequestType)out.getState().getLocalVariable(
-                            "urn:org:atricore:idbus:sso:protocol:IDPInitiatedAuthnRequest"
-                            );
-
-
-                    targetLocation += "?ResponseMode=unsolicited";
-
-                    if (idpInitiatedAuthnRequest.getPreferredResponseFormat().equals("urn:oasis:names:tc:SAML:1.1")) {
-                        targetLocation += "&ResponseFormat=SAML11";
-                    }
-
-                }
-
-
             } else if (out.getContent() instanceof StatusResponseType) {
                 msgName = "SAMLResponse";
                 msgValue = XmlUtils.marshallSamlR2Response((StatusResponseType) out.getContent(), element, true);

@@ -157,11 +157,19 @@ public class SingleSignOnProducer extends SamlR2Producer {
             // ------------------------------------------------------
             // Resolve target IDP for relaying the Authentication Request
             // ------------------------------------------------------
+
+            in.getMessage().getState().setLocalVariable(
+                    "urn:org:atricore:idbus:sso:protocol:responseMode", "unsolicited");
+
+            in.getMessage().getState().setLocalVariable(
+                    "urn:org:atricore:idbus:sso:protocol:responseFormat", idpInitiatedAuthnRequest.getPreferredResponseFormat());
+
             CircleOfTrustMemberDescriptor idp = this.resolveIdp(exchange);
             logger.debug("Using IdP " + idp.getAlias());
 
             // Select endpoint, must be a SingleSingOnService endpoint from a IDPSSORoleD
             EndpointType idpSsoEndpoint = resolveIdpSsoEndpoint(idp);
+
             EndpointDescriptor ed = new EndpointDescriptorImpl(
                     "IDPSSOEndpoint",
                     "SingleSignOnService",
@@ -172,16 +180,11 @@ public class SingleSignOnProducer extends SamlR2Producer {
             // ------------------------------------------------------
             // Create AuthnRequest using identity plan
             // ------------------------------------------------------
-            AuthnRequestType authnRequest = buildAuthnRequest(exchange, idp, ed, (FederationChannel)channel);
+            AuthnRequestType authnRequest = buildIdPInitiatedAuthnRequest(exchange, idp, ed, (FederationChannel)channel);
 
             // ------------------------------------------------------
             // Send Authn Request to IDP
             // ------------------------------------------------------
-
-            in.getMessage().getState().setLocalVariable(
-                    "urn:org:atricore:idbus:sso:protocol:IDPInitiatedAuthnRequest", idpInitiatedAuthnRequest);
-
-
             in.getMessage().getState().setLocalVariable(
                     SAMLR2Constants.SAML_PROTOCOL_NS + ":AuthnRequest", authnRequest);
 
@@ -227,8 +230,9 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
         String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
-        String responseMode = mediationState.getTransientVariable("ResponseMode");
-        String responseFormat = mediationState.getTransientVariable("ResponseFormat");
+        
+        String responseMode = (String) mediationState.getLocalVariable("urn:org:atricore:idbus:sso:protocol:responseMode");
+        String responseFormat = (String) mediationState.getLocalVariable("urn:org:atricore:idbus:sso:protocol:responseFormat");
 
         if (responseMode != null && responseMode.equalsIgnoreCase("unsolicited")) {
             logger.debug("Response Mode for Authentication Request " + authnRequest.getID() + " is unsolicited");
@@ -365,16 +369,14 @@ public class SingleSignOnProducer extends SamlR2Producer {
                     sp,
                     ed);
 
-            if (responseMode != null && responseMode.equals("SAML11")) {
+            if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 oasis.names.tc.saml._1_0.protocol.ResponseType saml11Response;
 
                 saml11Response = transformSamlR2ResponseToSaml11(response);
 
                 out.setMessage(new MediationMessageImpl(saml11Response.getResponseID(),
                         saml11Response, "Response", relayState, ed, in.getMessage().getState()));
-                out.getMessage().getState().setLocalVariable(
-                        "urn:org:atricore:idbus:sso:protocol:IDPInitiatedAuthnRequest:ResponseFormat",
-                        responseFormat);
+
             } else {
                 // SAML R2 is used by default
                 out.setMessage(new MediationMessageImpl(response.getID(),
@@ -550,9 +552,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             // Send Authn Response to SP
             // --------------------------------------------------------------------
 
-            clearAuthnState(exchange);
-
-            if (responseFormat != null && responseFormat.equals("SAML11")) {
+            if (responseFormat != null && responseFormat.equals("urn:oasis:names:tc:SAML:1.1")) {
                 oasis.names.tc.saml._1_0.protocol.ResponseType saml11Response;
 
                 saml11Response = transformSamlR2ResponseToSaml11(response);
@@ -566,6 +566,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
                 out.setMessage(new MediationMessageImpl(response.getID(),
                         response, "Response", authnState.getReceivedRelayState(), ed, in.getMessage().getState()));
             }
+
+            clearAuthnState(exchange);
 
             exchange.setOut(out);
 
@@ -883,7 +885,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
     /**
      * Build an AuthnRequest for the target SP to which IDP's unsollicited response needs to be pushed to.
      */
-    protected AuthnRequestType buildAuthnRequest(CamelMediationExchange exchange,
+    protected AuthnRequestType buildIdPInitiatedAuthnRequest(CamelMediationExchange exchange,
                                                  CircleOfTrustMemberDescriptor idp,
                                                  EndpointDescriptor ed,
                                                  FederationChannel spChannel
@@ -1228,6 +1230,8 @@ public class SingleSignOnProducer extends SamlR2Producer {
     protected void clearAuthnState(CamelMediationExchange exchange) {
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:samlr2:idp:authn-state");
+        in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:responseMode");
+        in.getMessage().getState().removeLocalVariable("urn:org:atricore:idbus:sso:protocol:responseFormat");
     }
 
     protected oasis.names.tc.saml._1_0.protocol.ResponseType transformSamlR2ResponseToSaml11(ResponseType responseType) {

@@ -46,6 +46,7 @@
        <module>idbus-boot</module>
        <module>idbus-webconsole-branding</module>
        <module>idbus-html</module>
+       <module>idbus-xmldsig</module>
        <module>idbus-wst-protocol</module>
        <module>idbus-spmldsml-protocol</module>
        <module>idbus-samlr2-protocol</module>
