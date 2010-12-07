@@ -39,8 +39,11 @@ import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLo
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
+import org.atricore.idbus.kernel.main.util.HashGenerator;
 import org.springframework.beans.factory.InitializingBean;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -332,8 +335,15 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         
         Bean spMd = newBean(spBeans, sp.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
-        setPropertyValue(spMd, "id", spMd.getName());
-        setPropertyValue(spMd, "alias", resolveLocationUrl(provider) + "/SAML2/MD");
+        String alias = resolveLocationUrl(provider) + "/SAML2/MD";
+        try {
+            setPropertyValue(spMd, "id", HashGenerator.sha1(alias));
+        } catch (UnsupportedEncodingException e) {
+            throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': unsupported encoding");
+        } catch (NoSuchAlgorithmException e) {
+            throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': no such algorithm");
+        }
+        setPropertyValue(spMd, "alias", alias);
         setPropertyValue(spMd, "resource", "classpath:" + idauPath + sp.getName() + "/" + sp.getName() + "-samlr2-metadata.xml");
 
         // accountLinkLifecycle

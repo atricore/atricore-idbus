@@ -37,11 +37,13 @@ import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustM
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger;
-import org.atricore.idbus.kernel.main.mediation.channel.SPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import org.atricore.idbus.kernel.main.session.SSOSessionEventManager;
+import org.atricore.idbus.kernel.main.util.HashGenerator;
 import org.springframework.beans.factory.InitializingBean;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -267,8 +269,15 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         }
 
         Bean idpMd = newBean(idpBeans, idpBean.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
-        setPropertyValue(idpMd, "id", idpMd.getName());
-        setPropertyValue(idpMd, "alias", resolveLocationUrl(provider) + "/SAML2/MD");
+        String alias = resolveLocationUrl(provider) + "/SAML2/MD";
+        try {
+            setPropertyValue(idpMd, "id", HashGenerator.sha1(alias));
+        } catch (UnsupportedEncodingException e) {
+            throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': unsupported encoding");
+        } catch (NoSuchAlgorithmException e) {
+            throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': no such algorithm");
+        }
+        setPropertyValue(idpMd, "alias", alias);
         setPropertyValue(idpMd, "resource", "classpath:" + idauPath + idpBean.getName() + "/" + idpBean.getName() + "-samlr2-metadata.xml");
 
         // ----------------------------------------

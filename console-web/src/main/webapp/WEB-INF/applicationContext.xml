@@ -77,6 +77,7 @@
 
     <bean id="signOnAjaxServiceBean" class="com.atricore.idbus.console.services.impl.SignOnAjaxServiceImpl">
         <property name="usrProvService" ref="userProvisioningAjaxServiceBean" />
+        <property name="realm" value="atricore" />
     </bean>
 
     <bean id="profileManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.ProfileManagementAjaxServiceImpl">

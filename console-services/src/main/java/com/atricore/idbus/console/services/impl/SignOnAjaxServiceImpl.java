@@ -2,7 +2,6 @@ package com.atricore.idbus.console.services.impl;
 
 import com.atricore.idbus.console.lifecycle.main.exception.SignOnException;
 import com.atricore.idbus.console.services.dto.UserDTO;
-import com.atricore.idbus.console.services.spi.SpmlAjaxClient;
 import com.atricore.idbus.console.services.spi.SignOnAjaxService;
 import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
 import com.atricore.idbus.console.services.spi.request.FindUserByUsernameRequest;
@@ -13,12 +12,15 @@ import com.atricore.idbus.console.services.spi.response.SignOnResponse;
 import com.atricore.idbus.console.services.spi.response.SignOutResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
+
+import javax.security.auth.callback.*;
+import javax.security.auth.login.LoginContext;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 /**
  * TODO : In future versions, authentication context must be provided by a built in SSO appliance unit
@@ -36,26 +38,40 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService {
     private String hashAlgorithm = "MD5";
     private String hashCharset = null;
 
+    private String realm;
+
     public SignOnResponse signOn(SignOnRequest signOnRequest) throws SignOnException {
-        FindUserByUsernameRequest userRequest = new FindUserByUsernameRequest();
-        userRequest.setUsername(signOnRequest.getUsername());
+        final String username = signOnRequest.getUsername();
+        final String password = signOnRequest.getPassword();
 
         try{
-            SignOnResponse response = new SignOnResponse();
+            LoginContext loginContext = new LoginContext(realm, new CallbackHandler() {
+                public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
+                    for (int i = 0; i < callbacks.length; i++) {
+                        if (callbacks[i] instanceof NameCallback) {
+                            ((NameCallback) callbacks[i]).setName(username);
+                        } else if (callbacks[i] instanceof PasswordCallback) {
+                            ((PasswordCallback) callbacks[i]).setPassword((password.toCharArray()));
+                        } else {
+                            throw new UnsupportedCallbackException(callbacks[i]);
+                        }
+                    }
+                }
+            });
+            loginContext.login();
+            //Subject subject = loginContext.getSubject();
+
+            FindUserByUsernameRequest userRequest = new FindUserByUsernameRequest();
+            userRequest.setUsername(username);
             FindUserByUsernameResponse resp = usrProvService.findUserByUsername(userRequest);
             UserDTO retUser = resp.getUser();
-            if (retUser != null &&
-                    retUser.getUserPassword().equals(createPasswordHash(signOnRequest.getPassword()))) {
-                response.setAuthenticatedUser(retUser);
-            }
-            if (retUser == null && logger.isTraceEnabled())
-                logger.trace("Unknown user with username: " + signOnRequest.getUsername() );
-
+            SignOnResponse response = new SignOnResponse();
+            response.setAuthenticatedUser(retUser);
             return response;
         }
         catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new SignOnException("Wrong credentials for user : " + userRequest.getUsername() + " : " + e.getMessage(), e);
+            throw new SignOnException("Wrong credentials for user : " + username + " : " + e.getMessage(), e);
         }
     }
 
@@ -194,5 +210,13 @@ public class SignOnAjaxServiceImpl implements SignOnAjaxService {
 
     public void setHashCharset(String hashCharset) {
         this.hashCharset = hashCharset;
+    }
+
+    public String getRealm() {
+        return realm;
+    }
+
+    public void setRealm(String realm) {
+        this.realm = realm;
     }
 }

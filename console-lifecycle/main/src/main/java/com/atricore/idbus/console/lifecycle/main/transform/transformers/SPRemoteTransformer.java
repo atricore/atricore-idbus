@@ -16,7 +16,10 @@ import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedRemoteProviderImpl;
+import org.atricore.idbus.kernel.main.util.HashGenerator;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Date;
 
@@ -82,13 +85,21 @@ public class SPRemoteTransformer extends AbstractTransformer {
 
         // ResourceCircleOfTrustMemberDescriptor
         Bean spMd = newBean(spBeans, sp.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
-        setPropertyValue(spMd, "id", spMd.getName());
+        String alias;
         try {
             MetadataDefinition md = MetadataUtil.loadMetadataDefinition(provider.getMetadata().getValue());
-            setPropertyValue(spMd, "alias", MetadataUtil.findEntityId(md));
+            alias = MetadataUtil.findEntityId(md);
         } catch (Exception e) {
             throw new TransformException("Error loading metadata definition for " + provider.getName());
         }
+        try {
+            setPropertyValue(spMd, "id", HashGenerator.sha1(alias));
+        } catch (UnsupportedEncodingException e) {
+            throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': unsupported encoding");
+        } catch (NoSuchAlgorithmException e) {
+            throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': no such algorithm");
+        }
+        setPropertyValue(spMd, "alias", alias);
         setPropertyValue(spMd, "resource", "classpath:" + idauPath + sp.getName() + "/" + sp.getName() + "-samlr2-metadata.xml");
 
         // members

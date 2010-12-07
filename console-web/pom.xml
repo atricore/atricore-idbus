@@ -211,6 +211,9 @@
                             javax.xml.transform.dom,
                             javax.xml.transform.stream,
                             javax.xml.validation,
+                            javax.security.auth,
+                            javax.security.auth.callback,
+                            javax.security.auth.login,
                             javax.sql,
                             javax.servlet.http; version="[2.5.0,3.0.0]",
                             javax.servlet; version="[2.5.0,3.0.0]",
@@ -259,6 +262,7 @@
                             org.xml.sax.helpers,
                             org.w3c.dom,
                             org.apache.commons.fileupload,
+                            org.apache.karaf.jaas.boot,
                             *
                         </Import-Package>
                         <Webapp-Context>atricore-console</Webapp-Context>
