@@ -10,8 +10,6 @@ import javax.management.openmbean.TabularData;
  */
 public interface IdentityProviderMBean extends ProviderMBean {
 
-
-
     boolean invalidateSession(String sessionId);
 
     boolean invalidateAllSessions();

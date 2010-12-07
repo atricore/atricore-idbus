@@ -44,7 +44,7 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
 
     public SamlR11HttpArtifactBinding(Channel channel) {
         super(SamlR2Binding.SAMLR11_ARTIFACT.getValue(), channel);
-        artifactEncoder = new SamlR2ArtifactEncoderImpl();
+        artifactEncoder = new SamlR11ArtifactEncoderImpl();
     }
 
     public MediationMessage createMessage(CamelMediationMessage message) {

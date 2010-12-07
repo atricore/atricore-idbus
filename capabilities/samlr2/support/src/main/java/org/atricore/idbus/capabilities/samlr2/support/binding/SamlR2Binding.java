@@ -69,7 +69,7 @@ public enum SamlR2Binding {
 
 
     /** URI for IDBUS HTTP Artifact binding, this is NOT SAML Normative*/
-    SAMLR11_ARTIFACT("urn:oasis:names:tc:SAML:1.1:bindings:HTTP-Artifact", true),
+    SAMLR11_ARTIFACT("urn:oasis:names:tc:SAML:1.0:bindings:HTTP-Artifact", true),
 
     /** URI for SAML 2 SOAP binding. [SAMLBinding 3.2]*/
     SAMLR11_SOAP("urn:oasis:names:tc:SAML:1.1:bindings:SOAP", false),
