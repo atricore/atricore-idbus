@@ -21,8 +21,10 @@ public enum StatusCode11 {
             ("VersionMismatch", "The SAML responder could not process the request because the version of the request message was incorrect."),
     ;
 
+    // TODO : Add subcodes
+
     StatusCode11(String name, String description) {
-        this.value = SAMLR11Constants.SAML_STATUS_NS + name;
+        this.value = SAMLR11Constants.SAML_STATUS_NS + ":" + name;
         this.description = description;
         this.qname = new QName(SAMLR11Constants.SAML_STATUS_NS, value);
     }

@@ -73,7 +73,7 @@ public class SamlR11ArtifactEncoderImpl extends AbstractSamlArtifactEncoder {
         String sourceId = null;
         String messageHandle = null;
 
-        byte[] remainingArtBin = copyOfRange(samlArtBin, 2, samlArtBin.length - 1);
+        byte[] remainingArtBin = copyOfRange(samlArtBin, 2, samlArtBin.length);
         // Assume SAML 1.1 Recommended remaining
         if (logger.isTraceEnabled())
             logger.trace("Assuming SAML 1.1 Recommended artifact format");
