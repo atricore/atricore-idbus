@@ -36,6 +36,7 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
+import java.math.BigInteger;
 
 /**
  * This producer can resolve SAML 1.1 and SAML 2.0 artifacts, the artifact must resolve to a SAML message
@@ -173,7 +174,7 @@ public class ArtifactResolutionProducer extends SamlR2Producer {
             java.lang.Object samlMsg) throws IdentityPlanningException, SamlR2Exception {
 
         // Let's do it simple for now ...
-
+        /*
         RequestType request =
                 (RequestType) ((CamelMediationMessage)exchange.getIn()).getMessage().getContent();
 
@@ -182,6 +183,8 @@ public class ArtifactResolutionProducer extends SamlR2Producer {
         // ID's
         response.setInResponseTo(request.getRequestID());
         response.setResponseID(uuidGenerator.generateId());
+        response.setMajorVersion(BigInteger.valueOf(1));
+        response.setMinorVersion(BigInteger.valueOf(0));
 
         // Issue instant (TODO)
 
@@ -200,6 +203,8 @@ public class ArtifactResolutionProducer extends SamlR2Producer {
 
 
         return response;
+        */
+        return (ResponseType) samlMsg;
 
 
     }
