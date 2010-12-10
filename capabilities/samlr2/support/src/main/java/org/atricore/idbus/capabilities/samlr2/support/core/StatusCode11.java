@@ -24,9 +24,9 @@ public enum StatusCode11 {
     // TODO : Add subcodes
 
     StatusCode11(String name, String description) {
-        this.value = SAMLR11Constants.SAML_STATUS_NS + ":" + name;
+        this.value = name;
         this.description = description;
-        this.qname = new QName(SAMLR11Constants.SAML_STATUS_NS, value);
+        this.qname = new QName(SAMLR11Constants.SAML_PROTOCOL_NS, value);
     }
 
     private String value;
