@@ -144,6 +144,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _folderExistsCommand:IIocCommand;
     private var _foldersExistsCommand:IIocCommand;
     private var _jdbcDriversListCommand:IIocCommand;
+    private var _getMetadataInfoCommand:IIocCommand;
 
 
     public function get applicationMediator():IIocMediator {
@@ -923,6 +924,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _jdbcDriversListCommand = value;
     }
 
+    public function get getMetadataInfoCommand():IIocCommand {
+        return _getMetadataInfoCommand;
+    }
+
+    public function set getMetadataInfoCommand(value:IIocCommand):void {
+        _getMetadataInfoCommand = value;
+    }
+
     override public function execute(note:INotification):void {
         var registry:ServiceRegistry = setupServiceRegistry();
 
@@ -973,6 +982,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, folderExistsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, foldersExistsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_JDBC_DRIVERS, jdbcDriversListCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.GET_METADATA_INFO, getMetadataInfoCommand.getConfigName());
 
         // setup for first level mediators
         applicationMediator.setViewComponent(app);

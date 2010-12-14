@@ -43,11 +43,15 @@ import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerExcepti
 import com.atricore.idbus.console.lifecycle.main.spi.*;
 import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
+import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
+import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
+import oasis.names.tc.saml._2_0.metadata.SSODescriptorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
+import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -898,6 +902,38 @@ public class IdentityApplianceManagementServiceImpl implements
             res.setResource(resource);
         } catch (Exception e){
 	        logger.error("Error looking for resource", e);
+	        throw new IdentityServerException(e);
+	    }
+        return res;
+    }
+
+    public GetMetadataInfoResponse getMetadataInfo(GetMetadataInfoRequest req) throws IdentityServerException {
+        GetMetadataInfoResponse res = null;
+        try {
+            MetadataDefinition md = MetadataUtil.loadMetadataDefinition(req.getMetadata());
+            res = new GetMetadataInfoResponse();
+            String entityId = MetadataUtil.findEntityId(md);
+            res.setEntityId(entityId);
+            SSODescriptorType ssoDescriptor = null;
+            try {
+                ssoDescriptor = MetadataUtil.findSSODescriptor(md, "SPSSODescriptor");
+            } catch (Exception e) {
+                // SPSSODescriptor not found
+            }
+            if (ssoDescriptor == null) {
+                ssoDescriptor = MetadataUtil.findSSODescriptor(md, "IDPSSODescriptor");
+            }
+            if (ssoDescriptor != null) {
+                if (ssoDescriptor.getSingleLogoutService().size() > 0) {
+                    res.setSloEnabled(true);
+                }
+                if (ssoDescriptor instanceof IDPSSODescriptorType &&
+                        ((IDPSSODescriptorType)ssoDescriptor).getSingleSignOnService().size() > 0) {
+                    res.setSsoEnabled(true);
+                }
+            }
+        } catch (Exception e){
+	        logger.error("Error retrieving metadata info", e);
 	        throw new IdentityServerException(e);
 	    }
         return res;

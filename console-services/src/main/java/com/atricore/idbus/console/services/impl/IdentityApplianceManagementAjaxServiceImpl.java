@@ -636,6 +636,18 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(beRes, LookupAuthAssertionEmissionPolicyByIdResponse.class);
     }
 
+    public GetMetadataInfoResponse getMetadataInfo(GetMetadataInfoRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.GetMetadataInfoRequest gmiReq =
+                dozerMapper.map(req, com.atricore.idbus.console.lifecycle.main.spi.request.GetMetadataInfoRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.GetMetadataInfoResponse gmiRes = null;
+        try {
+            gmiRes = idApplianceManagementService.getMetadataInfo(gmiReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(gmiRes, GetMetadataInfoResponse.class);
+    }
 
     /******************************************************
      * Helper methods

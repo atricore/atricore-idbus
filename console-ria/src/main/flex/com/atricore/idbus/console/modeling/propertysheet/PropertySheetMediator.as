@@ -30,9 +30,12 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFol
 import com.atricore.idbus.console.modeling.diagram.model.response.CheckFoldersResponse;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand;
+import com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.certificate.CertificateSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultLookupSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.alfresco.AlfrescoExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.apache.ApacheExecEnvCoreSection;
@@ -44,10 +47,10 @@ import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironme
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.weblogic.WeblogicExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.windowsiis.WindowsIISExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.externalidp.ExternalIdentityProviderCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.externalidp.ExternalIdentityProviderMetadataSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.externalsp.ExternalServiceProviderCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.externalsp.ExternalServiceProviderMetadataSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.ExternalDBIdentityVaultLookupSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionIDPChannelSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionSPChannelSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.identitylookup.IdentityLookupCoreSection;
@@ -56,8 +59,8 @@ import com.atricore.idbus.console.modeling.propertysheet.view.idp.BasicAuthentic
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.jossoactivation.JOSSOActivationCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceLookupSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceLookupSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.xmlidentitysource.XmlIdentitySourceCoreSection;
@@ -78,8 +81,8 @@ import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceState;
 import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityMappingType;
-import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
+import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
@@ -92,20 +95,19 @@ import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.Resource;
 import com.atricore.idbus.console.services.dto.SamlR2ProviderConfig;
-import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
+import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
+import com.atricore.idbus.console.services.spi.response.GetMetadataInfoResponse;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
-
 import flash.net.FileFilter;
 import flash.net.FileReference;
-
 import flash.text.TextFormat;
 import flash.utils.ByteArray;
 
@@ -138,7 +140,9 @@ public class PropertySheetMediator extends IocMediator {
     private var _ipCoreSection:IdentityProviderCoreSection;
     private var _spCoreSection:ServiceProviderCoreSection;
     private var _externalIdpCoreSection:ExternalIdentityProviderCoreSection;
+    private var _externalIdpMetadataSection:ExternalIdentityProviderMetadataSection;
     private var _externalSpCoreSection:ExternalServiceProviderCoreSection;
+    private var _externalSpMetadataSection:ExternalServiceProviderMetadataSection;
     private var _embeddedDbVaultCoreSection:EmbeddedDBIdentityVaultCoreSection;
     private var _externalDbVaultCoreSection:ExternalDBIdentityVaultCoreSection;
     private var _ldapIdentitySourceCoreSection:LdapIdentitySourceCoreSection;
@@ -242,7 +246,8 @@ public class PropertySheetMediator extends IocMediator {
             FolderExistsCommand.FOLDER_EXISTS,
             FolderExistsCommand.FOLDER_DOESNT_EXISTS,
             FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED,
-            JDBCDriversListCommand.SUCCESS];
+            JDBCDriversListCommand.SUCCESS,
+            GetMetadataInfoCommand.SUCCESS];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -368,6 +373,12 @@ public class PropertySheetMediator extends IocMediator {
                 break;
             case ApplicationFacade.APPLIANCE_SAVED:
                 _applianceSaved = true;
+                break;
+            case GetMetadataInfoCommand.SUCCESS:
+                var resp:GetMetadataInfoResponse = notification.getBody() as GetMetadataInfoResponse;
+                if (resp != null) {
+                    updateMetadataSection(resp);
+                }
                 break;
         }
 
@@ -1203,6 +1214,20 @@ public class PropertySheetMediator extends IocMediator {
 
         _externalIdpCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalIdentityProviderCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalIdentityProviderCorePropertyTabRollOut);
+
+        // Metadata Tab
+        var metadataPropertyTab:Group = new Group();
+        metadataPropertyTab.id = "propertySheetMetadataSection";
+        metadataPropertyTab.name = "Metadata";
+        metadataPropertyTab.width = Number("100%");
+        metadataPropertyTab.height = Number("100%");
+        metadataPropertyTab.setStyle("borderStyle", "solid");
+
+        _externalIdpMetadataSection = new ExternalIdentityProviderMetadataSection();
+        metadataPropertyTab.addElement(_externalIdpMetadataSection);
+        _propertySheetsViewStack.addNewChild(metadataPropertyTab);
+
+        _externalIdpMetadataSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalIdentityProviderMetadataPropertyTabCreationComplete);
     }
 
     private function handleExternalIdentityProviderCorePropertyTabCreationComplete(event:Event):void {
@@ -1246,6 +1271,21 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
+    private function handleExternalIdentityProviderMetadataPropertyTabCreationComplete(event:Event):void {
+        var identityProvider:ExternalIdentityProvider;
+
+        identityProvider = _currentIdentityApplianceElement as ExternalIdentityProvider;
+
+        // if identityProvider is null that means some other element was selected before completing this
+        if (identityProvider != null) {
+            // bind view
+            sendNotification(ApplicationFacade.GET_METADATA_INFO, identityProvider.metadata.value);
+
+            //clear all existing validators
+            _validators = [];
+        }
+    }
+
     private function updateExternalIdentityProvider():void {
         var identityProvider:ExternalIdentityProvider = _currentIdentityApplianceElement as ExternalIdentityProvider;
 
@@ -1259,6 +1299,7 @@ public class PropertySheetMediator extends IocMediator {
             resource.uri = _uploadedMetadataName;
             resource.value = _uploadedMetadata;
             identityProvider.metadata = resource;
+            sendNotification(ApplicationFacade.GET_METADATA_INFO, _uploadedMetadata);
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -1285,6 +1326,20 @@ public class PropertySheetMediator extends IocMediator {
 
         _externalSpCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalServiceProviderCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalServiceProviderCorePropertyTabRollOut);
+
+        // Metadata Tab
+        var metadataPropertyTab:Group = new Group();
+        metadataPropertyTab.id = "propertySheetMetadataSection";
+        metadataPropertyTab.name = "Metadata";
+        metadataPropertyTab.width = Number("100%");
+        metadataPropertyTab.height = Number("100%");
+        metadataPropertyTab.setStyle("borderStyle", "solid");
+
+        _externalSpMetadataSection = new ExternalServiceProviderMetadataSection();
+        metadataPropertyTab.addElement(_externalSpMetadataSection);
+        _propertySheetsViewStack.addNewChild(metadataPropertyTab);
+
+        _externalSpMetadataSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalServiceProviderMetadataPropertyTabCreationComplete);
     }
 
     private function handleExternalServiceProviderCorePropertyTabCreationComplete(event:Event):void {
@@ -1328,6 +1383,21 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
+    private function handleExternalServiceProviderMetadataPropertyTabCreationComplete(event:Event):void {
+        var serviceProvider:ExternalServiceProvider;
+
+        serviceProvider = _currentIdentityApplianceElement as ExternalServiceProvider;
+
+        // if serviceProvider is null that means some other element was selected before completing this
+        if (serviceProvider != null) {
+            // bind view
+            sendNotification(ApplicationFacade.GET_METADATA_INFO, serviceProvider.metadata.value);
+
+            //clear all existing validators
+            _validators = [];
+        }
+    }
+
     private function updateExternalServiceProvider():void {
         var serviceProvider:ExternalServiceProvider = _currentIdentityApplianceElement as ExternalServiceProvider;
 
@@ -1341,6 +1411,7 @@ public class PropertySheetMediator extends IocMediator {
             resource.uri = _uploadedMetadataName;
             resource.value = _uploadedMetadata;
             serviceProvider.metadata = resource;
+            sendNotification(ApplicationFacade.GET_METADATA_INFO, _uploadedMetadata);
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -3299,6 +3370,22 @@ public class PropertySheetMediator extends IocMediator {
         _selectedMetadataFiles = new ArrayCollection();
         _uploadedMetadata = null;
         _uploadedMetadataName = null;
+    }
+
+    private function updateMetadataSection(resp:GetMetadataInfoResponse):void {
+        if (_currentIdentityApplianceElement is ExternalIdentityProvider) {
+            _externalIdpMetadataSection.entityId.text = resp.entityId;
+            if (resp.ssoEnabled)
+                _externalIdpMetadataSection.samlProfileSSOCheck.selected = true;
+            if (resp.sloEnabled)
+                _externalIdpMetadataSection.samlProfileSLOCheck.selected = true;
+        } else if (_currentIdentityApplianceElement is ExternalServiceProvider) {
+            _externalSpMetadataSection.entityId.text = resp.entityId;
+            if (resp.ssoEnabled)
+                _externalSpMetadataSection.samlProfileSSOCheck.selected = true;
+            if (resp.sloEnabled)
+                _externalSpMetadataSection.samlProfileSLOCheck.selected = true;
+        }
     }
 
     protected function clearPropertyTabs():void {
