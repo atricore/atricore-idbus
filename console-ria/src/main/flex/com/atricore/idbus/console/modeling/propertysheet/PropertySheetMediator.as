@@ -46,10 +46,12 @@ import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironme
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.wasce.WASCEExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.weblogic.WeblogicExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.windowsiis.WindowsIISExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.externalidp.ExternalIdentityProviderCertificateSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.externalidp.ExternalIdentityProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.externalidp.ExternalIdentityProviderCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.externalidp.ExternalIdentityProviderMetadataSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.externalsp.ExternalServiceProviderCertificateSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.externalsp.ExternalServiceProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.externalsp.ExternalServiceProviderCoreSection;
-import com.atricore.idbus.console.modeling.propertysheet.view.externalsp.ExternalServiceProviderMetadataSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionIDPChannelSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionSPChannelSection;
@@ -140,9 +142,11 @@ public class PropertySheetMediator extends IocMediator {
     private var _ipCoreSection:IdentityProviderCoreSection;
     private var _spCoreSection:ServiceProviderCoreSection;
     private var _externalIdpCoreSection:ExternalIdentityProviderCoreSection;
-    private var _externalIdpMetadataSection:ExternalIdentityProviderMetadataSection;
+    private var _externalIdpContractSection:ExternalIdentityProviderContractSection;
+    private var _externalIdpCertificateSection:ExternalIdentityProviderCertificateSection;
     private var _externalSpCoreSection:ExternalServiceProviderCoreSection;
-    private var _externalSpMetadataSection:ExternalServiceProviderMetadataSection;
+    private var _externalSpContractSection:ExternalServiceProviderContractSection;
+    private var _externalSpCertificateSection:ExternalServiceProviderCertificateSection;
     private var _embeddedDbVaultCoreSection:EmbeddedDBIdentityVaultCoreSection;
     private var _externalDbVaultCoreSection:ExternalDBIdentityVaultCoreSection;
     private var _ldapIdentitySourceCoreSection:LdapIdentitySourceCoreSection;
@@ -1215,19 +1219,36 @@ public class PropertySheetMediator extends IocMediator {
         _externalIdpCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalIdentityProviderCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalIdentityProviderCorePropertyTabRollOut);
 
-        // Metadata Tab
-        var metadataPropertyTab:Group = new Group();
-        metadataPropertyTab.id = "propertySheetMetadataSection";
-        metadataPropertyTab.name = "Metadata";
-        metadataPropertyTab.width = Number("100%");
-        metadataPropertyTab.height = Number("100%");
-        metadataPropertyTab.setStyle("borderStyle", "solid");
+        // Contract Tab
+        var contractPropertyTab:Group = new Group();
+        contractPropertyTab.id = "propertySheetMetadataSection";
+        contractPropertyTab.name = "Contract";
+        contractPropertyTab.width = Number("100%");
+        contractPropertyTab.height = Number("100%");
+        contractPropertyTab.setStyle("borderStyle", "solid");
 
-        _externalIdpMetadataSection = new ExternalIdentityProviderMetadataSection();
-        metadataPropertyTab.addElement(_externalIdpMetadataSection);
-        _propertySheetsViewStack.addNewChild(metadataPropertyTab);
+        _externalIdpContractSection = new ExternalIdentityProviderContractSection();
+        contractPropertyTab.addElement(_externalIdpContractSection);
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
 
-        _externalIdpMetadataSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalIdentityProviderMetadataPropertyTabCreationComplete);
+        // Certificate Tab
+        var certificatePropertyTab:Group = new Group();
+        certificatePropertyTab.id = "propertySheetMetadataSection";
+        certificatePropertyTab.name = "Certificate";
+        certificatePropertyTab.width = Number("100%");
+        certificatePropertyTab.height = Number("100%");
+        certificatePropertyTab.setStyle("borderStyle", "solid");
+
+        _externalIdpCertificateSection = new ExternalIdentityProviderCertificateSection();
+        certificatePropertyTab.addElement(_externalIdpCertificateSection);
+        _propertySheetsViewStack.addNewChild(certificatePropertyTab);
+
+        var identityProvider:ExternalIdentityProvider = _currentIdentityApplianceElement as ExternalIdentityProvider;
+
+        // if identityProvider is null that means some other element was selected before completing this
+        if (identityProvider != null) {
+            sendNotification(ApplicationFacade.GET_METADATA_INFO, ["IDPSSO", identityProvider.metadata.value]);
+        }
     }
 
     private function handleExternalIdentityProviderCorePropertyTabCreationComplete(event:Event):void {
@@ -1271,21 +1292,6 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function handleExternalIdentityProviderMetadataPropertyTabCreationComplete(event:Event):void {
-        var identityProvider:ExternalIdentityProvider;
-
-        identityProvider = _currentIdentityApplianceElement as ExternalIdentityProvider;
-
-        // if identityProvider is null that means some other element was selected before completing this
-        if (identityProvider != null) {
-            // bind view
-            sendNotification(ApplicationFacade.GET_METADATA_INFO, identityProvider.metadata.value);
-
-            //clear all existing validators
-            _validators = [];
-        }
-    }
-
     private function updateExternalIdentityProvider():void {
         var identityProvider:ExternalIdentityProvider = _currentIdentityApplianceElement as ExternalIdentityProvider;
 
@@ -1299,7 +1305,7 @@ public class PropertySheetMediator extends IocMediator {
             resource.uri = _uploadedMetadataName;
             resource.value = _uploadedMetadata;
             identityProvider.metadata = resource;
-            sendNotification(ApplicationFacade.GET_METADATA_INFO, _uploadedMetadata);
+            sendNotification(ApplicationFacade.GET_METADATA_INFO, ["IDPSSO", _uploadedMetadata]);
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -1327,19 +1333,36 @@ public class PropertySheetMediator extends IocMediator {
         _externalSpCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalServiceProviderCorePropertyTabCreationComplete);
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExternalServiceProviderCorePropertyTabRollOut);
 
-        // Metadata Tab
-        var metadataPropertyTab:Group = new Group();
-        metadataPropertyTab.id = "propertySheetMetadataSection";
-        metadataPropertyTab.name = "Metadata";
-        metadataPropertyTab.width = Number("100%");
-        metadataPropertyTab.height = Number("100%");
-        metadataPropertyTab.setStyle("borderStyle", "solid");
+        // Contract Tab
+        var contractPropertyTab:Group = new Group();
+        contractPropertyTab.id = "propertySheetMetadataSection";
+        contractPropertyTab.name = "Contract";
+        contractPropertyTab.width = Number("100%");
+        contractPropertyTab.height = Number("100%");
+        contractPropertyTab.setStyle("borderStyle", "solid");
 
-        _externalSpMetadataSection = new ExternalServiceProviderMetadataSection();
-        metadataPropertyTab.addElement(_externalSpMetadataSection);
-        _propertySheetsViewStack.addNewChild(metadataPropertyTab);
+        _externalSpContractSection = new ExternalServiceProviderContractSection();
+        contractPropertyTab.addElement(_externalSpContractSection);
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
 
-        _externalSpMetadataSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalServiceProviderMetadataPropertyTabCreationComplete);
+        // Certificate Tab
+        var certificatePropertyTab:Group = new Group();
+        certificatePropertyTab.id = "propertySheetMetadataSection";
+        certificatePropertyTab.name = "Certificate";
+        certificatePropertyTab.width = Number("100%");
+        certificatePropertyTab.height = Number("100%");
+        certificatePropertyTab.setStyle("borderStyle", "solid");
+
+        _externalSpCertificateSection = new ExternalServiceProviderCertificateSection();
+        certificatePropertyTab.addElement(_externalSpCertificateSection);
+        _propertySheetsViewStack.addNewChild(certificatePropertyTab);
+
+        var serviceProvider:ExternalServiceProvider = _currentIdentityApplianceElement as ExternalServiceProvider;
+
+        // if serviceProvider is null that means some other element was selected before completing this
+        if (serviceProvider != null) {
+            sendNotification(ApplicationFacade.GET_METADATA_INFO, ["SPSSO", serviceProvider.metadata.value]);
+        }
     }
 
     private function handleExternalServiceProviderCorePropertyTabCreationComplete(event:Event):void {
@@ -1383,21 +1406,6 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
-    private function handleExternalServiceProviderMetadataPropertyTabCreationComplete(event:Event):void {
-        var serviceProvider:ExternalServiceProvider;
-
-        serviceProvider = _currentIdentityApplianceElement as ExternalServiceProvider;
-
-        // if serviceProvider is null that means some other element was selected before completing this
-        if (serviceProvider != null) {
-            // bind view
-            sendNotification(ApplicationFacade.GET_METADATA_INFO, serviceProvider.metadata.value);
-
-            //clear all existing validators
-            _validators = [];
-        }
-    }
-
     private function updateExternalServiceProvider():void {
         var serviceProvider:ExternalServiceProvider = _currentIdentityApplianceElement as ExternalServiceProvider;
 
@@ -1411,7 +1419,7 @@ public class PropertySheetMediator extends IocMediator {
             resource.uri = _uploadedMetadataName;
             resource.value = _uploadedMetadata;
             serviceProvider.metadata = resource;
-            sendNotification(ApplicationFacade.GET_METADATA_INFO, _uploadedMetadata);
+            sendNotification(ApplicationFacade.GET_METADATA_INFO, ["SPSSO", _uploadedMetadata]);
         }
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
@@ -3374,17 +3382,92 @@ public class PropertySheetMediator extends IocMediator {
 
     private function updateMetadataSection(resp:GetMetadataInfoResponse):void {
         if (_currentIdentityApplianceElement is ExternalIdentityProvider) {
-            _externalIdpMetadataSection.entityId.text = resp.entityId;
+            // entity id
+            _externalIdpContractSection.entityId.text = resp.entityId;
+
+            // profiles
             if (resp.ssoEnabled)
-                _externalIdpMetadataSection.samlProfileSSOCheck.selected = true;
+                _externalIdpContractSection.samlProfileSSOCheck.selected = true;
             if (resp.sloEnabled)
-                _externalIdpMetadataSection.samlProfileSLOCheck.selected = true;
+                _externalIdpContractSection.samlProfileSLOCheck.selected = true;
+
+            // bindings
+            if (resp.postEnabled)
+                _externalIdpContractSection.samlBindingHttpPostCheck.selected = true;
+            if (resp.redirectEnabled)
+                _externalIdpContractSection.samlBindingHttpRedirectCheck.selected = true;
+            if (resp.artifactEnabled)
+                _externalIdpContractSection.samlBindingArtifactCheck.selected = true;
+            if (resp.soapEnabled)
+                _externalIdpContractSection.samlBindingSoapCheck.selected = true;
+
+            // signing certificate
+            if (resp.signingCertIssuerDN != null) {
+                _externalIdpContractSection.signAuthAssertionCheck.selected = true;
+                _externalIdpCertificateSection.signingCertIssuerDN.text = resp.signingCertIssuerDN;
+            }
+            if (resp.signingCertSubjectDN != null)
+                _externalIdpCertificateSection.signingCertSubjectDN.text = resp.signingCertSubjectDN;
+            if (resp.signingCertNotBefore != null)
+                _externalIdpCertificateSection.signingCertNotBefore.text = _externalIdpCertificateSection.dateFormatter.format(resp.signingCertNotBefore);
+            if (resp.signingCertNotAfter != null)
+                _externalIdpCertificateSection.signingCertNotAfter.text = _externalIdpCertificateSection.dateFormatter.format(resp.signingCertNotAfter);
+
+            // encryption certificate
+            if (resp.encryptionCertIssuerDN != null) {
+                _externalIdpContractSection.encryptAuthAssertionCheck.selected = true;
+                _externalIdpCertificateSection.encryptionCertIssuerDN.text = resp.encryptionCertIssuerDN;
+            }
+            if (resp.encryptionCertSubjectDN != null)
+                _externalIdpCertificateSection.encryptionCertSubjectDN.text = resp.encryptionCertSubjectDN;
+            if (resp.encryptionCertNotBefore != null)
+                _externalIdpCertificateSection.encryptionCertNotBefore.text = _externalIdpCertificateSection.dateFormatter.format(resp.encryptionCertNotBefore);
+            if (resp.encryptionCertNotAfter != null)
+                _externalIdpCertificateSection.encryptionCertNotAfter.text = _externalIdpCertificateSection.dateFormatter.format(resp.encryptionCertNotAfter);
+            
         } else if (_currentIdentityApplianceElement is ExternalServiceProvider) {
-            _externalSpMetadataSection.entityId.text = resp.entityId;
+            // entity id
+            _externalSpContractSection.entityId.text = resp.entityId;
+
+            // profiles
             if (resp.ssoEnabled)
-                _externalSpMetadataSection.samlProfileSSOCheck.selected = true;
+                _externalSpContractSection.samlProfileSSOCheck.selected = true;
             if (resp.sloEnabled)
-                _externalSpMetadataSection.samlProfileSLOCheck.selected = true;
+                _externalSpContractSection.samlProfileSLOCheck.selected = true;
+
+            // bindings
+            if (resp.postEnabled)
+                _externalSpContractSection.samlBindingHttpPostCheck.selected = true;
+            if (resp.redirectEnabled)
+                _externalSpContractSection.samlBindingHttpRedirectCheck.selected = true;
+            if (resp.artifactEnabled)
+                _externalSpContractSection.samlBindingArtifactCheck.selected = true;
+            if (resp.soapEnabled)
+                _externalSpContractSection.samlBindingSoapCheck.selected = true;
+
+            // signing certificate
+            if (resp.signingCertIssuerDN != null) {
+                _externalSpContractSection.signAuthAssertionCheck.selected = true;
+                _externalSpCertificateSection.signingCertIssuerDN.text = resp.signingCertIssuerDN;
+            }
+            if (resp.signingCertSubjectDN != null)
+                _externalSpCertificateSection.signingCertSubjectDN.text = resp.signingCertSubjectDN;
+            if (resp.signingCertNotBefore != null)
+                _externalSpCertificateSection.signingCertNotBefore.text = _externalSpCertificateSection.dateFormatter.format(resp.signingCertNotBefore);
+            if (resp.signingCertNotAfter != null)
+                _externalSpCertificateSection.signingCertNotAfter.text = _externalSpCertificateSection.dateFormatter.format(resp.signingCertNotAfter);
+
+            // encryption certificate
+            if (resp.encryptionCertIssuerDN != null) {
+                _externalSpContractSection.encryptAuthAssertionCheck.selected = true;
+                _externalSpCertificateSection.encryptionCertIssuerDN.text = resp.encryptionCertIssuerDN;
+            }
+            if (resp.encryptionCertSubjectDN != null)
+                _externalSpCertificateSection.encryptionCertSubjectDN.text = resp.encryptionCertSubjectDN;
+            if (resp.encryptionCertNotBefore != null)
+                _externalSpCertificateSection.encryptionCertNotBefore.text = _externalSpCertificateSection.dateFormatter.format(resp.encryptionCertNotBefore);
+            if (resp.encryptionCertNotAfter != null)
+                _externalSpCertificateSection.encryptionCertNotAfter.text = _externalSpCertificateSection.dateFormatter.format(resp.encryptionCertNotAfter);
         }
     }
 

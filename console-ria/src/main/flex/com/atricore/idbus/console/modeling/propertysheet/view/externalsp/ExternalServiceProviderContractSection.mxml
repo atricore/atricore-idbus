@@ -29,20 +29,28 @@
 
     <mx:Form paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" width="100%" height="100%" verticalGap="8">
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.metadata.entityId')}:">
-            <s:TextInput id="entityId" width="300" editable="false"/>
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalServiceProv.metadata.entityId')}:">
+            <s:TextInput id="entityId" width="350" editable="false"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.enabled.saml.profiles')}:" direction="horizontal">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalServiceProv.enabled.saml.profiles')}:" direction="horizontal">
             <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}" enabled="false"/>
             <s:CheckBox id="samlProfileSLOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.slo')}" enabled="false"/>
         </mx:FormItem>
 
-        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalIdentityProv.enabled.saml.bindings')}:" direction="horizontal">
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalServiceProv.enabled.saml.bindings')}:" direction="horizontal">
             <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}" enabled="false"/>
             <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}" enabled="false"/>
             <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}" enabled="false"/>
             <s:CheckBox id="samlBindingSoapCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}" enabled="false"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalServiceProv.sign.auth.assertion')}:">
+            <s:CheckBox id="signAuthAssertionCheck" enabled="false"/>
+        </mx:FormItem>
+
+        <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'externalServiceProv.encrypt.auth.assertion')}:">
+            <s:CheckBox id="encryptAuthAssertionCheck" enabled="false"/>
         </mx:FormItem>
 
     </mx:Form>

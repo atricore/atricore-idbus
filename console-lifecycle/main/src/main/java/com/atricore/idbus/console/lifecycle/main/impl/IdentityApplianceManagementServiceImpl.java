@@ -44,18 +44,24 @@ import com.atricore.idbus.console.lifecycle.main.spi.*;
 import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
-import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
-import oasis.names.tc.saml._2_0.metadata.SSODescriptorType;
+import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.kernel.common.support.jdbc.DriverDescriptor;
 import org.atricore.idbus.kernel.common.support.jdbc.JDBCDriverManager;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3._2000._09.xmldsig_.X509DataType;
 
 import javax.jdo.FetchPlan;
+import javax.xml.bind.JAXBElement;
+import java.io.ByteArrayInputStream;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 public class IdentityApplianceManagementServiceImpl implements
@@ -912,18 +918,12 @@ public class IdentityApplianceManagementServiceImpl implements
         try {
             MetadataDefinition md = MetadataUtil.loadMetadataDefinition(req.getMetadata());
             res = new GetMetadataInfoResponse();
+            // entity id
             String entityId = MetadataUtil.findEntityId(md);
             res.setEntityId(entityId);
-            SSODescriptorType ssoDescriptor = null;
-            try {
-                ssoDescriptor = MetadataUtil.findSSODescriptor(md, "SPSSODescriptor");
-            } catch (Exception e) {
-                // SPSSODescriptor not found
-            }
-            if (ssoDescriptor == null) {
-                ssoDescriptor = MetadataUtil.findSSODescriptor(md, "IDPSSODescriptor");
-            }
+            SSODescriptorType ssoDescriptor = MetadataUtil.findSSODescriptor(md, req.getRole() + "Descriptor");
             if (ssoDescriptor != null) {
+                // profiles
                 if (ssoDescriptor.getSingleLogoutService().size() > 0) {
                     res.setSloEnabled(true);
                 }
@@ -931,12 +931,112 @@ public class IdentityApplianceManagementServiceImpl implements
                         ((IDPSSODescriptorType)ssoDescriptor).getSingleSignOnService().size() > 0) {
                     res.setSsoEnabled(true);
                 }
+
+                // bindings
+                List<EndpointType> endpoints = new ArrayList<EndpointType>();
+                endpoints.addAll(ssoDescriptor.getArtifactResolutionService());
+                endpoints.addAll(ssoDescriptor.getSingleLogoutService());
+                endpoints.addAll(ssoDescriptor.getManageNameIDService());
+                if (ssoDescriptor instanceof IDPSSODescriptorType) {
+                    endpoints.addAll(((IDPSSODescriptorType)ssoDescriptor).getSingleSignOnService());
+                    endpoints.addAll(((IDPSSODescriptorType)ssoDescriptor).getAssertionIDRequestService());
+                    endpoints.addAll(((IDPSSODescriptorType)ssoDescriptor).getNameIDMappingService());
+                } else if (ssoDescriptor instanceof SPSSODescriptorType) {
+                    endpoints.addAll(((SPSSODescriptorType)ssoDescriptor).getAssertionConsumerService());
+                }
+                for (EndpointType endpoint : endpoints) {
+                    if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_POST.getValue())) {
+                        res.setPostEnabled(true);
+                    } else if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_REDIRECT.getValue())) {
+                        res.setRedirectEnabled(true);
+                    } else if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_ARTIFACT.getValue())) {
+                        res.setArtifactEnabled(true);
+                    } else if (endpoint.getBinding().equals(SamlR2Binding.SAMLR2_SOAP.getValue())) {
+                        res.setSoapEnabled(true);
+                    }
+                    if (res.isPostEnabled() && res.isRedirectEnabled() &&
+                            res.isArtifactEnabled() && res.isSoapEnabled()) {
+                        break;
+                    }
+                }
+
+                // certificates
+                for (KeyDescriptorType keyMd : ssoDescriptor.getKeyDescriptor()) {
+                    X509Certificate x509Cert = getCertificate(keyMd);
+                    if (x509Cert != null) {
+                        if (KeyTypes.SIGNING.equals(keyMd.getUse())) {
+                            res.setSigningCertIssuerDN(x509Cert.getIssuerX500Principal().getName());
+                            res.setSigningCertSubjectDN(x509Cert.getSubjectX500Principal().getName());
+                            res.setSigningCertNotBefore(x509Cert.getNotBefore());
+                            res.setSigningCertNotAfter(x509Cert.getNotAfter());
+                        } else if (KeyTypes.ENCRYPTION.equals(keyMd.getUse())) {
+                            res.setEncryptionCertIssuerDN(x509Cert.getIssuerX500Principal().getName());
+                            res.setEncryptionCertSubjectDN(x509Cert.getSubjectX500Principal().getName());
+                            res.setEncryptionCertNotBefore(x509Cert.getNotBefore());
+                            res.setEncryptionCertNotAfter(x509Cert.getNotAfter());
+                        }
+                    }
+                }
             }
         } catch (Exception e){
 	        logger.error("Error retrieving metadata info", e);
 	        throw new IdentityServerException(e);
 	    }
         return res;
+    }
+
+    private X509Certificate getCertificate(KeyDescriptorType keyMd) {
+        X509Certificate x509Cert = null;
+        byte[] x509CertificateBin = null;
+        
+        if (keyMd.getKeyInfo() != null) {
+
+            // Get inside Key Info
+            List contentMd = keyMd.getKeyInfo().getContent();
+            if (contentMd != null && contentMd.size() > 0) {
+
+                for (Object o : contentMd) {
+
+                    if (o instanceof JAXBElement) {
+                        JAXBElement e = (JAXBElement) o;
+                        if (e.getValue() instanceof X509DataType) {
+
+                            X509DataType x509Data = (X509DataType) e.getValue();
+
+                            for (Object x509Content : x509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName()) {
+                                if (x509Content instanceof JAXBElement) {
+                                    JAXBElement x509Certificate = (JAXBElement) x509Content;
+
+                                    if (x509Certificate.getName().getNamespaceURI().equals("http://www.w3.org/2000/09/xmldsig#") &&
+                                            x509Certificate.getName().getLocalPart().equals("X509Certificate")) {
+
+                                        x509CertificateBin = (byte[]) x509Certificate.getValue();
+                                        break;
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+                    if (x509CertificateBin != null)
+                        break;
+                }
+            }
+        } else {
+            logger.debug("Metadata Key Descriptor does not have KeyInfo " + keyMd.toString());
+        }
+
+        if (x509CertificateBin != null) {
+            try {
+                CertificateFactory cf = CertificateFactory.getInstance("X.509");
+                x509Cert = (X509Certificate)cf.generateCertificate(new ByteArrayInputStream(x509CertificateBin));
+            } catch (CertificateException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+
+        return x509Cert;
     }
 
 // -------------------------------------------------< Properties >
