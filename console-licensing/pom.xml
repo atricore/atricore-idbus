@@ -45,7 +45,7 @@
     <modules>
         <module>support/josso2-license-v1_0</module>
         <module>main</module>
-        <!--module>command</module-->
+        <module>command</module>
     </modules>
 
     <build>

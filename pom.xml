@@ -243,6 +243,17 @@
                 <version>${pom.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.atricore.idbus.console.licensing</groupId>
+                <artifactId>com.atricore.idbus.console.licensing.josso2-license-v1_0</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.atricore.idbus.console.licensing</groupId>
+                <artifactId>com.atricore.idbus.console.licensing.main</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -567,7 +578,6 @@
                 <artifactId>org.atricore.idbus.kernel.common.xmldsig</artifactId>
                 <version>${idbus.kernel.version}</version>
             </dependency>
-
 
             <dependency>
                 <groupId>org.datanucleus</groupId>
