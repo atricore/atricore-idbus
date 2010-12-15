@@ -43,7 +43,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
 /**
- * @author <a href=mailto:ajadzinsky@atricor.org>Alejandro Jadzinsky</a>
+ * @author <a href=mailto:ajadzinsky@atricore.org>Alejandro Jadzinsky</a>
  *         User: ajadzinsky
  *         Date: Jun 2, 2009
  */

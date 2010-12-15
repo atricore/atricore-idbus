@@ -5,7 +5,7 @@ import org.atricore.idbus.kernel.common.support.osgi.ExternalResourcesClassLoade
 import java.util.List;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class DriverDescriptor {
 

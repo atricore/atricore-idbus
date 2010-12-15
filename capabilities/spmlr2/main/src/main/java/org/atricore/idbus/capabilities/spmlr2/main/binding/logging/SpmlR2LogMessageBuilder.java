@@ -10,7 +10,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.camel.logging.LogMessageBuilder;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class SpmlR2LogMessageBuilder implements LogMessageBuilder {
 

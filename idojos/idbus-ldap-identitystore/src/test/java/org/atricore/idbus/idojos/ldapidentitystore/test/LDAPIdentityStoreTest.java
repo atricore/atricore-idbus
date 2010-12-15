@@ -39,7 +39,7 @@ import org.springframework.context.ApplicationContext;
 import java.io.File;
 
 /**
- * User: <a href=mailto:ajadzinsky@atricor.org>ajadzinsky</a>
+ * User: <a href=mailto:ajadzinsky@atricore.org>ajadzinsky</a>
  * Date: Dec 4, 2008
  * Time: 12:55:48 PM
  */

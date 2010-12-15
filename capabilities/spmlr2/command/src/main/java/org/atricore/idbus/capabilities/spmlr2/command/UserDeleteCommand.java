@@ -10,7 +10,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @Command(scope = "spml", name = "usrdelete", description = "SPML User DELETE operation")
 public class UserDeleteCommand extends SpmlCommandSupport {

@@ -9,7 +9,7 @@ import org.atricore.idbus.capabilities.spmlr2.main.psp.producers.PSPProducer;
 import java.util.Map;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class PSPEndpoint<T> extends AbstractCamelEndpoint<CamelMediationExchange> {
 

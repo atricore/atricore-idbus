@@ -33,7 +33,7 @@ import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
 import java.net.URL;
 
 /**
- * @author <a href=mailto:ajadzinsky@atricor.org>Alejandro Jadzinsky</a>
+ * @author <a href=mailto:ajadzinsky@atricore.org>Alejandro Jadzinsky</a>
  *         User: ajadzinsky
  *         Date: May 20, 2009
  */

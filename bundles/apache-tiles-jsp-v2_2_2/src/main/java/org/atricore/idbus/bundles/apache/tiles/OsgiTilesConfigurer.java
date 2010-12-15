@@ -7,7 +7,7 @@ import org.apache.tiles.startup.TilesInitializer;
 import org.springframework.web.servlet.view.tiles2.TilesConfigurer;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class OsgiTilesConfigurer extends TilesConfigurer {
 

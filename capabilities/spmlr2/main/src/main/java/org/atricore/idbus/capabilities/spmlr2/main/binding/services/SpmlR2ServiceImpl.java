@@ -25,7 +25,7 @@ import javax.jws.WebParam;
 import java.util.logging.Logger;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @javax.jws.WebService(
                       serviceName = "SPMLService",

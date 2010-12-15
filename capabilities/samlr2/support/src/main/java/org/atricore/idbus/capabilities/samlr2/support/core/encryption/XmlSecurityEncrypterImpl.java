@@ -54,7 +54,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 
 /**
- * @author <a href=mailto:ajadzinsky@atricor.org>Alejandro Jadzinsky</a>
+ * @author <a href=mailto:ajadzinsky@atricore.org>Alejandro Jadzinsky</a>
  *         User: ajadzinsky
  *         Date: Jun 2, 2009
  * @org.apache.xbean.XBean element="samlr2-encrypter"

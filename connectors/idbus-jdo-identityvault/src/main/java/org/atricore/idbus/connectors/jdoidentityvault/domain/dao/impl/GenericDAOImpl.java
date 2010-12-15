@@ -8,7 +8,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public abstract class GenericDAOImpl<T, PK extends Serializable>
         extends JdoDaoSupport implements GenericDAO<T, PK> {

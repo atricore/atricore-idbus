@@ -49,7 +49,7 @@ import java.security.KeyStore;
 import java.security.PrivateKey;
 
 /**
- * @author <a href=mailto:ajadzinsky@atricor.org>Alejandro Jadzinsky</a>
+ * @author <a href=mailto:ajadzinsky@atricore.org>Alejandro Jadzinsky</a>
  *         User: ajadzinsky
  *         Date: Jun 4, 2009
  */

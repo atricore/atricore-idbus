@@ -41,7 +41,7 @@ import java.util.List;
 /**
  * // TODO : Split this in several producers ...
  *
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class PSPProducer extends SpmlR2Producer {
 

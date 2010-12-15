@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediationExchange>
         implements SPMLR2Constants, SPMLR2MessagingConstants, SPMLR2PlanningConstants {

@@ -54,7 +54,7 @@ import java.util.Map;
  * This test will emitt a SAMLR2 Assertion and serialize it as XML in the target folder.
  * It will also verify that the assertion has all required information.
  *
- * @author <a href=mailto:ajadzinsky@atricor.org>Alejandro Jadzinsky</a>
+ * @author <a href=mailto:ajadzinsky@atricore.org>Alejandro Jadzinsky</a>
  *         User: ajadzinsky
  *         Date: Apr 30, 2009
  */

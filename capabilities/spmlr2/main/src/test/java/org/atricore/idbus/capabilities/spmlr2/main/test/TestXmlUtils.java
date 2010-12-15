@@ -13,7 +13,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 
 public class TestXmlUtils {

@@ -13,7 +13,7 @@ import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProv
 import java.util.List;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @Command(scope = "spml", name = "targetsls", description = "SPML List Provisioning Service Targets operation")
 public class ListTargetsCommand extends SpmlCommandSupport {

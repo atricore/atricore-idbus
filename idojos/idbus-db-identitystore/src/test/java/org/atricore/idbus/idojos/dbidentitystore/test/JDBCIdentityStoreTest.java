@@ -41,7 +41,7 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 
 /**
- * User: <a href=mailto:ajadzinsky@atricor.org>ajadzinsky</a>
+ * User: <a href=mailto:ajadzinsky@atricore.org>ajadzinsky</a>
  * Date: Dec 3, 2008
  * Time: 6:33:23 PM
  */

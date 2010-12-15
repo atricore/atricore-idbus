@@ -42,7 +42,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * User: <a href=mailto:ajadzinsky@atricor.org>ajadzinsky</a>
+ * User: <a href=mailto:ajadzinsky@atricore.org>ajadzinsky</a>
  * Date: Dec 2, 2008
  * Time: 3:24:16 PM
  */

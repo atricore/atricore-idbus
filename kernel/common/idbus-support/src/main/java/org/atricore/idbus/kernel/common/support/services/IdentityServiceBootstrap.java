@@ -13,7 +13,7 @@ import java.util.Map;
  * Any component implementing IdentityServiceLifecycle will be initialized after the application context
  * declaring it is started.
  *
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class IdentityServiceBootstrap implements OsgiBundleApplicationContextListener, InitializingBean {
 

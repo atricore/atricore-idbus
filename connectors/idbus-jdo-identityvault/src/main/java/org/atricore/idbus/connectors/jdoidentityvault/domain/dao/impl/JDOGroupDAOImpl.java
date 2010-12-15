@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class JDOGroupDAOImpl extends GenericDAOImpl<JDOGroup, Long> implements JDOGroupDAO {
 

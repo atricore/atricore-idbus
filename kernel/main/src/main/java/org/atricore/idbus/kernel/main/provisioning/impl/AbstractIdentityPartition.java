@@ -5,7 +5,7 @@ import org.atricore.idbus.kernel.main.provisioning.spi.IdentityVault;
 import org.atricore.idbus.kernel.main.store.identity.IdentityStore;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public abstract class AbstractIdentityPartition implements IdentityPartition {
 

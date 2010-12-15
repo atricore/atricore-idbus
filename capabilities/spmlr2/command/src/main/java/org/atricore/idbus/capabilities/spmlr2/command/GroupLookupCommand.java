@@ -15,7 +15,7 @@ import org.atricore.idbus.kernel.main.mediation.channel.PsPChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @Command(scope = "spml", name = "grplookup", description = "SPML Group LOOKUP operation")
 public class GroupLookupCommand extends SpmlCommandSupport {

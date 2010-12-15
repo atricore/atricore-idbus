@@ -17,7 +17,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @Command(scope = "spml", name = "grpsearch", description = "SPML Group SEARCH operation")
 public class GroupSearchCommand extends SpmlCommandSupport {

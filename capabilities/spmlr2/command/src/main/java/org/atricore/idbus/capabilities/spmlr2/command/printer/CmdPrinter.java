@@ -4,7 +4,7 @@ import oasis.names.tc.spml._2._0.RequestType;
 import oasis.names.tc.spml._2._0.ResponseType;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public interface CmdPrinter {
 

@@ -20,7 +20,7 @@
   -->
 
 <wsdl:definitions
-        name="SAML V2 Service"
+        name="SAML V1.1 Service"
         targetNamespace="urn:oasis:names:tc:SAML:1.0:wsdl"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:tns="urn:oasis:names:tc:SAML:1.0:wsdl"

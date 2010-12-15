@@ -3,7 +3,7 @@ package org.atricore.idbus.capabilities.spmlr2.main;
 import javax.xml.namespace.QName;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public enum SpmlR2Service {
     

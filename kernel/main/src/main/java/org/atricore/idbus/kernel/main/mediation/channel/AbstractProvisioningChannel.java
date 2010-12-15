@@ -4,7 +4,7 @@ import org.atricore.idbus.kernel.main.mediation.AbstractChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class AbstractProvisioningChannel extends AbstractChannel implements ProvisioningChannel {
 

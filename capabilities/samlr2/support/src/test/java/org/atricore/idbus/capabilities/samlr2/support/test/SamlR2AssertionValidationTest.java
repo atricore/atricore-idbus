@@ -38,7 +38,7 @@ import javax.xml.validation.Validator;
 import java.io.File;
 
 /**
- * @author <a href=mailto:ajadzinsky@atricor.org>Alejandro Jadzinsky</a>
+ * @author <a href=mailto:ajadzinsky@atricore.org>Alejandro Jadzinsky</a>
  *         User: ajadzinsky
  *         Date: Jun 12, 2009
  */

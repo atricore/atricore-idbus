@@ -3,7 +3,7 @@ package org.atricore.idbus.connectors.jdoidentityvault.domain;
 import java.io.Serializable;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class JDOGroup implements Serializable {
 

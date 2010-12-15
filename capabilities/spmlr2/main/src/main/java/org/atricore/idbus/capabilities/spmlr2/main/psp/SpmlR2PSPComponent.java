@@ -12,7 +12,7 @@ import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import java.util.Map;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class SpmlR2PSPComponent extends DefaultComponent {
 

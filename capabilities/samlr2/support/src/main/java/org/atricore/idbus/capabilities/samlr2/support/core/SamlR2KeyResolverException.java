@@ -22,7 +22,7 @@
 package org.atricore.idbus.capabilities.samlr2.support.core;
 
 /**
- * @author <a href=mailto:ajadzinsky@atricor.org>Alejandro Jadzinsky</a>
+ * @author <a href=mailto:ajadzinsky@atricore.org>Alejandro Jadzinsky</a>
  *         User: ajadzinsky
  *         Date: Jun 9, 2009
  */
