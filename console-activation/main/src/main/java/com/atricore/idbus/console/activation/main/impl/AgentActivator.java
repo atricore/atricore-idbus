@@ -16,7 +16,7 @@ import org.josso.tooling.gshell.install.installer.Installer;
 import java.util.List;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class AgentActivator extends ActivatorSupport {
     

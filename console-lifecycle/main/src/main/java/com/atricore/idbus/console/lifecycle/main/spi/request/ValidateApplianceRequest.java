@@ -3,7 +3,7 @@ package com.atricore.idbus.console.lifecycle.main.spi.request;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class ValidateApplianceRequest extends AbstractManagementRequest {
 

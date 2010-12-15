@@ -5,7 +5,7 @@ import com.atricore.idbus.console.activation.main.spi.request.ActivateSamplesReq
 import org.apache.felix.gogo.commands.Command;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @Command(scope = "activate", name = "samples", description = "Activates a Sample Partner Appliaciont")
 public class ActivateSamplesCommand extends ActivationCommandSupport {

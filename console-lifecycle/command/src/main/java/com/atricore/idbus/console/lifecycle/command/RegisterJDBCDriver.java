@@ -3,7 +3,7 @@ package com.atricore.idbus.console.lifecycle.command;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class RegisterJDBCDriver extends ManagementCommandSupport {
 

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<schema
+        targetNamespace="urn:com:atricore:josso2:licensing:1.0:license"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"
+        xmlns:lic="urn:com:atricore:josso2:licensing:1.0:license"
+        elementFormDefault="unqualified"
+        attributeFormDefault="unqualified"
+        blockDefault="substitution"
+        version="2.0">
+
+    <import namespace="http://www.w3.org/2000/09/xmldsig#"
+            schemaLocation="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"/>
+    <import namespace="http://www.w3.org/2001/04/xmlenc#"
+            schemaLocation="http://www.w3.org/TR/2002/REC-xmlenc-core-20021210/xenc-schema.xsd"/>
+
+    <annotation>
+        <documentation>
+            Document identifier: josso2-license-1.0
+            Revision history:
+            V1.0 (October, 2010):
+            Initial Standard Schema.
+        </documentation>
+    </annotation>
+
+    <complexType name="LicenseType">
+        <sequence>
+            <element ref="ds:Signature" minOccurs="0"/>
+        </sequence>
+        <attribute name="Version" type="string" use="required"/>
+        <attribute name="ID" type="ID" use="required"/>
+        <attribute name="IssueInstant" type="dateTime" use="required"/>
+    </complexType>
+
+    <complexType name="LicensedFeatureType">
+        <sequence>
+            <element ref="lic:feature" minOccurs="0"/>
+        </sequence>
+        <attribute name="IssueDate" type="dateTime" use="optional"/>
+        <attribute name="ExpirationDate" type="dateTime" use="optional"/>
+    </complexType>
+
+    <element name="feature" type="lic:FeatureType"/>
+    <complexType name="FeatureType">
+        <sequence>
+            <element ref="lic:featureProperty"/>
+        </sequence>
+        <attribute name="Group" type="string" use="required"/>
+        <attribute name="Name" type="string" use="required"/>
+        <attribute name="Version" type="string" use="required"/>
+    </complexType>
+
+    <element name="featureProperty" type="lic:FeaturePropertyType"/>
+    <complexType name="FeaturePropertyType">
+        <attribute name="Name" type="string" use="required"/>
+        <attribute name="Value" type="string" use="required"/>
+    </complexType>
+
+    <!-- RFU -->
+    <element name="Request" type="lic:RequestType"/>
+    <complexType name="RequestType">
+        <attribute name="ID" type="ID" use="required"/>
+        <attribute name="IssueInstant" type="dateTime" use="required"/>
+    </complexType>
+
+    <element name="Response" type="lic:ResponseType"/>
+    <complexType name="ResponseType">
+        <attribute name="ID" type="ID" use="required"/>
+        <attribute name="IssueInstant" type="dateTime" use="required"/>
+    </complexType>
+
+</schema>

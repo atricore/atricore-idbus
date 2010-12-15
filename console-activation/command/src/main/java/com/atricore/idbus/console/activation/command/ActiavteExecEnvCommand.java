@@ -5,7 +5,7 @@ import com.atricore.idbus.console.activation.main.spi.request.ActivateAgentReque
 import org.apache.felix.gogo.commands.Command;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @Command(scope = "activate", name = "josso-agent", description = "Activates a JOSSO Agent")
 public class ActiavteExecEnvCommand extends ActivationCommandSupport {

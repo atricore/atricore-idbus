@@ -25,7 +25,7 @@ import java.security.cert.CertificateException;
 import java.util.*;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class ApplianceValidatorImpl extends AbstractApplianceDefinitionVisitor
         implements ApplianceValidator {

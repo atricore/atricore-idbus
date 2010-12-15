@@ -26,7 +26,7 @@ import java.util.Date;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class SPRemoteTransformer extends AbstractTransformer {
 

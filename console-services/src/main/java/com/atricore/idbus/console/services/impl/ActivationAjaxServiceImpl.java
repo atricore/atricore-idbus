@@ -13,7 +13,7 @@ import org.dozer.DozerBeanMapper;
 import java.rmi.activation.ActivationException;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class ActivationAjaxServiceImpl implements ActivationAjaxService {
 

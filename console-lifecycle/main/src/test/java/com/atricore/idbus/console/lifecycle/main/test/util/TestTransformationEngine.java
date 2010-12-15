@@ -6,7 +6,7 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformationEngine;
 import com.atricore.idbus.console.lifecycle.main.transform.TransformerVisitor;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class TestTransformationEngine extends TransformationEngine {
 

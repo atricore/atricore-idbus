@@ -73,6 +73,7 @@
         <commons-vfs.version>1.0_1</commons-vfs.version>
         <commons-lang.version>2.4</commons-lang.version>
         <commons-fileupload.version>1.2.1</commons-fileupload.version>
+        <cxf.version>2.2.2</cxf.version>
         <datanucleus.version>2.1.2</datanucleus.version>
         <dozer.version>5.2.2_1</dozer.version>
         <camel.version>1.6.1</camel.version>
@@ -98,13 +99,16 @@
         <javax.portlet.version>1.0.0</javax.portlet.version>
         <javax.servlet.version>2.5</javax.servlet.version>
         <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
+        <jaxws.api.version>2.1</jaxws.api.version>
         <junit.version>4.4</junit.version>
         <felix.karaf.version>2.1.0</felix.karaf.version>
         <felix.plugin.version>2.1.0</felix.plugin.version>
         <felix.osgi.version>1.4.0</felix.osgi.version>
+        <geronimo.wsmetadata.version>1.1.2</geronimo.wsmetadata.version>
         <log4j.version>1.2.14</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
         <ravis.version>1.0.0.RC2-20100628</ravis.version>
+        <servicemix.specs.version>1.2.0</servicemix.specs.version>
         <spring.security.version>2.0.4</spring.security.version>
         <spring.version>3.0.3.RELEASE</spring.version>
         <spring.osgi.version>1.2.0</spring.osgi.version>
@@ -133,7 +137,6 @@
                 <artifactId>org.atricore.idbus.bundles.apache-derby-client-v10_5_3_0_1</artifactId>
                 <version>${idbus.bundle.apache-derby-client-v10_5_3_0_1.version}</version>
             </dependency>
-
 
             <dependency>
                 <groupId>org.atricore.idbus.kernel.common</groupId>
@@ -560,6 +563,13 @@
             </dependency>
 
             <dependency>
+                <groupId>org.atricore.idbus.kernel.common</groupId>
+                <artifactId>org.atricore.idbus.kernel.common.xmldsig</artifactId>
+                <version>${idbus.kernel.version}</version>
+            </dependency>
+
+
+            <dependency>
                 <groupId>org.datanucleus</groupId>
                 <artifactId>datanucleus-core</artifactId>
                 <version>${datanucleus.version}</version>
@@ -610,6 +620,25 @@
                 <version>2.1</version>
                 <scope>provided</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.servicemix.specs</groupId>
+                <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
+                <version>1.2.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.servicemix.specs</groupId>
+                <artifactId>org.apache.servicemix.specs.jaxws-api-${jaxws.api.version}</artifactId>
+                <version>${servicemix.specs.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.geronimo.specs</groupId>
+                <artifactId>geronimo-ws-metadata_2.0_spec</artifactId>
+                <version>${geronimo.wsmetadata.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>org.springframework.osgi</groupId>
@@ -1351,6 +1380,7 @@
 
     <modules>
         <module>console-tooling</module>
+        <module>console-licensing</module>
         <module>console-lifecycle</module>
         <module>console-activation</module>
         <module>console-config</module>
@@ -1360,6 +1390,7 @@
         <module>console-web</module>
         <module>console-appliance/console-default-idau</module>
         <module>console-appliance/console-jaas</module>
+
     </modules>
 
     <profiles>

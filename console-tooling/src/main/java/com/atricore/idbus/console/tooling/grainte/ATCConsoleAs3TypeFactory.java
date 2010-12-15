@@ -5,7 +5,7 @@ import org.granite.generator.as3.DefaultAs3TypeFactory;
 import org.granite.util.ClassUtil;
 
 /**
- * @author <a href=mailto:sgonzalez@atricor.org>Sebastian Gonzalez Oyuela</a>
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class ATCConsoleAs3TypeFactory extends DefaultAs3TypeFactory {
 
