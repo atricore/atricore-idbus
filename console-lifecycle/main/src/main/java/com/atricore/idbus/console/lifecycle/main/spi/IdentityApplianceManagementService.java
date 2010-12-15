@@ -90,4 +90,6 @@ public interface IdentityApplianceManagementService {
 
     AddResourceResponse addResource(AddResourceRequest req) throws IdentityServerException;
     LookupResourceByIdResponse lookupResourceById(LookupResourceByIdRequest req) throws IdentityServerException;
+
+    GetMetadataInfoResponse getMetadataInfo(GetMetadataInfoRequest req) throws IdentityServerException;
 }
