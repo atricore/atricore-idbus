@@ -62,10 +62,11 @@ public class GetMetadataInfoCommand extends IocSimpleCommand implements IRespond
     }
 
     override public function execute(notification:INotification):void {
-        var metadata:ByteArray = notification.getBody() as ByteArray;
+        var params:Array = notification.getBody() as Array;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
         var req:GetMetadataInfoRequest = new GetMetadataInfoRequest();
-        req.metadata = metadata;
+        req.role = params[0];
+        req.metadata = params[1];
         var call:Object = service.getMetadataInfo(req);
         call.addResponder(this);
     }
