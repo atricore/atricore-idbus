@@ -204,7 +204,14 @@ public class ArtifactResolutionProducer extends SamlR2Producer {
 
         return response;
         */
-        return (ResponseType) samlMsg;
+
+        RequestType request =
+                (RequestType) ((CamelMediationMessage)exchange.getIn()).getMessage().getContent();
+        
+        ResponseType response = (ResponseType) samlMsg;
+        response.setInResponseTo(request.getRequestID());
+        
+        return response;
 
 
     }
