@@ -72,6 +72,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _wasceExecutionEnvironmentCreateMediator:IIocMediator;
     private var _apacheExecutionEnvironmentCreateMediator:IIocMediator;
     private var _alfrescoExecutionEnvironmentCreateMediator:IIocMediator;
+    private var _javaEEExecutionEnvironmentCreateMediator:IIocMediator;
+    private var _phpBBExecutionEnvironmentCreateMediator:IIocMediator;
     private var _windowsIISExecutionEnvironmentCreateMediator:IIocMediator;
     private var _uploadProgressMediator:IIocMediator;
     private var _buildApplianceMediator:IIocMediator;
@@ -329,6 +331,22 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set alfrescoExecutionEnvironmentCreateMediator(value:IIocMediator):void {
         _alfrescoExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get javaEEExecutionEnvironmentCreateMediator():IIocMediator {
+        return _javaEEExecutionEnvironmentCreateMediator;
+    }
+
+    public function set javaEEExecutionEnvironmentCreateMediator(value:IIocMediator):void {
+        _javaEEExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get phpBBExecutionEnvironmentCreateMediator():IIocMediator {
+        return _phpBBExecutionEnvironmentCreateMediator;
+    }
+
+    public function set phpBBExecutionEnvironmentCreateMediator(value:IIocMediator):void {
+        _phpBBExecutionEnvironmentCreateMediator = value;
     }
 
     public function get windowsIISExecutionEnvironmentCreateMediator():IIocMediator {
@@ -1034,6 +1052,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(wasceExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(apacheExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(alfrescoExecutionEnvironmentCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(javaEEExecutionEnvironmentCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(phpBBExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(windowsIISExecutionEnvironmentCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(uploadProgressMediator.getConfigName());
         //iocFacade.registerMediatorByConfigName(buildApplianceMediator.getConfigName());

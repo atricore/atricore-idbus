@@ -33,12 +33,16 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alf
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alfresco.AlfrescoExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.apache.ApacheExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.javaee.JavaEEExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.javaee.JavaEEExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jboss.JBossExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbossportal.JBossPortalExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.jbossportal.JBossPortalExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.liferayportal.LiferayPortalExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateForm;
@@ -98,6 +102,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _apacheExecutionEnvironmentCreateMediator:ApacheExecutionEnvironmentCreateMediator;
     private var _windowsIISExecutionEnvironmentCreateMediator:WindowsIISExecutionEnvironmentCreateMediator;
 	private var _alfrescoExecutionEnvironmentCreateMediator:AlfrescoExecutionEnvironmentCreateMediator;
+    private var _javaEEExecutionEnvironmentCreateMediator:JavaEEExecutionEnvironmentCreateMediator;
+    private var _phpBBExecutionEnvironmentCreateMediator:PhpBBExecutionEnvironmentCreateMediator;
     private var _uploadProgressMediator:UploadProgressMediator;
     private var _buildApplianceMediator:BuildApplianceMediator;
     private var _deployApplianceMediator:DeployApplianceMediator;
@@ -123,6 +129,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _apacheExecutionEnvironmentCreateForm:ApacheExecutionEnvironmentCreateForm;
     private var _windowsIISExecutionEnvironmentCreateForm:WindowsIISExecutionEnvironmentCreateForm;
     private var _alfrescoExecutionEnvironmentCreateForm:AlfrescoExecutionEnvironmentCreateForm;
+    private var _javaEEExecutionEnvironmentCreateForm:JavaEEExecutionEnvironmentCreateForm;
+    private var _phpBBExecutionEnvironmentCreateForm:PhpBBExecutionEnvironmentCreateForm;
     private var _manageCertificateForm:ManageCertificateView;
     private var _uploadProgress:UploadProgress;
     private var _buildAppliance:BuildApplianceView;
@@ -302,6 +310,22 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set alfrescoExecutionEnvironmentCreateMediator(value:AlfrescoExecutionEnvironmentCreateMediator):void {
         _alfrescoExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get javaEEExecutionEnvironmentCreateMediator():JavaEEExecutionEnvironmentCreateMediator {
+        return _javaEEExecutionEnvironmentCreateMediator;
+    }
+
+    public function set javaEEExecutionEnvironmentCreateMediator(value:JavaEEExecutionEnvironmentCreateMediator):void {
+        _javaEEExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get phpBBExecutionEnvironmentCreateMediator():PhpBBExecutionEnvironmentCreateMediator {
+        return _phpBBExecutionEnvironmentCreateMediator;
+    }
+
+    public function set phpBBExecutionEnvironmentCreateMediator(value:PhpBBExecutionEnvironmentCreateMediator):void {
+        _phpBBExecutionEnvironmentCreateMediator = value;
     }
 
     public function get activationCreateMediator():ActivationCreateMediator {
@@ -664,6 +688,48 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleAlfrescoExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
         alfrescoExecutionEnvironmentCreateMediator.setViewComponent(_alfrescoExecutionEnvironmentCreateForm);
         alfrescoExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateJavaEEExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createJavaEEExecutionEnvironmentCreateForm();
+        _popup.title = "Create JavaEE Execution Environment";
+        _popup.width = 500;
+        _popup.height = 290;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_javaEEExecutionEnvironmentCreateForm);
+    }
+
+    private function createJavaEEExecutionEnvironmentCreateForm():void {
+        _javaEEExecutionEnvironmentCreateForm = new JavaEEExecutionEnvironmentCreateForm();
+        _javaEEExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleJavaEEExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handleJavaEEExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        javaEEExecutionEnvironmentCreateMediator.setViewComponent(_javaEEExecutionEnvironmentCreateForm);
+        javaEEExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreatePhpBBExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createPhpBBExecutionEnvironmentCreateForm();
+        _popup.title = "Create PhpBB Execution Environment";
+        _popup.width = 500;
+        _popup.height = 290;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_phpBBExecutionEnvironmentCreateForm);
+    }
+
+    private function createPhpBBExecutionEnvironmentCreateForm():void {
+        _phpBBExecutionEnvironmentCreateForm = new PhpBBExecutionEnvironmentCreateForm();
+        _phpBBExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handlePhpBBExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handlePhpBBExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        phpBBExecutionEnvironmentCreateMediator.setViewComponent(_phpBBExecutionEnvironmentCreateForm);
+        phpBBExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateFederatedConnectionWindow(notification:INotification):void {

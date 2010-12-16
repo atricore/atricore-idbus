@@ -40,8 +40,10 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceUnitType;
 import com.atricore.idbus.console.services.dto.IdentityLookup;
 import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentitySource;
+import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
+import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
@@ -153,7 +155,11 @@ public class BrowserModelFactory {
             }else if(executionEnvironment is WindowsIISExecutionEnvironment){
                 execEnvironmentNode.icon = EmbeddedIcons.windowsEnvironmentMiniIcon;
             } else if (executionEnvironment is AlfrescoExecutionEnvironment){
-                execEnvironmentNode.icon = EmbeddedIcons.alfrescoEnvironmentMiniIcon; 
+                execEnvironmentNode.icon = EmbeddedIcons.alfrescoEnvironmentMiniIcon;
+            } else if (executionEnvironment is JEEExecutionEnvironment) {
+                execEnvironmentNode.icon = EmbeddedIcons.javaEnvironmentMiniIcon;
+            } else if (executionEnvironment is PHPExecutionEnvironment){
+                execEnvironmentNode.icon = EmbeddedIcons.phpbbEnvironmentMiniIcon;
             } else {
                 execEnvironmentNode.icon = EmbeddedIcons.executionEnvironmentMiniIcon;
             }

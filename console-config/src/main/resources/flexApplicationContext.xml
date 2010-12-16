@@ -321,6 +321,14 @@
             class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.alfresco.AlfrescoExecutionEnvironmentCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="javaEEExecutionEnvironmentCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.javaee.JavaEEExecutionEnvironmentCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="phpBBExecutionEnvironmentCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb.PhpBBExecutionEnvironmentCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <!--<object id="idpChannelCreateMediator"-->
             <!--class="com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator">-->
         <!--<property name="projectProxy" ref="projectProxy"/>-->
@@ -456,6 +464,8 @@
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
         <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator" />
+        <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator" />
+        <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator" />
         <property name="activationCreateMediator" ref="activationCreateMediator"/>
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
@@ -559,7 +569,9 @@
         <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
-        <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator" />        
+        <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator" />
+        <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator" />                        
+        <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator" />        
         <!--<property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>-->
         <!--<property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>-->
         <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>

@@ -52,9 +52,11 @@
         import com.atricore.idbus.console.services.dto.IdentityProvider;
         import com.atricore.idbus.console.services.dto.IdentitySource;
         import com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.LdapIdentitySource;
         import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.ServiceProvider;
 
         import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
@@ -163,6 +165,10 @@
                     _linkIcon = EmbeddedIcons.windowsEnvironmentIcon;
                 } else if (obj is AlfrescoExecutionEnvironment){
                     _linkIcon = EmbeddedIcons.alfrescoEnvironmentIcon
+                } else if (obj is JEEExecutionEnvironment) {
+                    _linkIcon = EmbeddedIcons.javaEnvironmentIcon;
+                } else if (obj is PHPExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.phpbbEnvironmentIcon;
                 } else {
                     _linkIcon = EmbeddedIcons.executionEnvironmentIcon;
                 }
