@@ -48,6 +48,7 @@ import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
@@ -158,8 +159,10 @@ public class BrowserModelFactory {
                 execEnvironmentNode.icon = EmbeddedIcons.alfrescoEnvironmentMiniIcon;
             } else if (executionEnvironment is JEEExecutionEnvironment) {
                 execEnvironmentNode.icon = EmbeddedIcons.javaEnvironmentMiniIcon;
-            } else if (executionEnvironment is PHPExecutionEnvironment){
+            } else if (executionEnvironment is PHPExecutionEnvironment) {
                 execEnvironmentNode.icon = EmbeddedIcons.phpbbEnvironmentMiniIcon;
+            } else if (executionEnvironment is WebserverExecutionEnvironment) {
+                execEnvironmentNode.icon = EmbeddedIcons.webEnvironmentMiniIcon;
             } else {
                 execEnvironmentNode.icon = EmbeddedIcons.executionEnvironmentMiniIcon;
             }

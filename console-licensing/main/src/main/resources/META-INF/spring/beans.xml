@@ -17,6 +17,7 @@
 
     <bean name="licenseManager" class="com.atricore.idbus.console.licensing.main.impl.LicenseManagerImpl"/>
 
-    <osgi:service id="osgiLicenseManager" ref="licenseManager"/>
+    <osgi:service id="osgiLicenseManager" ref="licenseManager"
+                  interface="com.atricore.idbus.console.licensing.main.LicenseManager"/>
 
 </beans>

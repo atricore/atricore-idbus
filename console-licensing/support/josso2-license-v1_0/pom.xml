@@ -119,7 +119,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>com.atricore.josso2.license.*;version=${pom.version}</Export-Package>
+                        <Export-Package>com.atricore.josso2.licensing._1_0.*;version=${pom.version}</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

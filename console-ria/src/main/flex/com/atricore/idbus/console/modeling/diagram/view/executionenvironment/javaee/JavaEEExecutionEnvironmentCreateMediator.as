@@ -60,7 +60,7 @@ public class JavaEEExecutionEnvironmentCreateMediator extends IocFormMediator {
     
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.btnOk.removeEventListener(MouseEvent.CLICK, handleApacheExecutionEnvironmentSave);
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handleJavaEEExecutionEnvironmentSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
         }
 
@@ -70,7 +70,7 @@ public class JavaEEExecutionEnvironmentCreateMediator extends IocFormMediator {
     }
 
     private function init():void {
-        view.btnOk.addEventListener(MouseEvent.CLICK, handleApacheExecutionEnvironmentSave);
+        view.btnOk.addEventListener(MouseEvent.CLICK, handleJavaEEExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
         view.selectedHost.enabled = false;
@@ -104,7 +104,7 @@ public class JavaEEExecutionEnvironmentCreateMediator extends IocFormMediator {
         _newExecutionEnvironment = jeeExecutionEnvironment;
     }
 
-    private function handleApacheExecutionEnvironmentSave(event:MouseEvent):void {
+    private function handleJavaEEExecutionEnvironmentSave(event:MouseEvent):void {
         view.homeDirectory.errorString = "";
         if (validate(true)) {
             var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();

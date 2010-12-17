@@ -306,6 +306,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             ApplicationFacade.CREATE_ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.CREATE_PHPBB_EXECUTION_ENVIRONMENT_ELEMENT,
+            ApplicationFacade.CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT,
             ApplicationFacade.REMOVE_ACTIVATION_ELEMENT,
             ApplicationFacade.REMOVE_FEDERATED_CONNECTION_ELEMENT,
             ApplicationFacade.REMOVE_IDENTITY_LOOKUP_ELEMENT,
@@ -441,6 +442,9 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 break;
             case ApplicationFacade.CREATE_PHPBB_EXECUTION_ENVIRONMENT_ELEMENT:
                 popupManager.showCreatePhpBBExecutionEnvironmentWindow(notification);
+                break;
+            case ApplicationFacade.CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT:
+                popupManager.showCreateWebserverExecutionEnvironmentWindow(notification);
                 break;
             case ApplicationFacade.CREATE_ACTIVATION:
                 popupManager.showCreateActivationWindow(notification);

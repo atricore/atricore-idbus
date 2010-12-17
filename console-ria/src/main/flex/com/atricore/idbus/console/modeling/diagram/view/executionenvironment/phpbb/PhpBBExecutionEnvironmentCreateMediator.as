@@ -60,7 +60,7 @@ public class PhpBBExecutionEnvironmentCreateMediator extends IocFormMediator {
     
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.btnOk.removeEventListener(MouseEvent.CLICK, handleApacheExecutionEnvironmentSave);
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handlePhpBBExecutionEnvironmentSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
         }
 
@@ -70,7 +70,7 @@ public class PhpBBExecutionEnvironmentCreateMediator extends IocFormMediator {
     }
 
     private function init():void {
-        view.btnOk.addEventListener(MouseEvent.CLICK, handleApacheExecutionEnvironmentSave);
+        view.btnOk.addEventListener(MouseEvent.CLICK, handlePhpBBExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
         view.selectedHost.enabled = false;
@@ -104,7 +104,7 @@ public class PhpBBExecutionEnvironmentCreateMediator extends IocFormMediator {
         _newExecutionEnvironment = phpExecutionEnvironment;
     }
 
-    private function handleApacheExecutionEnvironmentSave(event:MouseEvent):void {
+    private function handlePhpBBExecutionEnvironmentSave(event:MouseEvent):void {
         view.homeDirectory.errorString = "";
         if (validate(true)) {
             var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
