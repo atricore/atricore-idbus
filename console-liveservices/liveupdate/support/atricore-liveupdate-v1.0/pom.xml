@@ -27,16 +27,16 @@
 
 
     <parent>
-        <groupId>com.atricore.idbus.console.licensing</groupId>
-        <artifactId>console-licensing</artifactId>
+        <groupId>com.atricore.idbus.console.liveservices</groupId>
+        <artifactId>console-liveservices</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>com.atricore.idbus.console.licensing</groupId>
-    <artifactId>com.atricore.idbus.console.licensing.josso2-license-v1_0</artifactId>
+    <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+    <artifactId>com.atricore.idbus.console.liveservices.liveupdate.atricore-liveupdate-v1_0</artifactId>
 
-    <name>Atricore Console :: Licensing : XML Binding</name>
-    <description>Atricore Licensing XML Binding</description>
+    <name>Atricore Console :: LiveUpdate v1.0 : XML Binding</name>
+    <description>Atricore LiveUpate v1.0 XML Binding</description>
     <packaging>bundle</packaging>
 
     <dependencies>
@@ -85,7 +85,7 @@
                             <wsdlOptions>
                                 <wsdlOption>
                                     <wsdl>
-                                        ${basedir}/src/main/resources/josso2-license-1.0.wsdl
+                                        ${basedir}/src/main/resources/atricore-liveupdate-1.0.wsdl
                                     </wsdl>
                                     <extraargs>
                                         <extraarg>-impl</extraarg>
@@ -97,7 +97,7 @@
                                         <extraarg>http://www.w3.org/2001/04/xmlenc#</extraarg>
                                         <extraarg>-b</extraarg>
                                         <extraarg>
-                                            ${basedir}/src/main/resources/license_bindings.xml
+                                            ${basedir}/src/main/resources/liveupdate_bindings.xml
                                         </extraarg>
                                         <extraarg>-catalog</extraarg>
                                         <extraarg>${basedir}/src/main/resources/catalog.xml</extraarg>
@@ -119,7 +119,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>com.atricore.josso2.licensing._1_0.*;version=${pom.version}</Export-Package>
+                        <Export-Package>com.atricore.liveservices.liveupdate._1_0.*;version=${pom.version}</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

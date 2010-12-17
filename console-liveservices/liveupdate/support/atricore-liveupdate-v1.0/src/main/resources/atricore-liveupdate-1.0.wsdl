@@ -1,0 +1,88 @@
+<!--
+  ~ Atricore IDBus
+  ~
+  ~ Copyright 2009, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<wsdl:definitions
+        name="JOSSO 2 Licensing Service"
+        targetNamespace="urn:com:atricore:liveservices:liveupdate:1.0:wsdl"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:tns="urn:com:atricore:liveservices:liveupdate:1.0:wsdl"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+        xmlns:lic="urn:com:atricore:liveservices:liveupdate:1.0:md"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+    <wsdl:types>
+        <xsd:schema>
+            <xsd:import namespace="urn:com:atricore:liveservices:liveupdate:1.0:md"
+                        schemaLocation="atricore-liveupdate-md-1.0.xsd"/>
+        </xsd:schema>
+
+    </wsdl:types>
+
+    <!-- protocol message definitions -->
+    <wsdl:message name="LiveUpdateRequestMessage">
+        <wsdl:part name="body" element="lic:Request"/>
+    </wsdl:message>
+
+    <wsdl:message name="LiveUpdateResponseMessage">
+        <wsdl:part name="body" element="lic:Response"/>
+    </wsdl:message>
+
+    <wsdl:portType name="LiveUpdateRequestPortType">
+
+        <wsdl:operation name="LiveUpdateRequest">
+            <wsdl:input name="LiveUpdateRequestInput"
+                        message="tns:LiveUpdateRequestMessage"/>
+            <wsdl:output name="LiveUpdateResponseOutput"
+                         message="tns:LiveUpdateResponseMessage"/>
+        </wsdl:operation>
+
+    </wsdl:portType>
+
+    <wsdl:binding name="LiveUpdateSoapBinding" type="tns:LiveUpdateRequestPortType">
+        <soap:binding style="document"
+                      transport="http://schemas.xmlsoap.org/soap/http"/>
+
+        <wsdl:operation name="LiveUpdateRequest">
+            <soap:operation style="document"
+                            soapAction="http://www.oasis-open.org/committees/security"/>
+
+            <wsdl:input name="LiveUpdateRequestInput">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="LiveUpdateResponseOutput">
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+    </wsdl:binding>
+
+    <wsdl:service name="LiveUpdateService">
+        <documentation>LiveUpdate V1.0 Service</documentation>
+        <port name="soap"
+              binding="tns:LiveUpdateSoapBinding">
+            <soap:address location="http://localhost:8192/LiveUpdateService/"/>
+        </port>
+    </wsdl:service>
+
+
+</wsdl:definitions>

@@ -211,7 +211,6 @@
                 <version>${idbus.bundle.javax-jdo2-v2_3-ec.version}</version>
             </dependency>
 
-
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-config</artifactId>
@@ -252,6 +251,30 @@
             <dependency>
                 <groupId>com.atricore.idbus.console.licensing</groupId>
                 <artifactId>com.atricore.idbus.console.licensing.main</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.atricore.idbus.console.licensing</groupId>
+                <artifactId>com.atricore.idbus.console.licensing.command</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+                <artifactId>com.atricore.idbus.console.liveservices.liveupdate.atricore-liveupdate-v1_0</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+                <artifactId>com.atricore.idbus.console.liveservices.liveupdate.main</artifactId>
+                <version>${pom.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+                <artifactId>com.atricore.idbus.console.liveservices.liveupdate.command</artifactId>
                 <version>${pom.version}</version>
             </dependency>
 
@@ -1391,6 +1414,7 @@
     <modules>
         <module>console-tooling</module>
         <module>console-licensing</module>
+        <module>console-liveservices</module>
         <module>console-lifecycle</module>
         <module>console-activation</module>
         <module>console-config</module>
