@@ -378,11 +378,6 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         singleSignOnServiceArtifact.setLocation(resolveLocationUrl(provider) + "/SAML2/SSO/ARTIFACT");
         idpSSODescriptor.getSingleSignOnService().add(singleSignOnServiceArtifact);
 
-        EndpointType singleSignOnServiceSOAP = new EndpointType();
-        singleSignOnServiceSOAP.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
-        singleSignOnServiceSOAP.setLocation(resolveLocationUrl(provider) + "/SAML2/SSO/SOAP");
-        idpSSODescriptor.getSingleSignOnService().add(singleSignOnServiceSOAP);
-
         entityDescriptor.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor().add(idpSSODescriptor);
 
         // organization

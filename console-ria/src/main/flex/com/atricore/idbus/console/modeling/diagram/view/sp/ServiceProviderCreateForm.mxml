@@ -130,7 +130,7 @@
                 <mx:FormItem labelWidth="160" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.bindings')}:" direction="horizontal">
                     <s:CheckBox id="samlBindingHttpPostCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.post')}" selected="true"/>
                     <s:CheckBox id="samlBindingHttpRedirectCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.http.redirect')}"/>
-                    <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}"/>
+                    <s:CheckBox id="samlBindingArtifactCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.artifact')}" selected="true"/>
                     <s:CheckBox id="samlBindingSoapCheck"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.binding.soap')}" selected="true"/>
                 </mx:FormItem>

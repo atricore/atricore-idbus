@@ -33,6 +33,12 @@
             <fx:Object label="Windows (NTLM)" data="ntlm"/>
             <fx:Object label="Remember Me" data="rememberme"/>
         </mx:ArrayCollection>
+
+        <mx:NumberValidator id="portValidator" source="{spChannelLocationPort}" required="false" property="text" minValue="1" maxValue="65535"
+                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <utils:URLPartValidator id="domainValidator" source="{spChannelLocationDomain}" required="true" property="text" />
+        <utils:URLPartValidator id="contextValidator" source="{spChannelLocationContext}" required="true" property="text"/>
+        <utils:URLMultipartValidator id="pathValidator" source="{spChannelLocationPath}" required="true" property="text"/>
     </fx:Declarations>
 
     <utils:TitledBorderBox title="Contract" height="100%" width="50%" paddingLeft="5" paddingRight="5" paddingTop="15"
@@ -63,6 +69,27 @@
             <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.encrypt.auth.assertion')}:" labelWidth="235">
                 <s:CheckBox id="encryptAuthAssertionCheck"/>
             </mx:FormItem>
+
+            <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.location')}:"
+                         direction="horizontal" labelWidth="60">
+                <s:DropDownList id="spChannelLocationProtocol" width="70" selectedIndex="0">
+                    <s:dataProvider>
+                        <mx:ArrayCollection>
+                            <fx:Object label="http" data="http"/>
+                            <fx:Object label="https" data="https"/>
+                        </mx:ArrayCollection>
+                    </s:dataProvider>
+                </s:DropDownList>
+                <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
+                <s:TextInput id="spChannelLocationDomain" width="130"/>
+                <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
+                <s:TextInput id="spChannelLocationPort" width="40"/>
+                <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+                <s:TextInput id="spChannelLocationContext" width="100"/>
+                <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+                <s:TextInput id="spChannelLocationPath" width="130"/>
+            </mx:FormItem>
+
         </mx:Form>
     </utils:TitledBorderBox>
 

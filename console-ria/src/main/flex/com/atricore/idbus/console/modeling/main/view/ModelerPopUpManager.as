@@ -736,8 +736,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createFederatedConnectionCreateForm();
         _popup.title = "Create Federated Connection";
-        _popup.width = 600;
-        _popup.height = 395;
+        _popup.width = 640;
+        _popup.height = 425;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_federatedConnectionCreateForm);

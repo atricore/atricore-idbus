@@ -43,6 +43,26 @@
 
         <utils:NameValidator id="nameValidator" source="{federatedConnectionName}" required="true" property="text" trigger="{btnOk}"
                         triggerEvent="click"/>
+
+        <mx:NumberValidator id="idpChannelPortValidator" source="{idpChannelLocationPort}" required="false" property="text"
+                        trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
+                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <utils:URLPartValidator id="idpChannelDomainValidator" source="{idpChannelLocationDomain}" required="true" property="text"
+                        trigger="{btnOk}" triggerEvent="click"/>
+        <utils:URLPartValidator id="idpChannelContextValidator" source="{idpChannelLocationContext}" required="true" property="text"
+                        trigger="{btnOk}" triggerEvent="click"/>
+        <utils:URLMultipartValidator id="idpChannelPathValidator" source="{idpChannelLocationPath}" required="true" property="text"
+                        trigger="{btnOk}" triggerEvent="click"/>
+
+        <mx:NumberValidator id="spChannelPortValidator" source="{spChannelLocationPort}" required="false" property="text"
+                        trigger="{btnOk}" triggerEvent="click" minValue="1" maxValue="65535"
+                        invalidCharError="{resourceManager.getString(AtricoreConsole.BUNDLE, 'location.portValidationError')}"/>
+        <utils:URLPartValidator id="spChannelDomainValidator" source="{spChannelLocationDomain}" required="true" property="text"
+                        trigger="{btnOk}" triggerEvent="click"/>
+        <utils:URLPartValidator id="spChannelContextValidator" source="{spChannelLocationContext}" required="true" property="text"
+                        trigger="{btnOk}" triggerEvent="click"/>
+        <utils:URLMultipartValidator id="spChannelPathValidator" source="{spChannelLocationPath}" required="true" property="text"
+                        trigger="{btnOk}" triggerEvent="click"/>
     </fx:Declarations>
     
     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.name')}:" required="true">
@@ -53,12 +73,12 @@
         <s:TextInput id="federatedConnectionDescription" width="300"/>
     </mx:FormItem>
 
-    <mx:TabNavigator id="channelNavigator" borderStyle="solid" width="100%" height="250" creationPolicy="all" tabHeight="26">
+    <mx:TabNavigator id="channelNavigator" borderStyle="solid" width="100%" height="280" creationPolicy="all" tabHeight="26">
         <!-- IDP CHANNEL TAB -->
         <s:NavigatorContent id="idpChannelTab" icon="{EmbeddedIcons.idpChannelMiniIcon}" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.idpchannel')}">
             <s:VGroup width="100%" height="100%">
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.useinheritedspsettings')}:" labelWidth="235">
-                     <s:CheckBox id="useInheritedSPSettings"/>
+                     <s:CheckBox id="useInheritedSPSettings" selected="true"/>
                 </mx:FormItem>
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.enabled.saml.profiles')}:" direction="horizontal" labelWidth="235">
                     <s:CheckBox id="samlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}"/>
@@ -109,7 +129,28 @@
 
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.preferredidpchannel')}:" labelWidth="235">
                      <s:CheckBox id="preferredIDPChannel" selected="true"/>
-                </mx:FormItem>                
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.location')}:" required="true"
+                        direction="horizontal" labelWidth="60">
+                    <s:DropDownList id="idpChannelLocationProtocol" width="70" selectedIndex="0">
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object label="http" data="http"/>
+                                <fx:Object label="https" data="https"/>
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
+                    </s:DropDownList>
+                    <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
+                    <s:TextInput id="idpChannelLocationDomain" width="130"/>
+                    <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
+                    <s:TextInput id="idpChannelLocationPort" width="40"/>
+                    <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+                    <s:TextInput id="idpChannelLocationContext" width="100"/>
+                    <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+                    <s:TextInput id="idpChannelLocationPath" width="130"/>
+                </mx:FormItem>
+                
             </s:VGroup>
         </s:NavigatorContent>
         
@@ -117,7 +158,7 @@
         <s:NavigatorContent icon="{EmbeddedIcons.spChannelMiniIcon}" id="spChannelTab" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.spchannel')}">
             <s:VGroup width="100%" height="100%">
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.useinheritedidpsettings')}:" labelWidth="235">
-                     <s:CheckBox id="useInheritedIDPSettings"/>
+                     <s:CheckBox id="useInheritedIDPSettings" selected="true"/>
                 </mx:FormItem>
                 <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'identityProv.enabled.saml.profiles')}:" direction="horizontal" labelWidth="235">
                     <s:CheckBox id="spChannelSamlProfileSSOCheck" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'saml.profile.sso')}"/>
@@ -170,6 +211,26 @@
                             </mx:ArrayCollection>
                         </s:dataProvider>
                     </s:DropDownList>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'federatedconnection.location')}:" required="true"
+                        direction="horizontal" labelWidth="60">
+                    <s:DropDownList id="spChannelLocationProtocol" width="70" selectedIndex="0">
+                        <s:dataProvider>
+                            <mx:ArrayCollection>
+                                <fx:Object label="http" data="http"/>
+                                <fx:Object label="https" data="https"/>
+                            </mx:ArrayCollection>
+                        </s:dataProvider>
+                    </s:DropDownList>
+                    <s:Label text="://" width="9" paddingLeft="-5" paddingTop="5"/>
+                    <s:TextInput id="spChannelLocationDomain" width="130"/>
+                    <s:Label text=":" width="1" paddingLeft="-5" paddingTop="5"/>
+                    <s:TextInput id="spChannelLocationPort" width="40"/>
+                    <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+                    <s:TextInput id="spChannelLocationContext" width="100"/>
+                    <s:Label text="/" width="2" paddingLeft="-5" paddingTop="5"/>
+                    <s:TextInput id="spChannelLocationPath" width="130"/>
                 </mx:FormItem>
             </s:VGroup>
         </s:NavigatorContent>

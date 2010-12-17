@@ -20,7 +20,6 @@
  */
 
 package com.atricore.idbus.console.modeling.diagram.view.idp {
-import com.atricore.idbus.console.components.NameValidator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
@@ -124,9 +123,9 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
         view.signAuthAssertionCheck.selected = true;
         view.encryptAuthAssertionCheck.selected = false;
         view.samlBindingHttpPostCheck.selected = true;
-        view.samlBindingArtifactCheck.selected = false;
+        view.samlBindingArtifactCheck.selected = true;
         view.samlBindingHttpRedirectCheck.selected = false;
-        view.samlBindingSoapCheck.selected = false;
+        view.samlBindingSoapCheck.selected = true;
         view.samlProfileSSOCheck.selected = true;
         view.samlProfileSLOCheck.selected = true;
         view.authContract.selectedIndex = 0;
@@ -425,16 +424,11 @@ public class IdentityProviderCreateMediator extends IocFormMediator {
     }
 
     override public function registerValidators():void {
-        FormUtility.clearValidationErrors(_validators);
         _validators = [];
         _validators.push(view.nameValidator);
-        view.portValidator.source = view.idpLocationPort;
         _validators.push(view.portValidator);
-        view.domainValidator.source = view.idpLocationDomain;
         _validators.push(view.domainValidator);
-        view.contextValidator.source = view.idpLocationContext;
         _validators.push(view.contextValidator);
-        view.pathValidator.source = view.idpLocationPath;
         _validators.push(view.pathValidator);
         if (view.uploadKeystore.selected) {
             _validators.push(view.certificateAliasValidator);

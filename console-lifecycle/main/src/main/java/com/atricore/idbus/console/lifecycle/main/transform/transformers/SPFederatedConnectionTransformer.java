@@ -187,109 +187,177 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         // endpoints
         List<Bean> endpoints = new ArrayList<Bean>();
 
+        // profiles
+        // idpChannel.activeProfiles contains idp active profiles or user overridden profiles
+        boolean ssoEnabled = false;
+        boolean sloEnabled = false;
+        for (Profile profile : idpChannel.getActiveProfiles()) {
+            if (profile.equals(Profile.SSO)) {
+                ssoEnabled = true;
+            } else if (profile.equals(Profile.SSO_SLO)) {
+                sloEnabled = true;
+            }
+        }
+
+        // bindings
+        // idpChannel.activeBindings contains idp active bindings or user overridden bindings
+        boolean postEnabled = false;
+        boolean redirectEnabled = false;
+        boolean artifactEnabled = false;
+        boolean soapEnabled = false;
+        for (Binding binding : idpChannel.getActiveBindings()) {
+            if (binding.equals(Binding.SAMLR2_HTTP_POST)) {
+                postEnabled = true;
+            } else if (binding.equals(Binding.SAMLR2_HTTP_REDIRECT)) {
+                redirectEnabled = true;
+            } else if (binding.equals(Binding.SAMLR2_ARTIFACT)) {
+                artifactEnabled = true;
+            } else if (binding.equals(Binding.SAMLR2_SOAP)) {
+                soapEnabled = true;
+            }
+        }
+
         // SingleLogoutService
-        Bean sloHttpPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        sloHttpPost.setName(spBean.getName() + "-saml2-slo-http-post");
-        setPropertyValue(sloHttpPost, "name", sloHttpPost.getName());
-        setPropertyValue(sloHttpPost, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
-        setPropertyValue(sloHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
-        endpoints.add(sloHttpPost);
 
-        Bean sloHttpArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        sloHttpArtifact.setName(spBean.getName() + "-saml2-slo-http-artifact");
-        setPropertyValue(sloHttpArtifact, "name", sloHttpArtifact.getName());
-        setPropertyValue(sloHttpArtifact, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
-        setPropertyValue(sloHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
-        endpoints.add(sloHttpArtifact);
+        if (sloEnabled) {
+            // SAML2 SLO HTTP POST
+            if (postEnabled) {
+                Bean sloHttpPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                sloHttpPost.setName(spBean.getName() + "-saml2-slo-http-post");
+                setPropertyValue(sloHttpPost, "name", sloHttpPost.getName());
+                setPropertyValue(sloHttpPost, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
+                setPropertyValue(sloHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
+                endpoints.add(sloHttpPost);
+            }
 
-        Bean sloHttpRedirect = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        sloHttpRedirect.setName(spBean.getName() + "-saml2-slo-http-redirect");
-        setPropertyValue(sloHttpRedirect, "name", sloHttpRedirect.getName());
-        setPropertyValue(sloHttpRedirect, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
-        setPropertyValue(sloHttpRedirect, "binding", SamlR2Binding.SAMLR2_REDIRECT.getValue());
-        endpoints.add(sloHttpRedirect);
+            // SAML2 SLO HTTP ARTIFACT
+            if (artifactEnabled) {
+                Bean sloHttpArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                sloHttpArtifact.setName(spBean.getName() + "-saml2-slo-http-artifact");
+                setPropertyValue(sloHttpArtifact, "name", sloHttpArtifact.getName());
+                setPropertyValue(sloHttpArtifact, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
+                setPropertyValue(sloHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+                endpoints.add(sloHttpArtifact);
+            }
 
-        Bean sloSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        sloSoap.setName(spBean.getName() + "-saml2-slo-soap");
-        setPropertyValue(sloSoap, "name", sloSoap.getName());
-        setPropertyValue(sloSoap, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
-        setPropertyValue(sloSoap, "binding", SamlR2Binding.SAMLR2_SOAP.getValue());
-        List<Ref> plansList = new ArrayList<Ref>();
-        Ref plan = new Ref();
-        plan.setBean(spBean.getName() + "-spsso-samlr2sloreq-to-samlr2resp-plan");
-        plansList.add(plan);
-        setPropertyRefs(sloSoap, "identityPlans", plansList);
-        endpoints.add(sloSoap);
+            // SAML2 SLO HTTP REDIRECT
+            if (redirectEnabled) {
+                Bean sloHttpRedirect = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                sloHttpRedirect.setName(spBean.getName() + "-saml2-slo-http-redirect");
+                setPropertyValue(sloHttpRedirect, "name", sloHttpRedirect.getName());
+                setPropertyValue(sloHttpRedirect, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
+                setPropertyValue(sloHttpRedirect, "binding", SamlR2Binding.SAMLR2_REDIRECT.getValue());
+                endpoints.add(sloHttpRedirect);
+            }
 
-        Bean sloLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        sloLocal.setName(spBean.getName() + "-saml2-slo-local");
-        setPropertyValue(sloLocal, "name", sloLocal.getName());
-        setPropertyValue(sloLocal, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
-        setPropertyValue(sloLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
-        // NOTE: location doesn't exist in simple-federation example
-        setPropertyValue(sloLocal, "location", "local://" + sp.getLocation().getUri().toUpperCase() + "/SLO/LOCAL");
-        plansList = new ArrayList<Ref>();
-        plan = new Ref();
-        plan.setBean(spBean.getName() + "-spsso-samlr2sloreq-to-samlr2resp-plan");
-        plansList.add(plan);
-        setPropertyRefs(sloLocal, "identityPlans", plansList);
-        endpoints.add(sloLocal);
+            // SAML2 SLO SOAP
+            if (soapEnabled) {
+                Bean sloSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                sloSoap.setName(spBean.getName() + "-saml2-slo-soap");
+                setPropertyValue(sloSoap, "name", sloSoap.getName());
+                setPropertyValue(sloSoap, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
+                setPropertyValue(sloSoap, "binding", SamlR2Binding.SAMLR2_SOAP.getValue());
+                List<Ref> plansList = new ArrayList<Ref>();
+                Ref plan = new Ref();
+                plan.setBean(spBean.getName() + "-spsso-samlr2sloreq-to-samlr2resp-plan");
+                plansList.add(plan);
+                setPropertyRefs(sloSoap, "identityPlans", plansList);
+                endpoints.add(sloSoap);
+            }
+
+            // SAML2 SLO LOCAL
+            Bean sloLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
+            sloLocal.setName(spBean.getName() + "-saml2-slo-local");
+            setPropertyValue(sloLocal, "name", sloLocal.getName());
+            setPropertyValue(sloLocal, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
+            setPropertyValue(sloLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
+            // NOTE: location doesn't exist in simple-federation example
+            setPropertyValue(sloLocal, "location", "local://" + sp.getLocation().getUri().toUpperCase() + "/SLO/LOCAL");
+            List<Ref> plansList = new ArrayList<Ref>();
+            Ref plan = new Ref();
+            plan.setBean(spBean.getName() + "-spsso-samlr2sloreq-to-samlr2resp-plan");
+            plansList.add(plan);
+            setPropertyRefs(sloLocal, "identityPlans", plansList);
+            endpoints.add(sloLocal);
+        }
 
         // AssertionConsumerService
-        Bean acHttpPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        acHttpPost.setName(spBean.getName() + "-saml2-ac-http-post");
-        setPropertyValue(acHttpPost, "name", acHttpPost.getName());
-        setPropertyValue(acHttpPost, "type", SAMLR2MetadataConstants.AssertionConsumerService_QNAME.toString());
-        setPropertyValue(acHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
-        plansList = new ArrayList<Ref>();
-        plan = new Ref();
-        plan.setBean(spBean.getName() + "-idpunsolicitedresponse-to-subject-plan");
-        plansList.add(plan);
-        setPropertyRefs(acHttpPost, "identityPlans", plansList);
-        endpoints.add(acHttpPost);
+        if (ssoEnabled) {
+            if (postEnabled) {
+                Bean acHttpPost = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                acHttpPost.setName(spBean.getName() + "-saml2-ac-http-post");
+                setPropertyValue(acHttpPost, "name", acHttpPost.getName());
+                setPropertyValue(acHttpPost, "type", SAMLR2MetadataConstants.AssertionConsumerService_QNAME.toString());
+                setPropertyValue(acHttpPost, "binding", SamlR2Binding.SAMLR2_POST.getValue());
+                List<Ref> plansList = new ArrayList<Ref>();
+                Ref plan = new Ref();
+                plan.setBean(spBean.getName() + "-idpunsolicitedresponse-to-subject-plan");
+                plansList.add(plan);
+                setPropertyRefs(acHttpPost, "identityPlans", plansList);
+                endpoints.add(acHttpPost);
+            }
 
-        Bean acHttpArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        acHttpArtifact.setName(spBean.getName() + "-saml2-ac-http-artifact");
-        setPropertyValue(acHttpArtifact, "name", acHttpArtifact.getName());
-        setPropertyValue(acHttpArtifact, "type", SAMLR2MetadataConstants.AssertionConsumerService_QNAME.toString());
-        setPropertyValue(acHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
-        plansList = new ArrayList<Ref>();
-        plan = new Ref();
-        plan.setBean(spBean.getName() + "-idpunsolicitedresponse-to-subject-plan");
-        plansList.add(plan);
-        setPropertyRefs(acHttpArtifact, "identityPlans", plansList);
-        endpoints.add(acHttpArtifact);
+            if (artifactEnabled) {
+                Bean acHttpArtifact = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                acHttpArtifact.setName(spBean.getName() + "-saml2-ac-http-artifact");
+                setPropertyValue(acHttpArtifact, "name", acHttpArtifact.getName());
+                setPropertyValue(acHttpArtifact, "type", SAMLR2MetadataConstants.AssertionConsumerService_QNAME.toString());
+                setPropertyValue(acHttpArtifact, "binding", SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+                List<Ref> plansList = new ArrayList<Ref>();
+                Ref plan = new Ref();
+                plan.setBean(spBean.getName() + "-idpunsolicitedresponse-to-subject-plan");
+                plansList.add(plan);
+                setPropertyRefs(acHttpArtifact, "identityPlans", plansList);
+                endpoints.add(acHttpArtifact);
+            }
+
+            if (redirectEnabled) {
+                Bean acHttpRedirect = newAnonymousBean(IdentityMediationEndpointImpl.class);
+                acHttpRedirect.setName(spBean.getName() + "-saml2-ac-http-redirect");
+                setPropertyValue(acHttpRedirect, "name", acHttpRedirect.getName());
+                setPropertyValue(acHttpRedirect, "type", SAMLR2MetadataConstants.AssertionConsumerService_QNAME.toString());
+                setPropertyValue(acHttpRedirect, "binding", SamlR2Binding.SAMLR2_REDIRECT.getValue());
+                List<Ref> plansList = new ArrayList<Ref>();
+                Ref plan = new Ref();
+                plan.setBean(spBean.getName() + "-idpunsolicitedresponse-to-subject-plan");
+                plansList.add(plan);
+                setPropertyRefs(acHttpRedirect, "identityPlans", plansList);
+                endpoints.add(acHttpRedirect);
+            }
+        }
 
         // ArtifactResolutionService
-        Bean arSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        arSoap.setName(spBean.getName() + "-saml2-ar-soap");
-        setPropertyValue(arSoap, "name", arSoap.getName());
-        setPropertyValue(arSoap, "type", SAMLR2MetadataConstants.ArtifactResolutionService_QNAME.toString());
-        setPropertyValue(arSoap, "binding", SamlR2Binding.SAMLR2_SOAP.getValue());
-        plansList = new ArrayList<Ref>();
-        plan = new Ref();
-        plan.setBean(spBean.getName() + "-samlr2artresolve-to-samlr2artresponse-plan");
-        plansList.add(plan);
-        Ref plan2 = new Ref();
-        plan2.setBean(spBean.getName() + "-samlr2art-to-samlr2artresolve-plan");
-        plansList.add(plan2);
-        setPropertyRefs(arSoap, "identityPlans", plansList);
-        endpoints.add(arSoap);
+        if (artifactEnabled) {
+            Bean arSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
+            arSoap.setName(spBean.getName() + "-saml2-ar-soap");
+            setPropertyValue(arSoap, "name", arSoap.getName());
+            setPropertyValue(arSoap, "type", SAMLR2MetadataConstants.ArtifactResolutionService_QNAME.toString());
+            setPropertyValue(arSoap, "binding", SamlR2Binding.SAMLR2_SOAP.getValue());
+            List<Ref> plansList = new ArrayList<Ref>();
+            Ref plan = new Ref();
+            plan.setBean(spBean.getName() + "-samlr2artresolve-to-samlr2artresponse-plan");
+            plansList.add(plan);
+            Ref plan2 = new Ref();
+            plan2.setBean(spBean.getName() + "-samlr2art-to-samlr2artresolve-plan");
+            plansList.add(plan2);
+            setPropertyRefs(arSoap, "identityPlans", plansList);
+            endpoints.add(arSoap);
 
-        Bean arLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
-        arLocal.setName(spBean.getName() + "-saml2-ar-local");
-        setPropertyValue(arLocal, "name", arLocal.getName());
-        setPropertyValue(arLocal, "type", SAMLR2MetadataConstants.ArtifactResolutionService_QNAME.toString());
-        setPropertyValue(arLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
-        plansList = new ArrayList<Ref>();
-        plan = new Ref();
-        plan.setBean(spBean.getName() + "-samlr2artresolve-to-samlr2artresponse-plan");
-        plansList.add(plan);
-        plan2 = new Ref();
-        plan2.setBean(spBean.getName() + "-samlr2art-to-samlr2artresolve-plan");
-        plansList.add(plan2);
-        setPropertyRefs(arLocal, "identityPlans", plansList);
-        endpoints.add(arLocal);
+            Bean arLocal = newAnonymousBean(IdentityMediationEndpointImpl.class);
+            arLocal.setName(spBean.getName() + "-saml2-ar-local");
+            setPropertyValue(arLocal, "name", arLocal.getName());
+            setPropertyValue(arLocal, "type", SAMLR2MetadataConstants.ArtifactResolutionService_QNAME.toString());
+            setPropertyValue(arLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
+            plansList = new ArrayList<Ref>();
+            plan = new Ref();
+            plan.setBean(spBean.getName() + "-samlr2artresolve-to-samlr2artresponse-plan");
+            plansList.add(plan);
+            plan2 = new Ref();
+            plan2.setBean(spBean.getName() + "-samlr2art-to-samlr2artresolve-plan");
+            plansList.add(plan2);
+            setPropertyRefs(arLocal, "identityPlans", plansList);
+            endpoints.add(arLocal);
+        }
         
         setPropertyAsBeans(idpChannelBean, "endpoints", endpoints);
 
