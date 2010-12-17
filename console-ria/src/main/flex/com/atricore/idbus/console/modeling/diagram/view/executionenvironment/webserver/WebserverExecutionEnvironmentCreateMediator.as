@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.diagram.view.executionenvironment.phpbb {
+package com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
@@ -28,9 +28,8 @@ import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
-import com.atricore.idbus.console.services.dto.ApacheExecutionEnvironment;
 
-import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
 
 import flash.events.MouseEvent;
 
@@ -39,14 +38,14 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class PhpBBExecutionEnvironmentCreateMediator extends IocFormMediator {
+public class WebserverExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
-    private static var _environmentName:String = "PHPBB";
+    private static var _environmentName:String = "WEBSERVER";
 
-    private var _newExecutionEnvironment:PHPExecutionEnvironment;
+    private var _newExecutionEnvironment:WebserverExecutionEnvironment;
 
-    public function PhpBBExecutionEnvironmentCreateMediator(name:String = null, viewComp:PhpBBExecutionEnvironmentCreateForm = null) {
+    public function WebserverExecutionEnvironmentCreateMediator(name:String = null, viewComp:WebserverExecutionEnvironmentCreateForm = null) {
         super(name, viewComp);
     }
 
@@ -60,7 +59,7 @@ public class PhpBBExecutionEnvironmentCreateMediator extends IocFormMediator {
     
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.btnOk.removeEventListener(MouseEvent.CLICK, handlePhpBBExecutionEnvironmentSave);
+            view.btnOk.removeEventListener(MouseEvent.CLICK, handleWebserverExecutionEnvironmentSave);
             view.btnCancel.removeEventListener(MouseEvent.CLICK, handleCancel);
         }
 
@@ -70,7 +69,7 @@ public class PhpBBExecutionEnvironmentCreateMediator extends IocFormMediator {
     }
 
     private function init():void {
-        view.btnOk.addEventListener(MouseEvent.CLICK, handlePhpBBExecutionEnvironmentSave);
+        view.btnOk.addEventListener(MouseEvent.CLICK, handleWebserverExecutionEnvironmentSave);
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         view.selectedHost.selectedIndex = 0;
         view.selectedHost.enabled = false;
@@ -80,38 +79,34 @@ public class PhpBBExecutionEnvironmentCreateMediator extends IocFormMediator {
     private function resetForm():void {
         view.executionEnvironmentName.text = "";
         view.executionEnvironmentDescription.text = "";
-        view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
-        view.homeDirectory.errorString = "";
-        view.replaceConfFiles.selected = false;
-        view.installSamples.selected = false;         
+        view.selectedHost.selectedIndex = 0;
+        view.executionEnvironmentType.text = "";
 
         FormUtility.clearValidationErrors(_validators);
     }
 
     override public function bindModel():void {
 
-        var phpExecutionEnvironment:PHPExecutionEnvironment = new PHPExecutionEnvironment();
+        var webserverExecutionEnvironment:WebserverExecutionEnvironment = new WebserverExecutionEnvironment();
 
-        phpExecutionEnvironment.name = view.executionEnvironmentName.text;
-        phpExecutionEnvironment.description = view.executionEnvironmentDescription.text;
-        phpExecutionEnvironment.installUri = view.homeDirectory.text;
-        phpExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
-        phpExecutionEnvironment.installDemoApps = view.installSamples.selected;
-//        apacheExecutionEnvironment.platformId = view.platform.selectedItem.data;
+        webserverExecutionEnvironment.name = view.executionEnvironmentName.text;
+        webserverExecutionEnvironment.description = view.executionEnvironmentDescription.text;
+        webserverExecutionEnvironment.type = view.executionEnvironmentType.text;
+        webserverExecutionEnvironment.installUri = view.homeDirectory.text;
         //TODO check platform ID
-        phpExecutionEnvironment.platformId = "phpbb";
-        _newExecutionEnvironment = phpExecutionEnvironment;
+        webserverExecutionEnvironment.platformId = "webserver";
+        _newExecutionEnvironment = webserverExecutionEnvironment;
     }
 
-    private function handlePhpBBExecutionEnvironmentSave(event:MouseEvent):void {
+    private function handleWebserverExecutionEnvironmentSave(event:MouseEvent):void {
         view.homeDirectory.errorString = "";
         if (validate(true)) {
             var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
             cif.homeDir = view.homeDirectory.text;
             cif.environmentName = _environmentName;
             sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-        }
+        }    
     }
 
     private function save():void {
@@ -138,15 +133,15 @@ public class PhpBBExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
-    protected function get view():PhpBBExecutionEnvironmentCreateForm
+    protected function get view():WebserverExecutionEnvironmentCreateForm
     {
-        return viewComponent as PhpBBExecutionEnvironmentCreateForm;
+        return viewComponent as WebserverExecutionEnvironmentCreateForm;
     }
 
 
     override public function registerValidators():void {
         _validators.push(view.nameValidator);
-        _validators.push(view.homeDirValidator);
+        _validators.push(view.typeValidator);
     }
 
 
@@ -172,6 +167,7 @@ public class PhpBBExecutionEnvironmentCreateMediator extends IocFormMediator {
                 }
                 break;
         }
-    }
+    }    
+
 }
 }

@@ -138,6 +138,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const CREATE_ALFRESCO_EXECUTION_ENVIRONMENT_ELEMENT:String = "createAlfrescoExecutionEnvironmentElement";
     public static const CREATE_JAVAEE_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJavaEEExecutionEnvironmentElement";
     public static const CREATE_PHPBB_EXECUTION_ENVIRONMENT_ELEMENT:String = "createPhpBBExecutionEnvironmentElement";
+    public static const CREATE_WEBSERVER_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWebcontainerExecutionEnvironmentElement";
     public static const REMOVE_ACTIVATION_ELEMENT:String = "removeActivationElement";
     public static const REMOVE_FEDERATED_CONNECTION_ELEMENT:String = "removeFederatedConnectionElement";
     public static const REMOVE_IDENTITY_LOOKUP_ELEMENT:String = "removeIdentityLookupElement";

@@ -47,6 +47,8 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tom
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver.WebserverExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver.WebserverExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateForm;
@@ -104,6 +106,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
 	private var _alfrescoExecutionEnvironmentCreateMediator:AlfrescoExecutionEnvironmentCreateMediator;
     private var _javaEEExecutionEnvironmentCreateMediator:JavaEEExecutionEnvironmentCreateMediator;
     private var _phpBBExecutionEnvironmentCreateMediator:PhpBBExecutionEnvironmentCreateMediator;
+    private var _webserverExecutionEnvironmentCreateMediator:WebserverExecutionEnvironmentCreateMediator;
     private var _uploadProgressMediator:UploadProgressMediator;
     private var _buildApplianceMediator:BuildApplianceMediator;
     private var _deployApplianceMediator:DeployApplianceMediator;
@@ -131,6 +134,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _alfrescoExecutionEnvironmentCreateForm:AlfrescoExecutionEnvironmentCreateForm;
     private var _javaEEExecutionEnvironmentCreateForm:JavaEEExecutionEnvironmentCreateForm;
     private var _phpBBExecutionEnvironmentCreateForm:PhpBBExecutionEnvironmentCreateForm;
+    private var _webserverExecutionEnvironmentCreateForm:WebserverExecutionEnvironmentCreateForm;
     private var _manageCertificateForm:ManageCertificateView;
     private var _uploadProgress:UploadProgress;
     private var _buildAppliance:BuildApplianceView;
@@ -326,6 +330,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set phpBBExecutionEnvironmentCreateMediator(value:PhpBBExecutionEnvironmentCreateMediator):void {
         _phpBBExecutionEnvironmentCreateMediator = value;
+    }
+
+    public function get webserverExecutionEnvironmentCreateMediator():WebserverExecutionEnvironmentCreateMediator {
+        return _webserverExecutionEnvironmentCreateMediator;
+    }
+
+    public function set webserverExecutionEnvironmentCreateMediator(value:WebserverExecutionEnvironmentCreateMediator):void {
+        _webserverExecutionEnvironmentCreateMediator = value;
     }
 
     public function get activationCreateMediator():ActivationCreateMediator {
@@ -730,6 +742,27 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handlePhpBBExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
         phpBBExecutionEnvironmentCreateMediator.setViewComponent(_phpBBExecutionEnvironmentCreateForm);
         phpBBExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateWebserverExecutionEnvironmentWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createWebserverExecutionEnvironmentCreateForm();
+        _popup.title = "Create Webserver Execution Environment";
+        _popup.width = 500;
+        _popup.height = 290;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_webserverExecutionEnvironmentCreateForm);
+    }
+
+    private function createWebserverExecutionEnvironmentCreateForm():void {
+        _webserverExecutionEnvironmentCreateForm = new WebserverExecutionEnvironmentCreateForm();
+        _webserverExecutionEnvironmentCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleWebserverExecutionEnvironmentCreateFormCreated);
+    }
+
+    private function handleWebserverExecutionEnvironmentCreateFormCreated(event:FlexEvent):void {
+        webserverExecutionEnvironmentCreateMediator.setViewComponent(_webserverExecutionEnvironmentCreateForm);
+        webserverExecutionEnvironmentCreateMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateFederatedConnectionWindow(notification:INotification):void {

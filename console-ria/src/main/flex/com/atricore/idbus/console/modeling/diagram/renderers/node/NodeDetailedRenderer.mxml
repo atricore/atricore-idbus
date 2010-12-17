@@ -63,6 +63,7 @@
         import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 
+        import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
@@ -169,6 +170,8 @@
                     _linkIcon = EmbeddedIcons.javaEnvironmentIcon;
                 } else if (obj is PHPExecutionEnvironment){
                     _linkIcon = EmbeddedIcons.phpbbEnvironmentIcon;
+                } else if (obj is WebserverExecutionEnvironment){
+                    _linkIcon = EmbeddedIcons.webEnvironmentIcon;
                 } else {
                     _linkIcon = EmbeddedIcons.executionEnvironmentIcon;
                 }

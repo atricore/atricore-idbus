@@ -39,12 +39,15 @@ import com.atricore.idbus.console.modeling.propertysheet.view.dbidentitysource.E
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.ExecutionEnvironmentActivationSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.alfresco.AlfrescoExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.apache.ApacheExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.javaee.JavaEEExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jboss.JBossExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.jbossportal.JBossPortalExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.liferayportal.LiferayPortalExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.phpbb.PhpBBExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.tomcat.TomcatExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.wasce.WASCEExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.weblogic.WeblogicExecEnvCoreSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.webserver.WebserverExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.executionenvironment.windowsiis.WindowsIISExecEnvCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.externalidp.ExternalIdentityProviderCertificateSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.externalidp.ExternalIdentityProviderContractSection;
@@ -87,12 +90,14 @@ import com.atricore.idbus.console.services.dto.IdentityProvider;
 import com.atricore.idbus.console.services.dto.IdentityProviderChannel;
 import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JBossPortalExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.JEEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
 import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Keystore;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Location;
+import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.Resource;
@@ -102,6 +107,7 @@ import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WASCEExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
+import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 import com.atricore.idbus.console.services.spi.response.GetMetadataInfoResponse;
@@ -169,7 +175,10 @@ public class PropertySheetMediator extends IocMediator {
     private var _jbossExecEnvCoreSection:JBossExecEnvCoreSection;
     private var _apacheExecEnvCoreSection:ApacheExecEnvCoreSection;
     private var _windowsIISExecEnvCoreSection:WindowsIISExecEnvCoreSection;
-    private var _alfrescoExecEnvCoreSection:AlfrescoExecEnvCoreSection;    
+    private var _alfrescoExecEnvCoreSection:AlfrescoExecEnvCoreSection;
+    private var _javaEEExecEnvCoreSection:JavaEEExecEnvCoreSection;
+    private var _phpBBExecEnvCoreSection:PhpBBExecEnvCoreSection;
+    private var _webserverExecEnvCoreSection:WebserverExecEnvCoreSection;
     private var _executionEnvironmentActivateSection:ExecutionEnvironmentActivationSection;
     private var _authenticationPropertyTab:Group;
     private var _basicAuthenticationSection:BasicAuthenticationSection;
@@ -312,6 +321,12 @@ public class PropertySheetMediator extends IocMediator {
                         enableWindowsIISExecEnvPropertyTabs();
                     } else if (_currentIdentityApplianceElement is AlfrescoExecutionEnvironment) {
                         enableAlfrescoExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is JEEExecutionEnvironment){
+                        enableJavaEEExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is PHPExecutionEnvironment){
+                        enablePhpBBExecEnvPropertyTabs();
+                    } else if (_currentIdentityApplianceElement is WebserverExecutionEnvironment) {
+                        enableWebserverExecEnvPropertyTabs();
                     }
                 }
                 break;
@@ -3107,6 +3122,264 @@ public class PropertySheetMediator extends IocMediator {
         alfrescoExecEnv.platformId = "alfresco";
         alfrescoExecEnv.installUri = _alfrescoExecEnvCoreSection.homeDirectory.text;
         alfrescoExecEnv.tomcatInstallDir = _alfrescoExecEnvCoreSection.tomcatInstallDir.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
+
+    /*****JAVA EE*****/
+    private function enableJavaEEExecEnvPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _javaEEExecEnvCoreSection = new JavaEEExecEnvCoreSection();
+        corePropertyTab.addElement(_javaEEExecEnvCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _javaEEExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleJavaEEExecEnvCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleJavaEEExecEnvCorePropertyTabRollOut);
+
+        // Exec.Environment Activation Tab
+        var execEnvActivationPropertyTab:Group = new Group();
+        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
+        execEnvActivationPropertyTab.name = "Activation";
+        execEnvActivationPropertyTab.width = Number("100%");
+        execEnvActivationPropertyTab.height = Number("100%");
+        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
+
+        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
+        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
+        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
+        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+
+    }
+
+    private function handleJavaEEExecEnvCorePropertyTabCreationComplete(event:Event):void {
+        var javaEEExecEnv:JEEExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JEEExecutionEnvironment;
+
+        if (javaEEExecEnv != null) {
+            // bind view
+            _javaEEExecEnvCoreSection.executionEnvironmentName.text = javaEEExecEnv.name;
+            _javaEEExecEnvCoreSection.executionEnvironmentDescription.text = javaEEExecEnv.description;
+            _javaEEExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _javaEEExecEnvCoreSection.homeDirectory.text = javaEEExecEnv.installUri;
+
+            _javaEEExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _javaEEExecEnvCoreSection.selectedHost.enabled = false;
+
+            _javaEEExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _javaEEExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _javaEEExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _javaEEExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_javaEEExecEnvCoreSection.nameValidator);
+            _validators.push(_javaEEExecEnvCoreSection.homeDirValidator);
+        }
+    }
+
+    private function handleJavaEEExecEnvCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        _javaEEExecEnvCoreSection.homeDirectory.errorString = "";
+        if (_dirty && validate(true)) {
+            _execEnvSaveFunction = javaEESave;
+            _execEnvHomeDir = _javaEEExecEnvCoreSection.homeDirectory;
+
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = _javaEEExecEnvCoreSection.homeDirectory.text;
+            cif.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _apacheExecEnvCoreSection.homeDirectory.text);
+
+        }
+    }
+
+    private function javaEESave(): void {
+         // bind model
+        var javaEEExecEnv:JEEExecutionEnvironment = projectProxy.currentIdentityApplianceElement as JEEExecutionEnvironment;
+        javaEEExecEnv.name = _javaEEExecEnvCoreSection.executionEnvironmentName.text;
+        javaEEExecEnv.description = _javaEEExecEnvCoreSection.executionEnvironmentDescription.text;
+        //TODO CHECK PLATFORM ID
+        javaEEExecEnv.platformId = "jee";
+        javaEEExecEnv.installUri = _javaEEExecEnvCoreSection.homeDirectory.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
+
+    /*****PHPBB*****/
+    private function enablePhpBBExecEnvPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _phpBBExecEnvCoreSection = new PhpBBExecEnvCoreSection();
+        corePropertyTab.addElement(_phpBBExecEnvCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _phpBBExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handlePhpBBExecEnvCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handlePhpBBExecEnvCorePropertyTabRollOut);
+
+        // Exec.Environment Activation Tab
+//        var execEnvActivationPropertyTab:Group = new Group();
+//        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
+//        execEnvActivationPropertyTab.name = "Activation";
+//        execEnvActivationPropertyTab.width = Number("100%");
+//        execEnvActivationPropertyTab.height = Number("100%");
+//        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
+//
+//        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
+//        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
+//        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
+//        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+//        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+
+    }
+
+    private function handlePhpBBExecEnvCorePropertyTabCreationComplete(event:Event):void {
+        var phpBBExecEnv:PHPExecutionEnvironment = projectProxy.currentIdentityApplianceElement as PHPExecutionEnvironment;
+
+        if (phpBBExecEnv != null) {
+            // bind view
+            _phpBBExecEnvCoreSection.executionEnvironmentName.text = phpBBExecEnv.name;
+            _phpBBExecEnvCoreSection.executionEnvironmentDescription.text = phpBBExecEnv.description;
+            _phpBBExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _phpBBExecEnvCoreSection.homeDirectory.text = phpBBExecEnv.installUri;
+
+            _phpBBExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _phpBBExecEnvCoreSection.selectedHost.enabled = false;
+
+            _phpBBExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _phpBBExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _phpBBExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _phpBBExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_phpBBExecEnvCoreSection.nameValidator);
+            _validators.push(_phpBBExecEnvCoreSection.homeDirValidator);
+        }
+    }
+
+    private function handlePhpBBExecEnvCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        _phpBBExecEnvCoreSection.homeDirectory.errorString = "";
+        if (_dirty && validate(true)) {
+            _execEnvSaveFunction = phpBBSave;
+            _execEnvHomeDir = _phpBBExecEnvCoreSection.homeDirectory;
+
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = _phpBBExecEnvCoreSection.homeDirectory.text;
+            cif.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _apacheExecEnvCoreSection.homeDirectory.text);
+
+        }
+    }
+
+    private function phpBBSave(): void {
+         // bind model
+        var phpBBExecEnv:PHPExecutionEnvironment = projectProxy.currentIdentityApplianceElement as PHPExecutionEnvironment;
+        phpBBExecEnv.name = _phpBBExecEnvCoreSection.executionEnvironmentName.text;
+        phpBBExecEnv.description = _phpBBExecEnvCoreSection.executionEnvironmentDescription.text;
+        //TODO CHECK PLATFORM ID
+        phpBBExecEnv.platformId = "phpbb";
+        phpBBExecEnv.installUri = _phpBBExecEnvCoreSection.homeDirectory.text;
+
+        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        _applianceSaved = false;
+        _dirty = false;
+    }
+
+    /*****WEBSERVER*****/
+    private function enableWebserverExecEnvPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _webserverExecEnvCoreSection = new WebserverExecEnvCoreSection();
+        corePropertyTab.addElement(_webserverExecEnvCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _webserverExecEnvCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleWebserverExecEnvCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleWebserverExecEnvCorePropertyTabRollOut);
+    }
+
+    private function handleWebserverExecEnvCorePropertyTabCreationComplete(event:Event):void {
+        var webserverExecEnv:WebserverExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WebserverExecutionEnvironment;
+
+        if (webserverExecEnv != null) {
+            // bind view
+            _webserverExecEnvCoreSection.executionEnvironmentName.text = webserverExecEnv.name;
+            _webserverExecEnvCoreSection.executionEnvironmentDescription.text = webserverExecEnv.description;
+            _webserverExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _webserverExecEnvCoreSection.homeDirectory.text = webserverExecEnv.installUri;
+            _webserverExecEnvCoreSection.executionEnvironmentType.text = webserverExecEnv.type;
+
+            _webserverExecEnvCoreSection.selectedHost.selectedIndex = 0;
+            _webserverExecEnvCoreSection.selectedHost.enabled = false;
+
+            _webserverExecEnvCoreSection.executionEnvironmentName.addEventListener(Event.CHANGE, handleSectionChange);
+            _webserverExecEnvCoreSection.executionEnvironmentDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _webserverExecEnvCoreSection.selectedHost.addEventListener(Event.CHANGE, handleSectionChange);
+            _webserverExecEnvCoreSection.homeDirectory.addEventListener(Event.CHANGE, handleSectionChange);
+
+            _validators = [];
+            _validators.push(_webserverExecEnvCoreSection.nameValidator);
+            _validators.push(_webserverExecEnvCoreSection.homeDirValidator);
+            _validators.push(_webserverExecEnvCoreSection.typeValidator);
+        }
+    }
+
+    private function handleWebserverExecEnvCorePropertyTabRollOut(e:Event):void {
+        trace(e);
+        _webserverExecEnvCoreSection.homeDirectory.errorString = "";
+        if (_dirty && validate(true)) {
+            _execEnvSaveFunction = webserverSave;
+            _execEnvHomeDir = _webserverExecEnvCoreSection.homeDirectory;
+
+            var cif:CheckInstallFolderRequest = new CheckInstallFolderRequest();
+            cif.homeDir = _webserverExecEnvCoreSection.homeDirectory.text;
+            cif.environmentName = "n/a";
+            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
+//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _apacheExecEnvCoreSection.homeDirectory.text);
+
+        }
+    }
+
+    private function webserverSave(): void {
+         // bind model
+        var webserverExecEnv:WebserverExecutionEnvironment = projectProxy.currentIdentityApplianceElement as WebserverExecutionEnvironment;
+        webserverExecEnv.name = _webserverExecEnvCoreSection.executionEnvironmentName.text;
+        webserverExecEnv.description = _webserverExecEnvCoreSection.executionEnvironmentDescription.text;
+        webserverExecEnv.type = _webserverExecEnvCoreSection.executionEnvironmentType.text;
+        //TODO CHECK PLATFORM ID
+        webserverExecEnv.platformId = "web";
+        webserverExecEnv.installUri = _webserverExecEnvCoreSection.homeDirectory.text;
 
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
