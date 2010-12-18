@@ -31,7 +31,6 @@ import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataCon
 import org.atricore.idbus.kernel.main.federation.AccountLinkLifecycleImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
-import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
@@ -39,11 +38,8 @@ import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLo
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
-import org.atricore.idbus.kernel.main.util.HashGenerator;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -92,10 +88,12 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         ServiceProvider provider = (ServiceProvider) event.getData();
 
         FederatedProvider preferredIdp = null;
+        ServiceProviderChannel preferredSpChannel = null;
         for (FederatedConnection fc : provider.getFederatedConnectionsA()) {
             IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelA();
             if (idpc.isPreferred()) {
                 preferredIdp = (FederatedProvider) fc.getRoleB();
+                preferredSpChannel = (ServiceProviderChannel) fc.getChannelB();
                 break;
             }
         }
@@ -105,6 +103,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
                 IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelB();
                 if (idpc.isPreferred()) {
                     preferredIdp = (FederatedProvider) fc.getRoleA();
+                    preferredSpChannel = (ServiceProviderChannel) fc.getChannelA();
                     break;
                 }
             }
@@ -184,7 +183,7 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
         if (preferredIdp != null) {
             if (preferredIdp instanceof IdentityProvider) {
-                setPropertyValue(spMediator, "preferredIdpAlias", resolveLocationUrl(preferredIdp) + "/SAML2/MD");
+                setPropertyValue(spMediator, "preferredIdpAlias", resolveLocationUrl(preferredIdp, preferredSpChannel) + "/SAML2/MD");
             } else if (preferredIdp instanceof ExternalIdentityProvider) {
                 try {
                     MetadataDefinition md = MetadataUtil.loadMetadataDefinition(preferredIdp.getMetadata().getValue());
@@ -331,20 +330,6 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
         } else {
             throw new TransformException("No Encrypter defined for " + sp.getName());
         }
-
-
-        
-        Bean spMd = newBean(spBeans, sp.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
-        String alias = resolveLocationUrl(provider) + "/SAML2/MD";
-        try {
-            setPropertyValue(spMd, "id", HashGenerator.sha1(alias));
-        } catch (UnsupportedEncodingException e) {
-            throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': unsupported encoding");
-        } catch (NoSuchAlgorithmException e) {
-            throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': no such algorithm");
-        }
-        setPropertyValue(spMd, "alias", alias);
-        setPropertyValue(spMd, "resource", "classpath:" + idauPath + sp.getName() + "/" + sp.getName() + "-samlr2-metadata.xml");
 
         // accountLinkLifecycle
         Bean accountLinkLifecycle = newBean(spBeans, sp.getName() + "-account-link-lifecycle", AccountLinkLifecycleImpl.class);

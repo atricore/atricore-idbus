@@ -1993,33 +1993,38 @@ public class PropertySheetMediator extends IocMediator {
 
             _federatedConnectionSPChannelSection.useInheritedIDPSettings.addEventListener(Event.CHANGE, handleUseInheritedIDPSettingsChange);
             _federatedConnectionSPChannelSection.useInheritedIDPSettings.selected = !spChannel.overrideProviderSetup;
-//            handleUseInheritedIDPSettingsChange(null);
             reflectIdpSettingsInSpChannelTab();
 
-//            if(spChannel.overrideProviderSetup){
-                for each (var tmpBinding:Binding in spChannel.activeBindings) {
-                    if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
-                        _federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
-                        _federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
-                        _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.selected = true;
-                    }
-                    if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
-                        _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.selected = true;
-                    }
+            if (spChannel.overrideProviderSetup) {
+                _federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.selected = false;
+                _federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.selected = false;
+                _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.selected = false;
+                _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.selected = false;
+                _federatedConnectionSPChannelSection.spChannelSamlProfileSSOCheck.selected = false;
+                _federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.selected = false;
+            }
+            for each (var tmpBinding:Binding in spChannel.activeBindings) {
+                if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
+                    _federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.selected = true;
                 }
-                for each(var tmpProfile:Profile in spChannel.activeProfiles) {
-                    if (tmpProfile.name == Profile.SSO.name) {
-                        _federatedConnectionSPChannelSection.spChannelSamlProfileSSOCheck.selected = true;
-                    }
-                    if (tmpProfile.name == Profile.SSO_SLO.name) {
-                        _federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.selected = true;
-                    }
+                if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
+                    _federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.selected = true;
                 }
-//            }
+                if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
+                    _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.selected = true;
+                }
+                if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
+                    _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.selected = true;
+                }
+            }
+            for each(var tmpProfile:Profile in spChannel.activeProfiles) {
+                if (tmpProfile.name == Profile.SSO.name) {
+                    _federatedConnectionSPChannelSection.spChannelSamlProfileSSOCheck.selected = true;
+                }
+                if (tmpProfile.name == Profile.SSO_SLO.name) {
+                    _federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.selected = true;
+                }
+            }
 
             // set location
             if (spChannel.location != null) {
@@ -2076,29 +2081,34 @@ public class PropertySheetMediator extends IocMediator {
                 spChannel = connection.channelB as ServiceProviderChannel;
             }
             spChannel.overrideProviderSetup = !_federatedConnectionSPChannelSection.useInheritedIDPSettings.selected;
-//            if(spChannel.overrideProviderSetup){
-                spChannel.activeBindings = new ArrayCollection();
-                if (_federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.selected) {
-                    spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
-                }
-                if (_federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.selected) {
-                    spChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
-                }
-                if (_federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.selected) {
-                    spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
-                }
-                if (_federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.selected) {
-                    spChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
-                }
 
+            if (spChannel.activeBindings == null) {
+                spChannel.activeBindings = new ArrayCollection();
+            }
+            spChannel.activeBindings.removeAll();
+            if (_federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.selected) {
+                spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
+            }
+            if (_federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.selected) {
+                spChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
+            }
+            if (_federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.selected) {
+                spChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
+            }
+            if (_federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.selected) {
+                spChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
+            }
+
+            if (spChannel.activeProfiles == null) {
                 spChannel.activeProfiles = new ArrayCollection();
-                if (_federatedConnectionSPChannelSection.spChannelSamlProfileSSOCheck.selected) {
-                    spChannel.activeProfiles.addItem(Profile.SSO);
-                }
-                if (_federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.selected) {
-                    spChannel.activeProfiles.addItem(Profile.SSO_SLO);
-                }
-//            }
+            }
+            spChannel.activeProfiles.removeAll();
+            if (_federatedConnectionSPChannelSection.spChannelSamlProfileSSOCheck.selected) {
+                spChannel.activeProfiles.addItem(Profile.SSO);
+            }
+            if (_federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.selected) {
+                spChannel.activeProfiles.addItem(Profile.SSO_SLO);
+            }
 
             if (spChannel.location == null) {
                 spChannel.location = new Location();
@@ -2130,38 +2140,41 @@ public class PropertySheetMediator extends IocMediator {
         // if idpChannel is null that means some other element was selected before completing this
         if (idpChannel != null) {
 
-            if (idpChannel != null) {
-                _federatedConnectionIDPChannelSection.useInheritedSPSettings.addEventListener(Event.CHANGE, handleUseInheritedSPSettingsChange);
-                _federatedConnectionIDPChannelSection.preferredIDPChannel.selected = idpChannel.preferred;
-                _federatedConnectionIDPChannelSection.useInheritedSPSettings.selected = !idpChannel.overrideProviderSetup;
-//                handleUseInheritedSPSettingsChange(null);
-                reflectSPSettingsInIdpChannelTab();
+            _federatedConnectionIDPChannelSection.useInheritedSPSettings.addEventListener(Event.CHANGE, handleUseInheritedSPSettingsChange);
+            _federatedConnectionIDPChannelSection.preferredIDPChannel.selected = idpChannel.preferred;
+            _federatedConnectionIDPChannelSection.useInheritedSPSettings.selected = !idpChannel.overrideProviderSetup;
+            reflectSPSettingsInIdpChannelTab();
 
-//                if(idpChannel.overrideProviderSetup){
-                    for each(var tmpBinding:Binding in idpChannel.activeBindings) {
-                        if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
-                            _federatedConnectionIDPChannelSection.samlBindingHttpPostCheck.selected = true;
-                        }
-                        if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
-                            _federatedConnectionIDPChannelSection.samlBindingHttpRedirectCheck.selected = true;
-                        }
-                        if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
-                            _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.selected = true;
-                        }
-                        if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
-                            _federatedConnectionIDPChannelSection.samlBindingSoapCheck.selected = true;
-                        }
-                    }
-                    for each(var tmpProfile:Profile in idpChannel.activeProfiles) {
-                        if (tmpProfile.name == Profile.SSO.name) {
-                            _federatedConnectionIDPChannelSection.samlProfileSSOCheck.selected = true;
-                        }
-                        if (tmpProfile.name == Profile.SSO_SLO.name) {
-                            _federatedConnectionIDPChannelSection.samlProfileSLOCheck.selected = true;
-                        }
-                    }
+            if (idpChannel.overrideProviderSetup) {
+                _federatedConnectionIDPChannelSection.samlBindingHttpPostCheck.selected = false;
+                _federatedConnectionIDPChannelSection.samlBindingHttpRedirectCheck.selected = false;
+                _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.selected = false;
+                _federatedConnectionIDPChannelSection.samlBindingSoapCheck.selected = false;
+                _federatedConnectionIDPChannelSection.samlProfileSSOCheck.selected = false;
+                _federatedConnectionIDPChannelSection.samlProfileSLOCheck.selected = false;
+            }
+            for each(var tmpBinding:Binding in idpChannel.activeBindings) {
+                if (tmpBinding.name == Binding.SAMLR2_HTTP_POST.name) {
+                    _federatedConnectionIDPChannelSection.samlBindingHttpPostCheck.selected = true;
                 }
-//            }
+                if (tmpBinding.name == Binding.SAMLR2_HTTP_REDIRECT.name) {
+                    _federatedConnectionIDPChannelSection.samlBindingHttpRedirectCheck.selected = true;
+                }
+                if (tmpBinding.name == Binding.SAMLR2_ARTIFACT.name) {
+                    _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.selected = true;
+                }
+                if (tmpBinding.name == Binding.SAMLR2_SOAP.name) {
+                    _federatedConnectionIDPChannelSection.samlBindingSoapCheck.selected = true;
+                }
+            }
+            for each(var tmpProfile:Profile in idpChannel.activeProfiles) {
+                if (tmpProfile.name == Profile.SSO.name) {
+                    _federatedConnectionIDPChannelSection.samlProfileSSOCheck.selected = true;
+                }
+                if (tmpProfile.name == Profile.SSO_SLO.name) {
+                    _federatedConnectionIDPChannelSection.samlProfileSLOCheck.selected = true;
+                }
+            }
 
             // set location
             if (idpChannel.location != null) {
@@ -2238,28 +2251,32 @@ public class PropertySheetMediator extends IocMediator {
 
             idpChannel.overrideProviderSetup = !_federatedConnectionIDPChannelSection.useInheritedSPSettings.selected;
 
-            if(idpChannel.overrideProviderSetup){
+            if (idpChannel.activeBindings == null) {
                 idpChannel.activeBindings = new ArrayCollection();
-                if (_federatedConnectionIDPChannelSection.samlBindingHttpPostCheck.selected) {
-                    idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
-                }
-                if (_federatedConnectionIDPChannelSection.samlBindingArtifactCheck.selected) {
-                    idpChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
-                }
-                if (_federatedConnectionIDPChannelSection.samlBindingHttpRedirectCheck.selected) {
-                    idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
-                }
-                if (_federatedConnectionIDPChannelSection.samlBindingSoapCheck.selected) {
-                    idpChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
-                }
+            }
+            idpChannel.activeBindings.removeAll();
+            if (_federatedConnectionIDPChannelSection.samlBindingHttpPostCheck.selected) {
+                idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_POST);
+            }
+            if (_federatedConnectionIDPChannelSection.samlBindingArtifactCheck.selected) {
+                idpChannel.activeBindings.addItem(Binding.SAMLR2_ARTIFACT);
+            }
+            if (_federatedConnectionIDPChannelSection.samlBindingHttpRedirectCheck.selected) {
+                idpChannel.activeBindings.addItem(Binding.SAMLR2_HTTP_REDIRECT);
+            }
+            if (_federatedConnectionIDPChannelSection.samlBindingSoapCheck.selected) {
+                idpChannel.activeBindings.addItem(Binding.SAMLR2_SOAP);
+            }
 
+            if (idpChannel.activeProfiles == null) {
                 idpChannel.activeProfiles = new ArrayCollection();
-                if (_federatedConnectionIDPChannelSection.samlProfileSSOCheck.selected) {
-                    idpChannel.activeProfiles.addItem(Profile.SSO);
-                }
-                if (_federatedConnectionIDPChannelSection.samlProfileSLOCheck.selected) {
-                    idpChannel.activeProfiles.addItem(Profile.SSO_SLO);
-                }
+            }
+            idpChannel.activeProfiles.removeAll();
+            if (_federatedConnectionIDPChannelSection.samlProfileSSOCheck.selected) {
+                idpChannel.activeProfiles.addItem(Profile.SSO);
+            }
+            if (_federatedConnectionIDPChannelSection.samlProfileSLOCheck.selected) {
+                idpChannel.activeProfiles.addItem(Profile.SSO_SLO);
             }
 
             if (idpChannel.location == null) {

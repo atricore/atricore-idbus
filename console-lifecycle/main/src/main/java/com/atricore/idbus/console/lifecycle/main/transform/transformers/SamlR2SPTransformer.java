@@ -1,9 +1,6 @@
 package com.atricore.idbus.console.lifecycle.main.transform.transformers;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.Keystore;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.Location;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.SamlR2ProviderConfig;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ServiceProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.exception.TransformException;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectModule;
 import com.atricore.idbus.console.lifecycle.main.transform.IdProjectResource;
@@ -25,6 +22,8 @@ import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -70,25 +69,51 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
             String baseDestPath = (String) event.getContext().get("idauPath");
             String providerBeanName = normalizeBeanName(provider.getName());
 
-            // sp1-samlr2-metadata.xml
-            IdProjectResource<EntityDescriptorType> spMetadata =  new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
-                    baseDestPath + providerBeanName, providerBeanName, "saml2", generateSPMetadata(provider));
-            spMetadata.setClassifier("jaxb");
-            module.addResource(spMetadata);
+            boolean defaultChannelAdded = false;
+            List<IdentityProviderChannel> idpChannels = new ArrayList<IdentityProviderChannel>();
+
+            for (FederatedConnection fedConn : provider.getFederatedConnectionsA()) {
+                IdentityProviderChannel idpChannel = (IdentityProviderChannel) fedConn.getChannelA();
+                if (idpChannel.isOverrideProviderSetup() || !defaultChannelAdded) {
+                    idpChannels.add(idpChannel);
+                }
+                if (!idpChannel.isOverrideProviderSetup()) {
+                    defaultChannelAdded = true;
+                }
+            }
+
+            for (FederatedConnection fedConn : provider.getFederatedConnectionsB()) {
+                IdentityProviderChannel idpChannel = (IdentityProviderChannel) fedConn.getChannelB();
+                if (idpChannel.isOverrideProviderSetup() || !defaultChannelAdded) {
+                    idpChannels.add(idpChannel);
+                }
+                if (!idpChannel.isOverrideProviderSetup()) {
+                    defaultChannelAdded = true;
+                }
+            }
+
+            for (IdentityProviderChannel idpChannel : idpChannels) {
+                String resourceName = providerBeanName;
+                if (idpChannel.isOverrideProviderSetup()) {
+                    resourceName = normalizeBeanName(idpChannel.getName());
+                }
+                IdProjectResource<EntityDescriptorType> spMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
+                    baseDestPath + providerBeanName, resourceName, "saml2", generateIDPChannelMetadata(provider, idpChannel));
+                spMetadata.setClassifier("jaxb");
+                module.addResource(spMetadata);
+            }
         } catch (Exception e) {
             throw new TransformException(e);
         }
     }
     
-    private EntityDescriptorType generateSPMetadata(ServiceProvider provider) throws TransformException {
+    private EntityDescriptorType generateIDPChannelMetadata(ServiceProvider provider, IdentityProviderChannel idpChannel) throws TransformException {
         SamlR2ProviderConfig cfg = (SamlR2ProviderConfig) provider.getConfig();
-
-        Location location = provider.getLocation();
 
         EntityDescriptorType entityDescriptor = new EntityDescriptorType();
         // TODO : Take ID from provider entityId attribute (To be created)
         entityDescriptor.setID(idGenerator.generateId());
-        entityDescriptor.setEntityID(resolveLocationUrl(location) + "/SAML2/MD");
+        entityDescriptor.setEntityID(resolveLocationUrl(provider, idpChannel) + "/SAML2/MD");
 
         // SPSSODescriptor
         SPSSODescriptorType spSSODescriptor = new SPSSODescriptorType();
@@ -190,65 +215,108 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
 
         // services
 
-        // ArtifactResolutionService
-        IndexedEndpointType artifactResolutionService0 = new IndexedEndpointType();
-        artifactResolutionService0.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
-        artifactResolutionService0.setLocation(resolveLocationUrl(location) + "/SAML2/ARTIFACT/SOAP");
-        artifactResolutionService0.setIndex(0);
-        artifactResolutionService0.setIsDefault(true);
-        spSSODescriptor.getArtifactResolutionService().add(artifactResolutionService0);
+        // profiles
+        // idpChannel.activeProfiles contains idp active profiles or user overridden profiles
+        boolean ssoEnabled = false;
+        boolean sloEnabled = false;
+        for (Profile profile : idpChannel.getActiveProfiles()) {
+            if (profile.equals(Profile.SSO)) {
+                ssoEnabled = true;
+            } else if (profile.equals(Profile.SSO_SLO)) {
+                sloEnabled = true;
+            }
+        }
 
-        IndexedEndpointType artifactResolutionService1 = new IndexedEndpointType();
-        artifactResolutionService1.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
-        artifactResolutionService1.setLocation("local://" + location.getUri().toUpperCase() + "/SAML2/ARTIFACT/LOCAL");
-        artifactResolutionService1.setIndex(1);
-        //artifactResolutionService1.setIsDefault(true);
-        spSSODescriptor.getArtifactResolutionService().add(artifactResolutionService1);
+        // bindings
+        // idpChannel.activeBindings contains idp active bindings or user overridden bindings
+        boolean postEnabled = false;
+        boolean redirectEnabled = false;
+        boolean artifactEnabled = false;
+        boolean soapEnabled = false;
+        for (Binding binding : idpChannel.getActiveBindings()) {
+            if (binding.equals(Binding.SAMLR2_HTTP_POST)) {
+                postEnabled = true;
+            } else if (binding.equals(Binding.SAMLR2_HTTP_REDIRECT)) {
+                redirectEnabled = true;
+            } else if (binding.equals(Binding.SAMLR2_ARTIFACT)) {
+                artifactEnabled = true;
+            } else if (binding.equals(Binding.SAMLR2_SOAP)) {
+                soapEnabled = true;
+            }
+        }
+        
+        // ArtifactResolutionService
+        if (artifactEnabled) {
+            IndexedEndpointType artifactResolutionService0 = new IndexedEndpointType();
+            artifactResolutionService0.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
+            artifactResolutionService0.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ARTIFACT/SOAP");
+            artifactResolutionService0.setIndex(0);
+            artifactResolutionService0.setIsDefault(true);
+            spSSODescriptor.getArtifactResolutionService().add(artifactResolutionService0);
+
+            IndexedEndpointType artifactResolutionService1 = new IndexedEndpointType();
+            artifactResolutionService1.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
+            artifactResolutionService1.setLocation("local://" + idpChannel.getLocation().getUri().toUpperCase() + "/SAML2/ARTIFACT/LOCAL");
+            artifactResolutionService1.setIndex(1);
+            //artifactResolutionService1.setIsDefault(true);
+            spSSODescriptor.getArtifactResolutionService().add(artifactResolutionService1);
+        }
 
         // SingleLogoutService
-        EndpointType singleLogoutServicePost = new EndpointType();
-        singleLogoutServicePost.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
-        singleLogoutServicePost.setLocation(resolveLocationUrl(location) + "/SAML2/SLO/POST");
-        singleLogoutServicePost.setResponseLocation(resolveLocationUrl(location) + "/SAML2/SLO_RESPONSE/POST");
-        spSSODescriptor.getSingleLogoutService().add(singleLogoutServicePost);
 
-        EndpointType singleLogoutServiceArtifact = new EndpointType();
-        singleLogoutServiceArtifact.setBinding(SamlR2Binding.SAMLR2_ARTIFACT.getValue());
-        singleLogoutServiceArtifact.setLocation(resolveLocationUrl(location) + "/SAML2/SLO/ARTIFACT");
-        spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceArtifact);
+        if (sloEnabled) {
+            if (postEnabled) {
+                EndpointType singleLogoutServicePost = new EndpointType();
+                singleLogoutServicePost.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
+                singleLogoutServicePost.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO/POST");
+                singleLogoutServicePost.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO_RESPONSE/POST");
+                spSSODescriptor.getSingleLogoutService().add(singleLogoutServicePost);
+            }
 
-        EndpointType singleLogoutServiceSOAP = new EndpointType();
-        singleLogoutServiceSOAP.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
-        singleLogoutServiceSOAP.setLocation(resolveLocationUrl(location) + "/SAML2/SLO/SOAP");
-        spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceSOAP);
+            if (artifactEnabled) {
+                EndpointType singleLogoutServiceArtifact = new EndpointType();
+                singleLogoutServiceArtifact.setBinding(SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+                singleLogoutServiceArtifact.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO/ARTIFACT");
+                spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceArtifact);
+            }
 
-        EndpointType singleLogoutServiceLocal = new EndpointType();
-        singleLogoutServiceLocal.setBinding(SamlR2Binding.SSO_LOCAL.getValue());
-        singleLogoutServiceLocal.setLocation("local://" + location.getUri().toUpperCase() + "/SAML2/SLO/LOCAL");
-        spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceLocal);
+            if (redirectEnabled) {
+                EndpointType singleLogoutServiceRedirect = new EndpointType();
+                singleLogoutServiceRedirect.setBinding(SamlR2Binding.SAMLR2_REDIRECT.getValue());
+                singleLogoutServiceRedirect.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO/REDIR");
+                singleLogoutServiceRedirect.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO_RESPONSE/REDIR");
+                spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceRedirect);
+            }
 
-        EndpointType singleLogoutServiceRedirect = new EndpointType();
-        singleLogoutServiceRedirect.setBinding(SamlR2Binding.SAMLR2_REDIRECT.getValue());
-        singleLogoutServiceRedirect.setLocation(resolveLocationUrl(location) + "/SAML2/SLO/REDIR");
-        singleLogoutServiceRedirect.setResponseLocation(resolveLocationUrl(location) + "/SAML2/SLO_RESPONSE/REDIR");
-        spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceRedirect);
+            if (soapEnabled) {
+                EndpointType singleLogoutServiceSOAP = new EndpointType();
+                singleLogoutServiceSOAP.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
+                singleLogoutServiceSOAP.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/SLO/SOAP");
+                spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceSOAP);
+            }
+
+            EndpointType singleLogoutServiceLocal = new EndpointType();
+            singleLogoutServiceLocal.setBinding(SamlR2Binding.SSO_LOCAL.getValue());
+            singleLogoutServiceLocal.setLocation("local://" + idpChannel.getLocation().getUri().toUpperCase() + "/SAML2/SLO/LOCAL");
+            spSSODescriptor.getSingleLogoutService().add(singleLogoutServiceLocal);
+        }
 
         // ManageNameIDService
         EndpointType manageNameIDServiceSOAP = new EndpointType();
         manageNameIDServiceSOAP.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
-        manageNameIDServiceSOAP.setLocation(resolveLocationUrl(location) + "/SAML2/MNI/SOAP");
+        manageNameIDServiceSOAP.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI/SOAP");
         spSSODescriptor.getManageNameIDService().add(manageNameIDServiceSOAP);
 
         EndpointType manageNameIDServicePost = new EndpointType();
         manageNameIDServicePost.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
-        manageNameIDServicePost.setLocation(resolveLocationUrl(location) + "/SAML2/MNI/POST");
-        manageNameIDServicePost.setResponseLocation(resolveLocationUrl(location) + "/SAML2/MNI_RESPONSE/POST");
+        manageNameIDServicePost.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI/POST");
+        manageNameIDServicePost.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI_RESPONSE/POST");
         spSSODescriptor.getManageNameIDService().add(manageNameIDServicePost);
 
         EndpointType manageNameIDServiceRedirect = new EndpointType();
         manageNameIDServiceRedirect.setBinding(SamlR2Binding.SAMLR2_REDIRECT.getValue());
-        manageNameIDServiceRedirect.setLocation(resolveLocationUrl(location) + "/SAML2/MNI/REDIR");
-        manageNameIDServiceRedirect.setResponseLocation(resolveLocationUrl(location) + "/SAML2/MNI_RESPONSE/REDIR");
+        manageNameIDServiceRedirect.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI/REDIR");
+        manageNameIDServiceRedirect.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/MNI_RESPONSE/REDIR");
         spSSODescriptor.getManageNameIDService().add(manageNameIDServiceRedirect);
         
         // TODO : Make configurable
@@ -256,28 +324,36 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
         spSSODescriptor.getNameIDFormat().add("urn:oasis:names:tc:SAML:2.0:nameid-format:transient");
 
         // AssertionConsumerService
-        IndexedEndpointType assertionConsumerService0 = new IndexedEndpointType();
-        assertionConsumerService0.setBinding(SamlR2Binding.SAMLR2_ARTIFACT.getValue());
-        assertionConsumerService0.setLocation(resolveLocationUrl(location) + "/SAML2/ACS/ARTIFACT");
-        assertionConsumerService0.setIndex(0);
-        assertionConsumerService0.setIsDefault(true);
-        spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService0);
+        if (ssoEnabled) {
+            int index = 0;
+            if (artifactEnabled) {
+                IndexedEndpointType assertionConsumerService0 = new IndexedEndpointType();
+                assertionConsumerService0.setBinding(SamlR2Binding.SAMLR2_ARTIFACT.getValue());
+                assertionConsumerService0.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ACS/ARTIFACT");
+                assertionConsumerService0.setIndex(index++);
+                assertionConsumerService0.setIsDefault(true);
+                spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService0);
+            }
 
-        IndexedEndpointType assertionConsumerService1 = new IndexedEndpointType();
-        assertionConsumerService1.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
-        assertionConsumerService1.setLocation(resolveLocationUrl(location) + "/SAML2/ACS/POST");
-        assertionConsumerService1.setIndex(1);
-        //assertionConsumerService1.setIsDefault(false);
-        spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService1);
+            if (postEnabled) {
+                IndexedEndpointType assertionConsumerService1 = new IndexedEndpointType();
+                assertionConsumerService1.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
+                assertionConsumerService1.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ACS/POST");
+                assertionConsumerService1.setIndex(index++);
+                //assertionConsumerService1.setIsDefault(false);
+                spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService1);
+            }
 
-        /*
-        IndexedEndpointType assertionConsumerService2 = new IndexedEndpointType();
-        assertionConsumerService2.setBinding(SamlR2Binding.SAMLR2_REDIRECT.getValue());
-        assertionConsumerService2.setLocation(resolveLocationUrl(location) + "/SAML2/ACS/REDIRECT");
-        assertionConsumerService2.setIndex(2);
-        assertionConsumerService2.setIsDefault(true);
-        spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService2);
-        */
+            if (redirectEnabled) {
+                IndexedEndpointType assertionConsumerService2 = new IndexedEndpointType();
+                assertionConsumerService2.setBinding(SamlR2Binding.SAMLR2_REDIRECT.getValue());
+                assertionConsumerService2.setLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ACS/REDIR");
+                assertionConsumerService2.setResponseLocation(resolveLocationUrl(provider, idpChannel) + "/SAML2/ACS_RESPONSE/REDIR");
+                assertionConsumerService2.setIndex(index++);
+                //assertionConsumerService1.setIsDefault(false);
+                spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService2);
+            }
+        }
 
         entityDescriptor.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor().add(spSSODescriptor);
 

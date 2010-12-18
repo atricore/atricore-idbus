@@ -11,16 +11,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
+import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.channel.IdPChannelImpl;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpointImpl;
 import org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit;
 import org.atricore.idbus.kernel.main.mediation.provider.ServiceProviderImpl;
+import org.atricore.idbus.kernel.main.util.HashGenerator;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 
 /**
@@ -132,6 +137,8 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         spBean = b.iterator().next();
         String idpChannelName = spBean.getName() +  "-" + (!idpChannel.isOverrideProviderSetup() ? "default" : normalizeBeanName(target.getName())) + "-idp-channel";
 
+        String idauPath = (String) ctx.get("idauPath");
+        
         // Check if we already created this channel
         if (!idpChannel.isOverrideProviderSetup() && getPropertyRef(spBean, "channel") != null) {
             ctx.put("idpChannelBean", getBean(spBeans, idpChannelName));
@@ -155,6 +162,30 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         if (logger.isDebugEnabled())
             logger.debug("Creating IdP Channel definition for " + idpChannelName);
 
+        // COT Member Descriptor
+        String mdName = spBean.getName() + "-md";
+        if (idpChannel.isOverrideProviderSetup()) {
+            mdName = idpChannelName + "-md";
+        }
+        Bean spMd = newBean(spBeans, mdName, ResourceCircleOfTrustMemberDescriptorImpl.class);
+        String alias = resolveLocationUrl(sp, idpChannel) + "/SAML2/MD";
+        try {
+            setPropertyValue(spMd, "id", HashGenerator.sha1(alias));
+        } catch (UnsupportedEncodingException e) {
+            throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': unsupported encoding");
+        } catch (NoSuchAlgorithmException e) {
+            throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': no such algorithm");
+        }
+        setPropertyValue(spMd, "alias", alias);
+        String resourceName = spBean.getName();
+        if (idpChannel.isOverrideProviderSetup()) {
+            resourceName = normalizeBeanName(idpChannel.getName());
+        }
+        setPropertyValue(spMd, "resource", "classpath:" + idauPath + spBean.getName() + "/" + resourceName + "-samlr2-metadata.xml");
+
+        // -------------------------------------------------------
+        // IDP Channel
+        // -------------------------------------------------------
         Bean idpChannelBean = newBean(spBeans, idpChannelName, IdPChannelImpl.class.getName());
         ctx.put("idpChannelBean", idpChannelBean);
 
@@ -166,7 +197,7 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         if (idpChannel.isOverrideProviderSetup())
             setPropertyRef(idpChannelBean, "targetProvider", normalizeBeanName(target.getName()));
         setPropertyRef(idpChannelBean, "sessionManager", spBean.getName() + "-session-manager");
-        setPropertyRef(idpChannelBean, "member", spBean.getName() + "-md");
+        setPropertyRef(idpChannelBean, "member", spMd.getName());
         
         // identityMediator
         Bean identityMediatorBean = getBean(spBeans, spBean.getName() + "-samlr2-mediator");
@@ -272,7 +303,7 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
             setPropertyValue(sloLocal, "type", SAMLR2MetadataConstants.SingleLogoutService_QNAME.toString());
             setPropertyValue(sloLocal, "binding", SamlR2Binding.SAMLR2_LOCAL.getValue());
             // NOTE: location doesn't exist in simple-federation example
-            setPropertyValue(sloLocal, "location", "local://" + sp.getLocation().getUri().toUpperCase() + "/SLO/LOCAL");
+            setPropertyValue(sloLocal, "location", "local://" + idpChannel.getLocation().getUri().toUpperCase() + "/SLO/LOCAL");
             List<Ref> plansList = new ArrayList<Ref>();
             Ref plan = new Ref();
             plan.setBean(spBean.getName() + "-spsso-samlr2sloreq-to-samlr2resp-plan");

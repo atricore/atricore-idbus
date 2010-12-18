@@ -64,8 +64,27 @@ public class JOSSOActivationTransformer extends AbstractTransformer {
 
         setPropertyValue(partnerappBean, "partnerAppId", activation.getPartnerAppId());
 
+        ServiceProvider sp = activation.getSp();
+        IdentityProviderChannel preferredIdpChannel = null;
+        for (FederatedConnection fc : sp.getFederatedConnectionsA()) {
+            IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelA();
+            if (idpc.isPreferred()) {
+                preferredIdpChannel = idpc;
+                break;
+            }
+        }
+
+        if (preferredIdpChannel == null) {
+            for (FederatedConnection fc : sp.getFederatedConnectionsB()) {
+                IdentityProviderChannel idpc = (IdentityProviderChannel) fc.getChannelB();
+                if (idpc.isPreferred()) {
+                    preferredIdpChannel = idpc;
+                    break;
+                }
+            }
+        }
         // TODO : Maybe we can get this value from the context ..
-        String spAlias = resolveLocationUrl(activation.getSp()) + "/SAML2/MD";
+        String spAlias = resolveLocationUrl(sp, preferredIdpChannel) + "/SAML2/MD";
         setPropertyValue(partnerappBean, "spAlias", spAlias);
 
         setPropertyValue(partnerappBean, "partnerAppSLO", resolveSLOLocationUrl(activation));

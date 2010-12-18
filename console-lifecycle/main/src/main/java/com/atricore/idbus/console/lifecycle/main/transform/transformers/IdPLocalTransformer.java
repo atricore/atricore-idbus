@@ -33,17 +33,13 @@ import org.atricore.idbus.capabilities.samlr2.support.core.encryption.XmlSecurit
 import org.atricore.idbus.capabilities.samlr2.support.core.signature.JSR105SamlR2SignerImpl;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SAMLR2MetadataConstants;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustImpl;
-import org.atricore.idbus.kernel.main.federation.metadata.ResourceCircleOfTrustMemberDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.CamelLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.component.logging.HttpLogMessageBuilder;
 import org.atricore.idbus.kernel.main.mediation.camel.logging.DefaultMediationLogger;
 import org.atricore.idbus.kernel.main.mediation.provider.IdentityProviderImpl;
 import org.atricore.idbus.kernel.main.session.SSOSessionEventManager;
-import org.atricore.idbus.kernel.main.util.HashGenerator;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -267,18 +263,6 @@ public class IdPLocalTransformer extends AbstractTransformer implements Initiali
         } else {
             throw new TransformException("No Encrypter defined for " + provider.getName());
         }
-
-        Bean idpMd = newBean(idpBeans, idpBean.getName() + "-md", ResourceCircleOfTrustMemberDescriptorImpl.class);
-        String alias = resolveLocationUrl(provider) + "/SAML2/MD";
-        try {
-            setPropertyValue(idpMd, "id", HashGenerator.sha1(alias));
-        } catch (UnsupportedEncodingException e) {
-            throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': unsupported encoding");
-        } catch (NoSuchAlgorithmException e) {
-            throw new TransformException("Error generating SHA-1 hash for alias '" + alias + "': no such algorithm");
-        }
-        setPropertyValue(idpMd, "alias", alias);
-        setPropertyValue(idpMd, "resource", "classpath:" + idauPath + idpBean.getName() + "/" + idpBean.getName() + "-samlr2-metadata.xml");
 
         // ----------------------------------------
         // MBean

@@ -723,11 +723,25 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         idpChannel.setDescription(sp.getName() + " Default Channel");
         idpChannel.setOverrideProviderSetup(false);
         idpChannel.setPreferred(true);
+        LocationDTO idpChannelLocation = new LocationDTO();
+        idpChannelLocation.setProtocol(sp.getLocation().getProtocol());
+        idpChannelLocation.setHost(sp.getLocation().getHost());
+        idpChannelLocation.setPort(sp.getLocation().getPort());
+        idpChannelLocation.setContext(sp.getLocation().getContext());
+        idpChannelLocation.setUri(sp.getLocation().getUri());
+        idpChannel.setLocation(idpChannelLocation);
 
         ServiceProviderChannelDTO spChannel = new ServiceProviderChannelDTO();
         spChannel.setName(idp.getName() + "-to-" + sp.getName() + "-default-channel");
         spChannel.setDescription(sp.getName() + " Default Channel");
         spChannel.setOverrideProviderSetup(false);
+        LocationDTO spChannelLocation = new LocationDTO();
+        spChannelLocation.setProtocol(idp.getLocation().getProtocol());
+        spChannelLocation.setHost(idp.getLocation().getHost());
+        spChannelLocation.setPort(idp.getLocation().getPort());
+        spChannelLocation.setContext(idp.getLocation().getContext());
+        spChannelLocation.setUri(idp.getLocation().getUri());
+        spChannel.setLocation(spChannelLocation);
 
         FederatedConnectionDTO fedConnection = new FederatedConnectionDTO();
         fedConnection.setName(idp.getName().toLowerCase() + "-" + sp.getName().toLowerCase());
