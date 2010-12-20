@@ -77,6 +77,8 @@
         <property name="deployer" ref="applianceDeployer"/>
         <property name="marshaller" ref="applianceMarshaller"/>
 
+        <property name="sampleKeystore" ref="sampleKeystore"/>
+
         <!-- DAO's -->
         <property name="identityApplianceDAO" ref="identityApplianceDAO"/>
         <property name="identityApplianceDefinitionDAO" ref="identityApplianceDefinitionDAO"/>

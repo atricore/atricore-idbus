@@ -222,6 +222,11 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="getCertificateInfoCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.GetCertificateInfoCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
 
     <!-- Mediators -->
     <object id="manageCertificateMediator"
@@ -543,6 +548,7 @@
         <property name="foldersExistsCommand" ref="foldersExistsCommand" />
         <property name="jdbcDriversListCommand" ref="jdbcDriversListCommand"/>
         <property name="getMetadataInfoCommand" ref="getMetadataInfoCommand"/>
+        <property name="getCertificateInfoCommand" ref="getCertificateInfoCommand"/>
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>

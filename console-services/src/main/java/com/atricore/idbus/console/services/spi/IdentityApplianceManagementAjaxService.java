@@ -91,4 +91,5 @@ public interface IdentityApplianceManagementAjaxService {
     LookupResourceByIdResponse lookupResourceById(LookupResourceByIdRequest req) throws IdentityServerException;
 
     GetMetadataInfoResponse getMetadataInfo(GetMetadataInfoRequest req) throws IdentityServerException;
+    GetCertificateInfoResponse getCertificateInfo(GetCertificateInfoRequest req) throws IdentityServerException;
 }

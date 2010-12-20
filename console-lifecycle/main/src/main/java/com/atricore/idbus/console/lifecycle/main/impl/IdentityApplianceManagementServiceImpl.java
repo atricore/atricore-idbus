@@ -59,6 +59,10 @@ import org.w3._2000._09.xmldsig_.X509DataType;
 import javax.jdo.FetchPlan;
 import javax.xml.bind.JAXBElement;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -119,8 +123,22 @@ public class IdentityApplianceManagementServiceImpl implements
 
     private boolean enableDebugValidation = false;
 
-    public void afterPropertiesSet() throws Exception {
+    private Keystore sampleKeystore;
 
+    public void afterPropertiesSet() throws Exception {
+        if (sampleKeystore.getStore() != null &&
+                (sampleKeystore.getStore().getValue() == null ||
+                sampleKeystore.getStore().getValue().length == 0)) {
+            resolveResource(sampleKeystore.getStore());
+        }
+
+        if (sampleKeystore.getStore() == null &&
+            sampleKeystore.getStore().getValue() == null ||
+                sampleKeystore.getStore().getValue().length == 0) {
+            logger.debug("Sample Keystore invalid or not found!");
+        } else {
+            logger.debug("Sample Keystore size " + sampleKeystore.getStore());
+        }
     }
 
 
@@ -985,6 +1003,49 @@ public class IdentityApplianceManagementServiceImpl implements
         return res;
     }
 
+    public GetCertificateInfoResponse getCertificateInfo(GetCertificateInfoRequest req) throws IdentityServerException {
+        GetCertificateInfoResponse res = new GetCertificateInfoResponse();
+        try {
+            SamlR2ProviderConfig config = req.getConfig();
+
+            // signing certificate
+            Keystore signer = config.getSigner();
+            if (signer == null && config.isUseSampleStore()) {
+                signer = sampleKeystore;
+            }
+            if (signer != null) {
+                byte[] keystore = signer.getStore().getValue();
+                KeyStore jks = KeyStore.getInstance("PKCS#12".equals(signer.getType()) ? "PKCS12" : "JKS");
+                jks.load(new ByteArrayInputStream(keystore), signer.getPassword().toCharArray());
+                X509Certificate signerCertificate = (X509Certificate) jks.getCertificate(signer.getCertificateAlias());
+                res.setSigningCertIssuerDN(signerCertificate.getIssuerX500Principal().getName());
+                res.setSigningCertSubjectDN(signerCertificate.getSubjectX500Principal().getName());
+                res.setSigningCertNotBefore(signerCertificate.getNotBefore());
+                res.setSigningCertNotAfter(signerCertificate.getNotAfter());
+            }
+
+            // encryption certificate
+            Keystore encrypter = config.getEncrypter();
+            if (encrypter == null && config.isUseSampleStore()) {
+                encrypter = sampleKeystore;
+            }
+            if (encrypter != null) {
+                byte[] keystore = encrypter.getStore().getValue();
+                KeyStore jks = KeyStore.getInstance("PKCS#12".equals(encrypter.getType()) ? "PKCS12" : "JKS");
+                jks.load(new ByteArrayInputStream(keystore), encrypter.getPassword().toCharArray());
+                X509Certificate encrypterCertificate = (X509Certificate) jks.getCertificate(encrypter.getCertificateAlias());
+                res.setEncryptionCertIssuerDN(encrypterCertificate.getIssuerX500Principal().getName());
+                res.setEncryptionCertSubjectDN(encrypterCertificate.getSubjectX500Principal().getName());
+                res.setEncryptionCertNotBefore(encrypterCertificate.getNotBefore());
+                res.setEncryptionCertNotAfter(encrypterCertificate.getNotAfter());
+            }
+        } catch (Exception e){
+	        logger.error("Error retrieving certificate info", e);
+	        throw new IdentityServerException(e);
+	    }
+        return res;
+    }
+
     private X509Certificate getCertificate(KeyDescriptorType keyMd) {
         X509Certificate x509Cert = null;
         byte[] x509CertificateBin = null;
@@ -1039,6 +1100,27 @@ public class IdentityApplianceManagementServiceImpl implements
         return x509Cert;
     }
 
+    protected void resolveResource(Resource resource) throws IOException {
+
+        InputStream is = getClass().getResourceAsStream(resource.getUri());
+        if (is != null) {
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream(4096);
+                byte[] buff = new byte[4096];
+                int read = is.read(buff, 0, 4096);
+                while (read > 0) {
+                    baos.write(buff, 0, read);
+                    read = is.read(buff, 0, 4096);
+                }
+                resource.setValue(baos.toByteArray());
+
+            } finally {
+                if (is != null) try { is.close(); } catch (IOException e) {/**/}
+            }
+        }
+
+    }
+    
 // -------------------------------------------------< Properties >
 
     public ApplianceBuilder getBuilder() {
@@ -1225,7 +1307,14 @@ public class IdentityApplianceManagementServiceImpl implements
         this.jdbcDriverManager = jdbcDriverManager;
     }
 
-    // -------------------------------------------------< Protected Utils , they need transactional context !>
+    public Keystore getSampleKeystore() {
+        return sampleKeystore;
+    }
+
+    public void setSampleKeystore(Keystore sampleKeystore) {
+        this.sampleKeystore = sampleKeystore;
+    }
+// -------------------------------------------------< Protected Utils , they need transactional context !>
 
     protected void validateAppliance(IdentityAppliance appliance, ApplianceValidator.Operation operation) throws ApplianceValidationException {
 

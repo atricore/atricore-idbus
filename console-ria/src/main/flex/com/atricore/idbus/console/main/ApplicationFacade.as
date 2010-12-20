@@ -82,6 +82,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const CHECK_FOLDERS_EXISTENCE:String = "checkFoldersExistence";
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
     public static const GET_METADATA_INFO:String = "getMetadataInfo";
+    public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";

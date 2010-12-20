@@ -30,6 +30,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFol
 import com.atricore.idbus.console.modeling.diagram.model.response.CheckFoldersResponse;
 import com.atricore.idbus.console.modeling.main.controller.FolderExistsCommand;
 import com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand;
+import com.atricore.idbus.console.modeling.main.controller.GetCertificateInfoCommand;
 import com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
 import com.atricore.idbus.console.modeling.propertysheet.view.appliance.IdentityApplianceCoreSection;
@@ -110,6 +111,7 @@ import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
+import com.atricore.idbus.console.services.spi.response.GetCertificateInfoResponse;
 import com.atricore.idbus.console.services.spi.response.GetMetadataInfoResponse;
 
 import flash.events.Event;
@@ -260,7 +262,8 @@ public class PropertySheetMediator extends IocMediator {
             FolderExistsCommand.FOLDER_DOESNT_EXISTS,
             FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED,
             JDBCDriversListCommand.SUCCESS,
-            GetMetadataInfoCommand.SUCCESS];
+            GetMetadataInfoCommand.SUCCESS,
+            GetCertificateInfoCommand.SUCCESS];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -394,9 +397,15 @@ public class PropertySheetMediator extends IocMediator {
                 _applianceSaved = true;
                 break;
             case GetMetadataInfoCommand.SUCCESS:
-                var resp:GetMetadataInfoResponse = notification.getBody() as GetMetadataInfoResponse;
-                if (resp != null) {
-                    updateMetadataSection(resp);
+                var gmiResp:GetMetadataInfoResponse = notification.getBody() as GetMetadataInfoResponse;
+                if (gmiResp != null) {
+                    updateMetadataSection(gmiResp);
+                }
+                break;
+            case GetCertificateInfoCommand.SUCCESS:
+                var gciResp:GetCertificateInfoResponse = notification.getBody() as GetCertificateInfoResponse;
+                if (gciResp != null) {
+                    updateInternalProviderCertificateSection(gciResp);
                 }
                 break;
         }
@@ -910,6 +919,8 @@ public class PropertySheetMediator extends IocMediator {
             }
         }
 
+        sendNotification(ApplicationFacade.GET_CERTIFICATE_INFO, config);
+        
         _certificateSection.certificateManagementType.addEventListener(ItemClickEvent.ITEM_CLICK, handleSectionChange);
         _certificateSection.certificateKeyPair.addEventListener(Event.CHANGE, handleSectionChange);
         _certificateSection.keystoreFormat.addEventListener(Event.CHANGE, handleSectionChange);
@@ -986,6 +997,7 @@ public class PropertySheetMediator extends IocMediator {
             config.encrypter = keystore;
         }
 
+        sendNotification(ApplicationFacade.GET_CERTIFICATE_INFO, config);
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
         _applianceSaved = false;
@@ -3838,6 +3850,32 @@ public class PropertySheetMediator extends IocMediator {
                 _externalSpCertificateSection.encryptionCertNotBefore.text = _externalSpCertificateSection.dateFormatter.format(resp.encryptionCertNotBefore);
             if (resp.encryptionCertNotAfter != null)
                 _externalSpCertificateSection.encryptionCertNotAfter.text = _externalSpCertificateSection.dateFormatter.format(resp.encryptionCertNotAfter);
+        }
+    }
+
+    private function updateInternalProviderCertificateSection(resp:GetCertificateInfoResponse):void {
+        if (_certificateSection != null && (_currentIdentityApplianceElement is IdentityProvider ||
+                _currentIdentityApplianceElement is ServiceProvider)) {
+
+            // signing certificate
+            if (resp.signingCertIssuerDN != null)
+                _certificateSection.signingCertIssuerDN.text = resp.signingCertIssuerDN;
+            if (resp.signingCertSubjectDN != null)
+                _certificateSection.signingCertSubjectDN.text = resp.signingCertSubjectDN;
+            if (resp.signingCertNotBefore != null)
+                _certificateSection.signingCertNotBefore.text = _certificateSection.dateFormatter.format(resp.signingCertNotBefore);
+            if (resp.signingCertNotAfter != null)
+                _certificateSection.signingCertNotAfter.text = _certificateSection.dateFormatter.format(resp.signingCertNotAfter);
+
+            // encryption certificate
+            if (resp.encryptionCertIssuerDN != null)
+                _certificateSection.encryptionCertIssuerDN.text = resp.encryptionCertIssuerDN;
+            if (resp.encryptionCertSubjectDN != null)
+                _certificateSection.encryptionCertSubjectDN.text = resp.encryptionCertSubjectDN;
+            if (resp.encryptionCertNotBefore != null)
+                _certificateSection.encryptionCertNotBefore.text = _certificateSection.dateFormatter.format(resp.encryptionCertNotBefore);
+            if (resp.encryptionCertNotAfter != null)
+                _certificateSection.encryptionCertNotAfter.text = _certificateSection.dateFormatter.format(resp.encryptionCertNotAfter);
         }
     }
 
