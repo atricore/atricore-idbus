@@ -45,15 +45,21 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
             ZipOutputStream zout = new ZipOutputStream(bout);
 
             try {
-                zipDir(layout.getWorkDir(),
-                        appliance.getName() + "-1.0." + appliance.getIdApplianceDefinition().getRevision(),
-                        zout);
-                
+                String zipFilePath = appliance.getName() + "-1.0." + appliance.getIdApplianceDefinition().getRevision();
+                zipDir(layout.getWorkDir(), zipFilePath, zout);
+                //now save appliance binary definition
+                ZipEntry anEntry = new ZipEntry(zipFilePath + File.separator + "definition" + File.separator + "appliance.bin");
+                zout.putNextEntry(anEntry);
+                zout.write(appliance.getIdApplianceDefinitionBin().getBytes(),
+                           0,
+                           appliance.getIdApplianceDefinitionBin().getBytes().length);
+                zout.closeEntry();
+
                 zout.finish();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            
+
             return bout.toByteArray();
         }
 
