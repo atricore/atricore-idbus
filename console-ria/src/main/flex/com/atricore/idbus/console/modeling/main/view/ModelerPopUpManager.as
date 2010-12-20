@@ -643,8 +643,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createApacheExecutionEnvironmentCreateForm();
         _popup.title = "Create Apache Execution Environment";
-        _popup.width = 500;
-        _popup.height = 260;
+        _popup.width = 440;//500
+        _popup.height = 220; //260
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_apacheExecutionEnvironmentCreateForm);
@@ -664,8 +664,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createWindowsIISExecutionEnvironmentCreateForm();
         _popup.title = "Create Windows IIS Execution Environment";
-        _popup.width = 500;
-        _popup.height = 260;
+        _popup.width = 440;//500
+        _popup.height = 220; //260
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_windowsIISExecutionEnvironmentCreateForm);
@@ -706,8 +706,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createJavaEEExecutionEnvironmentCreateForm();
         _popup.title = "Create JavaEE Execution Environment";
-        _popup.width = 500;
-        _popup.height = 290;
+        _popup.width = 440;//500
+        _popup.height = 220; //260
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_javaEEExecutionEnvironmentCreateForm);
@@ -748,8 +748,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createWebserverExecutionEnvironmentCreateForm();
         _popup.title = "Create Webserver Execution Environment";
-        _popup.width = 500;
-        _popup.height = 290;
+        _popup.width = 440;//500
+        _popup.height = 240; //260
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_webserverExecutionEnvironmentCreateForm);

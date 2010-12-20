@@ -81,8 +81,8 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
         view.executionEnvironmentDescription.text = "";
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
-        view.replaceConfFiles.selected = false;
-        view.installSamples.selected = false;
+//        view.replaceConfFiles.selected = false;
+//        view.installSamples.selected = false;
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -94,8 +94,8 @@ public class WindowsIISExecutionEnvironmentCreateMediator extends IocFormMediato
         windowsIISExecutionEnvironment.name = view.executionEnvironmentName.text;
         windowsIISExecutionEnvironment.description = view.executionEnvironmentDescription.text;
         windowsIISExecutionEnvironment.installUri = view.homeDirectory.text;
-        windowsIISExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
-        windowsIISExecutionEnvironment.installDemoApps = view.installSamples.selected;         
+//        windowsIISExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
+//        windowsIISExecutionEnvironment.installDemoApps = view.installSamples.selected;         
 
         //TODO CHECK PLATFORM ID
         windowsIISExecutionEnvironment.platformId = "iis";

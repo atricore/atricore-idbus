@@ -2979,18 +2979,18 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleApacheExecEnvCorePropertyTabRollOut);
 
         // Exec.Environment Activation Tab
-        var execEnvActivationPropertyTab:Group = new Group();
-        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
-        execEnvActivationPropertyTab.name = "Activation";
-        execEnvActivationPropertyTab.width = Number("100%");
-        execEnvActivationPropertyTab.height = Number("100%");
-        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
-
-        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
-        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
-        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
-        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+//        var execEnvActivationPropertyTab:Group = new Group();
+//        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
+//        execEnvActivationPropertyTab.name = "Activation";
+//        execEnvActivationPropertyTab.width = Number("100%");
+//        execEnvActivationPropertyTab.height = Number("100%");
+//        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
+//
+//        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
+//        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
+//        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
+//        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+//        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
 
     }
 
@@ -3069,18 +3069,18 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleWindowsIISExecEnvCorePropertyTabRollOut);
 
         // Exec.Environment Activation Tab
-        var execEnvActivationPropertyTab:Group = new Group();
-        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
-        execEnvActivationPropertyTab.name = "Activation";
-        execEnvActivationPropertyTab.width = Number("100%");
-        execEnvActivationPropertyTab.height = Number("100%");
-        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
-
-        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
-        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
-        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
-        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+//        var execEnvActivationPropertyTab:Group = new Group();
+//        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
+//        execEnvActivationPropertyTab.name = "Activation";
+//        execEnvActivationPropertyTab.width = Number("100%");
+//        execEnvActivationPropertyTab.height = Number("100%");
+//        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
+//
+//        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
+//        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
+//        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
+//        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+//        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
 
     }
 
@@ -3252,18 +3252,18 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleJavaEEExecEnvCorePropertyTabRollOut);
 
         // Exec.Environment Activation Tab
-        var execEnvActivationPropertyTab:Group = new Group();
-        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
-        execEnvActivationPropertyTab.name = "Activation";
-        execEnvActivationPropertyTab.width = Number("100%");
-        execEnvActivationPropertyTab.height = Number("100%");
-        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
-
-        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
-        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
-        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
-        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+//        var execEnvActivationPropertyTab:Group = new Group();
+//        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
+//        execEnvActivationPropertyTab.name = "Activation";
+//        execEnvActivationPropertyTab.width = Number("100%");
+//        execEnvActivationPropertyTab.height = Number("100%");
+//        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
+//
+//        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
+//        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
+//        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
+//        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+//        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
 
     }
 
@@ -3302,8 +3302,6 @@ public class PropertySheetMediator extends IocMediator {
             cif.homeDir = _javaEEExecEnvCoreSection.homeDirectory.text;
             cif.environmentName = "n/a";
             sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _apacheExecEnvCoreSection.homeDirectory.text);
-
         }
     }
 
@@ -3342,18 +3340,18 @@ public class PropertySheetMediator extends IocMediator {
         corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handlePhpBBExecEnvCorePropertyTabRollOut);
 
         // Exec.Environment Activation Tab
-//        var execEnvActivationPropertyTab:Group = new Group();
-//        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
-//        execEnvActivationPropertyTab.name = "Activation";
-//        execEnvActivationPropertyTab.width = Number("100%");
-//        execEnvActivationPropertyTab.height = Number("100%");
-//        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
-//
-//        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
-//        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
-//        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
-//        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
-//        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
+        var execEnvActivationPropertyTab:Group = new Group();
+        execEnvActivationPropertyTab.id = "propertySheetActivationSection";
+        execEnvActivationPropertyTab.name = "Activation";
+        execEnvActivationPropertyTab.width = Number("100%");
+        execEnvActivationPropertyTab.height = Number("100%");
+        execEnvActivationPropertyTab.setStyle("borderStyle", "solid");
+
+        _executionEnvironmentActivateSection = new ExecutionEnvironmentActivationSection();
+        execEnvActivationPropertyTab.addElement(_executionEnvironmentActivateSection);
+        _propertySheetsViewStack.addNewChild(execEnvActivationPropertyTab);
+        _executionEnvironmentActivateSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExecEnvActivationPropertyTabCreationComplete);
+        execEnvActivationPropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleExecEnvActivationPropertyTabRollOut);
 
     }
 
@@ -3392,8 +3390,6 @@ public class PropertySheetMediator extends IocMediator {
             cif.homeDir = _phpBBExecEnvCoreSection.homeDirectory.text;
             cif.environmentName = "n/a";
             sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _apacheExecEnvCoreSection.homeDirectory.text);
-
         }
     }
 
@@ -3469,8 +3465,6 @@ public class PropertySheetMediator extends IocMediator {
             cif.homeDir = _webserverExecEnvCoreSection.homeDirectory.text;
             cif.environmentName = "n/a";
             sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, cif);
-//            sendNotification(ApplicationFacade.CHECK_INSTALL_FOLDER_EXISTENCE, _apacheExecEnvCoreSection.homeDirectory.text);
-
         }
     }
 
