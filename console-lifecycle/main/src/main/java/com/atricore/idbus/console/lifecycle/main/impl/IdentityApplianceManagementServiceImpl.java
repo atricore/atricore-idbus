@@ -67,13 +67,15 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class IdentityApplianceManagementServiceImpl implements
         IdentityApplianceManagementService,
         InitializingBean,
         IdentityServiceLifecycle {
 
-	private static final Log logger = LogFactory.getLog(IdentityApplianceManagementServiceImpl.class);
+    private static final Log logger = LogFactory.getLog(IdentityApplianceManagementServiceImpl.class);
 
     private ActivationService activationService;
 
@@ -128,12 +130,12 @@ public class IdentityApplianceManagementServiceImpl implements
     public void afterPropertiesSet() throws Exception {
         if (sampleKeystore.getStore() != null &&
                 (sampleKeystore.getStore().getValue() == null ||
-                sampleKeystore.getStore().getValue().length == 0)) {
+                        sampleKeystore.getStore().getValue().length == 0)) {
             resolveResource(sampleKeystore.getStore());
         }
 
         if (sampleKeystore.getStore() == null &&
-            sampleKeystore.getStore().getValue() == null ||
+                sampleKeystore.getStore().getValue() == null ||
                 sampleKeystore.getStore().getValue().length == 0) {
             logger.debug("Sample Keystore invalid or not found!");
         } else {
@@ -156,14 +158,14 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = buildAppliance(appliance, request.isDeploy());
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new BuildIdentityApplianceResponse(appliance);
-	    } catch (Exception e){
-	        logger.error("Error building identity appliance", e);
-	        throw new IdentityServerException(e);
+        } catch (Exception e){
+            logger.error("Error building identity appliance", e);
+            throw new IdentityServerException(e);
         }
     }
 
     /**
-     * Deploys an already existing Identity Appliance.  
+     * Deploys an already existing Identity Appliance.
      * The appliance was previously created or imported and can by found in the list of appliances.
      */
     @Transactional
@@ -178,10 +180,10 @@ public class IdentityApplianceManagementServiceImpl implements
             }
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new DeployIdentityApplianceResponse(appliance, true);
-	    } catch (Exception e){
-	        logger.error("Error deploying identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+        } catch (Exception e){
+            logger.error("Error deploying identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     /**
@@ -196,10 +198,10 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = undeployAppliance(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new UndeployIdentityApplianceResponse (appliance);
-	    } catch (Exception e){
-	        logger.error("Error undeploying identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+        } catch (Exception e){
+            logger.error("Error undeploying identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -210,10 +212,10 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = startAppliance(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new StartIdentityApplianceResponse (appliance);
-	    } catch (Exception e){
-	        logger.error("Error starting identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+        } catch (Exception e){
+            logger.error("Error starting identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -224,10 +226,10 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = stopAppliance(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new StopIdentityApplianceResponse (appliance);
-	    } catch (Exception e){
-	        logger.error("Error stopping identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+        } catch (Exception e){
+            logger.error("Error stopping identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -238,10 +240,10 @@ public class IdentityApplianceManagementServiceImpl implements
             appliance = disposeAppliance(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
             return new DisposeIdentityApplianceResponse(appliance);
-	    } catch (Exception e){
-	        logger.error("Error disposing identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+        } catch (Exception e){
+            logger.error("Error disposing identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -278,9 +280,74 @@ public class IdentityApplianceManagementServiceImpl implements
                     appliance.getIdApplianceDefinition().getRevision(),
                     zip);
 
-	    } catch (Exception e){
-	        logger.error("Error exporting identity appliance project", e);
-	        throw new IdentityServerException(e);
+        } catch (Exception e){
+            logger.error("Error exporting identity appliance project", e);
+            throw new IdentityServerException(e);
+        }
+    }
+
+    @Transactional
+    public ImportIdentityApplianceResponse importIdentityApplianceProject(ImportIdentityApplianceRequest request) throws IdentityServerException {
+
+        try {
+            syncAppliances();
+
+            if (logger.isTraceEnabled())
+                logger.trace("Importing appliance definition from zip file \n");
+
+            ByteArrayInputStream bIn = new ByteArrayInputStream(request.getBytes());
+            ZipInputStream zin = new ZipInputStream(bIn);
+            ZipEntry entry;
+            byte[] applianceBytes=null;
+
+            while((entry = zin.getNextEntry()) != null) {
+                if (entry.getName() != null && entry.getName().endsWith("appliance.bin")) {
+                    applianceBytes = new byte[(int) entry.getSize() + 100];
+                    zin.read(applianceBytes);
+                    zin.close();
+                    break;
+                }
+            }
+
+            // 1. Unmarshall appliance
+            ImportApplianceDefinitionRequest req = new ImportApplianceDefinitionRequest();
+            req.setDescriptor(new String(applianceBytes));
+            ImportApplianceDefinitionResponse resp = importApplianceDefinition(req);
+
+            IdentityAppliance appliance = resp.getAppliance();
+
+            validateAppliance(appliance, ApplianceValidator.Operation.IMPORT);
+            debugAppliance(appliance, ApplianceValidator.Operation.IMPORT);
+
+            if (logger.isDebugEnabled())
+                logger.debug("Received Identity Appliance Definition : [" +
+                        appliance.getIdApplianceDefinition().getId() + "] " +
+                        appliance.getIdApplianceDefinition().getName() + ":" +
+                        appliance.getIdApplianceDefinition().getDescription());
+
+            // 2. Create Identity Appliance
+
+            if (logger.isTraceEnabled())
+                logger.trace("Creating Identity Appliance");
+
+            appliance.setState(IdentityApplianceState.PROJECTED.toString());
+            appliance = identityApplianceDAO.save(appliance);
+            appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
+
+            if (logger.isTraceEnabled())
+                logger.trace("Created Identity Appliance " + appliance.getId());
+
+            // 4. Return the appliance
+            ImportIdentityApplianceResponse response = new ImportIdentityApplianceResponse();
+            response.setAppliance(appliance);
+
+            return response;
+
+        } catch(ApplianceValidationException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("Error importing identity appliance project from file", e);
+            throw new IdentityServerException(e);
         }
     }
 
@@ -302,10 +369,10 @@ public class IdentityApplianceManagementServiceImpl implements
             debugAppliance(appliance, ApplianceValidator.Operation.IMPORT);
 
             if (logger.isDebugEnabled())
-                    logger.debug("Received Identity Appliance Definition : [" +
-                            applianceDef.getId() + "] " +
-                    applianceDef.getName() + ":" +
-                    applianceDef.getDescription());
+                logger.debug("Received Identity Appliance Definition : [" +
+                        applianceDef.getId() + "] " +
+                        applianceDef.getName() + ":" +
+                        applianceDef.getDescription());
 
             applianceDef.setRevision(1);
             applianceDef.setLastModification(new Date());
@@ -333,9 +400,9 @@ public class IdentityApplianceManagementServiceImpl implements
         } catch(ApplianceValidationException e) {
             throw e;
         } catch (Exception e) {
-	        logger.error("Error importing identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error importing identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -374,9 +441,9 @@ public class IdentityApplianceManagementServiceImpl implements
             response.setStatusCode(StatusCode.STS_OK);
             return response;
         } catch (Exception e){
-	        logger.error("Error processing identity appliance lifecycle action", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error processing identity appliance lifecycle action", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -512,9 +579,9 @@ public class IdentityApplianceManagementServiceImpl implements
             res = new AddIdentityApplianceResponse();
             res.setAppliance(appliance);
         } catch (Exception e){
-	        logger.error("Error adding identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error adding identity appliance", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -557,9 +624,9 @@ public class IdentityApplianceManagementServiceImpl implements
             res = new UpdateIdentityApplianceResponse(appliance);
 
         } catch (Exception e){
-	        logger.error("Error updating identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error updating identity appliance", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -573,9 +640,9 @@ public class IdentityApplianceManagementServiceImpl implements
             res = new LookupIdentityApplianceByIdResponse();
             res.setIdentityAppliance(appliance);
         } catch (Exception e){
-	        logger.error("Error looking for identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error looking for identity appliance", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -592,9 +659,9 @@ public class IdentityApplianceManagementServiceImpl implements
             RemoveIdentityApplianceResponse res = new RemoveIdentityApplianceResponse();
             return res;
         } catch (Exception e){
-	        logger.error("Error removing identity appliance", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error removing identity appliance", e);
+            throw new IdentityServerException(e);
+        }
     }
 
     @Transactional
@@ -610,9 +677,9 @@ public class IdentityApplianceManagementServiceImpl implements
             res = new ListIdentityAppliancesResponse();
             res.setIdentityAppliances(appliances);
         } catch (Exception e){
-	        logger.error("Error listing identity appliances", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error listing identity appliances", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -632,11 +699,11 @@ public class IdentityApplianceManagementServiceImpl implements
             iad = identityApplianceDefinitionDAO.detachCopy(iad, FetchPlan.FETCH_SIZE_GREEDY);  //fetching providers and channels as well
             res = new LookupIdentityApplianceDefinitionByIdResponse();
             res.setIdentityApplianceDefinition(iad);
-	    } catch (Exception e){
-	        logger.error("Error retrieving identity appliance definition with id : " + request.getIdentityApplianceDefinitionId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving identity appliance definition with id : " + request.getIdentityApplianceDefinitionId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -648,9 +715,9 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = identityApplianceDefinitionDAO.findAll();
             res.getIdentityApplianceDefinitions().addAll(identityApplianceDefinitionDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));  //fetching providers and channels as well
         } catch (Exception e){
-	        logger.error("Error retrieving identity appliance definitions!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving identity appliance definitions!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -686,9 +753,9 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = identitySourceDAO.findAll();
             res.getIdentityVaults().addAll(identitySourceDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));  //fetching user lookup information as well
         } catch (Exception e){
-	        logger.error("Error retrieving identity vaults!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving identity vaults!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -701,9 +768,9 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = userInformationLookupDAO.findAll();
             res.getUserInfoLookups().addAll(userInformationLookupDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
-	        logger.error("Error retrieving user information lookups!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving user information lookups!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -716,9 +783,9 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = accountLinkagePolicyDAO.findAll();
             res.getAccountLinkagePolicies().addAll(accountLinkagePolicyDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
-	        logger.error("Error retrieving account linkage policies!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving account linkage policies!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -731,9 +798,9 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = authenticationContractDAO.findAll();
             res.getAuthContracts().addAll(authenticationContractDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
-	        logger.error("Error retrieving authentication contracts!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving authentication contracts!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -746,9 +813,9 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = authenticationMechanismDAO.findAll();
             res.getAuthMechanisms().addAll(authenticationMechanismDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
-	        logger.error("Error retrieving authentication mechanisms!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving authentication mechanisms!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -761,9 +828,9 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = attributeProfileDAO.findAll();
             res.getAttributeProfiles().addAll(attributeProfileDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
-	        logger.error("Error retrieving attribute profiles!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving attribute profiles!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -776,9 +843,9 @@ public class IdentityApplianceManagementServiceImpl implements
             Collection result = authenticationAssertionEmissionPolicyDAO.findAll();
             res.getAuthEmissionPolicies().addAll(authenticationAssertionEmissionPolicyDAO.detachCopyAll(result, FetchPlan.FETCH_SIZE_GREEDY));
         } catch (Exception e){
-	        logger.error("Error retrieving authentication assertion emission policies!!!", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving authentication assertion emission policies!!!", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -795,11 +862,11 @@ public class IdentityApplianceManagementServiceImpl implements
             IdentitySource identitySource = identitySourceDAO.findById(req.getIdentityVaultId());
             res = new LookupIdentityVaultByIdResponse();
             res.setIdentityVault(identitySourceDAO.detachCopy(identitySource, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving identity vault with id : " + req.getIdentityVaultId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving identity vault with id : " + req.getIdentityVaultId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -811,11 +878,11 @@ public class IdentityApplianceManagementServiceImpl implements
             UserInformationLookup userInformationLookup = userInformationLookupDAO.findById(req.getUserInformationLookupId());
             res = new LookupUserInformationLookupByIdResponse();
             res.setUserInfoLookup(userInformationLookupDAO.detachCopy(userInformationLookup, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving user information lookup with id : " + req.getUserInformationLookupId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving user information lookup with id : " + req.getUserInformationLookupId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -827,11 +894,11 @@ public class IdentityApplianceManagementServiceImpl implements
             AccountLinkagePolicy policy = accountLinkagePolicyDAO.findById(req.getAccountLinkagePolicyId());
             res = new LookupAccountLinkagePolicyByIdResponse();
             res.setAccountLinkagePolicy(accountLinkagePolicyDAO.detachCopy(policy, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving account linkage policy with id : " + req.getAccountLinkagePolicyId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving account linkage policy with id : " + req.getAccountLinkagePolicyId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -843,11 +910,11 @@ public class IdentityApplianceManagementServiceImpl implements
             AuthenticationContract authenticationContract = authenticationContractDAO.findById(req.getAuthenticationContactId());
             res = new LookupAuthenticationContractByIdResponse();
             res.setAuthenticationContract(authenticationContractDAO.detachCopy(authenticationContract, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving authentication contract with id : " + req.getAuthenticationContactId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving authentication contract with id : " + req.getAuthenticationContactId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -859,11 +926,11 @@ public class IdentityApplianceManagementServiceImpl implements
             AuthenticationMechanism authenticationMechanism = authenticationMechanismDAO.findById(req.getAuthMechanismId());
             res = new LookupAuthenticationMechanismByIdResponse();
             res.setAuthenticationMechanism(authenticationMechanismDAO.detachCopy(authenticationMechanism, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving authentication mechanism with id : " + req.getAuthMechanismId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving authentication mechanism with id : " + req.getAuthMechanismId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -875,11 +942,11 @@ public class IdentityApplianceManagementServiceImpl implements
             AttributeProfile attributeProfile = attributeProfileDAO.findById(req.getAttributeProfileId());
             res = new LookupAttributeProfileByIdResponse();
             res.setAttributeProfile(attributeProfileDAO.detachCopy(attributeProfile, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving attribute profile with id : " + req.getAttributeProfileId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving attribute profile with id : " + req.getAttributeProfileId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -891,11 +958,11 @@ public class IdentityApplianceManagementServiceImpl implements
             AuthenticationAssertionEmissionPolicy policy = authenticationAssertionEmissionPolicyDAO.findById(req.getAuthAssertionEmissionPolicyId());
             res = new LookupAuthAssertionEmissionPolicyByIdResponse();
             res.setPolicy(authenticationAssertionEmissionPolicyDAO.detachCopy(policy, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error retrieving authentication assertion emission policy with id : " + req.getAuthAssertionEmissionPolicyId(), e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error retrieving authentication assertion emission policy with id : " + req.getAuthAssertionEmissionPolicyId(), e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -907,11 +974,11 @@ public class IdentityApplianceManagementServiceImpl implements
             Resource resource = resourceDAO.save(req.getResource());
             res = new AddResourceResponse();
             res.setResource(resourceDAO.detachCopy(resource, FetchPlan.FETCH_SIZE_GREEDY));
-	    } catch (Exception e){
-	        logger.error("Error adding resource", e);
-	        throw new IdentityServerException(e);
-	    }
-		return res;
+        } catch (Exception e){
+            logger.error("Error adding resource", e);
+            throw new IdentityServerException(e);
+        }
+        return res;
     }
 
     @Transactional
@@ -925,9 +992,9 @@ public class IdentityApplianceManagementServiceImpl implements
             res = new LookupResourceByIdResponse();
             res.setResource(resource);
         } catch (Exception e){
-	        logger.error("Error looking for resource", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error looking for resource", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -997,9 +1064,9 @@ public class IdentityApplianceManagementServiceImpl implements
                 }
             }
         } catch (Exception e){
-	        logger.error("Error retrieving metadata info", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving metadata info", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
@@ -1040,16 +1107,16 @@ public class IdentityApplianceManagementServiceImpl implements
                 res.setEncryptionCertNotAfter(encrypterCertificate.getNotAfter());
             }
         } catch (Exception e){
-	        logger.error("Error retrieving certificate info", e);
-	        throw new IdentityServerException(e);
-	    }
+            logger.error("Error retrieving certificate info", e);
+            throw new IdentityServerException(e);
+        }
         return res;
     }
 
     private X509Certificate getCertificate(KeyDescriptorType keyMd) {
         X509Certificate x509Cert = null;
         byte[] x509CertificateBin = null;
-        
+
         if (keyMd.getKeyInfo() != null) {
 
             // Get inside Key Info
@@ -1120,7 +1187,7 @@ public class IdentityApplianceManagementServiceImpl implements
         }
 
     }
-    
+
 // -------------------------------------------------< Properties >
 
     public ApplianceBuilder getBuilder() {
@@ -1365,7 +1432,7 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     protected void configureExecEnv(IdentityAppliance appliance,
-                                                   ExecutionEnvironment execEnv) throws IdentityServerException {
+                                    ExecutionEnvironment execEnv) throws IdentityServerException {
 
         try {
 
@@ -1401,8 +1468,8 @@ public class IdentityApplianceManagementServiceImpl implements
     }
 
     protected void activateExecEnv(IdentityAppliance appliance,
-                                                   ExecutionEnvironment execEnv,
-                                                   boolean reactivate) throws IdentityServerException {
+                                   ExecutionEnvironment execEnv,
+                                   boolean reactivate) throws IdentityServerException {
 
 
 
@@ -1460,7 +1527,7 @@ public class IdentityApplianceManagementServiceImpl implements
             return false;
         }
     }
-    
+
     protected IdentityAppliance startAppliance(IdentityAppliance appliance) throws IdentityServerException {
         if (logger.isDebugEnabled())
             logger.debug("Starting Identity Appliance " + appliance.getId());
@@ -1580,7 +1647,7 @@ public class IdentityApplianceManagementServiceImpl implements
             identityApplianceDAO.delete(appliance.getId());
 
             identityApplianceUnitDAO.deleteUnitsByGroup(unitsGroup);
-            
+
             /*for (Long idauID : idauIDs) {
                 identityApplianceUnitDAO.delete(idauID);
             }*/

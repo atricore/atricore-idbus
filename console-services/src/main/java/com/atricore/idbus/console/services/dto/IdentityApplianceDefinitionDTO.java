@@ -41,6 +41,8 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     private String description;
 
+    private String namespace;
+
     private int revision;
 
     private Date lastModification;
@@ -87,6 +89,14 @@ public class IdentityApplianceDefinitionDTO implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
     public int getRevision() {

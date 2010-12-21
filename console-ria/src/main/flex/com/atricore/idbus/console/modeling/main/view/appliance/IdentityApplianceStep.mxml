@@ -51,6 +51,7 @@
                 var idApplianceDef:IdentityApplianceDefinition = new IdentityApplianceDefinition();
                 idApplianceDef.name = applianceName.text;
                 idApplianceDef.description = applianceDescription.text;
+                idApplianceDef.namespace = applianceNamespace.text;
 
                 var location:Location = new Location();
                 location.protocol = applianceLocationProtocol.selectedItem.data;

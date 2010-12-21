@@ -102,6 +102,10 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="identityApplianceImportCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.IdentityApplianceImportCommand">
+        <property name="registry" ref="serviceRegistry"/>
+    </object>
     <!--<object id="spChannelRemoveCommand"-->
             <!--class="com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand">-->
         <!--<property name="projectProxy" ref="projectProxy"/>-->
@@ -522,6 +526,7 @@
         <property name="stopIdentityApplianceCommand" ref="stopIdentityApplianceCommand"/>
         <property name="disposeIdentityApplianceCommand" ref="disposeIdentityApplianceCommand"/>
         <property name="identityApplianceCreateCommand" ref="identityApplianceCreateCommand"/>
+        <property name="identityApplianceImportCommand" ref="identityApplianceImportCommand"/>
         <!--<property name="spChannelRemoveCommand" ref="spChannelRemoveCommand"/>-->
         <!--<property name="idpChannelRemoveCommand" ref="idpChannelRemoveCommand"/>-->
         <property name="identityProviderRemoveCommand" ref="identityProviderRemoveCommand"/>

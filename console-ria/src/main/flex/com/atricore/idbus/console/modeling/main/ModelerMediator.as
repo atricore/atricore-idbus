@@ -49,19 +49,15 @@ import com.atricore.idbus.console.services.dto.IdentityApplianceState;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
-
-import flash.external.ExternalInterface;
-
+import flash.net.FileFilter;
 import flash.net.FileReference;
+
+import flash.utils.ByteArray;
 
 import mx.collections.ArrayCollection;
 import mx.controls.Alert;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
-
-import mx.rpc.events.FaultEvent;
-import mx.rpc.events.ResultEvent;
-import mx.rpc.http.HTTPService;
 
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
@@ -94,6 +90,9 @@ public class ModelerMediator extends IocMediator implements IDisposable {
     private var _propertySheetMediator:IIocMediator;
 
     private var _tempSelectedViewIndex:int;
+
+    private var _fileRef:FileReference;
+
 
     public function ModelerMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
@@ -211,6 +210,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         view.btnNew.addEventListener(MouseEvent.CLICK, handleNewClick);
         view.btnOpen.addEventListener(MouseEvent.CLICK, handleOpenClick);
         view.btnSave.addEventListener(MouseEvent.CLICK, handleSaveClick);
+        view.btnImport.addEventListener(MouseEvent.CLICK, handleImportClick);
         view.btnExport.addEventListener(MouseEvent.CLICK, handleExportClick);
     }
     public function dispose():void {
@@ -221,7 +221,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
 
         _identityAppliance = null;
         _tempSelectedViewIndex = -1;
-        
+
         view.btnSave.enabled = false;
         view.btnExport.enabled = false;
         view.appliances.selectedItem = null;
@@ -271,6 +271,15 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         trace("Save Button Click: " + event);
         sendNotification(ProcessingMediator.START, "Saving Identity Appliance...");
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
+    }
+
+    private function handleImportClick(event:MouseEvent):void {
+        trace("Import Button Click: " + event);
+        _fileRef = new FileReference();
+        var appTypes:FileFilter = new FileFilter("Appliances Files (*.zip, *.jar)", "*.zip; *.jar");
+        _fileRef.addEventListener(Event.SELECT, selectFileOpenHandler);
+        _fileRef.addEventListener(Event.COMPLETE, completeFileOpenHandler);
+        _fileRef.browse(new Array(appTypes));
     }
 
     private function handleExportClick(event:MouseEvent):void {
@@ -577,7 +586,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 if (_tempSelectedViewIndex != -1) {
                     sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                     _tempSelectedViewIndex = -1;
-                }                
+                }
                 break;
             case ApplicationFacade.AUTOSAVE_IDENTITY_APPLIANCE:
                 var selectedIndex:int = notification.getBody() as int;
@@ -593,6 +602,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         "There was an error loading JDBC drivers list.");
                 break;
+
             case ApplicationFacade.EXPORT_IDENTITY_APPLIANCE:
                 if (projectProxy.currentIdentityAppliance != null) {
                     popupManager.showCreateExportIdentityApplianceWindow(notification);
@@ -605,6 +615,17 @@ public class ModelerMediator extends IocMediator implements IDisposable {
     private function updateIdentityAppliance():void {
         _identityAppliance = projectProxy.currentIdentityAppliance;
         //sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+    }
+
+    private function selectFileOpenHandler(event:Event):void {
+        var file:FileReference = FileReference(event.target);
+        file.load();
+    }
+
+    private function completeFileOpenHandler(event:Event):void {
+        //get the data from the file as a ByteArray
+        var file:FileReference = FileReference(event.target);
+        sendNotification(ApplicationFacade.IMPORT_IDENTITY_APPLIANCE, file.data);
     }
 
     private function enableIdentityApplianceActionButtons():void {

@@ -428,6 +428,10 @@ public class EmbeddedIcons {
 
     [Bindable]
     [Embed(source="/assets/icons/modeler/export_identity_appliance_22.png")]
+    public static var importApplianceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/modeler/export_identity_appliance_22.png")]
     public static var exportApplianceMiniIcon:Class;
 
     [Bindable]
