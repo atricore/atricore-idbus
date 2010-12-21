@@ -20,12 +20,27 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<!DOCTYPE catalog
-PUBLIC "-//OASIS/DTD Entity Resolution XML Catalog V1.0//EN"
-"http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd">
+<schema
+        targetNamespace="urn:com:atricore:liveservices:liveupdate:1.0:profile"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:md="urn:com:atricore:liveservices:liveupdate:1.0:md"
+        xmlns:prof="urn:com:atricore:liveservices:liveupdate:1.0:profile"
+        elementFormDefault="unqualified"
+        attributeFormDefault="unqualified"
+        blockDefault="substitution"
+        version="2.0">
 
-<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
-    <rewriteURI rewritePrefix="./xmldsig-core-schema.xsd" uriStartString="http://www.w3.org/TR/xmldsig-core/xmldsig-core-schema.xsd"/>
-    <rewriteURI rewritePrefix="./xmldsig-core-schema.xsd" uriStartString="http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd"/>
-    <rewriteURI rewritePrefix="./xenc-schema.xsd" uriStartString="http://www.w3.org/TR/2002/REC-xmlenc-core-20021210/xenc-schema.xsd"/>
-</catalog>
+
+    <import namespace="urn:com:atricore:liveservices:liveupdate:1.0:md"
+            schemaLocation="atricore-liveupdate-md-1.0.xsd"/>
+
+    <element name="profile" type="prof:ProfileType"/>
+    <complexType name="ProfileType">
+        <sequence>
+            <element ref="md:installableUnit" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="ID" type="ID"/>
+        <attribute name="name" type="string"/>
+    </complexType>
+
+</schema>

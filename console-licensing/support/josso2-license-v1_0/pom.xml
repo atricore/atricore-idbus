@@ -35,7 +35,7 @@
     <groupId>com.atricore.idbus.console.licensing</groupId>
     <artifactId>com.atricore.idbus.console.licensing.josso2-license-v1_0</artifactId>
 
-    <name>Atricore Console :: Licensing : XML Binding</name>
+    <name>Atricore Console :: Licensing v 1.0 : XML Binding</name>
     <description>Atricore Licensing XML Binding</description>
     <packaging>bundle</packaging>
 

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Atricore IDBus
   ~
@@ -32,8 +33,12 @@
 
     <wsdl:types>
         <xsd:schema>
+            <xsd:import namespace="urn:com:atricore:liveservices:liveupdate:1.0:profile"
+                        schemaLocation="atricore-liveupdate-profile-1.0.xsd"/>
+
             <xsd:import namespace="urn:com:atricore:liveservices:liveupdate:1.0:md"
                         schemaLocation="atricore-liveupdate-md-1.0.xsd"/>
+
         </xsd:schema>
 
     </wsdl:types>

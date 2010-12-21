@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="US-ASCII"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Atricore IDBus
   ~
@@ -45,11 +45,13 @@
         </documentation>
     </annotation>
 
+    <element name="updatesIndex" type="lu:UpdatesIndexType"/>
     <complexType name="UpdatesIndexType">
         <sequence>
             <element ref="ds:Signature" minOccurs="0"/>
             <element ref="lu:updateDescriptor" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
+        <attribute name="ID" type="ID" use="required"/>
     </complexType>
 
     <element name="updateDescriptor" type="lu:UpdateDescriptorType"/>
@@ -65,13 +67,18 @@
     <element name="installableUnit" type="lu:InstallableUnitType"/>
     <complexType name="InstallableUnitType">
         <sequence>
-            <element ref="lu:version" minOccurs="0"/>
-            <element ref="lu:requirement" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="lu:feature" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="lu:artifact" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="lu:version" minOccurs="0"/>
+            <element ref="lu:requirement" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
         <attribute name="ID" type="ID" use="required"/>
         <attribute name="updateNature" type="lu:UpdateNatureType" />
+    </complexType>
+
+    <element name="versionRange" type="lu:VersionRangeType"/>
+    <complexType name="VersionRangeType">
+        <attribute name="Expression" type="string" use="required"/>
     </complexType>
 
     <element name="version" type="lu:VersionType"/>
@@ -79,21 +86,34 @@
         <attribute name="Version" type="string" use="required"/>
     </complexType>
     
-    <element name="requirement" type="lu:RequirementType"/>
     <complexType name="RequirementType">
         <attribute name="description" type="string"/>
     </complexType>
-    
-    <element name="feature" type="lu:RequiredFeatureType"/>
+
+    <element name="requirement" type="lu:RequiredFeatureType"/>
     <complexType name="RequiredFeatureType">
         <complexContent>
             <extension base="lu:RequirementType">
-                <attribute name="group" type="string"/>
-                <attribute name="name" type="string"/>
-                <attribute name="version" type="string"/>
+                <sequence>
+                    <element ref="lu:versionRange" />
+                </sequence>
+                <attribute name="group" type="string" use="required"/>
+                <attribute name="name" type="string" use="required"/>
             </extension>
         </complexContent>
     </complexType>
+
+    <element name="feature" type="lu:FeatureType"/>
+    <complexType name="FeatureType">
+        <sequence>
+            <element ref="lu:version" />
+        </sequence>
+
+        <attribute name="group" type="string" use="required"/>
+        <attribute name="name" type="string" use="required"/>
+        <attribute name="description" type="string"/>
+    </complexType>
+
     
     <element name="artifact" type="lu:ArtifactKeyType"/>
     <complexType name="ArtifactKeyType">
@@ -101,7 +121,7 @@
         <attribute name="group" type="string" use="required"/>
         <attribute name="name" type="string" use="required"/>
         <attribute name="version" type="string" use="required"/>
-        <attribute name="classifier" type="string" use="required"/>
+        <attribute name="classifier" type="string" use="optional"/>
     </complexType>
 
     <simpleType name="UpdateNatureType">
@@ -111,6 +131,9 @@
             <enumeration value="EMERGENCY_BUGFIX"/>
             <enumeration value="IMPROVEMENT"/>
             <enumeration value="NEW_FEATURE"/>
+            <enumeration value="UPGRADE"/>
+            <enumeration value="SERVICE_PACK"/>
+            <enumeration value="DISTRO"/>
         </restriction>
     </simpleType>
 

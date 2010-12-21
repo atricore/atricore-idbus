@@ -15,5 +15,8 @@
                     http://www.springframework.org/schema/osgi-compendium
                     http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
+         <bean name="liveUpdateMgr" init-method="init"
+               class="com.atricore.idbus.console.liveservices.liveupdate.main.service.LiveUpdateManagerImpl">
 
+         </bean>
 </beans>

@@ -1,0 +1,47 @@
+package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl;
+
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransportException;
+
+import java.io.*;
+import java.net.URI;
+
+/**
+ * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
+ */
+public class FileRepositoryTransport implements RepositoryTransport {
+
+    private String baseFolder;
+
+    public boolean canHandle(URI uri) {
+        return uri.getScheme() != null && uri.getScheme().equals("file");
+    }
+
+    public byte[] loadContent(URI uri) throws RepositoryTransportException {
+
+        // TODO : Validate that file belongs to baseFolder ...
+        FileInputStream fs = null;
+        try {
+            File f = new File(uri);
+
+            byte[] buf = new byte[1024];
+            fs = new FileInputStream(f);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+            int read = fs.read(buf);
+            while (read > 0) {
+                baos.write(buf, 0, read);
+                read = fs.read(buf);
+            }
+
+            return baos.toByteArray();
+
+        } catch (FileNotFoundException e) {
+            throw new RepositoryTransportException(e);
+        } catch (IOException e) {
+            throw new RepositoryTransportException(e);
+        } finally {
+            if (fs != null) try {fs.close();} catch (IOException e) { /*Ignore this*/ }
+        }
+    }
+}

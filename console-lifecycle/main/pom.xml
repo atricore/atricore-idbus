@@ -49,11 +49,9 @@
             <scope>provided</scope>
         </dependency>
 
-
         <dependency>
             <groupId>org.apache.karaf.features</groupId>
             <artifactId>org.apache.karaf.features.core</artifactId>
-            <version>${felix.karaf.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -182,6 +180,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>com.atricore.idbus.console.lifecycle.support.springmetadata</artifactId>
+            <version>${pom.version}</version>
         </dependency>
 
         <dependency>

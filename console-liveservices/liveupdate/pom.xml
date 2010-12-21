@@ -32,8 +32,8 @@
     </parent>
 
 
-    <groupId>com.atricore.idbus.console.liveservices</groupId>
-    <artifactId>console-liveservices</artifactId>
+    <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+    <artifactId>console-liveupdate</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Atricore Console :: Live Services POM</name>
@@ -43,9 +43,9 @@
     </prerequisites>
 
     <modules>
-        <module>liveupdate/main</module>
-        <module>liveupdate/command</module>
-        <module>liveupdate/support/atricore-liveupdate-v1.0</module>
+        <module>main</module>
+        <module>command</module>
+        <module>support/atricore-liveupdate-v1.0</module>
     </modules>
 
     <build>

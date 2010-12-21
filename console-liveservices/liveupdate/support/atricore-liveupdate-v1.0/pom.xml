@@ -25,7 +25,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-
     <parent>
         <groupId>com.atricore.idbus.console.liveservices</groupId>
         <artifactId>console-liveservices</artifactId>
@@ -62,6 +61,18 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.xmldsig</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.commons-vfs</artifactId>
             <scope>provided</scope>
         </dependency>
 

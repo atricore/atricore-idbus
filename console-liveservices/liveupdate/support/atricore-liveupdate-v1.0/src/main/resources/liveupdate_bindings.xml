@@ -24,7 +24,7 @@
         xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
         xmlns:xs="http://www.w3.org/2001/XMLSchema"
         xmlns:jxb="http://java.sun.com/xml/ns/jaxb">
-        <jxb:bindings schemaLocation="atricore-liveupdate-md-1.0.xsd" node="/xs:schema">
+        <jxb:bindings schemaLocation="atricore-liveupdate-profile-1.0.xsd" node="/xs:schema">
                 <jxb:globalBindings xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
                         xmlns:xs="http://www.w3.org/2001/XMLSchema">
                         <jxb:serializable/>

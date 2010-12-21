@@ -1,5 +1,9 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
 
+import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
+
+import java.util.Collection;
+
 /**
  * Manages a set of LiveUpdate MD repositories.
  *
@@ -10,5 +14,8 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
  */
 public interface MetadataRepositoryManager extends RepositoryManager {
 
+    Collection<UpdateDescriptorType> refreshRepositories();
+
+    Collection<UpdateDescriptorType> getAvailableUpdates();
 
 }
