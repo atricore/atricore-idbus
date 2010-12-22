@@ -19,14 +19,9 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.main.controller
-{
+package com.atricore.idbus.console.modeling.main.controller {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.spi.request.ImportIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.response.AddIdentityApplianceResponse;
-
-import com.atricore.idbus.console.services.spi.response.ImportIdentityApplianceResponse;
 
 import flash.utils.ByteArray;
 
@@ -38,10 +33,13 @@ import mx.rpc.remoting.mxml.RemoteObject;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
+import com.atricore.idbus.console.services.spi.request.ImportIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.response.ImportIdentityApplianceResponse;
+
 public class IdentityApplianceImportCommand extends IocSimpleCommand implements IResponder {
 
-    public static const SUCCESS : String = "IdentityApplianceImportCommand.SUCCESS";
-    public static const FAILURE : String = "IdentityApplianceImportCommand.FAILURE";
+    public static const SUCCESS:String = "IdentityApplianceImportCommand.SUCCESS";
+    public static const FAILURE:String = "IdentityApplianceImportCommand.FAILURE";
 
     private var _registry:ServiceRegistry;
 
@@ -65,9 +63,11 @@ public class IdentityApplianceImportCommand extends IocSimpleCommand implements 
 
     public function result(data:Object):void {
         var resp:ImportIdentityApplianceResponse = data.result as ImportIdentityApplianceResponse;
+        var applianceId:Number = resp.appliance.id;
         if (resp.validationErrors != null && resp.validationErrors.length > 0) {
             sendNotification(ApplicationFacade.APPLIANCE_VALIDATION_ERRORS);
         } else {
+            sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, applianceId);
             sendNotification(SUCCESS);
         }
     }

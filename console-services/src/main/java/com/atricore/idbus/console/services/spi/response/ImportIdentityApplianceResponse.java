@@ -22,9 +22,21 @@
 package com.atricore.idbus.console.services.spi.response;
 
 
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
+import com.atricore.idbus.console.services.dto.IdentityApplianceDTO;
 
 /**
  * Author: Dejan Maric
  */
 public class ImportIdentityApplianceResponse extends AbstractManagementResponse {
+
+    private IdentityApplianceDTO appliance;
+
+    public IdentityApplianceDTO getAppliance() {
+        return appliance;
+    }
+
+    public void setAppliance(IdentityApplianceDTO appliance) {
+        this.appliance = appliance;
+    }
 }

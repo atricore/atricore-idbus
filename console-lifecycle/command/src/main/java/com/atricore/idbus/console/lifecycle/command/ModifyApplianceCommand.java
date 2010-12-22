@@ -43,8 +43,10 @@ public class ModifyApplianceCommand extends ManagementCommandSupport {
         if (displayName != null)
             applianceDef.setDisplayName(displayName);
 
-        if (namespace != null)
+        if (namespace != null) {
             appliance.setNamespace(namespace);
+            applianceDef.setNamespace(namespace);
+        }
 
         if (description != null)
             applianceDef.setDescription(description);

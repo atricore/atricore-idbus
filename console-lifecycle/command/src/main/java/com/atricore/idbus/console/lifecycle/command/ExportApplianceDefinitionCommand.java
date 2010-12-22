@@ -21,7 +21,7 @@ import java.io.OutputStream;
 @Command(scope = "appliance", name = "export-definition", description = "Export Identity Appliance definition")
 public class ExportApplianceDefinitionCommand extends ManagementCommandSupport {
 
-    private static Log logger = LogFactory.getLog(ImportApplianceDefinitionCommand.class);
+    private static Log logger = LogFactory.getLog(ExportApplianceDefinitionCommand.class);
 
     @Argument(index = 0, name = "id", description = "The id of the identity appliance", required = true, multiValued = false)
     String id;

@@ -318,10 +318,14 @@ public class IdentityApplianceManagementServiceImpl implements
             // 1. Unmarshall appliance
             IdentityAppliance appliance = new IdentityAppliance();
             appliance.setIdApplianceDefinitionBin(appStr);
-
             appliance = identityApplianceDAO.unmarshall(appliance);
-            appliance.setName(appliance.getIdApplianceDefinition().getName());
+
+            validateAppliance(appliance, ApplianceValidator.Operation.IMPORT);
+            debugAppliance(appliance, ApplianceValidator.Operation.IMPORT);
+
             appliance.setNamespace(appliance.getIdApplianceDefinition().getNamespace());
+            appliance.setDisplayName(appliance.getIdApplianceDefinition().getDisplayName());
+            appliance.setDescription(appliance.getIdApplianceDefinition().getDescription());
             appliance.setState(IdentityApplianceState.PROJECTED.toString());
             appliance = identityApplianceDAO.save(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
