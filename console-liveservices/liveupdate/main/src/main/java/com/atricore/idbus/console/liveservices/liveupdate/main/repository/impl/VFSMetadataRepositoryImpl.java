@@ -42,7 +42,10 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
     public void init() throws LiveUpdateException {
 
         try {
-            repo = fsManager.createVirtualFileSystem(repoUri.toURL().toExternalForm());
+
+            repo = getFileSystemManager().createVirtualFileSystem(repoUri.toURL().toExternalForm());
+            if (logger.isDebugEnabled())
+                logger.debug("Initializing VFS MD Repository at " + repoUri.toString());
 
             if (!repo.exists())
                 repo.createFolder();
@@ -112,7 +115,7 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
     }
 
     public void setRepoFolder(URI repoFolder) {
-        this.repoUri = repoUri;
+        this.repoUri = repoFolder;
     }
 
     // ------------------------------< Utilities >

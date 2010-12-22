@@ -99,7 +99,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
                 repo.setLocation(location);
                 repo.setEnabled(enabled);
                 try {
-                    repo.setRepoFolder(new URI (karafData + "/liveservices/liveupdate/repo/md/" + id));
+                    repo.setRepoFolder(new URI ("file://" + karafData + "/liveservices/liveupdate/repo/md/" + id));
                 } catch (URISyntaxException e) {
                     logger.error("Invalid repository ID : " + id + ". " +e.getMessage());
                     continue;
