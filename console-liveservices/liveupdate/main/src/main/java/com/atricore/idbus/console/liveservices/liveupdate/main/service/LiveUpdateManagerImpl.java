@@ -17,10 +17,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 /**
@@ -43,6 +40,8 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     private UpdatesMonitor updatesMonitor;
 
+    private String karafData;
+
     private ScheduledThreadPoolExecutor stpe;
     private Properties config;
     private MetadataRepositoryManagerImpl mdManager;
@@ -54,11 +53,21 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
         for (Object k : config.keySet()) {
             String key = (String) k;
+            Set<String> used = new HashSet<String>();
+
             if (key.startsWith("repo.md.")) {
+
+
+
                 // We need to configure a repo, get repo base key.
                 String repoName = key.substring("repo.md.".length());
                 repoName = repoName.substring(0, repoName.indexOf('.'));
                 String repoKeys = "repo.md." + repoName;
+
+                if (used.contains(repoKeys))
+                    continue;
+
+                used.add(repoKeys);
 
                 // Get id,name, location, enabled
 
@@ -67,9 +76,11 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
                 boolean enabled = Boolean.parseBoolean(config.getProperty(repoKeys + ".enabled"));
                 URI location = null;
                 try {
-                    location = new URI(config.getProperty(repoKeys + ".location"));
+                    String l = config.getProperty(repoKeys + ".location");
+                    l.replaceAll("\\$\\{karaf\\.data\\}", karafData);
+                    location = new URI(l);
                 } catch (Exception e) {
-                    logger.error("Invalid URI [] for repository " + id + " " + name);
+                    logger.error("Invalid URI ["+config.getProperty(repoKeys + ".location")+"] for repository " + id + " " + name);
                     continue;
                 }
 
@@ -140,5 +151,13 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     public ArtifactRepositoryManagerImpl getArtifactRepositoryManager() {
         return artManager;
+    }
+
+    public String getKarafData() {
+        return karafData;
+    }
+
+    public void setKarafData(String karafData) {
+        this.karafData = karafData;
     }
 }

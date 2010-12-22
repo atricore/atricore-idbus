@@ -5,6 +5,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Reposi
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public class AbstractRepositoryManager<T> implements RepositoryManager {
 
-    protected List<T> repos;
+    protected List<T> repos = new ArrayList<T>();
 
     protected List<RepositoryTransport> transports;
 
