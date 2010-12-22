@@ -32,6 +32,8 @@ public interface IdentityApplianceManagementService {
 
     ExportIdentityApplianceResponse exportIdentityAppliance(ExportIdentityApplianceRequest request) throws IdentityServerException;
 
+    ImportIdentityApplianceResponse importIdentityApplianceProject(ImportIdentityApplianceRequest request) throws IdentityServerException;
+
     ImportApplianceDefinitionResponse importApplianceDefinition(ImportApplianceDefinitionRequest request) throws IdentityServerException;
 
     ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException;
@@ -92,4 +94,5 @@ public interface IdentityApplianceManagementService {
     LookupResourceByIdResponse lookupResourceById(LookupResourceByIdRequest req) throws IdentityServerException;
 
     GetMetadataInfoResponse getMetadataInfo(GetMetadataInfoRequest req) throws IdentityServerException;
+    GetCertificateInfoResponse getCertificateInfo(GetCertificateInfoRequest req) throws IdentityServerException;
 }

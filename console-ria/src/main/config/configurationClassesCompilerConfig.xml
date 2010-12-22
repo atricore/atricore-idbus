@@ -93,6 +93,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.StopIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.DisposeIdentityApplianceCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceCreateCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityApplianceImportCommand</symbol>
         <!--<symbol>com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand</symbol>-->
         <!--<symbol>com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand</symbol>-->
         <symbol>com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand</symbol>
@@ -109,6 +110,7 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.FoldersExistsCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.GetCertificateInfoCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.AddGroupCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.AddUserCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.DeleteGroupCommand</symbol>

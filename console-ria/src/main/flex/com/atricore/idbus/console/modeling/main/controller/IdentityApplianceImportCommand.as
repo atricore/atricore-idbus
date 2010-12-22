@@ -19,12 +19,16 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.main.controller {
+package com.atricore.idbus.console.modeling.main.controller
+{
 import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.spi.request.GetMetadataInfoRequest;
-import com.atricore.idbus.console.services.spi.response.GetMetadataInfoResponse;
+import com.atricore.idbus.console.services.spi.request.ImportIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.response.AddIdentityApplianceResponse;
+
+import com.atricore.idbus.console.services.spi.response.ImportIdentityApplianceResponse;
+
+import flash.utils.ByteArray;
 
 import mx.rpc.Fault;
 import mx.rpc.IResponder;
@@ -34,13 +38,12 @@ import mx.rpc.remoting.mxml.RemoteObject;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class GetMetadataInfoCommand extends IocSimpleCommand implements IResponder {
+public class IdentityApplianceImportCommand extends IocSimpleCommand implements IResponder {
 
-    public static const SUCCESS:String = "GetMetadataInfoCommand.SUCCESS";
-    public static const FAILURE:String = "GetMetadataInfoCommand.FAILURE";
+    public static const SUCCESS : String = "IdentityApplianceImportCommand.SUCCESS";
+    public static const FAILURE : String = "IdentityApplianceImportCommand.FAILURE";
 
     private var _registry:ServiceRegistry;
-    private var _projectProxy:ProjectProxy;
 
     public function get registry():ServiceRegistry {
         return _registry;
@@ -50,28 +53,23 @@ public class GetMetadataInfoCommand extends IocSimpleCommand implements IRespond
         _registry = value;
     }
 
-
-    public function get projectProxy():ProjectProxy {
-        return _projectProxy;
-    }
-
-    public function set projectProxy(value:ProjectProxy):void {
-        _projectProxy = value;
-    }
-
     override public function execute(notification:INotification):void {
-        var params:Array = notification.getBody() as Array;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
-        var req:GetMetadataInfoRequest = new GetMetadataInfoRequest();
-        req.role = params[0];
-        req.metadata = params[1];
-        var call:Object = service.getMetadataInfo(req);
+        var fBytes:ByteArray = notification.getBody() as ByteArray;
+
+        var req:ImportIdentityApplianceRequest = new ImportIdentityApplianceRequest();
+        req.bytes = fBytes;
+        var call:Object = service.importIdentityApplianceProject(req);
         call.addResponder(this);
     }
 
     public function result(data:Object):void {
-        var resp:GetMetadataInfoResponse = data.result as GetMetadataInfoResponse;
-        sendNotification(SUCCESS, resp);
+        var resp:ImportIdentityApplianceResponse = data.result as ImportIdentityApplianceResponse;
+        if (resp.validationErrors != null && resp.validationErrors.length > 0) {
+            sendNotification(ApplicationFacade.APPLIANCE_VALIDATION_ERRORS);
+        } else {
+            sendNotification(SUCCESS);
+        }
     }
 
     public function fault(info:Object):void {

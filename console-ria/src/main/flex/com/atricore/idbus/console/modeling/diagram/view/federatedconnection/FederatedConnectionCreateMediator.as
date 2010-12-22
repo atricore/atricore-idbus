@@ -62,6 +62,8 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
     private var _spLocation:Location;
     private var _idpLocation:Location;
+    private var _spName:String;
+    private var _idpName:String;
     
     public function FederatedConnectionCreateMediator(name:String = null, viewComp:FederatedConnectionCreateForm = null) {
         super(name, viewComp);
@@ -95,7 +97,6 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
     public function registerListeners():void {
         view.useInheritedSPSettings.addEventListener(Event.CHANGE, handleInheritedSpChkboxChanged);
         view.useInheritedIDPSettings.addEventListener(Event.CHANGE, handleInheritedIdpChkboxChanged);
-        view.federatedConnectionName.addEventListener(Event.CHANGE, handleFederatedConnectionNameChange);
     }
 
     private function reflectSPSettingsInIdpChannelTab():void {
@@ -155,6 +156,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
         // set location
         _spLocation = sp.location;
+        _spName = sp.name;
         updateIdpChannelLocation();
 
         view.useInheritedSPSettings.selected = true;
@@ -208,6 +210,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
 
         // set location
         _idpLocation = idp.location;
+        _idpName = idp.name;
         updateSpChannelLocation();
 
         view.useInheritedIDPSettings.selected = true;
@@ -673,12 +676,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.spChannelLocationPath.enabled = true;
         }
     }
-
-    private function handleFederatedConnectionNameChange(event:Event):void {
-        updateIdpChannelLocation();
-        updateSpChannelLocation();
-    }
-
+    
     private function updateIdpChannelLocation():void {
         if (_spLocation != null) {
             for (var i:int = 0; i < view.idpChannelLocationProtocol.dataProvider.length; i++) {
@@ -692,7 +690,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.idpChannelLocationContext.text = _spLocation.context;
             view.idpChannelLocationPath.text = _spLocation.uri;
             if (!view.useInheritedSPSettings.selected) {
-                view.idpChannelLocationPath.text += "/" + view.federatedConnectionName.text.toUpperCase().replace(/\s+/g, "-");
+                view.idpChannelLocationPath.text += "/" + _idpName.toUpperCase().replace(/\s+/g, "-");
             }
         }
     }
@@ -710,7 +708,7 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             view.spChannelLocationContext.text = _idpLocation.context;
             view.spChannelLocationPath.text = _idpLocation.uri;
             if (!view.useInheritedIDPSettings.selected) {
-                view.spChannelLocationPath.text += "/" + view.federatedConnectionName.text.toUpperCase().replace(/\s+/g, "-");
+                view.spChannelLocationPath.text += "/" + _spName.toUpperCase().replace(/\s+/g, "-");
             }
         }
     }

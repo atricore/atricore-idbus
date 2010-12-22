@@ -131,6 +131,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _createSimpleSSOIdentityApplianceCommand:IIocCommand;
     private var _identityApplianceListLoadCommand:IIocCommand;
     private var _identityApplianceCreateCommand:IIocCommand;
+    private var _identityApplianceImportCommand:IIocCommand;
     private var _createSimpleSSOSetupCommand:IIocCommand;
     private var _addGroupCommand:IIocCommand;
     private var _addUserCommand:IIocCommand;
@@ -148,6 +149,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _foldersExistsCommand:IIocCommand;
     private var _jdbcDriversListCommand:IIocCommand;
     private var _getMetadataInfoCommand:IIocCommand;
+    private var _getCertificateInfoCommand:IIocCommand;
 
 
     public function get applicationMediator():IIocMediator {
@@ -815,6 +817,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _identityApplianceCreateCommand = value;
     }
 
+    public function get identityApplianceImportCommand():IIocCommand {
+        return _identityApplianceImportCommand;
+    }
+
+    public function set identityApplianceImportCommand(value:IIocCommand):void {
+        _identityApplianceImportCommand = value;
+    }
+
     public function get createSimpleSSOSetupCommand():IIocCommand {
         return _createSimpleSSOSetupCommand;
     }
@@ -959,6 +969,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _getMetadataInfoCommand = value;
     }
 
+    public function get getCertificateInfoCommand():IIocCommand {
+        return _getCertificateInfoCommand;
+    }
+
+    public function set getCertificateInfoCommand(value:IIocCommand):void {
+        _getCertificateInfoCommand = value;
+    }
+
     override public function execute(note:INotification):void {
         var registry:ServiceRegistry = setupServiceRegistry();
 
@@ -972,6 +990,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.REGISTER, registerCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, createSimpleSSOIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, identityApplianceCreateCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.IMPORT_IDENTITY_APPLIANCE, identityApplianceImportCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_REMOVE, identityApplianceRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_PROVIDER_REMOVE, identityProviderRemoveCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SERVICE_PROVIDER_REMOVE, serviceProviderRemoveCommand.getConfigName());
@@ -1010,6 +1029,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_FOLDERS_EXISTENCE, foldersExistsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_JDBC_DRIVERS, jdbcDriversListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_METADATA_INFO, getMetadataInfoCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.GET_CERTIFICATE_INFO, getCertificateInfoCommand.getConfigName());
 
         // setup for first level mediators
         applicationMediator.setViewComponent(app);

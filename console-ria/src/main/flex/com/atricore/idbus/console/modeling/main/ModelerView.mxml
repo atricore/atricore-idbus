@@ -87,6 +87,12 @@
                                           toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'action.save')}"
                                           label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'action.save')}"/>
 
+                    <comp:IconLabelButton id="btnImport" isLinkButton="false"
+                                          iconUp="{EmbeddedIcons.importApplianceMiniIcon}"
+                                          skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
+                                          toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'action.import')}"
+                                          label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'action.import')}"/>
+
                     <comp:IconLabelButton id="btnExport" isLinkButton="false"
                                           iconUp="{EmbeddedIcons.exportApplianceMiniIcon}"
                                           skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"

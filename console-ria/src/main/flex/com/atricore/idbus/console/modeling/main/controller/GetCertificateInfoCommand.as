@@ -23,8 +23,9 @@ package com.atricore.idbus.console.modeling.main.controller {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.spi.request.GetMetadataInfoRequest;
-import com.atricore.idbus.console.services.spi.response.GetMetadataInfoResponse;
+import com.atricore.idbus.console.services.dto.SamlR2ProviderConfig;
+import com.atricore.idbus.console.services.spi.request.GetCertificateInfoRequest;
+import com.atricore.idbus.console.services.spi.response.GetCertificateInfoResponse;
 
 import mx.rpc.Fault;
 import mx.rpc.IResponder;
@@ -34,10 +35,10 @@ import mx.rpc.remoting.mxml.RemoteObject;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class GetMetadataInfoCommand extends IocSimpleCommand implements IResponder {
+public class GetCertificateInfoCommand extends IocSimpleCommand implements IResponder {
 
-    public static const SUCCESS:String = "GetMetadataInfoCommand.SUCCESS";
-    public static const FAILURE:String = "GetMetadataInfoCommand.FAILURE";
+    public static const SUCCESS:String = "GetCertificateInfoCommand.SUCCESS";
+    public static const FAILURE:String = "GetCertificateInfoCommand.FAILURE";
 
     private var _registry:ServiceRegistry;
     private var _projectProxy:ProjectProxy;
@@ -60,17 +61,16 @@ public class GetMetadataInfoCommand extends IocSimpleCommand implements IRespond
     }
 
     override public function execute(notification:INotification):void {
-        var params:Array = notification.getBody() as Array;
+        var config:SamlR2ProviderConfig = notification.getBody() as SamlR2ProviderConfig;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
-        var req:GetMetadataInfoRequest = new GetMetadataInfoRequest();
-        req.role = params[0];
-        req.metadata = params[1];
-        var call:Object = service.getMetadataInfo(req);
+        var req:GetCertificateInfoRequest = new GetCertificateInfoRequest();
+        req.config = config;
+        var call:Object = service.getCertificateInfo(req);
         call.addResponder(this);
     }
 
     public function result(data:Object):void {
-        var resp:GetMetadataInfoResponse = data.result as GetMetadataInfoResponse;
+        var resp:GetCertificateInfoResponse = data.result as GetCertificateInfoResponse;
         sendNotification(SUCCESS, resp);
     }
 

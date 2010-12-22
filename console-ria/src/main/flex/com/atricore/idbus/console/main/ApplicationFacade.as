@@ -63,6 +63,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const START_IDENTITY_APPLIANCE:String = "startIdentityAppliance";
     public static const STOP_IDENTITY_APPLIANCE:String = "stopIdentityAppliance";
     public static const DISPOSE_IDENTITY_APPLIANCE:String = "disposeIdentityAppliance";
+    public static const IMPORT_IDENTITY_APPLIANCE:String = "importIdentityAppliance";
     public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
     public static const ADD_GROUP:String = "addGroup";
     public static const ADD_USER:String = "addUser";
@@ -82,6 +83,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const CHECK_FOLDERS_EXISTENCE:String = "checkFoldersExistence";
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
     public static const GET_METADATA_INFO:String = "getMetadataInfo";
+    public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";

@@ -83,8 +83,8 @@ public class JavaEEExecutionEnvironmentCreateMediator extends IocFormMediator {
         view.selectedHost.selectedIndex = 0;
         view.homeDirectory.text = "";
         view.homeDirectory.errorString = "";
-        view.replaceConfFiles.selected = false;
-        view.installSamples.selected = false;         
+//        view.replaceConfFiles.selected = false;
+//        view.installSamples.selected = false;
 
         FormUtility.clearValidationErrors(_validators);
     }
@@ -96,8 +96,8 @@ public class JavaEEExecutionEnvironmentCreateMediator extends IocFormMediator {
         jeeExecutionEnvironment.name = view.executionEnvironmentName.text;
         jeeExecutionEnvironment.description = view.executionEnvironmentDescription.text;
         jeeExecutionEnvironment.installUri = view.homeDirectory.text;
-        jeeExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
-        jeeExecutionEnvironment.installDemoApps = view.installSamples.selected;
+//        jeeExecutionEnvironment.overwriteOriginalSetup = view.replaceConfFiles.selected;
+//        jeeExecutionEnvironment.installDemoApps = view.installSamples.selected;
 //        apacheExecutionEnvironment.platformId = view.platform.selectedItem.data;
         //TODO check platform ID
         jeeExecutionEnvironment.platformId = "jee";
