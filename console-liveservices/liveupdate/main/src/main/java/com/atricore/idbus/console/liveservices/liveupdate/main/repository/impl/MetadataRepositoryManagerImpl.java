@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
@@ -83,8 +84,10 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         return null;
     }
 
-    public void addRepository(MetadataRepository repo) {
+    public void addRepository(MetadataRepository repo) throws LiveUpdateException {
+        repo.init();
         repos.add(repo);
+
     }
 
 }

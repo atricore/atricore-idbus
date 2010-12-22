@@ -1,5 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
+
 import java.net.URI;
 
 /**
@@ -22,5 +24,8 @@ public interface Repository<T> {
     String getPassword();
 
     URI getLocation();
+
+    void init() throws LiveUpdateException;
+
 
 }

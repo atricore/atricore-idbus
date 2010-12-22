@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.service;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateEngine;
 import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileManager;
@@ -47,23 +48,24 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     private MetadataRepositoryManagerImpl mdManager;
     private ArtifactRepositoryManagerImpl artManager;
 
-    public void init() {
+    public void init() throws LiveUpdateException {
+
+
         // Start update check thread.
         logger.info("Initializing LiveUpdate service");
 
+        Set<String> used = new HashSet<String>();
+
         for (Object k : config.keySet()) {
             String key = (String) k;
-            Set<String> used = new HashSet<String>();
 
             if (key.startsWith("repo.md.")) {
 
-
-
                 // We need to configure a repo, get repo base key.
-                String repoName = key.substring("repo.md.".length());
-                repoName = repoName.substring(0, repoName.indexOf('.'));
-                String repoKeys = "repo.md." + repoName;
+                String repoId = key.substring("repo.md.".length());
+                repoId = repoId.substring(0, repoId.indexOf('.'));
 
+                String repoKeys = "repo.md." + repoId;
                 if (used.contains(repoKeys))
                     continue;
 
@@ -71,13 +73,16 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
                 // Get id,name, location, enabled
 
+                if (logger.isTraceEnabled())
+                    logger.trace("Adding new MD repository : " + repoKeys);
+
                 String id = config.getProperty(repoKeys + ".id");
                 String name = config.getProperty(repoKeys + ".name");
                 boolean enabled = Boolean.parseBoolean(config.getProperty(repoKeys + ".enabled"));
                 URI location = null;
                 try {
                     String l = config.getProperty(repoKeys + ".location");
-                    l.replaceAll("\\$\\{karaf\\.data\\}", karafData);
+                    l = l.replaceAll("\\$\\{karaf\\.data\\}", karafData);
                     location = new URI(l);
                 } catch (Exception e) {
                     logger.error("Invalid URI ["+config.getProperty(repoKeys + ".location")+"] for repository " + id + " " + name);
@@ -85,7 +90,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
                 }
 
                 if (logger.isDebugEnabled())
-                    logger.debug("Configuring repository ["+id+"] " + name +
+                    logger.debug("Adding new VFS MD Repository ["+id+"] " + name +
                             (enabled ? "enabled" : "disabled" ) + " at " + location);
 
                 VFSMetadataRepositoryImpl repo = new VFSMetadataRepositoryImpl();
@@ -93,10 +98,21 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
                 repo.setName(name);
                 repo.setLocation(location);
                 repo.setEnabled(enabled);
+                try {
+                    repo.setRepoFolder(new URI (karafData + "/liveservices/liveupdate/repo/md/" + id));
+                } catch (URISyntaxException e) {
+                    logger.error("Invalid repository ID : " + id + ". " +e.getMessage());
+                    continue;
+                }
 
-                // TODO : Setup other poperties as public key, etc
+
+                // TODO : Setup other poperties like public key, etc
+
                 mdManager.addRepository(repo);
 
+
+            } else if (key.startsWith("repo.art.")) {
+                // TODO : Configure Artifact Repository
 
             }
 

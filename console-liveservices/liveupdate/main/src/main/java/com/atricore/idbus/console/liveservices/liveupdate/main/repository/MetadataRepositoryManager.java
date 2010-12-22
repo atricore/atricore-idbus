@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSMetadataRepositoryImpl;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 
@@ -19,5 +20,5 @@ public interface MetadataRepositoryManager extends RepositoryManager {
 
     Collection<UpdateDescriptorType> getAvailableUpdates();
 
-    void addRepository(MetadataRepository repo);
+    void addRepository(MetadataRepository repo) throws LiveUpdateException;
 }

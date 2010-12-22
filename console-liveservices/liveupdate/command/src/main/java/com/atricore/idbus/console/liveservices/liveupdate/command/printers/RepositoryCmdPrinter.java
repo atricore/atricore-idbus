@@ -17,7 +17,7 @@ public class RepositoryCmdPrinter extends AbstractCmdPrinter<Repository> {
 
         StringBuilder sb = new StringBuilder();
         // Build headers line
-        sb.append("\u001B[1m  ID          Name           Eanbled             Location\u001B[0m\n");
+        sb.append("\u001B[1m      ID                  Name               Status    Location\u001B[0m\n");
 
         for (Repository r : os) {
             sb.append("[");

@@ -45,7 +45,7 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
             repo = fsManager.createVirtualFileSystem(repoUri.toURL().toExternalForm());
 
             if (!repo.exists())
-                throw new LiveUpdateException("Folder not found : " + repo.getURL());
+                repo.createFolder();
 
             if (!repo.getType().getName().equals(FileType.FOLDER.getName()))
                 throw new LiveUpdateException("Repository is not a folder : " + repo.getURL());

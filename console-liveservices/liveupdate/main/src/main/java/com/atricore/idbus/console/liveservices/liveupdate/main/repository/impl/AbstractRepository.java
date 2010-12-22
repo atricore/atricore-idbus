@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
 
 import java.net.URI;
@@ -22,6 +23,10 @@ public abstract class AbstractRepository<T> implements Repository<T> {
     private String password;
 
     private URI location;
+
+    public void init() throws LiveUpdateException {
+
+    }
 
     public String getId() {
         return id;
