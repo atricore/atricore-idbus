@@ -12,6 +12,8 @@ public interface RepositoryManager<T> {
 
     Collection<T> getRepositories();
 
+    Collection<RepositoryTransport> getTransports();
+
     URI[] getKnownRepositories();
 
     URI[] getKnownMetaDataRepositories();

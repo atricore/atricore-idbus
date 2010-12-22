@@ -6,6 +6,9 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileMa
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.ArtifactRepositoryManagerImpl;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.MetadataRepositoryManagerImpl;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSMetadataRepositoryImpl;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
@@ -32,9 +35,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     private static final Log logger = LogFactory.getLog(LiveUpdateManagerImpl.class);
 
-    private MetadataRepositoryManager mdManager;
-
-    private ArtifactRepositoryManager artManager;
+    private List<RepositoryTransport> transports;
 
     private ProfileManager profileManager;
 
@@ -44,6 +45,8 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     private ScheduledThreadPoolExecutor stpe;
     private Properties config;
+    private MetadataRepositoryManagerImpl mdManager;
+    private ArtifactRepositoryManagerImpl artManager;
 
     public void init() {
         // Start update check thread.
@@ -64,8 +67,8 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
                 boolean enabled = Boolean.parseBoolean(config.getProperty(repoKeys + ".enabled"));
                 URI location = null;
                 try {
-                    location = new URI(config.getProperty(repoKeys + ".uri"));
-                } catch (URISyntaxException e) {
+                    location = new URI(config.getProperty(repoKeys + ".location"));
+                } catch (Exception e) {
                     logger.error("Invalid URI [] for repository " + id + " " + name);
                     continue;
                 }
@@ -81,7 +84,6 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
                 repo.setEnabled(enabled);
 
                 // TODO : Setup other poperties as public key, etc
-
                 mdManager.addRepository(repo);
 
 
@@ -122,5 +124,21 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     public Properties getConfig() {
         return config;
+    }
+
+    public void setMetadataRepositoryManager(MetadataRepositoryManagerImpl metadataRepositoryManager) {
+        this.mdManager = metadataRepositoryManager;
+    }
+
+    public MetadataRepositoryManagerImpl getMetadataRepositoryManager() {
+        return mdManager;
+    }
+
+    public void setArtifactRepositoryManager(ArtifactRepositoryManagerImpl artifactRepositoryManager) {
+        this.artManager = artifactRepositoryManager;
+    }
+
+    public ArtifactRepositoryManagerImpl getArtifactRepositoryManager() {
+        return artManager;
     }
 }

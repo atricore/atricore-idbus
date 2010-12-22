@@ -2,6 +2,7 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.ProvisioningAgent;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryManager;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
 
 import java.net.URI;
 import java.util.Collection;
@@ -13,6 +14,8 @@ import java.util.List;
 public class AbstractRepositoryManager<T> implements RepositoryManager {
 
     protected List<T> repos;
+
+    protected List<RepositoryTransport> transports;
 
     public Collection getRepositories() {
         return repos;
@@ -41,4 +44,13 @@ public class AbstractRepositoryManager<T> implements RepositoryManager {
     public ProvisioningAgent getAgent() {
         return null;
     }
+
+    public void setTransports(List<RepositoryTransport> transports) {
+        this.transports = transports;
+    }
+
+    public List<RepositoryTransport> getTransports() {
+        return transports;
+    }
+
 }

@@ -26,8 +26,6 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
     private static final Log logger = LogFactory.getLog(MetadataRepositoryManagerImpl.class);
 
-    private List<RepositoryTransport> transports = new ArrayList<RepositoryTransport>();
-
     public void init() {
 
     }
@@ -88,4 +86,5 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
     public void addRepository(MetadataRepository repo) {
         repos.add(repo);
     }
+
 }

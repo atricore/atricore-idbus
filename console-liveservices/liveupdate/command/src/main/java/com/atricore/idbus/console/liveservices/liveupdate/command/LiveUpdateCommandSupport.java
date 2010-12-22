@@ -23,13 +23,13 @@ public abstract class LiveUpdateCommandSupport extends OsgiCommandSupport {
         // Get repository admin service.
         ServiceReference ref = getBundleContext().getServiceReference(LiveUpdateManager.class.getName());
         if (ref == null) {
-            System.out.println("Identity Appliance Management Service is unavailable. (no service reference)");
+            System.out.println("LiveUpdate Service is unavailable. (no service reference)");
             return null;
         }
         try {
             LiveUpdateManager svc = (LiveUpdateManager) getBundleContext().getService(ref);
             if (svc == null) {
-                System.out.println("Identity Appliance Management Service service is unavailable. (no service)");
+                System.out.println("LiveUpdate Service service is unavailable. (no service)");
                 return null;
             }
 

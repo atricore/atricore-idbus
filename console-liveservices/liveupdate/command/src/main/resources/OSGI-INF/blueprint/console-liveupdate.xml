@@ -29,4 +29,6 @@
 
     </command-bundle>
 
+    <bean id="repositoryPrinter" class="com.atricore.idbus.console.liveservices.liveupdate.command.printers.RepositoryCmdPrinter"/>
+
 </blueprint>
