@@ -21,6 +21,7 @@
         <property name="config" ref="liveUpdateProps"/>
         <property name="metadataRepositoryManager" ref="mdRepositoriesManager"/>
         <property name="artifactRepositoryManager" ref="artRepositoriesManager"/>
+        <property name="profileManager" ref="profileManager"/>
         <property name="karafData" value="${karaf.data}"/>
     </bean>
 
@@ -51,6 +52,11 @@
           class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.HttpRepositoryTransport"/>
     <bean name="fileRepositoryTransport"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.FileRepositoryTransport"/>
+
+    <!-- Profile Manager -->
+    <bean name="profileManager" class="com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl.ProfileManagerImpl">
+
+    </bean>
 
     <!-- Export LiveUpdate service using OSGi -->
     <osgi:service id="liveUpdateMgrOsgi" ref="liveUpdateMgr"

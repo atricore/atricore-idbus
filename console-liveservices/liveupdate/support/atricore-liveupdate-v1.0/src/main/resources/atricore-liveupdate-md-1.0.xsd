@@ -67,12 +67,14 @@
     <element name="installableUnit" type="lu:InstallableUnitType"/>
     <complexType name="InstallableUnitType">
         <sequence>
+            <element ref="lu:version" minOccurs="0"/>
             <element ref="lu:feature" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="lu:artifact" minOccurs="0" maxOccurs="unbounded"/>
-            <element ref="lu:version" minOccurs="0"/>
             <element ref="lu:requirement" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
         <attribute name="ID" type="ID" use="required"/>
+        <attribute name="group" type="string" use="required" />
+        <attribute name="name" type="string" use="required" />
         <attribute name="updateNature" type="lu:UpdateNatureType" />
     </complexType>
 
@@ -109,6 +111,7 @@
             <element ref="lu:version" />
         </sequence>
 
+        <attribute name="ID" type="ID" use="required"/>
         <attribute name="group" type="string" use="required"/>
         <attribute name="name" type="string" use="required"/>
         <attribute name="description" type="string"/>

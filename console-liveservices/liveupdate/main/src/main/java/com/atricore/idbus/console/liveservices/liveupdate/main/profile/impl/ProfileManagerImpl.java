@@ -12,10 +12,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.karaf.features.Feature;
 import org.apache.karaf.features.FeaturesService;
-import org.apache.karaf.shell.console.BundleContextAware;
+import org.atricore.idbus.kernel.common.support.osgi.OsgiBundleClassLoader;
 import org.atricore.idbus.kernel.common.support.osgi.OsgiBundlespaceClassLoader;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.springframework.osgi.context.BundleContextAware;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,9 +34,19 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
 
     private static final Log logger = LogFactory.getLog(ProfileManagerImpl.class);
 
+    private static final String CONTEXT_DIR = "/META-INF/liveservices/";
+
+    private static final String CONTEXT_FILES = "liveupdate-1.0.xml";
+
+
     private BundleContext bundleContext;
 
+    private ProfileType profile;
+
     public ProfileType getCurrentProfile() throws LiveUpdateException {
+
+        if (profile != null)
+            return profile;
 
         ServiceReference ref = getBundleContext().getServiceReference(FeaturesService.class.getName());
         if (ref == null) {
@@ -43,58 +55,111 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
 
         try {
 
-            List<InstallableUnitType> profile = new ArrayList<InstallableUnitType>();
-
-            OsgiBundlespaceClassLoader cl = new OsgiBundlespaceClassLoader(bundleContext,
-                    getClass().getClassLoader(),
-                    bundleContext.getBundle());
-
             FeaturesService svc = (FeaturesService) getBundleContext().getService(ref);
             if (svc == null) {
                 throw new LiveUpdateException("Features Service is unavailable. (no service)");
             }
 
-            Enumeration<URL> ius = cl.getResources("META-INF/liveservices/liveupdate-1.0.xml");
-            while (ius.hasMoreElements()) {
-                URL url = ius.nextElement();
+            List<InstallableUnitType> uis = new ArrayList<InstallableUnitType>();
+            for (Bundle bundle : bundleContext.getBundles()) {
 
-                InputStream is = null;
-                try {
-                    is = url.openStream();
-                    if (is != null) {
+                if (logger.isTraceEnabled())
+                    logger.trace("Looking for LiveUpdate 1.0 descriptors in " + bundle.getLocation());
+
+                Enumeration lu = bundle.findEntries(CONTEXT_DIR, CONTEXT_FILES, false);
+                if (lu == null)
+                    continue;
+
+                if (logger.isTraceEnabled())
+                    logger.trace("LiveUpdate 1.0 configuration found in bundle " + bundle.getLocation());
+
+                while (lu.hasMoreElements()) {
+
+                    URL location = (URL) lu.nextElement();
+                    if (logger.isDebugEnabled())
+                        logger.debug("LiveUpdate 1.0 configuration location : " + location);
+
+                    InputStream is = null;
+
+                    try {
+                        is = location.openStream();
+                        if (is == null) {
+                            logger.warn("LiveUpdate 1.0 configuration unreachable : " + location);
+                            continue;
+                        }
+
                         UpdatesIndexType udIdx = XmlUtils1.unmarshallUpdatesIndex(is, false);
+                        if (logger.isTraceEnabled())
+                            logger.trace("Found UpdatesIndex " + udIdx.getID());
+
                         for (UpdateDescriptorType  ud : udIdx.getUpdateDescriptor()) {
+
+                            if (logger.isTraceEnabled())
+                                logger.trace("Found UpdateDescriptor " + ud.getID() + " [" + ud.getDescription() + "] " +
+                                        ud.getIssueInstant());
+
                             for (InstallableUnitType iu : ud.getInstallableUnit()) {
+
+                                if (logger.isTraceEnabled())
+                                    logger.trace("Found InstalllableUnit " + iu.getID() + " " +
+                                            iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion().getVersion() +
+                                            " [" + iu.getUpdateNature() + "]");
+
                                 for (FeatureType f : iu.getFeature()) {
+
+                                    if (logger.isTraceEnabled())
+                                        logger.trace("Found Feature " + f.getGroup()  + "/" + f.getName() + "/" + f.getVersion());
 
                                     // With one feature installed, we consider the IU as installed.
                                     Feature kf = svc.getFeature(f.getName(), f.getVersion().getVersion());
-                                    if (svc.isInstalled(kf)) {
-                                        profile.add(iu);
-                                        break;
+
+                                    if (kf != null) {
+
+                                        if (logger.isTraceEnabled())
+                                            logger.trace("Karaf Feature found for LiveUpdate Feature " + kf.getId() +
+                                                    " [" + kf.getResolver() + "/" + kf.getName()+"/"+kf.getVersion()+"]");
+
+                                        if (svc.isInstalled(kf)) {
+
+                                            if(logger.isTraceEnabled())
+                                                logger.trace("Karaf Feature is installed " + kf.getId() +
+                                                    " [" + kf.getResolver() + "/" + kf.getName()+"/"+kf.getVersion()+"]");
+                                            uis.add(iu);
+                                            break;
+                                        }
+                                    } else {
+                                        logger.trace("Karaf Feature NOT found for LiveUpdate Feature " + f.getGroup() +
+                                                "/" + f.getName() + "/" + f.getVersion().getVersion());
                                     }
                                 }
                             }
                         }
+
+
+
+                    } catch (Exception e) {
+                        logger.error("Cannot load LiveUpdate descriptor : " + e.getMessage(), e);
+                    } finally {
+                        if (is != null) try {is.close();} catch (IOException e) { /**/ }
                     }
 
 
-                } catch (Exception e) {
-                    logger.error("Cannot load LiveUpdate descriptor from " + url + " : " + e.getMessage(), e);
-                } finally {
-                    if (is != null) try { is.close(); } catch (IOException e) { /**/ }
                 }
             }
 
             ProfileType p = new ProfileType();
+            p.setID("id001");
             p.setName("_SELF_");
-            p.getInstallableUnit().addAll(profile);
-            return null;
+            p.getInstallableUnit().addAll(uis);
 
-        } catch (IOException e) {
+            this.profile = p;
+
+            return profile;
+
+        } catch (Exception e) {
             throw new LiveUpdateException(e);
         } finally {
-                getBundleContext().ungetService(ref);
+          bundleContext.ungetService(ref);
         }
     }
 

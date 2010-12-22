@@ -5,6 +5,7 @@ package com.atricore.idbus.console.liveservices.liveupdate.command.printers;
  */
 
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Map;
 
 public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
@@ -31,6 +32,13 @@ public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
 
     public void print(T o, Map<String, Object> options) {
         print(o);
+    }
+
+    public void printAll(Collection<T> os) {
+        for (T o : os) {
+            print(o);
+        }
+
     }
 
     public void printError(Exception e) {

@@ -13,6 +13,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.M
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSMetadataRepositoryImpl;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
+import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -81,9 +82,11 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
                 boolean enabled = Boolean.parseBoolean(config.getProperty(repoKeys + ".enabled"));
                 URI location = null;
                 try {
+                    // Since we're handling the configuration properties, we cannot rely on spring properties resolver.
                     String l = config.getProperty(repoKeys + ".location");
                     l = l.replaceAll("\\$\\{karaf\\.data\\}", karafData);
                     location = new URI(l);
+
                 } catch (Exception e) {
                     logger.error("Invalid URI ["+config.getProperty(repoKeys + ".location")+"] for repository " + id + " " + name);
                     continue;
@@ -117,6 +120,10 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
             }
 
         }
+    }
+
+    public ProfileType getCurrentProfile() throws LiveUpdateException {
+        return this.profileManager.getCurrentProfile();
     }
 
     public Collection<Repository> getRepositories() {
@@ -167,6 +174,14 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     public ArtifactRepositoryManagerImpl getArtifactRepositoryManager() {
         return artManager;
+    }
+
+    public ProfileManager getProfileManager() {
+        return profileManager;
+    }
+
+    public void setProfileManager(ProfileManager profileManager) {
+        this.profileManager = profileManager;
     }
 
     public String getKarafData() {

@@ -27,8 +27,17 @@
             </action>
         </command>
 
+        <command name="liveupdate/view-profile">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ViewProfileCommand">
+                <property name="printer" ref="profilePrinter"/>
+            </action>
+        </command>
+
+
     </command-bundle>
 
     <bean id="repositoryPrinter" class="com.atricore.idbus.console.liveservices.liveupdate.command.printers.RepositoryCmdPrinter"/>
+
+    <bean id="profilePrinter" class="com.atricore.idbus.console.liveservices.liveupdate.command.printers.ProfileCmdPrinter"/>
 
 </blueprint>
