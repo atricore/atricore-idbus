@@ -35,6 +35,7 @@ public class ProfileCmdPrinter extends AbstractCmdPrinter<ProfileType> {
             for (FeatureType f : iu.getFeature()) {
                 sb.append("    Feature        : [");
                 sb.append(getNameString(f.getID(), 16));
+                sb.append("] ");
                 sb.append(f.getGroup());
                 sb.append("/");
                 sb.append(f.getName());
@@ -46,6 +47,7 @@ public class ProfileCmdPrinter extends AbstractCmdPrinter<ProfileType> {
             for (ArtifactKeyType art : iu.getArtifact()) {
                 sb.append("    Artifact       : [");
                 sb.append(getNameString(art.getID(), 16));
+                sb.append("] ");
                 sb.append(art.getGroup());
                 sb.append("/");
                 sb.append(art.getName());
