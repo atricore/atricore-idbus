@@ -43,7 +43,8 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
 
         try {
 
-            repo = getFileSystemManager().createVirtualFileSystem(repoUri.toURL().toExternalForm());
+            repo = getFileSystemManager().resolveFile(repoUri.toString());
+
             if (logger.isDebugEnabled())
                 logger.debug("Initializing VFS MD Repository at " + repoUri.toString());
 
@@ -64,8 +65,6 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
                 updates.put(descr.getID(), descr);
             }
 
-        } catch (MalformedURLException e) {
-            throw new LiveUpdateException(e);
         } catch (FileSystemException e) {
             throw new LiveUpdateException(e);
         }
