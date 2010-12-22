@@ -15,7 +15,7 @@ public class ProfileCmdPrinter extends AbstractCmdPrinter<ProfileType> {
 
         StringBuilder sb = new StringBuilder();
         // Build headers line
-        sb.append("\u001B[1m Profile           : [").append(p.getID()).append("] ").append(p.getName()).append("\u001B[0m ");
+        sb.append("\u001B[1m Profile           : [").append(getNameString(p.getID(), 16)).append("] ").append(p.getName()).append("\u001B[0m ");
         sb.append(" (IUs=").append(p.getInstallableUnit().size()).append(")\n") ;
 
         for (InstallableUnitType iu : p.getInstallableUnit()) {

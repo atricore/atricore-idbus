@@ -32,6 +32,8 @@ import java.util.List;
  */
 public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
 
+    // TODO : Liste for bundle events, and look for descriptors !?
+
     private static final Log logger = LogFactory.getLog(ProfileManagerImpl.class);
 
     private static final String CONTEXT_DIR = "/META-INF/liveservices/";
@@ -41,6 +43,8 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
 
     private BundleContext bundleContext;
 
+    // TODO : Keep track of container bundle
+    // TODO : Serialize and store ?!
     private ProfileType profile;
 
     public ProfileType getCurrentProfile() throws LiveUpdateException {
