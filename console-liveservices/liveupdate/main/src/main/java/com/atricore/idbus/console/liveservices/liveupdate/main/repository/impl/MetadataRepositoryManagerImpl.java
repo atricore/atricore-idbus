@@ -28,8 +28,6 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
     private List<RepositoryTransport> transports = new ArrayList<RepositoryTransport>();
 
-    private List<MetadataRepository> repos = new ArrayList<MetadataRepository>();
-
     public void init() {
 
     }
@@ -87,5 +85,7 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         return null;
     }
 
-
+    public void addRepository(MetadataRepository repo) {
+        repos.add(repo);
+    }
 }

@@ -41,6 +41,22 @@ public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
         return getNameString(n, 12);
     }
 
+    protected String getEnabledString(boolean e) {
+        return e ? "Enabled " : "Disabled";
+    }
+
+
+    protected String getIdString(int i) {
+        return getIdString(i + "");
+    }
+
+    protected String getIdString(String  id) {
+        while (id.length() < 4) {
+            id = " " + id;
+        }
+        return id;
+    }
+
     protected String getNameString(String n, int length) {
         String name = n;
         while (name.length() < length) {

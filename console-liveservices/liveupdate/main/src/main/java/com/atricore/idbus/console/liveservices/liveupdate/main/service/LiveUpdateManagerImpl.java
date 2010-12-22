@@ -6,9 +6,14 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileMa
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSMetadataRepositoryImpl;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,6 +30,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
  */
 public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
+    private static final Log logger = LogFactory.getLog(LiveUpdateManagerImpl.class);
+
     private MetadataRepositoryManager mdManager;
 
     private ArtifactRepositoryManager artManager;
@@ -40,6 +47,47 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     public void init() {
         // Start update check thread.
+        logger.info("Initializing LiveUpdate service");
+
+        for (Object k : config.keySet()) {
+            String key = (String) k;
+            if (key.startsWith("repo.md.")) {
+                // We need to configure a repo, get repo base key.
+                String repoName = key.substring("repo.md.".length());
+                repoName = repoName.substring(0, repoName.indexOf('.'));
+                String repoKeys = "repo.md." + repoName;
+
+                // Get id,name, location, enabled
+
+                String id = config.getProperty(repoKeys + ".id");
+                String name = config.getProperty(repoKeys + ".name");
+                boolean enabled = Boolean.parseBoolean(config.getProperty(repoKeys + ".enabled"));
+                URI location = null;
+                try {
+                    location = new URI(config.getProperty(repoKeys + ".uri"));
+                } catch (URISyntaxException e) {
+                    logger.error("Invalid URI [] for repository " + id + " " + name);
+                    continue;
+                }
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Configuring repository ["+id+"] " + name +
+                            (enabled ? "enabled" : "disabled" ) + " at " + location);
+
+                VFSMetadataRepositoryImpl repo = new VFSMetadataRepositoryImpl();
+                repo.setId(id);
+                repo.setName(name);
+                repo.setLocation(location);
+                repo.setEnabled(enabled);
+
+                // TODO : Setup other poperties as public key, etc
+
+                mdManager.addRepository(repo);
+
+
+            }
+
+        }
     }
 
     public Collection<Repository> getRepositories() {

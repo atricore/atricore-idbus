@@ -12,10 +12,10 @@ import java.util.List;
  */
 public class AbstractRepositoryManager<T> implements RepositoryManager {
 
-    private List<T> repositories;
+    protected List<T> repos;
 
     public Collection getRepositories() {
-        return repositories;
+        return repos;
     }
 
     public URI[] getKnownRepositories() {
