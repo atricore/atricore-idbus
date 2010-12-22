@@ -5,7 +5,6 @@
        xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
        xmlns:ctx="http://www.springframework.org/schema/context"
-       xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                     http://www.springframework.org/schema/beans/spring-beans.xsd
                     http://www.springframework.org/schema/osgi
@@ -15,8 +14,22 @@
                     http://www.springframework.org/schema/osgi-compendium
                     http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
-         <bean name="liveUpdateMgr" init-method="init"
-               class="com.atricore.idbus.console.liveservices.liveupdate.main.service.LiveUpdateManagerImpl">
+     <bean name="liveUpdateMgr" init-method="init"
+           class="com.atricore.idbus.console.liveservices.liveupdate.main.service.LiveUpdateManagerImpl">
 
-         </bean>
+         <property name="config" ref="liveUpdateProps"/>
+     </bean>
+
+    <!-- Expose JDO Properties as OSGi configuration properties -->
+    <osgix:cm-properties id="liveUpdateProps" persistent-id="com.atricore.idbus.console.liveservices.liveupdate">
+
+        <prop key="repo.md.default.name">md-default</prop>
+        <prop key="repo.md.default.uri">file:///${karaf.data}/liveservices/liveupdate/repos/default/md</prop>
+
+        <prop key="repo.art.default.name">art-default</prop>
+        <prop key="repo.md.default.uri">file:///${karaf.data}/liveservices/liveupdate/repos/default/art</prop>
+
+    </osgix:cm-properties>
+
+    <ctx:property-placeholder properties-ref="liveUpdateProps" />
 </beans>

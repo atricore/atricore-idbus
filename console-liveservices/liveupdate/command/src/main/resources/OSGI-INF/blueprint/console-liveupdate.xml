@@ -19,6 +19,14 @@
 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
 
+        <command name="liveupdate/list-repos">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListRepositoriesCommand">
+                <property name="printer" ref="repositoryPrinter"/>
+            </action>
+        </command>
+
+    </command-bundle>
 
 </blueprint>

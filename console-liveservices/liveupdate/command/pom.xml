@@ -36,7 +36,7 @@
     <artifactId>com.atricore.idbus.console.liveservices.liveupdate.command</artifactId>
     <packaging>bundle</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>Atricore Console :: LiveUpdate Commands</name>
+    <name>Atricore Console :: LiveUpdate : Commands</name>
 
     <description>
         Provides the Management Shell integration

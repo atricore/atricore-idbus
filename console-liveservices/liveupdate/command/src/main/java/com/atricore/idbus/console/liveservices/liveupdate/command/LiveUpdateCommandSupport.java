@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.command;
 
+import com.atricore.idbus.console.liveservices.liveupdate.command.printers.CmdPrinter;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
 import org.apache.felix.gogo.commands.Option;
@@ -13,6 +14,8 @@ public abstract class LiveUpdateCommandSupport extends OsgiCommandSupport {
 
     @Option(name = "-v", aliases = "--verbose", description = "Print out additional information during deployment", required = false, multiValued = false)
     boolean verbose = false;
+
+    private CmdPrinter printer;
 
     @Override
     protected Object doExecute() throws Exception {
@@ -40,6 +43,22 @@ public abstract class LiveUpdateCommandSupport extends OsgiCommandSupport {
         }
         return null;
 
+    }
+
+    public boolean isVerbose() {
+        return verbose;
+    }
+
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
+    public CmdPrinter getPrinter() {
+        return printer;
+    }
+
+    public void setPrinter(CmdPrinter printer) {
+        this.printer = printer;
     }
 
     protected abstract Object doExecute(LiveUpdateManager svc) throws Exception;
