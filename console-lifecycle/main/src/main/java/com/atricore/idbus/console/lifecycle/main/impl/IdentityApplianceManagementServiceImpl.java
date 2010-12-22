@@ -58,10 +58,7 @@ import org.w3._2000._09.xmldsig_.X509DataType;
 
 import javax.jdo.FetchPlan;
 import javax.xml.bind.JAXBElement;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -295,41 +292,36 @@ public class IdentityApplianceManagementServiceImpl implements
             if (logger.isTraceEnabled())
                 logger.trace("Importing appliance definition from zip file \n");
 
+            final int BUFFER_SIZE = 2048;
             ByteArrayInputStream bIn = new ByteArrayInputStream(request.getBytes());
+            ByteArrayOutputStream bOut = new ByteArrayOutputStream();
             ZipInputStream zin = new ZipInputStream(bIn);
             ZipEntry entry;
-            byte[] applianceBytes=null;
+            String appStr="";
 
             while((entry = zin.getNextEntry()) != null) {
                 if (entry.getName() != null && entry.getName().endsWith("appliance.bin")) {
-                    applianceBytes = new byte[(int) entry.getSize() + 100];
-                    zin.read(applianceBytes);
+                    int count;
+                    byte data[] = new byte[BUFFER_SIZE];
+                    while ((count = zin.read(data, 0, BUFFER_SIZE)) != -1) {
+                        bOut.write(data, 0, count);
+                    }
+                    bOut.flush();
+                    appStr = bOut.toString();
+
+                    bOut.close();
                     zin.close();
                     break;
                 }
             }
 
             // 1. Unmarshall appliance
-            ImportApplianceDefinitionRequest req = new ImportApplianceDefinitionRequest();
-            req.setDescriptor(new String(applianceBytes));
-            ImportApplianceDefinitionResponse resp = importApplianceDefinition(req);
+            IdentityAppliance appliance = new IdentityAppliance();
+            appliance.setIdApplianceDefinitionBin(appStr);
 
-            IdentityAppliance appliance = resp.getAppliance();
-
-            validateAppliance(appliance, ApplianceValidator.Operation.IMPORT);
-            debugAppliance(appliance, ApplianceValidator.Operation.IMPORT);
-
-            if (logger.isDebugEnabled())
-                logger.debug("Received Identity Appliance Definition : [" +
-                        appliance.getIdApplianceDefinition().getId() + "] " +
-                        appliance.getIdApplianceDefinition().getName() + ":" +
-                        appliance.getIdApplianceDefinition().getDescription());
-
-            // 2. Create Identity Appliance
-
-            if (logger.isTraceEnabled())
-                logger.trace("Creating Identity Appliance");
-
+            appliance = identityApplianceDAO.unmarshall(appliance);
+            appliance.setName(appliance.getIdApplianceDefinition().getName());
+            appliance.setNamespace(appliance.getIdApplianceDefinition().getNamespace());
             appliance.setState(IdentityApplianceState.PROJECTED.toString());
             appliance = identityApplianceDAO.save(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
