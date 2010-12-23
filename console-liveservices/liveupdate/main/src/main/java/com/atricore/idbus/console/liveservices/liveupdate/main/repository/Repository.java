@@ -27,5 +27,7 @@ public interface Repository<T> {
 
     void init() throws LiveUpdateException;
 
+    void clear() throws LiveUpdateException;
+
 
 }

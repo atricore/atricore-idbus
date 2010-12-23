@@ -97,18 +97,15 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
         for (InstallableUnitType iu : ud.getInstallableUnit()) {
 
-            for (FeatureType f : iu.getFeature()) {
+            String k = iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion();
+            Map<String, UpdateDescriptorType> uds = updatesByFeature.get(k);
+            if (uds == null) {
+                uds = new HashMap<String, UpdateDescriptorType>();
+                updatesByFeature.put(k, uds);
+            }
 
-                String k = f.getGroup() + "/" + f.getName() + "/" + f.getVersion().getVersion();
-                Map<String, UpdateDescriptorType> uds = updatesByFeature.get(k);
-                if (uds == null) {
-                    uds = new HashMap<String, UpdateDescriptorType>();
-                    updatesByFeature.put(k, uds);
-                }
-
-                if (!uds.containsKey(ud.getID())) {
-                    uds.put(ud.getID(), ud);
-                }
+            if (!uds.containsKey(ud.getID())) {
+                uds.put(ud.getID(), ud);
             }
 
         }
@@ -116,12 +113,7 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
 
     protected void lookForUpdates(InstallableUnitType iu) {
-        for (RequiredFeatureType f  : iu.getRequirement()) {
-            // TODO : Support version ranges!
-            String k = f.getGroup() + "/" + f.getName() + "/" + f.getVersionRange();
 
-
-        }
     }
 
 }

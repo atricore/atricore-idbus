@@ -2,7 +2,6 @@ package com.atricore.idbus.console.liveservices.liveupdate.command.printers;
 
 
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
-import com.atricore.liveservices.liveupdate._1_0.md.FeatureType;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 
@@ -26,23 +25,11 @@ public class ProfileCmdPrinter extends AbstractCmdPrinter<ProfileType> {
             sb.append("/");
             sb.append(iu.getName());
             sb.append("/");
-            sb.append(getNameString(iu.getVersion().getVersion(), 8));
+            sb.append(getNameString(iu.getVersion(), 8));
             sb.append(" (");
             sb.append(getNameString(iu.getUpdateNature().toString(), 12));
             sb.append(")");
             sb.append("\n");
-
-            for (FeatureType f : iu.getFeature()) {
-                sb.append("    Feature        : [");
-                sb.append(getNameString(f.getID(), 16));
-                sb.append("] ");
-                sb.append(f.getGroup());
-                sb.append("/");
-                sb.append(f.getName());
-                sb.append("/");
-                sb.append(f.getVersion().getVersion());
-                sb.append("\n");
-            }
 
             for (ArtifactKeyType art : iu.getArtifact()) {
                 sb.append("    Artifact       : [");

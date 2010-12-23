@@ -2,7 +2,7 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileManager;
-import com.atricore.liveservices.liveupdate._1_0.md.FeatureType;
+
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
@@ -12,8 +12,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.karaf.features.Feature;
 import org.apache.karaf.features.FeaturesService;
-import org.atricore.idbus.kernel.common.support.osgi.OsgiBundleClassLoader;
-import org.atricore.idbus.kernel.common.support.osgi.OsgiBundlespaceClassLoader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -106,35 +104,30 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
 
                                 if (logger.isTraceEnabled())
                                     logger.trace("Found InstalllableUnit " + iu.getID() + " " +
-                                            iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion().getVersion() +
+                                            iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion() +
                                             " [" + iu.getUpdateNature() + "]");
 
-                                for (FeatureType f : iu.getFeature()) {
+
+                                // With one feature installed, we consider the IU as installed.
+                                Feature kf = svc.getFeature(iu.getName(), iu.getVersion());
+
+                                if (kf != null) {
 
                                     if (logger.isTraceEnabled())
-                                        logger.trace("Found Feature " + f.getGroup()  + "/" + f.getName() + "/" + f.getVersion());
+                                        logger.trace("Karaf Feature found for LiveUpdate Feature " + kf.getId() +
+                                                " [" + kf.getResolver() + "/" + kf.getName()+"/"+kf.getVersion()+"]");
 
-                                    // With one feature installed, we consider the IU as installed.
-                                    Feature kf = svc.getFeature(f.getName(), f.getVersion().getVersion());
+                                    if (svc.isInstalled(kf)) {
 
-                                    if (kf != null) {
-
-                                        if (logger.isTraceEnabled())
-                                            logger.trace("Karaf Feature found for LiveUpdate Feature " + kf.getId() +
-                                                    " [" + kf.getResolver() + "/" + kf.getName()+"/"+kf.getVersion()+"]");
-
-                                        if (svc.isInstalled(kf)) {
-
-                                            if(logger.isTraceEnabled())
-                                                logger.trace("Karaf Feature is installed " + kf.getId() +
-                                                    " [" + kf.getResolver() + "/" + kf.getName()+"/"+kf.getVersion()+"]");
-                                            uis.add(iu);
-                                            break;
-                                        }
-                                    } else {
-                                        logger.trace("Karaf Feature NOT found for LiveUpdate Feature " + f.getGroup() +
-                                                "/" + f.getName() + "/" + f.getVersion().getVersion());
+                                        if(logger.isTraceEnabled())
+                                            logger.trace("Karaf Feature is installed " + kf.getId() +
+                                                " [" + kf.getResolver() + "/" + kf.getName()+"/"+kf.getVersion()+"]");
+                                        uis.add(iu);
+                                        break;
                                     }
+                                } else {
+                                    logger.trace("Karaf Feature NOT found for LiveUpdate Feature " + iu.getGroup() +
+                                            "/" + iu.getName() + "/" + iu.getVersion());
                                 }
                             }
                         }

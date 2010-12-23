@@ -67,15 +67,16 @@
     <element name="installableUnit" type="lu:InstallableUnitType"/>
     <complexType name="InstallableUnitType">
         <sequence>
-            <element ref="lu:version" minOccurs="0"/>
-            <element ref="lu:feature" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="lu:artifact" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="lu:requirement" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
         <attribute name="ID" type="ID" use="required"/>
         <attribute name="group" type="string" use="required" />
         <attribute name="name" type="string" use="required" />
+        <attribute name="version" type="string" use="required" />
         <attribute name="updateNature" type="lu:UpdateNatureType" />
+        <attribute name="description" type="string"/>
+
     </complexType>
 
     <element name="versionRange" type="lu:VersionRangeType"/>
@@ -83,11 +84,6 @@
         <attribute name="Expression" type="string" use="required"/>
     </complexType>
 
-    <element name="version" type="lu:VersionType"/>
-    <complexType name="VersionType">
-        <attribute name="Version" type="string" use="required"/>
-    </complexType>
-    
     <complexType name="RequirementType">
         <attribute name="description" type="string"/>
     </complexType>
@@ -105,19 +101,6 @@
         </complexContent>
     </complexType>
 
-    <element name="feature" type="lu:FeatureType"/>
-    <complexType name="FeatureType">
-        <sequence>
-            <element ref="lu:version" />
-        </sequence>
-
-        <attribute name="ID" type="ID" use="required"/>
-        <attribute name="group" type="string" use="required"/>
-        <attribute name="name" type="string" use="required"/>
-        <attribute name="description" type="string"/>
-    </complexType>
-
-    
     <element name="artifact" type="lu:ArtifactKeyType"/>
     <complexType name="ArtifactKeyType">
         <attribute name="ID" type="ID" use="required"/>

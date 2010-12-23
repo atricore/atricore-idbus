@@ -28,6 +28,10 @@ public abstract class AbstractRepository<T> implements Repository<T> {
 
     }
 
+    public void clear() throws LiveUpdateException {
+
+    }
+
     public String getId() {
         return id;
     }
