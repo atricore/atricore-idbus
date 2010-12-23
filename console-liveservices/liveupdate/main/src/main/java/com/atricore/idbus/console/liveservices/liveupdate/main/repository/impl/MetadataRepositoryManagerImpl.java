@@ -4,16 +4,13 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateExcepti
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
-import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
-import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
+import com.atricore.liveservices.liveupdate._1_0.md.*;
 import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Manages a set of LiveUpdate MD repositories.
@@ -27,12 +24,16 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
     private static final Log logger = LogFactory.getLog(MetadataRepositoryManagerImpl.class);
 
+    private Map<String, Map<String, UpdateDescriptorType>> updatesByFeature =
+            new HashMap<String, Map<String, UpdateDescriptorType>>();
+
     public void init() {
 
     }
 
     public Collection<UpdateDescriptorType> refreshRepositories() {
 
+        // TODO :Use indexes to keep track of updates/requirements/features
         // Loop over configured repos
         List<UpdateDescriptorType> newUpdates = new ArrayList<UpdateDescriptorType>();
 
@@ -54,11 +55,13 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
                             if (!repo.hasUpdate(ud.getID())) {
                                 add = true;
                                 newUpdates.add(ud);
-
                             }
+                            storeUpdateByFeature(ud);
                         }
 
                         repo.addUpdatesIndex(idx);
+
+
 
                     } catch (Exception e) {
                         logger.error("Cannot load updates list from repository " + repo.getName() +
@@ -88,6 +91,37 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         repo.init();
         repos.add(repo);
 
+    }
+
+    protected void storeUpdateByFeature(UpdateDescriptorType ud) {
+
+        for (InstallableUnitType iu : ud.getInstallableUnit()) {
+
+            for (FeatureType f : iu.getFeature()) {
+
+                String k = f.getGroup() + "/" + f.getName() + "/" + f.getVersion().getVersion();
+                Map<String, UpdateDescriptorType> uds = updatesByFeature.get(k);
+                if (uds == null) {
+                    uds = new HashMap<String, UpdateDescriptorType>();
+                    updatesByFeature.put(k, uds);
+                }
+
+                if (!uds.containsKey(ud.getID())) {
+                    uds.put(ud.getID(), ud);
+                }
+            }
+
+        }
+    }
+
+
+    protected void lookForUpdates(InstallableUnitType iu) {
+        for (RequiredFeatureType f  : iu.getRequirement()) {
+            // TODO : Support version ranges!
+            String k = f.getGroup() + "/" + f.getName() + "/" + f.getVersionRange();
+
+
+        }
     }
 
 }

@@ -81,8 +81,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.atricore.idbus.bundles</groupId>
-            <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
+            <groupId>org.apache.servicemix.specs</groupId>
+            <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
             <scope>provided</scope>
         </dependency>
 

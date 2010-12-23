@@ -138,10 +138,18 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     // Analyze MD and see if updates apply. (use license information ....)
     public void checkForUpdates() {
 
-        mdManager.refreshRepositories();
 
-        for (UpdateDescriptorType ud : mdManager.getAvailableUpdates()) {
+
+        // TODO :
+        /*
+            1. Get Available updates for a given IU
+            2. Get Available updates for new IUs from that update.
+            3. Build a list and store it in memory/disk!?
+         */
+        Collection<UpdateDescriptorType> uds = mdManager.refreshRepositories();
+        for (UpdateDescriptorType ud : uds) {
             for (InstallableUnitType iu : ud.getInstallableUnit()) {
+
             }
         }
     }

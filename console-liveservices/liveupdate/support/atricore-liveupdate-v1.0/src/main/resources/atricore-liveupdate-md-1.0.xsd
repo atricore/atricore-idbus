@@ -125,6 +125,7 @@
         <attribute name="name" type="string" use="required"/>
         <attribute name="version" type="string" use="required"/>
         <attribute name="classifier" type="string" use="optional"/>
+        <attribute name="type" type="string" use="optional"/>
     </complexType>
 
     <simpleType name="UpdateNatureType">
