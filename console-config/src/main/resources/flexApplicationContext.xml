@@ -105,6 +105,7 @@
     <object id="identityApplianceImportCommand"
             class="com.atricore.idbus.console.modeling.main.controller.IdentityApplianceImportCommand">
         <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
     </object>
     <!--<object id="spChannelRemoveCommand"-->
             <!--class="com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand">-->

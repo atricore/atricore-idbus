@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.modeling.main.controller {
 import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 
 import flash.utils.ByteArray;
@@ -42,6 +43,7 @@ public class IdentityApplianceImportCommand extends IocSimpleCommand implements 
     public static const FAILURE:String = "IdentityApplianceImportCommand.FAILURE";
 
     private var _registry:ServiceRegistry;
+    private var _projectProxy:ProjectProxy;
 
     public function get registry():ServiceRegistry {
         return _registry;
@@ -49,6 +51,14 @@ public class IdentityApplianceImportCommand extends IocSimpleCommand implements 
 
     public function set registry(value:ServiceRegistry):void {
         _registry = value;
+    }
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
     }
 
     override public function execute(notification:INotification):void {
@@ -60,15 +70,14 @@ public class IdentityApplianceImportCommand extends IocSimpleCommand implements 
         var call:Object = service.importIdentityApplianceProject(req);
         call.addResponder(this);
     }
-
     public function result(data:Object):void {
         var resp:ImportIdentityApplianceResponse = data.result as ImportIdentityApplianceResponse;
-        var applianceId:Number = resp.appliance.id;
         if (resp.validationErrors != null && resp.validationErrors.length > 0) {
+            projectProxy.identityApplianceValidationErrors = resp.validationErrors;
             sendNotification(ApplicationFacade.APPLIANCE_VALIDATION_ERRORS);
         } else {
-            sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, applianceId);
-            sendNotification(SUCCESS);
+            var applianceId:Number = resp.appliance.id;
+            sendNotification(SUCCESS,applianceId.toString());
         }
     }
 

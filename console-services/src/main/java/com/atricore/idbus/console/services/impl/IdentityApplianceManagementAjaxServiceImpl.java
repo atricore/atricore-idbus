@@ -21,97 +21,20 @@
 
 package com.atricore.idbus.console.services.impl;
 
-import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceState;
+import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.JDBCDriverDescriptor;
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
 import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.impl.ValidationError;
-import com.atricore.idbus.console.lifecycle.main.spi.ApplianceValidator;
-import com.atricore.idbus.console.lifecycle.main.spi.request.*;
-import com.atricore.idbus.console.lifecycle.main.spi.response.*;
+import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
+import com.atricore.idbus.console.services.dto.*;
 import com.atricore.idbus.console.services.spi.IdentityApplianceManagementAjaxService;
 import com.atricore.idbus.console.services.spi.IdentityServerException;
 import com.atricore.idbus.console.services.spi.request.*;
-import com.atricore.idbus.console.services.spi.request.ActivateExecEnvRequest;
-import com.atricore.idbus.console.services.spi.request.AddIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.request.AddResourceRequest;
-import com.atricore.idbus.console.services.spi.request.BuildIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.request.DeployIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.request.DisposeIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.request.ExportIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.request.GetCertificateInfoRequest;
-import com.atricore.idbus.console.services.spi.request.GetMetadataInfoRequest;
-import com.atricore.idbus.console.services.spi.request.ImportIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.request.ListAccountLinkagePoliciesRequest;
-import com.atricore.idbus.console.services.spi.request.ListAttributeProfilesRequest;
-import com.atricore.idbus.console.services.spi.request.ListAuthAssertionEmissionPoliciesRequest;
-import com.atricore.idbus.console.services.spi.request.ListAuthenticationContractsRequest;
-import com.atricore.idbus.console.services.spi.request.ListAuthenticationMechanismsRequest;
-import com.atricore.idbus.console.services.spi.request.ListAvailableJDBCDriversRequest;
-import com.atricore.idbus.console.services.spi.request.ListIdentityAppliancesRequest;
-import com.atricore.idbus.console.services.spi.request.ListIdentityVaultsRequest;
-import com.atricore.idbus.console.services.spi.request.ListUserInformationLookupsRequest;
-import com.atricore.idbus.console.services.spi.request.LookupAccountLinkagePolicyByIdRequest;
-import com.atricore.idbus.console.services.spi.request.LookupAttributeProfileByIdRequest;
-import com.atricore.idbus.console.services.spi.request.LookupAuthAssertionEmissionPolicyByIdRequest;
-import com.atricore.idbus.console.services.spi.request.LookupAuthenticationContractByIdRequest;
-import com.atricore.idbus.console.services.spi.request.LookupAuthenticationMechanismByIdRequest;
-import com.atricore.idbus.console.services.spi.request.LookupIdentityApplianceByIdRequest;
-import com.atricore.idbus.console.services.spi.request.LookupIdentityVaultByIdRequest;
-import com.atricore.idbus.console.services.spi.request.LookupResourceByIdRequest;
-import com.atricore.idbus.console.services.spi.request.LookupUserInformationLookupByIdRequest;
-import com.atricore.idbus.console.services.spi.request.ManageIdentityApplianceLifeCycleRequest;
-import com.atricore.idbus.console.services.spi.request.RemoveIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.request.StartIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.request.StopIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.request.UndeployIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.request.UpdateIdentityApplianceRequest;
 import com.atricore.idbus.console.services.spi.response.*;
-import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
-import com.atricore.idbus.console.services.dto.*;
-import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceManagementService;
-import com.atricore.idbus.console.services.spi.response.ActivateExecEnvResponse;
-import com.atricore.idbus.console.services.spi.response.AddIdentityApplianceResponse;
-import com.atricore.idbus.console.services.spi.response.AddResourceResponse;
-import com.atricore.idbus.console.services.spi.response.BuildIdentityApplianceResponse;
-import com.atricore.idbus.console.services.spi.response.DeployIdentityApplianceResponse;
-import com.atricore.idbus.console.services.spi.response.DisposeIdentityApplianceResponse;
-import com.atricore.idbus.console.services.spi.response.ExportIdentityApplianceResponse;
-import com.atricore.idbus.console.services.spi.response.GetCertificateInfoResponse;
-import com.atricore.idbus.console.services.spi.response.GetMetadataInfoResponse;
-import com.atricore.idbus.console.services.spi.response.ImportIdentityApplianceResponse;
-import com.atricore.idbus.console.services.spi.response.ListAccountLinkagePoliciesResponse;
-import com.atricore.idbus.console.services.spi.response.ListAttributeProfilesResponse;
-import com.atricore.idbus.console.services.spi.response.ListAuthAssertionEmissionPoliciesResponse;
-import com.atricore.idbus.console.services.spi.response.ListAuthenticationContractsResponse;
-import com.atricore.idbus.console.services.spi.response.ListAuthenticationMechanismsResponse;
-import com.atricore.idbus.console.services.spi.response.ListAvailableJDBCDriversResponse;
-import com.atricore.idbus.console.services.spi.response.ListIdentityAppliancesResponse;
-import com.atricore.idbus.console.services.spi.response.ListIdentityVaultsResponse;
-import com.atricore.idbus.console.services.spi.response.ListUserInformationLookupsResponse;
-import com.atricore.idbus.console.services.spi.response.LookupAccountLinkagePolicyByIdResponse;
-import com.atricore.idbus.console.services.spi.response.LookupAttributeProfileByIdResponse;
-import com.atricore.idbus.console.services.spi.response.LookupAuthAssertionEmissionPolicyByIdResponse;
-import com.atricore.idbus.console.services.spi.response.LookupAuthenticationContractByIdResponse;
-import com.atricore.idbus.console.services.spi.response.LookupAuthenticationMechanismByIdResponse;
-import com.atricore.idbus.console.services.spi.response.LookupIdentityApplianceByIdResponse;
-import com.atricore.idbus.console.services.spi.response.LookupIdentityVaultByIdResponse;
-import com.atricore.idbus.console.services.spi.response.LookupResourceByIdResponse;
-import com.atricore.idbus.console.services.spi.response.LookupUserInformationLookupByIdResponse;
-import com.atricore.idbus.console.services.spi.response.ManageIdentityApplianceLifeCycleResponse;
-import com.atricore.idbus.console.services.spi.response.RemoveIdentityApplianceResponse;
-import com.atricore.idbus.console.services.spi.response.StartIdentityApplianceResponse;
-import com.atricore.idbus.console.services.spi.response.StopIdentityApplianceResponse;
-import com.atricore.idbus.console.services.spi.response.UndeployIdentityApplianceResponse;
-import com.atricore.idbus.console.services.spi.response.UpdateIdentityApplianceResponse;
 import org.dozer.DozerBeanMapper;
 
-import javax.jdo.FetchPlan;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * Author: Dejan Maric
@@ -220,8 +143,19 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         try {
             beRes = idApplianceManagementService.importIdentityApplianceProject(beReq);
         } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
-            throw new IdentityServerException(e);
+            if (e.getCause() instanceof ApplianceValidationException) {
+                ImportIdentityApplianceResponse resp = new ImportIdentityApplianceResponse();
+                List<String> validationErrors = new ArrayList<String>();
+                for (ValidationError error : ((ApplianceValidationException) e.getCause()).getErrors()) {
+                    validationErrors.add(error.getMsg());
+                }
+                resp.setValidationErrors(validationErrors);
+                return resp;
+            } else {
+                throw new IdentityServerException(e);
+            }
         }
+
         return dozerMapper.map(beRes, ImportIdentityApplianceResponse.class);
     }
 
