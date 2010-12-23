@@ -7,14 +7,12 @@ import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.*;
 
-import java.io.*;
-import java.net.MalformedURLException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.*;
 
@@ -75,8 +73,13 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
         return updates.values();
     }
 
-    public void clear () {
-        // TODO : Destroy all updates stored in this repo.
+    public void clear() throws LiveUpdateException {
+        try {
+            repo.delete(Selectors.EXCLUDE_SELF);
+            updates.clear();
+        } catch (FileSystemException e) {
+            throw new LiveUpdateException(e);
+        }
     }
 
     public void addUpdatesIndex(UpdatesIndexType newUpdates) throws LiveUpdateException {
@@ -85,7 +88,7 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
             String updateStr = XmlUtils1.marshalUpdatesIndex(newUpdates, false);
             byte[] updateBin  = updateStr.getBytes();
 
-            FileObject updateFile = fsManager.resolveFile(newUpdates.getID() + ".liveupdate");
+            FileObject updateFile = repo.resolveFile(newUpdates.getID() + ".liveupdate");
             if (!updateFile.exists())
                 updateFile.createFile();
 
@@ -103,6 +106,8 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
 
     public void removeUpdate(String id) {
         // Delete an update stored in this repo.
+        updates.remove(id);
+        // TODO: remove update descriptor element from update file?
     }
 
     public boolean hasUpdate(String id) {
@@ -125,7 +130,8 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
         try {
             for (FileObject f : repo.getChildren()) {
                 byte[] descrBin = readContent(f);
-                descrs.add(XmlUtils1.unmarshallUpdateDescriptor(new String(descrBin), false));
+                UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(new String(descrBin), false);
+                descrs.addAll(idx.getUpdateDescriptor());
             }
         } catch (FileSystemException e) {
             throw new LiveUpdateException(e);

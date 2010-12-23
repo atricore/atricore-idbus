@@ -26,7 +26,6 @@ import oasis.names.tc.saml._2_0.metadata.SSODescriptorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
-import org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerException;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 import org.w3c.dom.Document;
@@ -113,7 +112,7 @@ public class MetadataUtil {
             packages.append( userPackage ).append( ":" );
         }
         // Use our classloader to build JAXBContext so it can find binding classes.
-        return JAXBContext.newInstance( packages.toString(), XmlUtils.class.getClassLoader());
+        return JAXBContext.newInstance( packages.toString(), MetadataUtil.class.getClassLoader());
     }
     
     public static String findEntityId(MetadataDefinition md) throws Exception {

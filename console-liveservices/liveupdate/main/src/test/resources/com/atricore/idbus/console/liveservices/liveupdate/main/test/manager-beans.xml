@@ -53,18 +53,4 @@
         </property>
     </bean>
 
-    <!-- Repository Transports -->
-    <bean name="httpRepositoryTransport"
-          class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.HttpRepositoryTransport"/>
-
-    <bean name="fileRepositoryTransport"
-          class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.FileRepositoryTransport">
-        <property name="baseFolder"
-                  value="file://${build.directory}/test-classes/com/atricore/idbus/console/liveservices/liveupdate/main/test/"/>
-    </bean>
-
-    <bean name="buildDir" class="java.lang.String">
-		<constructor-arg value="${build.directory}"/>
-	</bean>
-
 </beans>

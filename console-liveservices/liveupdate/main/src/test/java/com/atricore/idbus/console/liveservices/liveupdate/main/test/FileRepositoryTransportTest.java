@@ -18,7 +18,7 @@ public class FileRepositoryTransportTest {
     @Before
     public void setup() throws Exception {
         applicationContext = new ClassPathXmlApplicationContext(
-                new String[]{"classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/beans.xml"}
+                new String[]{"classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/transport-beans.xml"}
         );
 
         repositoryTransport = (FileRepositoryTransport) applicationContext.getBean("fileRepositoryTransport");
@@ -35,7 +35,7 @@ public class FileRepositoryTransportTest {
 
     @Test
     public void testLoadContent() throws Exception {
-        URI uri = new URI(repositoryTransport.getBaseFolder() + "/updates.xml");
+        URI uri = new URI(repositoryTransport.getBaseFolder() + "/test-updates.xml");
         byte[] content = repositoryTransport.loadContent(uri);
         Assert.assertNotNull(content);
     }
