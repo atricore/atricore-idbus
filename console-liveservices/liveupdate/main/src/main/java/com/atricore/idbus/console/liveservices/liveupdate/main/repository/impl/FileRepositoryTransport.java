@@ -19,7 +19,11 @@ public class FileRepositoryTransport implements RepositoryTransport {
 
     public byte[] loadContent(URI uri) throws RepositoryTransportException {
 
-        // TODO : Validate that file belongs to baseFolder ...
+        // validate that file belongs to baseFolder
+        if (!baseFolder.equals(uri.toString().substring(0, uri.toString().lastIndexOf("/")))) {
+            throw new RepositoryTransportException("File doesn't belong to baseFolder.");
+        }
+
         FileInputStream fs = null;
         try {
             File f = new File(uri);
@@ -42,6 +46,17 @@ public class FileRepositoryTransport implements RepositoryTransport {
             throw new RepositoryTransportException(e);
         } finally {
             if (fs != null) try {fs.close();} catch (IOException e) { /*Ignore this*/ }
+        }
+    }
+
+    public String getBaseFolder() {
+        return baseFolder;
+    }
+
+    public void setBaseFolder(String baseFolder) {
+        this.baseFolder = baseFolder;
+        if (this.baseFolder.endsWith("/")) {
+            this.baseFolder = this.baseFolder.substring(0, this.baseFolder.length() - 1);
         }
     }
 }
