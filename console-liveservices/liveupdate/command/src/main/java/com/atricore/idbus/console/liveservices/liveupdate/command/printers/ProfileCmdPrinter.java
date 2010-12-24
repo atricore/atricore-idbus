@@ -3,6 +3,7 @@ package com.atricore.idbus.console.liveservices.liveupdate.command.printers;
 
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
+import com.atricore.liveservices.liveupdate._1_0.md.RequiredFeatureType;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 
 /**
@@ -43,6 +44,19 @@ public class ProfileCmdPrinter extends AbstractCmdPrinter<ProfileType> {
                 sb.append("/");
                 sb.append(art.getClassifier());
                 sb.append("\n");
+            }
+
+            for (RequiredFeatureType req : iu.getRequirement()) {
+                sb.append("    Requirement    : ");
+                sb.append(getNameString(" ", 16));
+                sb.append("  ");
+                sb.append(req.getGroup());
+                sb.append("/");
+                sb.append(req.getName());
+                sb.append("/");
+                sb.append(req.getVersionRange().getExpression());
+                sb.append("\n");
+
             }
 
         }

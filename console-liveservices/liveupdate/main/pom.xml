@@ -52,8 +52,20 @@
         </dependency>
 
         <dependency>
+            <groupId>org.atricore.idbus.kernel.common</groupId>
+            <artifactId>org.atricore.idbus.kernel.common.support</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
             <artifactId>org.apache.servicemix.specs.jaxb-api-2.1</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.servicemix.specs</groupId>
+            <artifactId>org.apache.servicemix.specs.jaxws-api-${jaxws.api.version}</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -125,7 +137,8 @@
             <version>${commons-httpclient.version}</version>
             <scope>provided</scope>
         </dependency>
-        
+
+        <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
