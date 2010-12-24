@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 
 import java.util.Collection;
@@ -14,5 +15,5 @@ public interface ArtifactRepository extends Repository<ArtifactKeyType> {
 
     Collection<ArtifactKeyType> getAvailableArtifacts();
 
-    byte[] getArtifact(ArtifactKeyType artifactKey);
+    byte[] getArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException;
 }

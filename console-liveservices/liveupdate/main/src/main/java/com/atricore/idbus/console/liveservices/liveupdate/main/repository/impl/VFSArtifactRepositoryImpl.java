@@ -40,8 +40,21 @@ public class VFSArtifactRepositoryImpl extends AbstractVFSRepository<ArtifactKey
         return artifacts.values();
     }
 
-    public byte[] getArtifact(ArtifactKeyType artifactKey) {
-        return new byte[0];
+    public byte[] getArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException {
+        try {
+            String artifactPath = artifactKey.getGroup().replaceAll("\\.", File.separator) + File.separator +
+                    artifactKey.getName() + File.separator +
+                    artifactKey.getVersion() + File.separator +
+                    artifactKey.getName() + "-" + artifactKey.getVersion() +
+                    (artifactKey.getClassifier() != "" ? "-" : "") +
+                    artifactKey.getClassifier() + "." + artifactKey.getType();
+            FileObject artifact = repo.resolveFile(artifactPath);
+            return readContent(artifact);
+        } catch (FileSystemException e) {
+            throw new LiveUpdateException(e);
+        } catch (Exception e) {
+            throw new LiveUpdateException(e);
+        }
     }
 
     protected void loadArtifacts(FileObject dir) throws LiveUpdateException {

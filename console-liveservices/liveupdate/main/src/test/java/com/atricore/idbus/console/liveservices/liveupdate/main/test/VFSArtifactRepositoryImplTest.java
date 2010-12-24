@@ -50,4 +50,27 @@ public class VFSArtifactRepositoryImplTest {
         Assert.assertTrue(configArtifactFound);
         Assert.assertTrue(toolingArtifactFound);
     }
+
+    @Test
+    public void testGetArtifact() throws Exception {
+        ArtifactKeyType artifactKey1 = new ArtifactKeyType();
+        artifactKey1.setID("id1");
+        artifactKey1.setGroup("com.atricore.idbus.console");
+        artifactKey1.setName("console-config");
+        artifactKey1.setVersion("1.0.0-SNAPSHOT");
+        artifactKey1.setType("zip");
+        artifactKey1.setClassifier("resources");
+        byte[] artifact1 = vfsArtifactRepository.getArtifact(artifactKey1);
+        Assert.assertNotNull(artifact1);
+
+        ArtifactKeyType artifactKey2 = new ArtifactKeyType();
+        artifactKey2.setID("id2");
+        artifactKey2.setGroup("com.atricore.idbus.console");
+        artifactKey2.setName("console-tooling");
+        artifactKey2.setVersion("1.0.0-SNAPSHOT");
+        artifactKey2.setType("jar");
+        artifactKey2.setClassifier("");
+        byte[] artifact2 = vfsArtifactRepository.getArtifact(artifactKey2);
+        Assert.assertNotNull(artifact2);
+    }
 }
