@@ -7,13 +7,10 @@ import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.vfs.*;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.Selectors;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
 import java.util.*;
 
 /**
@@ -21,52 +18,23 @@ import java.util.*;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescriptorType> implements MetadataRepository {
+public class VFSMetadataRepositoryImpl extends AbstractVFSRepository<UpdateDescriptorType> implements MetadataRepository {
 
     private static final Log logger = LogFactory.getLog(VFSMetadataRepositoryImpl.class);
 
     private Map<String, UpdateDescriptorType> updates = new HashMap<String, UpdateDescriptorType>();
-
-    private URI repoUri;
-
-    private FileObject repo;
-
-    private FileSystemManager fsManager;
 
     public VFSMetadataRepositoryImpl() {
 
     }
 
     public void init() throws LiveUpdateException {
-
-        try {
-
-            repo = getFileSystemManager().resolveFile(repoUri.toString());
-
-            if (logger.isDebugEnabled())
-                logger.debug("Initializing VFS MD Repository at " + repoUri.toString());
-
-            if (!repo.exists())
-                repo.createFolder();
-
-            if (!repo.getType().getName().equals(FileType.FOLDER.getName()))
-                throw new LiveUpdateException("Repository is not a folder : " + repo.getURL());
-
-            if (!repo.isReadable())
-                throw new LiveUpdateException("Repository is not readable : " + repo.getURL());
-
-            if (!repo.isWriteable())
-                throw new LiveUpdateException("Repository is not writeable : " + repo.getURL());
-
-            List<UpdateDescriptorType> descrs = loadDescriptors();
-            for (UpdateDescriptorType descr : descrs) {
-                updates.put(descr.getID(), descr);
-            }
-
-        } catch (FileSystemException e) {
-            throw new LiveUpdateException(e);
+        super.init();
+        // load updates
+        List<UpdateDescriptorType> descrs = loadDescriptors();
+        for (UpdateDescriptorType descr : descrs) {
+            updates.put(descr.getID(), descr);
         }
-
     }
 
     public Collection<UpdateDescriptorType> getAvailableUpdates() {
@@ -114,14 +82,6 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
         return this.updates.containsKey(id);
     }
 
-    public URI getRepoFolder() {
-        return repoUri;
-    }
-
-    public void setRepoFolder(URI repoFolder) {
-        this.repoUri = repoFolder;
-    }
-
     // ------------------------------< Utilities >
 
     protected List<UpdateDescriptorType> loadDescriptors() throws LiveUpdateException {
@@ -141,54 +101,4 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
 
         return descrs;
     }
-
-    protected byte[] readContent(FileObject file) throws Exception {
-        InputStream is = null;
-
-        try {
-            is = file.getContent().getInputStream();
-            byte[] buf = new byte[1024];
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            int read = is.read(buf);
-            while (read > 0) {
-                baos.write(buf, 0, read);
-                read = is.read(buf);
-            }
-
-            return baos.toByteArray();
-
-        } finally {
-            if (is != null) try {
-                is.close();
-            } catch (IOException e) { /**/}
-        }
-
-    }
-
-    protected void writeContent(FileObject file, byte[] content, boolean append) throws Exception {
-        OutputStream os = null;
-
-        try {
-            os = file.getContent().getOutputStream(append);
-            os.write(content);
-
-        } finally {
-            if (os != null) try {
-                os.close();
-            } catch (IOException e) { /**/}
-        }
-
-    }
-    protected FileSystemManager getFileSystemManager() {
-        if (fsManager == null) {
-            try {
-                fsManager = VFS.getManager();
-            } catch (FileSystemException e) {
-                logger.error(e.getMessage(), e);
-                throw new RuntimeException(e);
-            }
-        }
-        return fsManager;
-    }
-
 }

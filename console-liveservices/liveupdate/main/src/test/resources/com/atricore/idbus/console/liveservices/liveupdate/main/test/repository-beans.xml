@@ -31,4 +31,15 @@
         <property name="repoFolder" value="file://${build.directory}/test-classes/com/atricore/idbus/console/liveservices/liveupdate/repos/md/cache/repo1"/>
     </bean>
 
+    <bean name="vfsArtifactRepository" class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSArtifactRepositoryImpl" init-method="init">
+        <property name="id" value="repo1"/>
+        <property name="name" value="Artifact Repository 1"/>
+        <property name="enabled" value="true"/>
+        <property name="username" value="user1"/>
+        <property name="password" value="pass1"/>
+        <property name="location" value="file://${build.directory}/test-classes/com/atricore/idbus/console/liveservices/liveupdate/main/test"/>
+        <property name="publicKey" value=""/>
+        <property name="repoFolder" value="file://${build.directory}/test-classes/com/atricore/idbus/console/liveservices/liveupdate/repos/artifacts/cache/repo1"/>
+    </bean>
+
 </beans>
