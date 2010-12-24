@@ -45,6 +45,16 @@
         </documentation>
     </annotation>
 
+    <element name="artifacDescriptor" type="lu:ArtifactDescritorType"/>
+    <complexType name="ArtifactDescriptorType">
+        <sequence>
+            <element ref="ds:Signature" minOccurs="0"/>
+            <element ref="lu:artifact"/>
+        </sequence>
+        <attribute name="checksum" type="string" use="optinal"/>
+        <attribute name="lastUpdate" type="dateTime" use="optinal"/>
+    </complexType>
+
     <element name="updatesIndex" type="lu:UpdatesIndexType"/>
     <complexType name="UpdatesIndexType">
         <sequence>

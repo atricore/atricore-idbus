@@ -1,5 +1,9 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
 
+import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
+
+import java.util.Collection;
+
 /**
  * Manages a set of LiveUpdate Artifact repositories.
  *
@@ -10,5 +14,9 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
  */
 public interface ArtifactRepositoryManager extends RepositoryManager {
 
+    void refreshRepositories();
 
+    Collection<ArtifactKeyType> getAvailableArtifacts();
+
+    byte[] getArtifact(ArtifactKeyType artifact);
 }

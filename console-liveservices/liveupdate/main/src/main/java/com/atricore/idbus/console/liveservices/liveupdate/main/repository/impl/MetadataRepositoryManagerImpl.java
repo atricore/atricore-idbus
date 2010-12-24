@@ -27,16 +27,18 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
     private static final Log logger = LogFactory.getLog(MetadataRepositoryManagerImpl.class);
 
+    /**
+     * List of Installable Units, defined as dependent objects.
+     */
     Map<String, DependencyNode> dependencies;
 
     public void init() {
-
+        // RFU
     }
 
     public void addRepository(MetadataRepository repo) throws LiveUpdateException {
         repo.init();
         repos.add(repo);
-
     }
 
     public synchronized Collection<UpdateDescriptorType> refreshRepositories() {
@@ -62,7 +64,6 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
                                 newUpdates.add(ud);
                             }
                         }
-
                         repo.addUpdatesIndex(idx);
 
                     } catch (Exception e) {
@@ -99,11 +100,11 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         // Store it locally
     }
 
-    public Collection<UpdateDescriptorType> getAvailableUpdates(InstallableUnitType iu) {
+    public synchronized Collection<UpdateDescriptorType> getAvailableUpdates(InstallableUnitType iu) {
         String fqKey = iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion();
         DependencyNode n = dependencies.get(fqKey);
 
-        List<DependencyNode> uds = getUpdates(n);
+        List<DependencyNode> uds = getDependents(n);
         Set<UpdateDescriptorType> updates = new HashSet<UpdateDescriptorType>();
 
         for (DependencyNode ud : uds) {
@@ -114,17 +115,23 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
     }
 
-    protected List<DependencyNode> getUpdates(DependencyNode dep) {
+    /**
+     * Get list of dependent objects
+     */
+    protected List<DependencyNode> getDependents(DependencyNode dep) {
         List<DependencyNode> updates = new ArrayList<DependencyNode>();
-        getUpdates(dep, updates);
+        getDependents(dep, updates);
         return updates;
     }
 
-    protected void getUpdates(DependencyNode dep, List<DependencyNode> updates) {
+    /**
+     * Get list of dependent objects
+     */
+    protected void getDependents(DependencyNode dep, List<DependencyNode> updates) {
         if (dep.getChildren() != null) {
             updates.addAll(dep.getChildren());
             for (DependencyNode c : dep.getChildren()) {
-                getUpdates(c, updates);
+                getDependents(c, updates);
             }
         }
     }
