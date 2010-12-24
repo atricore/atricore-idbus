@@ -13,4 +13,6 @@ import java.util.Collection;
 public interface ArtifactRepository extends Repository<ArtifactKeyType> {
 
     Collection<ArtifactKeyType> getAvailableArtifacts();
+
+    byte[] getArtifact(ArtifactKeyType artifactKey);
 }

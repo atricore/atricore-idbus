@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.liveservices.liveupdate.main.repository.md;
+package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md;
 
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.RequiredFeatureType;
@@ -93,21 +93,55 @@ public class DefaultDependencyTreeBuilder implements DependencyTreeBuilder {
 
             Set<String> deps = dependenciesByName.get(fqName);
             if (deps != null) {
-
-                // Make sure that versions match, for now: ignore expression and use equals
-
                 for (String fqKey : deps) {
                     DependencyNode dep = nodes.get(fqKey);
-                    // TODO : Support version range
-                    if (dep.getVersion().equals(req.getVersionRange().getExpression())) {
-                        // Found it!!
-                        // Set parent / child
-                        node.addDependency(dep, req);
-                        dep.addChild(node);
+
+                    try {
+                        if (versionsMatch(dep.getArtifactVersion(), req.getVersionRange().getExpression())) {
+                            // Found it!!
+                            // Set parent / child
+                            node.addDependency(dep, req);
+                            dep.addChild(node);
+                        }
+                    } catch (InvalidVersionSpecificationException e) {
+                        logger.error(e.getMessage(), e);
                     }
                 }
 
             }
         }
+    }
+    /**
+     * True if the given version matches the version expression.
+     * We use maven conventions (i.e. [2.0,2.1) refers to all 2.0.x versions)
+     *
+     * Some spec examples are
+     * <ul>
+     *   <li><code>1.0</code> Version 1.0</li>
+     *   <li><code>[1.0,2.0)</code> Versions 1.0 (included) to 2.0 (not included)</li>
+     *   <li><code>[1.0,2.0]</code> Versions 1.0 to 2.0 (both included)</li>
+     *   <li><code>[1.5,)</code> Versions 1.5 and higher</li>
+     *   <li><code>(,1.0],[1.2,)</code> Versions up to 1.0 (included) and 1.2 or higher</li>
+     * </ul>
+
+     */
+    protected boolean versionsMatch(ArtifactVersion version, String expression)
+            throws InvalidVersionSpecificationException {
+
+
+        boolean match = false;
+        if (expression.indexOf(',') > 0) {
+            VersionRange vr = VersionRange.createFromVersionSpec(expression);
+            match = vr.containsVersion(version);
+        } else {
+            ArtifactVersion v = new ArtifactVersion(expression);
+            match = version.equals(v);
+        }
+
+        if (logger.isTraceEnabled())
+            logger.trace("Matching " + version + " with " + expression + ":" + match);
+
+        return match;
+
     }
 }

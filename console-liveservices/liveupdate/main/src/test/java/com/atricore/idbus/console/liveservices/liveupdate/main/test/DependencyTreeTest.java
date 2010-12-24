@@ -1,8 +1,8 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.test;
 
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.md.DefaultDependencyTreeBuilder;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.md.DependencyNode;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.md.DependencyTreeBuilder;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.DefaultDependencyTreeBuilder;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.DependencyNode;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.DependencyTreeBuilder;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
 import org.apache.commons.logging.Log;
@@ -46,15 +46,35 @@ public class DependencyTreeTest {
         assert nodes.size() == 4 : "Invalid number of nodes " + nodes.size() + ", expected 4";
 
         // Check the tree structure for each version
-        checkTree(nodes);
+        checkTree01(nodes);
 
     }
+
+    @Test
+    public void testDependencyTree02() throws Exception{
+
+        // Get update Index descriptor
+        InputStream is = getClass().getResourceAsStream("/com/atricore/idbus/console/liveservices/liveupdate/main/test/dependency-tree-test-update-02.xml");
+        UpdatesIndexType udIdx = XmlUtils1.unmarshallUpdatesIndex(is, false);
+
+        // Build dependency graph
+        DependencyTreeBuilder b = new DefaultDependencyTreeBuilder();
+        Collection<DependencyNode> nodes = b.buildDependencyList(udIdx.getUpdateDescriptor());
+
+        // Check the outcome, we should have versions from 2.0.0 to 2.0.3
+        assert nodes.size() == 5 : "Invalid number of nodes " + nodes.size() + ", expected 5";
+
+        // Check the tree structure for each version
+        //checkTree01(nodes);
+
+    }
+
 
     /**
      * This will check versions 2.0.0, 2.0.1, 2.0.2 and 2.0.3 only, in that order!
      * @param nodes
      */
-    protected void checkTree(Collection<DependencyNode> nodes) {
+    protected void checkTree01(Collection<DependencyNode> nodes) {
 
         int major = 2;
         int minor = 0;

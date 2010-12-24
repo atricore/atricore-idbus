@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.liveservices.liveupdate.main.repository.md;
+package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md;
 
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.RequiredFeatureType;
@@ -14,6 +14,8 @@ public class DependencyNode   {
     private String fqName;
 
     private String fqKey;
+
+    private ArtifactVersion version;
 
     private Map<String, RequiredFeatureType> unsatisfied = new HashMap<String, RequiredFeatureType>();
 
@@ -35,6 +37,7 @@ public class DependencyNode   {
         this.iu = iu;
         this.fqKey = iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion();
         this.fqName =  iu.getGroup() + "/" + iu.getName();
+        this.version = new ArtifactVersion(iu.getVersion());
 
         if (iu.getRequirement() != null) {
 
@@ -69,6 +72,10 @@ public class DependencyNode   {
 
     public String getVersion() {
         return iu.getVersion();
+    }
+
+    public ArtifactVersion getArtifactVersion() {
+        return version;
     }
 
     public void addDependency(DependencyNode dep, RequiredFeatureType req) {

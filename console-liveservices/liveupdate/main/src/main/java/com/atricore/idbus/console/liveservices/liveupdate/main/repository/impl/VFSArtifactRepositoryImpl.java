@@ -40,6 +40,10 @@ public class VFSArtifactRepositoryImpl extends AbstractVFSRepository<ArtifactKey
         return artifacts.values();
     }
 
+    public byte[] getArtifact(ArtifactKeyType artifactKey) {
+        return new byte[0];
+    }
+
     protected void loadArtifacts(FileObject dir) throws LiveUpdateException {
         try {
             for (FileObject f : dir.getChildren()) {

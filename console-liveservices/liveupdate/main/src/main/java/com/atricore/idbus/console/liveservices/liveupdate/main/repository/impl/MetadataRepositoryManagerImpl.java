@@ -4,6 +4,9 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateExcepti
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.DefaultDependencyTreeBuilder;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.DependencyNode;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.DependencyTreeBuilder;
 import com.atricore.liveservices.liveupdate._1_0.md.*;
 import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
 import org.apache.commons.logging.Log;
@@ -24,14 +27,19 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
     private static final Log logger = LogFactory.getLog(MetadataRepositoryManagerImpl.class);
 
-    private Map<String, Map<String, UpdateDescriptorType>> updatesByFeature =
-            new HashMap<String, Map<String, UpdateDescriptorType>>();
+    Map<String, DependencyNode> dependencies;
 
     public void init() {
 
     }
 
-    public Collection<UpdateDescriptorType> refreshRepositories() {
+    public void addRepository(MetadataRepository repo) throws LiveUpdateException {
+        repo.init();
+        repos.add(repo);
+
+    }
+
+    public synchronized Collection<UpdateDescriptorType> refreshRepositories() {
 
         // TODO :Use indexes to keep track of updates/requirements/features
         // Loop over configured repos
@@ -46,22 +54,16 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
                         // TODO : Provide license information
                         byte[] idxBin = t.loadContent(location);
                         UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(new String(idxBin), false);
-
                         // Store updates to in repo
-
-
                         boolean add = false;
                         for (UpdateDescriptorType ud : idx.getUpdateDescriptor()) {
                             if (!repo.hasUpdate(ud.getID())) {
                                 add = true;
                                 newUpdates.add(ud);
                             }
-                            storeUpdateByFeature(ud);
                         }
 
                         repo.addUpdatesIndex(idx);
-
-
 
                     } catch (Exception e) {
                         logger.error("Cannot load updates list from repository " + repo.getName() +
@@ -76,6 +78,20 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
             }
         }
 
+        // Rebuild dependencies tree
+        List<UpdateDescriptorType> updates = new ArrayList<UpdateDescriptorType>();
+        for (MetadataRepository repo : repos) {
+            updates.addAll(repo.getAvailableUpdates());
+        }
+
+        DependencyTreeBuilder b = new DefaultDependencyTreeBuilder();
+        Collection<DependencyNode> deps = b.buildDependencyList(updates);
+
+        this.dependencies.clear();
+        for (DependencyNode dep : deps) {
+            this.dependencies.put(dep.getFqKey(), dep);
+        }
+
         return newUpdates;
 
         // Contact remote service,
@@ -83,37 +99,35 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         // Store it locally
     }
 
-    public Collection<UpdateDescriptorType> getAvailableUpdates() {
-        return null;
+    public Collection<UpdateDescriptorType> getAvailableUpdates(InstallableUnitType iu) {
+        String fqKey = iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion();
+        DependencyNode n = dependencies.get(fqKey);
+
+        List<DependencyNode> uds = getUpdates(n);
+        Set<UpdateDescriptorType> updates = new HashSet<UpdateDescriptorType>();
+
+        for (DependencyNode ud : uds) {
+            updates.add(ud.getUpdateDescriptor());
+        }
+
+        return updates;
+
     }
 
-    public void addRepository(MetadataRepository repo) throws LiveUpdateException {
-        repo.init();
-        repos.add(repo);
-
+    protected List<DependencyNode> getUpdates(DependencyNode dep) {
+        List<DependencyNode> updates = new ArrayList<DependencyNode>();
+        getUpdates(dep, updates);
+        return updates;
     }
 
-    protected void storeUpdateByFeature(UpdateDescriptorType ud) {
-
-        for (InstallableUnitType iu : ud.getInstallableUnit()) {
-
-            String k = iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion();
-            Map<String, UpdateDescriptorType> uds = updatesByFeature.get(k);
-            if (uds == null) {
-                uds = new HashMap<String, UpdateDescriptorType>();
-                updatesByFeature.put(k, uds);
+    protected void getUpdates(DependencyNode dep, List<DependencyNode> updates) {
+        if (dep.getChildren() != null) {
+            updates.addAll(dep.getChildren());
+            for (DependencyNode c : dep.getChildren()) {
+                getUpdates(c, updates);
             }
-
-            if (!uds.containsKey(ud.getID())) {
-                uds.put(ud.getID(), ud);
-            }
-
         }
     }
 
-
-    protected void lookForUpdates(InstallableUnitType iu) {
-
-    }
 
 }
