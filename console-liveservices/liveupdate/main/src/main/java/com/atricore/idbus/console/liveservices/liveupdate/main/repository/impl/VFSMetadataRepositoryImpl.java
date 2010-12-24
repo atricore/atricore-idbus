@@ -9,13 +9,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.FileType;
-import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.Selectors;
 
-import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.util.*;
 
 /**
@@ -23,60 +18,36 @@ import java.util.*;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescriptorType> implements MetadataRepository {
+public class VFSMetadataRepositoryImpl extends AbstractVFSRepository<UpdateDescriptorType> implements MetadataRepository {
 
     private static final Log logger = LogFactory.getLog(VFSMetadataRepositoryImpl.class);
 
     private Map<String, UpdateDescriptorType> updates = new HashMap<String, UpdateDescriptorType>();
-
-    private URI repoUri;
-
-    private FileObject repo;
-
-    private FileSystemManager fsManager;
 
     public VFSMetadataRepositoryImpl() {
 
     }
 
     public void init() throws LiveUpdateException {
-
-        try {
-
-            repo = getFileSystemManager().resolveFile(repoUri.toString());
-
-            if (logger.isDebugEnabled())
-                logger.debug("Initializing VFS MD Repository at " + repoUri.toString());
-
-            if (!repo.exists())
-                repo.createFolder();
-
-            if (!repo.getType().getName().equals(FileType.FOLDER.getName()))
-                throw new LiveUpdateException("Repository is not a folder : " + repo.getURL());
-
-            if (!repo.isReadable())
-                throw new LiveUpdateException("Repository is not readable : " + repo.getURL());
-
-            if (!repo.isWriteable())
-                throw new LiveUpdateException("Repository is not writeable : " + repo.getURL());
-
-            List<UpdateDescriptorType> descrs = loadDescriptors();
-            for (UpdateDescriptorType descr : descrs) {
-                updates.put(descr.getID(), descr);
-            }
-
-        } catch (FileSystemException e) {
-            throw new LiveUpdateException(e);
+        super.init();
+        // load updates
+        List<UpdateDescriptorType> descrs = loadDescriptors();
+        for (UpdateDescriptorType descr : descrs) {
+            updates.put(descr.getID(), descr);
         }
-
     }
 
     public Collection<UpdateDescriptorType> getAvailableUpdates() {
         return updates.values();
     }
 
-    public void clear () {
-        // TODO : Destroy all updates stored in this repo.
+    public void clear() throws LiveUpdateException {
+        try {
+            repo.delete(Selectors.EXCLUDE_SELF);
+            updates.clear();
+        } catch (FileSystemException e) {
+            throw new LiveUpdateException(e);
+        }
     }
 
     public void addUpdatesIndex(UpdatesIndexType newUpdates) throws LiveUpdateException {
@@ -85,7 +56,7 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
             String updateStr = XmlUtils1.marshalUpdatesIndex(newUpdates, false);
             byte[] updateBin  = updateStr.getBytes();
 
-            FileObject updateFile = fsManager.resolveFile(newUpdates.getID() + ".liveupdate");
+            FileObject updateFile = repo.resolveFile(newUpdates.getID() + ".liveupdate");
             if (!updateFile.exists())
                 updateFile.createFile();
 
@@ -103,18 +74,12 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
 
     public void removeUpdate(String id) {
         // Delete an update stored in this repo.
+        updates.remove(id);
+        // TODO: remove update descriptor element from update file?
     }
 
     public boolean hasUpdate(String id) {
         return this.updates.containsKey(id);
-    }
-
-    public URI getRepoFolder() {
-        return repoUri;
-    }
-
-    public void setRepoFolder(URI repoFolder) {
-        this.repoUri = repoFolder;
     }
 
     // ------------------------------< Utilities >
@@ -125,7 +90,8 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
         try {
             for (FileObject f : repo.getChildren()) {
                 byte[] descrBin = readContent(f);
-                descrs.add(XmlUtils1.unmarshallUpdateDescriptor(new String(descrBin), false));
+                UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(new String(descrBin), false);
+                descrs.addAll(idx.getUpdateDescriptor());
             }
         } catch (FileSystemException e) {
             throw new LiveUpdateException(e);
@@ -135,54 +101,4 @@ public class VFSMetadataRepositoryImpl extends AbstractRepository<UpdateDescript
 
         return descrs;
     }
-
-    protected byte[] readContent(FileObject file) throws Exception {
-        InputStream is = null;
-
-        try {
-            is = file.getContent().getInputStream();
-            byte[] buf = new byte[1024];
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            int read = is.read(buf);
-            while (read > 0) {
-                baos.write(buf, 0, read);
-                read = is.read(buf);
-            }
-
-            return baos.toByteArray();
-
-        } finally {
-            if (is != null) try {
-                is.close();
-            } catch (IOException e) { /**/}
-        }
-
-    }
-
-    protected void writeContent(FileObject file, byte[] content, boolean append) throws Exception {
-        OutputStream os = null;
-
-        try {
-            os = file.getContent().getOutputStream(append);
-            os.write(content);
-
-        } finally {
-            if (os != null) try {
-                os.close();
-            } catch (IOException e) { /**/}
-        }
-
-    }
-    protected FileSystemManager getFileSystemManager() {
-        if (fsManager == null) {
-            try {
-                fsManager = VFS.getManager();
-            } catch (FileSystemException e) {
-                logger.error(e.getMessage(), e);
-                throw new RuntimeException(e);
-            }
-        }
-        return fsManager;
-    }
-
 }

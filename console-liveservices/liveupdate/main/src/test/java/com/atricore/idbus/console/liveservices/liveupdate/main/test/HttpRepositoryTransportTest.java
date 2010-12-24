@@ -22,7 +22,7 @@ public class HttpRepositoryTransportTest {
     @Before
     public void setup() throws Exception {
         applicationContext = new ClassPathXmlApplicationContext(
-                new String[]{"classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/beans.xml"}
+                new String[]{"classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/transport-beans.xml"}
         );
 
         repositoryTransport = (HttpRepositoryTransport) applicationContext.getBean("httpRepositoryTransport");
@@ -43,7 +43,7 @@ public class HttpRepositoryTransportTest {
     @Test
     public void testLoadContent() throws Exception {
         startJetty();
-        URI uri = new URI("http://localhost:8888/updates.xml");
+        URI uri = new URI("http://localhost:8888/test-updates.xml");
         byte[] content = repositoryTransport.loadContent(uri);
         Assert.assertNotNull(content);
     }

@@ -8,10 +8,12 @@
 
     <updateDescriptor ID="id0000000100" description="JOSSO 2 EE ${pom.version}" IssueInstant="2010-12-25T19:32:52Z">
 
-        <installableUnit ID="id0000000110" updateNature="UPGRADE">
+        <installableUnit ID="id0000000110" group="${pom.groupId}" name="${pom.artifactId}" updateNature="UPGRADE">
+
+            <version Version="${pom.version}"/>
 
             <!-- Provided Features -->
-            <feature group="${pom.groupId}" name="josso-ee" description="JOSSO 2 EE ${pom.version}">
+            <feature ID="id000000222" group="${pom.groupId}" name="josso-ee" description="JOSSO 2 EE ${pom.version}">
                 <version Version="${pom.version}"/>
             </feature>
 
@@ -22,6 +24,7 @@
 
             <!-- JOSSO 2 EE Update (liveupdate installer) -->
             <artifact ID="id0000000112" group="${pom.groupId}" name="josso-ee" version="${pom.version}" classifier="install"/>
+
 
             <!-- Required features -->
             <requirement group="${pom.groupId}" name="josso-ee" description="JOSSO 2 EE 2.0.0" >

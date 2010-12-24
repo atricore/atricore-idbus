@@ -52,7 +52,7 @@ public class XmlUtils1 {
     public static String marshalUpdatesIndex(UpdatesIndexType udIdx, boolean encode) throws Exception {
         String type = udIdx.getClass().getSimpleName();
         if (type.endsWith("Type"))
-            type = type.substring(0, type.length() - 4);
+            type = Character.toLowerCase(type.charAt(0)) + type.substring(1, type.length() - 4);
 
         return marshalUpdatesIndex(udIdx, type, encode);
 

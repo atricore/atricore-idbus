@@ -1,12 +1,16 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
 
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
+import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
+
+import java.util.Collection;
 
 /**
- * Represents a server where update metadata can be obtained.
- * It also stores artifacts locally
+ * Represents a server where artifacts can be obtained.
+ * It also stores artifacts locally.
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public interface ArtifactRepository extends Repository {
+public interface ArtifactRepository extends Repository<ArtifactKeyType> {
+
+    Collection<ArtifactKeyType> getAvailableArtifacts();
 }
