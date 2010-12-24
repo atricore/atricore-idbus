@@ -52,7 +52,7 @@ public class VFSMetadataRepositoryImplTest {
     }
 
     @Test
-    public void getHasUpdate() throws Exception {
+    public void testHasUpdate() throws Exception {
         boolean hasUpdate = vfsMetadataRepository.hasUpdate("id0000000100");
         Assert.assertTrue(hasUpdate);
 
@@ -60,20 +60,7 @@ public class VFSMetadataRepositoryImplTest {
         Assert.assertFalse(hasUpdate);
     }
 
-    @Test
-    public void getRemoveUpdate() throws Exception {
-        String id = "id0000000100";
-        boolean hasUpdate = vfsMetadataRepository.hasUpdate(id);
-        Assert.assertTrue(hasUpdate);
-
-        // remove update
-        vfsMetadataRepository.removeUpdate(id);
-        
-        hasUpdate = vfsMetadataRepository.hasUpdate(id);
-        Assert.assertFalse(hasUpdate);
-    }
-
-    @Test
+    //s@Test
     public void testClear() throws Exception {
         vfsMetadataRepository.clear();
         Collection<UpdateDescriptorType> updates = vfsMetadataRepository.getAvailableUpdates();

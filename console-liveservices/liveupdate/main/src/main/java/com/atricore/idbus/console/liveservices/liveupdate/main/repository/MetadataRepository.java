@@ -1,9 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
-import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
-import com.atricore.liveservices.liveupdate._1_0.md.UpdateNatureType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 
 import java.util.Collection;
@@ -19,8 +17,6 @@ public interface MetadataRepository extends Repository<UpdateDescriptorType> {
     Collection<UpdateDescriptorType> getAvailableUpdates();
 
     void addUpdatesIndex(UpdatesIndexType updates) throws LiveUpdateException;
-
-    void removeUpdate(String id);
 
     boolean hasUpdate(String id);
 }

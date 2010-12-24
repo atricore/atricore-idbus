@@ -1,5 +1,6 @@
 package com.atricore.liveservices.liveupdate._1_0.util;
 
+import com.atricore.liveservices.liveupdate._1_0.md.ArtifactDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import org.apache.commons.codec.binary.Base64;
@@ -48,6 +49,13 @@ public class XmlUtils1 {
         return (UpdateDescriptorType) e.getValue();
     }
 
+    public static ArtifactDescriptorType unmarshallArtifactDescriptor(String adStr, boolean decode) throws Exception {
+        if (decode)
+            adStr = new String(new Base64().decode(adStr.getBytes()));
+
+        JAXBElement e = (JAXBElement) unmarshal(adStr, new String[]{ "com.atricore.liveservices.liveupdate._1_0.md" });
+        return (ArtifactDescriptorType) e.getValue();
+    }
 
     public static String marshalUpdatesIndex(UpdatesIndexType udIdx, boolean encode) throws Exception {
         String type = udIdx.getClass().getSimpleName();
@@ -75,7 +83,7 @@ public class XmlUtils1 {
     public static String marshalUpdateDescriptor(UpdateDescriptorType ud, boolean encode) throws Exception {
         String type = ud.getClass().getSimpleName();
         if (type.endsWith("Type"))
-            type = type.substring(0, type.length() - 4);
+            type = Character.toLowerCase(type.charAt(0)) + type.substring(1, type.length() - 4);
 
         return marshalUpdateDescriptor(ud, type, encode);
 
@@ -95,6 +103,28 @@ public class XmlUtils1 {
         return encode ? new String(new Base64().encode( marshalled.getBytes())) : marshalled;
     }
 
+    public static String marshalArtifactDescriptor(ArtifactDescriptorType ad, boolean encode) throws Exception {
+        String type = ad.getClass().getSimpleName();
+        if (type.endsWith("Type"))
+            type = Character.toLowerCase(type.charAt(0)) + type.substring(1, type.length() - 4);
+
+        return marshalArtifactDescriptor(ad, type, encode);
+
+    }
+
+    public static String marshalArtifactDescriptor(ArtifactDescriptorType ad, String requestType, boolean encode) throws Exception {
+
+        String marshalled ;
+        // Support IDBus SAMLR2 Extentions when marshalling
+        marshalled = marshal(
+            ad,
+            "urn:com:atricore:liveservices:liveupdate:1.0:md",
+            requestType,
+            new String[]{ "com.atricore.liveservices.liveupdate._1_0.md" }
+        );
+
+        return encode ? new String(new Base64().encode( marshalled.getBytes())) : marshalled;
+    }
 
     // JAXB Generic
 

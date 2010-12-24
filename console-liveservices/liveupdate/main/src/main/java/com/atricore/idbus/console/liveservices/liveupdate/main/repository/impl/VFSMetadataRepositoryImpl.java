@@ -72,12 +72,6 @@ public class VFSMetadataRepositoryImpl extends AbstractVFSRepository<UpdateDescr
 
     }
 
-    public void removeUpdate(String id) {
-        // Delete an update stored in this repo.
-        updates.remove(id);
-        // TODO: remove update descriptor element from update file?
-    }
-
     public boolean hasUpdate(String id) {
         return this.updates.containsKey(id);
     }

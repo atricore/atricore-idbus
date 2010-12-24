@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.test;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSArtifactRepositoryImpl;
+import com.atricore.liveservices.liveupdate._1_0.md.ArtifactDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,12 +29,13 @@ public class VFSArtifactRepositoryImplTest {
 
     @Test
     public void testGetAvailableArtifacts() throws Exception {
-        Collection<ArtifactKeyType> artifacts = vfsArtifactRepository.getAvailableArtifacts();
+        Collection<ArtifactDescriptorType> artifacts = vfsArtifactRepository.getAvailableArtifacts();
         Assert.assertEquals(artifacts.size(), 2);
 
         boolean configArtifactFound = false;
         boolean toolingArtifactFound = false;
-        for (ArtifactKeyType artifact : artifacts) {
+        for (ArtifactDescriptorType artifactDescriptor : artifacts) {
+            ArtifactKeyType artifact = artifactDescriptor.getArtifact();
             Assert.assertEquals(artifact.getGroup(), "com.atricore.idbus.console");
             Assert.assertEquals(artifact.getVersion(), "1.0.0-SNAPSHOT");
             if (artifact.getName().equals("console-config")) {
@@ -42,8 +44,8 @@ public class VFSArtifactRepositoryImplTest {
                 Assert.assertEquals(artifact.getClassifier(), "resources");
             } else if (artifact.getName().equals("console-tooling")) {
                 toolingArtifactFound = true;
-                Assert.assertEquals(artifact.getType(), "jar");
-                Assert.assertEquals(artifact.getClassifier(), "");
+                Assert.assertNull(artifact.getType());
+                Assert.assertNull(artifact.getClassifier());
             }
         }
 
@@ -54,7 +56,7 @@ public class VFSArtifactRepositoryImplTest {
     @Test
     public void testGetArtifact() throws Exception {
         ArtifactKeyType artifactKey1 = new ArtifactKeyType();
-        artifactKey1.setID("id1");
+        artifactKey1.setID("id0000000111");
         artifactKey1.setGroup("com.atricore.idbus.console");
         artifactKey1.setName("console-config");
         artifactKey1.setVersion("1.0.0-SNAPSHOT");
@@ -64,13 +66,18 @@ public class VFSArtifactRepositoryImplTest {
         Assert.assertNotNull(artifact1);
 
         ArtifactKeyType artifactKey2 = new ArtifactKeyType();
-        artifactKey2.setID("id2");
+        artifactKey2.setID("id0000000112");
         artifactKey2.setGroup("com.atricore.idbus.console");
         artifactKey2.setName("console-tooling");
         artifactKey2.setVersion("1.0.0-SNAPSHOT");
-        artifactKey2.setType("jar");
-        artifactKey2.setClassifier("");
         byte[] artifact2 = vfsArtifactRepository.getArtifact(artifactKey2);
         Assert.assertNotNull(artifact2);
+    }
+
+    @Test
+    public void testClear() throws Exception {
+        vfsArtifactRepository.clear();
+        Collection<ArtifactDescriptorType> artifacts = vfsArtifactRepository.getAvailableArtifacts();
+        Assert.assertEquals(artifacts.size(), 0);
     }
 }

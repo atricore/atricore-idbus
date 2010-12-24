@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<artifacDescriptor xmlns="urn:com:atricore:liveservices:liveupdate:1.0:md"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:com:atricore:liveservices:liveupdate:1.0:md
+                    http://www.atricore.com/liveservices/liveupdate/atricore-liveupdate-md-1.0.xsd"
+        ID="id0000001100"
+        checksum=""
+        lastUpdate="2010-12-25T19:32:52Z">
+
+    <artifact ID="id0000000112" group="com.atricore.idbus.console" name="console-tooling" version="1.0.0-SNAPSHOT" />
+
+</artifacDescriptor>
