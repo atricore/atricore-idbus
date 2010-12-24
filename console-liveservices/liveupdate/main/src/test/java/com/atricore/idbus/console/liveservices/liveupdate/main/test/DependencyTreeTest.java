@@ -65,7 +65,7 @@ public class DependencyTreeTest {
         assert nodes.size() == 5 : "Invalid number of nodes " + nodes.size() + ", expected 5";
 
         // Check the tree structure for each version
-        //checkTree01(nodes);
+        checkTree02(nodes);
 
     }
 
@@ -105,6 +105,52 @@ public class DependencyTreeTest {
         }
 
     }
+
+    /**
+     * This will check versions 2.0.0, 2.0.1, 2.0.2 and 2.0.3 only, in that order!
+     * @param nodes
+     */
+    protected void checkTree02(Collection<DependencyNode> nodes) {
+
+        DependencyNode node200 = getDependency(nodes, "2.0.0");
+        assert node200.getVersion().equals("2.0.0");
+        assert node200.getChildren().size() == 2 : "Invalid number of children for " + node200.getVersion() + " " + node200.getChildren().size();
+        assert node200.getParents().size() == 0 : "Invalid number of parents for " + node200.getVersion() + " " + node200.getParents().size();
+        for (DependencyNode n : node200.getChildren()) {
+            assert n.getVersion().equals("2.0.1") || n.getVersion().equals("2.1.0");
+        }
+        
+        DependencyNode node201 = getDependency(nodes, "2.0.1");
+        assert node201.getVersion().equals("2.0.1");
+        assert node201.getChildren().size() == 2 : "Invalid number of children for " + node201.getVersion() + " " + node201.getChildren().size();
+        assert node201.getParents().size() == 1 : "Invalid number of parents for " + node201.getVersion() + " " + node201.getParents().size();
+        for (DependencyNode n : node201.getChildren()) {
+            assert n.getVersion().equals("2.0.2") || n.getVersion().equals("2.1.0");
+        }
+
+        DependencyNode node202 = getDependency(nodes, "2.0.2");
+        assert node202.getVersion().equals("2.0.2");
+        assert node202.getChildren().size() == 2 : "Invalid number of children for " + node202.getVersion() + " " + node202.getChildren().size();
+        assert node202.getParents().size() == 1 : "Invalid number of parents for " + node202.getVersion() + " " + node202.getParents().size();
+        for (DependencyNode n : node202.getChildren()) {
+            assert n.getVersion().equals("2.0.3") || n.getVersion().equals("2.1.0");
+        }
+
+        DependencyNode node203 = getDependency(nodes, "2.0.3");
+        assert node203.getVersion().equals("2.0.3");
+        assert node203.getChildren().size() == 1 : "Invalid number of children for " + node203.getVersion() + " " + node203.getChildren().size();
+        assert node203.getParents().size() == 1 : "Invalid number of parents for " + node203.getVersion() + " " + node203.getParents().size();
+        for (DependencyNode n : node203.getChildren()) {
+            assert n.getVersion().equals("2.1.0");
+        }
+
+        DependencyNode node210 = getDependency(nodes, "2.1.0");
+        assert node210.getVersion().equals("2.1.0");
+        assert node210.getParents().size() == 4 : "Invalid number of parents for " + node210.getVersion() + " " + node210.getParents().size();
+        assert node210.getChildren().size() == 0 : "Invalid number of children for " + node210.getVersion() + " " + node210.getChildren().size();        
+
+    }
+
 
     protected DependencyNode getDependency(Collection<DependencyNode> nodes, String version) {
         for (DependencyNode node : nodes) {
