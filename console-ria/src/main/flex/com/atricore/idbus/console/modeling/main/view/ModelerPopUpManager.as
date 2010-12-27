@@ -916,7 +916,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         createExportIdentityApplianceView();
         _progress.title = "Export Identity Appliance";
         _progress.width = 300;
-        _progress.height = 200;
+        _progress.height = 150;
 //        _popup.x = (_popupParent.width / 2) - 225;
 //        _popup.y = 80;
         showProgress(_exportIdentityApplianceView);
