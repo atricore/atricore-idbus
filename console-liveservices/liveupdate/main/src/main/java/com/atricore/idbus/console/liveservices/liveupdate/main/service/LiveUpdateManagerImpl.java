@@ -135,7 +135,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     }
 
     public UpdatesIndexType getRepositoryUpdates(String repoName) throws LiveUpdateException {
-        return mdManager.getUpdates(repoName);
+        return mdManager.getUpdatesIndex(repoName);
     }
 
     public Collection<UpdateDescriptorType> getAvailableUpdates() throws LiveUpdateException {
@@ -147,7 +147,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
         for (InstallableUnitType iu : ius) {
 
-            Collection<UpdateDescriptorType> uds = mdManager.getAvailableUpdates(iu);
+            Collection<UpdateDescriptorType> uds = mdManager.getUpdates(iu);
 
             for (UpdateDescriptorType ud : uds) {
                 updates.put(ud.getID(), ud);
@@ -165,8 +165,32 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     }
 
     // Apply update
-    public void applyUpdate(String id) {
-        // TODO :
+    public void applyUpdate(String group, String name, String version) throws LiveUpdateException {
+
+        if (logger.isDebugEnabled())
+            logger.debug("Trying to apply update for " + group + "/" + name + "/" + version);
+
+        Collection<UpdateDescriptorType> updates = getAvailableUpdates();
+        InstallableUnitType installableUnit  = null;
+        for (UpdateDescriptorType ud : updates) {
+            for (InstallableUnitType iu : ud.getInstallableUnit()) {
+                if (iu.getGroup().equals(group) && iu.getName().equals(name) && iu.getVersion().equals(version)) {
+                    installableUnit = iu;
+                    if (logger.isDebugEnabled())
+                        logger.debug("Found IU " + iu.getID() + " for " + group + "/" + name + "/" + version);
+                    break;
+                }
+            }
+        }
+
+        if (installableUnit == null) {
+            throw new LiveUpdateException("Update not available for current setup : " +
+                    group + "/" + name + "/" + version);
+        }
+
+        logger.info("Applying Update " + group + "/" + name + "/" + version);
+
+        // TODO : Setup an update plan , could include rebooting, custom actions, etc.
     }
 
 

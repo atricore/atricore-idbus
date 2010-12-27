@@ -20,9 +20,11 @@ public interface MetadataRepositoryManager extends RepositoryManager {
 
     Collection<UpdateDescriptorType> refreshRepositories();
 
-    Collection<UpdateDescriptorType> getAvailableUpdates(InstallableUnitType iu);
+    Collection<UpdateDescriptorType> getUpdates(InstallableUnitType iu);
+
+    UpdatesIndexType getUpdatesIndex(String repoName) throws LiveUpdateException;
+
+    UpdateDescriptorType getUpdate(String id) throws LiveUpdateException;
 
     void addRepository(MetadataRepository repo) throws LiveUpdateException;
-
-    UpdatesIndexType getUpdates(String repoName) throws LiveUpdateException;
 }

@@ -25,7 +25,7 @@ public interface LiveUpdateManager {
     /**
      * Applies the given update to the current setup.
      */
-    void applyUpdate(String id) throws LiveUpdateException;
+    void applyUpdate(String group, String name, String version) throws LiveUpdateException;
 
 
     /**

@@ -100,7 +100,7 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         // Store it locally
     }
 
-    public synchronized Collection<UpdateDescriptorType> getAvailableUpdates(InstallableUnitType iu) {
+    public synchronized Collection<UpdateDescriptorType> getUpdates(InstallableUnitType iu) {
         String fqKey = iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion();
         DependencyNode n = dependencies.get(fqKey);
 
@@ -115,7 +115,7 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
     }
 
-    public synchronized UpdatesIndexType getUpdates(String repoName) throws LiveUpdateException {
+    public synchronized UpdatesIndexType getUpdatesIndex(String repoName) throws LiveUpdateException {
         for (MetadataRepository metadataRepository : repos) {
             if (metadataRepository.getName().equals(repoName)) {
                 return metadataRepository.getUpdates();
@@ -123,6 +123,17 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         }
         return null;
     }
+
+    public UpdateDescriptorType getUpdate(String id) throws LiveUpdateException {
+
+        for ( MetadataRepository repo : repos) {
+            for (UpdateDescriptorType ud : repo.getAvailableUpdates())
+                if (ud.getID().equals(id))
+                    return ud;
+        }
+        return null;
+    }
+
 
 
     /**
