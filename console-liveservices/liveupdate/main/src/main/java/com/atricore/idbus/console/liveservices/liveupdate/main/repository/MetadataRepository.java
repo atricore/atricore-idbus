@@ -32,5 +32,5 @@ public interface MetadataRepository extends Repository<UpdateDescriptorType> {
     /**
      * Retunrs the updates index descriptor.
      */
-    UpdatesIndexType getUpdates();
+    UpdatesIndexType getUpdates() throws LiveUpdateException;
 }

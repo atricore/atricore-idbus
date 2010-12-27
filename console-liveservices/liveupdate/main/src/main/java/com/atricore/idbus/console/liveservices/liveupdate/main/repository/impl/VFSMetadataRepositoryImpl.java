@@ -62,11 +62,12 @@ public class VFSMetadataRepositoryImpl extends AbstractVFSRepository<UpdateDescr
 
             writeContent(updateFile, updateBin, false);
 
+            // remove all old update descriptors
+            updates.clear();
+
+            // add new update descriptors
             for (UpdateDescriptorType ud : newUpdates.getUpdateDescriptor()) {
-                UpdateDescriptorType oldUd = updates.put(ud.getID(), ud);
-                if (logger.isDebugEnabled())
-                    logger.debug(oldUd != null ? ("Update descriptor replaced " + oldUd.getID()) :
-                            "New Update descriptor found " + ud.getID());
+                updates.put(ud.getID(), ud);
             }
         } catch (Exception e) {
             throw new LiveUpdateException(e);
@@ -79,9 +80,21 @@ public class VFSMetadataRepositoryImpl extends AbstractVFSRepository<UpdateDescr
         return this.updates.containsKey(id);
     }
 
-    public UpdatesIndexType getUpdates() {
-        // TODO : Implement me
-        return null;
+    public UpdatesIndexType getUpdates() throws LiveUpdateException {
+        UpdatesIndexType idx = null;
+        try {
+            // there should be just one child (one updates index file)
+            for (FileObject f : repo.getChildren()) {
+                byte[] updatesBin = readContent(f);
+                idx = XmlUtils1.unmarshallUpdatesIndex(new String(updatesBin), false);
+            }
+        } catch (FileSystemException e) {
+            throw new LiveUpdateException(e);
+        } catch (Exception e) {
+            throw new LiveUpdateException(e);
+        }
+
+        return idx;
     }
 
     // ------------------------------< Utilities >

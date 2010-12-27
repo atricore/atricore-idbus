@@ -40,6 +40,7 @@ public class VFSMetadataRepositoryImplTest {
     public void testAddUpdatesIndex() throws Exception {
         Collection<UpdateDescriptorType> updates = vfsMetadataRepository.getAvailableUpdates();
         Assert.assertEquals(updates.size(), 1);
+        Assert.assertEquals(updates.iterator().next().getID(), "id0000000100");
 
         // add updates index
         FileRepositoryTransport transport = (FileRepositoryTransport) applicationContext.getBean("fileRepositoryTransport");
@@ -48,16 +49,24 @@ public class VFSMetadataRepositoryImplTest {
         vfsMetadataRepository.addUpdatesIndex(idx);
 
         updates = vfsMetadataRepository.getAvailableUpdates();
-        Assert.assertEquals(updates.size(), 2);
+        Assert.assertEquals(updates.size(), 1);
+        Assert.assertEquals(updates.iterator().next().getID(), "id0000000200");
     }
 
     @Test
     public void testHasUpdate() throws Exception {
-        boolean hasUpdate = vfsMetadataRepository.hasUpdate("id0000000100");
+        boolean hasUpdate = vfsMetadataRepository.hasUpdate("id0000000200");
         Assert.assertTrue(hasUpdate);
 
         hasUpdate = vfsMetadataRepository.hasUpdate("id0000000111");
         Assert.assertFalse(hasUpdate);
+    }
+
+    @Test
+    public void testGetUpdates() throws Exception {
+        UpdatesIndexType idx = vfsMetadataRepository.getUpdates();
+        Assert.assertNotNull(idx);
+        Assert.assertEquals(idx.getUpdateDescriptor().size(), 1);
     }
 
     //@Test
