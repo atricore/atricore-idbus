@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+       xmlns:ctx="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/osgi
+                    http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context.xsd
+                    http://www.springframework.org/schema/osgi-compendium
+                    http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+    <bean name="osgiReg" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.OsgiInstallOperationsRegistry">
+        <constructor-arg ref="installOperationsRegistry"/>
+    </bean>
+
+    <osgi:list id="istallOps" interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation" cardinality="0..N">
+        <osgi:listener ref="osgiReg" bind-method="register" unbind-method="unregister"/>
+    </osgi:list>
+
+
+    <bean name="downloadInstallersOperation" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations.DownloadInstallersOperation">
+        <property name="name" value="downloadInstallersOperation"/>
+        <property name="stepName" value="download-installers"/>
+    </bean>
+    <osgi:service id="osgiDownloadInstallersOperation" ref="downloadInstallersOperation"
+                  interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
+
+    <bean name="installInstallerOperation" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations.InstallInstallersOperation">
+        <property name="name" value="installInstallerOperation"/>
+        <property name="stepName" value="install-installers"/>
+    </bean>
+    <osgi:service id="osgiInstallInstallerOperation" ref="installInstallerOperation"
+                  interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
+
+    <bean name="downloadUpdatesOperation" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations.DownloadUpdatesOperation">
+        <property name="name" value="downloadUpdatesOperation"/>
+        <property name="stepName" value="download-updates"/>
+    </bean>
+    <osgi:service id="osgiDownloadUpdatesOperation" ref="downloadUpdatesOperation"
+                  interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
+
+    <bean name="restartRequiredOperation" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations.RestartRequestOperation">
+        <property name="name" value="restartRequiredOperation"/>
+        <property name="stepName" value="install-updates"/>
+    </bean>
+    <osgi:service id="osgiRestartRequiredOperation" ref="restartRequiredOperation"
+                  interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
+
+
+</beans>

@@ -2,7 +2,10 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.service;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateContext;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateEngine;
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.UpdateEngineImpl;
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.UpdateEngineImpl;
 import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
@@ -49,7 +52,6 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     private ArtifactRepositoryManagerImpl artManager;
 
     public void init() throws LiveUpdateException {
-
 
         // Start update check thread.
         logger.info("Initializing LiveUpdate service");
@@ -147,7 +149,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
         for (InstallableUnitType iu : ius) {
 
-            Collection<UpdateDescriptorType> uds = mdManager.getUpdates(iu);
+            Collection<UpdateDescriptorType> uds = mdManager.getUpdates();
 
             for (UpdateDescriptorType ud : uds) {
                 updates.put(ud.getID(), ud);
@@ -190,10 +192,20 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
         logger.info("Applying Update " + group + "/" + name + "/" + version);
 
+        // TODO : Calculate all the required IUs from our profile to the new one
+        // UpdateContext ctx = buildUpdateContext(profile, iu);
+
         // TODO : Setup an update plan , could include rebooting, custom actions, etc.
+        //engine.execute("updatePlan", ctx);
     }
 
+    // -------------------------------------------< Utilities >
 
+    protected UpdateContext buildUpdateContext(ProfileType profile, InstallableUnitType iu) {
+        return null;//this.mdManager.
+    }
+
+    // -------------------------------------------< Properties >
     public void setConfig(Properties config) {
         this.config = config;
     }
@@ -224,6 +236,14 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     public void setProfileManager(ProfileManager profileManager) {
         this.profileManager = profileManager;
+    }
+
+    public UpdateEngine getEngine() {
+        return engine;
+    }
+
+    public void setEngine(UpdateEngine engine) {
+        this.engine = engine;
     }
 
     public String getDataFolder() {

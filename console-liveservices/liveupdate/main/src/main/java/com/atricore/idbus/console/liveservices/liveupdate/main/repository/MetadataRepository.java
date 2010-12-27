@@ -16,13 +16,25 @@ import java.util.Collection;
  */
 public interface MetadataRepository extends Repository<UpdateDescriptorType> {
 
+    /**
+     * Get the list of Update descriptors stored in this repo.
+     */
     Collection<UpdateDescriptorType> getAvailableUpdates();
 
+    /**
+     * Adds or replaces an updates index descriptor.
+     */
     void addUpdatesIndex(UpdatesIndexType updates) throws LiveUpdateException;
 
     void removeUpdate(String id);
 
+    /**
+     * True if an update descriptor exists with the given ID.
+     */
     boolean hasUpdate(String id);
 
+    /**
+     * Retunrs the updates index descriptor.
+     */
     UpdatesIndexType getUpdates();
 }
