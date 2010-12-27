@@ -1,8 +1,5 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl;
 
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.ArtifactVersion;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.InvalidVersionSpecificationException;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.VersionRange;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.RequiredFeatureType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
@@ -22,6 +19,13 @@ public class DefaultDependencyTreeBuilder implements DependencyTreeBuilder {
 
     protected Map<String, Set<String>> dependenciesByName = new HashMap<String, Set<String>>();
 
+    private boolean init = false;
+
+    /**
+     * Builds a list with all available updates
+     * @param uds
+     * @return
+     */
     public Collection<DependencyNode> buildDependencyList(Collection<UpdateDescriptorType> uds) {
 
         if (logger.isDebugEnabled())
@@ -79,7 +83,20 @@ public class DefaultDependencyTreeBuilder implements DependencyTreeBuilder {
             }
         }
 
+        init = true;
+
         return nodes.values();
+    }
+
+
+    public DependencyNode getDependency(InstallableUnitType iu) {
+        return getDependency(iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion());
+    }
+
+    public DependencyNode getDependency(String fqKey) {
+        if (!init)
+            throw new IllegalStateException("Tree builder not initialized!");
+        return nodes.get(fqKey);
     }
 
     protected void resolveDependencies() {

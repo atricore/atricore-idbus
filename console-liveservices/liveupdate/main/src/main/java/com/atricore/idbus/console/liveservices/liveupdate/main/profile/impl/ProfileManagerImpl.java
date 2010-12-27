@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdatePlan;
 import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileManager;
 
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
@@ -160,10 +161,27 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
         }
     }
 
-    public ProfileType createProfile(ProfileType original, Collection<UpdateDescriptorType> updates) {
+    /**
+     * Builds the profile containing all the necessary updates to install the provided IU in our the current setup
+     */
+    public ProfileType buildUpdateProfile(InstallableUnitType iu, Collection<UpdateDescriptorType> updates) throws LiveUpdateException {
+
+        DependencyTreeBuilder tb = new DefaultDependencyTreeBuilder();
+        Collection<DependencyNode> dependencies = tb.buildDependencyList(updates);
+
+        if (logger.isTraceEnabled())
+            logger.trace("Processing " + dependencies.size() + " updates");
+
+        DependencyNode install = tb.getDependency(iu);
+
+        // Now, build all the possible update paths and choose the shorter one. (Note this could be configurable)
+
         return null;
     }
 
+    // --------------------------------------------------< Utilities >
+
+    // --------------------------------------------------< Properties >
     public BundleContext getBundleContext() {
         return bundleContext;
     }

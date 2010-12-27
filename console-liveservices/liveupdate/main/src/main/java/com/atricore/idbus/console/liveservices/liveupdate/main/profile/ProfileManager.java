@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.profile;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdatePlan;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
@@ -22,8 +23,8 @@ public interface ProfileManager {
     ProfileType getCurrentProfile() throws LiveUpdateException;
 
     /**
-     * New profile, based on the list of updates.
+     * Builds the profile containing all the necessary updates to install the provided IU in the current setup
      */
-    ProfileType createProfile(ProfileType original, Collection<UpdateDescriptorType> updates);
+    ProfileType buildUpdateProfile(InstallableUnitType install, Collection<UpdateDescriptorType> updates) throws LiveUpdateException;
 
 }

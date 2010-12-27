@@ -2,6 +2,7 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.*;
+import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -22,10 +23,10 @@ public class UpdateEngineImpl implements UpdateEngine {
         // TODO : Resume stalled stalled processes!
     }
 
-
-
     // TODO : Provide persistence functionallity to resume an update process after reboot
-    public void execute(String planName, UpdateContext ctx) throws LiveUpdateException {
+    public void execute(String planName, ProfileType updateProfile) throws LiveUpdateException {
+
+        UpdateContext ctx = new UpdateContextImpl(updateProfile);
         for (UpdatePlan plan : plans) {
             if (plan.getName().equals(planName))
                 start(plan, ctx);

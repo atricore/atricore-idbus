@@ -2,6 +2,7 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateContext;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
+import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 
 import java.util.Collection;
 
@@ -10,13 +11,13 @@ import java.util.Collection;
  */
 public class UpdateContextImpl implements UpdateContext {
 
-    private Collection<InstallableUnitType> ius;
+    private ProfileType updateProfile;
 
-    public UpdateContextImpl(Collection<InstallableUnitType> ius) {
-        this.ius = ius;
+    public UpdateContextImpl(ProfileType updateProfile) {
+        this.updateProfile = updateProfile;
     }
 
     public Collection<InstallableUnitType> getIUs() {
-        return ius;
+        return updateProfile.getInstallableUnit();
     }
 }

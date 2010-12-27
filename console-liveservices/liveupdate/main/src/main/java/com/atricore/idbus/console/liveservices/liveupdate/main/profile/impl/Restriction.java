@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md;
+package com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>

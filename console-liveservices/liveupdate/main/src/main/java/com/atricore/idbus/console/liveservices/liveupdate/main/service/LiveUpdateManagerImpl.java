@@ -4,6 +4,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateExcepti
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateContext;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateEngine;
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.UpdateContextImpl;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.UpdateEngineImpl;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.UpdateEngineImpl;
 import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileManager;
@@ -191,12 +192,9 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         }
 
         logger.info("Applying Update " + group + "/" + name + "/" + version);
+        ProfileType updateProfile = profileManager.buildUpdateProfile(installableUnit, mdManager.getUpdates());
 
-        // TODO : Calculate all the required IUs from our profile to the new one
-        // UpdateContext ctx = buildUpdateContext(profile, iu);
-
-        // TODO : Setup an update plan , could include rebooting, custom actions, etc.
-        //engine.execute("updatePlan", ctx);
+        engine.execute("updatePlan", updateProfile);
     }
 
     // -------------------------------------------< Utilities >
