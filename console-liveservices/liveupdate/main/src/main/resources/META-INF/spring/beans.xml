@@ -22,7 +22,7 @@
         <property name="metadataRepositoryManager" ref="mdRepositoriesManager"/>
         <property name="artifactRepositoryManager" ref="artRepositoriesManager"/>
         <property name="profileManager" ref="profileManager"/>
-        <property name="karafData" value="${karaf.data}"/>
+        <property name="dataFolder" value="${karaf.data}"/>
     </bean>
 
     <!-- Metadta Repository Manager -->

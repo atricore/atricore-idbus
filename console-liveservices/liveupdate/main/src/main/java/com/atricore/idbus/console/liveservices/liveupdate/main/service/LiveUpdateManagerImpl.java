@@ -4,8 +4,6 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateExcepti
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateEngine;
 import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileManager;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepositoryManager;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.ArtifactRepositoryManagerImpl;
@@ -43,7 +41,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     private UpdatesMonitor updatesMonitor;
 
-    private String karafData;
+    private String dataFolder;
 
     private ScheduledThreadPoolExecutor stpe;
     private Properties config;
@@ -85,7 +83,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
                 try {
                     // Since we're handling the configuration properties, we cannot rely on spring properties resolver.
                     String l = config.getProperty(repoKeys + ".location");
-                    l = l.replaceAll("\\$\\{karaf\\.data\\}", karafData);
+                    l = l.replaceAll("\\$\\{karaf\\.data\\}", dataFolder);
                     location = new URI(l);
 
                 } catch (Exception e) {
@@ -103,7 +101,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
                 repo.setLocation(location);
                 repo.setEnabled(enabled);
                 try {
-                    repo.setRepoFolder(new URI ("file://" + karafData + "/liveservices/liveupdate/repos/md/cache/" + id));
+                    repo.setRepoFolder(new URI ("file://" + dataFolder + "/liveservices/liveupdate/repos/md/cache/" + id));
                 } catch (URISyntaxException e) {
                     logger.error("Invalid repository ID : " + id + ". " +e.getMessage());
                     continue;
@@ -161,27 +159,14 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
 
     // Analyze MD and see if updates apply. (use license information ....)
-    public void checkForUpdates() {
-
-
-
-        // TODO :
-        /*
-            1. Get Available updates for a given IU
-            2. Get Available updates for new IUs from that update.
-            3. Build a list and store it in memory/disk!?
-         */
+    public Collection<UpdateDescriptorType> checkForUpdates() throws LiveUpdateException {
         Collection<UpdateDescriptorType> uds = mdManager.refreshRepositories();
-        for (UpdateDescriptorType ud : uds) {
-            for (InstallableUnitType iu : ud.getInstallableUnit()) {
-
-            }
-        }
+        return getAvailableUpdates();
     }
 
     // Apply update
-    public void applyUpdate(String ID) {
-
+    public void applyUpdate(String id) {
+        // TODO :
     }
 
 
@@ -217,11 +202,13 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         this.profileManager = profileManager;
     }
 
-    public String getKarafData() {
-        return karafData;
+    public String getDataFolder() {
+        return dataFolder;
     }
 
-    public void setKarafData(String karafData) {
-        this.karafData = karafData;
+    public void setDataFolder(String dataFolder) {
+        this.dataFolder = dataFolder;
     }
+
+    //
 }

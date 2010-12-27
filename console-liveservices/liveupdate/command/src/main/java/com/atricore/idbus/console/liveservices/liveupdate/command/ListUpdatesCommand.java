@@ -3,6 +3,7 @@ package com.atricore.idbus.console.liveservices.liveupdate.command;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import org.apache.felix.gogo.commands.Command;
+import org.apache.felix.gogo.commands.Option;
 
 import java.util.Collection;
 
@@ -14,9 +15,12 @@ import java.util.Collection;
 @Command(scope = "liveupdate", name = "list-updates", description = "List available Updates for the current setup")
 public class ListUpdatesCommand extends LiveUpdateCommandSupport {
 
+    @Option(name = "-o", aliases = "--off-line", description = "Offline check for updates, use locally stored information", required = false, multiValued = false)
+    boolean offline  = false;
+
     @Override
     protected Object doExecute(LiveUpdateManager svc) throws Exception {
-        Collection<UpdateDescriptorType> updates = svc.getAvailableUpdates();
+        Collection<UpdateDescriptorType> updates = offline ? svc.getAvailableUpdates() : svc.checkForUpdates();
         getPrinter().printAll(updates);
         return null;
     }

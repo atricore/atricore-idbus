@@ -12,13 +12,35 @@ import java.util.Collection;
  */
 public interface LiveUpdateManager {
 
-    void checkForUpdates();
+    /**
+     * Refresh MD repositories and returns a list of updates that apply to current profile
+     */
+    Collection<UpdateDescriptorType> checkForUpdates() throws LiveUpdateException;
 
-    Collection<Repository> getRepositories();
+    /**
+     * Returns a list of updates that apply to current profile (without refreshing MD repositories)
+     */
+    Collection<UpdateDescriptorType> getAvailableUpdates() throws LiveUpdateException;
 
+    /**
+     * Applies the given update to the current setup.
+     */
+    void applyUpdate(String id) throws LiveUpdateException;
+
+
+    /**
+     * Returns the profile representing the current setup.
+     */
     ProfileType getCurrentProfile() throws LiveUpdateException;
 
+    /**
+     * Returns a list of configured repositories, the collection includes both MD and Artifact repositories.
+     */
+    Collection<Repository> getRepositories();
+
+    /**
+     * Returns a collection of ALL updates registered in a given repository.
+     */
     UpdatesIndexType getRepositoryUpdates(String repoName) throws LiveUpdateException;
 
-    Collection<UpdateDescriptorType> getAvailableUpdates() throws LiveUpdateException;
 }

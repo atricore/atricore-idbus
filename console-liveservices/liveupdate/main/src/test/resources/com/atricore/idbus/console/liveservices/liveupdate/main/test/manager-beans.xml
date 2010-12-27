@@ -26,7 +26,7 @@
         <property name="config" ref="liveUpdateProps"/>
         <property name="metadataRepositoryManager" ref="mdRepositoriesManager"/>
         <property name="artifactRepositoryManager" ref="artRepositoriesManager"/>
-        <property name="karafData" value="${build.directory}/test-classes/com/atricore/idbus/console"/>
+        <property name="dataFolderr" value="${build.directory}/test-classes/com/atricore/idbus/console"/>
     </bean>
 
     <util:properties id="liveUpdateProps" location="classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/liveupdate.properties"/>
