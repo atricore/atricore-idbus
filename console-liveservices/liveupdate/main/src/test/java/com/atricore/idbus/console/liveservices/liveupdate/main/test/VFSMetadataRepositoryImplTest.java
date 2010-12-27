@@ -60,7 +60,7 @@ public class VFSMetadataRepositoryImplTest {
         Assert.assertFalse(hasUpdate);
     }
 
-    //s@Test
+    //@Test
     public void testClear() throws Exception {
         vfsMetadataRepository.clear();
         Collection<UpdateDescriptorType> updates = vfsMetadataRepository.getAvailableUpdates();
