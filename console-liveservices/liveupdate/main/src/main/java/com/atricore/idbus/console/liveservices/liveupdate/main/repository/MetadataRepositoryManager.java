@@ -4,6 +4,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateExcepti
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSMetadataRepositoryImpl;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
+import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 
 import java.util.Collection;
 
@@ -22,4 +23,6 @@ public interface MetadataRepositoryManager extends RepositoryManager {
     Collection<UpdateDescriptorType> getAvailableUpdates(InstallableUnitType iu);
 
     void addRepository(MetadataRepository repo) throws LiveUpdateException;
+
+    UpdatesIndexType getUpdates(String repoName) throws LiveUpdateException;
 }

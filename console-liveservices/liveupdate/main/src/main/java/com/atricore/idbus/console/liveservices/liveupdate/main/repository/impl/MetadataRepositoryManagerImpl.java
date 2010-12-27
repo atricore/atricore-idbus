@@ -115,6 +115,16 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
     }
 
+    public synchronized UpdatesIndexType getUpdates(String repoName) throws LiveUpdateException {
+        for (MetadataRepository metadataRepository : repos) {
+            if (metadataRepository.getName().equals(repoName)) {
+                return metadataRepository.getUpdates();
+            }
+        }
+        return null;
+    }
+
+
     /**
      * Get list of dependent objects
      */

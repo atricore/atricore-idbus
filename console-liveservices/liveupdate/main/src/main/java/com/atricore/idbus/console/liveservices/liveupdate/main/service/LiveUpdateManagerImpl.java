@@ -13,6 +13,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.M
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSMetadataRepositoryImpl;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
+import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -134,6 +135,30 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
         return repos;
     }
+
+    public UpdatesIndexType getRepositoryUpdates(String repoName) throws LiveUpdateException {
+        return mdManager.getUpdates(repoName);
+    }
+
+    public Collection<UpdateDescriptorType> getAvailableUpdates() throws LiveUpdateException {
+
+        ProfileType profile = profileManager.getCurrentProfile();
+        List<InstallableUnitType> ius = profile.getInstallableUnit();
+
+        Map<String, UpdateDescriptorType> updates = new HashMap<String, UpdateDescriptorType>();
+
+        for (InstallableUnitType iu : ius) {
+
+            Collection<UpdateDescriptorType> uds = mdManager.getAvailableUpdates(iu);
+
+            for (UpdateDescriptorType ud : uds) {
+                updates.put(ud.getID(), ud);
+            }
+        }
+
+        return updates.values();
+    }
+
 
     // Analyze MD and see if updates apply. (use license information ....)
     public void checkForUpdates() {

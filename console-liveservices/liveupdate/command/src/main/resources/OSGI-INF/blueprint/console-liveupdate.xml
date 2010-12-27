@@ -33,11 +33,27 @@
             </action>
         </command>
 
+        <command name="liveupdate/list-repo-updates">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListRepositoryUpdatesCommand">
+                <property name="printer" ref="updatesIndexPrinter"/>
+            </action>
+        </command>
+
+        <command name="liveupdate/list-updates">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListUpdatesCommand">
+                <property name="printer" ref="updateDescriptorPrinter"/>
+            </action>
+        </command>
+
 
     </command-bundle>
 
     <bean id="repositoryPrinter" class="com.atricore.idbus.console.liveservices.liveupdate.command.printers.RepositoryCmdPrinter"/>
 
     <bean id="profilePrinter" class="com.atricore.idbus.console.liveservices.liveupdate.command.printers.ProfileCmdPrinter"/>
+
+    <bean id="updatesIndexPrinter" class="com.atricore.idbus.console.liveservices.liveupdate.command.printers.UpdatesIndexCmdPrinter"/>
+
+    <bean id="updateDescriptorPrinter" class="com.atricore.idbus.console.liveservices.liveupdate.command.printers.UpdateDescriptorCmdPrinter"/>
 
 </blueprint>
