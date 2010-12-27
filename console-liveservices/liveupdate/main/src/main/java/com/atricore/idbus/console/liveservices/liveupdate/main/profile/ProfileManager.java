@@ -7,6 +7,7 @@ import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Keeps track of configurations or profiles.

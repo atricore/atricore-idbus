@@ -1,12 +1,10 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl.DependencyNode;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.DefaultDependencyTreeBuilder;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.DependencyNode;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.DependencyTreeBuilder;
 import com.atricore.liveservices.liveupdate._1_0.md.*;
 import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
 import org.apache.commons.logging.Log;
@@ -27,23 +25,23 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
     private static final Log logger = LogFactory.getLog(MetadataRepositoryManagerImpl.class);
 
-    /**
-     * List of Installable Units, defined as dependent objects.
-     */
-    Map<String, DependencyNode> dependencies;
-
     public void init() {
         // RFU
     }
 
-    public void addRepository(MetadataRepository repo) throws LiveUpdateException {
+    /**
+     * Adds a new repository to this manager
+     */
+    public synchronized void addRepository(MetadataRepository repo) throws LiveUpdateException {
         repo.init();
         repos.add(repo);
     }
 
+    /**
+     * Refresh updates indexes of all repositories
+     */
     public synchronized Collection<UpdateDescriptorType> refreshRepositories() {
 
-        // TODO :Use indexes to keep track of updates/requirements/features
         // Loop over configured repos
         List<UpdateDescriptorType> newUpdates = new ArrayList<UpdateDescriptorType>();
 
@@ -53,17 +51,16 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
                 if (t.canHandle(location)) {
 
                     try {
-                        // TODO : Provide license information
                         byte[] idxBin = t.loadContent(location);
                         UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(new String(idxBin), false);
+
                         // Store updates to in repo
-                        boolean add = false;
                         for (UpdateDescriptorType ud : idx.getUpdateDescriptor()) {
                             if (!repo.hasUpdate(ud.getID())) {
-                                add = true;
                                 newUpdates.add(ud);
                             }
                         }
+
                         repo.addUpdatesIndex(idx);
 
                     } catch (Exception e) {
@@ -79,20 +76,6 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
             }
         }
 
-        // Rebuild dependencies tree
-        List<UpdateDescriptorType> updates = new ArrayList<UpdateDescriptorType>();
-        for (MetadataRepository repo : repos) {
-            updates.addAll(repo.getAvailableUpdates());
-        }
-
-        DependencyTreeBuilder b = new DefaultDependencyTreeBuilder();
-        Collection<DependencyNode> deps = b.buildDependencyList(updates);
-
-        this.dependencies.clear();
-        for (DependencyNode dep : deps) {
-            this.dependencies.put(dep.getFqKey(), dep);
-        }
-
         return newUpdates;
 
         // Contact remote service,
@@ -100,19 +83,16 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         // Store it locally
     }
 
-    public synchronized Collection<UpdateDescriptorType> getUpdates(InstallableUnitType iu) {
-        String fqKey = iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion();
-        DependencyNode n = dependencies.get(fqKey);
+    public synchronized Collection<UpdateDescriptorType> getUpdates() throws LiveUpdateException {
+        Map<String, UpdateDescriptorType> updates = new HashMap<String, UpdateDescriptorType>();
 
-        List<DependencyNode> uds = getDependents(n);
-        Set<UpdateDescriptorType> updates = new HashSet<UpdateDescriptorType>();
-
-        for (DependencyNode ud : uds) {
-            updates.add(ud.getUpdateDescriptor());
+        for (MetadataRepository repo : repos) {
+            for (UpdateDescriptorType ud : repo.getAvailableUpdates()) {
+                updates.put(ud.getID(), ud);
+            }
         }
 
-        return updates;
-
+        return updates.values();
     }
 
     public synchronized UpdatesIndexType getUpdatesIndex(String repoName) throws LiveUpdateException {
@@ -124,7 +104,7 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         return null;
     }
 
-    public UpdateDescriptorType getUpdate(String id) throws LiveUpdateException {
+    public synchronized UpdateDescriptorType getUpdate(String id) throws LiveUpdateException {
 
         for ( MetadataRepository repo : repos) {
             for (UpdateDescriptorType ud : repo.getAvailableUpdates())

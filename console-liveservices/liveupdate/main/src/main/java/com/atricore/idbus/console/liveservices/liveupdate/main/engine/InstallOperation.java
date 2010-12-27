@@ -5,11 +5,14 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateExcepti
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public interface UpdateEngine {
+public interface InstallOperation {
 
-    void init() throws LiveUpdateException;
+    String getStepName();
 
-    void execute(String planName, UpdateContext ctx) throws LiveUpdateException;
+    OperationStatus preInstall(UpdateContext ctx) throws LiveUpdateException;
 
+    OperationStatus postInstall(UpdateContext ctx) throws LiveUpdateException;
+
+    String getName();
 
 }

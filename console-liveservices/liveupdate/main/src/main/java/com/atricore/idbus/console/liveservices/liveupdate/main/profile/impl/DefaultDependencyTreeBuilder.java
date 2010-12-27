@@ -1,5 +1,8 @@
-package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md;
+package com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.ArtifactVersion;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.InvalidVersionSpecificationException;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md.VersionRange;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.RequiredFeatureType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;

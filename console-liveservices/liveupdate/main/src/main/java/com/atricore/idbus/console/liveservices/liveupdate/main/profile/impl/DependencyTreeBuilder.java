@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.md;
+package com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl;
 
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 
