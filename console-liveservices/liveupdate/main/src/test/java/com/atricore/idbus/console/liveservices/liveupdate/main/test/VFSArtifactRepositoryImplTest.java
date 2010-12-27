@@ -75,6 +75,30 @@ public class VFSArtifactRepositoryImplTest {
     }
 
     @Test
+    public void testRemoveArtifact() throws Exception {
+        ArtifactKeyType artifactKey = new ArtifactKeyType();
+        artifactKey.setID("id0000000111");
+        artifactKey.setGroup("com.atricore.idbus.console");
+        artifactKey.setName("console-config");
+        artifactKey.setVersion("1.0.0-SNAPSHOT");
+        artifactKey.setType("zip");
+        artifactKey.setClassifier("resources");
+
+        byte[] artifact = vfsArtifactRepository.getArtifact(artifactKey);
+        Assert.assertNotNull(artifact);
+
+        vfsArtifactRepository.removeArtifact(artifactKey);
+
+        boolean artifactExists = true;
+        try {
+            artifact = vfsArtifactRepository.getArtifact(artifactKey);
+        } catch (Exception e) {
+            artifactExists = false;
+        }
+        Assert.assertFalse(artifactExists);
+    }
+
+    @Test
     public void testClear() throws Exception {
         vfsArtifactRepository.clear();
         Collection<ArtifactDescriptorType> artifacts = vfsArtifactRepository.getAvailableArtifacts();
