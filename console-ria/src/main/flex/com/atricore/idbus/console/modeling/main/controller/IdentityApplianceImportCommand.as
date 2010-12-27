@@ -19,14 +19,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.main.controller
-{
+package com.atricore.idbus.console.modeling.main.controller {
 import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
-import com.atricore.idbus.console.services.spi.request.ImportIdentityApplianceRequest;
-import com.atricore.idbus.console.services.spi.response.AddIdentityApplianceResponse;
-
-import com.atricore.idbus.console.services.spi.response.ImportIdentityApplianceResponse;
 
 import flash.utils.ByteArray;
 
@@ -38,12 +34,16 @@ import mx.rpc.remoting.mxml.RemoteObject;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
+import com.atricore.idbus.console.services.spi.request.ImportIdentityApplianceRequest;
+import com.atricore.idbus.console.services.spi.response.ImportIdentityApplianceResponse;
+
 public class IdentityApplianceImportCommand extends IocSimpleCommand implements IResponder {
 
-    public static const SUCCESS : String = "IdentityApplianceImportCommand.SUCCESS";
-    public static const FAILURE : String = "IdentityApplianceImportCommand.FAILURE";
+    public static const SUCCESS:String = "IdentityApplianceImportCommand.SUCCESS";
+    public static const FAILURE:String = "IdentityApplianceImportCommand.FAILURE";
 
     private var _registry:ServiceRegistry;
+    private var _projectProxy:ProjectProxy;
 
     public function get registry():ServiceRegistry {
         return _registry;
@@ -51,6 +51,14 @@ public class IdentityApplianceImportCommand extends IocSimpleCommand implements 
 
     public function set registry(value:ServiceRegistry):void {
         _registry = value;
+    }
+
+    public function get projectProxy():ProjectProxy {
+        return _projectProxy;
+    }
+
+    public function set projectProxy(value:ProjectProxy):void {
+        _projectProxy = value;
     }
 
     override public function execute(notification:INotification):void {
@@ -62,13 +70,14 @@ public class IdentityApplianceImportCommand extends IocSimpleCommand implements 
         var call:Object = service.importIdentityApplianceProject(req);
         call.addResponder(this);
     }
-
     public function result(data:Object):void {
         var resp:ImportIdentityApplianceResponse = data.result as ImportIdentityApplianceResponse;
         if (resp.validationErrors != null && resp.validationErrors.length > 0) {
+            projectProxy.identityApplianceValidationErrors = resp.validationErrors;
             sendNotification(ApplicationFacade.APPLIANCE_VALIDATION_ERRORS);
         } else {
-            sendNotification(SUCCESS);
+            var applianceId:Number = resp.appliance.id;
+            sendNotification(SUCCESS,applianceId.toString());
         }
     }
 

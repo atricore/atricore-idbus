@@ -318,11 +318,14 @@ public class IdentityApplianceManagementServiceImpl implements
             // 1. Unmarshall appliance
             IdentityAppliance appliance = new IdentityAppliance();
             appliance.setIdApplianceDefinitionBin(appStr);
-
             appliance = identityApplianceDAO.unmarshall(appliance);
-            appliance.setName(appliance.getIdApplianceDefinition().getName());
+
             appliance.setNamespace(appliance.getIdApplianceDefinition().getNamespace());
+            appliance.setDisplayName(appliance.getIdApplianceDefinition().getDisplayName());
+            appliance.setDescription(appliance.getIdApplianceDefinition().getDescription());
             appliance.setState(IdentityApplianceState.PROJECTED.toString());
+            validateAppliance(appliance, ApplianceValidator.Operation.IMPORT);
+            debugAppliance(appliance, ApplianceValidator.Operation.IMPORT);
             appliance = identityApplianceDAO.save(appliance);
             appliance = identityApplianceDAO.detachCopy(appliance, FetchPlan.FETCH_SIZE_GREEDY);
 
@@ -335,8 +338,6 @@ public class IdentityApplianceManagementServiceImpl implements
 
             return response;
 
-        } catch(ApplianceValidationException e) {
-            throw e;
         } catch (Exception e) {
             logger.error("Error importing identity appliance project from file", e);
             throw new IdentityServerException(e);

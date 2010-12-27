@@ -35,6 +35,7 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityL
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
+import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceImportCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceUpdateCommand;
 import com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand;
@@ -338,6 +339,8 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             IdentityApplianceListLoadCommand.FAILURE,
             IdentityApplianceUpdateCommand.SUCCESS,
             IdentityApplianceUpdateCommand.FAILURE,
+            IdentityApplianceImportCommand.SUCCESS,
+            IdentityApplianceImportCommand.FAILURE,
             JDBCDriversListCommand.FAILURE];
     }
 
@@ -537,6 +540,16 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         "There was an error retrieving list of appliances.");
                 break;
+
+            case IdentityApplianceImportCommand.SUCCESS:
+                var appID:String = notification.getBody() as String;
+                sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, appID);
+                sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);
+                break;
+            case IdentityApplianceImportCommand.FAILURE:
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
+                        "There was an error importing appliance. Bad artifact or already exists.");
+                break;
             case IdentityApplianceUpdateCommand.SUCCESS:
                 var silentUpdate:Boolean = notification.getBody() as Boolean;
                 if (!silentUpdate) {
@@ -608,6 +621,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                     popupManager.showCreateExportIdentityApplianceWindow(notification);
                 }
                 break;
+
         }
 
     }
