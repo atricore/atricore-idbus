@@ -52,7 +52,10 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
                     try {
                         byte[] idxBin = t.loadContent(location);
+
                         UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(new String(idxBin), false);
+
+                        // TODO : Validate Digital signature!
 
                         // Store updates to in repo
                         for (UpdateDescriptorType ud : idx.getUpdateDescriptor()) {

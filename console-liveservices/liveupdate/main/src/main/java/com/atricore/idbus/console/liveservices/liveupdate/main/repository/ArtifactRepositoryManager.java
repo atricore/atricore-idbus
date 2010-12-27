@@ -1,7 +1,9 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 
+import java.io.InputStream;
 import java.util.Collection;
 
 /**
@@ -14,9 +16,9 @@ import java.util.Collection;
  */
 public interface ArtifactRepositoryManager extends RepositoryManager {
 
-    void refreshRepositories();
+    InputStream getArtifactStream(ArtifactKeyType artifact) throws LiveUpdateException;
 
-    Collection<ArtifactKeyType> getAvailableArtifacts();
+    void clearRepository(String repoName) throws LiveUpdateException;
 
-    byte[] getArtifact(ArtifactKeyType artifact);
+    void clearAllRepositories() throws LiveUpdateException;
 }

@@ -4,6 +4,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateExcepti
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 
+import java.io.InputStream;
 import java.util.Collection;
 
 /**
@@ -14,9 +15,29 @@ import java.util.Collection;
  */
 public interface ArtifactRepository extends Repository<ArtifactKeyType> {
 
-    Collection<ArtifactDescriptorType> getAvailableArtifacts();
+    /**
+     * Returns the list of locally stored artifacts
+     */
+    Collection<ArtifactDescriptorType> getAvailableArtifacts() throws LiveUpdateException;
 
-    byte[] getArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException;
+    /**
+     * Returns true if the artifact exists in the local storage
+     */
+    boolean containsArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException;
 
+    /**
+     * Gets the content for the given artifact
+     */
+    InputStream getArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException;
+
+    /**
+     * Removes an artifact from local storage
+     */
     void removeArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException;
+
+    /**
+     * Removes all artifacts from local storage
+     * @throws LiveUpdateException
+     */
+    void clear() throws LiveUpdateException;
 }

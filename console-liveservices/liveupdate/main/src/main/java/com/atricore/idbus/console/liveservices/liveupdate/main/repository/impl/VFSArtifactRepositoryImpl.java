@@ -14,6 +14,7 @@ import org.apache.commons.vfs.Selectors;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,11 +47,23 @@ public class VFSArtifactRepositoryImpl extends AbstractVFSRepository<ArtifactKey
         return artifacts.values();
     }
 
-    public byte[] getArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException {
+    public boolean containsArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException {
+        // TODO : Implement me!
+        return false;
+    }
+
+    public InputStream getArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException {
         try {
-            String artifactPath = createArtifactPath(artifactKey);
+            String artifactPath = artifactKey.getGroup().replaceAll("\\.", File.separator) + File.separator +
+                    artifactKey.getName() + File.separator +
+                    artifactKey.getVersion() + File.separator +
+                    artifactKey.getName() + "-" + artifactKey.getVersion() +
+                    (artifactKey.getClassifier() != null && artifactKey.getClassifier() != "" ?
+                            "-" + artifactKey.getClassifier() : "") + "." +
+                    (artifactKey.getType() != null && artifactKey.getType() != "" ? artifactKey.getType() : "jar");
             FileObject artifact = repo.resolveFile(artifactPath);
-            return readContent(artifact);
+            return artifact.getContent().getInputStream();
+
         } catch (FileSystemException e) {
             throw new LiveUpdateException(e);
         } catch (Exception e) {
@@ -60,19 +73,15 @@ public class VFSArtifactRepositoryImpl extends AbstractVFSRepository<ArtifactKey
 
     public void removeArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException {
         try {
-            String artifactPath = createArtifactPath(artifactKey);
+            String artifactPath = artifactKey.getGroup().replaceAll("\\.", File.separator) + File.separator +
+                    artifactKey.getName() + File.separator +
+                    artifactKey.getVersion() + File.separator +
+                    artifactKey.getName() + "-" + artifactKey.getVersion() +
+                    (artifactKey.getClassifier() != null && artifactKey.getClassifier() != "" ? "-" : "") +
+                    artifactKey.getClassifier() + "." +
+                    (artifactKey.getType() != null && artifactKey.getType() != "" ? artifactKey.getType() : "jar");
             FileObject artifact = repo.resolveFile(artifactPath);
-
-            // remove from filesystem
-            FileObject parent = artifact.getParent();
-            while (!repo.toString().equals(parent.getParent().toString()) &&
-                    parent.getParent().getChildren().length == 1) {
-                parent = parent.getParent();
-            }
-            parent.delete(Selectors.SELECT_ALL);
-
-            // remove from hash map
-            artifacts.remove(artifactKey.getID());
+            // TODO
         } catch (FileSystemException e) {
             throw new LiveUpdateException(e);
         } catch (Exception e) {
@@ -105,15 +114,5 @@ public class VFSArtifactRepositoryImpl extends AbstractVFSRepository<ArtifactKey
         } catch (Exception e) {
             throw new LiveUpdateException(e);
         }
-    }
-
-    protected String createArtifactPath(ArtifactKeyType artifactKey) {
-        return artifactKey.getGroup().replaceAll("\\.", File.separator) + File.separator +
-                    artifactKey.getName() + File.separator +
-                    artifactKey.getVersion() + File.separator +
-                    artifactKey.getName() + "-" + artifactKey.getVersion() +
-                    (artifactKey.getClassifier() != null && artifactKey.getClassifier() != "" ?
-                            "-" + artifactKey.getClassifier() : "") + "." +
-                    (artifactKey.getType() != null && artifactKey.getType() != "" ? artifactKey.getType() : "jar");
     }
 }
