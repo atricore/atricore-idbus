@@ -4,15 +4,13 @@ import com.atricore.liveservices.liveupdate._1_0.md.ArtifactDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import org.apache.commons.codec.binary.Base64;
+import org.w3c.dom.Document;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -21,16 +19,7 @@ public class XmlUtils1 {
 
 
     public static UpdatesIndexType unmarshallUpdatesIndex(InputStream is, boolean decode) throws Exception {
-        byte[] buf = new byte[1024];
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-
-        int read = is.read(buf);
-        while (read > 0) {
-            baos.write(buf, 0, read);
-            read = is.read(buf);
-        }
-
-        return unmarshallUpdatesIndex(new String(baos.toByteArray()), decode);
+        return unmarshallUpdatesIndex(new String(getByteArray(is)), decode);
     }
 
     public static UpdatesIndexType unmarshallUpdatesIndex(String udIdxStr, boolean decode) throws Exception {
@@ -38,6 +27,11 @@ public class XmlUtils1 {
             udIdxStr = new String(new Base64().decode(udIdxStr.getBytes()));
 
         JAXBElement e = (JAXBElement) unmarshal(udIdxStr, new String[]{ "com.atricore.liveservices.liveupdate._1_0.md" });
+        return (UpdatesIndexType) e.getValue();
+    }
+
+    public static UpdatesIndexType unmarshallUpdatesIndex(Document udIdx) throws Exception {
+        JAXBElement e = (JAXBElement) unmarshal(udIdx, new String[]{ "com.atricore.liveservices.liveupdate._1_0.md" });
         return (UpdatesIndexType) e.getValue();
     }
 
@@ -49,11 +43,20 @@ public class XmlUtils1 {
         return (UpdateDescriptorType) e.getValue();
     }
 
+    public static ArtifactDescriptorType unmarshallArtifactDescriptor(InputStream is, boolean decode) throws Exception {
+        return unmarshallArtifactDescriptor(new String(getByteArray(is)), decode);
+    }
+
     public static ArtifactDescriptorType unmarshallArtifactDescriptor(String adStr, boolean decode) throws Exception {
         if (decode)
             adStr = new String(new Base64().decode(adStr.getBytes()));
 
         JAXBElement e = (JAXBElement) unmarshal(adStr, new String[]{ "com.atricore.liveservices.liveupdate._1_0.md" });
+        return (ArtifactDescriptorType) e.getValue();
+    }
+
+    public static ArtifactDescriptorType unmarshallArtifactDescriptor(Document ad) throws Exception {
+        JAXBElement e = (JAXBElement) unmarshal(ad, new String[]{ "com.atricore.liveservices.liveupdate._1_0.md" });
         return (ArtifactDescriptorType) e.getValue();
     }
 
@@ -78,6 +81,17 @@ public class XmlUtils1 {
         );
 
         return encode ? new String(new Base64().encode( marshalled.getBytes())) : marshalled;
+    }
+
+    public static Document marshalUpdatesIndexToDOM(UpdatesIndexType udIdx) throws Exception {
+        String marshalled = marshalUpdatesIndex(udIdx, false);
+
+        javax.xml.parsers.DocumentBuilderFactory dbf =
+                javax.xml.parsers.DocumentBuilderFactory.newInstance();
+
+        dbf.setNamespaceAware(true);
+
+        return dbf.newDocumentBuilder().parse(new ByteArrayInputStream(marshalled.getBytes()));
     }
 
     public static String marshalUpdateDescriptor(UpdateDescriptorType ud, boolean encode) throws Exception {
@@ -126,6 +140,17 @@ public class XmlUtils1 {
         return encode ? new String(new Base64().encode( marshalled.getBytes())) : marshalled;
     }
 
+    public static Document marshalArtifactDescriptorToDOM(ArtifactDescriptorType ad) throws Exception {
+        String marshalled = marshalArtifactDescriptor(ad, false);
+
+        javax.xml.parsers.DocumentBuilderFactory dbf =
+                javax.xml.parsers.DocumentBuilderFactory.newInstance();
+
+        dbf.setNamespaceAware(true);
+
+        return dbf.newDocumentBuilder().parse(new ByteArrayInputStream(marshalled.getBytes()));
+    }
+
     // JAXB Generic
 
     public static String marshal ( Object msg, String msgQName, String msgLocalName, String[] userPackages ) throws Exception {
@@ -143,10 +168,14 @@ public class XmlUtils1 {
         return writer.toString();
     }
 
-
     public static Object unmarshal( String msg, String userPackages[] ) throws Exception {
         JAXBContext jaxbContext = createJAXBContext( userPackages );
         return jaxbContext.createUnmarshaller().unmarshal( new StringSource( msg ) );
+    }
+
+    public static Object unmarshal( Document doc, String userPackages[] ) throws Exception {
+        JAXBContext jaxbContext = createJAXBContext( userPackages );
+        return jaxbContext.createUnmarshaller().unmarshal( doc );
     }
 
     public static JAXBContext createJAXBContext ( String[] userPackages ) throws JAXBException {
@@ -158,4 +187,16 @@ public class XmlUtils1 {
         return JAXBContext.newInstance( packages.toString(), XmlUtils1.class.getClassLoader());
     }
 
+    private static byte[] getByteArray(InputStream is) throws Exception {
+        byte[] buf = new byte[1024];
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+
+        int read = is.read(buf);
+        while (read > 0) {
+            baos.write(buf, 0, read);
+            read = is.read(buf);
+        }
+
+        return baos.toByteArray();
+    }
 }

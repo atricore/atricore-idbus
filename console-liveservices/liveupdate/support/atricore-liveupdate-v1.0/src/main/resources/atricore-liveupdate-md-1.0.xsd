@@ -45,7 +45,7 @@
         </documentation>
     </annotation>
 
-    <element name="artifacDescriptor" type="lu:ArtifactDescriptorType"/>
+    <element name="artifactDescriptor" type="lu:ArtifactDescriptorType"/>
     <complexType name="ArtifactDescriptorType">
         <sequence>
             <element ref="ds:Signature" minOccurs="0"/>

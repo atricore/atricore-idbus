@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<updatesIndex xmlns="urn:com:atricore:liveservices:liveupdate:1.0:md"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:com:atricore:liveservices:liveupdate:1.0:md
+                    http://www.atricore.com/liveservices/liveupdate/atricore-liveupdate-md-1.0.xsd"
+        ID="id0000001100">
+
+    <updateDescriptor ID="id0000000200" description="JOSSO 2 EE 1.0.0-SNAPSHOT" IssueInstant="2010-12-25T19:32:52Z">
+
+        <installableUnit ID="id0000000110"
+                         group="com.atricore.josso"
+                         name="com.atricore.josso.ee.install"
+                         version="1.0.0-SNAPSHOT"
+                         description="JOSSO 2 EE"
+                         updateNature="UPGRADE">
+
+
+
+            <!-- Set of artifacts required for this install -->
+
+            <!-- JOSSO 2 EE Update (distribution) -->
+            <artifact ID="id0000000111"
+                      group="com.atricore.josso"
+                      name="josso-ee"
+                      version="1.0.0-SNAPSHOT"
+                      type="tar.gz"
+                      classifier="liveupdate"/>
+
+            <!-- JOSSO 2 EE Update (distribution) -->
+            <artifact ID="id0000000112"
+                      group="com.atricore.josso"
+                      name="josso-ee"
+                      version="1.0.0-SNAPSHOT"
+                      type="zip"
+                      classifier="liveupdate"/>
+
+
+            <!-- JOSSO 2 EE Update (liveupdate installer) -->
+            <artifact ID="id0000000113"
+                      group="com.atricore.josso"
+                      name="com.atricore.josso.ee.install"
+                      version="1.0.0-SNAPSHOT"
+                      type="bundle"
+                      classifier="liveupdate"/>
+
+
+            <!-- Required features -->
+            <requirement group="com.atricore.josso" name="josso-ee" description="JOSSO 2 EE 2.0.0" >
+                <versionRange Expression="[1.9,2.0)"/>
+            </requirement>
+
+        </installableUnit>
+
+    </updateDescriptor>
+
+</updatesIndex>

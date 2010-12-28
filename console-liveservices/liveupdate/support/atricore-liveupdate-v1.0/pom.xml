@@ -38,6 +38,11 @@
     <description>Atricore LiveUpate v1.0 XML Binding</description>
     <packaging>bundle</packaging>
 
+    <properties>
+        <jaxb.impl.version>2.1.12_1</jaxb.impl.version>
+        <woodstox.version>4.0.5</woodstox.version>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -76,6 +81,32 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.santuario</groupId>
+            <artifactId>xmlsec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
+            <version>${jaxb.impl.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
+            <version>${woodstox.version}</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
