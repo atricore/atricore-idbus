@@ -6,13 +6,13 @@ package com.atricore.idbus.console.lifecycle.main.spi.request;
  */
 public class ImportApplianceDefinitionRequest extends AbstractManagementRequest {
 
-    private String descriptor;
+    private byte[] bytes;
 
-    public String getDescriptor() {
-        return descriptor;
+    public byte[] getBytes() {
+        return bytes;
     }
 
-    public void setDescriptor(String descriptor) {
-        this.descriptor = descriptor;
+    public void setBytes(byte[] bytes) {
+        this.bytes = bytes;
     }
 }

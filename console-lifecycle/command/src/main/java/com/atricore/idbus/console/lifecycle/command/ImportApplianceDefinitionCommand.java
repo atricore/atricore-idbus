@@ -12,8 +12,12 @@ import org.apache.commons.vfs.VFS;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -26,7 +30,7 @@ public class ImportApplianceDefinitionCommand extends ManagementCommandSupport {
 
     @Option(name = "-i", aliases = "--input", description = "Identity Appliance export file", required = true, multiValued = false)
     private String input;
-    
+
     @Override
     protected Object doExecute(IdentityApplianceManagementService svc) throws Exception {
 
@@ -38,16 +42,16 @@ public class ImportApplianceDefinitionCommand extends ManagementCommandSupport {
 
         //System.out.println("Importing from " + inputFile.getURL().toExternalForm());
 
+        final int BUFFER_SIZE = 2048;
+        int count;
         InputStream is = inputFile.getContent().getInputStream();
-        StringBuilder descriptor = new StringBuilder();
+        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+        byte[] buff =  new byte[BUFFER_SIZE];
 
-        byte[] buff =  new byte[1024];
-
-        int read = is.read(buff, 0, 1024);
-        while (read > 0) {
-            descriptor.append(new String(buff, 0, read));
-            read = is.read(buff);
+        while ((count = is.read(buff, 0, BUFFER_SIZE)) != -1) {
+            bOut.write(buff, 0, count);
         }
+        bOut.flush();
 
         if (is != null) {
             try {
@@ -61,7 +65,8 @@ public class ImportApplianceDefinitionCommand extends ManagementCommandSupport {
 
         try {
             ImportApplianceDefinitionRequest req = new ImportApplianceDefinitionRequest ();
-            req.setDescriptor(descriptor.toString());
+            req.setBytes(bOut.toByteArray());
+            bOut.close();
 
             // Invoke service
             ImportApplianceDefinitionResponse res = svc.importApplianceDefinition(req);
