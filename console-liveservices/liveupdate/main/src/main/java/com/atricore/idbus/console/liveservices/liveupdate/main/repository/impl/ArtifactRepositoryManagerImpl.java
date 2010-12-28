@@ -60,4 +60,7 @@ public class ArtifactRepositoryManagerImpl extends AbstractRepositoryManager<Art
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    public void addRepository(ArtifactRepository repo) {
+        //To change body of created methods use File | Settings | File Templates.
+    }
 }

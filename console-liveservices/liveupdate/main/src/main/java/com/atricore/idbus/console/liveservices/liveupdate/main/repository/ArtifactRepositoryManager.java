@@ -21,4 +21,6 @@ public interface ArtifactRepositoryManager extends RepositoryManager {
     void clearRepository(String repoName) throws LiveUpdateException;
 
     void clearAllRepositories() throws LiveUpdateException;
+
+    void addRepository(ArtifactRepository repo) throws LiveUpdateException;
 }

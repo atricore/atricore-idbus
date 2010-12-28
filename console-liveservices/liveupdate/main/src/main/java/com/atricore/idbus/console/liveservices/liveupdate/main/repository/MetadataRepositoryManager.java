@@ -37,7 +37,7 @@ public interface MetadataRepositoryManager extends RepositoryManager {
     UpdatesIndexType getUpdatesIndex(String repoName, boolean refreshRepo) throws LiveUpdateException;
 
     /**
-     * Retrieves the entire list of available updates.
+     * Retrieves the entire list of available updates, in all repositories.
      */
     Collection<UpdateDescriptorType> getUpdates() throws LiveUpdateException;
 

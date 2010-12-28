@@ -2,16 +2,15 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.service;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
-import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateContext;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateEngine;
-import com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.UpdateContextImpl;
-import com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.UpdateEngineImpl;
-import com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.UpdateEngineImpl;
 import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileManager;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepository;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.ArtifactRepositoryManagerImpl;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.MetadataRepositoryManagerImpl;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSArtifactRepositoryImpl;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSMetadataRepositoryImpl;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
@@ -55,8 +54,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     public void init() throws LiveUpdateException {
 
         // Start update check thread.
-        logger.info("Initializing LiveUpdate service");
-
+        logger.info("Initializing LiveUpdate service ...");
         Set<String> used = new HashSet<String>();
 
         for (Object k : config.keySet()) {
@@ -74,51 +72,31 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
                 used.add(repoKeys);
 
-                // Get id,name, location, enabled
+                MetadataRepository repo = buildMDRepository(repoKeys);
 
-                if (logger.isTraceEnabled())
-                    logger.trace("Adding new MD repository : " + repoKeys);
-
-                String id = config.getProperty(repoKeys + ".id");
-                String name = config.getProperty(repoKeys + ".name");
-                boolean enabled = Boolean.parseBoolean(config.getProperty(repoKeys + ".enabled"));
-                URI location = null;
-                try {
-                    // Since we're handling the configuration properties, we cannot rely on spring properties resolver.
-                    String l = config.getProperty(repoKeys + ".location");
-                    l = l.replaceAll("\\$\\{karaf\\.data\\}", dataFolder);
-                    location = new URI(l);
-
-                } catch (Exception e) {
-                    logger.error("Invalid URI ["+config.getProperty(repoKeys + ".location")+"] for repository " + id + " " + name);
-                    continue;
+                if (repo != null) {
+                    logger.info("Using LiveUpdate MD Repository at " + repo.getLocation());
+                    mdManager.addRepository(repo);
                 }
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Adding new VFS MD Repository ["+id+"] " + name +
-                            (enabled ? "enabled" : "disabled" ) + " at " + location);
-
-                VFSMetadataRepositoryImpl repo = new VFSMetadataRepositoryImpl();
-                repo.setId(id);
-                repo.setName(name);
-                repo.setLocation(location);
-                repo.setEnabled(enabled);
-
-                try {
-                    repo.setRepoFolder(new URI ("file://" + dataFolder + "/liveservices/liveupdate/repos/cache/" + id));
-                } catch (URISyntaxException e) {
-                    logger.error("Invalid repository ID : " + id + ". " +e.getMessage());
-                    continue;
-                }
-
-                // TODO : Setup other poperties like public key, etc
-
-                mdManager.addRepository(repo);
 
 
             } else if (key.startsWith("repo.art.")) {
-                // TODO : Configure Artifact Repository
+                // We need to configure a repo, get repo base key.
+                String repoId = key.substring("repo.art.".length());
+                repoId = repoId.substring(0, repoId.indexOf('.'));
 
+                String repoKeys = "repo.art." + repoId;
+                if (used.contains(repoKeys))
+                    continue;
+
+                used.add(repoKeys);
+
+                ArtifactRepository repo = buildArtRepository(repoKeys);
+
+                if (repo != null) {
+                    logger.info("Using LiveUpdate Artifact Repository at " + repo.getLocation());
+                    artManager.addRepository(repo);
+                }
             }
 
         }
@@ -182,10 +160,13 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         if (logger.isDebugEnabled())
             logger.debug("Trying to apply update for " + group + "/" + name + "/" + version);
 
-        Collection<UpdateDescriptorType> updates = getAvailableUpdates();
+        mdManager.refreshRepositories();
+
+        Collection<UpdateDescriptorType> availableUpdates = getAvailableUpdates();
         InstallableUnitType installableUnit  = null;
         UpdateDescriptorType update = null;
-        for (UpdateDescriptorType ud : updates) {
+
+        for (UpdateDescriptorType ud : availableUpdates) {
             for (InstallableUnitType iu : ud.getInstallableUnit()) {
                 if (iu.getGroup().equals(group) && iu.getName().equals(name) && iu.getVersion().equals(version)) {
                     installableUnit = iu;
@@ -203,7 +184,9 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         }
 
         logger.info("Applying Update " + group + "/" + name + "/" + version);
-        ProfileType updateProfile = profileManager.buildUpdateProfile(update, mdManager.getUpdates());
+
+        Collection<UpdateDescriptorType> updates = mdManager.getUpdates();
+        ProfileType updateProfile = profileManager.buildUpdateProfile(update, updates);
 
         engine.execute("updatePlan", updateProfile);
     }
@@ -220,8 +203,91 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     // -------------------------------------------< Utilities >
 
-    protected UpdateContext buildUpdateContext(ProfileType profile, InstallableUnitType iu) {
-        return null;//this.mdManager.
+    protected ArtifactRepository buildArtRepository(String repoKeys) {
+        // Get id,name, location, enabled
+        if (logger.isTraceEnabled())
+            logger.trace("Adding new Artifact repository : " + repoKeys);
+
+        String id = config.getProperty(repoKeys + ".id");
+        String name = config.getProperty(repoKeys + ".name");
+        boolean enabled = Boolean.parseBoolean(config.getProperty(repoKeys + ".enabled"));
+        URI location = null;
+        try {
+            // Since we're handling the configuration properties, we cannot rely on spring properties resolver.
+            String l = config.getProperty(repoKeys + ".location");
+            l = l.replaceAll("\\$\\{karaf\\.data\\}", dataFolder);
+            location = new URI(l);
+
+        } catch (Exception e) {
+            logger.error("Invalid URI ["+config.getProperty(repoKeys + ".location")+"] for repository " + id + " " + name);
+            return null;
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Adding new VFS MD Repository ["+id+"] " + name +
+                    (enabled ? "enabled" : "disabled" ) + " at " + location);
+
+        // TODO : Setup other poperties like public key, etc
+        VFSArtifactRepositoryImpl repo = new VFSArtifactRepositoryImpl();
+        repo.setId(id);
+        repo.setName(name);
+        repo.setLocation(location);
+        repo.setEnabled(enabled);
+
+        try {
+            repo.setRepoFolder(new URI ("file://" + dataFolder + "/liveservices/liveupdate/repos/cache/" + id));
+        } catch (URISyntaxException e) {
+            logger.error("Invalid repository ID : " + id + ". " +e.getMessage());
+            return null;
+        }
+
+        return repo;
+
+    }
+
+    // TODO : Mayb MD Repo manager should do this ?!
+    protected MetadataRepository buildMDRepository(String repoKeys) {
+
+        // Get id,name, location, enabled
+        if (logger.isTraceEnabled())
+            logger.trace("Adding new MD repository : " + repoKeys);
+
+        String id = config.getProperty(repoKeys + ".id");
+        String name = config.getProperty(repoKeys + ".name");
+        boolean enabled = Boolean.parseBoolean(config.getProperty(repoKeys + ".enabled"));
+        URI location = null;
+        try {
+            // Since we're handling the configuration properties, we cannot rely on spring properties resolver.
+            String l = config.getProperty(repoKeys + ".location");
+            l = l.replaceAll("\\$\\{karaf\\.data\\}", dataFolder);
+            location = new URI(l);
+
+        } catch (Exception e) {
+            logger.error("Invalid URI ["+config.getProperty(repoKeys + ".location")+"] for repository " + id + " " + name);
+            return null;
+        }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Adding new VFS MD Repository ["+id+"] " + name +
+                    (enabled ? "enabled" : "disabled" ) + " at " + location);
+
+
+        // TODO : Setup other poperties like public key, etc
+        VFSMetadataRepositoryImpl repo = new VFSMetadataRepositoryImpl();
+        repo.setId(id);
+        repo.setName(name);
+        repo.setLocation(location);
+        repo.setEnabled(enabled);
+
+        try {
+            repo.setRepoFolder(new URI ("file://" + dataFolder + "/liveservices/liveupdate/repos/cache/" + id));
+        } catch (URISyntaxException e) {
+            logger.error("Invalid repository ID : " + id + ". " +e.getMessage());
+            return null;
+        }
+
+        return repo;
+
     }
 
     // -------------------------------------------< Properties >
