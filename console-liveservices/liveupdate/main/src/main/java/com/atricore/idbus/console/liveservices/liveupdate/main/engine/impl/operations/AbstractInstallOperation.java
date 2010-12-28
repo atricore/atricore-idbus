@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallEvent;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateContext;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.OperationStatus;
@@ -13,6 +14,14 @@ public abstract class AbstractInstallOperation implements InstallOperation {
     private String name;
 
     private String stepName;
+
+    public void init() {
+
+    }
+
+    public void shutdonw() {
+        
+    }
 
     public String getName() {
         return name;
@@ -30,11 +39,11 @@ public abstract class AbstractInstallOperation implements InstallOperation {
         this.stepName = stepName;
     }
 
-    public OperationStatus preInstall(UpdateContext ctx) throws LiveUpdateException {
+    public OperationStatus preInstall(InstallEvent event) throws LiveUpdateException {
         return OperationStatus.NEXT;
     }
 
-    public OperationStatus postInstall(UpdateContext ctx) throws LiveUpdateException {
+    public OperationStatus postInstall(InstallEvent event) throws LiveUpdateException {
         return OperationStatus.NEXT;
     }
 

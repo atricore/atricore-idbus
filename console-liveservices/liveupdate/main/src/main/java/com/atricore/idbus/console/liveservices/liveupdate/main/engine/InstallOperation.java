@@ -9,10 +9,13 @@ public interface InstallOperation {
 
     String getStepName();
 
-    OperationStatus preInstall(UpdateContext ctx) throws LiveUpdateException;
+    OperationStatus preInstall(InstallEvent event) throws LiveUpdateException;
 
-    OperationStatus postInstall(UpdateContext ctx) throws LiveUpdateException;
+    OperationStatus postInstall(InstallEvent event) throws LiveUpdateException;
 
     String getName();
 
+    void init();
+
+    void shutdonw();
 }

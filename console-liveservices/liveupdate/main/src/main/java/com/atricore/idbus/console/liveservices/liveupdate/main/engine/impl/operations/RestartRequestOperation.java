@@ -1,7 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
-import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateContext;
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallEvent;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.OperationStatus;
 
 /**
@@ -10,7 +10,10 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.engine.OperationS
 public class RestartRequestOperation extends AbstractInstallOperation {
 
     @Override
-    public OperationStatus postInstall(UpdateContext ctx) throws LiveUpdateException {
-        return OperationStatus.RESTART;
+    public OperationStatus postInstall(InstallEvent event) throws LiveUpdateException {
+        // TODO : Pause until proper bundle is installed, the return NEXT :)
+        // TODO : if (isUpdateInstalled) return OperationStatus.NEXT
+
+        return OperationStatus.PAUSE;
     }
 }

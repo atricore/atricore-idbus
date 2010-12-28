@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallEvent;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateContext;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.OperationStatus;
 
@@ -10,7 +11,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.engine.OperationS
 public class InstallInstallersOperation extends AbstractInstallOperation {
 
     @Override
-    public OperationStatus preInstall(UpdateContext cxt) throws LiveUpdateException {
+    public OperationStatus preInstall(InstallEvent event) throws LiveUpdateException {
         // install/start installer osgi bundles
         return OperationStatus.NEXT;
     }

@@ -118,6 +118,8 @@
         <prop key="repo.art.default.location">file:${karaf.data}/liveservices/liveupdate/repos/art-default/</prop>
 
     </osgix:cm-properties>
+
+
     <ctx:property-placeholder properties-ref="liveUpdateProps"/>
 
 </beans>

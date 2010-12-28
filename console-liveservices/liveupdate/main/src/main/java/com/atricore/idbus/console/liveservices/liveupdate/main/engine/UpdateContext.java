@@ -9,6 +9,8 @@ import java.util.Collection;
  */
 public interface UpdateContext {
 
+    UpdatePlan getPlan();
+
     Collection<InstallableUnitType> getIUs();
 
 }

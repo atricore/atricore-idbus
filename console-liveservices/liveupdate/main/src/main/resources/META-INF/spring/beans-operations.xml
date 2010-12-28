@@ -26,6 +26,7 @@
     <bean name="downloadInstallersOperation" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations.DownloadInstallersOperation">
         <property name="name" value="downloadInstallersOperation"/>
         <property name="stepName" value="download-installers"/>
+        <property name="artMgr" ref="artRepositoriesManager"/>
     </bean>
     <osgi:service id="osgiDownloadInstallersOperation" ref="downloadInstallersOperation"
                   interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>

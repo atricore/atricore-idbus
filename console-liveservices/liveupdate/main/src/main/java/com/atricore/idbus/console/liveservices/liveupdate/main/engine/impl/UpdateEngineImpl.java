@@ -5,6 +5,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.engine.*;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import java.util.Set;
 
@@ -14,6 +15,8 @@ import java.util.Set;
 public class UpdateEngineImpl implements UpdateEngine {
 
     private static Log logger = LogFactory.getLog(UpdateEngineImpl.class);
+
+    private static final UUIDGenerator uuidGen = new UUIDGenerator();
 
     private Set<UpdatePlan> plans;
 
@@ -26,34 +29,60 @@ public class UpdateEngineImpl implements UpdateEngine {
     // TODO : Provide persistence functionallity to resume an update process after reboot
     public void execute(String planName, ProfileType updateProfile) throws LiveUpdateException {
 
-        UpdateContext ctx = new UpdateContextImpl(updateProfile);
         for (UpdatePlan plan : plans) {
-            if (plan.getName().equals(planName))
-                start(plan, ctx);
+
+            if (plan.getName().equals(planName)) {
+
+                String procId = uuidGen.generateId();
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Starting update plan : " + plan.getName() + " in process " + procId);
+                UpdateContext ctx = new UpdateContextImpl(procId, plan, updateProfile);
+                execute(plan, ctx);
+            }
         }
     }
 
-    protected String start(UpdatePlan plan, UpdateContext ctx) {
+    protected void execute(UpdatePlan plan , UpdateContext ctx) {
 
-        // Startup process for given plan, using provided context, return process id
-        return null;
+        if (logger.isTraceEnabled())
+            logger.trace("currentPlan=>" + plan.getName());
 
-    }
-
-    protected void execute(String id) {
-
-        UpdatePlan plan = null;
-        UpdateContext ctx = null;
         try {
             for (Step step : plan.getSteps()) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("currentStep=>" + step.getName());
+
+                InstallEvent event = new InstallEventImpl(step, ctx);
+
                 Set<InstallOperation> operations = operationsRegistry.getOperations(step.getName());
 
                 for (InstallOperation operation : operations) {
-                    operation.preInstall(ctx);
+                    if (logger.isTraceEnabled())
+                        logger.trace("preInstall=>" + operation.getName());
+                    OperationStatus sts = operation.preInstall(event);
+
+                    if (sts.equals(OperationStatus.PAUSE)) {
+                        // Pause process ... when will be resumed!?
+
+                    } else if (sts.equals(OperationStatus.STOP)) {
+                        // Stop process .. will not resume.
+                    }
                 }
 
                 for (InstallOperation operation : operations) {
-                    operation.postInstall(ctx);
+                    if (logger.isTraceEnabled())
+                        logger.trace("postInstall=>" + operation.getName());
+                    OperationStatus sts = operation.postInstall(event);
+
+                    if (sts.equals(OperationStatus.PAUSE)) {
+                        // Pause process ... when will be resumed!?
+
+                    } else if (sts.equals(OperationStatus.STOP)) {
+                        // Stop process .. will not resume.
+                    }
+
                 }
 
             }

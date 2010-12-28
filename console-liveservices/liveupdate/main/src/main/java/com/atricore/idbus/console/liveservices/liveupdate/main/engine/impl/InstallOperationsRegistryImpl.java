@@ -2,6 +2,8 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperationsRegistry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -9,6 +11,8 @@ import java.util.*;
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class InstallOperationsRegistryImpl implements InstallOperationsRegistry {
+
+    private static final Log logger = LogFactory.getLog(InstallOperationsRegistryImpl.class);
 
     private Set<InstallOperation> operations = new HashSet<InstallOperation>();
 
@@ -24,6 +28,9 @@ public class InstallOperationsRegistryImpl implements InstallOperationsRegistry 
                 return operation;
             }
         }
+
+        if (logger.isDebugEnabled())
+            logger.debug("Operation not found " + name);
 
         return null;
     }
@@ -45,9 +52,26 @@ public class InstallOperationsRegistryImpl implements InstallOperationsRegistry 
             operationsByStep.put(installOp.getStepName(), ops);
         }
         ops.add(installOp);
+
+        if (logger.isDebugEnabled())
+            logger.debug("Registered operation " + name);
+
+        installOp.init();
     }
 
     public void unregister(String name) {
-        // TODO :
+        InstallOperation op = getOperation(name);
+        if (op == null)
+            return;
+
+        operations.remove(op);
+        
+        Set<InstallOperation> ops = operationsByStep.get(op.getStepName());
+        if (ops != null)
+            ops.remove(op);
+
+        if (logger.isDebugEnabled())
+            logger.debug("Unregistered operation " + name);
+
     }
 }

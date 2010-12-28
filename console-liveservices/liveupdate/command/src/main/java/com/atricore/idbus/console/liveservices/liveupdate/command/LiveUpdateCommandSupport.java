@@ -12,7 +12,7 @@ import org.osgi.framework.ServiceReference;
  */
 public abstract class LiveUpdateCommandSupport extends OsgiCommandSupport {
 
-    @Option(name = "-v", aliases = "--verbose", description = "Print out additional information during deployment", required = false, multiValued = false)
+    @Option(name = "-v", aliases = "--verbose", description = "Print out additional information", required = false, multiValued = false)
     boolean verbose = false;
 
     private CmdPrinter printer;
