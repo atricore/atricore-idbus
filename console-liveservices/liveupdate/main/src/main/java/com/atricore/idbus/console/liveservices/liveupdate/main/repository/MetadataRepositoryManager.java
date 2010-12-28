@@ -19,15 +19,22 @@ import java.util.Collection;
 public interface MetadataRepositoryManager extends RepositoryManager {
 
     /**
-     * Refresh all repositories by contacting repository servers.
+     * Refresh all repositories by contacting repository service.
      * @return the list of new updates found.
      */
     Collection<UpdateDescriptorType> refreshRepositories();
 
+
+    /**
+     * Refresh the given repository by contacting repository service.
+     * @return the list of new updates found.
+     */
+    Collection<UpdateDescriptorType> refreshRepository(String repoId) throws LiveUpdateException;
+
     /**
      * Retrieves an updates index descriptor for a given repository
      */
-    UpdatesIndexType getUpdatesIndex(String repoName) throws LiveUpdateException;
+    UpdatesIndexType getUpdatesIndex(String repoName, boolean refreshRepo) throws LiveUpdateException;
 
     /**
      * Retrieves the entire list of available updates.

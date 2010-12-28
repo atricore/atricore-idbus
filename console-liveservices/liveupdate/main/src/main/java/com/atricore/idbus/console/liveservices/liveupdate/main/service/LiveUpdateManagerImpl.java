@@ -138,7 +138,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     }
 
     public UpdatesIndexType getRepositoryUpdates(String repoId) throws LiveUpdateException {
-        return mdManager.getUpdatesIndex(repoId);
+        return mdManager.getUpdatesIndex(repoId, true);
     }
 
     public Collection<UpdateDescriptorType> getAvailableUpdates() throws LiveUpdateException {

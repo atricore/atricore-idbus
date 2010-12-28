@@ -15,7 +15,7 @@ import java.util.*;
 
 /**
  * Manages a set of LiveUpdate MD repositories.
- *
+ * <p/>
  * It retrieves MD information for actual update services and stores it in the local repository representation.
  * Different transports are supported
  *
@@ -43,74 +43,23 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
     public synchronized Collection<UpdateDescriptorType> refreshRepositories() {
 
         // Loop over configured repos
-        List<UpdateDescriptorType> newUpdates = new ArrayList<UpdateDescriptorType>();
-
+        Set<UpdateDescriptorType> newUpdates = new HashSet<UpdateDescriptorType>();
         for (MetadataRepository repo : repos) {
+            if (repo.isEnabled())
+                newUpdates.addAll(refreshRepository(repo, newUpdates));
+        }
+        return newUpdates;
 
-            if (!repo.isEnabled()) {
-                if (logger.isDebugEnabled())
-                    logger.debug("Ignoring disabled repository " + repo.getId());
+    }
 
-                continue;
-            }
-
-            if (logger.isTraceEnabled())
-                logger.trace("Refreshing repository content for " + repo.getName() + " [" + repo.getId() + "]");
-
-            URI location = repo.getLocation();
-
-            for (RepositoryTransport t : transports) {
-
-                if (t.canHandle(location)) {
-
-                    if (logger.isTraceEnabled())
-                        logger.trace("Loading repository content using transport " + t.getClass().getSimpleName());
-
-                    try {
-                        byte[] idxBin = t.loadContent(location);
-
-                        if (logger.isTraceEnabled())
-                            logger.trace("Repository content is " + (idxBin == null ? 0 : idxBin.length) + " bytes length");
-
-                        UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(new String(idxBin), false);
-
-                        if (logger.isTraceEnabled())
-                            logger.trace("Found Updates Index " + idx.getID());
-
-                        // TODO : Validate Digital signature!
-
-                        // Store updates to in repo
-                        for (UpdateDescriptorType ud : idx.getUpdateDescriptor()) {
-
-                            if (logger.isTraceEnabled())
-                                logger.trace("Found update [" + ud.getID() + "] " + ud.getDescription());
-                            
-                            if (!repo.hasUpdate(ud.getID())) {
-                                logger.info("Found new update [" + ud.getID() + "] " + ud.getDescription());
-                                newUpdates.add(ud);
-                            }
-                        }
-
-                        repo.addUpdatesIndex(idx);
-
-                    } catch (Exception e) {
-                        logger.error("Cannot load updates list from repository " + repo.getName() +
-                                " ["+repo.getId()+"] " + e.getMessage());
-
-                        if (logger.isTraceEnabled())
-                            logger.error("Cannot load updates list from repository " + repo.getName() +
-                                    " ["+repo.getId()+"] " + e.getMessage(), e);
-                    }
-
-                }
+    public synchronized Collection<UpdateDescriptorType> refreshRepository(String repoId) throws LiveUpdateException {
+        for (MetadataRepository repo : repos) {
+            if (repo.isEnabled() && repo.getId().equals(repoId)) {
+                return refreshRepository(repo, new HashSet<UpdateDescriptorType>());
             }
         }
 
-        return newUpdates;
-
-        // Contact remote service,
-        // Retrieve update list,
-        // Store it locally
+        throw new LiveUpdateException("Repository not found or disabled " + repoId);
     }
 
     public synchronized Collection<UpdateDescriptorType> getUpdates() throws LiveUpdateException {
@@ -133,7 +82,7 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         return updates.values();
     }
 
-    public synchronized UpdatesIndexType getUpdatesIndex(String repoId) throws LiveUpdateException {
+    public synchronized UpdatesIndexType getUpdatesIndex(String repoId, boolean refreshRepo) throws LiveUpdateException {
         for (MetadataRepository repo : repos) {
 
             if (!repo.isEnabled()) {
@@ -144,15 +93,21 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
             }
 
             if (repo.getId().equals(repoId)) {
+
+                if (refreshRepo)
+                    this.refreshRepository(repoId);
+
                 return repo.getUpdates();
             }
         }
-        return null;
+
+        throw new LiveUpdateException("Repository not found or disabled " + repoId);
+
     }
 
     public synchronized UpdateDescriptorType getUpdate(String id) throws LiveUpdateException {
 
-        for ( MetadataRepository repo : repos) {
+        for (MetadataRepository repo : repos) {
             if (!repo.isEnabled()) {
                 if (logger.isDebugEnabled())
                     logger.debug("Ignoring disabled repository " + repo.getId());
@@ -169,7 +124,7 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
     public synchronized UpdateDescriptorType getUpdate(String group, String name, String version) throws LiveUpdateException {
 
-        for ( MetadataRepository repo : repos) {
+        for (MetadataRepository repo : repos) {
             if (!repo.isEnabled()) {
                 if (logger.isDebugEnabled())
                     logger.debug("Ignoring disabled repository " + repo.getId());
@@ -189,6 +144,63 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         }
         return null;
     }
+
+    protected Collection<UpdateDescriptorType> refreshRepository(MetadataRepository repo, Set<UpdateDescriptorType> newUpdates) {
+
+        if (logger.isTraceEnabled())
+            logger.trace("Refreshing repository content for " + repo.getName() + " [" + repo.getId() + "]");
+
+        URI location = repo.getLocation();
+
+        for (RepositoryTransport t : transports) {
+
+            if (t.canHandle(location)) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Loading repository content using transport " + t.getClass().getSimpleName());
+
+                try {
+                    byte[] idxBin = t.loadContent(location);
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Repository content is " + (idxBin == null ? 0 : idxBin.length) + " bytes length");
+
+                    UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(new String(idxBin), false);
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Found Updates Index " + idx.getID());
+
+                    // TODO : Validate Digital signature!
+
+                    // Store updates to in repo
+                    for (UpdateDescriptorType ud : idx.getUpdateDescriptor()) {
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("Found update [" + ud.getID() + "] " + ud.getDescription());
+
+                        if (!repo.hasUpdate(ud.getID())) {
+                            logger.info("Found new update [" + ud.getID() + "] " + ud.getDescription());
+                            newUpdates.add(ud);
+                        }
+                    }
+
+                    repo.addUpdatesIndex(idx);
+
+                } catch (Exception e) {
+                    logger.error("Cannot load updates list from repository " + repo.getName() +
+                            " [" + repo.getId() + "] " + e.getMessage());
+
+                    if (logger.isTraceEnabled())
+                        logger.error("Cannot load updates list from repository " + repo.getName() +
+                                " [" + repo.getId() + "] " + e.getMessage(), e);
+                }
+
+            }
+        }
+
+        return newUpdates;
+    }
+
 
 
     /**
