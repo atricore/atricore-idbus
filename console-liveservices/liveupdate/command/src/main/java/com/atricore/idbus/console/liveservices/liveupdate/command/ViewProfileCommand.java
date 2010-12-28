@@ -7,7 +7,7 @@ import org.apache.felix.gogo.commands.Command;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "liveupdate", name = "view-profile", description = "View configured profile details")
+@Command(scope = "liveupdate", name = "profile", description = "View configured profile details")
 public class ViewProfileCommand extends LiveUpdateCommandSupport {
 
     @Override

@@ -10,7 +10,7 @@ import java.util.Collection;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "liveupdate", name = "list-repos", description = "List configured repositories")
+@Command(scope = "liveupdate", name = "ls-repos", description = "List configured repositories")
 public class ListRepositoriesCommand extends LiveUpdateCommandSupport {
 
     @Override

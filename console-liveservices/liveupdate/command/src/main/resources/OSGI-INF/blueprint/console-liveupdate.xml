@@ -21,31 +21,31 @@
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
 
-        <command name="liveupdate/list-repos">
+        <command name="liveupdate/ls-repos">
             <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListRepositoriesCommand">
                 <property name="printer" ref="repositoryPrinter"/>
             </action>
         </command>
 
-        <command name="liveupdate/view-profile">
+        <command name="liveupdate/profile">
             <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ViewProfileCommand">
                 <property name="printer" ref="profilePrinter"/>
             </action>
         </command>
 
-        <command name="liveupdate/list-repo-updates">
+        <command name="liveupdate/ls-repo-updates">
             <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListRepositoryUpdatesCommand">
                 <property name="printer" ref="updatesIndexPrinter"/>
             </action>
         </command>
 
-        <command name="liveupdate/list-updates">
+        <command name="liveupdate/ls-updates">
             <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListUpdatesCommand">
                 <property name="printer" ref="updateDescriptorPrinter"/>
             </action>
         </command>
 
-        <command name="liveupdate/list-dependnecies">
+        <command name="liveupdate/ls-dependnecies">
             <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListDependenciesCommand">
                 <property name="printer" ref="profilePrinter"/>
             </action>
@@ -63,8 +63,8 @@
 
     <bean id="profilePrinter" class="com.atricore.idbus.console.liveservices.liveupdate.command.printers.ProfileCmdPrinter"/>
 
-    <bean id="updatesIndexPrinter" class="com.atricore.idbus.console.liveservices.liveupdate.command.printers.UpdatesIndexCmdPrinter"/>
-
     <bean id="updateDescriptorPrinter" class="com.atricore.idbus.console.liveservices.liveupdate.command.printers.UpdateDescriptorCmdPrinter"/>
+
+    <bean id="updatesIndexPrinter" class="com.atricore.idbus.console.liveservices.liveupdate.command.printers.UpdatesIndexCmdPrinter"/>
 
 </blueprint>

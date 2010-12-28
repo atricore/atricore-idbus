@@ -46,6 +46,6 @@ public interface LiveUpdateManager {
     /**
      * Returns a collection of ALL updates registered in a given repository.
      */
-    UpdatesIndexType getRepositoryUpdates(String repoName) throws LiveUpdateException;
+    UpdatesIndexType getRepositoryUpdates(String repoId) throws LiveUpdateException;
 
 }

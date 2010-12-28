@@ -10,15 +10,15 @@ import org.apache.felix.gogo.commands.Command;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "liveupdate", name = "list-repo-updates", description = "List available Updates in a given repository")
+@Command(scope = "liveupdate", name = "ls-repo-updates", description = "List available Updates in a given repository")
 public class ListRepositoryUpdatesCommand extends LiveUpdateCommandSupport {
 
     @Argument(name = "repoName", description = "Repository Name", required = true, multiValued = false, index =  0)
-    private String repoName;
+    private String repoId;
 
     @Override
     protected Object doExecute(LiveUpdateManager svc) throws Exception {
-        UpdatesIndexType updates = svc.getRepositoryUpdates(repoName);
+        UpdatesIndexType updates = svc.getRepositoryUpdates(repoId);
 
         getPrinter().print(this, updates);
 

@@ -12,7 +12,7 @@ import java.util.Collection;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-@Command(scope = "liveupdate", name = "list-updates", description = "List available Updates for the current setup")
+@Command(scope = "liveupdate", name = "ls-updates", description = "List available Updates for the current setup")
 public class ListUpdatesCommand extends LiveUpdateCommandSupport {
 
     @Option(name = "-o", aliases = "--off-line", description = "Offline check for updates, use locally stored information", required = false, multiValued = false)

@@ -118,9 +118,9 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         return updates.values();
     }
 
-    public synchronized UpdatesIndexType getUpdatesIndex(String repoName) throws LiveUpdateException {
+    public synchronized UpdatesIndexType getUpdatesIndex(String repoId) throws LiveUpdateException {
         for (MetadataRepository metadataRepository : repos) {
-            if (metadataRepository.getName().equals(repoName)) {
+            if (metadataRepository.getId().equals(repoId)) {
                 return metadataRepository.getUpdates();
             }
         }
