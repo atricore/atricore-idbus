@@ -5,29 +5,49 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.V
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.context.ApplicationContext;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.Selectors;
+import org.junit.*;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.net.URI;
 import java.util.Collection;
 
-public class VFSMetadataRepositoryImplTest {
+public class VFSMetadataRepositoryImplTest extends BaseTest {
 
-    private VFSMetadataRepositoryImpl vfsMetadataRepository;
+    private static VFSMetadataRepositoryImpl vfsMetadataRepository;
     
-    private ApplicationContext applicationContext;
-    
-    @Before
-    public void setup() throws Exception {
+    @BeforeClass
+    public static void setupTestSuite() throws Exception {
         applicationContext = new ClassPathXmlApplicationContext(
-                new String[]{"classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/transport-beans.xml", 
+                new String[]{"classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/transport-beans.xml",
                              "classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/repository-beans.xml"}
         );
 
         vfsMetadataRepository = (VFSMetadataRepositoryImpl) applicationContext.getBean("vfsMetadataRepository");
+
+        // copy test files to repository location
+        String baseDir = (String) applicationContext.getBean("baseDir");
+        FileObject testUpdatesSrc = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/main/test/test-updates.xml");
+        FileObject testUpdatesDest = getFileSystemManager().resolveFile(vfsMetadataRepository.getLocation().toString() + "/test-updates.xml");
+        testUpdatesDest.createFile();
+        testUpdatesDest.copyFrom(testUpdatesSrc, Selectors.SELECT_SELF);
+    }
+
+    @Before
+    public void setup() throws Exception {
+        // copy test files to repository folder
+        String baseDir = (String) applicationContext.getBean("baseDir");
+        FileObject repo = getFileSystemManager().resolveFile(vfsMetadataRepository.getRepoFolder().toString());
+        FileObject sourceDir = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/repos/md/cache/repo1");
+        repo.copyFrom(sourceDir, Selectors.SELECT_ALL);  // copyFrom first deletes repo if it exists
+
+        // reload descriptors
+        vfsMetadataRepository.init();
+    }
+
+    @AfterClass
+    public static void tearDownTestSuite() throws Exception {
     }
 
     @Test
@@ -44,7 +64,7 @@ public class VFSMetadataRepositoryImplTest {
 
         // add updates index
         FileRepositoryTransport transport = (FileRepositoryTransport) applicationContext.getBean("fileRepositoryTransport");
-        byte[] idxBin = transport.loadContent(new URI(transport.getBaseFolder() + "/test-updates.xml"));
+        byte[] idxBin = transport.loadContent(new URI(vfsMetadataRepository.getLocation().toString() + "/test-updates.xml"));
         UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(new String(idxBin), false);
         vfsMetadataRepository.addUpdatesIndex(idx);
 
@@ -55,7 +75,7 @@ public class VFSMetadataRepositoryImplTest {
 
     @Test
     public void testHasUpdate() throws Exception {
-        boolean hasUpdate = vfsMetadataRepository.hasUpdate("id0000000200");
+        boolean hasUpdate = vfsMetadataRepository.hasUpdate("id0000000100");
         Assert.assertTrue(hasUpdate);
 
         hasUpdate = vfsMetadataRepository.hasUpdate("id0000000111");
@@ -69,7 +89,7 @@ public class VFSMetadataRepositoryImplTest {
         Assert.assertEquals(idx.getUpdateDescriptor().size(), 1);
     }
 
-    //@Test
+    @Test
     public void testClear() throws Exception {
         vfsMetadataRepository.clear();
         Collection<UpdateDescriptorType> updates = vfsMetadataRepository.getAvailableUpdates();
