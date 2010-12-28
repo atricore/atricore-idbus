@@ -19,8 +19,8 @@ public class FileRepositoryTransport implements RepositoryTransport {
 
     public byte[] loadContent(URI uri) throws RepositoryTransportException {
 
-        // validate that file belongs to baseFolder
-        if (!baseFolder.equals(uri.toString().substring(0, uri.toString().lastIndexOf("/")))) {
+        // validate that file belongs to baseFolder, if any
+        if (baseFolder != null && !baseFolder.equals(uri.toString().substring(0, uri.toString().lastIndexOf("/")))) {
             throw new RepositoryTransportException("File doesn't belong to baseFolder.");
         }
 

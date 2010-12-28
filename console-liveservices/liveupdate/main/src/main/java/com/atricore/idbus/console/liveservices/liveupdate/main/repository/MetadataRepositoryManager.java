@@ -40,6 +40,11 @@ public interface MetadataRepositoryManager extends RepositoryManager {
     UpdateDescriptorType getUpdate(String id) throws LiveUpdateException;
 
     /**
+     * Retrieves an update descriptor based on the IU group, name and version
+     */
+    UpdateDescriptorType getUpdate(String group, String name, String version) throws LiveUpdateException;
+
+    /**
      * Adds a new MD repository to this manager
      */
     void addRepository(MetadataRepository repo) throws LiveUpdateException;

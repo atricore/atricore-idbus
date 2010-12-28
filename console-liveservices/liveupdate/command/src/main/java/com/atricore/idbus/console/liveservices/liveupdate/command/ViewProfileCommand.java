@@ -13,7 +13,7 @@ public class ViewProfileCommand extends LiveUpdateCommandSupport {
     @Override
     protected Object doExecute(LiveUpdateManager svc) throws Exception {
         ProfileType p = svc.getCurrentProfile();
-        getPrinter().print(p);
+        getPrinter().print(this, p);
         return null;
     }
 }

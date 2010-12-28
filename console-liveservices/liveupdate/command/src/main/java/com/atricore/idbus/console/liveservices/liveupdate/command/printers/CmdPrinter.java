@@ -1,5 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.command.printers;
 
+import com.atricore.idbus.console.liveservices.liveupdate.command.LiveUpdateCommandSupport;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -8,12 +10,12 @@ import java.util.Map;
  */
 public interface CmdPrinter<T> {
 
-    void print(T o, Map<String, Object> options);
+    void print(LiveUpdateCommandSupport cmd, T o, Map<String, Object> options);
 
-    void print(T o);
+    void print(LiveUpdateCommandSupport cmd, T o);
 
-    void printAll(Collection<T> os);
+    void printAll(LiveUpdateCommandSupport cmd, Collection<T> os);
 
-    void printError(Exception e);
+    void printError(LiveUpdateCommandSupport cmd, Exception e);
 
 }

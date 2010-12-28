@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.command.printers;
 
 
+import com.atricore.idbus.console.liveservices.liveupdate.command.LiveUpdateCommandSupport;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.RequiredFeatureType;
@@ -11,52 +12,51 @@ import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
  */
 public class ProfileCmdPrinter extends AbstractCmdPrinter<ProfileType> {
 
-    public void print(ProfileType p) {
+    public void print(LiveUpdateCommandSupport cmd, ProfileType p) {
 
         StringBuilder sb = new StringBuilder();
         // Build headers line
-        sb.append("\u001B[1m Profile           : [").append(getNameString(p.getID(), 16)).append("] ").append(p.getName()).append("\u001B[0m ");
-        sb.append(" (IUs=").append(p.getInstallableUnit().size()).append(")\n") ;
+
+        sb.append("Profile\n");
+        sb.append(getNameValue("ID", p.getID()));
+        sb.append(getNameValue("Name", p.getName()));
+        sb.append(getNameValue("Installable Units", (p.getInstallableUnit() != null ? p.getInstallableUnit().size() + "" : "<null>")));
+        sb.append("\n");
 
         for (InstallableUnitType iu : p.getInstallableUnit()) {
-            sb.append("  Installable Unit : [");
-            sb.append(getNameString(iu.getID(), 16));
-            sb.append("] ");
-            sb.append(iu.getGroup());
-            sb.append("/");
-            sb.append(iu.getName());
-            sb.append("/");
-            sb.append(getNameString(iu.getVersion(), 8));
-            sb.append(" (");
-            sb.append(getNameString(iu.getUpdateNature().toString(), 12));
-            sb.append(")");
-            sb.append("\n");
 
-            for (ArtifactKeyType art : iu.getArtifact()) {
-                sb.append("    Artifact       : [");
-                sb.append(getNameString(art.getID(), 16));
-                sb.append("] ");
-                sb.append(art.getGroup());
-                sb.append("/");
-                sb.append(art.getName());
-                sb.append("/");
-                sb.append(art.getVersion());
-                sb.append("/");
-                sb.append(art.getClassifier());
-                sb.append("\n");
-            }
+            sb.append("Installable Unit\n");
 
-            for (RequiredFeatureType req : iu.getRequirement()) {
-                sb.append("    Requirement    : ");
-                sb.append(getNameString(" ", 16));
-                sb.append("  ");
-                sb.append(req.getGroup());
-                sb.append("/");
-                sb.append(req.getName());
-                sb.append("/");
-                sb.append(req.getVersionRange().getExpression());
-                sb.append("\n");
+            sb.append(getNameValue("ID", iu.getID()));
+            sb.append(getNameValue("Group", iu.getGroup()));
+            sb.append(getNameValue("Name", iu.getName()));
+            sb.append(getNameValue("Version", iu.getVersion()));
+            sb.append(getNameValue("Nature", iu.getUpdateNature().value()));
 
+
+            if (cmd.isVerbose()) {
+
+                int i = 0;
+                for (ArtifactKeyType art : iu.getArtifact()) {
+                    sb.append(getNameValue("Artifact ("+i+")",
+                            art.getGroup() +
+                            "/" + art.getName() +
+                                    "/" + art.getVersion() +
+                                    "/" + art.getName() +
+                                    "-" + art.getVersion() +
+                                    (art.getClassifier() != null ? "-" + art.getClassifier() : "") +
+                                    "." + (art.getType() != null ? art.getType() : "jar")));
+                    i++;
+                }
+
+                i = 0;
+                for (RequiredFeatureType req : iu.getRequirement()) {
+                    sb.append(getNameValue("Requirement",
+                            req.getGroup() + "/" + req.getName() + "/" + req.getVersionRange().getExpression()
+                            ));
+
+                    i++;
+                }
             }
 
         }

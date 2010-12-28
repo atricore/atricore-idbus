@@ -46,20 +46,40 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         List<UpdateDescriptorType> newUpdates = new ArrayList<UpdateDescriptorType>();
 
         for (MetadataRepository repo : repos) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Refreshing repository content for " + repo.getName() + " [" + repo.getId() + "]");
+
             URI location = repo.getLocation();
+
             for (RepositoryTransport t : transports) {
+
                 if (t.canHandle(location)) {
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Loading repository content using transport " + t.getClass().getSimpleName());
 
                     try {
                         byte[] idxBin = t.loadContent(location);
 
+                        if (logger.isTraceEnabled())
+                            logger.trace("Repository content is " + (idxBin == null ? 0 : idxBin.length) + " bytes length");
+
                         UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(new String(idxBin), false);
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("Found Updates Index " + idx.getID());
 
                         // TODO : Validate Digital signature!
 
                         // Store updates to in repo
                         for (UpdateDescriptorType ud : idx.getUpdateDescriptor()) {
+
+                            if (logger.isTraceEnabled())
+                                logger.trace("Found update [" + ud.getID() + "] " + ud.getDescription());
+                            
                             if (!repo.hasUpdate(ud.getID())) {
+                                logger.info("Found new update [" + ud.getID() + "] " + ud.getDescription());
                                 newUpdates.add(ud);
                             }
                         }
@@ -117,6 +137,21 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         return null;
     }
 
+    public synchronized UpdateDescriptorType getUpdate(String group, String name, String version) throws LiveUpdateException {
+
+        for ( MetadataRepository repo : repos) {
+            for (UpdateDescriptorType ud : repo.getAvailableUpdates()) {
+                for (InstallableUnitType iu : ud.getInstallableUnit()) {
+                    if (iu.getGroup().equals(group) &&
+                            iu.getName().equals(name) &&
+                            iu.getVersion().equals(version)) {
+                        return ud;
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
 
     /**

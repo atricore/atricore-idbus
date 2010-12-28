@@ -4,6 +4,8 @@ package com.atricore.idbus.console.liveservices.liveupdate.command.printers;
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 
+import com.atricore.idbus.console.liveservices.liveupdate.command.LiveUpdateCommandSupport;
+
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Map;
@@ -30,18 +32,18 @@ public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
         this.err = err;
     }
 
-    public void print(T o, Map<String, Object> options) {
-        print(o);
+    public void print(LiveUpdateCommandSupport cmd, T o, Map<String, Object> options) {
+        print(cmd, o);
     }
 
-    public void printAll(Collection<T> os) {
+    public void printAll(LiveUpdateCommandSupport cmd, Collection<T> os) {
         for (T o : os) {
-            print(o);
+            print(cmd, o);
         }
 
     }
 
-    public void printError(Exception e) {
+    public void printError(LiveUpdateCommandSupport cmd, Exception e) {
         System.err.println("\u001B[31m" + e.getMessage() + "\u001B[0m");
     }
 
@@ -86,6 +88,10 @@ public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
         }
 
         return strRevision;
+    }
+
+    protected String getNameValue(String name, String value) {
+        return "\u001B[1m" + getNameString("  " + name, 24) + "\u001B[0m" + value + "\n";
     }
 
 

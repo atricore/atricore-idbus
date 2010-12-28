@@ -5,13 +5,13 @@ package com.atricore.idbus.console.lifecycle.main.spi.request;
  */
 public class ImportIdentityApplianceRequest extends AbstractManagementRequest {
 
-    private byte[] bytes;
+    private byte[] binaryAppliance;
 
-    public byte[] getBytes() {
-        return bytes;
+    public byte[] getBinaryAppliance() {
+        return binaryAppliance;
     }
 
-    public void setBytes(byte[] bytes) {
-        this.bytes = bytes;
+    public void setBinaryAppliance(byte[] binaryAppliance) {
+        this.binaryAppliance = binaryAppliance;
     }
 }

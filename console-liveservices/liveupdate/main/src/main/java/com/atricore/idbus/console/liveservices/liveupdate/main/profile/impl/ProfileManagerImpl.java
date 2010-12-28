@@ -174,9 +174,19 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
 
         DependencyNode install = tb.getDependency(iu);
 
-        // Now, build all the possible update paths and choose the shorter one. (Note this could be configurable)
+        // Now, build all possible update paths and choose the shorter one. (Note this could be configurable)
+        DependencyVisitor<List<ProfileType>> v = new UpdateProfilesBuilderVisitor(profile);
+        DependencyWalker<List<ProfileType>> w = new DeepFirstDependencyWalker<List<ProfileType>>();
 
-        return null;
+        List<ProfileType> profiles = w.walk(install, v);
+
+        ProfileType updateProfile = null;
+        for (ProfileType p : profiles) {
+            if (updateProfile == null || p.getInstallableUnit().size() < updateProfile.getInstallableUnit().size()) {
+                updateProfile = p;
+            }
+        }
+        return updateProfile;
     }
 
     // --------------------------------------------------< Utilities >

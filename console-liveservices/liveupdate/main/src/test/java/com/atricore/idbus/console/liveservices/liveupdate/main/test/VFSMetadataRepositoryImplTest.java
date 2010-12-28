@@ -13,7 +13,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.net.URI;
 import java.util.Collection;
 
-public class VFSMetadataRepositoryImplTest extends BaseTest {
+public class VFSMetadataRepositoryImplTest extends VFSTestSupport {
 
     private static VFSMetadataRepositoryImpl vfsMetadataRepository;
     

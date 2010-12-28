@@ -52,6 +52,7 @@
     <!-- Repository Transports -->
     <bean name="httpRepositoryTransport"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.HttpRepositoryTransport"/>
+
     <bean name="fileRepositoryTransport"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.FileRepositoryTransport"/>
 
@@ -109,7 +110,7 @@
         <prop key="repo.md.default.id">md-default</prop>
         <prop key="repo.md.default.name">LiveUpdate MD Default repository</prop>
         <prop key="repo.md.default.enabled">true</prop>
-        <prop key="repo.md.default.location">file:${karaf.data}/liveservices/liveupdate/repos/default/md</prop>
+        <prop key="repo.md.default.location">file:${karaf.data}/liveservices/liveupdate/repos/default/md/liveupdate-1.0.xml</prop>
 
         <prop key="repo.art.default.id">art-default</prop>
         <prop key="repo.art.default.name">LiveUpdate Artifacts Default repository</prop>

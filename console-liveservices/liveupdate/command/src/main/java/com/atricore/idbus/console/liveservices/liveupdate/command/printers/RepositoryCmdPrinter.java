@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.command.printers;
 
+import com.atricore.idbus.console.liveservices.liveupdate.command.LiveUpdateCommandSupport;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
 
 import java.util.Collection;
@@ -9,28 +10,16 @@ import java.util.Collection;
  */
 public class RepositoryCmdPrinter extends AbstractCmdPrinter<Repository> {
 
-    public void print(Repository o) {
-
-    }
-
-    public void printAll(Collection<Repository> os) {
+    public void print(LiveUpdateCommandSupport cmd, Repository r) {
 
         StringBuilder sb = new StringBuilder();
-        // Build headers line
-        sb.append("\u001B[1m      ID                  Name               Status    Location\u001B[0m\n");
 
-        for (Repository r : os) {
-            sb.append("[");
-            sb.append(getNameString(r.getId(), 16));
-            sb.append("]  [");
-            sb.append(getNameString(r.getName()));
-            sb.append("]  [");
-            sb.append(getEnabledString(r.isEnabled()));
-            sb.append("]  [");
-            sb.append(getNameString(r.getLocation().toString(), 64));
-            sb.append("]");
-            sb.append("\n");
-        }
+        sb.append("Repository'\n");
+        sb.append(getNameValue("ID", r.getId()));
+        sb.append(getNameValue("Name", r.getName()));
+        sb.append(getNameValue("Enabled", r.isEnabled() + ""));
+        sb.append(getNameValue("Location", r.getLocation().toString()));
+        sb.append("\n");
 
         getOut().println(sb);
     }

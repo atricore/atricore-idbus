@@ -197,6 +197,15 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         engine.execute("updatePlan", updateProfile);
     }
 
+    public ProfileType getUpdateProfile(String group, String name, String version) throws LiveUpdateException {
+        UpdateDescriptorType ud = mdManager.getUpdate(group, name, version);
+
+        // TODO : What if we havem ore than one IU
+        InstallableUnitType install = ud.getInstallableUnit().get(0);
+
+        return this.profileManager.buildUpdateProfile(install, mdManager.getUpdates());
+    }
+
     // -------------------------------------------< Utilities >
 
     protected UpdateContext buildUpdateContext(ProfileType profile, InstallableUnitType iu) {

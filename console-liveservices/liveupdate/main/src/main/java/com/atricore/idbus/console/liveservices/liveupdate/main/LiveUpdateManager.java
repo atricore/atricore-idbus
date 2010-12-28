@@ -22,11 +22,16 @@ public interface LiveUpdateManager {
      */
     Collection<UpdateDescriptorType> getAvailableUpdates() throws LiveUpdateException;
 
+
     /**
      * Applies the given update to the current setup.
      */
     void applyUpdate(String group, String name, String version) throws LiveUpdateException;
 
+    /**
+     * Returns a profile with all the installable units required to install the given update in the current setup.
+     */
+    ProfileType getUpdateProfile(String group, String name, String version) throws LiveUpdateException;
 
     /**
      * Returns the profile representing the current setup.

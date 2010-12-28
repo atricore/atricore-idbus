@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.command.printers;
 
+import com.atricore.idbus.console.liveservices.liveupdate.command.LiveUpdateCommandSupport;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 
 import java.util.Collection;
@@ -9,12 +10,12 @@ import java.util.Collection;
  */
 public class UpdateDescriptorCmdPrinter extends AbstractCmdPrinter<UpdateDescriptorType> {
 
-    public void print(UpdateDescriptorType o) {
+    public void print(LiveUpdateCommandSupport cmd, UpdateDescriptorType o) {
         // TODO :
     }
 
     @Override
-    public void printAll(Collection<UpdateDescriptorType> os) {
+    public void printAll(LiveUpdateCommandSupport cmd, Collection<UpdateDescriptorType> os) {
         // TODO :
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.io.InputStream;
 import java.util.Collection;
 
-public class VFSArtifactRepositoryImplTest extends BaseTest {
+public class VFSArtifactRepositoryImplTest extends VFSTestSupport {
 
     private static VFSArtifactRepositoryImpl vfsArtifactRepository;
 

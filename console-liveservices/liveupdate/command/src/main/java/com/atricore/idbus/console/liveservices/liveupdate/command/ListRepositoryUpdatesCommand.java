@@ -20,7 +20,7 @@ public class ListRepositoryUpdatesCommand extends LiveUpdateCommandSupport {
     protected Object doExecute(LiveUpdateManager svc) throws Exception {
         UpdatesIndexType updates = svc.getRepositoryUpdates(repoName);
 
-        getPrinter().print(updates);
+        getPrinter().print(this, updates);
 
         return null;
     }

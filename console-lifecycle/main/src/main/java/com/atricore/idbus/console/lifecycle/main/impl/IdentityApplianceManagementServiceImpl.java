@@ -293,7 +293,7 @@ public class IdentityApplianceManagementServiceImpl implements
                 logger.trace("Importing appliance definition from zip file \n");
 
             final int BUFFER_SIZE = 2048;
-            ByteArrayInputStream bIn = new ByteArrayInputStream(request.getBytes());
+            ByteArrayInputStream bIn = new ByteArrayInputStream(request.getBinaryAppliance());
             ByteArrayOutputStream bOut = new ByteArrayOutputStream();
             ZipInputStream zin = new ZipInputStream(bIn);
             ZipEntry entry;
@@ -344,6 +344,7 @@ public class IdentityApplianceManagementServiceImpl implements
         }
     }
 
+    @Deprecated
     @Transactional
     public ImportApplianceDefinitionResponse importApplianceDefinition(ImportApplianceDefinitionRequest request) throws IdentityServerException {
 

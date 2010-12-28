@@ -15,7 +15,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.net.URI;
 
-public class HttpRepositoryTransportTest extends BaseTest {
+public class HttpRepositoryTransportTest extends VFSTestSupport {
 
     private static HttpRepositoryTransport repositoryTransport;
 

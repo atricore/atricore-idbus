@@ -24,7 +24,7 @@ public class ImportApplianceDefinitionCommand extends ManagementCommandSupport {
 
     private static Log logger = LogFactory.getLog(ImportApplianceDefinitionCommand.class);
 
-    @Option(name = "-i", aliases = "--input", description = "Identity Appliance descriptor file", required = true, multiValued = false)
+    @Option(name = "-i", aliases = "--input", description = "Identity Appliance export file", required = true, multiValued = false)
     private String input;
     
     @Override

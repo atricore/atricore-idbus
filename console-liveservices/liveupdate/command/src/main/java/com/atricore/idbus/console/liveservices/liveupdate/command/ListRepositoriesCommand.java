@@ -16,7 +16,7 @@ public class ListRepositoriesCommand extends LiveUpdateCommandSupport {
     @Override
     protected Object doExecute(LiveUpdateManager svc) throws Exception {
         Collection<Repository> repos = svc.getRepositories();
-        this.getPrinter().printAll(repos);
+        this.getPrinter().printAll(this, repos);
         return null;
     }
 }

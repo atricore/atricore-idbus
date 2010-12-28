@@ -21,7 +21,7 @@ public class ListUpdatesCommand extends LiveUpdateCommandSupport {
     @Override
     protected Object doExecute(LiveUpdateManager svc) throws Exception {
         Collection<UpdateDescriptorType> updates = offline ? svc.getAvailableUpdates() : svc.checkForUpdates();
-        getPrinter().printAll(updates);
+        getPrinter().printAll(this, updates);
         return null;
     }
 }
