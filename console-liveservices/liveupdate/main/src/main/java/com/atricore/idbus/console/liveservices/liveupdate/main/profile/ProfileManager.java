@@ -25,6 +25,6 @@ public interface ProfileManager {
     /**
      * Builds the profile containing all the necessary updates to install the provided IU in the current setup
      */
-    ProfileType buildUpdateProfile(InstallableUnitType install, Collection<UpdateDescriptorType> updates) throws LiveUpdateException;
+    ProfileType buildUpdateProfile(UpdateDescriptorType install, Collection<UpdateDescriptorType> updates) throws LiveUpdateException;
 
 }

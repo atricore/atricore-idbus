@@ -160,6 +160,15 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         return updates.values();
     }
 
+    public void cleanRepository(String repoId) throws LiveUpdateException {
+        // TODO : mdManager.clearRepository(repoId);
+        // TODO : artManager.clearRepository(repoId);
+    }
+
+    public void cleanAllRepositories() throws LiveUpdateException {
+        // TODO : mdManager.clearRepositories();
+        // TODO : artManager.clearRepositories();
+    }
 
     // Analyze MD and see if updates apply. (use license information ....)
     public Collection<UpdateDescriptorType> checkForUpdates() throws LiveUpdateException {
@@ -175,10 +184,12 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
         Collection<UpdateDescriptorType> updates = getAvailableUpdates();
         InstallableUnitType installableUnit  = null;
+        UpdateDescriptorType update = null;
         for (UpdateDescriptorType ud : updates) {
             for (InstallableUnitType iu : ud.getInstallableUnit()) {
                 if (iu.getGroup().equals(group) && iu.getName().equals(name) && iu.getVersion().equals(version)) {
                     installableUnit = iu;
+                    update = ud;
                     if (logger.isDebugEnabled())
                         logger.debug("Found IU " + iu.getID() + " for " + group + "/" + name + "/" + version);
                     break;
@@ -192,18 +203,19 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         }
 
         logger.info("Applying Update " + group + "/" + name + "/" + version);
-        ProfileType updateProfile = profileManager.buildUpdateProfile(installableUnit, mdManager.getUpdates());
+        ProfileType updateProfile = profileManager.buildUpdateProfile(update, mdManager.getUpdates());
 
         engine.execute("updatePlan", updateProfile);
     }
 
     public ProfileType getUpdateProfile(String group, String name, String version) throws LiveUpdateException {
+        // TODO : Refresh repos every time ?
+        mdManager.refreshRepositories();
         UpdateDescriptorType ud = mdManager.getUpdate(group, name, version);
-
-        // TODO : What if we havem ore than one IU
-        InstallableUnitType install = ud.getInstallableUnit().get(0);
-
-        return this.profileManager.buildUpdateProfile(install, mdManager.getUpdates());
+        if (ud == null)
+            throw new LiveUpdateException("No update found for " + group +"/"+name+"/"+version);
+        
+        return this.profileManager.buildUpdateProfile(ud, mdManager.getUpdates());
     }
 
     // -------------------------------------------< Utilities >

@@ -1,7 +1,10 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyNode;
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyVisitor;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +13,9 @@ import java.util.Stack;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class UpdateProfilesBuilderVisitor implements DependencyVisitor<List<ProfileType>> {
+public class UpdateProfileBuilderVisitor implements DependencyVisitor<List<ProfileType>> {
+
+    private UUIDGenerator uuidGen = new UUIDGenerator();
 
     // Current setup
     private ProfileType profile;
@@ -23,7 +28,7 @@ public class UpdateProfilesBuilderVisitor implements DependencyVisitor<List<Prof
 
     private boolean found;
 
-    public UpdateProfilesBuilderVisitor(ProfileType profile) {
+    public UpdateProfileBuilderVisitor(ProfileType profile) {
         this.profile = profile;
         // TODO : Review this !!!
         this.updatableIu = profile.getInstallableUnit().get(0);
@@ -46,14 +51,12 @@ public class UpdateProfilesBuilderVisitor implements DependencyVisitor<List<Prof
             // We found the IU to be updated in the path, this is a possible updateProfile.
             // We have to store it as a candidate and reset the flag.
             ProfileType profile = new ProfileType();
-            // TODO :
-            profile.setID("TBD");
-            profile.setName("TBD");
+            profile.setID(uuidGen.generateId());
+            profile.setName("gen-profile-" + (this.updateProfiles.size() + 1));
 
             for (DependencyNode node : currentUpdateProfile) {
                 profile.getInstallableUnit().add(node.getInstallableUnit());
             }
-
 
             this.updateProfiles.add(profile);
             found = false;

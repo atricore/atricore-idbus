@@ -1,5 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyNode;
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyTreeBuilder;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.RequiredFeatureType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
@@ -74,8 +76,11 @@ public class DefaultDependencyTreeBuilder implements DependencyTreeBuilder {
 
         for (DependencyNode n : nodes.values()) {
 
+            if (logger.isTraceEnabled())
+                logger.trace("IU " + n.getFqKey() + " (dependencies:"+n.getParents().size()+")");
+
             for (RequiredFeatureType unsatisifed : n.getUnsatisifed()) {
-                logger.warn("IU " + n.getFqKey() + " can't resolve requirement " +
+                logger.warn("IU " + n.getFqKey() + " has unresolved requirement : " +
                         unsatisifed.getGroup() + "/" +
                         unsatisifed.getName() + "/" +
                         unsatisifed.getVersionRange().getExpression());
@@ -84,7 +89,6 @@ public class DefaultDependencyTreeBuilder implements DependencyTreeBuilder {
         }
 
         init = true;
-
         return nodes.values();
     }
 
@@ -118,6 +122,9 @@ public class DefaultDependencyTreeBuilder implements DependencyTreeBuilder {
 
                     try {
                         if (versionsMatch(dep.getArtifactVersion(), req.getVersionRange().getExpression())) {
+
+                            if (node.getFqKey().equals(dep.getFqKey()))
+                                throw new IllegalStateException("Cannot add dependency to self for " + node.getFqKey());
                             // Found it!!
                             // Set parent / child
                             node.addDependency(dep, req);

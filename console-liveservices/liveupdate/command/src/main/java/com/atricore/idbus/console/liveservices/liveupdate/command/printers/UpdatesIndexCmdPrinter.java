@@ -38,26 +38,29 @@ public class UpdatesIndexCmdPrinter extends AbstractCmdPrinter<UpdatesIndexType>
                 sb.append(getNameValue("Version", iu.getVersion()));
                 sb.append(getNameValue("Nature", iu.getUpdateNature().value()));
 
-                int i = 0;
-                for (ArtifactKeyType art : iu.getArtifact()) {
-                    sb.append(getNameValue("Artifact (" + i + ")",
-                            art.getGroup() +
-                                    "/" + art.getName() +
-                                    "/" + art.getVersion() +
-                                    "/" + art.getName() +
-                                    "-" + art.getVersion() +
-                                    (art.getClassifier() != null ? "-" + art.getClassifier() : "") +
-                                    "." + (art.getType() != null ? art.getType() : "jar")));
-                    i++;
-                }
+                if (cmd.isVerbose()) {
 
-                i = 0;
-                for (RequiredFeatureType req : iu.getRequirement()) {
-                    sb.append(getNameValue("Requirement",
-                            req.getGroup() + "/" + req.getName() + "/" + req.getVersionRange().getExpression()
-                    ));
+                    int i = 0;
+                    for (ArtifactKeyType art : iu.getArtifact()) {
+                        sb.append(getNameValue("Artifact (" + i + ")",
+                                art.getGroup() +
+                                        "/" + art.getName() +
+                                        "/" + art.getVersion() +
+                                        "/" + art.getName() +
+                                        "-" + art.getVersion() +
+                                        (art.getClassifier() != null ? "-" + art.getClassifier() : "") +
+                                        "." + (art.getType() != null ? art.getType() : "jar")));
+                        i++;
+                    }
 
-                    i++;
+                    i = 0;
+                    for (RequiredFeatureType req : iu.getRequirement()) {
+                        sb.append(getNameValue("Requirement",
+                                req.getGroup() + "/" + req.getName() + "/" + req.getVersionRange().getExpression() 
+                        ));
+
+                        i++;
+                    }
                 }
 
             }

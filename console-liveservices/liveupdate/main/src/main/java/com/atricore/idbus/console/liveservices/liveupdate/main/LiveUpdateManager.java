@@ -48,4 +48,14 @@ public interface LiveUpdateManager {
      */
     UpdatesIndexType getRepositoryUpdates(String repoId) throws LiveUpdateException;
 
+    /**
+     * Clear repository local information
+     */
+    void cleanRepository(String repoId) throws LiveUpdateException;
+
+    /**
+     * Clear all repositories local information
+     */
+    void cleanAllRepositories() throws LiveUpdateException;
+
 }

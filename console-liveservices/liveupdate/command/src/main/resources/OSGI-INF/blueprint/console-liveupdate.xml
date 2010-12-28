@@ -45,7 +45,7 @@
             </action>
         </command>
 
-        <command name="liveupdate/ls-dependnecies">
+        <command name="liveupdate/ls-dependencies">
             <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListDependenciesCommand">
                 <property name="printer" ref="profilePrinter"/>
             </action>

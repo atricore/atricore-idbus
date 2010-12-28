@@ -1,8 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
-import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdatePlan;
-import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileManager;
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.*;
 
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
@@ -13,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.karaf.features.Feature;
 import org.apache.karaf.features.FeaturesService;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -32,6 +32,8 @@ import java.util.List;
 public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
 
     // TODO : Liste for bundle events, and look for descriptors !?
+
+    private static final UUIDGenerator uuidGen = new UUIDGenerator();
 
     private static final Log logger = LogFactory.getLog(ProfileManagerImpl.class);
 
@@ -146,13 +148,16 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
             }
 
             ProfileType p = new ProfileType();
-            p.setID("id001");
+            p.setID(uuidGen.generateId());
             p.setName("_SELF_");
             p.getInstallableUnit().addAll(uis);
 
-            this.profile = p;
+            // Only store profile if any IU was found ...
+            if (p.getInstallableUnit().size() > 0) {
+                this.profile = p;
+            }
 
-            return profile;
+            return p;
 
         } catch (Exception e) {
             throw new LiveUpdateException(e);
@@ -164,28 +169,55 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
     /**
      * Builds the profile containing all the necessary updates to install the provided IU in our the current setup
      */
-    public ProfileType buildUpdateProfile(InstallableUnitType iu, Collection<UpdateDescriptorType> updates) throws LiveUpdateException {
+    public ProfileType buildUpdateProfile(UpdateDescriptorType update, Collection<UpdateDescriptorType> updates) throws LiveUpdateException {
 
+        List<UpdateDescriptorType> uds = new ArrayList<UpdateDescriptorType>(updates);
+
+        boolean found = false;
+        for (UpdateDescriptorType u : updates) {
+            if (u.getID().equals(update.getID())) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            if (logger.isDebugEnabled())
+                logger.debug("Requested update is not part of updates collection, adding it !");
+            uds.add(update);
+        }
+
+        // Create dependency tree
         DependencyTreeBuilder tb = new DefaultDependencyTreeBuilder();
-        Collection<DependencyNode> dependencies = tb.buildDependencyList(updates);
+        Collection<DependencyNode> dependencies = tb.buildDependencyList(uds);
 
         if (logger.isTraceEnabled())
             logger.trace("Processing " + dependencies.size() + " updates");
 
+        // Look the IU Dependency Node
+        // TODO : What if there's more than one IU ?
+        InstallableUnitType iu = update.getInstallableUnit().get(0);
         DependencyNode install = tb.getDependency(iu);
 
-        // Now, build all possible update paths and choose the shorter one. (Note this could be configurable)
-        DependencyVisitor<List<ProfileType>> v = new UpdateProfilesBuilderVisitor(profile);
+        // Now, build all possible update 'paths' and choose the shorter one.
+        DependencyVisitor<List<ProfileType>> v = new UpdateProfileBuilderVisitor(getCurrentProfile());
         DependencyWalker<List<ProfileType>> w = new DeepFirstDependencyWalker<List<ProfileType>>();
 
+        // Each profile is a different way to install the desire update in our setup
         List<ProfileType> profiles = w.walk(install, v);
+        if (logger.isTraceEnabled())
+            logger.trace("Found " + profiles.size() + " possible update profiles (strategies)");        
 
+        // Choose the shorter path, the one that requires the fewer installable units
         ProfileType updateProfile = null;
         for (ProfileType p : profiles) {
             if (updateProfile == null || p.getInstallableUnit().size() < updateProfile.getInstallableUnit().size()) {
                 updateProfile = p;
             }
         }
+
+        if (logger.isTraceEnabled())
+            logger.trace("Selected update profile with " + updateProfile.getInstallableUnit() + " IUs");
         return updateProfile;
     }
 

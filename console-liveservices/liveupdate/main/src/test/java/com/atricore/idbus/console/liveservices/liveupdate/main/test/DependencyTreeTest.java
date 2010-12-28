@@ -1,8 +1,8 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.test;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyNode;
 import com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl.DefaultDependencyTreeBuilder;
-import com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl.DependencyNode;
-import com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl.DependencyTreeBuilder;
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyTreeBuilder;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
 import org.apache.commons.logging.Log;

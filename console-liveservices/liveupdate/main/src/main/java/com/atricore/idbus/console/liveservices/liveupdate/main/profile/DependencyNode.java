@@ -1,5 +1,6 @@
-package com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl;
+package com.atricore.idbus.console.liveservices.liveupdate.main.profile;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl.ArtifactVersion;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.RequiredFeatureType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;

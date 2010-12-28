@@ -1,7 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
-import com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl.DependencyNode;
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyNode;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
@@ -124,6 +124,9 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
     public synchronized UpdateDescriptorType getUpdate(String group, String name, String version) throws LiveUpdateException {
 
+        if (logger.isTraceEnabled())
+            logger.trace("Looking for update " + group + "/" + name + "/" + version);
+
         for (MetadataRepository repo : repos) {
             if (!repo.isEnabled()) {
                 if (logger.isDebugEnabled())
@@ -132,11 +135,24 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
                 continue;
             }
 
+            // What if the IU is in more than one update ?!
             for (UpdateDescriptorType ud : repo.getAvailableUpdates()) {
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Looking in update descriptor " + ud.getID());
+
                 for (InstallableUnitType iu : ud.getInstallableUnit()) {
+
+                    if (logger.isTraceEnabled())
+                        logger.trace("Checking IU " + iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion());
+
                     if (iu.getGroup().equals(group) &&
                             iu.getName().equals(name) &&
                             iu.getVersion().equals(version)) {
+
+                        if (logger.isTraceEnabled())
+                            logger.trace("Update Found " + ud.getID());
+
                         return ud;
                     }
                 }
