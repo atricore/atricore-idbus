@@ -1,29 +1,40 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.test;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.FileRepositoryTransport;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.Selectors;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.net.URI;
 
-public class FileRepositoryTransportTest {
+public class FileRepositoryTransportTest extends BaseTest {
 
-    private FileRepositoryTransport repositoryTransport;
+    private static FileRepositoryTransport repositoryTransport;
 
-    private ApplicationContext applicationContext;
-
-    @Before
-    public void setup() throws Exception {
+    @BeforeClass
+    public static void setupTestSuite() throws Exception {
         applicationContext = new ClassPathXmlApplicationContext(
                 new String[]{"classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/transport-beans.xml"}
         );
 
         repositoryTransport = (FileRepositoryTransport) applicationContext.getBean("fileRepositoryTransport");
+
+        // copy test files to repository baseFolder
+        String baseDir = (String) applicationContext.getBean("baseDir");
+        FileObject testUpdatesSrc = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/main/test/test-updates.xml");
+        FileObject testUpdatesDest = getFileSystemManager().resolveFile(repositoryTransport.getBaseFolder() + "/test-updates.xml");
+        testUpdatesDest.createFile();
+        testUpdatesDest.copyFrom(testUpdatesSrc, Selectors.SELECT_SELF);
     }
-    
+
+    @AfterClass
+    public static void tearDownTestSuite() throws Exception {
+    }
+
     @Test
     public void testCanHandle() throws Exception {
         URI uri = new URI("file:///tmp/file.xml");

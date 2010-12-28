@@ -68,6 +68,7 @@ public class VFSMetadataRepositoryImpl extends AbstractVFSRepository<UpdateDescr
             // add new update descriptors
             for (UpdateDescriptorType ud : newUpdates.getUpdateDescriptor()) {
                 updates.put(ud.getID(), ud);
+
             }
         } catch (Exception e) {
             throw new LiveUpdateException(e);
