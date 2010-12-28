@@ -103,13 +103,13 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
                 repo.setName(name);
                 repo.setLocation(location);
                 repo.setEnabled(enabled);
+
                 try {
-                    repo.setRepoFolder(new URI ("file://" + dataFolder + "/liveservices/liveupdate/repos/md/cache/" + id));
+                    repo.setRepoFolder(new URI ("file://" + dataFolder + "/liveservices/liveupdate/repos/cache/" + id));
                 } catch (URISyntaxException e) {
                     logger.error("Invalid repository ID : " + id + ". " +e.getMessage());
                     continue;
                 }
-
 
                 // TODO : Setup other poperties like public key, etc
 

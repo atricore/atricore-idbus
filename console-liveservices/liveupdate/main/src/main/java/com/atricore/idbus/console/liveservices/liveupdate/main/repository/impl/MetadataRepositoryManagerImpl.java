@@ -47,6 +47,13 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
         for (MetadataRepository repo : repos) {
 
+            if (!repo.isEnabled()) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Ignoring disabled repository " + repo.getId());
+
+                continue;
+            }
+
             if (logger.isTraceEnabled())
                 logger.trace("Refreshing repository content for " + repo.getName() + " [" + repo.getId() + "]");
 
@@ -110,6 +117,14 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         Map<String, UpdateDescriptorType> updates = new HashMap<String, UpdateDescriptorType>();
 
         for (MetadataRepository repo : repos) {
+
+            if (!repo.isEnabled()) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Ignoring disabled repository " + repo.getId());
+
+                continue;
+            }
+
             for (UpdateDescriptorType ud : repo.getAvailableUpdates()) {
                 updates.put(ud.getID(), ud);
             }
@@ -119,9 +134,17 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
     }
 
     public synchronized UpdatesIndexType getUpdatesIndex(String repoId) throws LiveUpdateException {
-        for (MetadataRepository metadataRepository : repos) {
-            if (metadataRepository.getId().equals(repoId)) {
-                return metadataRepository.getUpdates();
+        for (MetadataRepository repo : repos) {
+
+            if (!repo.isEnabled()) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Ignoring disabled repository " + repo.getId());
+
+                continue;
+            }
+
+            if (repo.getId().equals(repoId)) {
+                return repo.getUpdates();
             }
         }
         return null;
@@ -130,6 +153,13 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
     public synchronized UpdateDescriptorType getUpdate(String id) throws LiveUpdateException {
 
         for ( MetadataRepository repo : repos) {
+            if (!repo.isEnabled()) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Ignoring disabled repository " + repo.getId());
+
+                continue;
+            }
+
             for (UpdateDescriptorType ud : repo.getAvailableUpdates())
                 if (ud.getID().equals(id))
                     return ud;
@@ -140,6 +170,13 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
     public synchronized UpdateDescriptorType getUpdate(String group, String name, String version) throws LiveUpdateException {
 
         for ( MetadataRepository repo : repos) {
+            if (!repo.isEnabled()) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Ignoring disabled repository " + repo.getId());
+
+                continue;
+            }
+
             for (UpdateDescriptorType ud : repo.getAvailableUpdates()) {
                 for (InstallableUnitType iu : ud.getInstallableUnit()) {
                     if (iu.getGroup().equals(group) &&
