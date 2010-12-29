@@ -12,25 +12,7 @@ import java.io.FileNotFoundException;
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @Command(scope = "liveupdate-admin", name = "validate-updates-index", description = "Validate updates index")
-public class ValidateUpdatesIndexSignatureCommand extends LiveUpdateAdminCommandSupport {
-
-    @Option(name = "-k", aliases = "--keystore", description = "Keystore file", required = true, multiValued = false)
-    private String keystoreFile;
-
-    @Option(name = "-t", aliases = "--keystore-type", description = "Keystore type, default JKS", required = false, multiValued = false)
-    private String keystoreType = "JKS";
-
-    @Option(name = "-c", aliases = "--cert-alias", description = "Private Key alias", required = true, multiValued = false)
-    private String certificateAlias;
-
-    @Option(name = "-n", aliases = "--private-key-alias", description = "Private Key alias", required = true, multiValued = false)
-    private String privateKeyAlias;
-
-    @Option(name = "-p", aliases = "--keystore-pass", description = "Keystore password", required = true, multiValued = false)
-    private String keystorePass;
-
-    @Option(name = "-kp", aliases = "--private-key-pass", description = "Private Key password", required = false, multiValued = false)
-    private String privateKeyPass;
+public class ValidateUpdatesIndexSignatureCommand extends SignValidateCommandSupport {
 
     @Option(name = "-f", aliases = "--file", description = "Updates index file", required = true, multiValued = false)
     private String updatesIndexFile;
