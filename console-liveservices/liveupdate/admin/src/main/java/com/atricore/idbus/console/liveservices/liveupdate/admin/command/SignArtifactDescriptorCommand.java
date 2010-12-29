@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.admin.command;
 
 import com.atricore.idbus.console.liveservices.liveupdate.admin.service.LiveUpdateAdminService;
+import com.atricore.liveservices.liveupdate._1_0.util.LiveUpdateKeyResolver;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 
@@ -24,14 +25,16 @@ public class SignArtifactDescriptorCommand extends SignValidateCommandSupport {
     @Override
     protected Object doExecute(LiveUpdateAdminService svc) throws Exception {
         byte[] artifactDescriptor;
+        LiveUpdateKeyResolver keyResolver;
         try {
             artifactDescriptor = readContent(artifactDescriptorFile);
+            keyResolver = getLiveUpdateKeyResolver();
         } catch (FileNotFoundException e) {
             System.err.println("\u001B[31mFile not found: " + e.getMessage() + "\u001B[0m");
             return null;
         }
 
-        byte[] signedArtifactDescriptor = svc.signArtifactDescriptor(artifactDescriptor, getLiveUpdateKeyResolver());
+        byte[] signedArtifactDescriptor = svc.signArtifactDescriptor(artifactDescriptor, keyResolver);
         writeContent(signedArtifactDescriptorFile, signedArtifactDescriptor, replace);
 
         System.out.println("Artifact descriptor file successfully signed.");
