@@ -12,10 +12,7 @@ import org.apache.commons.vfs.VFS;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -44,26 +41,19 @@ public class ImportApplianceDefinitionCommand extends ManagementCommandSupport {
 
         final int BUFFER_SIZE = 2048;
         int count;
-        InputStream is = inputFile.getContent().getInputStream();
-        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-        byte[] buff =  new byte[BUFFER_SIZE];
+        InputStream is = null;
 
-        while ((count = is.read(buff, 0, BUFFER_SIZE)) != -1) {
-            bOut.write(buff, 0, count);
-        }
-        bOut.flush();
+       try {
 
-        if (is != null) {
-            try {
-                is.close();
-            } catch (Exception e) {
-                logger.info("Unable to close stream for " + inputFile.getURL() + ". Error:" + e.getMessage());
-                if (logger.isDebugEnabled())
-                    logger.debug("Unable to close stream for " + inputFile.getURL() + ". Error:" + e.getMessage(), e);
+            is = inputFile.getContent().getInputStream();
+            ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+            byte[] buff =  new byte[BUFFER_SIZE];
+
+            while ((count = is.read(buff, 0, BUFFER_SIZE)) != -1) {
+                bOut.write(buff, 0, count);
             }
-        }
+            bOut.flush();
 
-        try {
             ImportApplianceDefinitionRequest req = new ImportApplianceDefinitionRequest ();
             req.setBytes(bOut.toByteArray());
             bOut.close();
@@ -75,7 +65,18 @@ public class ImportApplianceDefinitionCommand extends ManagementCommandSupport {
 
         } catch (ApplianceValidationException e) {
             cmdPrinter.printError(e);
-        }
+
+        } finally {
+
+           if (is != null) {
+               try { is.close();  } catch (IOException e) {
+                   logger.error("Unable to close stream for " + inputFile.getURL() + ". Error:" + e.getMessage());
+                   if (logger.isDebugEnabled())
+                       logger.debug("Unable to close stream for " + inputFile.getURL() + ". Error:" + e.getMessage(), e);
+               }
+           }
+
+       }
 
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

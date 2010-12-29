@@ -119,7 +119,6 @@
 
     </osgix:cm-properties>
 
-
     <ctx:property-placeholder properties-ref="liveUpdateProps"/>
 
 </beans>
