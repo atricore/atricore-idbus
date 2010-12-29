@@ -18,5 +18,35 @@
 
 -->
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
-    <!-- TODO : Declare commands and service, injecting everything together  -->
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
+
+        <command name="liveupdate-admin/sign-updates-index">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.admin.command.SignUpdatesIndexCommand">
+                <property name="liveUpdateAdminService" ref="liveUpdateAdminService"/>
+            </action>
+        </command>
+
+        <command name="liveupdate-admin/sign-artifact-descriptor">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.admin.command.SignArtifactDescriptorCommand">
+                <property name="liveUpdateAdminService" ref="liveUpdateAdminService"/>
+            </action>
+        </command>
+
+        <command name="liveupdate-admin/validate-updates-index">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.admin.command.ValidateUpdatesIndexSignatureCommand">
+                <property name="liveUpdateAdminService" ref="liveUpdateAdminService"/>
+            </action>
+        </command>
+
+        <command name="liveupdate-admin/validate-artifact-descriptor">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.admin.command.ValidateArtifactDescriptorSignatureCommand">
+                <property name="liveUpdateAdminService" ref="liveUpdateAdminService"/>
+            </action>
+        </command>
+
+    </command-bundle>
+
+    <bean id="liveUpdateAdminService" class="com.atricore.idbus.console.liveservices.liveupdate.admin.service.impl.LiveUpdateAdminServiceImpl"/>
+    
 </blueprint>
