@@ -63,9 +63,6 @@ public class ImportApplianceDefinitionCommand extends ManagementCommandSupport {
 
             System.out.println("Created Identity Appliance " + res.getAppliance().getId() + " from " + input);
 
-        } catch (ApplianceValidationException e) {
-            cmdPrinter.printError(e);
-
         } finally {
 
            if (is != null) {
