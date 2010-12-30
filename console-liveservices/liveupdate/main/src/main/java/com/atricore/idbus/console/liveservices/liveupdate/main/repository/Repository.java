@@ -3,6 +3,7 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 
 import java.net.URI;
+import java.security.cert.Certificate;
 
 /**
 
@@ -15,8 +16,10 @@ public interface Repository<T> {
 
     String getName();
 
-    String getPublicKey();
+    Certificate getCertificate();
 
+    boolean isSignatureValidationEnabled();
+    
     boolean isEnabled();
 
     String getUsername();

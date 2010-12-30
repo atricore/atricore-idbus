@@ -2,15 +2,16 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URI;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -23,7 +24,11 @@ public abstract class AbstractVFSRepository<T> implements Repository<T> {
 
     private String name;
 
-    private String publicKey;
+    private byte[] certValue;
+    
+    private X509Certificate x509Cert;
+
+    private boolean isSignatureValidationEnabled;
 
     private boolean isEnabled;
 
@@ -59,6 +64,11 @@ public abstract class AbstractVFSRepository<T> implements Repository<T> {
             if (!repo.isWriteable())
                 throw new LiveUpdateException("Repository is not writeable : " + repo.getURL());
 
+            if (certValue != null) {
+                byte[] x509CertificateBin = new Base64().decode(certValue);
+                x509Cert = buildX509Certificate(x509CertificateBin);
+            }
+            
         } catch (FileSystemException e) {
             throw new LiveUpdateException(e);
         }
@@ -120,6 +130,17 @@ public abstract class AbstractVFSRepository<T> implements Repository<T> {
 
     }
 
+    protected X509Certificate buildX509Certificate(byte[] x509CertificateBin) {
+        X509Certificate x509Cert = null;
+        try {
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            x509Cert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(x509CertificateBin));
+        } catch (CertificateException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return x509Cert;
+    }
+    
     // ------------------------------< Getters/Setters >
 
     public URI getRepoFolder() {
@@ -146,12 +167,24 @@ public abstract class AbstractVFSRepository<T> implements Repository<T> {
         this.name = name;
     }
 
-    public String getPublicKey() {
-        return publicKey;
+    public X509Certificate getCertificate() {
+        return x509Cert;
     }
 
-    public void setPublicKey(String publicKey) {
-        this.publicKey = publicKey;
+    public byte[] getCertValue() {
+        return certValue;
+    }
+
+    public void setCertValue(byte[] certValue) {
+        this.certValue = certValue;
+    }
+
+    public boolean isSignatureValidationEnabled() {
+        return isSignatureValidationEnabled;
+    }
+
+    public void setSignatureValidationEnabled(boolean signatureValidationEnabled) {
+        isSignatureValidationEnabled = signatureValidationEnabled;
     }
 
     public boolean isEnabled() {

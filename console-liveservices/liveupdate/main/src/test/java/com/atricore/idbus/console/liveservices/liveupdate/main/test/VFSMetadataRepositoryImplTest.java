@@ -16,7 +16,7 @@ import java.util.Collection;
 public class VFSMetadataRepositoryImplTest extends VFSTestSupport {
 
     private static VFSMetadataRepositoryImpl vfsMetadataRepository;
-    
+
     @BeforeClass
     public static void setupTestSuite() throws Exception {
         applicationContext = new ClassPathXmlApplicationContext(
@@ -24,12 +24,12 @@ public class VFSMetadataRepositoryImplTest extends VFSTestSupport {
                              "classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/repository-beans.xml"}
         );
 
-        vfsMetadataRepository = (VFSMetadataRepositoryImpl) applicationContext.getBean("vfsMetadataRepository");
+        vfsMetadataRepository = (VFSMetadataRepositoryImpl) applicationContext.getBean("vfsMetadataRepository1");
 
         // copy test files to repository location
         String baseDir = (String) applicationContext.getBean("baseDir");
-        FileObject testUpdatesSrc = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/main/test/test-updates.xml");
-        FileObject testUpdatesDest = getFileSystemManager().resolveFile(vfsMetadataRepository.getLocation().toString() + "/test-updates.xml");
+        FileObject testUpdatesSrc = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/main/test/repo1-updates.xml");
+        FileObject testUpdatesDest = getFileSystemManager().resolveFile(vfsMetadataRepository.getLocation().toString());
         testUpdatesDest.createFile();
         testUpdatesDest.copyFrom(testUpdatesSrc, Selectors.SELECT_SELF);
     }
@@ -51,6 +51,11 @@ public class VFSMetadataRepositoryImplTest extends VFSTestSupport {
     }
 
     @Test
+    public void testInit() throws Exception {
+        // TODO
+    }
+
+    @Test
     public void testGetAvailableUpdates() throws Exception {
         Collection<UpdateDescriptorType> updates = vfsMetadataRepository.getAvailableUpdates();
         Assert.assertEquals(updates.size(), 1);
@@ -63,14 +68,14 @@ public class VFSMetadataRepositoryImplTest extends VFSTestSupport {
         Assert.assertEquals(updates.iterator().next().getID(), "id0000000100");
 
         // add updates index
-        FileRepositoryTransport transport = (FileRepositoryTransport) applicationContext.getBean("fileRepositoryTransport");
-        byte[] idxBin = transport.loadContent(new URI(vfsMetadataRepository.getLocation().toString() + "/test-updates.xml"));
+        FileRepositoryTransport transport = (FileRepositoryTransport) applicationContext.getBean("fileRepositoryTransport1");
+        byte[] idxBin = transport.loadContent(new URI(vfsMetadataRepository.getLocation().toString()));
         UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(new String(idxBin), false);
         vfsMetadataRepository.addUpdatesIndex(idx);
 
         updates = vfsMetadataRepository.getAvailableUpdates();
         Assert.assertEquals(updates.size(), 1);
-        Assert.assertEquals(updates.iterator().next().getID(), "id0000000200");
+        Assert.assertEquals(updates.iterator().next().getID(), "id0000000300");
     }
 
     @Test

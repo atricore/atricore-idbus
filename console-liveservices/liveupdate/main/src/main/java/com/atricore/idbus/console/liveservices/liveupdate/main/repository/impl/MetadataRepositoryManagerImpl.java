@@ -5,8 +5,10 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.profile.Dependenc
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
-import com.atricore.liveservices.liveupdate._1_0.md.*;
-import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
+import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
+import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
+import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
+import com.atricore.liveservices.liveupdate._1_0.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -186,7 +188,23 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
                     if (logger.isTraceEnabled())
                         logger.trace("Found Updates Index " + idx.getID());
 
-                    // TODO : Validate Digital signature!
+                    // Validate Digital signature
+                    if (repo.isSignatureValidationEnabled()) {
+                        if (repo.getCertificate() != null) {
+                            LiveUpdateKeyResolver keyResolver = new LiveUpdateKeyResolverImpl(repo.getCertificate());
+                            try {
+                                LiveUpdateSigner.validate(idx, keyResolver);
+                            } catch (InvalidSignatureException e) {
+                                logger.error("Signature is not valid for updates index [" + idx.getID() + "]. " +
+                                        "Repository [" + repo.getId() + "] will not be refreshed.");
+                                return newUpdates;
+                            }
+                        } else {
+                            logger.error("Signature validation is enabled but there is no valid certificate " +
+                                    "for repository [" + repo.getId() + "]. Skipping repository refresh.");
+                            return newUpdates;
+                        }
+                    }
 
                     // Store updates to in repo
                     for (UpdateDescriptorType ud : idx.getUpdateDescriptor()) {

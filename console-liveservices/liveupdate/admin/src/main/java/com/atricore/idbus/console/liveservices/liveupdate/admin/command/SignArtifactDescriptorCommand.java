@@ -1,29 +1,44 @@
 package com.atricore.idbus.console.liveservices.liveupdate.admin.command;
 
 import com.atricore.idbus.console.liveservices.liveupdate.admin.service.LiveUpdateAdminService;
+import com.atricore.liveservices.liveupdate._1_0.util.LiveUpdateKeyResolver;
+import org.apache.felix.gogo.commands.Command;
+import org.apache.felix.gogo.commands.Option;
+
+import java.io.FileNotFoundException;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-// cmd : liveupdate-admin/sign-artifact-descriptor
-public class SignArtifactDescriptorCommand extends LiveUpdateAdminCommandSupport {
+@Command(scope = "liveupdate-admin", name = "sign-artifact-descriptor", description = "Sign artifact descriptor")
+public class SignArtifactDescriptorCommand extends SignValidateCommandSupport {
 
-    // Option -k --keystore
-    private String keystoreFile;
+    @Option(name = "-f", aliases = "--file", description = "Artifact descriptor file", required = true, multiValued = false)
+    private String artifactDescriptorFile;
 
-    // Opition -n --key-name
-    private String keyName;
+    @Option(name = "-s", aliases = "--signed-file", description = "Signed artifact descriptor file", required = true, multiValued = false)
+    private String signedArtifactDescriptorFile;
 
-    // Option -p --keystore-pass
-    private String keyPass;
+    @Option(name = "-r", aliases = "--replace", description = "Replace destination file", required = false, multiValued = false)
+    private boolean replace;
+    
+    @Override
+    protected Object doExecute(LiveUpdateAdminService svc) throws Exception {
+        byte[] artifactDescriptor;
+        LiveUpdateKeyResolver keyResolver;
+        try {
+            artifactDescriptor = readContent(artifactDescriptorFile);
+            keyResolver = getLiveUpdateKeyResolver();
+        } catch (FileNotFoundException e) {
+            System.err.println("\u001B[31mFile not found: " + e.getMessage() + "\u001B[0m");
+            return null;
+        }
 
-    // Argument
-    private String updatesIndexFile;
+        byte[] signedArtifactDescriptor = svc.signArtifactDescriptor(artifactDescriptor, keyResolver);
+        writeContent(signedArtifactDescriptorFile, signedArtifactDescriptor, replace);
 
-    protected Object doExecute(LiveUpdateAdminService svc) {
-        // TODO
+        System.out.println("Artifact descriptor file successfully signed.");
+
         return null;
     }
-
-
 }

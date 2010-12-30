@@ -6,12 +6,12 @@
                     http://www.atricore.com/liveservices/liveupdate/atricore-liveupdate-md-1.0.xsd"
         ID="id0000001100">
 
-    <updateDescriptor ID="id0000000200" description="JOSSO 2 EE ${pom.version}" IssueInstant="2010-12-25T19:32:52Z">
+    <updateDescriptor ID="id0000000300" description="JOSSO 2 EE 1.0.0-SNAPSHOT" IssueInstant="2010-12-25T19:32:52Z">
 
         <installableUnit ID="id0000000110"
-                         group="${pom.groupId}"
-                         name="${pom.artifactId}"
-                         version="${pom.version}"
+                         group="com.atricore.josso"
+                         name="com.atricore.josso.ee.install"
+                         version="1.0.0-SNAPSHOT"
                          description="JOSSO 2 EE"
                          updateNature="UPGRADE">
 
@@ -21,32 +21,32 @@
 
             <!-- JOSSO 2 EE Update (distribution) -->
             <artifact ID="id0000000111"
-                      group="${pom.groupId}"
+                      group="com.atricore.josso"
                       name="josso-ee"
-                      version="${pom.version}"
+                      version="1.0.0-SNAPSHOT"
                       type="tar.gz"
                       classifier="liveupdate"/>
 
             <!-- JOSSO 2 EE Update (distribution) -->
             <artifact ID="id0000000112"
-                      group="${pom.groupId}"
+                      group="com.atricore.josso"
                       name="josso-ee"
-                      version="${pom.version}"
+                      version="1.0.0-SNAPSHOT"
                       type="zip"
                       classifier="liveupdate"/>
 
 
             <!-- JOSSO 2 EE Update (liveupdate installer) -->
             <artifact ID="id0000000113"
-                      group="${pom.groupId}"
-                      name="${pom.artifactId}"
-                      version="${pom.version}"
+                      group="com.atricore.josso"
+                      name="com.atricore.josso.ee.install"
+                      version="1.0.0-SNAPSHOT"
                       type="bundle"
                       classifier="liveupdate"/>
 
 
             <!-- Required features -->
-            <requirement group="${pom.groupId}" name="josso-ee" description="JOSSO 2 EE 2.0.0" >
+            <requirement group="com.atricore.josso" name="josso-ee" description="JOSSO 2 EE 2.0.0" >
                 <versionRange Expression="[1.9,2.0)"/>
             </requirement>
 
