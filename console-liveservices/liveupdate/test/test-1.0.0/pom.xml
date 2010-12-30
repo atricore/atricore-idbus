@@ -38,6 +38,7 @@
 
     <modules>
         <module>services</module>
+        <module>command</module>
         <module>installer</module>
         <module>distribution</module>
     </modules>

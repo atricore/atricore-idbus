@@ -46,7 +46,7 @@
         <file>
             <source>${basedir}/target/classes/test-features.xml</source>
             <outputDirectory>/features/com/atricore/josso/josso-ee-test/${version}</outputDirectory>
-            <destName>josso-ee-${version}-features.xml</destName>
+            <destName>josso-ee-test-${version}-features.xml</destName>
             <fileMode>0644</fileMode>
             <lineEnding>unix</lineEnding>
         </file>

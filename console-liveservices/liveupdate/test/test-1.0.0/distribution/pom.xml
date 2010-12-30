@@ -36,6 +36,11 @@
     <packaging>pom</packaging>
     <name>Atricore Console :: Tests : LiveUpdate Sample ${pom.version} Distribution</name>
 
+    <properties>
+        <karaf.version>2.1.0</karaf.version>
+        <josso2ee.version>2.0.0-SNAPSHOT</josso2ee.version>
+    </properties>
+
     <dependencies>
 
         <dependency>
@@ -43,6 +48,13 @@
             <artifactId>com.atricore.idbus.console.liveservices.liveupdate.tests.services</artifactId>
             <version>${pom.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>com.atricore.idbus.console.liveservices.liveupdate.tests.command</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+        
         
     </dependencies>
 
