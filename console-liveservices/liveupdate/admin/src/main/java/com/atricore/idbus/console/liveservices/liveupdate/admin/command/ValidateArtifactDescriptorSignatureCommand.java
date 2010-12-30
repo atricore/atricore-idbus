@@ -14,7 +14,7 @@ import java.io.FileNotFoundException;
 @Command(scope = "liveupdate-admin", name = "validate-artifact-descriptor", description = "Validate artifact descriptor")
 public class ValidateArtifactDescriptorSignatureCommand extends SignValidateCommandSupport {
 
-    @Option(name = "-f", aliases = "--file", description = "Artifact descriptor file", required = true, multiValued = false)
+    @Option(name = "-i", aliases = "--in", description = "Artifact descriptor file", required = true, multiValued = false)
     private String artifactDescriptorFile;
 
     @Override

@@ -13,10 +13,10 @@ import java.io.FileNotFoundException;
 @Command(scope = "liveupdate-admin", name = "sign-artifact-descriptor", description = "Sign artifact descriptor")
 public class SignArtifactDescriptorCommand extends SignValidateCommandSupport {
 
-    @Option(name = "-f", aliases = "--file", description = "Artifact descriptor file", required = true, multiValued = false)
+    @Option(name = "-i", aliases = "--in", description = "Artifact descriptor input file", required = true, multiValued = false)
     private String artifactDescriptorFile;
 
-    @Option(name = "-s", aliases = "--signed-file", description = "Signed artifact descriptor file", required = true, multiValued = false)
+    @Option(name = "-o", aliases = "--out", description = "Signed artifact descriptor output file", required = true, multiValued = false)
     private String signedArtifactDescriptorFile;
 
     @Option(name = "-r", aliases = "--replace", description = "Replace destination file", required = false, multiValued = false)

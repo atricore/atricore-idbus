@@ -14,7 +14,7 @@ import java.io.FileNotFoundException;
 @Command(scope = "liveupdate-admin", name = "validate-updates-index", description = "Validate updates index")
 public class ValidateUpdatesIndexSignatureCommand extends SignValidateCommandSupport {
 
-    @Option(name = "-f", aliases = "--file", description = "Updates index file", required = true, multiValued = false)
+    @Option(name = "-i", aliases = "--in", description = "Updates index file", required = true, multiValued = false)
     private String updatesIndexFile;
 
     @Override
