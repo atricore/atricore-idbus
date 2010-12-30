@@ -27,6 +27,8 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
     private static final Log logger = LogFactory.getLog(MetadataRepositoryManagerImpl.class);
 
+    private LiveUpdateSigner liveUpdateSigner;
+    
     public void init() {
         // RFU
     }
@@ -163,6 +165,22 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         return null;
     }
 
+    public void clearRepositories() throws LiveUpdateException {
+        for (MetadataRepository repo : repos) {
+            if (repo.isEnabled()) {
+                repo.clear();
+            }
+        }
+    }
+
+    public void clearRepository(String repoId) throws LiveUpdateException {
+        for (MetadataRepository repo : repos) {
+            if (repo.isEnabled() && repo.getId().equals(repoId)) {
+                repo.clear();
+            }
+        }
+    }
+
     protected Collection<UpdateDescriptorType> refreshRepository(MetadataRepository repo, Set<UpdateDescriptorType> newUpdates) {
 
         if (logger.isTraceEnabled())
@@ -193,7 +211,7 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
                         if (repo.getCertificate() != null) {
                             LiveUpdateKeyResolver keyResolver = new LiveUpdateKeyResolverImpl(repo.getCertificate());
                             try {
-                                LiveUpdateSigner.validate(idx, keyResolver);
+                                liveUpdateSigner.validate(idx, keyResolver);
                             } catch (InvalidSignatureException e) {
                                 logger.error("Signature is not valid for updates index [" + idx.getID() + "]. " +
                                         "Repository [" + repo.getId() + "] will not be refreshed.");
@@ -258,5 +276,11 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
         }
     }
 
+    public LiveUpdateSigner getLiveUpdateSigner() {
+        return liveUpdateSigner;
+    }
 
+    public void setLiveUpdateSigner(LiveUpdateSigner liveUpdateSigner) {
+        this.liveUpdateSigner = liveUpdateSigner;
+    }
 }

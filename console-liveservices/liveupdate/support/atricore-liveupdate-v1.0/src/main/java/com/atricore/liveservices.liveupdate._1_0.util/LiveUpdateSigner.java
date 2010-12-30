@@ -43,9 +43,28 @@ public class LiveUpdateSigner {
     /**
      * JSR 105 Provider.
      */
-    private static Provider provider;
+    private Provider provider;
 
-    public static UpdatesIndexType sign(UpdatesIndexType unsigned, LiveUpdateKeyResolver keyResolver) throws LiveUpdateSignatureException {
+    public void init() {
+        try {
+            // If a provider was already 'injected', use it.
+            if (provider == null) {
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Creating JSR 105 Provider : " + getProviderFQCN());
+
+                provider = (Provider) Class.forName(getProviderFQCN()).newInstance();
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Error creating default provider: " + getProviderFQCN(), e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException("Error creating default provider: " + getProviderFQCN(), e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Error creating default provider: " + getProviderFQCN(), e);
+        }
+    }
+
+    public UpdatesIndexType sign(UpdatesIndexType unsigned, LiveUpdateKeyResolver keyResolver) throws LiveUpdateSignatureException {
         try {
 
             if (logger.isDebugEnabled())
@@ -66,7 +85,7 @@ public class LiveUpdateSigner {
         }
     }
 
-    public static ArtifactDescriptorType sign(ArtifactDescriptorType unsigned, LiveUpdateKeyResolver keyResolver) throws LiveUpdateSignatureException {
+    public ArtifactDescriptorType sign(ArtifactDescriptorType unsigned, LiveUpdateKeyResolver keyResolver) throws LiveUpdateSignatureException {
         try {
 
             if (logger.isDebugEnabled())
@@ -87,7 +106,7 @@ public class LiveUpdateSigner {
         }
     }
 
-    public static void validate(UpdatesIndexType signed, LiveUpdateKeyResolver keyResolver) throws InvalidSignatureException {
+    public void validate(UpdatesIndexType signed, LiveUpdateKeyResolver keyResolver) throws InvalidSignatureException {
         try {
 
             if (logger.isDebugEnabled())
@@ -103,7 +122,7 @@ public class LiveUpdateSigner {
         }
     }
 
-    public static void validate(ArtifactDescriptorType signed, LiveUpdateKeyResolver keyResolver) throws InvalidSignatureException {
+    public void validate(ArtifactDescriptorType signed, LiveUpdateKeyResolver keyResolver) throws InvalidSignatureException {
         try {
 
             if (logger.isDebugEnabled())
@@ -128,7 +147,7 @@ public class LiveUpdateSigner {
      * @param id id
      * @return signed document
      */
-    protected static Document sign(Document doc, String id, LiveUpdateKeyResolver keyResolver) throws LiveUpdateSignatureException {
+    protected Document sign(Document doc, String id, LiveUpdateKeyResolver keyResolver) throws LiveUpdateSignatureException {
         try {
 
             Certificate cert = keyResolver.getCertificate();
@@ -136,7 +155,7 @@ public class LiveUpdateSigner {
 
             // Create a DOM XMLSignatureFactory that will be used to generate the
             // enveloped signature
-            XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM", getProvider());
+            XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM", provider);
 
             if (logger.isDebugEnabled())
                 logger.debug("Creating XML DOM Digital Signature (not signing yet!)");
@@ -204,7 +223,7 @@ public class LiveUpdateSigner {
         }
     }
 
-    protected static void validate(Document doc, LiveUpdateKeyResolver keyResolver) throws LiveUpdateSignatureException, InvalidSignatureException {
+    protected void validate(Document doc, LiveUpdateKeyResolver keyResolver) throws LiveUpdateSignatureException, InvalidSignatureException {
         try {
             // Find Signature element
             NodeList nl =
@@ -215,7 +234,7 @@ public class LiveUpdateSigner {
 
             // Create a DOM XMLSignatureFactory that will be used to unmarshal the
             // document containing the XMLSignature
-            XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM", getProvider());
+            XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM", provider);
 
             // Create a DOMValidateContext and specify a KeyValue KeySelector
             // and document context
@@ -269,7 +288,7 @@ public class LiveUpdateSigner {
         }
     }
 
-    protected static boolean validateCertificate(LiveUpdateKeyResolver keyResolver, Key publicKey) throws LiveUpdateSignatureException {
+    protected boolean validateCertificate(LiveUpdateKeyResolver keyResolver, Key publicKey) throws LiveUpdateSignatureException {
         try {
             PublicKey x509PublicKey = keyResolver.getCertificate().getPublicKey();
             byte[] x509PublicKeyEncoded = x509PublicKey.getEncoded();
@@ -344,27 +363,12 @@ public class LiveUpdateSigner {
         }
     }
 
-    public static Provider getProvider() {
-        try {
-            if (provider == null) {
-
-                if (logger.isDebugEnabled())
-                    logger.debug("Creating JSR 105 Provider : " + getProviderFQCN());
-
-                LiveUpdateSigner.provider = (Provider) Class.forName(getProviderFQCN()).newInstance();
-            }
-            return provider;
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Error creating default provider: " + getProviderFQCN(), e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException("Error creating default provider: " + getProviderFQCN(), e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Error creating default provider: " + getProviderFQCN(), e);
-        }
+    public Provider getProvider() {
+        return provider;
     }
 
-    public static void setProvider(Provider provider) {
-        LiveUpdateSigner.provider = provider;
+    public void setProvider(Provider provider) {
+        this.provider = provider;
     }
 
     public static String getProviderFQCN() {

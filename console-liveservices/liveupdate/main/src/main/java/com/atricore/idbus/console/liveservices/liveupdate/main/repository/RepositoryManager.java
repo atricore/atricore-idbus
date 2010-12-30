@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.ProvisioningAgent;
 
 import java.net.URI;
@@ -26,4 +27,7 @@ public interface RepositoryManager<T> {
 
     ProvisioningAgent getAgent();
 
+    void clearRepositories() throws LiveUpdateException;
+    
+    void clearRepository(String repoId) throws LiveUpdateException;
 }

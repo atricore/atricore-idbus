@@ -139,13 +139,13 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     }
 
     public void cleanRepository(String repoId) throws LiveUpdateException {
-        // TODO : mdManager.clearRepository(repoId);
-        // TODO : artManager.clearRepository(repoId);
+        mdManager.clearRepository(repoId);
+        artManager.clearRepository(repoId);
     }
 
     public void cleanAllRepositories() throws LiveUpdateException {
-        // TODO : mdManager.clearRepositories();
-        // TODO : artManager.clearRepositories();
+        mdManager.clearRepositories();
+        artManager.clearRepositories();
     }
 
     // Analyze MD and see if updates apply. (use license information ....)

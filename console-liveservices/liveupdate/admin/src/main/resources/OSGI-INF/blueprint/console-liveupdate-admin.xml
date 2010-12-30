@@ -47,6 +47,10 @@
 
     </command-bundle>
 
-    <bean id="liveUpdateAdminService" class="com.atricore.idbus.console.liveservices.liveupdate.admin.service.impl.LiveUpdateAdminServiceImpl"/>
+    <bean id="liveUpdateSigner" class="com.atricore.liveservices.liveupdate._1_0.util.LiveUpdateSigner" init-method="init"/>
+
+    <bean id="liveUpdateAdminService" class="com.atricore.idbus.console.liveservices.liveupdate.admin.service.impl.LiveUpdateAdminServiceImpl">
+        <property name="liveUpdateSigner" ref="liveUpdateSigner"/>
+    </bean>
     
 </blueprint>

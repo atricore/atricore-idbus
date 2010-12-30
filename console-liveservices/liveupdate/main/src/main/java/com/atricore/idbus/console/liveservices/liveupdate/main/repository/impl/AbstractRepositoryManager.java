@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.ProvisioningAgent;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
@@ -54,4 +55,11 @@ public class AbstractRepositoryManager<T> implements RepositoryManager {
         return transports;
     }
 
+    public void clearRepositories() throws LiveUpdateException {
+
+    }
+
+    public void clearRepository(String repoId) throws LiveUpdateException {
+        
+    }
 }

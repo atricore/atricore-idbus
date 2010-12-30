@@ -207,4 +207,45 @@ public class MetadataRepositoryManagerImplTest extends VFSTestSupport {
 
         Assert.assertEquals(repo.getAvailableUpdates().size(), 1);
     }
+
+    @Test
+    public void testClearRepoitories() throws Exception {
+        // assert current updates
+        Assert.assertEquals(mdRepositoryManager.getUpdates().size(), 2);
+        Assert.assertEquals(vfsMetadataRepository1.getAvailableUpdates().size(), 1);
+        Assert.assertEquals(vfsMetadataRepository2.getAvailableUpdates().size(), 1);
+
+        FileObject repo1 = getFileSystemManager().resolveFile(vfsMetadataRepository1.getRepoFolder().toString());
+        FileObject repo2 = getFileSystemManager().resolveFile(vfsMetadataRepository2.getRepoFolder().toString());
+        Assert.assertEquals(repo1.getChildren().length, 1);
+        Assert.assertEquals(repo2.getChildren().length, 1);
+
+        // clear repositories
+        mdRepositoryManager.clearRepositories();
+
+        Assert.assertEquals(mdRepositoryManager.getUpdates().size(), 0);
+        Assert.assertEquals(vfsMetadataRepository1.getAvailableUpdates().size(), 0);
+        Assert.assertEquals(vfsMetadataRepository2.getAvailableUpdates().size(), 0);
+
+        Assert.assertEquals(repo1.getChildren().length, 0);
+        Assert.assertEquals(repo2.getChildren().length, 0);
+    }
+
+    @Test
+    public void testClearRepoitory() throws Exception {
+        // assert current updates
+        Assert.assertEquals(mdRepositoryManager.getUpdates().size(), 2);
+        Assert.assertEquals(vfsMetadataRepository1.getAvailableUpdates().size(), 1);
+        
+        FileObject repo1 = getFileSystemManager().resolveFile(vfsMetadataRepository1.getRepoFolder().toString());
+        Assert.assertEquals(repo1.getChildren().length, 1);
+        
+        // clear repo1
+        mdRepositoryManager.clearRepository("repo1");
+
+        Assert.assertEquals(mdRepositoryManager.getUpdates().size(), 1);
+        Assert.assertEquals(vfsMetadataRepository1.getAvailableUpdates().size(), 0);
+
+        Assert.assertEquals(repo1.getChildren().length, 0);
+    }
 }
