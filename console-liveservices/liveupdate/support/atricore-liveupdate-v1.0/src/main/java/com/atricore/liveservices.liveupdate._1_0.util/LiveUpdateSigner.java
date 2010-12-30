@@ -115,7 +115,8 @@ public class LiveUpdateSigner {
             validate(doc, keyResolver);
 
         } catch (Exception e) {
-            throw new InvalidSignatureException("Error validating signature for ArtifactDescriptorType " + signed.getArtifact().getID(), e);
+            throw new InvalidSignatureException("Error validating signature for ArtifactDescriptorType " +
+                    signed.getArtifact().getID() + " : " + e.getMessage(), e);
         }
     }
 

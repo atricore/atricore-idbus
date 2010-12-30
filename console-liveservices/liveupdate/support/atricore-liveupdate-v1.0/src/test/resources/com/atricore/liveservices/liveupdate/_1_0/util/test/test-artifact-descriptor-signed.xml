@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <artifactDescriptor xmlns:ns2="http://www.w3.org/2000/09/xmldsig#"
-                    xmlns="urn:com:atricore:liveservices:liveupdate:1.0:md" lastUpdate="2010-12-25T19:32:52Z"
+                    xmlns="urn:com:atricore:liveservices:liveupdate:1.0:md"
+                    lastUpdate="2010-12-25T19:32:52Z"
                     checksum="">
     <ns2:Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
         <SignedInfo>

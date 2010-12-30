@@ -42,28 +42,35 @@ public abstract class LiveUpdateAdminCommandSupport extends OsgiCommandSupport {
 
         final int BUFFER_SIZE = 2048;
         int count;
-        InputStream is = file.getContent().getInputStream();
-        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-        byte[] buff =  new byte[BUFFER_SIZE];
+        InputStream is = null;
 
-        while ((count = is.read(buff, 0, BUFFER_SIZE)) != -1) {
-            bOut.write(buff, 0, count);
-        }
-        bOut.flush();
+        try {
+            is = file.getContent().getInputStream();
+            ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+            byte[] buff =  new byte[BUFFER_SIZE];
 
-        if (is != null) {
-            try {
-                is.close();
-            } catch (Exception e) {
-                logger.info("Unable to close stream for " + file.getURL() + ". Error:" + e.getMessage());
-                if (logger.isDebugEnabled())
-                    logger.debug("Unable to close stream for " + file.getURL() + ". Error:" + e.getMessage(), e);
+            while ((count = is.read(buff, 0, BUFFER_SIZE)) != -1) {
+                bOut.write(buff, 0, count);
+            }
+            bOut.flush();
+
+            byte[] content = bOut.toByteArray();
+            bOut.close();
+            return content;
+
+        } finally {
+
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (Exception e) {
+                    logger.info("Unable to close stream for " + file.getURL() + ". Error:" + e.getMessage());
+                    if (logger.isDebugEnabled())
+                        logger.debug("Unable to close stream for " + file.getURL() + ". Error:" + e.getMessage(), e);
+                }
             }
         }
 
-        byte[] content = bOut.toByteArray();
-        bOut.close();
-        return content;
     }
 
     protected void writeContent(String path, byte[] content, boolean replace) throws Exception {

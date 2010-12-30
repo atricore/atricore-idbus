@@ -4,6 +4,7 @@ import com.atricore.liveservices.liveupdate._1_0.md.ArtifactDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
 
 import javax.xml.bind.JAXBContext;
@@ -188,15 +189,6 @@ public class XmlUtils1 {
     }
 
     private static byte[] getByteArray(InputStream is) throws Exception {
-        byte[] buf = new byte[1024];
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-
-        int read = is.read(buf);
-        while (read > 0) {
-            baos.write(buf, 0, read);
-            read = is.read(buf);
-        }
-
-        return baos.toByteArray();
+        return IOUtils.toByteArray(is);
     }
 }
