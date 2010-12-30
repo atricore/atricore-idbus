@@ -4,12 +4,12 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="urn:com:atricore:liveservices:liveupdate:1.0:md
                     http://www.atricore.com/liveservices/liveupdate/atricore-liveupdate-md-1.0.xsd"
-        ID="id0000001100">
+        ID="${update.id}000">
 
-    <updateDescriptor ID="id0000000100" description="LiveUpdate Test ${pom.version}" IssueInstant="2010-12-25T19:32:52Z">
+    <updateDescriptor ID="${update.id}100" description="LiveUpdate Test ${pom.version}" IssueInstant="2010-12-25T19:32:52Z">
 
         <!-- Installable Unit, name and version MUST match product feature and version in Karaf -->
-        <installableUnit ID="id0000000110"
+        <installableUnit ID="${update.id}110"
                          group="com.atricore.idbus.console.liveservices.liveupdate.tests"
                          name="josso-ee-liveupdate-test"
                          version="${pom.version}"
@@ -19,15 +19,15 @@
             <!-- Set of artifacts required for this install -->
 
             <!-- LiveUpdate Test Update (distribution) -->
-            <artifact ID="id0000000111"
+            <artifact ID="${update.id}111"
                       group="com.atricore.idbus.console.liveservices.liveupdate.tests"
                       name="liveupdate-test"
                       version="${pom.version}"
-                      type="tar.gz"
+                      type="tgz"
                       classifier="liveupdate"/>
 
             <!-- LiveUpdate Test Update (distribution) -->
-            <artifact ID="id0000000112"
+            <artifact ID="${update.id}112"
                       group="com.atricore.idbus.console.liveservices.liveupdate.tests"
                       name="liveupdate-test"
                       version="${pom.version}"
@@ -36,11 +36,11 @@
 
 
             <!-- LiveUpdate Test Update (liveupdate installer) -->
-            <artifact ID="id0000000113"
+            <artifact ID="${update.id}113"
                       group="com.atricore.idbus.console.liveservices.liveupdate.tests"
                       name="com.atricore.idbus.console.liveservices.liveupdate.tests.installer"
                       version="${pom.version}"
-                      type="jar"
+                      type="bundle"
                       classifier="liveupdate"/>
 
 

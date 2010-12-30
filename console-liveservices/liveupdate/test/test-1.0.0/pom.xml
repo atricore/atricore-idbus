@@ -36,6 +36,10 @@
     <packaging>pom</packaging>
     <name>Atricore Console :: Tests : LiveUpdate Sample ${pom.version} POM</name>
 
+    <properties>
+        <update.id>id-v1_0_0-</update.id>
+    </properties>
+
     <modules>
         <module>services</module>
         <module>command</module>

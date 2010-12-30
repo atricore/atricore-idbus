@@ -23,7 +23,7 @@
                       group="com.atricore.idbus.console.liveservices.liveupdate.tests"
                       name="liveupdate-test"
                       version="1.0.0"
-                      type="tar.gz"
+                      type="tgz"
                       classifier="liveupdate"/>
 
             <!-- LiveUpdate Test Update (distribution) -->
@@ -40,7 +40,7 @@
                       group="com.atricore.idbus.console.liveservices.liveupdate.tests"
                       name="com.atricore.idbus.console.liveservices.liveupdate.tests.installer"
                       version="1.0.0"
-                      type="jar"
+                      type="bundle"
                       classifier="liveupdate"/>
 
 
