@@ -6,6 +6,7 @@ import com.atricore.liveservices.liveupdate._1_0.util.InvalidSignatureException;
 import com.atricore.liveservices.liveupdate._1_0.util.LiveUpdateKeystoreKeyResolver;
 import com.atricore.liveservices.liveupdate._1_0.util.LiveUpdateSigner;
 import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,9 +14,9 @@ import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 
 public class LiveUpdateSignerTest {
 
@@ -54,6 +55,19 @@ public class LiveUpdateSignerTest {
 
     @AfterClass
     public static void tearDownTestSuite() throws Exception {
+    }
+
+    @Test
+    public void testCertificate() throws Exception {
+        Certificate cert = keyResolver.getCertificate();
+
+        // Check if this are interoperable !
+        javax.security.cert.X509Certificate x509cert = javax.security.cert.X509Certificate.getInstance(cert.getEncoded());
+
+        OutputStream out = new FileOutputStream("target/cert.enc");
+
+        cert.getEncoded();
+        IOUtils.write(Base64.encodeBase64(cert.getEncoded()), out);
     }
 
     @Test

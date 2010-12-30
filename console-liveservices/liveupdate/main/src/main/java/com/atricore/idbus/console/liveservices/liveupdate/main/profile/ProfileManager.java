@@ -18,9 +18,14 @@ import java.util.List;
 public interface ProfileManager {
 
     /**
-     * Current executing profile
+     * Current executing profile, this is the cached version of it.
      */
     ProfileType getCurrentProfile() throws LiveUpdateException;
+
+    /**
+     * Calculates current execution profile.
+     */
+    ProfileType buildCurrentProfile() throws LiveUpdateException;
 
     /**
      * Builds the profile containing all the necessary updates to install the provided IU in the current setup

@@ -28,7 +28,7 @@
         </command>
 
         <command name="liveupdate/profile">
-            <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ViewProfileCommand">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.command.CurrentProfileCommand">
                 <property name="printer" ref="profilePrinter"/>
             </action>
         </command>

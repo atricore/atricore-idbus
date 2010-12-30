@@ -11,7 +11,7 @@
         <!-- Installable Unit, name and version MUST match product feature and version in Karaf -->
         <installableUnit ID="id0000000110"
                          group="com.atricore.idbus.console.liveservices.liveupdate.tests"
-                         name="liveupdate-test"
+                         name="josso-ee-liveupdate-test"
                          version="${pom.version}"
                          description="LiveUpdate Test ${pom.version}"
                          updateNature="UPGRADE">

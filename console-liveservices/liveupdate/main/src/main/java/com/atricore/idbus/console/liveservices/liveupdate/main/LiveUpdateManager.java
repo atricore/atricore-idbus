@@ -36,7 +36,7 @@ public interface LiveUpdateManager {
     /**
      * Returns the profile representing the current setup.
      */
-    ProfileType getCurrentProfile() throws LiveUpdateException;
+    ProfileType getCurrentProfile(boolean rebuild) throws LiveUpdateException;
 
     /**
      * Returns a list of configured repositories, the collection includes both MD and Artifact repositories.

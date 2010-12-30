@@ -110,17 +110,19 @@
     <!-- Expose LiveUpdate configuration properties -->
     <osgix:cm-properties id="liveUpdateProps" persistent-id="com.atricore.idbus.console.liveservices.liveupdate">
 
-        <prop key="repo.md.default.id">md-default</prop>
-        <prop key="repo.md.default.name">LiveUpdate MD Default repository</prop>
-        <prop key="repo.md.default.enabled">true</prop>
-        <prop key="repo.md.default.validateSignature">true</prop>
-        <prop key="repo.md.default.location">file:${karaf.data}/liveservices/liveupdate/repos/md-default/liveupdate-1.0.xml</prop>
+        <prop key="repo.md.primary.id">md-primary</prop>
+        <prop key="repo.md.primary.name">LiveUpdate MD Primary Repository</prop>
+        <prop key="repo.md.primary.enabled">true</prop>
+        <prop key="repo.md.primary.validateSignature">false</prop>
+        <prop key="repo.md.primary.location">file:${karaf.data}/liveservices/liveupdate/repos/md-primary/liveupdate-1.0.xml</prop>
+        <prop key="repo.md.primary.certificate">file:${karaf.data}/liveservices/liveupdate/repos/md-primary/md-primary-cert</prop>
 
-        <prop key="repo.art.default.id">art-default</prop>
-        <prop key="repo.art.default.name">LiveUpdate Artifacts Default repository</prop>
-        <prop key="repo.art.default.enabled">true</prop>
-        <prop key="repo.art.default.validateSignature">true</prop>
-        <prop key="repo.art.default.location">file:${karaf.data}/liveservices/liveupdate/repos/art-default/</prop>
+        <prop key="repo.art.primary.id">art-primary</prop>
+        <prop key="repo.art.primary.name">LiveUpdate Artifacts Primary Repository</prop>
+        <prop key="repo.art.primary.enabled">true</prop>
+        <prop key="repo.art.primary.validateSignature">false</prop>
+        <prop key="repo.art.primary.location">file:${karaf.data}/liveservices/liveupdate/repos/art-primary/</prop>
+        <prop key="repo.md.primary.certificate">file:${karaf.data}/liveservices/liveupdate/repos/art-primary/art-primary-cert</prop>
 
     </osgix:cm-properties>
 

@@ -13,11 +13,15 @@ import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.net.URI;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.cert.CertStore;
+import java.security.cert.CollectionCertStoreParameters;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -51,73 +55,93 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     private ArtifactRepositoryManagerImpl artManager;
 
+    private String certProviderName = "SUN";
+
+    private CertStore certStore;
+
     public void init() throws LiveUpdateException {
 
-        // Start update check thread.
-        logger.info("Initializing LiveUpdate service ...");
-        Set<String> used = new HashSet<String>();
+        try {
 
-        for (Object k : config.keySet()) {
-            String key = (String) k;
+            // Crate Collection CertStore using SUN Provider
+            CertStore.getInstance("Collection",
+                new CollectionCertStoreParameters(new ArrayList()),
+                    certProviderName);
+            // TODO : Add CRLs, etc.
 
-            if (key.startsWith("repo.md.")) {
+            // Start update check thread.
+            logger.info("Initializing LiveUpdate service ...");
+            Set<String> used = new HashSet<String>();
 
-                // We need to configure a repo, get repo base key.
-                String repoId = key.substring("repo.md.".length());
-                repoId = repoId.substring(0, repoId.indexOf('.'));
+            for (Object k : config.keySet()) {
+                String key = (String) k;
 
-                String repoKeys = "repo.md." + repoId;
-                if (used.contains(repoKeys))
-                    continue;
+                if (key.startsWith("repo.md.")) {
 
-                used.add(repoKeys);
+                    // We need to configure a repo, get repo base key.
+                    String repoId = key.substring("repo.md.".length());
+                    repoId = repoId.substring(0, repoId.indexOf('.'));
 
-                try {
-                    MetadataRepository repo = (MetadataRepository) buildVFSRepository(VFSMetadataRepositoryImpl.class, repoKeys);
-                    logger.info("Using LiveUpdate MD Repository at " + repo.getLocation());
-                    mdManager.addRepository(repo);
+                    String repoKeys = "repo.md." + repoId;
+                    if (used.contains(repoKeys))
+                        continue;
 
-                } catch (LiveUpdateException e) {
-                    logger.error("Ignoring MD repository definition : " + e.getMessage());
+                    used.add(repoKeys);
 
-                    // When debugging, error log includs stack trace.
-                    if (logger.isDebugEnabled())
-                        logger.error("Ignoring MD repository definition : " + e.getMessage(), e);
+                    try {
+                        MetadataRepository repo = (MetadataRepository) buildVFSRepository(VFSMetadataRepositoryImpl.class, repoKeys);
+                        logger.info("Using LiveUpdate MD Repository at " + repo.getLocation());
+                        mdManager.addRepository(repo);
+
+                    } catch (LiveUpdateException e) {
+                        logger.error("Ignoring MD repository definition : " + e.getMessage());
+
+                        // When debugging, error log includs stack trace.
+                        if (logger.isDebugEnabled())
+                            logger.error("Ignoring MD repository definition : " + e.getMessage(), e);
+                    }
+
+
+                } else if (key.startsWith("repo.art.")) {
+                    // We need to configure a repo, get repo base key.
+                    String repoId = key.substring("repo.art.".length());
+                    repoId = repoId.substring(0, repoId.indexOf('.'));
+
+                    String repoKeys = "repo.art." + repoId;
+                    if (used.contains(repoKeys))
+                        continue;
+
+                    used.add(repoKeys);
+
+                    try {
+                        ArtifactRepository repo = (ArtifactRepository) buildVFSRepository(VFSArtifactRepositoryImpl.class, repoKeys);
+                        logger.info("Using LiveUpdate Artifact Repository at " + repo.getLocation());
+                        artManager.addRepository(repo);
+                    } catch (LiveUpdateException e) {
+                        logger.error("Ignoring Artifact repository definition : " + e.getMessage());
+
+                        // When debugging, error log includs stack trace.
+                        if (logger.isDebugEnabled())
+                            logger.error("Ignoring Artifact repository definition : " + e.getMessage(), e);
+                    }
                 }
 
-
-            } else if (key.startsWith("repo.art.")) {
-                // We need to configure a repo, get repo base key.
-                String repoId = key.substring("repo.art.".length());
-                repoId = repoId.substring(0, repoId.indexOf('.'));
-
-                String repoKeys = "repo.art." + repoId;
-                if (used.contains(repoKeys))
-                    continue;
-
-                used.add(repoKeys);
-
-                try {
-                    ArtifactRepository repo = (ArtifactRepository) buildVFSRepository(VFSArtifactRepositoryImpl.class, repoKeys);
-                    logger.info("Using LiveUpdate Artifact Repository at " + repo.getLocation());
-                    artManager.addRepository(repo);
-                } catch (LiveUpdateException e) {
-                    logger.error("Ignoring Artifact repository definition : " + e.getMessage());
-
-                    // When debugging, error log includs stack trace.
-                    if (logger.isDebugEnabled())
-                        logger.error("Ignoring Artifact repository definition : " + e.getMessage(), e);
-                }
             }
-
+        } catch (NoSuchAlgorithmException e) {
+            throw new LiveUpdateException(e);
+        } catch (InvalidAlgorithmParameterException e) {
+            throw new LiveUpdateException(e);
+        } catch (NoSuchProviderException e) {
+            throw new LiveUpdateException(e);
         }
     }
 
-    public ProfileType getCurrentProfile() throws LiveUpdateException {
-        return this.profileManager.getCurrentProfile();
+    public ProfileType getCurrentProfile(boolean rebuild) throws LiveUpdateException {
+        return rebuild ? this.profileManager.buildCurrentProfile() : this.profileManager.getCurrentProfile();
     }
 
     public Collection<Repository> getRepositories() {
+
         List<Repository> repos = new ArrayList<Repository>();
 
         repos.addAll(mdManager.getRepositories());
@@ -237,12 +261,18 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
             // DS Validation
             boolean validateSignature = Boolean.parseBoolean(config.getProperty(repoKeys + ".validateSignature", "true"));
 
+
             // Certificate for DS validation
-            String base64certificate =  config.getProperty(repoKeys + ".certificate");
-            if (base64certificate == null && validateSignature) {
+            // TODO : Use java.security.cert.CertStore to keep track of all certs :) !?
+            String certFile =  config.getProperty(repoKeys + ".certificate");
+            // TODO : Read/Decode/Validate the certificate file , use CertStore instance ..
+            byte[] certificate = null;
+
+            if (validateSignature && certificate == null) {
                 throw new LiveUpdateException("Repository " + id + " has Digital Signature enabled, but no certificate was provided" );
             }
-            byte[] certificate = Base64.decodeBase64(base64certificate.getBytes());
+
+            // Repository Location
             URI location = null;
             try {
                 // Since we're handling the configuration properties, we cannot rely on spring properties resolver.
@@ -275,7 +305,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
             return repo;
         } catch (Exception e) {
-            throw new LiveUpdateException("Cannot create repository " + e.getMessage(), e);
+            throw new LiveUpdateException("Cannot configure repository. " + e.getMessage(), e);
         }
 
     }
@@ -328,5 +358,14 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     public void setDataFolder(String dataFolder) {
         this.dataFolder = dataFolder;
     }
+
+    public String getCertProviderName() {
+        return certProviderName;
+    }
+
+    public void setCertProviderName(String certProviderName) {
+        this.certProviderName = certProviderName;
+    }
+
     //
 }

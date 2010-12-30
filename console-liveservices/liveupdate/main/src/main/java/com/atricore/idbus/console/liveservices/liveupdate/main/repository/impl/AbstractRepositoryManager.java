@@ -19,7 +19,7 @@ public class AbstractRepositoryManager<T> implements RepositoryManager {
 
     protected List<RepositoryTransport> transports;
 
-    public Collection getRepositories() {
+    public Collection<T> getRepositories() {
         return repos;
     }
 
