@@ -9,6 +9,8 @@ import com.atricore.liveservices.liveupdate._1_0.md.*;
 public class UpdatesIndexCmdPrinter extends AbstractCmdPrinter<UpdatesIndexType> {
 
     public void print(LiveUpdateCommandSupport cmd, UpdatesIndexType idx) {
+        if (idx == null)
+            printError(cmd, "No updates available in repository ");
 
         StringBuffer sb = new StringBuffer();
 

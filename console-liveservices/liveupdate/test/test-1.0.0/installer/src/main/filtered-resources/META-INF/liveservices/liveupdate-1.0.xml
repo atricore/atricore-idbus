@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<updatesIndex xmlns="urn:com:atricore:liveservices:liveupdate:1.0:md"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:com:atricore:liveservices:liveupdate:1.0:md
+                    http://www.atricore.com/liveservices/liveupdate/atricore-liveupdate-md-1.0.xsd"
+        ID="id0000001100">
+
+    <updateDescriptor ID="id0000000100" description="LiveUpdate Test ${pom.version}" IssueInstant="2010-12-25T19:32:52Z">
+
+        <!-- Installable Unit, name and version MUST match product feature and version in Karaf -->
+        <installableUnit ID="id0000000110"
+                         group="com.atricore.idbus.console.liveservices.liveupdate.tests"
+                         name="liveupdate-test"
+                         version="${pom.version}"
+                         description="LiveUpdate Test ${pom.version}"
+                         updateNature="UPGRADE">
+
+            <!-- Set of artifacts required for this install -->
+
+            <!-- LiveUpdate Test Update (distribution) -->
+            <artifact ID="id0000000111"
+                      group="com.atricore.idbus.console.liveservices.liveupdate.tests"
+                      name="liveupdate-test"
+                      version="${pom.version}"
+                      type="tar.gz"
+                      classifier="liveupdate"/>
+
+            <!-- LiveUpdate Test Update (distribution) -->
+            <artifact ID="id0000000112"
+                      group="com.atricore.idbus.console.liveservices.liveupdate.tests"
+                      name="liveupdate-test"
+                      version="${pom.version}"
+                      type="zip"
+                      classifier="liveupdate"/>
+
+
+            <!-- LiveUpdate Test Update (liveupdate installer) -->
+            <artifact ID="id0000000113"
+                      group="com.atricore.idbus.console.liveservices.liveupdate.tests"
+                      name="com.atricore.idbus.console.liveservices.liveupdate.tests.installer"
+                      version="${pom.version}"
+                      type="jar"
+                      classifier="liveupdate"/>
+
+
+            <!-- Required features
+            <requirement group="com.atricore.idbus.console.liveservices.liveupdate.tests" name="liveupdate-test" description="LiveUpdate Test 2.0.0" >
+                <versionRange Expression="[1.9,2.0)"/>
+            </requirement>
+            -->
+
+        </installableUnit>
+
+    </updateDescriptor>
+
+</updatesIndex>

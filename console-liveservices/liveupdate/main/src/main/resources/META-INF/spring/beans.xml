@@ -110,11 +110,13 @@
         <prop key="repo.md.default.id">md-default</prop>
         <prop key="repo.md.default.name">LiveUpdate MD Default repository</prop>
         <prop key="repo.md.default.enabled">true</prop>
+        <prop key="repo.md.default.validateSignature">true</prop>
         <prop key="repo.md.default.location">file:${karaf.data}/liveservices/liveupdate/repos/md-default/liveupdate-1.0.xml</prop>
 
         <prop key="repo.art.default.id">art-default</prop>
         <prop key="repo.art.default.name">LiveUpdate Artifacts Default repository</prop>
         <prop key="repo.art.default.enabled">true</prop>
+        <prop key="repo.art.default.validateSignature">true</prop>
         <prop key="repo.art.default.location">file:${karaf.data}/liveservices/liveupdate/repos/art-default/</prop>
 
     </osgix:cm-properties>

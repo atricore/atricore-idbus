@@ -18,4 +18,6 @@ public interface CmdPrinter<T> {
 
     void printError(LiveUpdateCommandSupport cmd, Exception e);
 
+    void printError(LiveUpdateCommandSupport cmd, String msg);
+
 }

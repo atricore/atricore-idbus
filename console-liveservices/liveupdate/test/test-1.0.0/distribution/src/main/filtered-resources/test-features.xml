@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features  name="atricore-josso-ee-${version}">
+    <!-- JOSSO EE-->
+    <feature name="josso-ee-test" version="${version}">
+        <feature version="${version}">josso-ee</feature>
+        <bundle>mvn:com.atricore.idbus.console.liveservices.liveupdate/com.atricore.idbus.console.liveservices.liveupdate.tests.services/${version}</bundle>
+    </feature>
+</features>

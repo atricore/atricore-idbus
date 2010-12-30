@@ -8,19 +8,16 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Artifa
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.ArtifactRepositoryManagerImpl;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.MetadataRepositoryManagerImpl;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSArtifactRepositoryImpl;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSMetadataRepositoryImpl;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.*;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
@@ -47,8 +44,11 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     private String dataFolder;
 
     private ScheduledThreadPoolExecutor stpe;
+
     private Properties config;
+
     private MetadataRepositoryManagerImpl mdManager;
+
     private ArtifactRepositoryManagerImpl artManager;
 
     public void init() throws LiveUpdateException {
@@ -72,11 +72,17 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
                 used.add(repoKeys);
 
-                MetadataRepository repo = buildMDRepository(repoKeys);
-
-                if (repo != null) {
+                try {
+                    MetadataRepository repo = (MetadataRepository) buildVFSRepository(VFSMetadataRepositoryImpl.class, repoKeys);
                     logger.info("Using LiveUpdate MD Repository at " + repo.getLocation());
                     mdManager.addRepository(repo);
+
+                } catch (LiveUpdateException e) {
+                    logger.error("Ignoring MD repository definition : " + e.getMessage());
+
+                    // When debugging, error log includs stack trace.
+                    if (logger.isDebugEnabled())
+                        logger.error("Ignoring MD repository definition : " + e.getMessage(), e);
                 }
 
 
@@ -91,11 +97,16 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
                 used.add(repoKeys);
 
-                ArtifactRepository repo = buildArtRepository(repoKeys);
-
-                if (repo != null) {
+                try {
+                    ArtifactRepository repo = (ArtifactRepository) buildVFSRepository(VFSArtifactRepositoryImpl.class, repoKeys);
                     logger.info("Using LiveUpdate Artifact Repository at " + repo.getLocation());
                     artManager.addRepository(repo);
+                } catch (LiveUpdateException e) {
+                    logger.error("Ignoring Artifact repository definition : " + e.getMessage());
+
+                    // When debugging, error log includs stack trace.
+                    if (logger.isDebugEnabled())
+                        logger.error("Ignoring Artifact repository definition : " + e.getMessage(), e);
                 }
             }
 
@@ -203,94 +214,73 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     // -------------------------------------------< Utilities >
 
-    protected ArtifactRepository buildArtRepository(String repoKeys) {
-        // Get id,name, location, enabled
-        if (logger.isTraceEnabled())
-            logger.trace("Adding new Artifact repository : " + repoKeys);
-
-        String id = config.getProperty(repoKeys + ".id");
-        String name = config.getProperty(repoKeys + ".name");
-        boolean enabled = Boolean.parseBoolean(config.getProperty(repoKeys + ".enabled"));
-        URI location = null;
-        try {
-            // Since we're handling the configuration properties, we cannot rely on spring properties resolver.
-            String l = config.getProperty(repoKeys + ".location");
-            l = l.replaceAll("\\$\\{karaf\\.data\\}", dataFolder);
-            location = new URI(l);
-
-        } catch (Exception e) {
-            logger.error("Invalid URI ["+config.getProperty(repoKeys + ".location")+"] for repository " + id + " " + name);
-            return null;
-        }
-
-        if (logger.isDebugEnabled())
-            logger.debug("Adding new VFS MD Repository ["+id+"] " + name +
-                    (enabled ? "enabled" : "disabled" ) + " at " + location);
-
-        // TODO : Setup other poperties like public key, etc
-        VFSArtifactRepositoryImpl repo = new VFSArtifactRepositoryImpl();
-        repo.setId(id);
-        repo.setName(name);
-        repo.setLocation(location);
-        repo.setEnabled(enabled);
+    protected AbstractVFSRepository buildVFSRepository(Class repoType, String repoKeys) throws LiveUpdateException {
 
         try {
+            // Get id,name, location, enabled
+            if (logger.isTraceEnabled())
+                logger.trace("Adding new repository : " + repoKeys);
+
+            // Repository ID
+            String id = config.getProperty(repoKeys + ".id");
+            if (id == null)
+                throw new LiveUpdateException("Repository ID is required. Configuration keys " + repoKeys);
+
+            // Repository Name
+            String name = config.getProperty(repoKeys + ".name");
+            if (name == null)
+                throw new LiveUpdateException("Repository name is required for " + id);
+
+            // Enabled
+            boolean enabled = Boolean.parseBoolean(config.getProperty(repoKeys + ".enabled", "false"));
+
+            // DS Validation
+            boolean validateSignature = Boolean.parseBoolean(config.getProperty(repoKeys + ".validateSignature", "true"));
+
+            // Certificate for DS validation
+            String base64certificate =  config.getProperty(repoKeys + ".certificate");
+            if (base64certificate == null && validateSignature) {
+                throw new LiveUpdateException("Repository " + id + " has Digital Signature enabled, but no certificate was provided" );
+            }
+            byte[] certificate = Base64.decodeBase64(base64certificate.getBytes());
+            URI location = null;
+            try {
+                // Since we're handling the configuration properties, we cannot rely on spring properties resolver.
+                String l = config.getProperty(repoKeys + ".location");
+                l = l.replaceAll("\\$\\{karaf\\.data\\}", dataFolder);
+                location = new URI(l);
+
+            } catch (Exception e) {
+                logger.error("Invalid URI ["+config.getProperty(repoKeys + ".location")+"] for repository " + id + " " + name);
+                return null;
+            }
+
+            if (logger.isDebugEnabled())
+                logger.debug("Adding new VFS Repository ["+id+"] " + name +
+                        (enabled ? "enabled" : "disabled" ) + " at " + location);
+
+
+            AbstractVFSRepository repo = (AbstractVFSRepository) repoType.newInstance();
+            repo.setId(id);
+            repo.setName(name);
+            repo.setLocation(location);
+            repo.setEnabled(enabled);
+            repo.setCertValue(certificate);
+            repo.setSignatureValidationEnabled(validateSignature);
+            // TODO : Take from license
+            //repo.setUsername();
+            //repo.setPassword();
+
             repo.setRepoFolder(new URI ("file://" + dataFolder + "/liveservices/liveupdate/repos/cache/" + id));
-        } catch (URISyntaxException e) {
-            logger.error("Invalid repository ID : " + id + ". " +e.getMessage());
-            return null;
-        }
 
-        return repo;
+            return repo;
+        } catch (Exception e) {
+            throw new LiveUpdateException("Cannot create repository " + e.getMessage(), e);
+        }
 
     }
 
-    // TODO : Mayb MD Repo manager should do this ?!
-    protected MetadataRepository buildMDRepository(String repoKeys) {
-
-        // Get id,name, location, enabled
-        if (logger.isTraceEnabled())
-            logger.trace("Adding new MD repository : " + repoKeys);
-
-        String id = config.getProperty(repoKeys + ".id");
-        String name = config.getProperty(repoKeys + ".name");
-        boolean enabled = Boolean.parseBoolean(config.getProperty(repoKeys + ".enabled"));
-        URI location = null;
-        try {
-            // Since we're handling the configuration properties, we cannot rely on spring properties resolver.
-            String l = config.getProperty(repoKeys + ".location");
-            l = l.replaceAll("\\$\\{karaf\\.data\\}", dataFolder);
-            location = new URI(l);
-
-        } catch (Exception e) {
-            logger.error("Invalid URI ["+config.getProperty(repoKeys + ".location")+"] for repository " + id + " " + name);
-            return null;
-        }
-
-        if (logger.isDebugEnabled())
-            logger.debug("Adding new VFS MD Repository ["+id+"] " + name +
-                    (enabled ? "enabled" : "disabled" ) + " at " + location);
-
-
-        // TODO : Setup other poperties like public key, etc
-        VFSMetadataRepositoryImpl repo = new VFSMetadataRepositoryImpl();
-        repo.setId(id);
-        repo.setName(name);
-        repo.setLocation(location);
-        repo.setEnabled(enabled);
-
-        try {
-            repo.setRepoFolder(new URI ("file://" + dataFolder + "/liveservices/liveupdate/repos/cache/" + id));
-        } catch (URISyntaxException e) {
-            logger.error("Invalid repository ID : " + id + ". " +e.getMessage());
-            return null;
-        }
-
-        return repo;
-
-    }
-
-    // -------------------------------------------< Properties >
+// -------------------------------------------< Properties >
     public void setConfig(Properties config) {
         this.config = config;
     }
@@ -338,6 +328,5 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     public void setDataFolder(String dataFolder) {
         this.dataFolder = dataFolder;
     }
-
     //
 }

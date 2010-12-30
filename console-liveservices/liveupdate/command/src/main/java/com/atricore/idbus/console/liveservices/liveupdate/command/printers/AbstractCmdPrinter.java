@@ -47,6 +47,10 @@ public abstract class AbstractCmdPrinter<T> implements CmdPrinter<T> {
         System.err.println("\u001B[31m" + e.getMessage() + "\u001B[0m");
     }
 
+    public void printError(LiveUpdateCommandSupport cmd, String msg) {
+        System.err.println("\u001B[31m" + msg + "\u001B[0m");
+    }
+
     protected String getNameString(String n) {
         return getNameString(n, 12);
     }
