@@ -12,8 +12,6 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
 
-import static com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations.ArtifactsUtil.*;
-
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
@@ -44,8 +42,8 @@ public class DownloadInstallersOperation extends AbstractInstallOperation {
                     // Input stream to read artifact from.
                     OutputStream out = null;
 
-                    String artFileName = getArtifactFileName(systemFolder, art) ;
-                    String artFolderName = getArtifactFolderName(systemFolder, art);
+                    String artFileName = ArtifactsUtil.getArtifactFilePath(systemFolder, art) ;
+                    String artFolderName = ArtifactsUtil.getArtifactFolderPath(systemFolder, art);
 
                     try {
 
