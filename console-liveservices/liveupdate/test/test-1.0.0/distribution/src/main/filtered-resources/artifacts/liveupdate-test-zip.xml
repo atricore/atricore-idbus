@@ -1,0 +1,15 @@
+<artifactDescriptor xmlns="urn:com:atricore:liveservices:liveupdate:1.0:md"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:com:atricore:liveservices:liveupdate:1.0:md
+                    http://www.atricore.com/liveservices/liveupdate/atricore-liveupdate-md-1.0.xsd"
+        checksum=""
+        lastUpdate="2010-12-25T19:32:52Z">
+
+    <artifact ID="id0000000111"
+              group="${pom.groupId}"
+              name="${pom.artifactId}"
+              version="${pom.version}"
+              type="zip" 
+              classifier="liveupdate"/>
+
+</artifactDescriptor>
