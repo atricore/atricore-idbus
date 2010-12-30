@@ -12,7 +12,7 @@ public abstract class SignValidateCommandSupport extends LiveUpdateAdminCommandS
     @Option(name = "-t", aliases = "--keystore-type", description = "Keystore type, default JKS", required = false, multiValued = false)
     protected String keystoreType = "JKS";
 
-    @Option(name = "-c", aliases = "--cert-alias", description = "Private Key alias", required = true, multiValued = false)
+    @Option(name = "-c", aliases = "--cert-alias", description = "Certificate alias", required = true, multiValued = false)
     protected String certificateAlias;
 
     @Option(name = "-n", aliases = "--private-key-alias", description = "Private Key alias", required = true, multiValued = false)

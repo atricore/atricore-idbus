@@ -31,6 +31,7 @@ public class VFSMetadataRepositoryImpl extends AbstractVFSRepository<UpdateDescr
     public void init() throws LiveUpdateException {
         super.init();
         // load updates
+        updates.clear();
         List<UpdateDescriptorType> descrs = loadDescriptors();
         for (UpdateDescriptorType descr : descrs) {
             updates.put(descr.getID(), descr);

@@ -4,9 +4,9 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="urn:com:atricore:liveservices:liveupdate:1.0:md
                     http://www.atricore.com/liveservices/liveupdate/atricore-liveupdate-md-1.0.xsd"
-        ID="id0000001100">
+        ID="id0000002200">
 
-    <updateDescriptor ID="id0000000100" description="JOSSO 2 EE 1.0.0-SNAPSHOT" IssueInstant="2010-12-25T19:32:52Z">
+    <updateDescriptor ID="id0000000200" description="JOSSO 2 EE 1.0.0-SNAPSHOT" IssueInstant="2010-12-25T19:32:52Z">
 
         <installableUnit ID="id0000000110"
                          group="com.atricore.josso"

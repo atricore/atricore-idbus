@@ -21,12 +21,12 @@ public class FileRepositoryTransportTest extends VFSTestSupport {
                 new String[]{"classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/transport-beans.xml"}
         );
 
-        repositoryTransport = (FileRepositoryTransport) applicationContext.getBean("fileRepositoryTransport");
+        repositoryTransport = (FileRepositoryTransport) applicationContext.getBean("fileRepositoryTransport1");
 
         // copy test files to repository baseFolder
         String baseDir = (String) applicationContext.getBean("baseDir");
-        FileObject testUpdatesSrc = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/main/test/test-updates.xml");
-        FileObject testUpdatesDest = getFileSystemManager().resolveFile(repositoryTransport.getBaseFolder() + "/test-updates.xml");
+        FileObject testUpdatesSrc = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/main/test/repo1-updates.xml");
+        FileObject testUpdatesDest = getFileSystemManager().resolveFile(repositoryTransport.getBaseFolder() + "/repo1-updates.xml");
         testUpdatesDest.createFile();
         testUpdatesDest.copyFrom(testUpdatesSrc, Selectors.SELECT_SELF);
     }
@@ -46,7 +46,7 @@ public class FileRepositoryTransportTest extends VFSTestSupport {
 
     @Test
     public void testLoadContent() throws Exception {
-        URI uri = new URI(repositoryTransport.getBaseFolder() + "/test-updates.xml");
+        URI uri = new URI(repositoryTransport.getBaseFolder() + "/repo1-updates.xml");
         byte[] content = repositoryTransport.loadContent(uri);
         Assert.assertNotNull(content);
     }

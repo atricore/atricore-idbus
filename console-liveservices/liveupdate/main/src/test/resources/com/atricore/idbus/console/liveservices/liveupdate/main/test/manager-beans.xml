@@ -20,35 +20,37 @@
                     http://www.springframework.org/schema/util/spring-util.xsd">
 
     <!-- LiveUpdate service -->
-    <bean name="liveUpdateMgr" init-method="init"
+    <!--bean name="liveUpdateMgr" init-method="init"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.service.LiveUpdateManagerImpl">
 
         <property name="config" ref="liveUpdateProps"/>
-        <property name="metadataRepositoryManager" ref="mdRepositoriesManager"/>
-        <property name="artifactRepositoryManager" ref="artRepositoriesManager"/>
-        <property name="dataFolderr" value="${build.directory}/test-classes/com/atricore/idbus/console"/>
+        <property name="metadataRepositoryManager" ref="mdRepositoryManager"/>
+        <property name="artifactRepositoryManager" ref="artRepositoryManager"/>
+        <property name="dataFolder" value="${build.directory}"/>
     </bean>
 
-    <util:properties id="liveUpdateProps" location="classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/liveupdate.properties"/>
+    <util:properties id="liveUpdateProps" location="classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/liveupdate.properties"/-->
 
-    <!-- Metadta Repository Manager -->
-    <bean name="mdRepositoriesManager"
-          class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.MetadataRepositoryManagerImpl">
+    <!-- Metadata Repository Manager -->
+    <bean name="mdRepositoryManager"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.MetadataRepositoryManagerImpl" scope="prototype">
         <property name="transports">
             <list>
                 <ref bean="httpRepositoryTransport"/>
-                <ref bean="fileRepositoryTransport"/>
+                <ref bean="fileRepositoryTransport1"/>
+                <ref bean="fileRepositoryTransport2"/>
             </list>
         </property>
     </bean>
 
     <!-- Artifact Repository Manager -->
-    <bean name="artRepositoriesManager"
+    <bean name="artRepositoryManager"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.ArtifactRepositoryManagerImpl">
         <property name="transports">
             <list>
                 <ref bean="httpRepositoryTransport"/>
-                <ref bean="fileRepositoryTransport"/>
+                <ref bean="fileRepositoryTransport1"/>
+                <ref bean="fileRepositoryTransport2"/>
             </list>
         </property>
     </bean>

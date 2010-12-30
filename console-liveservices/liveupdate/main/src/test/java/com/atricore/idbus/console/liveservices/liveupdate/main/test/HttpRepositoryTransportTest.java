@@ -32,8 +32,8 @@ public class HttpRepositoryTransportTest extends VFSTestSupport {
         // copy test files to war dir
         String baseDir = (String) applicationContext.getBean("baseDir");
         String buildDir = (String) applicationContext.getBean("buildDir");
-        FileObject testUpdatesSrc = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/main/test/test-updates.xml");
-        FileObject testUpdatesDest = getFileSystemManager().resolveFile(buildDir + warPath + "/test-updates.xml");
+        FileObject testUpdatesSrc = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/main/test/repo1-updates.xml");
+        FileObject testUpdatesDest = getFileSystemManager().resolveFile(buildDir + warPath + "/repo1-updates.xml");
         testUpdatesDest.createFile();
         testUpdatesDest.copyFrom(testUpdatesSrc, Selectors.SELECT_SELF);
     }
@@ -57,7 +57,7 @@ public class HttpRepositoryTransportTest extends VFSTestSupport {
     @Test
     public void testLoadContent() throws Exception {
         startJetty();
-        URI uri = new URI("http://localhost:8888/test-updates.xml");
+        URI uri = new URI("http://localhost:8888/repo1-updates.xml");
         byte[] content = repositoryTransport.loadContent(uri);
         Assert.assertNotNull(content);
     }
