@@ -33,9 +33,8 @@ public class ImportApplianceDefinitionCommand extends ManagementCommandSupport {
 
     @Override
     protected Object doExecute(IdentityApplianceManagementService svc) throws Exception {
-
-
         FileSystemManager fs = VFS.getManager();
+        input.replace("\\", "/");
         FileObject inputFile = fs.resolveFile("file://" + input);
         if (!inputFile.exists())
             throw new FileNotFoundException(inputFile.getURL().toExternalForm());
