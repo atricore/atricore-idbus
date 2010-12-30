@@ -31,6 +31,6 @@ public interface LicenseManager {
     /**
      * Retrive active license information
      */
-    LicenseType getLicense();
+    LicenseType getLicense() throws InvalidLicenseException;
 
 }

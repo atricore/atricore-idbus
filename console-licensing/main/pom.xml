@@ -64,6 +64,24 @@
             <artifactId>com.atricore.idbus.console.licensing.josso2-license-v1_0</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.santuario</groupId>
+            <artifactId>xmlsec</artifactId>
+            <version>1.4.2</version>
+            <scope>provided</scope>
+        </dependency>        
 
     </dependencies>
 

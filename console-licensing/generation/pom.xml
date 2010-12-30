@@ -66,6 +66,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.atricore.idbus.console.licensing</groupId>
+            <artifactId>com.atricore.idbus.console.licensing.main</artifactId>
+            <scope>provided</scope>
+        </dependency>        
+
+        <dependency>
             <groupId>org.apache.karaf.shell</groupId>
             <artifactId>org.apache.karaf.shell.console</artifactId>
             <version>${felix.karaf.version}</version>
@@ -82,6 +88,19 @@
             <artifactId>commons-logging</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.santuario</groupId>
+            <artifactId>xmlsec</artifactId>
+            <version>1.4.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>        
 
     </dependencies>
 

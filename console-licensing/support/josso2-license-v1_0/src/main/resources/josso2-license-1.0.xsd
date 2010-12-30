@@ -45,6 +45,7 @@
         </documentation>
     </annotation>
 
+    <element name="license" type="lic:LicenseType"/>
     <complexType name="LicenseType">
         <sequence>
             <element ref="ds:Signature" minOccurs="0"/>
@@ -54,6 +55,7 @@
         <attribute name="IssueInstant" type="dateTime" use="required"/>
     </complexType>
 
+    <element name="licensedFeature" type="lic:LicensedFeatureType"/>
     <complexType name="LicensedFeatureType">
         <sequence>
             <element ref="lic:feature" minOccurs="0"/>
