@@ -31,6 +31,8 @@
 
     <util:properties id="liveUpdateProps" location="classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/liveupdate.properties"/-->
 
+    <bean name="liveUpdateSigner" class="com.atricore.liveservices.liveupdate._1_0.util.LiveUpdateSigner" init-method="init"/>
+    
     <!-- Metadata Repository Manager -->
     <bean name="mdRepositoryManager"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.MetadataRepositoryManagerImpl" scope="prototype">
@@ -41,6 +43,7 @@
                 <ref bean="fileRepositoryTransport2"/>
             </list>
         </property>
+        <property name="liveUpdateSigner" ref="liveUpdateSigner"/>
     </bean>
 
     <!-- Artifact Repository Manager -->

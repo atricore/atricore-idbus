@@ -27,6 +27,8 @@
         <property name="dataFolder" value="${karaf.data}"/>
     </bean>
 
+    <bean name="liveUpdateSigner" class="com.atricore.liveservices.liveupdate._1_0.util.LiveUpdateSigner" init-method="init"/>
+    
     <!-- Metadta Repository Manager -->
     <bean name="mdRepositoriesManager"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.MetadataRepositoryManagerImpl">
@@ -36,6 +38,7 @@
                 <ref bean="fileRepositoryTransport"/>
             </list>
         </property>
+        <property name="liveUpdateSigner" ref="liveUpdateSigner"/>
     </bean>
 
     <!-- Artifact Repository Manager -->

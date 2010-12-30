@@ -10,6 +10,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.*;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,10 +21,19 @@ public class LiveUpdateSignerTest {
 
     private static final Log logger = LogFactory.getLog(LiveUpdateSignerTest.class);
 
+    private static ApplicationContext applicationContext;
+
+    private static LiveUpdateSigner liveUpdateSigner;
+    
     private static LiveUpdateKeystoreKeyResolver keyResolver;
     
     @BeforeClass
     public static void setupTestSuite() throws Exception {
+        applicationContext = new ClassPathXmlApplicationContext(
+                new String[]{"classpath:com/atricore/liveservices/liveupdate/_1_0/util/test/test-beans.xml"}
+        );
+
+        liveUpdateSigner = (LiveUpdateSigner) applicationContext.getBean("liveUpdateSigner");
     }
 
     @Before
@@ -58,7 +69,7 @@ public class LiveUpdateSignerTest {
         UpdatesIndexType unsigned = XmlUtils1.unmarshallUpdatesIndex(signedStr, false);
         Assert.assertNull(unsigned.getSignature());
 
-        UpdatesIndexType signed = LiveUpdateSigner.sign(unsigned, keyResolver);
+        UpdatesIndexType signed = liveUpdateSigner.sign(unsigned, keyResolver);
         Assert.assertNotNull(signed.getSignature());
 
         logger.debug("\n<---------------------- START DESCR --------------------->\n"
@@ -79,7 +90,7 @@ public class LiveUpdateSignerTest {
         ArtifactDescriptorType unsigned = XmlUtils1.unmarshallArtifactDescriptor(signedStr, false);
         Assert.assertNull(unsigned.getSignature());
 
-        ArtifactDescriptorType signed = LiveUpdateSigner.sign(unsigned, keyResolver);
+        ArtifactDescriptorType signed = liveUpdateSigner.sign(unsigned, keyResolver);
         Assert.assertNotNull(signed.getSignature());
         logger.debug("\n<---------------------- START DESCR --------------------->\n"
                 + XmlUtils1.marshalArtifactDescriptor(signed, false)
@@ -102,7 +113,7 @@ public class LiveUpdateSignerTest {
 
         InvalidSignatureException error = null;
         try {
-            LiveUpdateSigner.validate(signed, keyResolver);
+            liveUpdateSigner.validate(signed, keyResolver);
         } catch (InvalidSignatureException e) {
             error = e;
         }
@@ -126,7 +137,7 @@ public class LiveUpdateSignerTest {
 
         InvalidSignatureException error = null;
         try {
-            LiveUpdateSigner.validate(signed, keyResolver);
+            liveUpdateSigner.validate(signed, keyResolver);
         } catch (InvalidSignatureException e) {
             error = e;
         }
