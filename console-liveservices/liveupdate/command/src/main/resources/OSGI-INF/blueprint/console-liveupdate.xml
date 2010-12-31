@@ -45,12 +45,6 @@
             </action>
         </command>
 
-        <command name="liveupdate/ls-dependencies">
-            <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListDependenciesCommand">
-                <property name="printer" ref="profilePrinter"/>
-            </action>
-        </command>
-
         <command name="liveupdate/clean-repo">
             <action class="com.atricore.idbus.console.liveservices.liveupdate.command.CleanRepositoryCommand"/>
         </command>
@@ -59,6 +53,12 @@
         <!-- liveupdate/update -->
 
         <!-- liveupdate/list-dependencies -->
+        <command name="liveupdate/ls-dependencies">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListDependenciesCommand">
+                <property name="printer" ref="profilePrinter"/>
+            </action>
+        </command>
+
 
 
     </command-bundle>

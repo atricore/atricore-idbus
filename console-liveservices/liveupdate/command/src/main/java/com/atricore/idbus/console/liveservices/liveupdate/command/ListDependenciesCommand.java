@@ -13,7 +13,8 @@ import java.util.StringTokenizer;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-@Command(scope = "liveupdate", name = "ls-dependencies", description = "List dependencies required by a given update to be installed in current setup")
+@Command(scope = "liveupdate", name = "ls-dependencies", description = "List dependencies required by a given update," +
+        " so that it can be installed in current setup.")
 public class ListDependenciesCommand extends LiveUpdateCommandSupport {
 
     @Argument(name = "update", description = "Fully Qualified Update name (group/name/version)", index = 0, required = true)

@@ -30,6 +30,10 @@ public interface ProfileManager {
     /**
      * Builds the profile containing all the necessary updates to install the provided IU in the current setup
      */
-    ProfileType buildUpdateProfile(UpdateDescriptorType install, Collection<UpdateDescriptorType> updates) throws LiveUpdateException;
+    ProfileType buildUpdateProfile(InstallableUnitType installable, Collection<UpdateDescriptorType> updates) throws LiveUpdateException;
 
+    /**
+     * Gets the list of updates that can be applied to the given installable unit
+     */
+    Collection<UpdateDescriptorType> getUpdates(InstallableUnitType installed, Collection<UpdateDescriptorType> updates);
 }

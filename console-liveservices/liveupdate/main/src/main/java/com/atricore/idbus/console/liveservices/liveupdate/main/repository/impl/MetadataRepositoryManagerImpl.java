@@ -144,20 +144,19 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
                 if (logger.isTraceEnabled())
                     logger.trace("Looking in update descriptor " + ud.getID());
 
-                for (InstallableUnitType iu : ud.getInstallableUnit()) {
+                InstallableUnitType iu = ud.getInstallableUnit();
+
+                if (logger.isTraceEnabled())
+                    logger.trace("Checking IU " + iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion());
+
+                if (iu.getGroup().equals(group) &&
+                        iu.getName().equals(name) &&
+                        iu.getVersion().equals(version)) {
 
                     if (logger.isTraceEnabled())
-                        logger.trace("Checking IU " + iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion());
+                        logger.trace("Update Found " + ud.getID());
 
-                    if (iu.getGroup().equals(group) &&
-                            iu.getName().equals(name) &&
-                            iu.getVersion().equals(version)) {
-
-                        if (logger.isTraceEnabled())
-                            logger.trace("Update Found " + ud.getID());
-
-                        return ud;
-                    }
+                    return ud;
                 }
             }
         }

@@ -2,6 +2,7 @@
 
 <updatesIndex xmlns="urn:com:atricore:liveservices:liveupdate:1.0:md"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xsi:schemaLocation="urn:com:atricore:liveservices:liveupdate:1.0:md
                     http://www.atricore.com/liveservices/liveupdate/atricore-liveupdate-md-1.0.xsd"
         ID="${update.id}000">
@@ -15,6 +16,8 @@
                          version="${pom.version}"
                          description="LiveUpdate Test ${pom.version}"
                          updateNature="UPGRADE">
+
+            <updateDescriptor>#${update.id}100</updateDescriptor>
 
             <!-- Set of artifacts required for this install -->
 

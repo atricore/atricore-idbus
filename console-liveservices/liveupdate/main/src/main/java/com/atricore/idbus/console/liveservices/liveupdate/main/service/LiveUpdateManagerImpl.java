@@ -155,22 +155,20 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     }
 
     public Collection<UpdateDescriptorType> getAvailableUpdates() throws LiveUpdateException {
+        Collection<UpdateDescriptorType> updates = mdManager.getUpdates();
+        ProfileType profile = profileManager.buildCurrentProfile();
 
-        ProfileType profile = profileManager.getCurrentProfile();
-        List<InstallableUnitType> ius = profile.getInstallableUnit();
+        Map<String, UpdateDescriptorType> availableUpdates = new HashMap<String, UpdateDescriptorType>();
 
-        Map<String, UpdateDescriptorType> updates = new HashMap<String, UpdateDescriptorType>();
-
-        for (InstallableUnitType iu : ius) {
-
-            Collection<UpdateDescriptorType> uds = mdManager.getUpdates();
-
+        for (InstallableUnitType installed : profile.getInstallableUnit()) {
+            Collection<UpdateDescriptorType> uds = profileManager.getUpdates(installed, updates);
             for (UpdateDescriptorType ud : uds) {
-                updates.put(ud.getID(), ud);
+                availableUpdates.put(ud.getID(), ud);
             }
         }
 
-        return updates.values();
+        return availableUpdates.values();
+
     }
 
     public void cleanRepository(String repoId) throws LiveUpdateException {
@@ -185,7 +183,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     // Analyze MD and see if updates apply. (use license information ....)
     public Collection<UpdateDescriptorType> checkForUpdates() throws LiveUpdateException {
-        Collection<UpdateDescriptorType> uds = mdManager.refreshRepositories();
+        mdManager.refreshRepositories();
         return getAvailableUpdates();
     }
 
@@ -202,14 +200,13 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         UpdateDescriptorType update = null;
 
         for (UpdateDescriptorType ud : availableUpdates) {
-            for (InstallableUnitType iu : ud.getInstallableUnit()) {
-                if (iu.getGroup().equals(group) && iu.getName().equals(name) && iu.getVersion().equals(version)) {
-                    installableUnit = iu;
-                    update = ud;
-                    if (logger.isDebugEnabled())
-                        logger.debug("Found IU " + iu.getID() + " for " + group + "/" + name + "/" + version);
-                    break;
-                }
+            InstallableUnitType iu = ud.getInstallableUnit();
+            if (iu.getGroup().equals(group) && iu.getName().equals(name) && iu.getVersion().equals(version)) {
+                installableUnit = iu;
+                update = ud;
+                if (logger.isDebugEnabled())
+                    logger.debug("Found IU " + iu.getID() + " for " + group + "/" + name + "/" + version);
+                break;
             }
         }
 
@@ -221,10 +218,23 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         logger.info("Applying Update " + group + "/" + name + "/" + version);
 
         Collection<UpdateDescriptorType> updates = mdManager.getUpdates();
-        ProfileType updateProfile = profileManager.buildUpdateProfile(update, updates);
+        ProfileType updateProfile = profileManager.buildUpdateProfile(installableUnit, updates);
 
         engine.execute("updatePlan", updateProfile);
     }
+
+    public ProfileType getUpdateProfile() throws LiveUpdateException {
+        // TODO : Refresh repos every time ?
+        Collection<UpdateDescriptorType> updates = mdManager.refreshRepositories();
+        ProfileType profile = getCurrentProfile(true);
+
+        for (InstallableUnitType iu : profile.getInstallableUnit()) {
+            profileManager.buildUpdateProfile(iu, updates);
+        }
+        throw new UnsupportedOperationException("implement me");
+
+    }
+
 
     public ProfileType getUpdateProfile(String group, String name, String version) throws LiveUpdateException {
         // TODO : Refresh repos every time ?
@@ -233,7 +243,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         if (ud == null)
             throw new LiveUpdateException("No update found for " + group +"/"+name+"/"+version);
         
-        return this.profileManager.buildUpdateProfile(ud, mdManager.getUpdates());
+        return this.profileManager.buildUpdateProfile(ud.getInstallableUnit(), mdManager.getUpdates());
     }
 
     // -------------------------------------------< Utilities >

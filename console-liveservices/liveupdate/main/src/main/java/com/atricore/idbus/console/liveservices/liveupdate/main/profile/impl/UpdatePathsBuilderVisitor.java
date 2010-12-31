@@ -11,7 +11,7 @@ import java.util.*;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class UpdateProfileBuilderVisitor implements DependencyVisitor<List<ProfileType>> {
+public class UpdatePathsBuilderVisitor implements DependencyVisitor<DependencyNode> {
 
     private UUIDGenerator uuidGen = new UUIDGenerator();
 
@@ -20,9 +20,9 @@ public class UpdateProfileBuilderVisitor implements DependencyVisitor<List<Profi
 
     private InstallableUnitType updateableIu;
 
-    private Stack<DependencyNode> currentUpdateProfile = new Stack();
+    private DependencyNode updatableNode;
 
-    private List<ProfileType> updateProfiles = new ArrayList<ProfileType>();
+    private Stack<DependencyNode> currentUpdatePath = new Stack();
 
     private List<DependencyNode> requireDependecies = new ArrayList<DependencyNode>();
 
@@ -30,14 +30,14 @@ public class UpdateProfileBuilderVisitor implements DependencyVisitor<List<Profi
 
     private boolean found;
 
-    public UpdateProfileBuilderVisitor(InstallableUnitType  iu) {
+    public UpdatePathsBuilderVisitor(InstallableUnitType  iu) {
         this.updateableIu = iu;
 
     }
 
     public void before(DependencyNode dep) {
 
-        currentUpdateProfile.push(dep);
+        currentUpdatePath.push(dep);
 
         if (!dep.getInstallableUnit().getGroup().equals(updateableIu.getGroup()) ||
             !dep.getInstallableUnit().getName().equals(updateableIu.getName())) {
@@ -48,27 +48,26 @@ public class UpdateProfileBuilderVisitor implements DependencyVisitor<List<Profi
 
         } else {
             walkNext = !dep.getInstallableUnit().getVersion().equals(updateableIu.getVersion());
+            updatableNode = dep;
+
             found = !walkNext;
         }
     }
 
     public void after(DependencyNode dep) {
-        currentUpdateProfile.pop();
+        currentUpdatePath.pop();
 
         if (found) {
 
             // We found the IU to be updated in the path, this is a possible updateProfile.
             // We have to store it as a candidate and reset the flag.
-            ProfileType profile = new ProfileType();
-            profile.setID(uuidGen.generateId());
-            profile.setName("gen-profile-" + (this.updateProfiles.size() + 1));
+            List<DependencyNode> updatePath = new ArrayList<DependencyNode>(currentUpdatePath.size());
+            updatePath.addAll(currentUpdatePath);
+            dep.addUpdatePath(updatePath);
 
-            for (DependencyNode node : currentUpdateProfile) {
-                profile.getInstallableUnit().add(node.getInstallableUnit());
-            }
-
-            this.updateProfiles.add(profile);
         }
+
+        requireDependecies.clear();
 
         // Reset walk next
         walkNext = true;
@@ -80,11 +79,8 @@ public class UpdateProfileBuilderVisitor implements DependencyVisitor<List<Profi
         return walkNext;
     }
 
-    public List<ProfileType> getResult() {
-        return this.updateProfiles;
+    public DependencyNode getResult() {
+        return this.updatableNode;
     }
 
-    public List<DependencyNode> getRequireDeps() {
-        return requireDependecies;
-    }
 }
