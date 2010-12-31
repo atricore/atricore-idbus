@@ -65,8 +65,8 @@ public class DownloadInstallersOperation extends AbstractInstallOperation {
                         return OperationStatus.STOP;
 
                     } finally {
-                        if (in != null) try {in.close(); } catch (IOException e) { logger.debug(e.getMessage(), e); }
-                        if (out != null) try {out.close(); } catch (IOException e) { logger.debug(e.getMessage(), e); }
+                        IOUtils.closeQuietly(in);
+                        IOUtils.closeQuietly(out);
                     }
 
                 }

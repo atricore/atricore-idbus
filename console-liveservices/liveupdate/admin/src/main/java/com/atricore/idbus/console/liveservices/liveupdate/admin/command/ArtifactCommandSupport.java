@@ -4,7 +4,7 @@ import com.atricore.liveservices.liveupdate._1_0.util.LiveUpdateKeyResolver;
 import com.atricore.liveservices.liveupdate._1_0.util.LiveUpdateKeystoreKeyResolver;
 import org.apache.felix.gogo.commands.Option;
 
-public abstract class SignValidateCommandSupport extends LiveUpdateAdminCommandSupport {
+public abstract class ArtifactCommandSupport extends LiveUpdateAdminCommandSupport {
 
     @Option(name = "-k", aliases = "--keystore", description = "Keystore file", required = true, multiValued = false)
     protected String keystoreFile;

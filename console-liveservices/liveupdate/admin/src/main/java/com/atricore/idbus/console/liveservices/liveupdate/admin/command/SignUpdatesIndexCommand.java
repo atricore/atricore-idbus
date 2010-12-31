@@ -2,7 +2,6 @@ package com.atricore.idbus.console.liveservices.liveupdate.admin.command;
 
 import com.atricore.idbus.console.liveservices.liveupdate.admin.service.LiveUpdateAdminService;
 import com.atricore.liveservices.liveupdate._1_0.util.LiveUpdateKeyResolver;
-import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.felix.gogo.commands.Option;
 
@@ -12,7 +11,7 @@ import java.io.FileNotFoundException;
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @Command(scope = "liveupdate-admin", name = "sign-updates-index", description = "Sign updates index")
-public class SignUpdatesIndexCommand extends SignValidateCommandSupport {
+public class SignUpdatesIndexCommand extends ArtifactCommandSupport {
 
     @Option(name = "-i", aliases = "--in", description = "Updates index input file", required = true, multiValued = false)
     private String updatesIndexFile;
