@@ -1,5 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.test;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations.ArtifactsUtil;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.FileRepositoryTransport;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSArtifactRepositoryImpl;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
@@ -9,12 +11,17 @@ import org.junit.*;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.InputStream;
+import java.net.URI;
 import java.util.Collection;
 
 public class VFSArtifactRepositoryImplTest extends VFSTestSupport {
 
     private static VFSArtifactRepositoryImpl vfsArtifactRepository;
 
+    private static ArtifactKeyType testArtifactKey;
+
+    private static FileRepositoryTransport fileTransport;
+    
     @BeforeClass
     public static void setupTestSuite() throws Exception {
         applicationContext = new ClassPathXmlApplicationContext(
@@ -22,7 +29,33 @@ public class VFSArtifactRepositoryImplTest extends VFSTestSupport {
                              "classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/repository-beans.xml"}
         );
 
+        fileTransport = (FileRepositoryTransport) applicationContext.getBean("fileRepositoryTransport");
+        
         vfsArtifactRepository = (VFSArtifactRepositoryImpl) applicationContext.getBean("vfsArtifactRepository");
+
+        // test artifact (for addArtifact() test)
+        testArtifactKey = new ArtifactKeyType();
+        testArtifactKey.setID("id0000000113");
+        testArtifactKey.setGroup("com.atricore.idbus.console");
+        testArtifactKey.setName("console-config");
+        testArtifactKey.setVersion("1.0");
+        testArtifactKey.setType("zip");
+        testArtifactKey.setClassifier("resources");
+
+        // copy test artifacts to repository location
+        String baseDir = (String) applicationContext.getBean("baseDir");
+
+        // copy artifact
+        FileObject testArtifactSrc = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/main/test/console-config-1.0-resources.zip");
+        FileObject testArtifactDest = getFileSystemManager().resolveFile(ArtifactsUtil.getArtifactFilePath(vfsArtifactRepository.getLocation().toString(), testArtifactKey));
+        testArtifactDest.createFile();
+        testArtifactDest.copyFrom(testArtifactSrc, Selectors.SELECT_SELF);
+
+        // copy descriptor
+        FileObject testArtifactDescriptorSrc = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/main/test/console-config-1.0-resources.xml");
+        FileObject testArtifactDescriptorDest = getFileSystemManager().resolveFile(ArtifactsUtil.getArtifactDescriptorPath(vfsArtifactRepository.getLocation().toString(), testArtifactKey));
+        testArtifactDescriptorDest.createFile();
+        testArtifactDescriptorDest.copyFrom(testArtifactDescriptorSrc, Selectors.SELECT_SELF);
     }
 
     @Before
@@ -31,7 +64,8 @@ public class VFSArtifactRepositoryImplTest extends VFSTestSupport {
         String baseDir = (String) applicationContext.getBean("baseDir");
         FileObject repo = getFileSystemManager().resolveFile(vfsArtifactRepository.getRepoFolder().toString());
         FileObject sourceDir = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/repos/artifacts/cache/repo1");
-        repo.copyFrom(sourceDir, Selectors.SELECT_ALL);  // copyFrom first deletes repo if it exists
+        repo.delete(Selectors.EXCLUDE_SELF);
+        repo.copyFrom(sourceDir, Selectors.SELECT_ALL);
 
         // reload artifacts
         vfsArtifactRepository.init();
@@ -105,6 +139,53 @@ public class VFSArtifactRepositoryImplTest extends VFSTestSupport {
         artifactKey2.setVersion("1.0.0-SNAPSHOT");
         InputStream artifact2Stream = vfsArtifactRepository.getArtifact(artifactKey2);
         Assert.assertNotNull(artifact2Stream);
+    }
+
+    @Test
+    public void testGetArtifactDescriptor() throws Exception {
+        ArtifactKeyType artifactKey1 = new ArtifactKeyType();
+        artifactKey1.setID("id0000000111");
+        artifactKey1.setGroup("com.atricore.idbus.console");
+        artifactKey1.setName("console-config");
+        artifactKey1.setVersion("1.0.0-SNAPSHOT");
+        artifactKey1.setType("zip");
+        artifactKey1.setClassifier("resources");
+        InputStream artifactDescriptor1Stream = vfsArtifactRepository.getArtifactDescriptor(artifactKey1);
+        Assert.assertNotNull(artifactDescriptor1Stream);
+
+        ArtifactKeyType artifactKey2 = new ArtifactKeyType();
+        artifactKey2.setID("id0000000112");
+        artifactKey2.setGroup("com.atricore.idbus.console");
+        artifactKey2.setName("console-tooling");
+        artifactKey2.setVersion("1.0.0-SNAPSHOT");
+        InputStream artifactDescriptor2Stream = vfsArtifactRepository.getArtifactDescriptor(artifactKey2);
+        Assert.assertNotNull(artifactDescriptor2Stream);
+    }
+
+    @Test
+    public void testAddArtifact() throws Exception {
+        Assert.assertEquals(vfsArtifactRepository.getAvailableArtifacts().size(), 2);
+
+        InputStream artifactStream = fileTransport.getContentStream(
+                new URI(vfsArtifactRepository.getLocation().toString() + "/" + ArtifactsUtil.getArtifactFilePath(testArtifactKey)));
+        InputStream artifactDescriptorStream = fileTransport.getContentStream(
+                new URI(vfsArtifactRepository.getLocation().toString() + "/" + ArtifactsUtil.getArtifactDescriptorPath(testArtifactKey)));
+
+        vfsArtifactRepository.addArtifact(testArtifactKey, artifactStream, artifactDescriptorStream);
+
+        Assert.assertEquals(vfsArtifactRepository.getAvailableArtifacts().size(), 3);
+
+        boolean artifactExists = true;
+        boolean artifactDescriptorExists = true;
+        try {
+            artifactStream = vfsArtifactRepository.getArtifact(testArtifactKey);
+            artifactDescriptorStream = vfsArtifactRepository.getArtifactDescriptor(testArtifactKey);
+        } catch (Exception e) {
+            artifactExists = false;
+            artifactDescriptorExists = false;
+        }
+        Assert.assertTrue(artifactExists);
+        Assert.assertTrue(artifactDescriptorExists);
     }
 
     @Test

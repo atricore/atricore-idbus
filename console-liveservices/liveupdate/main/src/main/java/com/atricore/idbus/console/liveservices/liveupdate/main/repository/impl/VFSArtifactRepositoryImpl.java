@@ -1,10 +1,12 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations.ArtifactsUtil;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepository;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
@@ -13,8 +15,8 @@ import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.Selectors;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
-import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +42,7 @@ public class VFSArtifactRepositoryImpl extends AbstractVFSRepository<ArtifactKey
     public void init() throws LiveUpdateException {
         super.init();
         // load artifacts
+        artifacts.clear();
         loadArtifacts(repo);
     }
 
@@ -53,7 +56,7 @@ public class VFSArtifactRepositoryImpl extends AbstractVFSRepository<ArtifactKey
 
     public InputStream getArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException {
         try {
-            String artifactPath = createArtifactPath(artifactKey);
+            String artifactPath = ArtifactsUtil.getArtifactFilePath(artifactKey);
             FileObject artifact = repo.resolveFile(artifactPath);
             return artifact.getContent().getInputStream();
 
@@ -64,9 +67,48 @@ public class VFSArtifactRepositoryImpl extends AbstractVFSRepository<ArtifactKey
         }
     }
 
+    public InputStream getArtifactDescriptor(ArtifactKeyType artifactKey) throws LiveUpdateException {
+        try {
+            String artifactDescriptorPath = ArtifactsUtil.getArtifactDescriptorPath(artifactKey);
+            FileObject artifactDescriptor = repo.resolveFile(artifactDescriptorPath);
+            return artifactDescriptor.getContent().getInputStream();
+
+        } catch (FileSystemException e) {
+            throw new LiveUpdateException(e);
+        } catch (Exception e) {
+            throw new LiveUpdateException(e);
+        }
+    }
+
+    public void addArtifact(ArtifactKeyType artifactKey, InputStream artifactStream, InputStream artifactDescriptorStream) throws LiveUpdateException {
+        try {
+            // store artifact
+            FileObject artFile = repo.resolveFile(ArtifactsUtil.getArtifactFilePath(artifactKey));
+            OutputStream artOut = artFile.getContent().getOutputStream();
+            IOUtils.copy(artifactStream, artOut);
+            artOut.flush();
+            artOut.close();
+
+            // store artifact descriptor
+            FileObject artDescriptorFile = repo.resolveFile(ArtifactsUtil.getArtifactDescriptorPath(artifactKey));
+            OutputStream artDescriptorOut = artDescriptorFile.getContent().getOutputStream();
+            IOUtils.copy(artifactDescriptorStream, artDescriptorOut);
+            artDescriptorOut.flush();
+            artDescriptorOut.close();
+
+            // add to hash map
+            ArtifactDescriptorType artifactDescriptor = XmlUtils1.unmarshallArtifactDescriptor(getArtifactDescriptor(artifactKey), false);
+            artifacts.put(artifactDescriptor.getArtifact().getID(), artifactDescriptor);
+        } catch (FileSystemException e) {
+            throw new LiveUpdateException(e);
+        } catch (Exception e) {
+            throw new LiveUpdateException(e);
+        }
+    }
+
     public void removeArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException {
         try {
-            String artifactPath = createArtifactPath(artifactKey);
+            String artifactPath = ArtifactsUtil.getArtifactFilePath(artifactKey);
             FileObject artifact = repo.resolveFile(artifactPath);
 
             // remove from filesystem
@@ -112,15 +154,4 @@ public class VFSArtifactRepositoryImpl extends AbstractVFSRepository<ArtifactKey
             throw new LiveUpdateException(e);
         }
     }
-
-    protected String createArtifactPath(ArtifactKeyType artifactKey) {
-        return artifactKey.getGroup().replaceAll("\\.", File.separator) + File.separator +
-                    artifactKey.getName() + File.separator +
-                    artifactKey.getVersion() + File.separator +
-                    artifactKey.getName() + "-" + artifactKey.getVersion() +
-                    (artifactKey.getClassifier() != null && artifactKey.getClassifier() != "" ?
-                            "-" + artifactKey.getClassifier() : "") + "." +
-                    (artifactKey.getType() != null && artifactKey.getType() != "" ? artifactKey.getType() : "jar");
-    }
-
 }

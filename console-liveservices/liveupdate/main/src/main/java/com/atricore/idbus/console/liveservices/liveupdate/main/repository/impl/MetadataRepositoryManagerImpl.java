@@ -12,6 +12,7 @@ import com.atricore.liveservices.liveupdate._1_0.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.util.*;
 
@@ -27,8 +28,6 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
 
     private static final Log logger = LogFactory.getLog(MetadataRepositoryManagerImpl.class);
 
-    private LiveUpdateSigner liveUpdateSigner;
-    
     public void init() {
         // RFU
     }
@@ -196,12 +195,9 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
                     logger.trace("Loading repository content using transport " + t.getClass().getSimpleName());
 
                 try {
-                    byte[] idxBin = t.loadContent(location);
+                    InputStream idxStream = t.getContentStream(location);
 
-                    if (logger.isTraceEnabled())
-                        logger.trace("Repository content is " + (idxBin == null ? 0 : idxBin.length) + " bytes length");
-
-                    UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(new String(idxBin), false);
+                    UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(idxStream, false);
 
                     if (logger.isTraceEnabled())
                         logger.trace("Found Updates Index " + idx.getID());
@@ -274,13 +270,5 @@ public class MetadataRepositoryManagerImpl extends AbstractRepositoryManager<Met
                 getDependents(c, updates);
             }
         }
-    }
-
-    public LiveUpdateSigner getLiveUpdateSigner() {
-        return liveUpdateSigner;
-    }
-
-    public void setLiveUpdateSigner(LiveUpdateSigner liveUpdateSigner) {
-        this.liveUpdateSigner = liveUpdateSigner;
     }
 }

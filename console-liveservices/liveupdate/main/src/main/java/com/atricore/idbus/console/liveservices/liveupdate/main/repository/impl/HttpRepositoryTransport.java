@@ -9,6 +9,7 @@ import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 
 /**
@@ -38,6 +39,24 @@ public class HttpRepositoryTransport implements RepositoryTransport {
             }
             String response = get.getResponseBodyAsString();
             return response.getBytes();
+        } catch (HttpException e) {
+            throw new RepositoryTransportException(e);
+        } catch (IOException e) {
+            throw new RepositoryTransportException(e);
+        } finally {
+            get.releaseConnection();
+        }
+    }
+
+    public InputStream getContentStream(URI uri) throws RepositoryTransportException {
+        GetMethod get = new GetMethod(uri.toString());
+
+        try {
+            int statusCode = httpClient.executeMethod(get);
+            if (statusCode != HttpStatus.SC_OK) {
+                throw new RepositoryTransportException("Error getting file: " + statusCode);
+            }
+            return get.getResponseBodyAsStream();
         } catch (HttpException e) {
             throw new RepositoryTransportException(e);
         } catch (IOException e) {

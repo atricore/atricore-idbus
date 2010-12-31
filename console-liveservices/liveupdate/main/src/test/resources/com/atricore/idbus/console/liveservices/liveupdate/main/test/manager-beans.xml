@@ -39,8 +39,7 @@
         <property name="transports">
             <list>
                 <ref bean="httpRepositoryTransport"/>
-                <ref bean="fileRepositoryTransport1"/>
-                <ref bean="fileRepositoryTransport2"/>
+                <ref bean="fileRepositoryTransport"/>
             </list>
         </property>
         <property name="liveUpdateSigner" ref="liveUpdateSigner"/>
@@ -48,14 +47,14 @@
 
     <!-- Artifact Repository Manager -->
     <bean name="artRepositoryManager"
-          class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.ArtifactRepositoryManagerImpl">
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.ArtifactRepositoryManagerImpl" scope="prototype">
         <property name="transports">
             <list>
                 <ref bean="httpRepositoryTransport"/>
-                <ref bean="fileRepositoryTransport1"/>
-                <ref bean="fileRepositoryTransport2"/>
+                <ref bean="fileRepositoryTransport"/>
             </list>
         </property>
+        <property name="liveUpdateSigner" ref="liveUpdateSigner"/>
     </bean>
 
 </beans>

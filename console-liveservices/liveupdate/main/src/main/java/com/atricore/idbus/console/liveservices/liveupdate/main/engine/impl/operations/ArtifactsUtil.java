@@ -2,39 +2,46 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.oper
 
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 
-import java.io.File;
-
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
 public class ArtifactsUtil {
 
-    public static String getArtifactFolderName(String baseFolder, ArtifactKeyType artifact) {
-        String artFoldername = baseFolder;
+    public static String getArtifactFolderPath(ArtifactKeyType artifact) {
+        String artFolderName = artifact.getGroup().replace('.', '/');
+        artFolderName += "/" + artifact.getName();
+        artFolderName += "/" + artifact.getVersion();
 
-        artFoldername += "/" + artifact.getGroup().replace('.', '/');
-        artFoldername += "/" + artifact.getName();
-        artFoldername += "/" + artifact.getVersion();
-        artFoldername += "/" + artifact.getName();
-
-        return artFoldername;
-
+        return artFolderName;
     }
 
-    public static String getArtifactFileName(String baseFolder, ArtifactKeyType artifact) {
+    public static String getArtifactFolderPath(String baseFolder, ArtifactKeyType artifact) {
+        return baseFolder + "/" + getArtifactFolderPath(artifact);
+    }
 
-        String artFileName = getArtifactFolderName(baseFolder, artifact);
-
-        artFileName += "-" + artifact.getVersion();
+    public static String getArtifactBaseFileName(ArtifactKeyType artifact) {
+        String artFileName = artifact.getName() + "-" + artifact.getVersion();
         if (artifact.getClassifier() != null && !"".equals(artifact.getClassifier()))
             artFileName += "-" + artifact.getClassifier();
 
-        artFileName += "." + (artifact.getType() == null || artifact.getType().equals("bundle") ?
-                "jar" : artifact.getType());
-
         return artFileName;
-
     }
 
+    public static String getArtifactFilePath(ArtifactKeyType artifact) {
+        return getArtifactFolderPath(artifact) + "/" + getArtifactBaseFileName(artifact) + "." +
+                    (artifact.getType() == null || artifact.getType().equals("bundle") ? "jar" : artifact.getType());
+    }
+
+    public static String getArtifactFilePath(String baseFolder, ArtifactKeyType artifact) {
+        return baseFolder + "/" + getArtifactFilePath(artifact);
+    }
+
+    public static String getArtifactDescriptorPath(ArtifactKeyType artifact) {
+        return getArtifactFolderPath(artifact) + "/" + getArtifactBaseFileName(artifact) + ".xml";
+    }
+
+    public static String getArtifactDescriptorPath(String baseFolder, ArtifactKeyType artifact) {
+        return baseFolder + "/" + getArtifactDescriptorPath(artifact);
+    }
 }
