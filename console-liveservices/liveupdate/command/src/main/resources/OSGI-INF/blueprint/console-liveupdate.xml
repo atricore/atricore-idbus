@@ -51,6 +51,10 @@
             </action>
         </command>
 
+        <command name="liveupdate/clean-repo">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.command.CleanRepositoryCommand"/>
+        </command>
+
 
         <!-- liveupdate/update -->
 
