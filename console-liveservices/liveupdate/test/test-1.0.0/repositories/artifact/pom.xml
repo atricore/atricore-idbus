@@ -31,31 +31,35 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>liveupdate-test</artifactId>
+    <artifactId>liveupdate-test-artifact-repo</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <name>Atricore Console :: Tests : LiveUpdate Sample ${pom.version} Distribution</name>
-
-    <properties>
-        <karaf.version>2.1.0</karaf.version>
-        <josso2ee.version>2.0.0-SNAPSHOT</josso2ee.version>
-    </properties>
+    <name>Atricore Console :: Tests : LiveUpdate Sample ${pom.version} Artifacts</name>
 
     <dependencies>
 
         <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>com.atricore.idbus.console.liveservices.liveupdate.tests.services</artifactId>
+            <artifactId>com.atricore.idbus.console.liveservices.liveupdate.tests.installer</artifactId>
             <version>${pom.version}</version>
         </dependency>
 
         <dependency>
             <groupId>${pom.groupId}</groupId>
-            <artifactId>com.atricore.idbus.console.liveservices.liveupdate.tests.command</artifactId>
+            <artifactId>liveupdate-test</artifactId>
             <version>${pom.version}</version>
+            <type>zip</type>
+            <classifier>liveupdate</classifier>
         </dependency>
-        
-        
+
+        <dependency>
+            <groupId>${pom.groupId}</groupId>
+            <artifactId>liveupdate-test</artifactId>
+            <version>${pom.version}</version>
+            <type>tar.gz</type>
+            <classifier>liveupdate</classifier>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -75,7 +79,8 @@
             </resource>
         </resources>
 
-        <plugins>            <plugin>
+        <plugins>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
@@ -106,7 +111,7 @@
                         <configuration>
                             <copyPom>true</copyPom>
                             <useRepositoryLayout>true</useRepositoryLayout>
-                            <outputDirectory>target/dependencies/system</outputDirectory>
+                            <outputDirectory>target/dependencies/repo</outputDirectory>
                             <excludeTransitive>true</excludeTransitive>
                         </configuration>
 
@@ -125,33 +130,20 @@
                         <phase>none</phase>
                     </execution>
                     <execution>
-                        <id>unix-liveupdate</id>
+                        <id>unix-artifacts</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>src/main/descriptors/unix-liveupdate.xml</descriptor>
+                                <descriptor>src/main/descriptors/artifact-repo.xml</descriptor>
                             </descriptors>
-                            <finalName>${pom.artifactId}-${pom.version}-liveupdate</finalName>
+                            <finalName>${pom.artifactId}-${pom.version}</finalName>
                             <tarLongFileMode>gnu</tarLongFileMode>
                         </configuration>
                     </execution>
 
-                    <execution>
-                        <id>windows-liveupdate</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>src/main/descriptors/windows-liveupdate.xml</descriptor>
-                            </descriptors>
-                            <finalName>${pom.artifactId}-${pom.version}-liveupdate</finalName>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
 

@@ -9,7 +9,7 @@
               group="${pom.groupId}"
               name="${pom.artifactId}"
               version="${pom.version}" 
-              type="tgz"
+              type="tar.gz"
               classifier="liveupdate"/>
 
 </artifactDescriptor>

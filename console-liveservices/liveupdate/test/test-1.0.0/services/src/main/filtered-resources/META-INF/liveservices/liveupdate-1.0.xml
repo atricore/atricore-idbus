@@ -23,7 +23,7 @@
                       group="com.atricore.idbus.console.liveservices.liveupdate.tests"
                       name="liveupdate-test"
                       version="${pom.version}"
-                      type="tgz"
+                      type="tar.gz"
                       classifier="liveupdate"/>
 
             <!-- LiveUpdate Test Update (distribution) -->

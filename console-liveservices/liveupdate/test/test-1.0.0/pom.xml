@@ -45,6 +45,7 @@
         <module>command</module>
         <module>installer</module>
         <module>distribution</module>
+        <module>repositories/artifact</module>
     </modules>
 
 </project>
