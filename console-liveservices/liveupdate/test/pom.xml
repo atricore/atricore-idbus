@@ -56,11 +56,23 @@
             </modules>
         </profile>
 
+        <profile>
+            <id>liveupdate-test-1.0.2</id>
+            <modules>
+                <module>test-1.0.2</module>
+            </modules>
+        </profile>
+        
+        <profile>
+            <id>liveupdate-test-1.0.3</id>
+            <modules>
+                <module>test-1.0.3</module>
+            </modules>
+        </profile>
+
     </profiles>
 
         <!--
-        <module>test-1.0.2</module>
-        <module>test-1.0.3</module>
         <module>test-1.1.0</module>
         <module>test-1.1.1</module>
         <module>test-1.2.0</module>
@@ -69,6 +81,7 @@
         <module>test-2.0.0</module>
         <module>test-2.0.1</module>
         <module>test-2.1.1</module>
-        -->
+
+-->
 
 </project>
