@@ -35,5 +35,5 @@ public interface ProfileManager {
     /**
      * Gets the list of updates that can be applied to the given installable unit
      */
-    Collection<UpdateDescriptorType> getUpdates(InstallableUnitType updatable, Collection<UpdateDescriptorType> updates);
+    Collection<UpdateDescriptorType> getAvailableUpdates(InstallableUnitType updatable, Collection<UpdateDescriptorType> updates) throws LiveUpdateException;
 }

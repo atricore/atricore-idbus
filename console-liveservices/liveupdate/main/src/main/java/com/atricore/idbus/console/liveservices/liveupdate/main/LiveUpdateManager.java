@@ -18,9 +18,21 @@ public interface LiveUpdateManager {
     Collection<UpdateDescriptorType> checkForUpdates() throws LiveUpdateException;
 
     /**
+     * Refresh MD repositories and returns a list of updates that apply to current profile
+     */
+    Collection<UpdateDescriptorType> checkForUpdates(String iuFqn) throws LiveUpdateException;
+
+
+    /**
      * Returns a list of all updates available
      */
     Collection<UpdateDescriptorType> getAvailableUpdates() throws LiveUpdateException;
+
+    /**
+     * Returns a list of all updates available
+     */
+    Collection<UpdateDescriptorType> getAvailableUpdates(String iuFqn) throws LiveUpdateException;
+
 
     /**
      * Applies the given update to the current setup.

@@ -2,20 +2,20 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyNode;
 import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyVisitor;
-import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
-import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class UpdatePathsBuilderVisitor implements DependencyVisitor<DependencyNode> {
+public class UpdateDependenciesPathsBuilder implements DependencyVisitor<DependencyNode> {
 
-    private Log logger = LogFactory.getLog(UpdatePathsBuilderVisitor.class);
+    private Log logger = LogFactory.getLog(UpdateDependenciesPathsBuilder.class);
 
     private UUIDGenerator uuidGen = new UUIDGenerator();
 
@@ -31,7 +31,7 @@ public class UpdatePathsBuilderVisitor implements DependencyVisitor<DependencyNo
 
     private boolean found;
 
-    public UpdatePathsBuilderVisitor(DependencyNode installableNode, DependencyNode updatableNode) {
+    public UpdateDependenciesPathsBuilder(DependencyNode installableNode, DependencyNode updatableNode) {
         this.installableNode = installableNode;
         this.updatableNode = updatableNode;
     }

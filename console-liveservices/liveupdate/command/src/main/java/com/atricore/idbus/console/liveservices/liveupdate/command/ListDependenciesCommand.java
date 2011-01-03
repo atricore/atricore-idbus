@@ -17,7 +17,7 @@ import java.util.StringTokenizer;
         " so that it can be installed in current setup.")
 public class ListDependenciesCommand extends LiveUpdateCommandSupport {
 
-    @Argument(name = "update", description = "Fully Qualified Update name (group/name/version)", index = 0, required = true)
+    @Argument(name = "update", description = "Installable Unit fully qualified name (group/name/version)", index = 0, required = true)
     String fqKey;
 
     @Override

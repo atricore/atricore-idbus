@@ -161,7 +161,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         Map<String, UpdateDescriptorType> availableUpdates = new HashMap<String, UpdateDescriptorType>();
 
         for (InstallableUnitType installed : profile.getInstallableUnit()) {
-            Collection<UpdateDescriptorType> uds = profileManager.getUpdates(installed, updates);
+            Collection<UpdateDescriptorType> uds = profileManager.getAvailableUpdates(installed, updates);
             for (UpdateDescriptorType ud : uds) {
                 availableUpdates.put(ud.getID(), ud);
             }
@@ -169,6 +169,20 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
         return availableUpdates.values();
 
+    }
+
+    public Collection<UpdateDescriptorType> getAvailableUpdates(String iuFqn) throws LiveUpdateException {
+        Collection<UpdateDescriptorType> updates = mdManager.getUpdates();
+        ProfileType profile = profileManager.getCurrentProfile(true);
+
+        for (InstallableUnitType installed : profile.getInstallableUnit()) {
+            String installedFqn = installed.getGroup() + "/" + installed.getName() + "/" + installed.getVersion();
+            if (installedFqn.equals(iuFqn)) {
+                return profileManager.getAvailableUpdates(installed, updates);
+            }
+
+        }
+        return new ArrayList<UpdateDescriptorType>();
     }
 
     public void cleanRepository(String repoId) throws LiveUpdateException {
@@ -185,6 +199,11 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     public Collection<UpdateDescriptorType> checkForUpdates() throws LiveUpdateException {
         mdManager.refreshRepositories();
         return getAvailableUpdates();
+    }
+
+    public Collection<UpdateDescriptorType> checkForUpdates(String iuFqn) throws LiveUpdateException {
+        mdManager.refreshRepositories();
+        return getAvailableUpdates(iuFqn);
     }
 
     // Apply update

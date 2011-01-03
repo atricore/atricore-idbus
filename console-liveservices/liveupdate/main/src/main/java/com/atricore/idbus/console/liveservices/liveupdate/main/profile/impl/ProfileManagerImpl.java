@@ -1,8 +1,10 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
-import com.atricore.idbus.console.liveservices.liveupdate.main.profile.*;
-
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyNode;
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyTreeBuilder;
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyWalker;
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileManager;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
@@ -241,31 +243,44 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
         return updateProfile;
     }
 
-    public Collection<UpdateDescriptorType> getUpdates(InstallableUnitType updatable, Collection<UpdateDescriptorType> updates) {
-        throw new UnsupportedOperationException("Implement me!");
+    public Collection<UpdateDescriptorType> getAvailableUpdates(InstallableUnitType updatable, Collection<UpdateDescriptorType> updates) throws LiveUpdateException {
+
+        List<UpdateDescriptorType> availableUpdates = new ArrayList<UpdateDescriptorType>();
+        for (DependencyNode au : buildAvailableUpdates(updatable, updates)) {
+            availableUpdates.add(au.getUpdateDescriptor());
+        }
+
+        return availableUpdates;
     }
 
     // --------------------------------------------------< Utilities >
 
     /**
      * Builds the list of dependencies that can update the given iu
-     * @param iu
-     * @param updates
-     * @return
+     * @param updatable the IU that needs to be updated.
+     * @param updates the updates available for the updatable IU
      */
-    protected  Collection<DependencyNode> buildUpdateDependencies1(InstallableUnitType iu, Collection<UpdateDescriptorType> updates) {
+    protected  Collection<DependencyNode> buildAvailableUpdates(InstallableUnitType updatable, Collection<UpdateDescriptorType> updates) throws LiveUpdateException {
         // Create dependency tree for all possible updates
         DependencyTreeBuilder tb = new DefaultDependencyTreeBuilder();
         Collection<DependencyNode> dependencies = tb.buildDependencyList(updates);
         if (logger.isTraceEnabled())
             logger.trace("Processing " + dependencies.size() + " updates");
 
-        // Look the IU Dependency Node
-        DependencyNode install = tb.getDependency(iu);
+        DependencyNode updatableNode = tb.getDependency(updatable);
 
-        // TODO : define other wwalker , to go from parent to children
-        // TODO : define UpdateDependenciesBuilderVisitor
-        throw new UnsupportedOperationException("implement me");
+        if (updatableNode == null) {
+            logger.warn("Installable Unit not found in updates : " +
+                    updatable.getGroup() + "/" + updatable.getName() + "/" + updatable.getVersion());
+            return new ArrayList<DependencyNode>();
+        }
+
+        AvailableUpdatesBuilder v = new AvailableUpdatesBuilder(updatableNode);
+        DependencyWalker<Collection<DependencyNode>> w = new DeepFirstDependencyChildrenWalker<Collection<DependencyNode>>();
+
+        w.walk(updatableNode, v);
+
+        return v.getResult();
     }
 
 
@@ -314,7 +329,7 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
         }
 
         // Now, build all possible update 'paths' and choose the shorter one.
-        UpdatePathsBuilderVisitor v = new UpdatePathsBuilderVisitor(installableNode, updatableNode);
+        UpdateDependenciesPathsBuilder v = new UpdateDependenciesPathsBuilder(installableNode, updatableNode);
         DependencyWalker<DependencyNode> w = new DeepFirstDependencyParentsWalker<DependencyNode>();
 
         w.walk(installableNode, v);
