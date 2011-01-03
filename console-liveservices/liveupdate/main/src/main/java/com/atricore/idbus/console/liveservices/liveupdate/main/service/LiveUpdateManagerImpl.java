@@ -137,7 +137,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     }
 
     public ProfileType getCurrentProfile(boolean rebuild) throws LiveUpdateException {
-        return rebuild ? this.profileManager.buildCurrentProfile() : this.profileManager.getCurrentProfile();
+        return this.profileManager.getCurrentProfile(rebuild);
     }
 
     public Collection<Repository> getRepositories() {
@@ -156,7 +156,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     public Collection<UpdateDescriptorType> getAvailableUpdates() throws LiveUpdateException {
         Collection<UpdateDescriptorType> updates = mdManager.getUpdates();
-        ProfileType profile = profileManager.buildCurrentProfile();
+        ProfileType profile = profileManager.getCurrentProfile(true);
 
         Map<String, UpdateDescriptorType> availableUpdates = new HashMap<String, UpdateDescriptorType>();
 

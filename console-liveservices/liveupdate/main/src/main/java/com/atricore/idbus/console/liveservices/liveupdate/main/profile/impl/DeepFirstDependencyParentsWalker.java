@@ -9,9 +9,9 @@ import org.apache.commons.logging.LogFactory;
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class DeepFirstDependencyWalker<T> implements DependencyWalker<T> {
+public class DeepFirstDependencyParentsWalker<T> implements DependencyWalker<T> {
 
-    private static final Log logger = LogFactory.getLog(DeepFirstDependencyWalker.class);
+    private static final Log logger = LogFactory.getLog(DeepFirstDependencyParentsWalker.class);
 
     public T walk(DependencyNode node, DependencyVisitor<T> visitor) {
         walkNode(node, visitor);

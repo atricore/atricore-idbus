@@ -4,6 +4,8 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.profile.Dependenc
 import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyVisitor;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
 import java.util.*;
@@ -13,50 +15,80 @@ import java.util.*;
  */
 public class UpdatePathsBuilderVisitor implements DependencyVisitor<DependencyNode> {
 
+    private Log logger = LogFactory.getLog(UpdatePathsBuilderVisitor.class);
+
     private UUIDGenerator uuidGen = new UUIDGenerator();
 
-    // Current setup
-    private ProfileType profile;
+    // Installable Unit, the unit that will be used as update.
+    private DependencyNode installableNode;
 
-    private InstallableUnitType updateableIu;
-
+    // Updatable Unit, the unit that needs to be updated.
     private DependencyNode updatableNode;
 
     private Stack<DependencyNode> currentUpdatePath = new Stack();
-
-    private List<DependencyNode> requireDependecies = new ArrayList<DependencyNode>();
 
     private boolean walkNext;
 
     private boolean found;
 
-    public UpdatePathsBuilderVisitor(InstallableUnitType  iu) {
-        this.updateableIu = iu;
-
+    public UpdatePathsBuilderVisitor(DependencyNode installableNode, DependencyNode updatableNode) {
+        this.installableNode = installableNode;
+        this.updatableNode = updatableNode;
     }
 
     public void before(DependencyNode dep) {
 
-        currentUpdatePath.push(dep);
+        try {
 
-        if (!dep.getInstallableUnit().getGroup().equals(updateableIu.getGroup()) ||
-            !dep.getInstallableUnit().getName().equals(updateableIu.getName())) {
+            // Previous node in the stack is our parent.
+            DependencyNode parent = !currentUpdatePath.empty() ? currentUpdatePath.peek() : null;
 
-            // Dependency on another IU type !! (like a 3rd party lib ...)
-            requireDependecies.add(dep);
-            walkNext = false;
+            // Is this a different IU or a different version of the IU that will be installed ?
 
-        } else {
-            walkNext = !dep.getInstallableUnit().getVersion().equals(updateableIu.getVersion());
-            updatableNode = dep;
+            // 1. Different IU being installed
+            if (!dep.getGroup().equals(installableNode.getGroup()) ||
+                !dep.getName().equals(installableNode.getName())) {
 
-            found = !walkNext;
+                // Store this dependency as required by the previous node, this is a different IU
+                if (parent  != null)
+                    parent.addRequiredDependency(dep);
+
+                walkNext = false;
+                found = false;
+                return ;
+            }
+
+            // 2. Same IU being installed, check if is the udpatable IU,
+            if (updatableNode != null) {
+
+                if (dep.getVersion().equals(updatableNode.getVersion())) {
+                    // We found the IU we want to update
+                    walkNext = false;
+                    found = true;
+
+                } else {
+                    // We still looking for the IU to update
+                    walkNext = true;
+                    found = false;
+                }
+
+            } else {
+                // TODO : Check if this is the last node for this IU.  It could be a valid install path
+                walkNext = true;
+                found = false;
+            }
+        } finally {
+            // Push the node
+            currentUpdatePath.push(dep);
         }
     }
 
     public void after(DependencyNode dep) {
+
+        // This is the dep node.
         currentUpdatePath.pop();
 
+        // We found the updatable
         if (found) {
 
             // We found the IU to be updated in the path, this is a possible updateProfile.
@@ -66,8 +98,6 @@ public class UpdatePathsBuilderVisitor implements DependencyVisitor<DependencyNo
             dep.addUpdatePath(updatePath);
 
         }
-
-        requireDependecies.clear();
 
         // Reset walk next
         walkNext = true;

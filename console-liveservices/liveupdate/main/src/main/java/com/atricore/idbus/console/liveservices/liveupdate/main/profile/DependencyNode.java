@@ -34,7 +34,7 @@ public class DependencyNode   {
     private List<DependencyNode> parents = new ArrayList<DependencyNode>();
 
     // Other dependencies required by this dependency
-    private List<DependencyNode> requiredDependencies = new ArrayList<DependencyNode>();
+    private Map<String, DependencyNode> requiredDependencies = new HashMap<String, DependencyNode>();
 
     // List of valid update paths for this node.
     private List<List<DependencyNode>> updatePaths = new ArrayList<List<DependencyNode>>();
@@ -110,9 +110,14 @@ public class DependencyNode   {
         return children;
     }
 
-    public List<DependencyNode> getRequiredDependencies() {
-        return requiredDependencies;
+    public Collection<DependencyNode> getRequiredDependencies() {
+        return requiredDependencies.values();
     }
+
+    public void addRequiredDependency(DependencyNode dep) {
+        requiredDependencies.put(dep.getFqKey(), dep);
+    }
+
 
     public List<List<DependencyNode>> getUpdatePaths() {
         return updatePaths;
@@ -121,4 +126,5 @@ public class DependencyNode   {
     public void addUpdatePath(List<DependencyNode> updatePath) {
         this.updatePaths.add(updatePath);
     }
+
 }

@@ -45,7 +45,7 @@
 
 
             <!-- Required features -->
-            <requirement group="com.atricore.idbus.console.liveservices.liveupdate.tests" name="liveupdate-test" description="LiveUpdate Test 2.0.0" >
+            <requirement group="com.atricore.idbus.console.liveservices.liveupdate.tests" name="josso-ee-liveupdate-test" description="LiveUpdate Test 1.0.0" >
                 <versionRange Expression="1.0.0"/>
             </requirement>
 
