@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations;
+package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
 
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 
@@ -20,17 +20,24 @@ public class ArtifactsUtil {
         return baseFolder + "/" + getArtifactFolderPath(artifact);
     }
 
-    public static String getArtifactBaseFileName(ArtifactKeyType artifact) {
+    public static String getArtifactFileName(ArtifactKeyType artifact) {
+        // Name and version
         String artFileName = artifact.getName() + "-" + artifact.getVersion();
-        if (artifact.getClassifier() != null && !"".equals(artifact.getClassifier()))
+
+        // Classifier (optional)
+        if (artifact.getClassifier() != null && !"".equals(artifact.getClassifier())) {
             artFileName += "-" + artifact.getClassifier();
+        }
+
+        // Type (default jar)
+        artFileName += "." +
+                (artifact.getType() == null || artifact.getType().equals("bundle") ? "jar" : artifact.getType());
 
         return artFileName;
     }
 
     public static String getArtifactFilePath(ArtifactKeyType artifact) {
-        return getArtifactFolderPath(artifact) + "/" + getArtifactBaseFileName(artifact) + "." +
-                    (artifact.getType() == null || artifact.getType().equals("bundle") ? "jar" : artifact.getType());
+        return getArtifactFolderPath(artifact) + "/" + getArtifactFileName(artifact);
     }
 
     public static String getArtifactFilePath(String baseFolder, ArtifactKeyType artifact) {
@@ -38,7 +45,7 @@ public class ArtifactsUtil {
     }
 
     public static String getArtifactDescriptorPath(ArtifactKeyType artifact) {
-        return getArtifactFolderPath(artifact) + "/" + getArtifactBaseFileName(artifact) + ".xml";
+        return getArtifactFolderPath(artifact) + "/" + getArtifactFileName(artifact) + ".xml";
     }
 
     public static String getArtifactDescriptorPath(String baseFolder, ArtifactKeyType artifact) {

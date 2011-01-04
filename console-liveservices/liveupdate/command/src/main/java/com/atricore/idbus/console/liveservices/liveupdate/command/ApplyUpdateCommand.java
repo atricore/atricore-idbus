@@ -1,9 +1,9 @@
 package com.atricore.idbus.console.liveservices.liveupdate.command;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
-import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import org.apache.felix.gogo.commands.Argument;
 import org.apache.felix.gogo.commands.Command;
+import org.apache.felix.gogo.commands.Option;
 
 import java.text.ParseException;
 import java.util.NoSuchElementException;
@@ -13,27 +13,29 @@ import java.util.StringTokenizer;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-@Command(scope = "liveupdate", name = "dependencies", description = "List dependencies required by a given update," +
-        " so that it can be installed in current setup.")
-public class ListDependenciesCommand extends LiveUpdateCommandSupport {
+@Command(scope = "liveupdate", name = "apply-update", description = "Applies an available Update to the current setup")
+public class ApplyUpdateCommand extends LiveUpdateCommandSupport {
 
-    @Argument(name = "update", description = "Installable Unit fully qualified name (group/name/version)", index = 0, required = true)
+    @Option(name = "-o", aliases = "--off-line", description = "Offline check for updates, use locally stored information", required = false, multiValued = false)
+    boolean offline  = false;
+
+    @Argument(name = "Update IU", description = "Install Unit fully qualified name (group/name/version)", index = 0, required = true)
     String fqKey;
 
     @Override
     protected Object doExecute(LiveUpdateManager svc) throws Exception {
         StringTokenizer st = new StringTokenizer(fqKey, "/", false);
-
         try {
             String group = st.nextToken();
             String name  = st.nextToken();
             String version = st.nextToken();
 
-            ProfileType p = svc.getUpdateProfile(group, name, version);
-            getPrinter().print(this, p);
-            return null;
+            svc.applyUpdate(group, name, version, offline);
+
         } catch (NoSuchElementException e) {
             throw new ParseException("Invalid Installable Unit FQN format in " + fqKey, 0);
         }
+
+        return null;
     }
 }

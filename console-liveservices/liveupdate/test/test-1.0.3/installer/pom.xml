@@ -36,6 +36,22 @@
     <packaging>bundle</packaging>
     <name>Atricore Console :: Tests : LiveUpdate Sample ${pom.version} Installer</name>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+            <artifactId>com.atricore.idbus.console.liveservices.liveupdate.main</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
     <build>
         <resources>
             <resource>
@@ -52,6 +68,7 @@
                 </includes>
             </resource>
         </resources>
+        
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -61,6 +78,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>com.atricore.idbus.console.liveservices.liveupdate.tests.installer.*;version=${pom.version}</Export-Package>
+                        <Spring-Context>*;timeout:=60;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>

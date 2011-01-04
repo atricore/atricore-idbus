@@ -54,7 +54,7 @@ public class InstallOperationsRegistryImpl implements InstallOperationsRegistry 
         ops.add(installOp);
 
         if (logger.isDebugEnabled())
-            logger.debug("Registered operation " + name);
+            logger.debug("Registered operation " + name + " ("+installOp.getClass().getName()+") for step " + installOp.getStepName());
 
         installOp.init();
     }

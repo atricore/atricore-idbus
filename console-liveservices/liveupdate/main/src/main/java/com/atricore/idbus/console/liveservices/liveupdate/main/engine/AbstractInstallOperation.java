@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations;
+package com.atricore.idbus.console.liveservices.liveupdate.main.engine;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallEvent;

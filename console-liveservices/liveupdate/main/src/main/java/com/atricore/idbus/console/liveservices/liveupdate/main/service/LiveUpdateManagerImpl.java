@@ -171,18 +171,19 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     }
 
-    public Collection<UpdateDescriptorType> getAvailableUpdates(String iuFqn) throws LiveUpdateException {
+    public Collection<UpdateDescriptorType> getAvailableUpdates(String group, String name, String version) throws LiveUpdateException {
         Collection<UpdateDescriptorType> updates = mdManager.getUpdates();
         ProfileType profile = profileManager.getCurrentProfile(true);
 
         for (InstallableUnitType installed : profile.getInstallableUnit()) {
             String installedFqn = installed.getGroup() + "/" + installed.getName() + "/" + installed.getVersion();
-            if (installedFqn.equals(iuFqn)) {
+            if (installedFqn.equals(group + "/" + name + "/" + version)) {
                 return profileManager.getAvailableUpdates(installed, updates);
             }
 
         }
-        return new ArrayList<UpdateDescriptorType>();
+        
+        throw new LiveUpdateException("Install Unit not found in current profile");
     }
 
     public void cleanRepository(String repoId) throws LiveUpdateException {
@@ -201,27 +202,28 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         return getAvailableUpdates();
     }
 
-    public Collection<UpdateDescriptorType> checkForUpdates(String iuFqn) throws LiveUpdateException {
+    public Collection<UpdateDescriptorType> checkForUpdates(String group, String name, String version) throws LiveUpdateException {
         mdManager.refreshRepositories();
-        return getAvailableUpdates(iuFqn);
+        return getAvailableUpdates(group, name , version);
     }
 
     // Apply update
-    public void applyUpdate(String group, String name, String version) throws LiveUpdateException {
+    public void applyUpdate(String group, String name, String version, boolean offline) throws LiveUpdateException {
 
         if (logger.isDebugEnabled())
             logger.debug("Trying to apply update for " + group + "/" + name + "/" + version);
 
-        mdManager.refreshRepositories();
+        if (!offline)
+            mdManager.refreshRepositories();
 
         Collection<UpdateDescriptorType> availableUpdates = getAvailableUpdates();
-        InstallableUnitType installableUnit  = null;
+        InstallableUnitType installable  = null;
         UpdateDescriptorType update = null;
 
         for (UpdateDescriptorType ud : availableUpdates) {
             InstallableUnitType iu = ud.getInstallableUnit();
             if (iu.getGroup().equals(group) && iu.getName().equals(name) && iu.getVersion().equals(version)) {
-                installableUnit = iu;
+                installable = iu;
                 update = ud;
                 if (logger.isDebugEnabled())
                     logger.debug("Found IU " + iu.getID() + " for " + group + "/" + name + "/" + version);
@@ -229,7 +231,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
             }
         }
 
-        if (installableUnit == null) {
+        if (installable == null) {
             throw new LiveUpdateException("Update not available for current setup : " +
                     group + "/" + name + "/" + version);
         }
@@ -237,9 +239,9 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         logger.info("Applying Update " + group + "/" + name + "/" + version);
 
         Collection<UpdateDescriptorType> updates = mdManager.getUpdates();
-        ProfileType updateProfile = profileManager.buildUpdateProfile(installableUnit, updates);
+        ProfileType updateProfile = profileManager.buildUpdateProfile(installable, updates);
 
-        engine.execute("updatePlan", updateProfile);
+        engine.execute("defaultUpdatePlan", updateProfile);
     }
 
     public ProfileType getUpdateProfile() throws LiveUpdateException {

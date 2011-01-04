@@ -70,13 +70,17 @@
         <property name="operationsRegistry" ref="installOperationsRegistry"/>
         <property name="plans">
             <set>
-                <ref bean="updatePlan"/>
+                <ref bean="defaultUpdatePlan"/>
             </set>
         </property>
     </bean>
 
     <!-- Default update plan -->
-    <bean name="updatePlan" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdatePlan">
+    <bean name="defaultUpdatePlan"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdatePlan">
+
+        <property name="name" value="defaultUpdatePlan"/>
+        
         <property name="steps">
             <set>
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">

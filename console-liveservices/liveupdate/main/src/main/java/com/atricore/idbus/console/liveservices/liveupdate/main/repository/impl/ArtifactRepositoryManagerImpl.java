@@ -1,11 +1,8 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
-import com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations.ArtifactsUtil;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactNotFoundException;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepository;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepositoryManager;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactsUtil;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.*;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 import com.atricore.liveservices.liveupdate._1_0.util.*;

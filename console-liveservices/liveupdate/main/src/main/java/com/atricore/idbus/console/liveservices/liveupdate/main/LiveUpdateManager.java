@@ -20,7 +20,7 @@ public interface LiveUpdateManager {
     /**
      * Refresh MD repositories and returns a list of updates that apply to current profile
      */
-    Collection<UpdateDescriptorType> checkForUpdates(String iuFqn) throws LiveUpdateException;
+    Collection<UpdateDescriptorType> checkForUpdates(String group, String name, String version) throws LiveUpdateException;
 
 
     /**
@@ -31,13 +31,13 @@ public interface LiveUpdateManager {
     /**
      * Returns a list of all updates available
      */
-    Collection<UpdateDescriptorType> getAvailableUpdates(String iuFqn) throws LiveUpdateException;
+    Collection<UpdateDescriptorType> getAvailableUpdates(String group, String name, String version) throws LiveUpdateException;
 
 
     /**
      * Applies the given update to the current setup.
      */
-    void applyUpdate(String group, String name, String version) throws LiveUpdateException;
+    void applyUpdate(String group, String name, String version, boolean offline) throws LiveUpdateException;
 
     /**
      * Returns a profile with all the installable units that can be applied to the given setup.

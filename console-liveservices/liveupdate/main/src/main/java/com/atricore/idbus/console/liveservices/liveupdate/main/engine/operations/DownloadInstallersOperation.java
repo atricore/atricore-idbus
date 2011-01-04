@@ -1,9 +1,11 @@
-package com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations;
+package com.atricore.idbus.console.liveservices.liveupdate.main.engine.operations;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallEvent;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.OperationStatus;
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.AbstractInstallOperation;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepositoryManager;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactsUtil;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import org.apache.commons.io.IOUtils;
@@ -25,6 +27,7 @@ public class DownloadInstallersOperation extends AbstractInstallOperation {
     private String systemFolder;
 
     public void init() {
+        // This is where everything will be installed ...
         if (systemFolder == null)
             systemFolder = System.getProperty("karaf.base") + "/system";
     }
@@ -59,6 +62,10 @@ public class DownloadInstallersOperation extends AbstractInstallOperation {
 
                         // Installers are not zipped, so just copy them as they are.
                         IOUtils.copy(in, out);
+
+                        if (logger.isDebugEnabled())
+                            logger.debug("Downloaded installer : " + ArtifactsUtil.getArtifactFileName(art) + " ==> " +
+                                    artFile.getAbsolutePath());
 
                     } catch (Exception e) {
                         logger.error("Can't install artifact " + artFileName + " : " + e.getMessage(), e);

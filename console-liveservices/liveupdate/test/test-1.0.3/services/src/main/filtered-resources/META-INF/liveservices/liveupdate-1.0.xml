@@ -40,8 +40,7 @@
                       group="com.atricore.idbus.console.liveservices.liveupdate.tests"
                       name="com.atricore.idbus.console.liveservices.liveupdate.tests.installer"
                       version="${pom.version}"
-                      type="bundle"
-                      classifier="liveupdate"/>
+                      type="bundle"/>
 
 
             <!-- Required features -->

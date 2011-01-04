@@ -7,6 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -18,12 +19,16 @@ public class UpdateEngineImpl implements UpdateEngine {
 
     private static final UUIDGenerator uuidGen = new UUIDGenerator();
 
-    private Set<UpdatePlan> plans;
+    private Set<UpdatePlan> plans = new HashSet<UpdatePlan>();
 
     private InstallOperationsRegistry operationsRegistry;
 
     public void init() throws LiveUpdateException {
-        // TODO : Resume stalled stalled processes!
+
+        if (logger.isDebugEnabled())
+            logger.debug("Installed plans : " + plans.size());
+
+        // TODO : Resume stalled processes!
     }
 
     // TODO : Provide persistence functionallity to resume an update process after reboot
@@ -37,7 +42,9 @@ public class UpdateEngineImpl implements UpdateEngine {
 
                 if (logger.isDebugEnabled())
                     logger.debug("Starting update plan : " + plan.getName() + " in process " + procId);
+
                 UpdateContext ctx = new UpdateContextImpl(procId, plan, updateProfile);
+
                 execute(plan, ctx);
             }
         }
@@ -49,6 +56,7 @@ public class UpdateEngineImpl implements UpdateEngine {
             logger.trace("currentPlan=>" + plan.getName());
 
         try {
+
             for (Step step : plan.getSteps()) {
 
                 if (logger.isTraceEnabled())
@@ -61,6 +69,7 @@ public class UpdateEngineImpl implements UpdateEngine {
                 for (InstallOperation operation : operations) {
                     if (logger.isTraceEnabled())
                         logger.trace("preInstall=>" + operation.getName());
+
                     OperationStatus sts = operation.preInstall(event);
 
                     if (sts.equals(OperationStatus.PAUSE)) {

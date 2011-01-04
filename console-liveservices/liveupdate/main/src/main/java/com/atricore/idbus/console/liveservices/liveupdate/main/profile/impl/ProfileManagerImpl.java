@@ -238,7 +238,7 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
         }
 
         if (logger.isTraceEnabled())
-            logger.trace("Selected update profile with " + updateProfile.getInstallableUnit() + " IUs");
+            logger.trace("Selected update profile with " + updateProfile.getInstallableUnit().size() + " IUs");
         
         return updateProfile;
     }

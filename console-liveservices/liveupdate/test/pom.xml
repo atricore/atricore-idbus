@@ -41,6 +41,20 @@
         <maven>2.0.9</maven>
     </prerequisites>
 
+    <properties>
+        <console.version>1.0.0-SNAPSHOT</console.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+                <artifactId>com.atricore.idbus.console.liveservices.liveupdate.main</artifactId>
+                <version>${console.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <profiles>
         <profile>
             <id>liveupdate-test-1.0.0</id>

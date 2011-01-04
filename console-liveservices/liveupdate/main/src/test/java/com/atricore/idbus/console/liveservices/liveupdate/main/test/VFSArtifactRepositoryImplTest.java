@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.test;
 
-import com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.operations.ArtifactsUtil;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactsUtil;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.FileRepositoryTransport;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.VFSArtifactRepositoryImpl;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactDescriptorType;
