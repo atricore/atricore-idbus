@@ -55,13 +55,11 @@ public class UpdateProcess {
 
         InstallOperation op = advance();
         while (op != null) {
-
             if (op.getName().equals(operationName)) {
-                // Restore the op to the queue
-                operations.addFirst(op);
                 state.setOperation(op.getName());
                 return op;
             }
+            op = advance();
         }
 
         return null;

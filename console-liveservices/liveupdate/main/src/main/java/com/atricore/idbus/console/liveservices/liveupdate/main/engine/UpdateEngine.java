@@ -12,6 +12,4 @@ public interface UpdateEngine {
 
     void execute(String planName, ProfileType updateProfile) throws LiveUpdateException;
 
-    
-
 }
