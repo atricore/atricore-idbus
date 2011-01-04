@@ -44,11 +44,12 @@
     <osgi:service id="osgiDownloadUpdatesOperation" ref="downloadUpdatesOperation"
                   interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
 
-    <bean name="restartRequiredOperation" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.operations.RestartRequestOperation">
+    <bean name="shutdownIDBusOperation"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.operations.ShutdownIDBusOperation">
         <property name="name" value="restartRequiredOperation"/>
         <property name="stepName" value="install-updates"/>
     </bean>
-    <osgi:service id="osgiRestartRequiredOperation" ref="restartRequiredOperation"
+    <osgi:service id="osgiRestartRequiredOperation" ref="shutdownIDBusOperation"
                   interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
 
 

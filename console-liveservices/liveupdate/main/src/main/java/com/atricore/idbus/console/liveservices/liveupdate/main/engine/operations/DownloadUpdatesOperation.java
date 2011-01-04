@@ -11,7 +11,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.engine.OperationS
 public class DownloadUpdatesOperation extends AbstractInstallOperation {
 
     @Override
-    public OperationStatus preInstall(InstallEvent event) throws LiveUpdateException {
+    public OperationStatus execute(InstallEvent event) throws LiveUpdateException {
         // TODO : Download and extract distro artifacts for all IUs
         return OperationStatus.NEXT;
     }

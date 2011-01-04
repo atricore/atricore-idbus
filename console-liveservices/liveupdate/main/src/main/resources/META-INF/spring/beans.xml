@@ -68,12 +68,16 @@
     <bean name="updateEngine" init-method="init"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.UpdateEngineImpl">
         <property name="operationsRegistry" ref="installOperationsRegistry"/>
+        <property name="store" ref="processStateStore"/>
         <property name="plans">
             <set>
                 <ref bean="defaultUpdatePlan"/>
             </set>
         </property>
     </bean>
+
+    <bean name="processStateStore" init-method="init"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.PropertiesProcessStateStore"/>
 
     <!-- Default update plan -->
     <bean name="defaultUpdatePlan"

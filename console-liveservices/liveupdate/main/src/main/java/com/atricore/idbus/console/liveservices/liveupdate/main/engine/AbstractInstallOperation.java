@@ -39,11 +39,7 @@ public abstract class AbstractInstallOperation implements InstallOperation {
         this.stepName = stepName;
     }
 
-    public OperationStatus preInstall(InstallEvent event) throws LiveUpdateException {
-        return OperationStatus.NEXT;
-    }
-
-    public OperationStatus postInstall(InstallEvent event) throws LiveUpdateException {
+    public OperationStatus execute(InstallEvent event) throws LiveUpdateException {
         return OperationStatus.NEXT;
     }
 

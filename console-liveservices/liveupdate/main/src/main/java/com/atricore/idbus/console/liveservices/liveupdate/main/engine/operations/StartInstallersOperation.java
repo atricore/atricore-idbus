@@ -33,7 +33,7 @@ public class StartInstallersOperation extends AbstractInstallOperation implement
     }
 
     @Override
-    public OperationStatus preInstall(InstallEvent event) throws LiveUpdateException {
+    public OperationStatus execute(InstallEvent event) throws LiveUpdateException {
         for (InstallableUnitType iu : event.getContext().getIUs()) {
             for (ArtifactKeyType art : iu.getArtifact()) {
 

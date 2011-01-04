@@ -41,29 +41,18 @@ public abstract class UnitInstallOperation extends AbstractInstallOperation {
         this.iuVersion = iuVersion;
     }
 
-    public OperationStatus preInstall(InstallEvent event) throws LiveUpdateException {
+    public OperationStatus execute(InstallEvent event) throws LiveUpdateException {
         for (InstallableUnitType iu : event.getContext().getIUs()) {
             if (iu.getGroup().equals(iuGroup) &&
                     iu.getName().equals(iuName) &&
                     iu.getVersion().equals(iuVersion)) {
-                preInstall(event, iu);
+                execute(event, iu);
             }
         }
         return OperationStatus.NEXT;
     }
 
-    public OperationStatus postInstall(InstallEvent event) throws LiveUpdateException {
-        for (InstallableUnitType iu : event.getContext().getIUs()) {
-            if (iu.getGroup().equals(iuGroup) &&
-                    iu.getName().equals(iuName) &&
-                    iu.getVersion().equals(iuVersion)) {
-                postInstall(event, iu);
-            }
-        }
-        return OperationStatus.NEXT;
-    }
+    public abstract OperationStatus execute(InstallEvent event, InstallableUnitType iu) throws LiveUpdateException;
 
-    public abstract OperationStatus preInstall(InstallEvent event, InstallableUnitType iu) throws LiveUpdateException;
 
-    public abstract OperationStatus postInstall(InstallEvent event, InstallableUnitType iu) throws LiveUpdateException;
 }

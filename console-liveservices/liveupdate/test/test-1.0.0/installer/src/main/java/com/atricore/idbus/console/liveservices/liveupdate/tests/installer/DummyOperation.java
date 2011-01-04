@@ -34,23 +34,10 @@ public class DummyOperation extends AbstractInstallOperation {
     }
 
     @Override
-    public OperationStatus preInstall(InstallEvent event) throws LiveUpdateException {
+    public OperationStatus execute(InstallEvent event) throws LiveUpdateException {
 
         if (logger.isDebugEnabled())
-            logger.debug("DummyOp:preInstall:" + groupId + "/" + artifactId + "/" + version);
+            logger.debug("DummyOp:execute:" + groupId + "/" + artifactId + "/" + version);
         return OperationStatus.NEXT;
     }
-
-
-    @Override
-    public OperationStatus postInstall(InstallEvent event) throws LiveUpdateException {
-
-        if (logger.isDebugEnabled())
-            logger.debug("DummyOp:postInstall:" + groupId + "/" + artifactId + "/" + version);
-
-        return OperationStatus.NEXT;
-    }
-
-
-
 }
