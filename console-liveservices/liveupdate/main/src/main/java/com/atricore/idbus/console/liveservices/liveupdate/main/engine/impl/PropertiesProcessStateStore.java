@@ -77,8 +77,10 @@ public class PropertiesProcessStateStore implements ProcessStore {
         props.setProperty("plan", state.getPlan());
         if (state.getOperation() != null)
             props.setProperty("operation", state.getOperation());
+
+        URI profileUri = buildProfileFileURI(state.getId());
         
-        props.setProperty("updateProfile", baseFolder + "/" + state.getId() + "-profile.bin");
+        props.setProperty("updateProfile", profileUri.toString());
 
         OutputStream out = null;
         OutputStream profileOut = null;
@@ -88,7 +90,7 @@ public class PropertiesProcessStateStore implements ProcessStore {
             out = new FileOutputStream(new File(file), false);
             props.store(out, "LiveUpdate process state " + state.getId());
 
-            String updateProfile = XmlUtils1.marshalUpdateProfile(state.getUpdateProfile(), "Profile", false);
+            String updateProfile = XmlUtils1.marshalProfile(state.getUpdateProfile(), "profile", false);
 
             InputStream profileIn = new ByteArrayInputStream(updateProfile.getBytes());
             File profileFile = new File (new URI(props.getProperty("updateProfile")));
@@ -129,8 +131,7 @@ public class PropertiesProcessStateStore implements ProcessStore {
     }
 
     public Collection<UpdateProcessState> load() throws LiveUpdateException {
-        File baseFolderFile = new File(baseFolder);
-        String fn = buildFileURI("id1").toString();
+        File baseFolderFile = new File(baseUri);
 
         List<UpdateProcessState> states = new ArrayList<UpdateProcessState>();
 
@@ -138,10 +139,11 @@ public class PropertiesProcessStateStore implements ProcessStore {
             return states;
 
         for (File child : baseFolderFile.listFiles()) {
-            if (child.getName().endsWith(fn)) {
+            if (child.getName().endsWith("-proc.bin")) {
                 InputStream in = null;
                 try {
                     Properties props = new Properties();
+                    in = new FileInputStream(child);
                     props.load(in);
 
                     states.add(buildStateInstance(props));
@@ -158,15 +160,24 @@ public class PropertiesProcessStateStore implements ProcessStore {
     }
 
     public void remove(String id) throws LiveUpdateException {
-        URI  file = buildFileURI(id);
+        URI file = buildFileURI(id);
 
         File f = new File(file);
-
         if (f.exists() && !f.isDirectory()) {
             if (!f.delete()) {
                 throw new LiveUpdateException("Cannot delete process state " + id);
             }
         }
+
+        URI profileFile = buildProfileFileURI(id);
+        File pf = new File(profileFile);
+        if (pf.exists() && !pf.isDirectory()) {
+            if (!pf.delete()) {
+                logger.warn("Cannot delete process resource " + profileFile.toString());
+            }
+        }
+
+
     }
 
     protected UpdateProcessState buildStateInstance(Properties props) throws LiveUpdateException {
@@ -179,7 +190,8 @@ public class PropertiesProcessStateStore implements ProcessStore {
         InputStream in = null;
         try {
 
-            in = new FileInputStream(new File(props.getProperty("updateProfile")));
+            URI profileUri = new URI(props.getProperty("updateProfile"));
+            in = new FileInputStream(new File(profileUri));
             ProfileType profile = XmlUtils1.unmarshallProfile(in, false);
             state.setUpdateProfile(profile);
         } catch (FileNotFoundException e) {
@@ -189,10 +201,6 @@ public class PropertiesProcessStateStore implements ProcessStore {
         } finally {
             IOUtils.closeQuietly(in);
         }
-
-
-
-
 
         return state;
 
@@ -206,4 +214,14 @@ public class PropertiesProcessStateStore implements ProcessStore {
             throw new LiveUpdateException("Invalid file name " + n);
         }
     }
+
+    protected URI buildProfileFileURI(String id) throws LiveUpdateException {
+        String n = baseFolder + "/" + id + "-prof.bin";
+        try {
+            return new URI(n);
+        } catch (URISyntaxException e) {
+            throw new LiveUpdateException("Invalid file name " + n);
+        }
+    }
+
 }

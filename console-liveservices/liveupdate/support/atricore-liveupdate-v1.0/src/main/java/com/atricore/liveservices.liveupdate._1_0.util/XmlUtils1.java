@@ -41,7 +41,8 @@ public class XmlUtils1 {
         if (decode)
             udStr = new String(new Base64().decode(udStr.getBytes()));
 
-        JAXBElement e = (JAXBElement) unmarshal(udStr, new String[]{ "com.atricore.liveservices.liveupdate._1_0.md" });
+        JAXBElement e = (JAXBElement) unmarshal(udStr,
+                new String[]{ "com.atricore.liveservices.liveupdate._1_0.md" });
         return (UpdateDescriptorType) e.getValue();
     }
 
@@ -53,8 +54,8 @@ public class XmlUtils1 {
         if (decode)
             adStr = new String(new Base64().decode(adStr.getBytes()));
 
-        JAXBElement e = (JAXBElement) unmarshal(adStr, new String[]{ "com.atricore.liveservices.liveupdate._1_0.profile",
-                "com.atricore.liveservices.liveupdate._1_0.md" });
+        JAXBElement e = (JAXBElement) unmarshal(adStr, new String[]{
+                "com.atricore.liveservices.liveupdate._1_0.profile" });
         return (ProfileType) e.getValue();
     }
 
@@ -133,7 +134,7 @@ public class XmlUtils1 {
         return encode ? new String(new Base64().encode( marshalled.getBytes())) : marshalled;
     }
 
-    public static String marshalUpdateProfile(ProfileType prof, String type, boolean encode) throws Exception {
+    public static String marshalProfile(ProfileType prof, String type, boolean encode) throws Exception {
         String marshalled ;
         // Support IDBus SAMLR2 Extentions when marshalling
         marshalled = marshal(

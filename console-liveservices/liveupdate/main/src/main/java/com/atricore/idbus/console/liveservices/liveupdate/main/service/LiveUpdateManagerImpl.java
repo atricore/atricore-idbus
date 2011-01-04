@@ -127,6 +127,10 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
                 }
 
             }
+
+            // Try to resume pending processes :
+            this.engine.resume();
+
         } catch (NoSuchAlgorithmException e) {
             throw new LiveUpdateException(e);
         } catch (InvalidAlgorithmParameterException e) {

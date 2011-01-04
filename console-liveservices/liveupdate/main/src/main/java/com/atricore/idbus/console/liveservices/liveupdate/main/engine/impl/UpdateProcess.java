@@ -70,7 +70,7 @@ public class UpdateProcess {
             prepareNextStep();
         }
 
-        InstallOperation op = operations.pollFirst();
+        InstallOperation op = operations.poll();
 
         if (op != null) {
             state.setOperation(op.getName());
@@ -111,7 +111,7 @@ public class UpdateProcess {
         // We want to get operations dynamically
         Collection<InstallOperation> ops = reg.getOperations(s.getName());
         for (InstallOperation op : ops) {
-            operations.addLast(op);
+            operations.add(op);
         }
 
     }

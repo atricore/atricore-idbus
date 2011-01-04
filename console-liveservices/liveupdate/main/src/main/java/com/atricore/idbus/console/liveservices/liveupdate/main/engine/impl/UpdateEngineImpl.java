@@ -51,8 +51,6 @@ public class UpdateEngineImpl implements UpdateEngine {
     public void execute(String planName, ProfileType updateProfile) throws LiveUpdateException {
 
         UpdatePlan plan = getPlan(planName);
-
-
         String procId = uuidGen.generateId();
 
         if (logger.isDebugEnabled())
@@ -60,16 +58,15 @@ public class UpdateEngineImpl implements UpdateEngine {
 
         UpdateProcess proc = startProcess(plan, updateProfile);
 
-        OperationStatus sts = advanceProcess(proc);
-        while(sts.equals(OperationStatus.NEXT))
-            sts = advanceProcess(proc);
+        executeProcess(proc);
 
-        if (sts.equals(OperationStatus.STOP)) {
-            if (logger.isDebugEnabled())
-                logger.debug("Process completed " + proc.getId());
-            store.remove(proc.getId());
+    }
+
+    public void resume() throws LiveUpdateException {
+        for (String procId : procs.keySet()) {
+            UpdateProcess proc = resumeProcess(procId);
+            executeProcess(proc);
         }
-
     }
 
     //------------------------------------------------------< Properties >
@@ -119,6 +116,31 @@ public class UpdateEngineImpl implements UpdateEngine {
         // TODO : Persist process information (use properties or osgi cfg ?!)
         return proc;
 
+    }
+
+    protected void executeProcess(UpdateProcess proc) throws LiveUpdateException {
+        OperationStatus sts = advanceProcess(proc);
+
+        while(sts.equals(OperationStatus.NEXT))
+            sts = advanceProcess(proc);
+
+        if (sts.equals(OperationStatus.STOP)) {
+            if (logger.isDebugEnabled())
+                logger.debug("Process completed " + proc.getId());
+            store.remove(proc.getId());
+        }
+
+    }
+
+    protected UpdateProcess resumeProcess(String processId) throws LiveUpdateException {
+        UpdateProcess proc = procs.get(processId);
+        if (proc == null)
+            throw new LiveUpdateException("Cannot find update process " + processId);
+
+        if (logger.isDebugEnabled())
+            logger.debug("Resuming process " + processId);
+
+        return proc;
     }
 
     protected OperationStatus advanceProcess(String processId) throws LiveUpdateException {
