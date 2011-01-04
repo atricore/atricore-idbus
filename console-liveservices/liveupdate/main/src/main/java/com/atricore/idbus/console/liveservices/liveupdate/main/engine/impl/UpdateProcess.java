@@ -34,7 +34,7 @@ public class UpdateProcess {
     public void init() {
         UpdatePlan p = ctx.getPlan();
         for (Step s : p.getSteps()) {
-            steps.addLast(s);
+            steps.add(s);
         }
 
     }
@@ -83,7 +83,7 @@ public class UpdateProcess {
     }
 
     public Step getCurrentStep() {
-        return steps.peekFirst();
+        return steps.peek();
     }
 
     public InstallOperation getNextOperation() {
@@ -101,7 +101,7 @@ public class UpdateProcess {
     }
 
     protected void prepareNextStep() {
-        Step s = steps.pollFirst();
+        Step s = steps.poll();
         // No more steps
         if (s == null) {
             operations.clear();
