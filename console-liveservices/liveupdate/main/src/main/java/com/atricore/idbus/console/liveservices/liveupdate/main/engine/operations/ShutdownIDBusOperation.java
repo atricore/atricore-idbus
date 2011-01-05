@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.context.BundleContextAware;
 
 /**
@@ -21,8 +22,6 @@ public class ShutdownIDBusOperation extends AbstractInstallOperation implements 
 
     @Override
     public OperationStatus execute(InstallEvent event) throws LiveUpdateException {
-
-        // TODO : Configure feature service to start IDBus in maintenance mode
 
         new Thread() {
             public void run() {
@@ -44,4 +43,5 @@ public class ShutdownIDBusOperation extends AbstractInstallOperation implements 
     public BundleContext getBundleContext() {
         return bundleContext;
     }
+
 }

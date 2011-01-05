@@ -33,6 +33,7 @@
     <bean name="installInstallerOperation" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.operations.StartInstallersOperation">
         <property name="name" value="installInstallerOperation"/>
         <property name="stepName" value="install-installers"/>
+        <property name="installerRunLevel" value="${maintenanceRunLevel}"/>
     </bean>
     <osgi:service id="osgiInstallInstallerOperation" ref="installInstallerOperation"
                   interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
@@ -44,13 +45,32 @@
     <osgi:service id="osgiDownloadUpdatesOperation" ref="downloadUpdatesOperation"
                   interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
 
+    <bean name="switchToMaintananceModeOperation"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.operations.SwitchIDBusRunLevelOperation">
+        <property name="name" value="switchToMaintananceMode"/>
+        <property name="stepName" value="udpate-system-start"/>
+        <property name="runLevel" value="${maintenanceRunLevel}"/>
+    </bean>
+    <osgi:service id="osgiSwitchToMaintananceModeOperation" ref="switchToMaintananceModeOperation"
+                  interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
+
+    <bean name="switchToOperationalModeOperation"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.operations.SwitchIDBusRunLevelOperation">
+        <property name="name" value="switchToOperational"/>
+        <property name="stepName" value="udpate-system-end"/>
+        <property name="runLevel" value="${defaultRunLevel}"/>
+    </bean>
+    <osgi:service id="osgiSwitchToOperationalModeOperation" ref="switchToOperationalModeOperation"
+                  interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
+
+    <!--
+
     <bean name="shutdownIDBusOperation"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.operations.ShutdownIDBusOperation">
         <property name="name" value="restartRequiredOperation"/>
-        <property name="stepName" value="install-updates"/>
+        <property name="stepName" value="update-system-end"/>
     </bean>
     <osgi:service id="osgiRestartRequiredOperation" ref="shutdownIDBusOperation"
                   interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
-
-
+    -->
 </beans>

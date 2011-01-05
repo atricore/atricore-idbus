@@ -22,6 +22,8 @@ public class StartInstallersOperation extends AbstractInstallOperation implement
 
     private static final Log logger = LogFactory.getLog(StartInstallersOperation.class);
 
+    private int installerRunLevel;
+
     private BundleContext bundleContext;
 
     public void setBundleContext(BundleContext bundleContext) {
@@ -30,6 +32,14 @@ public class StartInstallersOperation extends AbstractInstallOperation implement
 
     public BundleContext getBundleContext() {
         return bundleContext;
+    }
+
+    public int getInstallerRunLevel() {
+        return installerRunLevel;
+    }
+
+    public void setInstallerRunLevel(int installerRunLevel) {
+        this.installerRunLevel = installerRunLevel;
     }
 
     @Override
@@ -75,7 +85,7 @@ public class StartInstallersOperation extends AbstractInstallOperation implement
 
     protected void start(Bundle b) throws LiveUpdateException {
         try {
-            b.start();
+            b.start(installerRunLevel);
         } catch (BundleException e) {
             throw new LiveUpdateException("Can't start bundle " + b.getBundleId() + ". " + e.getMessage(), e);
         }

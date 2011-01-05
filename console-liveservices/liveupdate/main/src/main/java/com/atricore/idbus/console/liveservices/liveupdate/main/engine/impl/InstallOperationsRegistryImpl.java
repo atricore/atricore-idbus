@@ -64,6 +64,8 @@ public class InstallOperationsRegistryImpl implements InstallOperationsRegistry 
         if (op == null)
             return;
 
+        op.shutdown();
+
         operations.remove(op);
         
         Set<InstallOperation> ops = operationsByStep.get(op.getStepName());

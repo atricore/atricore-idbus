@@ -9,11 +9,12 @@ public interface InstallOperation {
 
     String getStepName();
 
-    OperationStatus execute(InstallEvent event) throws LiveUpdateException;
-
     String getName();
 
     void init();
 
-    void shutdonw();
+    void shutdown();
+
+    OperationStatus execute(InstallEvent event) throws LiveUpdateException;
+
 }

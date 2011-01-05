@@ -19,7 +19,7 @@ public abstract class AbstractInstallOperation implements InstallOperation {
 
     }
 
-    public void shutdonw() {
+    public void shutdown() {
         
     }
 

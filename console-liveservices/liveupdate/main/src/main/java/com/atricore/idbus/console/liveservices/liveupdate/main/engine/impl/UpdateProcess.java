@@ -17,6 +17,8 @@ public class UpdateProcess {
 
     private LinkedList<Step> steps = new LinkedList<Step>();
 
+    private Step currentStep;
+
     private LinkedList<InstallOperation> operations = new LinkedList<InstallOperation>();
 
     private UpdateProcessState state;
@@ -83,7 +85,7 @@ public class UpdateProcess {
     }
 
     public Step getCurrentStep() {
-        return steps.peek();
+        return currentStep;
     }
 
     public InstallOperation getNextOperation() {
@@ -101,15 +103,16 @@ public class UpdateProcess {
     }
 
     protected void prepareNextStep() {
-        Step s = steps.poll();
+        currentStep = steps.poll();
+        operations.clear();
+
         // No more steps
-        if (s == null) {
-            operations.clear();
+        if (currentStep == null) {
             return;
         }
 
         // We want to get operations dynamically
-        Collection<InstallOperation> ops = reg.getOperations(s.getName());
+        Collection<InstallOperation> ops = reg.getOperations(currentStep.getName());
         for (InstallOperation op : ops) {
             operations.add(op);
         }

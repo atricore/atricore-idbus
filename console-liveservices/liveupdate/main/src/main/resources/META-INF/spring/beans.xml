@@ -101,11 +101,18 @@
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
                     <property name="name" value="download-updates"/>
                 </bean>
+                
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
-                    <property name="name" value="install-updates"/>
+                    <property name="name" value="install-updates-start"/>
                 </bean>
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
-                    <property name="name" value="udpate-system"/>
+                    <property name="name" value="install-updates-end"/>
+                </bean>
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="udpate-system-start"/>
+                </bean>
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="udpate-system-end"/>
                 </bean>
             </set>
         </property>
@@ -136,6 +143,10 @@
 
         <!-- In Minutes, default : daily -->
         <prop key="updatesCheckInterval">1440</prop>
+
+        <prop key="maintenanceRunLevel">35</prop>
+        <!-- TODO : Take this from environment -->
+        <prop key="defaultRunLevel">100</prop>
 
     </osgix:cm-properties>
 
