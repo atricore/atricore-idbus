@@ -4,8 +4,7 @@ import com.atricore.idbus.console.licensing.main.InvalidFeatureException;
 import com.atricore.idbus.console.licensing.main.InvalidLicenseException;
 import com.atricore.idbus.console.licensing.main.LicenseManager;
 import com.atricore.josso2.licensing._1_0.license.LicenseType;
-import com.atricore.josso2.licensing._1_0.util.NamespaceFilterXMLStreamWriter;
-import com.atricore.josso2.licensing._1_0.util.XmlUtils;
+import com.atricore.josso2.licensing._1_0.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -35,8 +34,30 @@ public class LicenseManagerImpl implements LicenseManager {
     static Log logger = LogFactory.getLog(LicenseManagerImpl.class);
 
     // Encoded digital certificate (in the future, we should be able to manage a set of certs).
-    private String certificate = "";
+    //TODO replace with proper certificate
+    private String certificate = "-----BEGIN CERTIFICATE-----\n" +
+            "MIIDVzCCAj8CBE0cdYswDQYJKoZIhvcNAQEEBQAwcDEQMA4GA1UEBhMHVW5rbm93\n" +
+            "bjEQMA4GA1UECBMHVW5rbm93bjEQMA4GA1UEBxMHVW5rbm93bjEQMA4GA1UEChMH\n" +
+            "VW5rbm93bjEQMA4GA1UECxMHVW5rbm93bjEUMBIGA1UEAxMLRGVqYW4gTWFyaWMw\n" +
+            "HhcNMTAxMjMwMTIwNTMxWhcNMTMwMTI4MTIwNTMxWjBwMRAwDgYDVQQGEwdVbmtu\n" +
+            "b3duMRAwDgYDVQQIEwdVbmtub3duMRAwDgYDVQQHEwdVbmtub3duMRAwDgYDVQQK\n" +
+            "EwdVbmtub3duMRAwDgYDVQQLEwdVbmtub3duMRQwEgYDVQQDEwtEZWphbiBNYXJp\n" +
+            "YzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALCD0c4gN9akBO/crFpk\n" +
+            "PpqFNNRg9fpnDrW3VRHdGtZCUWc0Bd6H3KisSPOAP7LChzFVjpbNK914naSVbzfX\n" +
+            "z7oYEGGJ7RMueRgHRxkeud4aUAZEfVqAcsX2a5Xuy2ghf4zaz0G/GI0mI0TTKlnh\n" +
+            "yp1h3g6ImO86UCzUXI954KvKy6aEj8SEc53kmyRdsErypAOoKQVH3DqJ8A2CkMMU\n" +
+            "JhbawH3yGhayxO070vCcBlZPwWCz23GWO3XjHdlbS7HHxT4XJs3VMWDWA1qO8+bV\n" +
+            "wu0RxYJY9Dbigi8vd4hHfimfMq0qk0FwC+M+pD06iRFhGotc1d+yCCITTcDlu4p9\n" +
+            "auUCAwEAATANBgkqhkiG9w0BAQQFAAOCAQEABSMuhGIkM+WlFT9Mu7qZHwF4oFpf\n" +
+            "A0TT7SMwyac4vJXjSsXX28n3htP5xN95m17Fi8n4VVqY8yQPLKHDD4Id6ffaM8h7\n" +
+            "hwgrmy66pAjsU0LNnvL76+md/CRm/3XRAVG2Tj7pEBQ0lS86HJMcvEcdC38Ng/+q\n" +
+            "/mpi8sH3VgufF8ooCYlPPLEk55Nc+GZkXj7j6yd4ocgPGqdiB7L2CpC82s6gb1Ju\n" +
+            "mvbxZJj5s1rzxDTAm5WYDV50wqnWvgIyjKd4ymeoQQnGfunu31OZ9xcpdGgLoH6V\n" +
+            "OVuOVWYfBNMwMNikL2JvOZAmNNFWZia4EGphS8Uh+yLRhHbpobRqT6+DOg==\n" +
+            "-----END CERTIFICATE-----";
+    
     private String licensePath = "";
+    private LicenseSigner signer;
 
 
     public void activateLicense(byte[] license) throws InvalidLicenseException {
@@ -88,83 +109,15 @@ public class LicenseManagerImpl implements LicenseManager {
     }
 
     protected void validateSignature(LicenseType license, String certificate) throws InvalidLicenseException {
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(true);
-
-            DocumentBuilder builder = dbf.newDocumentBuilder();
-
-            JAXBContext context = JAXBContext.newInstance(XmlUtils.ATRICORE_LICENSE_PKG, license.getClass().getClassLoader());
-            Marshaller m = context.createMarshaller();
-            JAXBElement<LicenseType> jaxbAssertion = new JAXBElement<LicenseType>(new QName(XmlUtils.ATRICORE_LICENSE_NS, "License"), LicenseType.class, license);
-            StringWriter swas = new StringWriter();
-            XMLStreamWriter sw = new NamespaceFilterXMLStreamWriter(swas);
-            m.marshal(jaxbAssertion, sw);
-            Document doc = dbf.newDocumentBuilder().parse(new ByteArrayInputStream(swas.toString().getBytes()));
-
-            // Find Signature element
-            NodeList nl =
-                    doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
-            if (nl.getLength() == 0) {
-                throw new InvalidLicenseException("Cannot find Signature element");
-            }
-
-            // Create a DOM XMLSignatureFactory that will be used to unmarshal the
-            // document containing the XMLSignature
-            XMLSignatureFactory fac = XMLSignatureFactory.getInstance("DOM");
-
-            //load public key from cert file
+        try{
             CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-//            java.security.cert.Certificate cert = certFactory.generateCertificate(new FileInputStream(this.certificate));
             java.security.cert.Certificate cert = certFactory.generateCertificate(new ByteArrayInputStream(certificate.getBytes()));
 
-            // Validate all Signature elements
-            for (int k = 0; k < nl.getLength(); k++) {
-
-//                DOMValidateContext valContext = new DOMValidateContext
-//                        (new RawX509KeySelector(), nl.item(k));
-                
-                DOMValidateContext valContext = new DOMValidateContext
-                        (cert.getPublicKey(), nl.item(k));
-                
-
-                // unmarshal the XMLSignature
-                XMLSignature signature = fac.unmarshalXMLSignature(valContext);
-
-                // Validate the XMLSignature (generated above)
-                boolean coreValidity = signature.validate(valContext);
-
-                // Check core validation status
-                if (!coreValidity) {
-                    logger.debug("Signature failed core validation");
-                    boolean sv = signature.getSignatureValue().validate(valContext);
-                    logger.debug("signature validation status: " + sv);
-                    // check the validation status of each Reference
-                    Iterator i = signature.getSignedInfo().getReferences().iterator();
-                    boolean refValid = true;
-                    for (int j = 0; i.hasNext(); j++) {
-                        boolean b = ((Reference) i.next()).validate(valContext);
-                        if (!b) refValid = b;
-                        logger.debug("ref[" + j + "] validity status: " + b);
-                    }
-                    throw new InvalidLicenseException("Signature failed core validation" + (refValid ? " but passed all Reference validations" : " and some/all Reference validation"));
-                }
-            }
-        } catch (ParserConfigurationException e) {
+            LicenseKeyResolver keyResolver = new LicenseKeyResolverImpl(cert, null); //we don't need private key in resolver to validate license
+            signer.validate(license, keyResolver);
+        }catch(CertificateException e){
             throw new InvalidLicenseException(e);
-        } catch (XMLSignatureException e) {
-            throw new InvalidLicenseException(e);
-        } catch (MarshalException e) {
-            throw new InvalidLicenseException(e);
-        } catch (JAXBException e) {
-            throw new InvalidLicenseException(e);
-        } catch (IOException e) {
-            throw new InvalidLicenseException(e);
-        } catch (XMLStreamException e) {
-            throw new InvalidLicenseException(e);
-        } catch (SAXException e) {
-            throw new InvalidLicenseException(e);
-        } catch (CertificateException e) {
+        } catch (LicenseSignatureException e) {
             throw new InvalidLicenseException(e);
         }
     }
@@ -207,5 +160,9 @@ public class LicenseManagerImpl implements LicenseManager {
 
     public void setLicensePath(String licensePath) {
         this.licensePath = licensePath;
+    }
+
+    public void setSigner(LicenseSigner signer) {
+        this.signer = signer;
     }
 }
