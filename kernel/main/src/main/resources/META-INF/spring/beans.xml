@@ -121,7 +121,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
     <osgi:service id="idsuRegistryExporter" ref="idsuRegistry"
                   interface="org.atricore.idbus.kernel.main.mediation.IdentityMediationUnitRegistry" />
 
-    <osgi:list id="identityMediationUnits" interface="org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit"
+         <osgi:list id="identityMediationUnits" interface="org.atricore.idbus.kernel.main.mediation.osgi.OsgiIdentityMediationUnit"
                cardinality="0..N" >
         <osgi:listener ref="osgiIdsuRegistry" bind-method="register" unbind-method="unregister" />
     </osgi:list>

@@ -63,7 +63,7 @@
         
         <apache.derby.version>10.5.3.0_1</apache.derby.version>
         <apache.tiles.version>2.2.2</apache.tiles.version>
-        <apache.xmlsec.version>1.4.2</apache.xmlsec.version>
+        <apache.xmlsec.version>1.4.3</apache.xmlsec.version>
         <blazeds.version>3.0</blazeds.version>
         <commons-vfs.version>1.0_1</commons-vfs.version>
         <commons-lang.version>2.4</commons-lang.version>

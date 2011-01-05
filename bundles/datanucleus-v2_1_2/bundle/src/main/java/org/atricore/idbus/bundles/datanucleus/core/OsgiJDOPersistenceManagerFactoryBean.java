@@ -29,14 +29,6 @@ public class OsgiJDOPersistenceManagerFactoryBean
         if (logger.isDebugEnabled())
             logger.debug("Creating new PersistenceManagerFactory based on properties");
 
-        /* TODO : DO NOT USE THE ENTIRE BUNDLESPACE, try local bundle classloader instead
-
-        ClassLoader osgiCl = new OsgiBundlespaceClassLoader(bundleContext,
-                new OsgiBundleClassLoader(bundleContext.getBundle()),
-                bundleContext.getBundle());
-                */
-
-        // TODO : This does not work well ... check it
         ClassLoader osgiCl = new OsgiBundleClassLoader(bundleContext.getBundle());
 
         if (props.get("datanucleus.primaryClassLoader") == null) {

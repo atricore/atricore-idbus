@@ -24,8 +24,7 @@
     <!-- =================================================================== -->
 
     <osgix:cm-properties id="apacheDsProps" persistent-id="org.atricore.idbus.bundles.apacheds.server">
-        <!-- EHCache properties -->
-        <prop key="apacheds.partitions">${karaf.base}/apacheds/</prop>
+        <prop key="apacheds.partitions">${karaf.data}/apacheds/</prop>
     </osgix:cm-properties>
 
     <ctx:property-placeholder properties-ref="apacheDsProps" />
