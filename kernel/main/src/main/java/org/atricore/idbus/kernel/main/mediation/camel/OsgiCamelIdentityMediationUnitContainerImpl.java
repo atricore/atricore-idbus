@@ -38,7 +38,8 @@ import org.springframework.osgi.context.BundleContextAware;
  *
  * @org.apache.xbean.XBean element="osgi-identity-mediation-engine"
  */
-public class OsgiCamelIdentityMediationUnitContainerImpl extends CamelIdentityMediationUnitContainer implements BundleContextAware {
+public class OsgiCamelIdentityMediationUnitContainerImpl extends CamelIdentityMediationUnitContainer
+        implements BundleContextAware {
 
     private static final Log logger = LogFactory.getLog(OsgiCamelIdentityMediationUnitContainerImpl.class);
 
@@ -59,6 +60,9 @@ public class OsgiCamelIdentityMediationUnitContainerImpl extends CamelIdentityMe
     }
 
     protected CamelContext createCamelContext() throws Exception {
+
+        if (logger.isDebugEnabled())
+            logger.debug("Creating new Camel Context for " + getName());
 
         OsgiIdentityMediationUnit unit = (OsgiIdentityMediationUnit) getUnit();
         CamelContextFactory ccFac = new org.apache.camel.osgi.CamelContextFactory();

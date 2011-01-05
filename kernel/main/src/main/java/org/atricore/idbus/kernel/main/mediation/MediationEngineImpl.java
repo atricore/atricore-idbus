@@ -95,6 +95,7 @@ public class MediationEngineImpl implements MediationEngine, MediationUnitLifecy
 
     protected void stopUnit(OsgiIdentityMediationUnit unit) throws IdentityMediationException {
         Collection<Channel> channels = unit.getChannels();
+
         // initialize mediation mediation engines (e.g. create  context)
         for (Channel channel : channels) {
             // TODO : Stop engines only once

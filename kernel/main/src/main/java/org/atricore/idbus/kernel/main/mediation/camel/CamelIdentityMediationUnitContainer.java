@@ -243,23 +243,29 @@ public class CamelIdentityMediationUnitContainer implements IdentityMediationUni
             for (IdentityMediator mediator : getMediators()) {
                 if (logger.isDebugEnabled())
                     logger.debug("Stopping mediationr " + mediator);
-                mediator.stop();
+                try {
+                    mediator.stop();
+                } catch (Exception e) {
+                    logger.error("Error stoppig mediator " + e.getMessage(), e);
+                }
             }
-        } catch (Exception e) {
-            throw new IdentityMediationException(e);
+
         } finally {
+
             try {
 
                 if (logger.isDebugEnabled())
                     logger.debug("Stopping Camel context " + context);
 
                 context.stop();
-                active = false;
+
                 logger.debug("Stopped Engine Camel Context [" + context.getName() + "]");
+
             } catch (Exception e) {
-                if (logger.isDebugEnabled())
-                    logger.debug("Error while stopping Camel context " + e.getMessage(), e);
+                logger.error("Error while stopping Camel context " + e.getMessage(), e);
             }
+
+            active = false;
         }
     }
 

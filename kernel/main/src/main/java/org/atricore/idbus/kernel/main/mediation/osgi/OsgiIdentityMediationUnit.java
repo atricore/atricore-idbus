@@ -175,5 +175,11 @@ public class OsgiIdentityMediationUnit extends SpringMediationUnit
     @Override
     public void destroy() throws Exception {
         super.destroy();
+
+        IdentityMediationUnitContainer c = this.getContainer();
+
+        if (c != null) {
+            c.stop();
+        }
     }
 }
