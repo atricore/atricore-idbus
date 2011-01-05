@@ -49,44 +49,4 @@
         <module>generation</module>
     </modules>
 
-    <build>
-        <plugins>
-              <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.4.2</version>
-                    <configuration>
-                        <useFile>true</useFile>
-                        <forkMode>never</forkMode>
-                        <childDelegation>false</childDelegation>
-                        <argLine>-Xmx512M</argLine>
-                        <!--useSystemClassLoader>false</useSystemClassLoader-->
-                        <!--<redirectTestOutputToFile>true</redirectTestOutputToFile>-->
-                        <workingDirectory>${basedir}</workingDirectory>
-                        <systemProperties>
-                            <property>
-                                <name>log4j.configuration</name>
-                                <value>log4j-tests.properties</value>
-                            </property>
-                            <property>
-                                <name>derby.system.home</name>
-                                <value>${build.directory}/derby</value>
-                            </property>
-
-                            <property>
-                                <name>buildDir</name>
-                                <value>${build.directory}</value>
-                            </property>
-
-                            <property>
-                                <name>baseDir</name>
-                                <value>${basedir}</value>
-                            </property>
-
-                        </systemProperties>
-                    </configuration>
-                </plugin>              
-        </plugins>
-    </build>
-
 </project>
