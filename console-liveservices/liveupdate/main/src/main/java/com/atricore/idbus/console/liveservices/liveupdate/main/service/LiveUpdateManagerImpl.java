@@ -24,6 +24,7 @@ import java.security.cert.CertStore;
 import java.security.cert.CollectionCertStoreParameters;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Periodically analyze MD and see if updates apply.
@@ -45,9 +46,11 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     private UpdatesMonitor updatesMonitor;
 
-    private String dataFolder;
-
     private ScheduledThreadPoolExecutor stpe;
+
+    private int updatesCheckInterval;
+
+    private String dataFolder;
 
     private Properties config;
 
@@ -58,6 +61,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     private String certProviderName = "SUN";
 
     private CertStore certStore;
+
 
     public void init() throws LiveUpdateException {
 
@@ -128,15 +132,29 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
             }
 
-            // Try to resume pending processes :
-            this.engine.resume();
-
         } catch (NoSuchAlgorithmException e) {
             throw new LiveUpdateException(e);
         } catch (InvalidAlgorithmParameterException e) {
             throw new LiveUpdateException(e);
         } catch (NoSuchProviderException e) {
             throw new LiveUpdateException(e);
+        }
+
+        updatesMonitor = new UpdatesMonitor(this, updatesCheckInterval * 60 * 1000);
+
+        stpe = new ScheduledThreadPoolExecutor(3);
+        stpe.scheduleAtFixedRate(updatesMonitor, 1,
+                updatesCheckInterval,
+                TimeUnit.MINUTES);
+
+    }
+
+    public void shutdown() {
+        try {
+            if (stpe != null)
+                stpe.shutdown();
+        } catch (Exception e) {
+            logger.warn (e.getMessage());
         }
     }
 
@@ -203,6 +221,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     // Analyze MD and see if updates apply. (use license information ....)
     public Collection<UpdateDescriptorType> checkForUpdates() throws LiveUpdateException {
         mdManager.refreshRepositories();
+        // TODO : Notify if new updates were found !
         return getAvailableUpdates();
     }
 
@@ -249,7 +268,6 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     }
 
     public ProfileType getUpdateProfile() throws LiveUpdateException {
-        // TODO : Refresh repos every time ?
         Collection<UpdateDescriptorType> updates = mdManager.refreshRepositories();
         ProfileType profile = getCurrentProfile(true);
 
@@ -262,7 +280,6 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
 
     public ProfileType getUpdateProfile(String group, String name, String version) throws LiveUpdateException {
-        // TODO : Refresh repos every time ?
         mdManager.refreshRepositories();
         UpdateDescriptorType ud = mdManager.getUpdate(group, name, version);
         if (ud == null)
@@ -403,4 +420,12 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
     }
 
     //
+
+    public void setUpdatesCheckInterval(int updatesCheckInterval) {
+        this.updatesCheckInterval = updatesCheckInterval;
+    }
+
+    public int getUpdatesCheckInterval() {
+        return updatesCheckInterval;
+    }
 }

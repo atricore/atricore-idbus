@@ -15,7 +15,7 @@
                     http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
     <!-- LiveUpdate service -->
-    <bean name="liveUpdateMgr" init-method="init"
+    <bean name="liveUpdateMgr" init-method="init" destroy-method="shutdown"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.service.LiveUpdateManagerImpl">
 
         <property name="config" ref="liveUpdateProps"/>
@@ -23,6 +23,8 @@
         <property name="artifactRepositoryManager" ref="artRepositoriesManager"/>
         <property name="profileManager" ref="profileManager"/>
         <property name="engine" ref="updateEngine"/>
+        <property name="updatesCheckInterval" value="${updatesCheckInterval}"/>
+
 
         <property name="dataFolder" value="${karaf.data}"/>
     </bean>
@@ -131,6 +133,9 @@
         <prop key="repo.art.primary.validateSignature">false</prop>
         <prop key="repo.art.primary.location">file:${karaf.data}/liveservices/liveupdate/repos/art-primary/</prop>
         <prop key="repo.md.primary.certificate">file:${karaf.data}/liveservices/liveupdate/repos/art-primary/art-primary-cert</prop>
+
+        <!-- In Minutes, default : daily -->
+        <prop key="updatesCheckInterval">1440</prop>
 
     </osgix:cm-properties>
 

@@ -280,6 +280,7 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
 
         w.walk(updatableNode, v);
 
+        // TODO : Reverse dependencies order before return
         return v.getResult();
     }
 

@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.ProcessStatus;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 
 import java.io.Serializable;
@@ -17,6 +18,8 @@ public class UpdateProcessState implements Serializable {
     private String operation;
 
     private ProfileType updateProfile;
+
+    private ProcessStatus status;
 
     public String getId() {
         return id;
@@ -50,4 +53,11 @@ public class UpdateProcessState implements Serializable {
         this.plan = plan;
     }
 
+    public ProcessStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ProcessStatus status) {
+        this.status = status;
+    }
 }

@@ -51,21 +51,23 @@ public class UpdateEngineImpl implements UpdateEngine {
     public void execute(String planName, ProfileType updateProfile) throws LiveUpdateException {
 
         UpdatePlan plan = getPlan(planName);
-        String procId = uuidGen.generateId();
-
-        if (logger.isDebugEnabled())
-            logger.debug("Starting update plan : " + plan.getName() + " in process " + procId);
 
         UpdateProcess proc = startProcess(plan, updateProfile);
 
-        executeProcess(proc);
+        proc = executeProcess(proc);
+
+        if (logger.isDebugEnabled())
+            logger.debug("Process Executed : " + proc.getId());
 
     }
 
-    public void resume() throws LiveUpdateException {
+    public void resumeAll() throws LiveUpdateException {
         for (String procId : procs.keySet()) {
             UpdateProcess proc = resumeProcess(procId);
             executeProcess(proc);
+            if (logger.isDebugEnabled())
+                logger.debug("Process Executed (resume) : " + proc.getId());
+
         }
     }
 
@@ -97,12 +99,45 @@ public class UpdateEngineImpl implements UpdateEngine {
 
     //------------------------------------------------------< Utilities >
 
+    protected UpdateProcess executeProcess(UpdateProcess proc) throws LiveUpdateException {
+
+        proc.getState().setStatus(ProcessStatus.RUNNING);
+        OperationStatus sts = advanceProcess(proc);
+
+        while(sts.equals(OperationStatus.NEXT)) {
+            if (logger.isTraceEnabled())
+                logger.trace("Process advanced " + proc.getId());
+            sts = advanceProcess(proc);
+        }
+
+        switch (sts) {
+            case STOP:
+                if (logger.isDebugEnabled())
+                    logger.debug("Process completed " + proc.getId());
+                stopProcess(proc);
+               break;
+
+            case PAUSE:
+                if (logger.isDebugEnabled())
+                    logger.debug("Process paused " + proc.getId());
+                pauseProcess(proc);
+                break;
+
+            default:
+            logger.error("Unknown operation status " + sts.name());
+            stopProcess(proc);
+        }
+
+        return proc;
+
+    }
+
     protected UpdateProcess startProcess(UpdatePlan plan, ProfileType updateProfile) throws LiveUpdateException {
 
         String procId = uuidGen.generateId();
 
         if (logger.isDebugEnabled())
-            logger.debug("Starting update plan : " + plan.getName() + " in process " + procId);
+            logger.debug("Starting process for : " + plan.getName() + ". ID : " + procId);
 
         UpdateContext ctx = new UpdateContextImpl(procId, plan, updateProfile);
 
@@ -110,27 +145,14 @@ public class UpdateEngineImpl implements UpdateEngine {
         procs.put(proc.getId(), proc);
 
         proc.init();
+        proc.getState().setStatus(ProcessStatus.STARTED);
 
         store.save(proc.getState());
 
-        // TODO : Persist process information (use properties or osgi cfg ?!)
         return proc;
 
     }
 
-    protected void executeProcess(UpdateProcess proc) throws LiveUpdateException {
-        OperationStatus sts = advanceProcess(proc);
-
-        while(sts.equals(OperationStatus.NEXT))
-            sts = advanceProcess(proc);
-
-        if (sts.equals(OperationStatus.STOP)) {
-            if (logger.isDebugEnabled())
-                logger.debug("Process completed " + proc.getId());
-            store.remove(proc.getId());
-        }
-
-    }
 
     protected UpdateProcess resumeProcess(String processId) throws LiveUpdateException {
         UpdateProcess proc = procs.get(processId);
@@ -139,6 +161,8 @@ public class UpdateEngineImpl implements UpdateEngine {
 
         if (logger.isDebugEnabled())
             logger.debug("Resuming process " + processId);
+
+        proc.seek(proc.getState().getOperation());
 
         return proc;
     }
@@ -149,6 +173,19 @@ public class UpdateEngineImpl implements UpdateEngine {
             throw new LiveUpdateException("Cannot find update process " + processId);
         return advanceProcess(proc);
     }
+
+    protected UpdateProcess stopProcess(UpdateProcess proc) throws LiveUpdateException {
+        proc.getState().setStatus(ProcessStatus.STOPPED);
+        store.remove(proc.getId());
+        return proc;
+    }
+
+    protected UpdateProcess pauseProcess(UpdateProcess proc) throws LiveUpdateException {
+        proc.getState().setStatus(ProcessStatus.STOPPED);
+        store.save(proc.getState());
+        return proc;
+    }
+
 
     protected OperationStatus advanceProcess(UpdateProcess proc) throws LiveUpdateException {
 

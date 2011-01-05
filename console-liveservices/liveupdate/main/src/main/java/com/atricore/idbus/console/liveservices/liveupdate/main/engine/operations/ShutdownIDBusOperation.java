@@ -21,6 +21,9 @@ public class ShutdownIDBusOperation extends AbstractInstallOperation implements 
 
     @Override
     public OperationStatus execute(InstallEvent event) throws LiveUpdateException {
+
+        // TODO : Configure feature service to start IDBus in maintenance mode
+
         new Thread() {
             public void run() {
                 try {

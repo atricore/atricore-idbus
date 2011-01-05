@@ -1,6 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.ProcessStatus;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.ProcessStore;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
@@ -75,6 +76,7 @@ public class PropertiesProcessStateStore implements ProcessStore {
 
         props.setProperty("id", state.getId());
         props.setProperty("plan", state.getPlan());
+        props.setProperty("status", state.getStatus().name());
         if (state.getOperation() != null)
             props.setProperty("operation", state.getOperation());
 
@@ -185,7 +187,9 @@ public class PropertiesProcessStateStore implements ProcessStore {
         UpdateProcessState state = new UpdateProcessState();
         state.setId(props.getProperty("id"));
         state.setPlan(props.getProperty("plan"));
+        state.setStatus(ProcessStatus.valueOf(props.getProperty("status")));
         state.setOperation(props.getProperty("operation"));
+
 
         InputStream in = null;
         try {
