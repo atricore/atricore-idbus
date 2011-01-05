@@ -119,7 +119,7 @@
                         <Export-Package>com.atricore.idbus.console.licensing.main.*;version=${pom.version}</Export-Package>
                     </instructions>
                 </configuration>
-            </plugin>
+            </plugin>             
         </plugins>
 
     </build>

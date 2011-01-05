@@ -5,7 +5,7 @@ package com.atricore.idbus.console.licensing.generation;
  */
 public class LicenseGenerationException extends Exception {
 
-        public LicenseGenerationException() {
+    public LicenseGenerationException() {
     }
 
     public LicenseGenerationException(String message) {

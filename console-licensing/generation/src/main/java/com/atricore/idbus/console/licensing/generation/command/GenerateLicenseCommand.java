@@ -16,8 +16,11 @@ public class GenerateLicenseCommand  extends OsgiCommandSupport {
         // * Keystore pass
         // * Private Key name (in keystore)
         // * Private key pass
-    @Option(name = "-l", aliases = "--license", description = "License file", required = true, multiValued = false)
-    private String license;
+    @Option(name = "-i", aliases = "--in", description = "Unsigned license file", required = true, multiValued = false)
+    private String inLicense;
+
+    @Option(name = "-o", aliases = "--out", description = "Signed license file", required = true, multiValued = false)
+    private String outLicense;
 
     @Option(name = "-s", aliases = "--keystore", description = "Keystore file", required = true, multiValued = false)
     private String keystore;
@@ -38,7 +41,7 @@ public class GenerateLicenseCommand  extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-        generator.generate(license, keystore, keystorePass, keyAlias, keyPass, certAlias);        
+        generator.generate(inLicense, outLicense, keystore, keystorePass, keyAlias, keyPass, certAlias);
         return null;
     }
 

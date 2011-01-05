@@ -3,9 +3,9 @@ package com.atricore.idbus.console.licensing.main.impl;
 import com.atricore.idbus.console.licensing.main.InvalidFeatureException;
 import com.atricore.idbus.console.licensing.main.InvalidLicenseException;
 import com.atricore.idbus.console.licensing.main.LicenseManager;
-import com.atricore.idbus.console.licensing.main.util.LicenseUtil;
-import com.atricore.idbus.console.licensing.main.util.NamespaceFilterXMLStreamWriter;
 import com.atricore.josso2.licensing._1_0.license.LicenseType;
+import com.atricore.josso2.licensing._1_0.util.NamespaceFilterXMLStreamWriter;
+import com.atricore.josso2.licensing._1_0.util.XmlUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -45,16 +45,22 @@ public class LicenseManagerImpl implements LicenseManager {
     private String publicKey = "";
     private String licensePath = "";
 
+
     public void activateLicense(byte[] license) throws InvalidLicenseException {
         LicenseType licenseType = null;
         try {
-            licenseType = LicenseUtil.unmarshal(new ByteArrayInputStream(license));
+            //unmarshal
+            licenseType = XmlUtils.unmarshallLicense(new ByteArrayInputStream(license), false);
+            //and call validate
+            validateLicense(licenseType);
+            //store license
+            storeLicense(licenseType);
         } catch (JAXBException e) {
             logger.error("Error unmarshalling the license", e);
             throw new InvalidLicenseException(e);
+        } catch (Exception e) {
+            throw new InvalidLicenseException(e);
         }
-        validateLicense(licenseType);
-        // 1. Unmarshal and call validate again
     }
 
     public void activateLicense(LicenseType license) throws InvalidLicenseException {
@@ -95,9 +101,9 @@ public class LicenseManagerImpl implements LicenseManager {
 
             DocumentBuilder builder = dbf.newDocumentBuilder();
 
-            JAXBContext context = JAXBContext.newInstance(LicenseUtil.ATRICORE_LICENSE_PKG, license.getClass().getClassLoader());
+            JAXBContext context = JAXBContext.newInstance(XmlUtils.ATRICORE_LICENSE_PKG, license.getClass().getClassLoader());
             Marshaller m = context.createMarshaller();
-            JAXBElement<LicenseType> jaxbAssertion = new JAXBElement<LicenseType>(new QName(LicenseUtil.ATRICORE_LICENSE_NS, "License"), LicenseType.class, license);
+            JAXBElement<LicenseType> jaxbAssertion = new JAXBElement<LicenseType>(new QName(XmlUtils.ATRICORE_LICENSE_NS, "License"), LicenseType.class, license);
             StringWriter swas = new StringWriter();
             XMLStreamWriter sw = new NamespaceFilterXMLStreamWriter(swas);
             m.marshal(jaxbAssertion, sw);
@@ -178,12 +184,14 @@ public class LicenseManagerImpl implements LicenseManager {
         LicenseType consoleLicense = null;
         File licenseFile = new File(licensePath);
         try {
-            consoleLicense = LicenseUtil.unmarshal(new FileInputStream(licenseFile));
+            consoleLicense = XmlUtils.unmarshallLicense(new FileInputStream(licenseFile), false);
         } catch (JAXBException e) {
             logger.error("Problem unmarshalling consoleLicense file", e);
             throw new InvalidLicenseException(e);
         } catch (FileNotFoundException e) {
             logger.error("License file not found", e);
+            throw new InvalidLicenseException(e);
+        } catch (Exception e) {
             throw new InvalidLicenseException(e);
         }
         return consoleLicense;
@@ -191,9 +199,13 @@ public class LicenseManagerImpl implements LicenseManager {
 
     protected void storeLicense(LicenseType license) throws InvalidLicenseException {
         try {
-            LicenseUtil.marshal(license, licensePath);
+            String licenseString = XmlUtils.marshalLicense(license, false);
+            Writer out = new OutputStreamWriter(new FileOutputStream(licensePath), "UTF-8");
+            out.write(licenseString);
         } catch (JAXBException e) {
             logger.error("Error marshalling license", e);
+            throw new InvalidLicenseException(e);
+        } catch (Exception e) {
             throw new InvalidLicenseException(e);
         }
     }
@@ -204,62 +216,62 @@ public class LicenseManagerImpl implements LicenseManager {
      * NOTE: If there is an X509CRL in the KeyInfo element, then revoked
      * certificate will be ignored.
      */
-    public static class RawX509KeySelector extends KeySelector {
+//    public static class RawX509KeySelector extends KeySelector {
+//
+//        public KeySelectorResult select(KeyInfo keyInfo,
+//                                        KeySelector.Purpose purpose,
+//                                        AlgorithmMethod method,
+//                                        XMLCryptoContext context)
+//                throws KeySelectorException {
+//            if (keyInfo == null) {
+//                throw new KeySelectorException("Null KeyInfo object!");
+//            }
+//            // search for X509Data in keyinfo
+//            Iterator iter = keyInfo.getContent().iterator();
+//            while (iter.hasNext()) {
+//                XMLStructure kiType = (XMLStructure) iter.next();
+//                if (kiType instanceof X509Data) {
+//                    X509Data xd = (X509Data) kiType;
+//                    Object[] entries = xd.getContent().toArray();
+//                    X509CRL crl = null;
+//                    // Looking for CRL before finding certificates
+//                    for (int i = 0; (i < entries.length && crl != null); i++) {
+//                        if (entries[i] instanceof X509CRL) {
+//                            crl = (X509CRL) entries[i];
+//                        }
+//                    }
+//                    Iterator xi = xd.getContent().iterator();
+//                    boolean hasCRL = false;
+//                    while (xi.hasNext()) {
+//                        Object o = xi.next();
+//                        // skip non-X509Certificate entries
+//                        if (o instanceof X509Certificate) {
+//                            if ((purpose != KeySelector.Purpose.VERIFY) &&
+//                                    (crl != null) &&
+//                                    crl.isRevoked((X509Certificate) o)) {
+//                                continue;
+//                            } else {
+//                                return new SimpleKeySelectorResult
+//                                        (((X509Certificate) o).getPublicKey());
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            throw new KeySelectorException("No X509Certificate found!");
+//        }
+//    }
 
-        public KeySelectorResult select(KeyInfo keyInfo,
-                                        KeySelector.Purpose purpose,
-                                        AlgorithmMethod method,
-                                        XMLCryptoContext context)
-                throws KeySelectorException {
-            if (keyInfo == null) {
-                throw new KeySelectorException("Null KeyInfo object!");
-            }
-            // search for X509Data in keyinfo
-            Iterator iter = keyInfo.getContent().iterator();
-            while (iter.hasNext()) {
-                XMLStructure kiType = (XMLStructure) iter.next();
-                if (kiType instanceof X509Data) {
-                    X509Data xd = (X509Data) kiType;
-                    Object[] entries = xd.getContent().toArray();
-                    X509CRL crl = null;
-                    // Looking for CRL before finding certificates
-                    for (int i = 0; (i < entries.length && crl != null); i++) {
-                        if (entries[i] instanceof X509CRL) {
-                            crl = (X509CRL) entries[i];
-                        }
-                    }
-                    Iterator xi = xd.getContent().iterator();
-                    boolean hasCRL = false;
-                    while (xi.hasNext()) {
-                        Object o = xi.next();
-                        // skip non-X509Certificate entries
-                        if (o instanceof X509Certificate) {
-                            if ((purpose != KeySelector.Purpose.VERIFY) &&
-                                    (crl != null) &&
-                                    crl.isRevoked((X509Certificate) o)) {
-                                continue;
-                            } else {
-                                return new SimpleKeySelectorResult
-                                        (((X509Certificate) o).getPublicKey());
-                            }
-                        }
-                    }
-                }
-            }
-            throw new KeySelectorException("No X509Certificate found!");
-        }
-    }
-
-    private static class SimpleKeySelectorResult implements KeySelectorResult {
-        private PublicKey pk;
-
-        SimpleKeySelectorResult(PublicKey pk) {
-            this.pk = pk;
-        }
-
-        public Key getKey() {
-            return pk;
-        }
-    }    
+//    private static class SimpleKeySelectorResult implements KeySelectorResult {
+//        private PublicKey pk;
+//
+//        SimpleKeySelectorResult(PublicKey pk) {
+//            this.pk = pk;
+//        }
+//
+//        public Key getKey() {
+//            return pk;
+//        }
+//    }
 
 }
