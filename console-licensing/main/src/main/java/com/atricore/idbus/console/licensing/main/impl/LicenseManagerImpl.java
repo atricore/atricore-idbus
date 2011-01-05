@@ -13,11 +13,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.*;
-import javax.xml.crypto.*;
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.dom.DOMValidateContext;
-import javax.xml.crypto.dsig.keyinfo.KeyInfo;
-import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,12 +22,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.*;
-import java.security.Key;
-import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import java.security.cert.X509CRL;
-import java.security.cert.X509Certificate;
 import java.util.Iterator;
 import javax.xml.crypto.dsig.*;
 
@@ -42,7 +35,7 @@ public class LicenseManagerImpl implements LicenseManager {
     static Log logger = LogFactory.getLog(LicenseManagerImpl.class);
 
     // Encoded digital certificate (in the future, we should be able to manage a set of certs).
-    private String publicKey = "";
+    private String certificate = "";
     private String licensePath = "";
 
 
@@ -87,7 +80,7 @@ public class LicenseManagerImpl implements LicenseManager {
 
     protected void validateLicense(LicenseType license) throws InvalidLicenseException {
         // 1. Validate signature
-        validateSignature(license, publicKey);
+        validateSignature(license, certificate);
 
         // 2. Validate consoleLicense information
         validateLicenseInformation(license);
@@ -122,7 +115,8 @@ public class LicenseManagerImpl implements LicenseManager {
 
             //load public key from cert file
             CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-            java.security.cert.Certificate cert = certFactory.generateCertificate(new FileInputStream(publicKey));
+//            java.security.cert.Certificate cert = certFactory.generateCertificate(new FileInputStream(this.certificate));
+            java.security.cert.Certificate cert = certFactory.generateCertificate(new ByteArrayInputStream(certificate.getBytes()));
 
             // Validate all Signature elements
             for (int k = 0; k < nl.getLength(); k++) {
@@ -200,8 +194,9 @@ public class LicenseManagerImpl implements LicenseManager {
     protected void storeLicense(LicenseType license) throws InvalidLicenseException {
         try {
             String licenseString = XmlUtils.marshalLicense(license, false);
-            Writer out = new OutputStreamWriter(new FileOutputStream(licensePath), "UTF-8");
+            Writer out = new OutputStreamWriter(new FileOutputStream(licensePath));
             out.write(licenseString);
+            out.close();
         } catch (JAXBException e) {
             logger.error("Error marshalling license", e);
             throw new InvalidLicenseException(e);
@@ -210,68 +205,7 @@ public class LicenseManagerImpl implements LicenseManager {
         }
     }
 
-    /**
-     * KeySelector which would retrieve the X509Certificate out of the
-     * KeyInfo element and return the public key.
-     * NOTE: If there is an X509CRL in the KeyInfo element, then revoked
-     * certificate will be ignored.
-     */
-//    public static class RawX509KeySelector extends KeySelector {
-//
-//        public KeySelectorResult select(KeyInfo keyInfo,
-//                                        KeySelector.Purpose purpose,
-//                                        AlgorithmMethod method,
-//                                        XMLCryptoContext context)
-//                throws KeySelectorException {
-//            if (keyInfo == null) {
-//                throw new KeySelectorException("Null KeyInfo object!");
-//            }
-//            // search for X509Data in keyinfo
-//            Iterator iter = keyInfo.getContent().iterator();
-//            while (iter.hasNext()) {
-//                XMLStructure kiType = (XMLStructure) iter.next();
-//                if (kiType instanceof X509Data) {
-//                    X509Data xd = (X509Data) kiType;
-//                    Object[] entries = xd.getContent().toArray();
-//                    X509CRL crl = null;
-//                    // Looking for CRL before finding certificates
-//                    for (int i = 0; (i < entries.length && crl != null); i++) {
-//                        if (entries[i] instanceof X509CRL) {
-//                            crl = (X509CRL) entries[i];
-//                        }
-//                    }
-//                    Iterator xi = xd.getContent().iterator();
-//                    boolean hasCRL = false;
-//                    while (xi.hasNext()) {
-//                        Object o = xi.next();
-//                        // skip non-X509Certificate entries
-//                        if (o instanceof X509Certificate) {
-//                            if ((purpose != KeySelector.Purpose.VERIFY) &&
-//                                    (crl != null) &&
-//                                    crl.isRevoked((X509Certificate) o)) {
-//                                continue;
-//                            } else {
-//                                return new SimpleKeySelectorResult
-//                                        (((X509Certificate) o).getPublicKey());
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//            throw new KeySelectorException("No X509Certificate found!");
-//        }
-//    }
-
-//    private static class SimpleKeySelectorResult implements KeySelectorResult {
-//        private PublicKey pk;
-//
-//        SimpleKeySelectorResult(PublicKey pk) {
-//            this.pk = pk;
-//        }
-//
-//        public Key getKey() {
-//            return pk;
-//        }
-//    }
-
+    public void setLicensePath(String licensePath) {
+        this.licensePath = licensePath;
+    }
 }
