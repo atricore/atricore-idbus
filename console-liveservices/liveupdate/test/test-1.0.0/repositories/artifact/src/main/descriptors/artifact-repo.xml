@@ -38,7 +38,7 @@
         <file>
             <source>${basedir}/target/classes/liveupdate-test-installer.xml</source>
             <outputDirectory>/com/atricore/idbus/console/liveservices/liveupdate/tests/com.atricore.idbus.console.liveservices.liveupdate.tests.installer/${pom.version}/</outputDirectory>
-            <destName>com.atricore.idbus.console.liveservices.liveupdate.tests.installer-${pom.version}-liveupdate.jar.xml</destName>
+            <destName>com.atricore.idbus.console.liveservices.liveupdate.tests.installer-${pom.version}.jar.xml</destName>
             <fileMode>0644</fileMode>
             <lineEnding>unix</lineEnding>
         </file>

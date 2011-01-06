@@ -41,8 +41,17 @@
     <bean name="downloadUpdatesOperation" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.operations.DownloadUpdatesOperation">
         <property name="name" value="downloadUpdatesOperation"/>
         <property name="stepName" value="download-updates"/>
+        <property name="artMgr" ref="artRepositoriesManager"/>
     </bean>
     <osgi:service id="osgiDownloadUpdatesOperation" ref="downloadUpdatesOperation"
+                  interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
+
+    <bean name="installUpdatesOperation" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.operations.InstallUpdatesOperation">
+        <property name="name" value="installUpdatesOperation"/>
+        <property name="stepName" value="install-updates-start"/>
+        <property name="artMgr" ref="artRepositoriesManager"/>
+    </bean>
+    <osgi:service id="osgiInstallUpdatesOperation" ref="installUpdatesOperation"
                   interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
 
     <bean name="switchToMaintananceModeOperation"

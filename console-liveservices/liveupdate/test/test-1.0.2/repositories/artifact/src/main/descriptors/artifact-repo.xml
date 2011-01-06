@@ -47,7 +47,7 @@
         <file>
             <source>${basedir}/target/classes/liveupdate-test-tar.gz.xml</source>
             <outputDirectory>/com/atricore/idbus/console/liveservices/liveupdate/tests/liveupdate-test/${pom.version}/</outputDirectory>
-            <destName>liveupdate-test-${pom.version}.tar.gz.xml</destName>
+            <destName>liveupdate-test-${pom.version}-liveupdate.tar.gz.xml</destName>
             <fileMode>0644</fileMode>
             <lineEnding>unix</lineEnding>
         </file>
@@ -56,7 +56,7 @@
         <file>
             <source>${basedir}/target/classes/liveupdate-test-zip.xml</source>
             <outputDirectory>/com/atricore/idbus/console/liveservices/liveupdate/tests/liveupdate-test/${pom.version}/</outputDirectory>
-            <destName>liveupdate-test-${pom.version}.zip.xml</destName>
+            <destName>liveupdate-test-${pom.version}-liveupdate.zip.xml</destName>
             <fileMode>0644</fileMode>
             <lineEnding>dos</lineEnding>
         </file>

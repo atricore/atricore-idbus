@@ -234,7 +234,7 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
         updateProfile.setName("Generated profile");
 
         for (DependencyNode dependencyNode : updatePath) {
-            updateProfile.getInstallableUnit().add(dependencyNode.getInstallableUnit());
+            updateProfile.getInstallableUnit().add(0, dependencyNode.getInstallableUnit());
         }
 
         if (logger.isTraceEnabled())
@@ -280,7 +280,6 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
 
         w.walk(updatableNode, v);
 
-        // TODO : Reverse dependencies order before return
         return v.getResult();
     }
 

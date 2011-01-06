@@ -891,6 +891,12 @@
                 <version>${commons-fileupload.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.ant</artifactId>
+                <version>1.7.0_4</version>
+            </dependency>
+            
             <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>
