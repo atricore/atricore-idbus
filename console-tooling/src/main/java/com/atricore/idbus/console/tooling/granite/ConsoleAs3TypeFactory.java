@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.tooling.grainte;
+package com.atricore.idbus.console.tooling.granite;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>

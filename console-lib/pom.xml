@@ -102,7 +102,7 @@
                             </templates>
 
                             <extraOptions>
-                                <as3typefactory>com.atricore.idbus.console.tooling.grainte.ATCConsoleAs3TypeFactory</as3typefactory>
+                                <as3typefactory>com.atricore.idbus.console.tooling.granite.ATCConsoleAs3TypeFactory</as3typefactory>
                             </extraOptions>
 
                         </configuration>

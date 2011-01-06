@@ -1,4 +1,4 @@
-package com.atricore.idbus.console.tooling.grainte;
+package com.atricore.idbus.console.tooling.granite;
 
 import org.granite.generator.as3.As3Type;
 import org.granite.generator.as3.DefaultAs3TypeFactory;
