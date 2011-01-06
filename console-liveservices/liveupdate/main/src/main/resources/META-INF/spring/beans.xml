@@ -89,31 +89,64 @@
         
         <property name="steps">
             <set>
+
+                <!-- Download and install installers -->
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
                     <property name="name" value="download-installers"/>
                 </bean>
+
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
                     <property name="name" value="install-installers"/>
                 </bean>
+
+                <!-- Prepare install, system is still running -->
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
-                    <property name="name" value="prepare-install"/>
+                    <property name="name" value="prepare-install-start"/>
+                </bean>
+
+                <!-- Download required artifacts -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="download-updates-start"/>
                 </bean>
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
-                    <property name="name" value="download-updates"/>
+                    <property name="name" value="download-updates-end"/>
                 </bean>
-                
+
+                <!-- Prepare install end -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="prepare-install-end"/>
+                </bean>
+
+                <!-- Install updates start, system is still running -->
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
                     <property name="name" value="install-updates-start"/>
                 </bean>
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
                     <property name="name" value="install-updates-end"/>
                 </bean>
+
+
+                <!-- Install updates start, system is in maintenance mode-->
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
                     <property name="name" value="udpate-system-start"/>
                 </bean>
+
+                <!-- Install updates start, system is in maintenance mode -->
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
                     <property name="name" value="udpate-system-end"/>
                 </bean>
+
+
+                <!-- Clean up stuff, system is in maintenance mode-->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="cleanup-start"/>
+                </bean>
+
+                <!-- Cleanup stuff, start, system is set to operational mode  -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="cleanup-end"/>
+                </bean>
+
             </set>
         </property>
     </bean>

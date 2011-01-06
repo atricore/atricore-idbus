@@ -23,6 +23,8 @@ public class ShutdownIDBusOperation extends AbstractInstallOperation implements 
     @Override
     public OperationStatus execute(InstallEvent event) throws LiveUpdateException {
 
+        // TODO : Check for property in context and see if restart is required!
+
         new Thread() {
             public void run() {
                 try {
