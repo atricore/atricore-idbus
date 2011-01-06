@@ -1,8 +1,10 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
-import com.atricore.idbus.console.liveservices.liveupdate.main.profile.*;
-
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyNode;
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyTreeBuilder;
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.DependencyWalker;
+import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileManager;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
@@ -27,11 +29,13 @@ import java.util.Enumeration;
 import java.util.List;
 
 /**
+ * This should be replaced by mave
+ *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
 
-    // TODO : Liste for bundle events, and look for descriptors !?
+    // TODO : List for bundle events, and look for descriptors !?
 
     private static final UUIDGenerator uuidGen = new UUIDGenerator();
 
@@ -41,17 +45,21 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
 
     private static final String CONTEXT_FILES = "liveupdate-1.0.xml";
 
-
     private BundleContext bundleContext;
 
-    // TODO : Keep track of container bundle
-    // TODO : Serialize and store ?!
     private ProfileType profile;
 
     public ProfileType getCurrentProfile() throws LiveUpdateException {
+        return getCurrentProfile(false);
+    }
 
-        if (profile != null)
+    public ProfileType getCurrentProfile(boolean rebuild) throws LiveUpdateException {
+
+        if (!rebuild && profile != null)
             return profile;
+
+        if (logger.isDebugEnabled())
+            logger.debug("Building current profile");
 
         ServiceReference ref = getBundleContext().getServiceReference(FeaturesService.class.getName());
         if (ref == null) {
@@ -103,40 +111,35 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
                                 logger.trace("Found UpdateDescriptor " + ud.getID() + " [" + ud.getDescription() + "] " +
                                         ud.getIssueInstant());
 
-                            for (InstallableUnitType iu : ud.getInstallableUnit()) {
+                            InstallableUnitType iu = ud.getInstallableUnit();
+
+                            if (logger.isTraceEnabled())
+                                logger.trace("Found InstalllableUnit " + iu.getID() + " " +
+                                        iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion() +
+                                        " [" + iu.getUpdateNature() + "]");
+
+
+                            // With one feature installed, we consider the IU as installed.
+                            Feature kf = svc.getFeature(iu.getName(), iu.getVersion());
+
+                            if (kf != null) {
 
                                 if (logger.isTraceEnabled())
-                                    logger.trace("Found InstalllableUnit " + iu.getID() + " " +
-                                            iu.getGroup() + "/" + iu.getName() + "/" + iu.getVersion() +
-                                            " [" + iu.getUpdateNature() + "]");
+                                    logger.trace("Karaf Feature found for LiveUpdate Feature " + kf.getId() +
+                                            " [" + kf.getResolver() + "/" + kf.getName()+"/"+kf.getVersion()+"]");
 
+                                if (svc.isInstalled(kf)) {
 
-                                // With one feature installed, we consider the IU as installed.
-                                Feature kf = svc.getFeature(iu.getName(), iu.getVersion());
-
-                                if (kf != null) {
-
-                                    if (logger.isTraceEnabled())
-                                        logger.trace("Karaf Feature found for LiveUpdate Feature " + kf.getId() +
-                                                " [" + kf.getResolver() + "/" + kf.getName()+"/"+kf.getVersion()+"]");
-
-                                    if (svc.isInstalled(kf)) {
-
-                                        if(logger.isTraceEnabled())
-                                            logger.trace("Karaf Feature is installed " + kf.getId() +
-                                                " [" + kf.getResolver() + "/" + kf.getName()+"/"+kf.getVersion()+"]");
-                                        uis.add(iu);
-                                        break;
-                                    }
-                                } else {
-                                    logger.trace("Karaf Feature NOT found for LiveUpdate Feature " + iu.getGroup() +
-                                            "/" + iu.getName() + "/" + iu.getVersion());
+                                    if(logger.isTraceEnabled())
+                                        logger.trace("Karaf Feature is installed " + kf.getId() +
+                                            " [" + kf.getResolver() + "/" + kf.getName()+"/"+kf.getVersion()+"]");
+                                    uis.add(iu);
                                 }
+                            } else {
+                                logger.trace("Karaf Feature NOT found for LiveUpdate Feature " + iu.getGroup() +
+                                        "/" + iu.getName() + "/" + iu.getVersion());
                             }
                         }
-
-
-
                     } catch (Exception e) {
                         logger.error("Cannot load LiveUpdate descriptor : " + e.getMessage(), e);
                     } finally {
@@ -149,13 +152,11 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
 
             ProfileType p = new ProfileType();
             p.setID(uuidGen.generateId());
-            p.setName("_SELF_");
+            p.setName("_CURRENT_");
             p.getInstallableUnit().addAll(uis);
 
-            // Only store profile if any IU was found ...
-            if (p.getInstallableUnit().size() > 0) {
-                this.profile = p;
-            }
+            // Store it
+            this.profile = p;
 
             return p;
 
@@ -167,61 +168,175 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
     }
 
     /**
-     * Builds the profile containing all the necessary updates to install the provided IU in our the current setup
+     * Builds the profile containing all the necessary updates to install the provided update in the current setup
      */
-    public ProfileType buildUpdateProfile(UpdateDescriptorType update, Collection<UpdateDescriptorType> updates) throws LiveUpdateException {
-
-        List<UpdateDescriptorType> uds = new ArrayList<UpdateDescriptorType>(updates);
-
-        boolean found = false;
-        for (UpdateDescriptorType u : updates) {
-            if (u.getID().equals(update.getID())) {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found) {
-            if (logger.isDebugEnabled())
-                logger.debug("Requested update is not part of updates collection, adding it !");
-            uds.add(update);
-        }
-
-        // Create dependency tree
-        DependencyTreeBuilder tb = new DefaultDependencyTreeBuilder();
-        Collection<DependencyNode> dependencies = tb.buildDependencyList(uds);
-
-        if (logger.isTraceEnabled())
-            logger.trace("Processing " + dependencies.size() + " updates");
-
-        // Look the IU Dependency Node
-        // TODO : What if there's more than one IU ?
-        InstallableUnitType iu = update.getInstallableUnit().get(0);
-        DependencyNode install = tb.getDependency(iu);
-
-        // Now, build all possible update 'paths' and choose the shorter one.
-        DependencyVisitor<List<ProfileType>> v = new UpdateProfileBuilderVisitor(getCurrentProfile());
-        DependencyWalker<List<ProfileType>> w = new DeepFirstDependencyWalker<List<ProfileType>>();
+    public ProfileType buildUpdateProfile(InstallableUnitType installable, Collection<UpdateDescriptorType> updates) throws LiveUpdateException {
 
         // Each profile is a different way to install the desire update in our setup
-        List<ProfileType> profiles = w.walk(install, v);
+
+        DependencyNode installableNode = buildUpdateDependenciesPaths(installable, getCurrentProfile().getInstallableUnit(), updates);
+        List<List<DependencyNode>> updatePaths = installableNode.getUpdatePaths();
+
         if (logger.isTraceEnabled())
-            logger.trace("Found " + profiles.size() + " possible update profiles (strategies)");        
+            logger.trace("Found " + updatePaths.size() + " possible update paths (strategies)");
+
+        if (updatePaths.size() < 1)
+            return null;
 
         // Choose the shorter path, the one that requires the fewer installable units
-        ProfileType updateProfile = null;
-        for (ProfileType p : profiles) {
-            if (updateProfile == null || p.getInstallableUnit().size() < updateProfile.getInstallableUnit().size()) {
-                updateProfile = p;
+        List<DependencyNode> updatePath = null;
+        for (List<DependencyNode> p : updatePaths) {
+            if (updatePath == null || p.size() < updatePath.size())
+                updatePath = p;
+        }
+
+        // Check if any required dependency needs to bee installed/updated
+        Collection<DependencyNode> requiredDependencies = installableNode.getRequiredDependencies();
+        for (DependencyNode requiredDep : requiredDependencies) {
+
+            boolean requiresInstall = true;
+            boolean requiresUpdate = true;
+
+            for (InstallableUnitType installedIu : profile.getInstallableUnit()) {
+
+                if (installedIu.getGroup().equals(requiredDep.getGroup())
+                        && installedIu.getName().equals(requiredDep.getName())) {
+
+                    // Some dependency version is in place, do not require install.
+                    requiresInstall = false;
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Installable Unit found for required dependency : " +
+                                installedIu.getGroup() + "/" +
+                                installedIu.getName() + "/" +
+                                installedIu.getVersion());
+
+                    if (installedIu.getVersion().equals(requiredDep.getVersion())) {
+                        // Dependency is in place
+                        requiresUpdate = false;
+                        break;
+                    }
+                }
             }
+
+            // TODO : Do this automatically .... 
+            if (requiresInstall)
+                throw new LiveUpdateException("Dependency install is required : " + requiredDep.getFqKey());
+
+            if (requiresUpdate)
+                throw new LiveUpdateException("Dependency upgrade is required : " + requiredDep.getFqKey());
+
+
+        }
+
+        ProfileType updateProfile = new ProfileType();
+        updateProfile.setID(uuidGen.generateId());
+        updateProfile.setName("Generated profile");
+
+        for (DependencyNode dependencyNode : updatePath) {
+            updateProfile.getInstallableUnit().add(0, dependencyNode.getInstallableUnit());
         }
 
         if (logger.isTraceEnabled())
-            logger.trace("Selected update profile with " + updateProfile.getInstallableUnit() + " IUs");
+            logger.trace("Selected update profile with " + updateProfile.getInstallableUnit().size() + " IUs");
+        
         return updateProfile;
     }
 
+    public Collection<UpdateDescriptorType> getAvailableUpdates(InstallableUnitType updatable, Collection<UpdateDescriptorType> updates) throws LiveUpdateException {
+
+        List<UpdateDescriptorType> availableUpdates = new ArrayList<UpdateDescriptorType>();
+        for (DependencyNode au : buildAvailableUpdates(updatable, updates)) {
+            availableUpdates.add(au.getUpdateDescriptor());
+        }
+
+        return availableUpdates;
+    }
+
     // --------------------------------------------------< Utilities >
+
+    /**
+     * Builds the list of dependencies that can update the given iu
+     * @param updatable the IU that needs to be updated.
+     * @param updates the updates available for the updatable IU
+     */
+    protected  Collection<DependencyNode> buildAvailableUpdates(InstallableUnitType updatable, Collection<UpdateDescriptorType> updates) throws LiveUpdateException {
+        // Create dependency tree for all possible updates
+        DependencyTreeBuilder tb = new DefaultDependencyTreeBuilder();
+        Collection<DependencyNode> dependencies = tb.buildDependencyList(updates);
+        if (logger.isTraceEnabled())
+            logger.trace("Processing " + dependencies.size() + " updates");
+
+        DependencyNode updatableNode = tb.getDependency(updatable);
+
+        if (updatableNode == null) {
+            logger.warn("Installable Unit not found in updates : " +
+                    updatable.getGroup() + "/" + updatable.getName() + "/" + updatable.getVersion());
+            return new ArrayList<DependencyNode>();
+        }
+
+        AvailableUpdatesBuilder v = new AvailableUpdatesBuilder(updatableNode);
+        DependencyWalker<Collection<DependencyNode>> w = new DeepFirstDependencyChildrenWalker<Collection<DependencyNode>>();
+
+        w.walk(updatableNode, v);
+
+        return v.getResult();
+    }
+
+
+    /**
+     * Builds the list of update paths.  The list of updates must contain both IUs.
+     */
+    protected  DependencyNode buildUpdateDependenciesPaths(InstallableUnitType installable,
+                                                           Collection<InstallableUnitType> installed,
+                                                           Collection<UpdateDescriptorType> updates) throws LiveUpdateException {
+
+
+        // Nothing to update
+        InstallableUnitType updatable = null;
+        for (InstallableUnitType i : installed) {
+            if (i.getGroup().equals(installable.getGroup()) &&
+                    i.getName().equals(installable.getName())) {
+                updatable = i;
+            }
+        }
+
+        // Create dependency tree for all possible updates
+        DependencyTreeBuilder tb = new DefaultDependencyTreeBuilder();
+        Collection<DependencyNode> dependencies = tb.buildDependencyList(updates);
+        if (logger.isTraceEnabled())
+            logger.trace("Processing " + dependencies.size() + " updates");
+
+        // Look the Installable IU Dependency Node
+        DependencyNode installableNode = tb.getDependency(installable);
+
+        // Look the Updatable IU Dependency Node
+        DependencyNode updatableNode = tb.getDependency(updatable);
+
+        if (logger.isDebugEnabled())
+            logger.debug("Building update paths for " +
+                    (updatableNode != null ? updatableNode.getFqKey() : "<NONE>") +  " ==> " +
+                    installableNode.getFqKey());
+
+        if (updatableNode != null && !updatableNode.getFqName().equals(installableNode.getFqName())) {
+            throw new LiveUpdateException("Installable Unit " + installableNode.getFqKey() +
+                    " cannot update " + updatableNode.getFqKey());
+        }
+
+        if (installableNode.getUnsatisifed().size() > 0) {
+            throw new LiveUpdateException("Cannot install " + installableNode +
+                    ".  It has " + installableNode.getUnsatisifed().size() + " unsatisfied dependencies.");
+        }
+
+        // Now, build all possible update 'paths' and choose the shorter one.
+        UpdateDependenciesPathsBuilder v = new UpdateDependenciesPathsBuilder(installableNode, updatableNode);
+        DependencyWalker<DependencyNode> w = new DeepFirstDependencyParentsWalker<DependencyNode>();
+
+        w.walk(installableNode, v);
+
+        return v.getResult();
+
+    }
 
     // --------------------------------------------------< Properties >
     public BundleContext getBundleContext() {
@@ -231,5 +346,8 @@ public class ProfileManagerImpl implements ProfileManager, BundleContextAware {
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }
+
+
+    // --------------------------------------------------< Inner classes >
 
 }

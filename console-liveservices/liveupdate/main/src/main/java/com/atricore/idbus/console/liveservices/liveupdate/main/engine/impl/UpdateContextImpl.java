@@ -36,4 +36,7 @@ public class UpdateContextImpl implements UpdateContext {
         return updateProfile.getInstallableUnit();
     }
 
+    public ProfileType getProfile() {
+        return updateProfile;
+    }
 }

@@ -4,6 +4,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateExcepti
 import com.atricore.idbus.console.liveservices.liveupdate.main.ProvisioningAgent;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
+import com.atricore.liveservices.liveupdate._1_0.util.LiveUpdateSigner;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -19,7 +20,9 @@ public class AbstractRepositoryManager<T> implements RepositoryManager {
 
     protected List<RepositoryTransport> transports;
 
-    public Collection getRepositories() {
+    protected LiveUpdateSigner liveUpdateSigner;
+
+    public Collection<T> getRepositories() {
         return repos;
     }
 
@@ -61,5 +64,13 @@ public class AbstractRepositoryManager<T> implements RepositoryManager {
 
     public void clearRepository(String repoId) throws LiveUpdateException {
         
+    }
+
+    public LiveUpdateSigner getLiveUpdateSigner() {
+        return liveUpdateSigner;
+    }
+
+    public void setLiveUpdateSigner(LiveUpdateSigner liveUpdateSigner) {
+        this.liveUpdateSigner = liveUpdateSigner;
     }
 }

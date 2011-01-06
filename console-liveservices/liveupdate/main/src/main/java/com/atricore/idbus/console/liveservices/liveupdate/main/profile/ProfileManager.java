@@ -18,13 +18,22 @@ import java.util.List;
 public interface ProfileManager {
 
     /**
-     * Current executing profile
+     * Current execution profile, this is the cached version of it.
      */
     ProfileType getCurrentProfile() throws LiveUpdateException;
 
     /**
+     * Calculates current execution profile.
+     */
+    ProfileType getCurrentProfile(boolean rebuild) throws LiveUpdateException;
+
+    /**
      * Builds the profile containing all the necessary updates to install the provided IU in the current setup
      */
-    ProfileType buildUpdateProfile(UpdateDescriptorType install, Collection<UpdateDescriptorType> updates) throws LiveUpdateException;
+    ProfileType buildUpdateProfile(InstallableUnitType installable, Collection<UpdateDescriptorType> updates) throws LiveUpdateException;
 
+    /**
+     * Gets the list of updates that can be applied to the given installable unit
+     */
+    Collection<UpdateDescriptorType> getAvailableUpdates(InstallableUnitType updatable, Collection<UpdateDescriptorType> updates) throws LiveUpdateException;
 }

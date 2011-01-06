@@ -67,7 +67,7 @@
     <element name="updateDescriptor" type="lu:UpdateDescriptorType"/>
     <complexType name="UpdateDescriptorType">
         <sequence>
-            <element ref="lu:installableUnit" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="lu:installableUnit" minOccurs="0" />
         </sequence>
         <attribute name="ID" type="ID" use="required"/>
         <attribute name="description" type="string" use="required"/>
@@ -79,6 +79,7 @@
         <sequence>
             <element ref="lu:artifact" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="lu:requirement" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="lu:updateDescriptor" minOccurs="0"/>
         </sequence>
         <attribute name="ID" type="ID" use="required"/>
         <attribute name="group" type="string" use="required" />

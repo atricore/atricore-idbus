@@ -40,7 +40,8 @@ public class VFSMetadataRepositoryImplTest extends VFSTestSupport {
         String baseDir = (String) applicationContext.getBean("baseDir");
         FileObject repo = getFileSystemManager().resolveFile(vfsMetadataRepository.getRepoFolder().toString());
         FileObject sourceDir = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/repos/md/cache/repo1");
-        repo.copyFrom(sourceDir, Selectors.SELECT_ALL);  // copyFrom first deletes repo if it exists
+        repo.delete(Selectors.EXCLUDE_SELF);
+        repo.copyFrom(sourceDir, Selectors.SELECT_ALL);
 
         // reload descriptors
         vfsMetadataRepository.init();
@@ -48,11 +49,6 @@ public class VFSMetadataRepositoryImplTest extends VFSTestSupport {
 
     @AfterClass
     public static void tearDownTestSuite() throws Exception {
-    }
-
-    @Test
-    public void testInit() throws Exception {
-        // TODO
     }
 
     @Test
@@ -68,7 +64,7 @@ public class VFSMetadataRepositoryImplTest extends VFSTestSupport {
         Assert.assertEquals(updates.iterator().next().getID(), "id0000000100");
 
         // add updates index
-        FileRepositoryTransport transport = (FileRepositoryTransport) applicationContext.getBean("fileRepositoryTransport1");
+        FileRepositoryTransport transport = (FileRepositoryTransport) applicationContext.getBean("fileRepositoryTransport");
         byte[] idxBin = transport.loadContent(new URI(vfsMetadataRepository.getLocation().toString()));
         UpdatesIndexType idx = XmlUtils1.unmarshallUpdatesIndex(new String(idxBin), false);
         vfsMetadataRepository.addUpdatesIndex(idx);

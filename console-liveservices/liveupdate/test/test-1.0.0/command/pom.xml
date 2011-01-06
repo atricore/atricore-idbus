@@ -28,7 +28,7 @@
 
     <parent>
         <groupId>com.atricore.idbus.console.liveservices.liveupdate.tests</groupId>
-        <artifactId>tests</artifactId>
+        <artifactId>test-1.0.0</artifactId>
         <version>1.0.0</version>
     </parent>
 

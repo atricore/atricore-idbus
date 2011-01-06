@@ -33,7 +33,7 @@
 
     <groupId>com.atricore.idbus.console.liveservices.liveupdate.tests</groupId>
     <artifactId>tests</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Atricore Console :: Live Updates : Tests</name>
 
@@ -41,12 +41,52 @@
         <maven>2.0.9</maven>
     </prerequisites>
 
-    <modules>
-        <module>test-1.0.0</module>
+    <properties>
+        <console.version>1.0.0-SNAPSHOT</console.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+                <artifactId>com.atricore.idbus.console.liveservices.liveupdate.main</artifactId>
+                <version>${console.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>liveupdate-test-1.0.0</id>
+            <modules>
+                <module>test-1.0.0</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>liveupdate-test-1.0.1</id>
+            <modules>
+                <module>test-1.0.1</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>liveupdate-test-1.0.2</id>
+            <modules>
+                <module>test-1.0.2</module>
+            </modules>
+        </profile>
+        
+        <profile>
+            <id>liveupdate-test-1.0.3</id>
+            <modules>
+                <module>test-1.0.3</module>
+            </modules>
+        </profile>
+
+    </profiles>
+
         <!--
-        <module>test-1.0.1</module>
-        <module>test-1.0.2</module>
-        <module>test-1.0.3</module>
         <module>test-1.1.0</module>
         <module>test-1.1.1</module>
         <module>test-1.2.0</module>
@@ -55,7 +95,7 @@
         <module>test-2.0.0</module>
         <module>test-2.0.1</module>
         <module>test-2.1.1</module>
-        -->
-    </modules>
+
+-->
 
 </project>

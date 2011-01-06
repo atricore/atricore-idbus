@@ -12,7 +12,7 @@ import java.io.FileNotFoundException;
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @Command(scope = "liveupdate-admin", name = "validate-updates-index", description = "Validate updates index")
-public class ValidateUpdatesIndexSignatureCommand extends SignValidateCommandSupport {
+public class ValidateUpdatesIndexSignatureCommand extends ArtifactCommandSupport {
 
     @Option(name = "-i", aliases = "--in", description = "Updates index file", required = true, multiValued = false)
     private String updatesIndexFile;

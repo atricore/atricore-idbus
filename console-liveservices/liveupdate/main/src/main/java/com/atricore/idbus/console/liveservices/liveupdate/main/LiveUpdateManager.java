@@ -18,15 +18,31 @@ public interface LiveUpdateManager {
     Collection<UpdateDescriptorType> checkForUpdates() throws LiveUpdateException;
 
     /**
-     * Returns a list of updates that apply to current profile (without refreshing MD repositories)
+     * Refresh MD repositories and returns a list of updates that apply to current profile
+     */
+    Collection<UpdateDescriptorType> checkForUpdates(String group, String name, String version) throws LiveUpdateException;
+
+
+    /**
+     * Returns a list of all updates available
      */
     Collection<UpdateDescriptorType> getAvailableUpdates() throws LiveUpdateException;
+
+    /**
+     * Returns a list of all updates available
+     */
+    Collection<UpdateDescriptorType> getAvailableUpdates(String group, String name, String version) throws LiveUpdateException;
 
 
     /**
      * Applies the given update to the current setup.
      */
-    void applyUpdate(String group, String name, String version) throws LiveUpdateException;
+    void applyUpdate(String group, String name, String version, boolean offline) throws LiveUpdateException;
+
+    /**
+     * Returns a profile with all the installable units that can be applied to the given setup.
+     */
+    ProfileType getUpdateProfile() throws LiveUpdateException;
 
     /**
      * Returns a profile with all the installable units required to install the given update in the current setup.
@@ -36,7 +52,7 @@ public interface LiveUpdateManager {
     /**
      * Returns the profile representing the current setup.
      */
-    ProfileType getCurrentProfile() throws LiveUpdateException;
+    ProfileType getCurrentProfile(boolean rebuild) throws LiveUpdateException;
 
     /**
      * Returns a list of configured repositories, the collection includes both MD and Artifact repositories.

@@ -15,7 +15,7 @@
                     http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
     <!-- LiveUpdate service -->
-    <bean name="liveUpdateMgr" init-method="init"
+    <bean name="liveUpdateMgr" init-method="init" destroy-method="shutdown"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.service.LiveUpdateManagerImpl">
 
         <property name="config" ref="liveUpdateProps"/>
@@ -23,6 +23,8 @@
         <property name="artifactRepositoryManager" ref="artRepositoriesManager"/>
         <property name="profileManager" ref="profileManager"/>
         <property name="engine" ref="updateEngine"/>
+        <property name="updatesCheckInterval" value="${updatesCheckInterval}"/>
+
 
         <property name="dataFolder" value="${karaf.data}"/>
     </bean>
@@ -68,35 +70,83 @@
     <bean name="updateEngine" init-method="init"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.UpdateEngineImpl">
         <property name="operationsRegistry" ref="installOperationsRegistry"/>
+        <property name="store" ref="processStateStore"/>
         <property name="plans">
             <set>
-                <ref bean="updatePlan"/>
+                <ref bean="defaultUpdatePlan"/>
             </set>
         </property>
     </bean>
 
+    <bean name="processStateStore" init-method="init"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.PropertiesProcessStateStore"/>
+
     <!-- Default update plan -->
-    <bean name="updatePlan" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdatePlan">
+    <bean name="defaultUpdatePlan"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdatePlan">
+
+        <property name="name" value="defaultUpdatePlan"/>
+        
         <property name="steps">
             <set>
+
+                <!-- Download and install installers -->
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
                     <property name="name" value="download-installers"/>
                 </bean>
+
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
                     <property name="name" value="install-installers"/>
                 </bean>
+
+                <!-- Prepare install, system is still running -->
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
-                    <property name="name" value="prepare-install"/>
+                    <property name="name" value="prepare-install-start"/>
+                </bean>
+
+                <!-- Download required artifacts -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="download-updates-start"/>
                 </bean>
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
-                    <property name="name" value="download-updates"/>
+                    <property name="name" value="download-updates-end"/>
+                </bean>
+
+                <!-- Prepare install end -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="prepare-install-end"/>
+                </bean>
+
+                <!-- Install updates start, system is still running -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="install-updates-start"/>
                 </bean>
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
-                    <property name="name" value="install-updates"/>
+                    <property name="name" value="install-updates-end"/>
                 </bean>
+
+
+                <!-- Install updates start, system is in maintenance mode-->
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
-                    <property name="name" value="udpate-system"/>
+                    <property name="name" value="udpate-system-start"/>
                 </bean>
+
+                <!-- Install updates start, system is in maintenance mode -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="udpate-system-end"/>
+                </bean>
+
+
+                <!-- Clean up stuff, system is in maintenance mode-->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="cleanup-start"/>
+                </bean>
+
+                <!-- Cleanup stuff, start, system is set to operational mode  -->
+                <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
+                    <property name="name" value="cleanup-end"/>
+                </bean>
+
             </set>
         </property>
     </bean>
@@ -110,17 +160,26 @@
     <!-- Expose LiveUpdate configuration properties -->
     <osgix:cm-properties id="liveUpdateProps" persistent-id="com.atricore.idbus.console.liveservices.liveupdate">
 
-        <prop key="repo.md.default.id">md-default</prop>
-        <prop key="repo.md.default.name">LiveUpdate MD Default repository</prop>
-        <prop key="repo.md.default.enabled">true</prop>
-        <prop key="repo.md.default.validateSignature">true</prop>
-        <prop key="repo.md.default.location">file:${karaf.data}/liveservices/liveupdate/repos/md-default/liveupdate-1.0.xml</prop>
+        <prop key="repo.md.primary.id">md-primary</prop>
+        <prop key="repo.md.primary.name">LiveUpdate MD Primary Repository</prop>
+        <prop key="repo.md.primary.enabled">true</prop>
+        <prop key="repo.md.primary.validateSignature">false</prop>
+        <prop key="repo.md.primary.location">file:${karaf.data}/liveservices/liveupdate/repos/md-primary/liveupdate-1.0.xml</prop>
+        <prop key="repo.md.primary.certificate">file:${karaf.data}/liveservices/liveupdate/repos/md-primary/md-primary-cert</prop>
 
-        <prop key="repo.art.default.id">art-default</prop>
-        <prop key="repo.art.default.name">LiveUpdate Artifacts Default repository</prop>
-        <prop key="repo.art.default.enabled">true</prop>
-        <prop key="repo.art.default.validateSignature">true</prop>
-        <prop key="repo.art.default.location">file:${karaf.data}/liveservices/liveupdate/repos/art-default/</prop>
+        <prop key="repo.art.primary.id">art-primary</prop>
+        <prop key="repo.art.primary.name">LiveUpdate Artifacts Primary Repository</prop>
+        <prop key="repo.art.primary.enabled">true</prop>
+        <prop key="repo.art.primary.validateSignature">false</prop>
+        <prop key="repo.art.primary.location">file:${karaf.data}/liveservices/liveupdate/repos/art-primary/</prop>
+        <prop key="repo.md.primary.certificate">file:${karaf.data}/liveservices/liveupdate/repos/art-primary/art-primary-cert</prop>
+
+        <!-- In Seconds, default : daily -->
+        <prop key="updatesCheckInterval">86400</prop>
+
+        <prop key="maintenanceRunLevel">35</prop>
+        <!-- TODO : Take this from environment -->
+        <prop key="defaultRunLevel">100</prop>
 
     </osgix:cm-properties>
 

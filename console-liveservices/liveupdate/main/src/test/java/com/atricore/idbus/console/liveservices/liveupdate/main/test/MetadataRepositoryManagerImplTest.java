@@ -19,6 +19,8 @@ public class MetadataRepositoryManagerImplTest extends VFSTestSupport {
 
     private static VFSMetadataRepositoryImpl vfsMetadataRepository1;
     private static VFSMetadataRepositoryImpl vfsMetadataRepository2;
+
+    private static FileRepositoryTransport fileTransport;
     
     @BeforeClass
     public static void setupTestSuite() throws Exception {
@@ -28,9 +30,11 @@ public class MetadataRepositoryManagerImplTest extends VFSTestSupport {
                              "classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/manager-beans.xml"}
         );
 
+        fileTransport = (FileRepositoryTransport) applicationContext.getBean("fileRepositoryTransport");
+
         vfsMetadataRepository1 = (VFSMetadataRepositoryImpl) applicationContext.getBean("vfsMetadataRepository1");
         vfsMetadataRepository2 = (VFSMetadataRepositoryImpl) applicationContext.getBean("vfsMetadataRepository2");
-        
+
         String baseDir = (String) applicationContext.getBean("baseDir");
         
         // copy test files to repository location
@@ -52,11 +56,13 @@ public class MetadataRepositoryManagerImplTest extends VFSTestSupport {
         // copy test files to repository folder
         FileObject repo1 = getFileSystemManager().resolveFile(vfsMetadataRepository1.getRepoFolder().toString());
         FileObject sourceDir1 = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/repos/md/cache/repo1");
-        repo1.copyFrom(sourceDir1, Selectors.SELECT_ALL);  // copyFrom first deletes repo1 if it exists
+        repo1.delete(Selectors.EXCLUDE_SELF);
+        repo1.copyFrom(sourceDir1, Selectors.SELECT_ALL);
 
         FileObject repo2 = getFileSystemManager().resolveFile(vfsMetadataRepository2.getRepoFolder().toString());
         FileObject sourceDir2 = getFileSystemManager().resolveFile(baseDir + "/src/test/resources/com/atricore/idbus/console/liveservices/liveupdate/repos/md/cache/repo2");
-        repo2.copyFrom(sourceDir2, Selectors.SELECT_ALL);  // copyFrom first deletes repo2 if it exists
+        repo2.delete(Selectors.EXCLUDE_SELF);
+        repo2.copyFrom(sourceDir2, Selectors.SELECT_ALL);
 
         vfsMetadataRepository1.setSignatureValidationEnabled(false);
 
@@ -182,7 +188,6 @@ public class MetadataRepositoryManagerImplTest extends VFSTestSupport {
         }
 
         // add file transport
-        FileRepositoryTransport fileTransport = new FileRepositoryTransport();
         fileTransport.setBaseFolder("file://" + buildDir + "/liveservices/liveupdate/repos/md/repo3");
         mdRepositoryManager.getTransports().add(fileTransport);
 

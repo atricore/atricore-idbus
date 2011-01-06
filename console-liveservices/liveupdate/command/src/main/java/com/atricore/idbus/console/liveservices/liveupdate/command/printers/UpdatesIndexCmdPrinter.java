@@ -30,45 +30,43 @@ public class UpdatesIndexCmdPrinter extends AbstractCmdPrinter<UpdatesIndexType>
             sb.append(getNameValue("Description", o.getDescription()));
             sb.append(getNameValue("Issued", o.getIssueInstant().toString()));
 
-            for (InstallableUnitType iu : o.getInstallableUnit()) {
+            InstallableUnitType iu = o.getInstallableUnit();
 
-                sb.append("Installable Unit\n");
+            sb.append("Installable Unit\n");
 
-                sb.append(getNameValue("ID", iu.getID()));
-                sb.append(getNameValue("Group", iu.getGroup()));
-                sb.append(getNameValue("Name", iu.getName()));
-                sb.append(getNameValue("Version", iu.getVersion()));
-                sb.append(getNameValue("Nature", iu.getUpdateNature().value()));
+            sb.append(getNameValue("ID", iu.getID()));
+            sb.append(getNameValue("Group", iu.getGroup()));
+            sb.append(getNameValue("Name", iu.getName()));
+            sb.append(getNameValue("Version", iu.getVersion()));
+            sb.append(getNameValue("Nature", iu.getUpdateNature().value()));
 
-                if (cmd.isVerbose()) {
+            if (cmd.isVerbose()) {
 
-                    int i = 0;
-                    for (ArtifactKeyType art : iu.getArtifact()) {
-                        sb.append(getNameValue("Artifact (" + i + ")",
-                                art.getGroup() +
-                                        "/" + art.getName() +
-                                        "/" + art.getVersion() +
-                                        "/" + art.getName() +
-                                        "-" + art.getVersion() +
-                                        (art.getClassifier() != null ? "-" + art.getClassifier() : "") +
-                                        "." + (art.getType() != null ? art.getType() : "jar")));
-                        i++;
-                    }
-
-                    i = 0;
-                    for (RequiredFeatureType req : iu.getRequirement()) {
-                        sb.append(getNameValue("Requirement",
-                                req.getGroup() + "/" + req.getName() + "/" + req.getVersionRange().getExpression() 
-                        ));
-
-                        i++;
-                    }
+                int i = 0;
+                for (ArtifactKeyType art : iu.getArtifact()) {
+                    sb.append(getNameValue("Artifact (" + i + ")",
+                            art.getGroup() +
+                                    "/" + art.getName() +
+                                    "/" + art.getVersion() +
+                                    "/" + art.getName() +
+                                    "-" + art.getVersion() +
+                                    (art.getClassifier() != null ? "-" + art.getClassifier() : "") +
+                                    "." + (art.getType() != null ? art.getType() : "jar")));
+                    i++;
                 }
 
+                i = 0;
+                for (RequiredFeatureType req : iu.getRequirement()) {
+                    sb.append(getNameValue("Requirement",
+                            req.getGroup() + "/" + req.getName() + "/" + req.getVersionRange().getExpression()
+                    ));
+
+                    i++;
+                }
             }
-            sb.append("\n");
 
         }
+        sb.append("\n");
 
         getOut().append(sb.toString());
     }

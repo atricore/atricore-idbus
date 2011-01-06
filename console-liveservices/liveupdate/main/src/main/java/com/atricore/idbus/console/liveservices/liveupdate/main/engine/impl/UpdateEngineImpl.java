@@ -7,7 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -18,82 +18,60 @@ public class UpdateEngineImpl implements UpdateEngine {
 
     private static final UUIDGenerator uuidGen = new UUIDGenerator();
 
-    private Set<UpdatePlan> plans;
+    private Set<UpdatePlan> plans = new HashSet<UpdatePlan>();
 
     private InstallOperationsRegistry operationsRegistry;
 
+    private Map<String, UpdateProcess> procs = new HashMap<String, UpdateProcess>();
+
+    private ProcessStore store;
+
     public void init() throws LiveUpdateException {
-        // TODO : Resume stalled stalled processes!
+
+        if (logger.isDebugEnabled())
+            logger.debug("Installed plans : " + plans.size());
+
+        // TODO : Validate plans are unique, by name
+
+        // TODO : Resume stalled processes!
+        Collection<UpdateProcessState> saved = store.load();
+        for (UpdateProcessState state : saved) {
+
+            if (logger.isDebugEnabled())
+                logger.debug("Restoring process " + state.getId());
+
+            UpdatePlan plan =  getPlan(state.getPlan());
+            UpdateContext ctx = new UpdateContextImpl(state.getId(), plan, state.getUpdateProfile());
+            UpdateProcess p = new UpdateProcess(getOperationsRegistry(), ctx);
+            procs.put(p.getId(), p);
+            this.seekProcess(p, state.getOperation());
+        }
     }
 
-    // TODO : Provide persistence functionallity to resume an update process after reboot
     public void execute(String planName, ProfileType updateProfile) throws LiveUpdateException {
 
-        for (UpdatePlan plan : plans) {
+        UpdatePlan plan = getPlan(planName);
 
-            if (plan.getName().equals(planName)) {
+        UpdateProcess proc = startProcess(plan, updateProfile);
 
-                String procId = uuidGen.generateId();
+        proc = executeProcess(proc);
 
-                if (logger.isDebugEnabled())
-                    logger.debug("Starting update plan : " + plan.getName() + " in process " + procId);
-                UpdateContext ctx = new UpdateContextImpl(procId, plan, updateProfile);
-                execute(plan, ctx);
-            }
+        if (logger.isDebugEnabled())
+            logger.debug("Process Executed : " + proc.getId());
+
+    }
+
+    public void resumeAll() throws LiveUpdateException {
+        for (String procId : procs.keySet()) {
+            UpdateProcess proc = resumeProcess(procId);
+            executeProcess(proc);
+            if (logger.isDebugEnabled())
+                logger.debug("Process Executed (resume) : " + proc.getId());
+
         }
     }
 
-    protected void execute(UpdatePlan plan , UpdateContext ctx) {
-
-        if (logger.isTraceEnabled())
-            logger.trace("currentPlan=>" + plan.getName());
-
-        try {
-            for (Step step : plan.getSteps()) {
-
-                if (logger.isTraceEnabled())
-                    logger.trace("currentStep=>" + step.getName());
-
-                InstallEvent event = new InstallEventImpl(step, ctx);
-
-                Set<InstallOperation> operations = operationsRegistry.getOperations(step.getName());
-
-                for (InstallOperation operation : operations) {
-                    if (logger.isTraceEnabled())
-                        logger.trace("preInstall=>" + operation.getName());
-                    OperationStatus sts = operation.preInstall(event);
-
-                    if (sts.equals(OperationStatus.PAUSE)) {
-                        // Pause process ... when will be resumed!?
-
-                    } else if (sts.equals(OperationStatus.STOP)) {
-                        // Stop process .. will not resume.
-                    }
-                }
-
-                for (InstallOperation operation : operations) {
-                    if (logger.isTraceEnabled())
-                        logger.trace("postInstall=>" + operation.getName());
-                    OperationStatus sts = operation.postInstall(event);
-
-                    if (sts.equals(OperationStatus.PAUSE)) {
-                        // Pause process ... when will be resumed!?
-
-                    } else if (sts.equals(OperationStatus.STOP)) {
-                        // Stop process .. will not resume.
-                    }
-
-                }
-
-            }
-        } catch (LiveUpdateException e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    protected void resume(String processId) {
-        // TODO !
-    }
+    //------------------------------------------------------< Properties >
 
     public Set<UpdatePlan> getPlans() {
         return plans;
@@ -111,6 +89,146 @@ public class UpdateEngineImpl implements UpdateEngine {
         this.operationsRegistry = operationsRegistry;
     }
 
+    public ProcessStore getStore() {
+        return store;
+    }
 
+    public void setStore(ProcessStore store) {
+        this.store = store;
+    }
+
+    //------------------------------------------------------< Utilities >
+
+    protected UpdateProcess executeProcess(UpdateProcess proc) throws LiveUpdateException {
+
+        proc.getState().setStatus(ProcessStatus.RUNNING);
+        OperationStatus sts = advanceProcess(proc);
+
+        while(sts.equals(OperationStatus.NEXT)) {
+            if (logger.isTraceEnabled())
+                logger.trace("Process advanced " + proc.getId());
+            sts = advanceProcess(proc);
+        }
+
+        switch (sts) {
+            case STOP:
+                if (logger.isDebugEnabled())
+                    logger.debug("Process completed " + proc.getId());
+                stopProcess(proc);
+               break;
+
+            case PAUSE:
+                if (logger.isDebugEnabled())
+                    logger.debug("Process paused " + proc.getId());
+                pauseProcess(proc);
+                break;
+
+            default:
+            logger.error("Unknown operation status " + sts.name());
+            stopProcess(proc);
+        }
+
+        return proc;
+
+    }
+
+    protected UpdateProcess startProcess(UpdatePlan plan, ProfileType updateProfile) throws LiveUpdateException {
+
+        String procId = uuidGen.generateId();
+
+        if (logger.isDebugEnabled())
+            logger.debug("Starting process for : " + plan.getName() + ". ID : " + procId);
+
+        UpdateContext ctx = new UpdateContextImpl(procId, plan, updateProfile);
+
+        UpdateProcess proc = new UpdateProcess(getOperationsRegistry(), ctx);
+        procs.put(proc.getId(), proc);
+
+        proc.init();
+        proc.getState().setStatus(ProcessStatus.STARTED);
+
+        store.save(proc.getState());
+
+        return proc;
+
+    }
+
+
+    protected UpdateProcess resumeProcess(String processId) throws LiveUpdateException {
+        UpdateProcess proc = procs.get(processId);
+        if (proc == null)
+            throw new LiveUpdateException("Cannot find update process " + processId);
+
+        if (logger.isDebugEnabled())
+            logger.debug("Resuming process " + processId);
+
+        proc.seek(proc.getState().getOperation());
+
+        return proc;
+    }
+
+    protected OperationStatus advanceProcess(String processId) throws LiveUpdateException {
+        UpdateProcess proc = procs.get(processId);
+        if (proc == null)
+            throw new LiveUpdateException("Cannot find update process " + processId);
+        return advanceProcess(proc);
+    }
+
+    protected UpdateProcess stopProcess(UpdateProcess proc) throws LiveUpdateException {
+        proc.getState().setStatus(ProcessStatus.STOPPED);
+        store.remove(proc.getId());
+        return proc;
+    }
+
+    protected UpdateProcess pauseProcess(UpdateProcess proc) throws LiveUpdateException {
+        proc.getState().setStatus(ProcessStatus.STOPPED);
+        store.save(proc.getState());
+        return proc;
+    }
+
+
+    protected OperationStatus advanceProcess(UpdateProcess proc) throws LiveUpdateException {
+
+        InstallOperation op = proc.advance();
+
+        // If no more operations are available, stop the process.
+        if (op == null) {
+            if (logger.isTraceEnabled())
+                logger.trace("Process " + proc.getId() + " status (no more operations) : " + OperationStatus.STOP);
+
+            return OperationStatus.STOP;
+        }
+
+        if (logger.isTraceEnabled())
+            logger.trace("Process " + proc.getId() + " Step/Op:" +
+                    proc.getCurrentStep().getName() + "/" + op.getName());
+
+        InstallEvent event = new InstallEventImpl(proc.getCurrentStep(), proc.getCotenxt());
+        try {
+            OperationStatus sts = op.execute(event);
+            if (logger.isTraceEnabled())
+                logger.trace("Process " + proc.getId() + " status : " + sts.name());
+
+            return sts;
+        } finally {
+            store.save(proc.getState());
+        }
+
+    }
+
+    protected void seekProcess(UpdateProcess proc, String opName) {
+        proc.seek(opName);
+    }
+
+    protected UpdatePlan getPlan (String planName) {
+        for (UpdatePlan plan : plans) {
+            if (plan.getName().equals(planName)) {
+                return plan;
+            }
+        }
+
+        return null;
+
+    }
 
 }

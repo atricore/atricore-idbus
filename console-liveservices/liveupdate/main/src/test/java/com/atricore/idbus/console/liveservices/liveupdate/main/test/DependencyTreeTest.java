@@ -7,8 +7,7 @@ import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -24,11 +23,26 @@ public class DependencyTreeTest {
 
     private ApplicationContext applicationContext;
 
+    @BeforeClass
+    public static void setupTestSuite() {
+        // RFU
+    }
+
     @Before
     public void setup() throws Exception {
         applicationContext = new ClassPathXmlApplicationContext(
                 new String[]{"classpath:com/atricore/idbus/console/liveservices/liveupdate/main/test/dependency-tree-test-beans.xml"}
         );
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        // RFU
+    }
+
+    @AfterClass
+    public static void tearDownTestSuite() {
+        // RFU
     }
 
     @Test

@@ -1,7 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository;
 
-import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
-
+import java.io.InputStream;
 import java.net.URI;
 
 /**
@@ -12,4 +11,6 @@ public interface RepositoryTransport {
     boolean canHandle(URI uri);
 
     byte[] loadContent(URI uri) throws RepositoryTransportException;
+
+    InputStream getContentStream(URI uri) throws RepositoryTransportException;
 }

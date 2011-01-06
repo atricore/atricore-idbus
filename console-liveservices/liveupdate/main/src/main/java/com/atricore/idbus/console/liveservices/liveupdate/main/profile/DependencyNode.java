@@ -4,6 +4,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl.Arti
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.RequiredFeatureType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
+import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 
 import java.util.*;
 
@@ -32,6 +33,11 @@ public class DependencyNode   {
     // Nodes we depend on
     private List<DependencyNode> parents = new ArrayList<DependencyNode>();
 
+    // Other dependencies required by this dependency
+    private Map<String, DependencyNode> requiredDependencies = new HashMap<String, DependencyNode>();
+
+    // List of valid update paths for this node.
+    private List<List<DependencyNode>> updatePaths = new ArrayList<List<DependencyNode>>();
 
     public DependencyNode(UpdateDescriptorType ud, InstallableUnitType iu) {
         this.ud = ud;
@@ -102,6 +108,23 @@ public class DependencyNode   {
 
     public Collection<DependencyNode> getChildren() {
         return children;
+    }
+
+    public Collection<DependencyNode> getRequiredDependencies() {
+        return requiredDependencies.values();
+    }
+
+    public void addRequiredDependency(DependencyNode dep) {
+        requiredDependencies.put(dep.getFqKey(), dep);
+    }
+
+
+    public List<List<DependencyNode>> getUpdatePaths() {
+        return updatePaths;
+    }
+
+    public void addUpdatePath(List<DependencyNode> updatePath) {
+        this.updatePaths.add(updatePath);
     }
 
 }

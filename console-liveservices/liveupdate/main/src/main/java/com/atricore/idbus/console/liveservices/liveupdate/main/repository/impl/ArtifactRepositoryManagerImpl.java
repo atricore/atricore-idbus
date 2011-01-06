@@ -1,13 +1,16 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactNotFoundException;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepository;
-import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepositoryManager;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactsUtil;
+import com.atricore.idbus.console.liveservices.liveupdate.main.repository.*;
+import com.atricore.liveservices.liveupdate._1_0.md.ArtifactDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
+import com.atricore.liveservices.liveupdate._1_0.util.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.InputStream;
-import java.util.Collection;
+import java.net.URI;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -15,6 +18,12 @@ import java.util.Collection;
 public class ArtifactRepositoryManagerImpl extends AbstractRepositoryManager<ArtifactRepository>
         implements ArtifactRepositoryManager {
 
+    private static final Log logger = LogFactory.getLog(ArtifactRepositoryManagerImpl.class);
+
+    public void init() {
+        // RFU
+    }
+    
     /**
      * We need to work wit streams, in case artifact size is too big to store in RAM !!!
      */
@@ -22,23 +31,63 @@ public class ArtifactRepositoryManagerImpl extends AbstractRepositoryManager<Art
 
         for (ArtifactRepository repo : repos) {
 
+            if (!repo.isEnabled()) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Ignoring disabled repository " + repo.getId());
+
+                continue;
+            }
+
             InputStream content = null;
 
             if (!repo.containsArtifact(artifact)) {
                 try {
-                    // TODO : Try to download it and store it in the repo
-                    repo.getLocation();
+                    URI location = repo.getLocation();
 
-                    // 1. Download descriptor
+                    for (RepositoryTransport t : transports) {
 
-                    // 2. Validate it (include digital signature)
+                        if (t.canHandle(location)) {
 
-                    // 3. Download content (us streams to read/write, do not store in local byte[])
+                            // download artifact descriptor
+                            InputStream artifactDescriptorStream = t.getContentStream(new URI(location + "/" + ArtifactsUtil.getArtifactDescriptorPath(artifact)));
+
+                            ArtifactDescriptorType artifactDescriptor = XmlUtils1.unmarshallArtifactDescriptor(artifactDescriptorStream, false);
+
+                            if (logger.isTraceEnabled())
+                                logger.trace("Found Artifact descriptor for artifact [" + artifact.getID() + "]");
+
+                            // Validate Digital signature
+                            if (repo.isSignatureValidationEnabled()) {
+                                if (repo.getCertificate() != null) {
+                                    LiveUpdateKeyResolver keyResolver = new LiveUpdateKeyResolverImpl(repo.getCertificate());
+                                    try {
+                                        liveUpdateSigner.validate(artifactDescriptor, keyResolver);
+                                    } catch (InvalidSignatureException e) {
+                                        logger.error("Signature is not valid for artifact descriptor [" + artifactDescriptor.getArtifact().getID() + "]. " +
+                                                "Artifact [" + artifact.getID() + "] will not be downloaded.");
+                                        return null;
+                                    }
+                                } else {
+                                    logger.error("Signature validation is enabled but there is no valid certificate " +
+                                            "for repository [" + repo.getId() + "]. Skipping artifact download.");
+                                    return null;
+                                }
+                            }
+
+                            // download artifact content and store it in the repo
+                            repo.addArtifact(artifact,
+                                    t.getContentStream(new URI(location + "/" + ArtifactsUtil.getArtifactFilePath(artifact))),
+                                    t.getContentStream(new URI(location + "/" + ArtifactsUtil.getArtifactDescriptorPath(artifact))));
+
+                            content = repo.getArtifact(artifact);
+                        }
+                        
+                    }
 
                 } catch (Exception e) {
                     // Not found or error, try the next repository.
-                    // TODO : logger !
-
+                    logger.error("Error downloading or storing artifact [" + artifact.getID() + "] " +
+                            "from repository [" + repo.getId() + "] " + e.getMessage(), e);
                 }
             } else {
                 content = repo.getArtifact(artifact);
@@ -52,15 +101,24 @@ public class ArtifactRepositoryManagerImpl extends AbstractRepositoryManager<Art
         throw new ArtifactNotFoundException(artifact);
     }
 
-    public void clearRepository(String repoName) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void clearRepositories() throws LiveUpdateException {
+        for (ArtifactRepository repo : repos) {
+            if (repo.isEnabled()) {
+                repo.clear();
+            }
+        }
     }
 
-    public void clearAllRepositories() {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public void clearRepository(String repoId) throws LiveUpdateException {
+        for (ArtifactRepository repo : repos) {
+            if (repo.isEnabled() && repo.getId().equals(repoId)) {
+                repo.clear();
+            }
+        }
     }
 
     public void addRepository(ArtifactRepository repo) throws LiveUpdateException {
-        //To change body of created methods use File | Settings | File Templates.
+        repo.init();
+        repos.add(repo);
     }
 }

@@ -175,6 +175,7 @@ public abstract class AbstractVFSRepository<T> implements Repository<T> {
         return certValue;
     }
 
+    // TODO : Use a CertStore ?!
     public void setCertValue(byte[] certValue) {
         this.certValue = certValue;
     }

@@ -145,11 +145,16 @@
             <scope>provided</scope>
         </dependency>
 
-
         <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <version>${commons-httpclient.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -218,6 +223,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>com.atricore.idbus.console.liveservices.liveupdate.main.*;version=${pom.version}</Export-Package>
+                        <Spring-Context>*;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>

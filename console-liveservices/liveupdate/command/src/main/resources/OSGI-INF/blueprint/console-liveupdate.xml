@@ -21,41 +21,45 @@
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
 
-        <command name="liveupdate/ls-repos">
+        <command name="liveupdate/repos">
             <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListRepositoriesCommand">
                 <property name="printer" ref="repositoryPrinter"/>
             </action>
         </command>
 
         <command name="liveupdate/profile">
-            <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ViewProfileCommand">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.command.CurrentProfileCommand">
                 <property name="printer" ref="profilePrinter"/>
             </action>
         </command>
 
-        <command name="liveupdate/ls-repo-updates">
+        <command name="liveupdate/repo-updates">
             <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListRepositoryUpdatesCommand">
                 <property name="printer" ref="updatesIndexPrinter"/>
             </action>
         </command>
 
-        <command name="liveupdate/ls-updates">
+        <command name="liveupdate/updates">
             <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListUpdatesCommand">
                 <property name="printer" ref="updateDescriptorPrinter"/>
             </action>
         </command>
 
-        <command name="liveupdate/ls-dependencies">
+        <command name="liveupdate/clean-repo">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.command.CleanRepositoryCommand"/>
+        </command>
+
+        <command name="liveupdate/dependencies">
             <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ListDependenciesCommand">
                 <property name="printer" ref="profilePrinter"/>
             </action>
         </command>
 
-
-        <!-- liveupdate/update -->
-
-        <!-- liveupdate/list-dependencies -->
-
+        <command name="liveupdate/apply-update">
+            <action class="com.atricore.idbus.console.liveservices.liveupdate.command.ApplyUpdateCommand">
+                <property name="printer" ref="profilePrinter"/>
+            </action>
+        </command>
 
     </command-bundle>
 

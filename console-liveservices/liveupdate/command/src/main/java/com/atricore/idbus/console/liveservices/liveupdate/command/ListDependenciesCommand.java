@@ -13,10 +13,11 @@ import java.util.StringTokenizer;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-@Command(scope = "liveupdate", name = "ls-dependencies", description = "List dependencies required by a given update to be installed in current setup")
+@Command(scope = "liveupdate", name = "dependencies", description = "List dependencies required by a given update," +
+        " so that it can be installed in current setup.")
 public class ListDependenciesCommand extends LiveUpdateCommandSupport {
 
-    @Argument(name = "update", description = "Fully Qualified Update name (group/name/version)", index = 0, required = true)
+    @Argument(name = "update", description = "Installable Unit fully qualified name (group/name/version)", index = 0, required = true)
     String fqKey;
 
     @Override
@@ -32,7 +33,7 @@ public class ListDependenciesCommand extends LiveUpdateCommandSupport {
             getPrinter().print(this, p);
             return null;
         } catch (NoSuchElementException e) {
-            throw new ParseException("Invalid update name format in " + fqKey, 0);
+            throw new ParseException("Invalid Installable Unit FQN format in " + fqKey, 0);
         }
     }
 }

@@ -31,6 +31,16 @@ public interface ArtifactRepository extends Repository<ArtifactKeyType> {
     InputStream getArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException;
 
     /**
+     * Gets the content for the given artifact descriptor
+     */
+    InputStream getArtifactDescriptor(ArtifactKeyType artifactKey) throws LiveUpdateException;
+
+    /**
+     * Adds an artifact to local storage
+     */
+    void addArtifact(ArtifactKeyType artifactKey, InputStream artifactStream, InputStream artifactDescriptorStream) throws LiveUpdateException;
+    
+    /**
      * Removes an artifact from local storage
      */
     void removeArtifact(ArtifactKeyType artifactKey) throws LiveUpdateException;

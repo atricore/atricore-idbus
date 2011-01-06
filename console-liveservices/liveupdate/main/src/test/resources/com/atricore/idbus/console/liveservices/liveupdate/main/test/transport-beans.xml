@@ -23,17 +23,8 @@
     <bean name="httpRepositoryTransport"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.HttpRepositoryTransport"/>
 
-    <bean name="fileRepositoryTransport1"
-          class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.FileRepositoryTransport">
-        <property name="baseFolder"
-                  value="file://${build.directory}/liveservices/liveupdate/repos/md/repo1"/>
-    </bean>
-
-    <bean name="fileRepositoryTransport2"
-          class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.FileRepositoryTransport">
-        <property name="baseFolder"
-                  value="file://${build.directory}/liveservices/liveupdate/repos/md/repo2"/>
-    </bean>
+    <bean name="fileRepositoryTransport"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.FileRepositoryTransport"/>
 
     <bean name="baseDir" class="java.lang.String">
 		<constructor-arg value="${basedir}"/>

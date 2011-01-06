@@ -11,7 +11,7 @@ import java.io.FileNotFoundException;
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 @Command(scope = "liveupdate-admin", name = "sign-artifact-descriptor", description = "Sign artifact descriptor")
-public class SignArtifactDescriptorCommand extends SignValidateCommandSupport {
+public class SignArtifactDescriptorCommand extends ArtifactCommandSupport {
 
     @Option(name = "-i", aliases = "--in", description = "Artifact descriptor input file", required = true, multiValued = false)
     private String artifactDescriptorFile;

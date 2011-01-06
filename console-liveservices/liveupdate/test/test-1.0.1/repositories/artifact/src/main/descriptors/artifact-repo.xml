@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<assembly>
+    <id>artifacts</id> <!-- intentionally left blank -> http://jira.codehaus.org/browse/MASSEMBLY-301 -->
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+
+
+    <fileSets>
+
+        <!-- Copy over jar files -->
+        <fileSet>
+            <directory>target/dependencies/repo</directory>
+            <outputDirectory>/</outputDirectory>
+        </fileSet>
+
+    </fileSets>
+
+    <files>
+
+        <!-- Installer Artifact descriptor -->
+        <file>
+            <source>${basedir}/target/classes/liveupdate-test-installer.xml</source>
+            <outputDirectory>/com/atricore/idbus/console/liveservices/liveupdate/tests/com.atricore.idbus.console.liveservices.liveupdate.tests.installer/${pom.version}/</outputDirectory>
+            <destName>com.atricore.idbus.console.liveservices.liveupdate.tests.installer-${pom.version}.jar.xml</destName>
+            <fileMode>0644</fileMode>
+            <lineEnding>unix</lineEnding>
+        </file>
+
+        <!-- Unix distro Artifact descriptor -->
+        <file>
+            <source>${basedir}/target/classes/liveupdate-test-tar.gz.xml</source>
+            <outputDirectory>/com/atricore/idbus/console/liveservices/liveupdate/tests/liveupdate-test/${pom.version}/</outputDirectory>
+            <destName>liveupdate-test-${pom.version}-liveupdate.tar.gz.xml</destName>
+            <fileMode>0644</fileMode>
+            <lineEnding>unix</lineEnding>
+        </file>
+
+        <!-- Unix distro Artifact descriptor -->
+        <file>
+            <source>${basedir}/target/classes/liveupdate-test-zip.xml</source>
+            <outputDirectory>/com/atricore/idbus/console/liveservices/liveupdate/tests/liveupdate-test/${pom.version}/</outputDirectory>
+            <destName>liveupdate-test-${pom.version}-liveupdate.zip.xml</destName>
+            <fileMode>0644</fileMode>
+            <lineEnding>dos</lineEnding>
+        </file>
+
+
+
+    </files>
+
+
+</assembly>

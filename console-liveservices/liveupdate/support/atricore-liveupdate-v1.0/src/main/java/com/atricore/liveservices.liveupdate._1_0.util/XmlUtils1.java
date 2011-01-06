@@ -3,6 +3,7 @@ package com.atricore.liveservices.liveupdate._1_0.util;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
+import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.w3c.dom.Document;
@@ -40,9 +41,24 @@ public class XmlUtils1 {
         if (decode)
             udStr = new String(new Base64().decode(udStr.getBytes()));
 
-        JAXBElement e = (JAXBElement) unmarshal(udStr, new String[]{ "com.atricore.liveservices.liveupdate._1_0.md" });
+        JAXBElement e = (JAXBElement) unmarshal(udStr,
+                new String[]{ "com.atricore.liveservices.liveupdate._1_0.md" });
         return (UpdateDescriptorType) e.getValue();
     }
+
+    public static ProfileType unmarshallProfile(InputStream is, boolean decode) throws Exception {
+        return unmarshallProfile(new String(getByteArray(is)), decode);
+    }
+
+    public static ProfileType unmarshallProfile(String adStr, boolean decode) throws Exception {
+        if (decode)
+            adStr = new String(new Base64().decode(adStr.getBytes()));
+
+        JAXBElement e = (JAXBElement) unmarshal(adStr, new String[]{
+                "com.atricore.liveservices.liveupdate._1_0.profile" });
+        return (ProfileType) e.getValue();
+    }
+
 
     public static ArtifactDescriptorType unmarshallArtifactDescriptor(InputStream is, boolean decode) throws Exception {
         return unmarshallArtifactDescriptor(new String(getByteArray(is)), decode);
@@ -118,6 +134,21 @@ public class XmlUtils1 {
         return encode ? new String(new Base64().encode( marshalled.getBytes())) : marshalled;
     }
 
+    public static String marshalProfile(ProfileType prof, String type, boolean encode) throws Exception {
+        String marshalled ;
+        // Support IDBus SAMLR2 Extentions when marshalling
+        marshalled = marshal(
+            prof,
+            "urn:com:atricore:liveservices:liveupdate:1.0:profile",
+            type,
+            new String[]{ "com.atricore.liveservices.liveupdate._1_0.profile",
+                    "com.atricore.liveservices.liveupdate._1_0.md" }
+        );
+
+        return encode ? new String(new Base64().encode( marshalled.getBytes())) : marshalled;
+    }
+
+
     public static String marshalArtifactDescriptor(ArtifactDescriptorType ad, boolean encode) throws Exception {
         String type = ad.getClass().getSimpleName();
         if (type.endsWith("Type"))
@@ -191,4 +222,5 @@ public class XmlUtils1 {
     private static byte[] getByteArray(InputStream is) throws Exception {
         return IOUtils.toByteArray(is);
     }
+
 }
