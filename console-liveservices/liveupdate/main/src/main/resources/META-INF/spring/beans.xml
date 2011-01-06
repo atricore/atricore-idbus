@@ -141,8 +141,8 @@
         <prop key="repo.art.primary.location">file:${karaf.data}/liveservices/liveupdate/repos/art-primary/</prop>
         <prop key="repo.md.primary.certificate">file:${karaf.data}/liveservices/liveupdate/repos/art-primary/art-primary-cert</prop>
 
-        <!-- In Minutes, default : daily -->
-        <prop key="updatesCheckInterval">1440</prop>
+        <!-- In Seconds, default : daily -->
+        <prop key="updatesCheckInterval">86400</prop>
 
         <prop key="maintenanceRunLevel">35</prop>
         <!-- TODO : Take this from environment -->

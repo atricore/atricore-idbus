@@ -1,7 +1,7 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.util;
 
-import org.apache.tools.tar.TarEntry;
-import org.apache.tools.tar.TarInputStream;
+import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -52,11 +52,11 @@ public class CompressionUtils {
 
     public static File unpackTarGzFile(InputStream in, String destFolder) throws Exception {
         GZIPInputStream zin = new GZIPInputStream(in);
-        TarInputStream tar = new TarInputStream(zin);
+        TarArchiveInputStream tar = new TarArchiveInputStream(zin);
 
         final int BUFFER_SIZE = 2048;
         BufferedOutputStream dest;
-        TarEntry entry;
+        ArchiveEntry entry;
         File unpackedDir = null;
         
         while ((entry = tar.getNextEntry()) != null) {
