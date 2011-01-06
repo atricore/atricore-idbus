@@ -290,6 +290,7 @@
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-httpclient/${commons-httpclient.version}</bundle>
         <bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-lang/${commons-lang.version}</bundle>
         <bundle start-level="35">mvn:commons-digester/commons-digester/${commons-digester.version}</bundle>
+        <bundle start-level="35">mvn:org.apache.commons/commons-compress/${commons-compress.version}</bundle>
         <!--<bundle start-level="35">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.commons-beanutils/${commons-beanutils.version}</bundle>-->
         <bundle start-level="35">mvn:org.apache.commons/com.springsource.org.apache.commons.beanutils/${commons-beanutils.version}</bundle>
         <bundle start-level="35">mvn:commons-collections/commons-collections/${commons-collections.version}</bundle>
