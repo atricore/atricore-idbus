@@ -101,7 +101,7 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
                 mb = new SsoSoapBinding(channel);
                 break;
             case SSO_IDP_INITIATED_SSO_HTTP_SAML2:
-                mb = new SamlR2SsoIDPInitiatedBinding(channel);
+                mb = new SamlR2SsoIDPInitiatedHttpBinding(channel);
                 break;
             case SSO_IDP_INITIATED_SSO_HTTP_SAML11:
                 mb = new SamlR11SsoIDPInitiatedHttpBinding(channel);
