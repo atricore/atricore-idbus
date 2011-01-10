@@ -26,6 +26,9 @@ public class WaitForSystemStartup extends AbstractInstallOperation implements Bu
         // check that all bundles in that runlevel are active
         // if (true, return next, otherwise, return pause)
 
+        // org.osgi.service.startlevel.StartLevel sl;
+        // sl.getBundleStartLevel(bundle);
+
         return super.execute(event);
     }
 
