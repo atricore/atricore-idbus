@@ -72,6 +72,13 @@
     <osgi:service id="osgiRestartRequiredOperation" ref="shutdownIDBusOperation"
                   interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
 
+    <bean name="waitForSystemStartupOperation"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.operations.WaitForSystemStartup">
+        <property name="name" value="waitForSystemStartupOperation"/>
+        <property name="stepName" value="udpate-system-start"/>
+    </bean>
+    <osgi:service id="osgiWaitForSystemStartupOperation" ref="waitForSystemStartupOperation"
+                  interface="com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallOperation"/>
 
     <bean name="switchToOperationalModeOperation"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.operations.SwitchIDBusRunLevelOperation">

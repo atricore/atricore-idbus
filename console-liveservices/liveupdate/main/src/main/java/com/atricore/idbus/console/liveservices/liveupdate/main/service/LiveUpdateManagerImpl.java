@@ -143,7 +143,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
         updatesMonitor = new UpdatesMonitor(this, updatesCheckInterval * 1000);
 
         stpe = new ScheduledThreadPoolExecutor(3);
-        stpe.scheduleAtFixedRate(updatesMonitor, 1,
+        stpe.scheduleAtFixedRate(updatesMonitor, 60,
                 updatesCheckInterval,
                 TimeUnit.SECONDS);
 
