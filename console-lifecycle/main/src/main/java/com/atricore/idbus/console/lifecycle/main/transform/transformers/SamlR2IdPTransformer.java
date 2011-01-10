@@ -23,6 +23,7 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -317,10 +318,13 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         // services
 
         // profiles
-        // spChannel.activeProfiles contains idp active profiles or user overridden profiles
+        Set<Profile> activeProfiles = spChannel.getActiveProfiles();
+        if (!spChannel.isOverrideProviderSetup()) {
+            activeProfiles = provider.getActiveProfiles();
+        }
         boolean ssoEnabled = false;
         boolean sloEnabled = false;
-        for (Profile profile : spChannel.getActiveProfiles()) {
+        for (Profile profile : activeProfiles) {
             if (profile.equals(Profile.SSO)) {
                 ssoEnabled = true;
             } else if (profile.equals(Profile.SSO_SLO)) {
@@ -329,12 +333,15 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         }
 
         // bindings
-        // spChannel.activeBindings contains idp active bindings or user overridden bindings
+        Set<Binding> activeBindings = spChannel.getActiveBindings();
+        if (!spChannel.isOverrideProviderSetup()) {
+            activeBindings = provider.getActiveBindings();
+        }
         boolean postEnabled = false;
         boolean redirectEnabled = false;
         boolean artifactEnabled = false;
         boolean soapEnabled = false;
-        for (Binding binding : spChannel.getActiveBindings()) {
+        for (Binding binding : activeBindings) {
             if (binding.equals(Binding.SAMLR2_HTTP_POST)) {
                 postEnabled = true;
             } else if (binding.equals(Binding.SAMLR2_HTTP_REDIRECT)) {

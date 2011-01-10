@@ -23,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
@@ -219,10 +220,13 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         List<Bean> endpoints = new ArrayList<Bean>();
 
         // profiles
-        // idpChannel.activeProfiles contains idp active profiles or user overridden profiles
+        Set<Profile> activeProfiles = idpChannel.getActiveProfiles();
+        if (!idpChannel.isOverrideProviderSetup()) {
+            activeProfiles = sp.getActiveProfiles();
+        }
         boolean ssoEnabled = false;
         boolean sloEnabled = false;
-        for (Profile profile : idpChannel.getActiveProfiles()) {
+        for (Profile profile : activeProfiles) {
             if (profile.equals(Profile.SSO)) {
                 ssoEnabled = true;
             } else if (profile.equals(Profile.SSO_SLO)) {
@@ -231,12 +235,15 @@ public class SPFederatedConnectionTransformer extends AbstractTransformer {
         }
 
         // bindings
-        // idpChannel.activeBindings contains idp active bindings or user overridden bindings
+        Set<Binding> activeBindings = idpChannel.getActiveBindings();
+        if (!idpChannel.isOverrideProviderSetup()) {
+            activeBindings = sp.getActiveBindings();
+        }
         boolean postEnabled = false;
         boolean redirectEnabled = false;
         boolean artifactEnabled = false;
         boolean soapEnabled = false;
-        for (Binding binding : idpChannel.getActiveBindings()) {
+        for (Binding binding : activeBindings) {
             if (binding.equals(Binding.SAMLR2_HTTP_POST)) {
                 postEnabled = true;
             } else if (binding.equals(Binding.SAMLR2_HTTP_REDIRECT)) {

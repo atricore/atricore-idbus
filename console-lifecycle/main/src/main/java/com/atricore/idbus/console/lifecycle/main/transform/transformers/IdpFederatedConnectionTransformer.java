@@ -222,10 +222,13 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         List<Bean> endpoints = new ArrayList<Bean>();
 
         // profiles
-        // spChannel.activeProfiles contains idp active profiles or user overridden profiles
+        Set<Profile> activeProfiles = spChannel.getActiveProfiles();
+        if (!spChannel.isOverrideProviderSetup()) {
+            activeProfiles = idp.getActiveProfiles();
+        }
         boolean ssoEnabled = false;
         boolean sloEnabled = false;
-        for (Profile profile : spChannel.getActiveProfiles()) {
+        for (Profile profile : activeProfiles) {
             if (profile.equals(Profile.SSO)) {
                 ssoEnabled = true;
             } else if (profile.equals(Profile.SSO_SLO)) {
@@ -234,12 +237,15 @@ public class IdpFederatedConnectionTransformer extends AbstractTransformer {
         }
 
         // bindings
-        // spChannel.activeBindings contains idp active bindings or user overridden bindings
+        Set<Binding> activeBindings = spChannel.getActiveBindings();
+        if (!spChannel.isOverrideProviderSetup()) {
+            activeBindings = idp.getActiveBindings();
+        }
         boolean postEnabled = false;
         boolean redirectEnabled = false;
         boolean artifactEnabled = false;
         boolean soapEnabled = false;
-        for (Binding binding : spChannel.getActiveBindings()) {
+        for (Binding binding : activeBindings) {
             if (binding.equals(Binding.SAMLR2_HTTP_POST)) {
                 postEnabled = true;
             } else if (binding.equals(Binding.SAMLR2_HTTP_REDIRECT)) {
