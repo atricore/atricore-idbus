@@ -117,7 +117,7 @@
                     <property name="name" value="prepare-install-end"/>
                 </bean>
 
-                <!-- Install updates start, system is still running -->
+                <!-- Install updates, system is still running -->
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
                     <property name="name" value="install-updates-start"/>
                 </bean>
@@ -125,8 +125,7 @@
                     <property name="name" value="install-updates-end"/>
                 </bean>
 
-
-                <!-- Install updates start, system is in maintenance mode-->
+                <!-- Update system, system is in maintenance mode-->
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
                     <property name="name" value="udpate-system-start"/>
                 </bean>
