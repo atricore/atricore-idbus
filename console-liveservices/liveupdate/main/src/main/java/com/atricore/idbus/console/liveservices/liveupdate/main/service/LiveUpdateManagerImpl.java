@@ -15,6 +15,8 @@ import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.osgi.framework.BundleContext;
+import org.springframework.osgi.context.BundleContextAware;
 
 import java.net.URI;
 import java.security.InvalidAlgorithmParameterException;
@@ -34,11 +36,13 @@ import java.util.concurrent.TimeUnit;
  *
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class LiveUpdateManagerImpl implements LiveUpdateManager {
+public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAware {
 
     private static final Log logger = LogFactory.getLog(LiveUpdateManagerImpl.class);
 
     private List<RepositoryTransport> transports;
+
+    private BundleContext bundleContext;
 
     private ProfileManager profileManager;
 
@@ -50,6 +54,11 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     private int updatesCheckInterval;
 
+    private SystemStartupMonitor systemStartupMonitor;
+    private ScheduledThreadPoolExecutor startupStpe;
+    private int startupCheckInterval;
+    private int startupRunLevel;
+    
     private String dataFolder;
 
     private Properties config;
@@ -147,6 +156,12 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
                 updatesCheckInterval,
                 TimeUnit.SECONDS);
 
+        systemStartupMonitor = new SystemStartupMonitor(engine, startupRunLevel, getBundleContext());
+
+        startupStpe = new ScheduledThreadPoolExecutor(3);
+        startupStpe.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+        startupStpe.scheduleAtFixedRate(systemStartupMonitor, startupCheckInterval,
+                startupCheckInterval, TimeUnit.SECONDS);
     }
 
     public void shutdown() {
@@ -427,5 +442,29 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager {
 
     public int getUpdatesCheckInterval() {
         return updatesCheckInterval;
+    }
+
+    public BundleContext getBundleContext() {
+        return bundleContext;
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
+    public int getStartupRunLevel() {
+        return startupRunLevel;
+    }
+
+    public void setStartupRunLevel(int startupRunLevel) {
+        this.startupRunLevel = startupRunLevel;
+    }
+
+    public int getStartupCheckInterval() {
+        return startupCheckInterval;
+    }
+
+    public void setStartupCheckInterval(int startupCheckInterval) {
+        this.startupCheckInterval = startupCheckInterval;
     }
 }

@@ -24,8 +24,8 @@
         <property name="profileManager" ref="profileManager"/>
         <property name="engine" ref="updateEngine"/>
         <property name="updatesCheckInterval" value="${updatesCheckInterval}"/>
-
-
+        <property name="startupCheckInterval" value="${startupCheckInterval}"/>
+        <property name="startupRunLevel" value="${maintenanceRunLevel}"/>
         <property name="dataFolder" value="${karaf.data}"/>
     </bean>
 
@@ -127,12 +127,12 @@
 
                 <!-- Update system, system is in maintenance mode-->
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
-                    <property name="name" value="udpate-system-start"/>
+                    <property name="name" value="update-system-start"/>
                 </bean>
 
                 <!-- Install updates start, system is in maintenance mode -->
                 <bean class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.Step">
-                    <property name="name" value="udpate-system-end"/>
+                    <property name="name" value="update-system-end"/>
                 </bean>
 
 
@@ -175,6 +175,8 @@
 
         <!-- In Seconds, default : daily -->
         <prop key="updatesCheckInterval">86400</prop>
+
+        <prop key="startupCheckInterval">5</prop>
 
         <prop key="maintenanceRunLevel">35</prop>
         <!-- TODO : Take this from environment -->

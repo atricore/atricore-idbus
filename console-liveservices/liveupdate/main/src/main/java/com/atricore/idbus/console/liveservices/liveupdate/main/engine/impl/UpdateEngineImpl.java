@@ -43,6 +43,7 @@ public class UpdateEngineImpl implements UpdateEngine {
             UpdatePlan plan =  getPlan(state.getPlan());
             UpdateContext ctx = new UpdateContextImpl(state.getId(), plan, state.getUpdateProfile());
             UpdateProcess p = new UpdateProcess(getOperationsRegistry(), ctx);
+            p.init();
             procs.put(p.getId(), p);
             this.seekProcess(p, state.getOperation());
         }
@@ -162,8 +163,6 @@ public class UpdateEngineImpl implements UpdateEngine {
         if (logger.isDebugEnabled())
             logger.debug("Resuming process " + processId);
 
-        proc.seek(proc.getState().getOperation());
-
         return proc;
     }
 
@@ -181,7 +180,7 @@ public class UpdateEngineImpl implements UpdateEngine {
     }
 
     protected UpdateProcess pauseProcess(UpdateProcess proc) throws LiveUpdateException {
-        proc.getState().setStatus(ProcessStatus.STOPPED);
+        proc.getState().setStatus(ProcessStatus.PAUSED);
         store.save(proc.getState());
         return proc;
     }
