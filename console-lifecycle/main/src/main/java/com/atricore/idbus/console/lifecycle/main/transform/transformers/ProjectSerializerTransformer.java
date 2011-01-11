@@ -58,7 +58,7 @@ public class ProjectSerializerTransformer extends AbstractTransformer {
             if (prjDir.exists()) {
                 if (logger.isTraceEnabled())
                     logger.trace("Removing pre-existing project work dir " + prjDir.getURL());
-                prjDir.delete(Selectors.SELECT_SELF_AND_CHILDREN);
+                prjDir.delete(Selectors.SELECT_ALL);
                 prjDir.close();
             }
 

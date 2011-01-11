@@ -4010,20 +4010,17 @@ public class PropertySheetMediator extends IocMediator {
         }
 
         // set provider location
-        if (_federatedConnectionIDPChannelSection.idpChannelLocationPath.text == null ||
-                _federatedConnectionIDPChannelSection.idpChannelLocationPath.text == "") {
-            for (var i:int = 0; i < _federatedConnectionIDPChannelSection.idpChannelLocationProtocol.dataProvider.length; i++) {
-                if (sp.location.protocol == _federatedConnectionIDPChannelSection.idpChannelLocationProtocol.dataProvider[i].data) {
-                    _federatedConnectionIDPChannelSection.idpChannelLocationProtocol.selectedIndex = i;
-                    break;
-                }
+        for (var i:int = 0; i < _federatedConnectionIDPChannelSection.idpChannelLocationProtocol.dataProvider.length; i++) {
+            if (sp.location.protocol == _federatedConnectionIDPChannelSection.idpChannelLocationProtocol.dataProvider[i].data) {
+                _federatedConnectionIDPChannelSection.idpChannelLocationProtocol.selectedIndex = i;
+                break;
             }
-            _federatedConnectionIDPChannelSection.idpChannelLocationDomain.text = sp.location.host;
-            _federatedConnectionIDPChannelSection.idpChannelLocationPort.text = sp.location.port.toString() != "0" ? sp.location.port.toString() : "";
-            _federatedConnectionIDPChannelSection.idpChannelLocationContext.text = sp.location.context;
-            _federatedConnectionIDPChannelSection.idpChannelLocationPath.text = sp.location.uri;
         }
-
+        _federatedConnectionIDPChannelSection.idpChannelLocationDomain.text = sp.location.host;
+        _federatedConnectionIDPChannelSection.idpChannelLocationPort.text = sp.location.port.toString() != "0" ? sp.location.port.toString() : "";
+        _federatedConnectionIDPChannelSection.idpChannelLocationContext.text = sp.location.context;
+        _federatedConnectionIDPChannelSection.idpChannelLocationPath.text = sp.location.uri;
+        
         _federatedConnectionIDPChannelSection.useInheritedSPSettings.selected = true;
         setIdpChannelFields();
     }
@@ -4070,20 +4067,17 @@ public class PropertySheetMediator extends IocMediator {
         }
 
         // set provider location
-        if (_federatedConnectionSPChannelSection.spChannelLocationPath.text == null ||
-                _federatedConnectionSPChannelSection.spChannelLocationPath.text == "") {
-            for (var i:int = 0; i < _federatedConnectionSPChannelSection.spChannelLocationProtocol.dataProvider.length; i++) {
-                if (idp.location.protocol == _federatedConnectionSPChannelSection.spChannelLocationProtocol.dataProvider[i].data) {
-                    _federatedConnectionSPChannelSection.spChannelLocationProtocol.selectedIndex = i;
-                    break;
-                }
+        for (var i:int = 0; i < _federatedConnectionSPChannelSection.spChannelLocationProtocol.dataProvider.length; i++) {
+            if (idp.location.protocol == _federatedConnectionSPChannelSection.spChannelLocationProtocol.dataProvider[i].data) {
+                _federatedConnectionSPChannelSection.spChannelLocationProtocol.selectedIndex = i;
+                break;
             }
-            _federatedConnectionSPChannelSection.spChannelLocationDomain.text = idp.location.host;
-            _federatedConnectionSPChannelSection.spChannelLocationPort.text = idp.location.port.toString() != "0" ? idp.location.port.toString() : "";
-            _federatedConnectionSPChannelSection.spChannelLocationContext.text = idp.location.context;
-            _federatedConnectionSPChannelSection.spChannelLocationPath.text = idp.location.uri;
         }
-
+        _federatedConnectionSPChannelSection.spChannelLocationDomain.text = idp.location.host;
+        _federatedConnectionSPChannelSection.spChannelLocationPort.text = idp.location.port.toString() != "0" ? idp.location.port.toString() : "";
+        _federatedConnectionSPChannelSection.spChannelLocationContext.text = idp.location.context;
+        _federatedConnectionSPChannelSection.spChannelLocationPath.text = idp.location.uri;
+        
         _federatedConnectionSPChannelSection.useInheritedIDPSettings.selected = true;
         setSpChannelFields();
     }
