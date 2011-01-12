@@ -65,7 +65,6 @@ import org.atricore.idbus.kernel.main.mediation.claim.*;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.store.SSOIdentityManager;

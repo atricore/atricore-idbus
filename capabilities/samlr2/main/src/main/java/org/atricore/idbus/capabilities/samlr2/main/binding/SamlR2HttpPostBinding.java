@@ -29,7 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils;
-import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedAuthnRequestType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.main.mediation.MediationMessage;
@@ -89,6 +88,13 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
                 // SAML Request
                 RequestAbstractType samlRequest = XmlUtils.unmarshallSamlR2Request(base64SAMLRequest, true);
                 logger.debug("Received SAML Request " + samlRequest.getID());
+
+                // Store relay state to send it back later
+                if (relayState != null) {
+                    // TODO : Use issuer as part of the key
+                    state.setLocalVariable("urn:org:atricore:idbus:samr2:protocol:relayState:" + samlRequest.getID(), relayState);
+                }
+
                 return new MediationMessageImpl<RequestAbstractType>(httpMsg.getMessageId(),
                         samlRequest,
                         XmlUtils.decode(base64SAMLRequest),
@@ -143,6 +149,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             Message httpIn = exchange.getIn();
             Message httpOut = exchange.getOut();
             String targetLocation = this.buildHttpTargetLocation(httpIn, ed);
+            String relayState = out.getRelayState();
 
             if (out.getContent() instanceof RequestAbstractType) {
                 msgName = "SAMLRequest";
@@ -150,6 +157,17 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
             } else if (out.getContent() instanceof StatusResponseType) {
                 msgName = "SAMLResponse";
                 msgValue = XmlUtils.marshallSamlR2Response((StatusResponseType) out.getContent(), element, true);
+
+                StatusResponseType samlResponse = (StatusResponseType) out.getContent();
+                if (samlResponse.getInResponseTo() != null) {
+                    String rs = (String) out.getState().getLocalVariable("urn:org:atricore:idbus:samr2:protocol:relayState:" + samlResponse.getInResponseTo());
+                    if (relayState != null && rs != null && !relayState.equals(rs)) {
+                        relayState = rs;
+                        logger.warn("Provided relay state does not match stored state : " + relayState + " : " + rs +
+                                ", forcing " + relayState);
+                    }
+                }
+                
             } else if (out.getContent() instanceof oasis.names.tc.saml._1_0.protocol.ResponseType) {
                 // Marshal SAML 1.1 Response
                 msgName = "SAMLResponse";
@@ -169,7 +187,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
 
 
             Html post = this.createHtmlPostMessage(targetLocation,
-                    out.getRelayState(),
+                    relayState,
                     msgName,
                     (String) msgValue);
             String marshalledHttpResponseBody = XmlUtils.marshal(post, "http://www.w3.org/1999/xhtml", "html",

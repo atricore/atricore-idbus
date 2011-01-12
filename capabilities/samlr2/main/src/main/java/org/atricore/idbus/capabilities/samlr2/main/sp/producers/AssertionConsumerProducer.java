@@ -24,7 +24,6 @@ package org.atricore.idbus.capabilities.samlr2.main.sp.producers;
 import oasis.names.tc.saml._2_0.assertion.*;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
-import oasis.names.tc.saml._2_0.metadata.KeyDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
@@ -65,7 +64,6 @@ import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.session.exceptions.SSOSessionException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
-import org.w3._2000._09.xmldsig_.X509DataType;
 import org.w3._2001._04.xmlenc_.EncryptedType;
 import org.w3c.dom.Element;
 

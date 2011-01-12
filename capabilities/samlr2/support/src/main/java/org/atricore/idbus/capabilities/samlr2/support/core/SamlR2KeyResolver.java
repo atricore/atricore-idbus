@@ -22,6 +22,7 @@
 package org.atricore.idbus.capabilities.samlr2.support.core;
 
 import java.security.Key;
+import java.security.PublicKey;
 import java.security.cert.Certificate;
 
 /**
@@ -34,4 +35,6 @@ public interface SamlR2KeyResolver {
     Certificate getCertificate () throws SamlR2KeyResolverException;
 
     Key getPrivateKey () throws SamlR2KeyResolverException;
+
+    PublicKey getPublicKey() throws SamlR2KeyResolverException;
 }

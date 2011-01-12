@@ -58,15 +58,13 @@ public class BuildAuthnAssertionAuthStatementAction extends AbstractSAMLR2Assert
                 (SamlR2SecurityTokenEmissionContext) executionContext.getContextInstance().getVariable(RST_CTX);
 
         // Get user SSO Session information!
-
         AuthnStatementType authnStatement;
         authnStatement = new AuthnStatementType();
 
-        // We asume that we are authenticating the user now so there is no session information yet.
-
+        // We assume that we are authenticating the user now so there is no session information yet.
         // TODO : Use built in SSO session expiration time
-        Date authInstant = new java.util.Date();
-        Date sessionNotOnOrAfter = new java.util.Date(authInstant.getTime() + (1000 * 60 * 60));
+        Date authInstant = new java.util.Date(System.currentTimeMillis());
+        Date sessionNotOnOrAfter = new java.util.Date(authInstant.getTime() + (1000 * 60 * 60 * 6));
 
         // Get session information from STS RST Context!!
         String sessionIndex = ctx.getSessionIndex();
@@ -83,7 +81,6 @@ public class BuildAuthnAssertionAuthStatementAction extends AbstractSAMLR2Assert
         authnStatement.setSessionNotOnOrAfter(DateUtils.toXMLGregorianCalendar(sessionNotOnOrAfter));
 
         // Auth Context
-
         if (ctx.getAuthnState().getCurrentAuthnCtxClass() != null) {
 
             AuthnContextType authnContext = new AuthnContextType();

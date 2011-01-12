@@ -58,6 +58,7 @@
                   access="read"/>
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
                   access="read"/>
+
     </process-fragment-state>
 
     <!--
@@ -72,6 +73,7 @@
                   access="read"/>
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
                   access="read"/>
+
 
     </process-fragment-state>
 
@@ -88,6 +90,7 @@
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
                   access="read"/>
 
+
     </process-fragment-state>
 
     <!--
@@ -102,6 +105,7 @@
                   access="read" />
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
                   access="read"/>
+
 
     </process-fragment-state>
 
@@ -118,6 +122,7 @@
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
                   access="read"/>
 
+
     </process-fragment-state>
 
     <!--
@@ -132,7 +137,8 @@
                   access="read" />
         <variable name="urn:org:atricore:idbus:kernel:main:sts::RSTContext"
                   access="read"/>
-        
+
+
     </process-fragment-state>
 
     <end-state name="end" />

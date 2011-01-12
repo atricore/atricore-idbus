@@ -28,6 +28,7 @@ import org.springframework.core.io.Resource;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.cert.Certificate;
 
 
@@ -42,11 +43,13 @@ public class SamlR2KeystoreKeyResolver extends SamlR2KeyResolverImpl {
 
     private static final Log logger = LogFactory.getLog(SamlR2KeystoreKeyResolver.class);
 
+    private KeyStore keystore;
     private Boolean initiated = false;
     private String keystoreType = "JKS";
     private Resource  keystoreFile;
     private String keystorePass;
     private String privateKeyAlias;
+    private String publicKeyAlias;
     private String privateKeyPass;
     private String certificateAlias;
 
@@ -72,6 +75,14 @@ public class SamlR2KeystoreKeyResolver extends SamlR2KeyResolverImpl {
 
     public void setKeystorePass(String keystorePass) {
         this.keystorePass = keystorePass;
+    }
+
+    public String getPublicKeyAlias() {
+        return publicKeyAlias;
+    }
+
+    public void setPublicKeyAlias(String publicKeyAlias) {
+        this.publicKeyAlias = publicKeyAlias;
     }
 
     public String getPrivateKeyAlias() {
@@ -101,7 +112,7 @@ public class SamlR2KeystoreKeyResolver extends SamlR2KeyResolverImpl {
     public void init() throws SamlR2KeyResolverException {
         InputStream is = null;
         try {
-            KeyStore keystore = KeyStore.getInstance(keystoreType);
+            keystore = KeyStore.getInstance(keystoreType);
 
             if (keystoreFile == null)
                 throw new IllegalStateException("No keystore resource defined!");        
@@ -115,8 +126,10 @@ public class SamlR2KeystoreKeyResolver extends SamlR2KeyResolverImpl {
             //load the keystore
             keystore.load(is, keystorePass.toCharArray());
 
-            if (certificateAlias != null)
+            if (certificateAlias != null) {
                 certificate = keystore.getCertificate(certificateAlias);
+                publicKey = certificate.getPublicKey();
+            }
 
             if (privateKeyAlias != null)
                 privateKey = (PrivateKey) keystore.getKey(privateKeyAlias, privateKeyPass != null ? privateKeyPass.toCharArray() : null);
@@ -162,4 +175,15 @@ public class SamlR2KeystoreKeyResolver extends SamlR2KeyResolverImpl {
         return super.getPrivateKey();
     }
 
+    @Override
+    public PublicKey getPublicKey() throws SamlR2KeyResolverException {
+        if (!initiated)
+            init();
+
+        return super.getPublicKey();
+    }
+
+    public KeyStore getKeystore() {
+        return this.keystore;
+    }
 }

@@ -26,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
 import org.atricore.idbus.capabilities.samlr2.main.common.AbstractSamlR2Mediator;
-import org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;

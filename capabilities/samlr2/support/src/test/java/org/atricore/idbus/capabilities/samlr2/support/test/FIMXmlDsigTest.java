@@ -5,7 +5,6 @@ import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2KeystoreKeyResolver;
 import org.atricore.idbus.capabilities.samlr2.support.core.signature.JSR105SamlR2SignerImpl;
-import org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -65,7 +64,8 @@ public class FIMXmlDsigTest {
 
         AssertionType assertion = (AssertionType) assertionLs.get(0);
 
-        signer.validate(responseDom);
+        // TODO : Provide MD
+        signer.validate(null, responseDom);
     }
 
     private Document loadDocument (String fileName) throws Exception {

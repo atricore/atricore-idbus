@@ -3,12 +3,10 @@ package org.atricore.idbus.capabilities.samlr2.main.idp;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
-import org.atricore.idbus.capabilities.samlr2.support.SAMLR2MessagingConstants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SamlR2Service;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedLogoutRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
-import org.atricore.idbus.common.sso._1_0.wsdl.SSORequestPortType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.Channel;
@@ -24,8 +22,6 @@ import org.atricore.idbus.kernel.main.session.SSOSessionEventListener;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-
-import javax.xml.ws.Service;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

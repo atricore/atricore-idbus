@@ -6,7 +6,6 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.common.sso._1_0.protocol.SPSessionHeartBeatResponseType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.mediation.*;

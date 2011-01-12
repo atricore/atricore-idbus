@@ -47,7 +47,6 @@ public class InitializeResponseAction extends AbstractSamlR2Action {
 
     private static final Log logger = LogFactory.getLog(InitializeResponseAction.class);
 
-    // TODO : Take this from app context ?
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
     protected void doExecute(IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext) throws Exception {
@@ -88,8 +87,10 @@ public class InitializeResponseAction extends AbstractSamlR2Action {
             logger.warn("Process Variable not found " + VAR_DESTINATION_ENDPOINT_DESCRIPTOR);
         }
 
+
         // Consent [optional]
-        response.setConsent(Consent.Unavailable.getValue());
+        // TODO : set proper Consent value
+        response.setConsent(Consent.Obtained.getValue());
 
         // Issuer [optional]
         CircleOfTrustMemberDescriptor cotMember =

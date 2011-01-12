@@ -22,7 +22,6 @@
 package org.atricore.idbus.capabilities.samlr2.main.emitter.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
-import oasis.names.tc.saml._2_0.assertion.AudienceRestrictionType;
 import oasis.names.tc.saml._2_0.assertion.ConditionsType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,14 +58,8 @@ public class BuildAuthnAssertionConditionsAction extends AbstractSAMLR2Assertion
 
         // Not Before, Not On or After
         Date dateNow = new java.util.Date();
-        conditions.setNotBefore(DateUtils.toXMLGregorianCalendar(dateNow.getTime() - (1000L * 60L * 5l)));
-        conditions.setNotOnOrAfter(DateUtils.toXMLGregorianCalendar(dateNow.getTime() + (1000L * 60L * 5l)));
-
-        // Audience , the requester SP
-        AudienceRestrictionType audienceRestriction = new AudienceRestrictionType();
-        audienceRestriction.getAudience().add(sp.getAlias());
-        conditions.getConditionOrAudienceRestrictionOrOneTimeUse().add(audienceRestriction);
-
+        conditions.setNotBefore(DateUtils.toXMLGregorianCalendar(dateNow.getTime() - (1000L * 60L * 5)));
+        conditions.setNotOnOrAfter(DateUtils.toXMLGregorianCalendar(dateNow.getTime() + (1000L * 60L * 5)));
 
         logger.debug("ending action");
     }

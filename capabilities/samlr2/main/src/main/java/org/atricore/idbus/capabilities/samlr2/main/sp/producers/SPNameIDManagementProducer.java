@@ -37,7 +37,10 @@ import org.atricore.idbus.capabilities.samlr2.main.common.producers.SamlR2Produc
 import org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
-import org.atricore.idbus.capabilities.samlr2.support.core.*;
+import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
+import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2RequestException;
+import org.atricore.idbus.capabilities.samlr2.support.core.StatusCode;
+import org.atricore.idbus.capabilities.samlr2.support.core.StatusDetails;
 import org.atricore.idbus.capabilities.samlr2.support.core.encryption.SamlR2Encrypter;
 import org.atricore.idbus.capabilities.samlr2.support.core.encryption.SamlR2EncrypterException;
 import org.atricore.idbus.capabilities.samlr2.support.core.signature.SamlR2SignatureException;

@@ -24,10 +24,8 @@ package org.atricore.idbus.capabilities.samlr2.main.idp.producers;
 import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
-import oasis.names.tc.saml._2_0.wsdl.SAMLRequestPortType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
 import org.atricore.idbus.capabilities.samlr2.main.common.producers.SamlR2Producer;
 import org.atricore.idbus.capabilities.samlr2.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.samlr2.main.idp.IdentityProviderConstants;
@@ -50,15 +48,12 @@ import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.AbstractCamelEndpoint;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationExchange;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
-import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
-import org.atricore.idbus.kernel.main.session.exceptions.SSOSessionException;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

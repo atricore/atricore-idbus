@@ -12,7 +12,10 @@ import org.atricore.idbus.common.sso._1_0.protocol.IDPSessionHeartBeatRequestTyp
 import org.atricore.idbus.common.sso._1_0.protocol.IDPSessionHeartBeatResponseType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPSessionHeartBeatRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SPSessionHeartBeatResponseType;
-import org.atricore.idbus.kernel.main.federation.metadata.*;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrust;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.binding.BindingChannel;
@@ -30,7 +33,7 @@ import org.atricore.idbus.kernel.main.session.SSOSessionManager;
 import org.atricore.idbus.kernel.main.session.exceptions.NoSuchSessionException;
 import org.atricore.idbus.kernel.main.session.exceptions.SSOSessionException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
-import org.atricore.idbus.kernel.planning.*;
+import org.atricore.idbus.kernel.planning.IdentityPlanningException;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

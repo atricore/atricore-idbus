@@ -41,6 +41,7 @@
     </prerequisites>
 
     <properties>
+        <commons-httpclient.version>3.1_1</commons-httpclient.version>
         <woodstox.stax2api.version>3.0.1</woodstox.stax2api.version>
         <woodstox.version>4.0.5</woodstox.version>
     </properties>
@@ -113,10 +114,36 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.osgi</groupId>
+            <artifactId>spring-osgi-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>1.1</version>
+            <scope>tests</scope>
+        </dependency>
+        
 
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
@@ -159,16 +186,25 @@
 
         <!-- Test dependencies -->
 
+
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>stax2-api</artifactId>
             <version>${woodstox.stax2api.version}</version>
             <scope>test</scope>
         </dependency>
+        
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>woodstox-core-asl</artifactId>
             <version>${woodstox.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.commons-httpclient</artifactId>
+            <version>${commons-httpclient.version}</version>
             <scope>test</scope>
         </dependency>
 

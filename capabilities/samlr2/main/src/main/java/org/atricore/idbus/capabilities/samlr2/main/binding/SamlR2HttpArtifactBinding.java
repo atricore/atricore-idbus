@@ -23,10 +23,11 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
 import org.atricore.idbus.kernel.planning.*;
-import static org.atricore.idbus.capabilities.samlr2.main.common.plans.SamlR2PlanningConstants.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+
+import static org.atricore.idbus.capabilities.samlr2.main.common.plans.SamlR2PlanningConstants.*;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -115,6 +116,12 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
 
                 RequestAbstractType samlRequest = (RequestAbstractType) msgValue;
                 logger.debug("Received SAML Request " + samlRequest.getID());
+
+                // Store relay state to send it back later
+                if (relayState != null) {
+                    state.setLocalVariable("urn:org:atricore:idbus:samr2:protocol:relayState:" + samlRequest.getID(), relayState);
+                }
+
                 return new MediationMessageImpl<RequestAbstractType>(httpMsg.getMessageId(),
                         samlRequest,
                         null,
@@ -168,12 +175,24 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
             java.lang.Object msgValue = out.getContent();
             String element = out.getContentType();
             boolean isResponse = false;
+            String relayState = out.getRelayState();
 
             if (out.getContent() instanceof RequestAbstractType) {
                 msgName = "SAMLRequest";
             } else if (out.getContent() instanceof StatusResponseType) {
                 msgName = "SAMLResponse";
                 isResponse = true;
+
+                StatusResponseType samlResponse = (StatusResponseType) out.getContent();
+                if (samlResponse.getInResponseTo() != null) {
+                    String rs = (String) out.getState().getLocalVariable("urn:org:atricore:idbus:samr2:protocol:relayState:" + samlResponse.getInResponseTo());
+                    if (relayState != null && rs != null && !relayState.equals(rs)) {
+                        relayState = rs;
+                        logger.warn("Provided relay state does not match stored state : " + relayState + " : " + rs +
+                                ", forcing " + relayState);
+                    }
+                }
+
             }
 
             if (msgValue == null) {
@@ -198,7 +217,7 @@ public class SamlR2HttpArtifactBinding extends AbstractMediationHttpBinding {
 
             String qryString = "?" + artifactParameterName + "=" + samlArtifactEnc;
             if (out.getRelayState() != null) {
-                qryString += "&relayState=" + out.getRelayState();
+                qryString += "&relayState=" + relayState;
             }
 
             Message httpOut = exchange.getOut();

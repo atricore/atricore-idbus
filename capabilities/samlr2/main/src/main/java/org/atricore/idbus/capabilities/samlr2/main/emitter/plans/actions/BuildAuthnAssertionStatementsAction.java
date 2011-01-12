@@ -69,7 +69,6 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSAMLR2Assertion
         attrPrincipal.getAttributeValue().add(ssoUser.getName());
 
         // This will add SSO User properties as attribute statements.
-
         List<AttributeType> attrProps = new ArrayList<AttributeType>();
         if (ssoUser.getProperties() != null && ssoUser.getProperties().length > 0) {
 
@@ -88,12 +87,13 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSAMLR2Assertion
         Set<SSORole> ssoRoles = s.getPrincipals(SSORole.class);
 
         AttributeType attrRole = new AttributeType();
-        attrRole.setName(DCEPACAttributeDefinition.GROUPS.getValue()); // Check, use GROUP or GROUPS!
+        // TODO : Make SAML Attribute profile configurable
+        attrRole.setName(DCEPACAttributeDefinition.GROUPS.getValue());
         attrRole.setNameFormat(AttributeNameFormat.URI.getValue());
         for(SSORole role : ssoRoles)
             attrRole.getAttributeValue().add( role.getName() );
 
-        // Assembly all
+        // Create attribute statements
         AttributeStatementType attributeStatement = new AttributeStatementType();
         attributeStatement.getAttributeOrEncryptedAttribute().add(attrRole);
         attributeStatement.getAttributeOrEncryptedAttribute().add(attrPrincipal);
@@ -103,9 +103,10 @@ public class BuildAuthnAssertionStatementsAction extends AbstractSAMLR2Assertion
                 attributeStatement.getAttributeOrEncryptedAttribute().add(attrProp);
         }
 
+        // Assembly all
         assertion.getStatementOrAuthnStatementOrAuthzDecisionStatement().add( attributeStatement );
 
-        // Create attribute statements
+
 
         logger.debug("ending action");
     }

@@ -48,7 +48,6 @@ public class InitializeRequestAction extends AbstractSamlR2Action {
 
     private static final Log logger = LogFactory.getLog(InitializeRequestAction.class);
 
-    // TODO : Take this from app context ?
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
 
     protected void doExecute(IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext) throws Exception {
@@ -79,6 +78,7 @@ public class InitializeRequestAction extends AbstractSamlR2Action {
         }
 
         // Consent [optional]
+        // TODO : Set proper Consent value
         request.setConsent(Consent.Unavailable.getValue());
 
         // Issuer [optional]

@@ -310,7 +310,8 @@ public class XmlDsigTest {
 
         assertion = signer.sign(assertion);
 
-        signer.validate(assertion);
+        // TODO : Provide MD
+        signer.validate(null, assertion);
 
 
     }

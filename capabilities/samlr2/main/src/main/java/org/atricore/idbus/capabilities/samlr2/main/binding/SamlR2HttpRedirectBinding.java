@@ -25,6 +25,7 @@ import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
@@ -36,6 +37,11 @@ import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.AbstractMediationHttpBinding;
 import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMediationMessage;
+
+import java.io.*;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -84,9 +90,18 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
 
             if (base64SAMLRequest != null) {
 
+                // By default, we use inflate/deflate
+                base64SAMLRequest = inflate(base64SAMLRequest, true);
+
                 // SAML Request
-                RequestAbstractType samlRequest = XmlUtils.unmarshallSamlR2Request(base64SAMLRequest, true);
+                RequestAbstractType samlRequest = XmlUtils.unmarshallSamlR2Request(base64SAMLRequest, false);
                 logger.debug("Received SAML Request " + samlRequest.getID());
+
+                // Store relay state to send it back later
+                if (relayState != null) {
+                    state.setLocalVariable("urn:org:atricore:idbus:samr2:protocol:relayState:" + samlRequest.getID(), relayState);
+                }
+
                 return new MediationMessageImpl<RequestAbstractType>(httpMsg.getMessageId(),
                         samlRequest,
                         XmlUtils.decode(base64SAMLRequest),
@@ -97,6 +112,11 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             } else {
 
                 // SAML Response
+                base64SAMLResponse = inflate(base64SAMLResponse, true);
+
+                // By default, we use inflate/deflate
+                base64SAMLResponse = inflate(base64SAMLResponse, false);
+
                 StatusResponseType samlResponse = XmlUtils.unmarshallSamlR2Response(base64SAMLResponse, true);
                 logger.debug("Received SAML Response " + samlResponse.getID());
                 return new MediationMessageImpl<StatusResponseType>(httpMsg.getMessageId(),
@@ -138,14 +158,47 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             java.lang.Object msgValue = null;
             String element = out.getContentType();
             boolean isResponse = false;
+            String relayState = out.getRelayState();
 
             if (out.getContent() instanceof RequestAbstractType) {
+
+
                 msgName = "SAMLRequest";
-                msgValue = XmlUtils.marshallSamlR2Request((RequestAbstractType) out.getContent(), element, true);
+
+                // Strip DS information from request/response!
+                RequestAbstractType req = (RequestAbstractType) out.getContent();
+                req.setSignature(null);
+
+                // Marshall
+                String s = XmlUtils.marshallSamlR2Request((RequestAbstractType) out.getContent(), element, false);
+
+                // Use default DEFLATE (rfc 1951)
+                msgValue = deflate(s, true);
 
             } else if (out.getContent() instanceof StatusResponseType) {
                 msgName = "SAMLResponse";
-                msgValue = XmlUtils.marshallSamlR2Response((StatusResponseType) out.getContent(), element, true);
+
+                // Strip DS information from request/response!
+                RequestAbstractType req = (RequestAbstractType) out.getContent();
+                req.setSignature(null);
+
+                // Marshall
+                String s = XmlUtils.marshallSamlR2Response((StatusResponseType) out.getContent(), element, false);
+
+                // Use default DEFLATE (rfc 1951)
+                msgValue = deflate(s, true);
+
+                StatusResponseType samlResponse = (StatusResponseType) out.getContent();
+                if (samlResponse.getInResponseTo() != null) {
+                    String rs = (String) out.getState().getLocalVariable("urn:org:atricore:idbus:samr2:protocol:relayState:" +
+                            samlResponse.getInResponseTo());
+                    if (relayState != null && rs != null && !relayState.equals(rs)) {
+                        relayState = rs;
+                        logger.warn("Provided relay state does not match stored state : " + relayState + " : " + rs +
+                                ", forcing " + relayState);
+                    }
+                }
+
             }
 
             if (out.getContent() == null) {
@@ -157,7 +210,7 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
 
             String qryString = "?" + msgName + "=" + (String) msgValue;
             if (out.getRelayState() != null) {
-                qryString += "&relayState=" + out.getRelayState();
+                qryString += "&relayState=" + relayState;
             }
 
             Message httpOut = exchange.getOut();
@@ -178,6 +231,56 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
+    }
+
+    protected String deflate(String in, boolean encode) throws Exception {
+
+        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+        DeflaterOutputStream deflater = new DeflaterOutputStream(bytesOut);
+
+        ByteArrayInputStream inflated = new ByteArrayInputStream(in.getBytes());
+
+
+        byte[] buf = new byte[1024];
+        int read = inflated.read(buf);
+        while (read > 0) {
+            deflater.write (buf, 0, read);
+            read = inflated.read(buf);
+        }
+
+        deflater.flush();
+
+        byte[] encodedbytes = bytesOut.toByteArray();
+        if (encode) {
+            byte[] b64 = new Base64().encodeBase64(encodedbytes);
+        }
+
+        return new String(encodedbytes);
+
+    }
+
+    protected String inflate(String in, boolean decode) throws Exception {
+
+        byte[] decodedBytes = in.getBytes();
+        if (decode) {
+            decodedBytes = new Base64().decode(in.getBytes());
+        }
+        
+        ByteArrayInputStream bytesIn = new ByteArrayInputStream(decodedBytes);
+        InputStream inflater = new InflaterInputStream(bytesIn, new Inflater(true));
+
+        // This gets rid of platform specific EOL chars ...
+        BufferedReader r = new BufferedReader(new InputStreamReader(inflater));
+        StringBuffer sb = new StringBuffer();
+        
+        String l = r.readLine();
+        while (l != null) {
+            sb.append(l);
+            l = r.readLine();
+        }
+
+        return sb.toString();
+
     }
 
 }

@@ -2,8 +2,6 @@ package org.atricore.idbus.capabilities.samlr2.main.binding.producers;
 
 import oasis.names.tc.saml._1_0.protocol.RequestType;
 import oasis.names.tc.saml._1_0.protocol.ResponseType;
-import oasis.names.tc.saml._1_0.protocol.StatusCodeType;
-import oasis.names.tc.saml._1_0.protocol.StatusType;
 import oasis.names.tc.saml._2_0.protocol.ArtifactResolveType;
 import oasis.names.tc.saml._2_0.protocol.ArtifactResponseType;
 import org.apache.commons.logging.Log;
@@ -20,7 +18,6 @@ import org.atricore.idbus.capabilities.samlr2.support.SAMLR11Constants;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.core.StatusCode;
-import org.atricore.idbus.capabilities.samlr2.support.core.StatusCode11;
 import org.atricore.idbus.capabilities.samlr2.support.core.StatusDetails;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptorImpl;
@@ -36,7 +33,6 @@ import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.atricore.idbus.kernel.planning.*;
 
 import javax.xml.namespace.QName;
-import java.math.BigInteger;
 
 /**
  * This producer can resolve SAML 1.1 and SAML 2.0 artifacts, the artifact must resolve to a SAML message

@@ -2,7 +2,6 @@ package org.atricore.idbus.capabilities.samlr2.support.federation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.atricore.idbus.capabilities.samlr2.support.profiles.DCEPACAttributeDefinition;
 import org.atricore.idbus.kernel.main.federation.IdentityMapper;
 
 import javax.security.auth.Subject;

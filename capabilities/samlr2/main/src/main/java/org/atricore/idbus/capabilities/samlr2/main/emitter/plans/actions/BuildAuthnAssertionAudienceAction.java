@@ -52,12 +52,7 @@ public class BuildAuthnAssertionAudienceAction extends AbstractSAMLR2AssertionAc
             if (ctx.getMember() != null) {
                 AudienceRestrictionType audience = new AudienceRestrictionType ();
 
-                // TODO : Salesforce hack! ... fix me
-                if (ctx.getMember().getAlias().startsWith("https://saml.salesforce.com"))
-                    audience.getAudience().add("https://saml.salesforce.com");
-                else
-                    audience.getAudience().add(ctx.getMember().getAlias());
-                
+                audience.getAudience().add(ctx.getMember().getAlias());
                 assertion.getConditions().getConditionOrAudienceRestrictionOrOneTimeUse().add(audience);
             }
         }

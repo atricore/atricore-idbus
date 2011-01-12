@@ -36,7 +36,6 @@ import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2KeyResolver;
 import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2KeyResolverException;
 import org.atricore.idbus.capabilities.samlr2.support.core.util.NamespaceFilterXMLStreamWriter;
 import org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils;
-import org.w3._2000._09.xmldsig_.SignatureType;
 import org.w3._2000._09.xmldsig_.X509DataType;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -64,12 +63,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.security.*;
-import java.security.cert.*;
 import java.security.cert.Certificate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.security.cert.*;
+import java.util.*;
 
 /**
  * This will sign and verify saml2 identity artifact (assertion, requet, response) signatures usign a JSR 105 Provider.
@@ -724,11 +720,12 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             // Create a Reference to the enveloped document and
             // also specify the SHA1 digest algorithm and the ENVELOPED Transform.
             // The URI must be the assertion ID
+
             Reference ref = fac.newReference
                     ("#" + id, fac.newDigestMethod(DigestMethod.SHA1, null),
-                            Collections.singletonList
-                                    (fac.newTransform
-                                            (Transform.ENVELOPED, (TransformParameterSpec) null)),
+                            Collections.singletonList(
+                                    fac.newTransform (Transform.ENVELOPED,
+                                            (TransformParameterSpec) null)),
                             null, null);
 
             // Use signature method based on key algorithm.
@@ -739,9 +736,17 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             logger.debug("Using signature method " + signatureMethod);
 
             // Create the SignedInfo, with the X509 Certificate
+            /*
             SignedInfo si = fac.newSignedInfo
                     (fac.newCanonicalizationMethod
                             (CanonicalizationMethod.INCLUSIVE_WITH_COMMENTS,
+                                    (C14NMethodParameterSpec) null),
+                            fac.newSignatureMethod(signatureMethod, null),
+                            Collections.singletonList(ref));
+             */
+            SignedInfo si = fac.newSignedInfo
+                    (fac.newCanonicalizationMethod
+                            (CanonicalizationMethod.EXCLUSIVE,
                                     (C14NMethodParameterSpec) null),
                             fac.newSignatureMethod(signatureMethod, null),
                             Collections.singletonList(ref));

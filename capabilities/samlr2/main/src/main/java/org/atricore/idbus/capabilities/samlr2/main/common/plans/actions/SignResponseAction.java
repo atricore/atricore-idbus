@@ -32,6 +32,9 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: SignResponseAction.java 1335 2009-06-24 16:34:38Z sgonzalez $
@@ -48,23 +51,40 @@ public class SignResponseAction extends AbstractSamlR2Action {
         AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
 
-        // If the response has an assertion, remove the signature
+        // TODO : Add enable assertion signature property
+        if (!mediator.isEnableSignature()) {
+            logger.debug("Signature is disabled for " + channel.getName());
+            return ;
+        }
 
+        // If the response has an assertion, remove the signature and re-sign it ... (we're discarding STS signature!)
         if (((ResponseType)response).getAssertionOrEncryptedAssertion().size() > 0) {
 
-            AssertionType assertion = (AssertionType) ((ResponseType)response).getAssertionOrEncryptedAssertion().get(0);
 
-            if (logger.isDebugEnabled())
-                logger.debug("Signing SAMLR2 Assertion: " + assertion.getID() + " in channel " + channel.getName());
+            List<Object> assertions = new ArrayList<Object>();
+            for (Object o : ((ResponseType)response).getAssertionOrEncryptedAssertion()) {
 
-            // The Assertion is now eveloped within a SAML Response so we need to sign a second time within this context.
-            assertion.setSignature(null);
+                if (o instanceof AssertionType) {
 
-            /* TODO: not able to obtain a valid DS of an Assertion within a Response
-            AssertionType signedAssertion = signer.sign(assertion);
+                    AssertionType assertion = (AssertionType) o;
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Signing SAMLR2 Assertion: " + assertion.getID() + " in channel " + channel.getName());
+
+                    // The Assertion is now eveloped within a SAML Response so we need to sign a second time within this context.
+                    assertion.setSignature(null);
+
+                    AssertionType signedAssertion = signer.sign(assertion);
+                    assertions.add(signedAssertion);
+
+
+                }
+
+            }
+            // Replace assertions
             ((ResponseType)response).getAssertionOrEncryptedAssertion().clear();
-            ((ResponseType)response).getAssertionOrEncryptedAssertion().add(signedAssertion);
-            */
+            ((ResponseType)response).getAssertionOrEncryptedAssertion().addAll(assertions);
+
         }
 
         if (logger.isDebugEnabled())

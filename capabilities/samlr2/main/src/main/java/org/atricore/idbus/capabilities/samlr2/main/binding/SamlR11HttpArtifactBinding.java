@@ -29,7 +29,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import static org.atricore.idbus.capabilities.samlr2.main.common.plans.SamlR2PlanningConstants.*;
-import static org.atricore.idbus.capabilities.samlr2.main.common.plans.SamlR2PlanningConstants.VAR_RESPONSE_CHANNEL;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>

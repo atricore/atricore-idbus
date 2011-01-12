@@ -23,7 +23,6 @@ package org.atricore.idbus.capabilities.samlr2.main.emitter.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.*;
 import oasis.names.tc.saml._2_0.protocol.AuthnRequestType;
-import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.emitter.SamlR2SecurityTokenEmissionContext;
@@ -136,16 +135,12 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSAMLR2AssertionAct
             throw new RuntimeException("Subject must contain a SSOUser principal");
         SSOUser ssoUser = ssoUsers.iterator().next();
 
-        // TODO : Move this to a context class : Do we have an AuthnRequest ?
-        RequestAbstractType samlr2InboundMsg = (RequestAbstractType) executionContext.getVariable(SAMLR2_INBOUND_MSG);
-        AuthnRequestType authnRequest = samlr2InboundMsg instanceof AuthnRequestType ? (AuthnRequestType) samlr2InboundMsg : null;
-
         oasis.names.tc.saml._2_0.assertion.ObjectFactory samlObjectFactory;
         samlObjectFactory = new oasis.names.tc.saml._2_0.assertion.ObjectFactory();
 
         // Subject Confirmation Data
 
-        SubjectConfirmationDataType subjectConfirmationData = samlObjectFactory.createKeyInfoConfirmationDataType();
+        SubjectConfirmationDataType subjectConfirmationData = samlObjectFactory.createSubjectConfirmationDataType();
 
         SamlR2SecurityTokenEmissionContext ctx =
                 (SamlR2SecurityTokenEmissionContext) executionContext.getContextInstance().getVariable(RST_CTX);
@@ -154,15 +149,21 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSAMLR2AssertionAct
             subjectConfirmationData.setRecipient(
                 ((AuthnRequestType)ctx.getRequest()).getAssertionConsumerServiceURL()
             );
+
         }
 
         // Subject Confirmation : NotOnOrAfter (required)
-        Date dateNow = new java.util.Date(); // TODO : Base this on assertion.getIssueInstant ?
-        subjectConfirmationData.setNotOnOrAfter(DateUtils.toXMLGregorianCalendar(dateNow.getTime() + (1000 * 60 * 5)));
+        Date dateNow = new java.util.Date();
+        subjectConfirmationData.setNotOnOrAfter(DateUtils.toXMLGregorianCalendar(dateNow.getTime() + (1000L * 60L * 5)));
+        // TODO : Check when we need to set SubjectConfirmation notBefore
+        // subjectConfirmationData.setNotBefore(DateUtils.toXMLGregorianCalendar(dateNow.getTime() - (1000L * 60L * 5)));
 
         // Subject Confirmation In Response To : If we have an authn request, set the ID here!
-        if (authnRequest != null) {
-            subjectConfirmationData.setInResponseTo(authnRequest.getID());
+        if (ctx.getAuthnState() != null) {
+            // TODO : Check when we need to sent SubjectConfirmation inResponseTo
+            AuthnRequestType req = ctx.getAuthnState().getAuthnRequest();
+//            if (req != null)
+//                subjectConfirmationData.setInResponseTo(req.getID());
         }
 
         // Subject Confirmation, Confirmation Method Bearer is required.
@@ -179,6 +180,8 @@ public class BuildAuthnAssertionSubjectAction extends AbstractSAMLR2AssertionAct
         NameIDType subjectNameID = new NameIDType();
         subjectNameID.setFormat(NameIDFormat.UNSPECIFIED.getValue());
         subjectNameID.setValue(ssoUser.getName());
+        // TODO : Set SPNameQualifier
+        //subjectNameID.setSPNameQualifier("google.com/a/atricore.com");
 
         // Previously built parts
         subject.getContent().add(samlObjectFactory.createNameID(subjectNameID));

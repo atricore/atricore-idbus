@@ -43,8 +43,8 @@ import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.main.mediation.channel.SPChannel;
 import org.atricore.idbus.kernel.main.mediation.endpoint.IdentityMediationEndpoint;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedLocalProvider;
-import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 import org.atricore.idbus.kernel.main.mediation.provider.FederatedRemoteProvider;
+import org.atricore.idbus.kernel.main.mediation.provider.Provider;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
