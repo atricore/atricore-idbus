@@ -89,7 +89,6 @@ public class SamlR2IDPComponent extends DefaultComponent {
 
     protected SamlR2Service getSamlR2Service(String remaining) {
 
-        // TODO !
         for (SamlR2Service et : SamlR2Service.values()) {
             if (et.getQname().getLocalPart().equals(remaining))
                 return et;

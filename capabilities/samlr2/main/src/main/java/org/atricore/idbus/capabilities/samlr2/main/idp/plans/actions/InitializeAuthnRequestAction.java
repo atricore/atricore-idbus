@@ -77,7 +77,6 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
 
         // NameIDPolicy [optional]
         // TODO : This is deployment specific, every IDP and SP can provide / support different policies, check SAMLR2 MD
-
         SamlR2IDPMediator mediator = (SamlR2IDPMediator) spChannel.getIdentityMediator();
 
         CircleOfTrustMemberDescriptor spCotMember = resolveSpAlias(channel, ssoAuthnReq);
@@ -111,9 +110,6 @@ public class InitializeAuthnRequestAction extends AbstractSamlR2Action {
 
         // AssertionConsumerServiceIndex [optional] --> from our springmetadata/endponit
         // AssertionConsumerServiceURL [optional] --> from our springmetadata/endpoint
-
-        // TODO: Build on the Metadata of the remote SP for fetching the ACS instead of using mediator-specific metadata
-        //// e.g. IdentityMediationEndpoint acsEndpoint = resolveAcsEndpoint(idp, spChannel, endpoint);
 
         MetadataEntry destinationSPMetadataEntry = spCotMember.getMetadata();
 

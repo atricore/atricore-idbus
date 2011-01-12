@@ -129,7 +129,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
             logger.debug("Building SLO Response for SSO Session "  + (secCtx != null ? secCtx.getSessionIndex() : "<NONE>"));
 
         CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(sloRequest.getIssuer());
-        // TODO : Make more flexible!
+
         EndpointDescriptor ed = resolveSpSloEndpoint(sloRequest.getIssuer(), new SamlR2Binding [] { binding } , true);
         ResponseType response = buildSamlResponse(exchange, sloRequest, sp, ed);
 
@@ -197,7 +197,6 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
                 // Notify other SPs using either back or front channels
 
-                // TODO : Move registry to mediation state (local)
                 for (ProviderSecurityContext pSecCtx : secCtx.lookupProviders()) {
 
                     // Skip from the list the SP that requested SLO, if any
@@ -226,7 +225,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
                     StatusResponseType spSloResponse =
                             (StatusResponseType) channel.getIdentityMediator().sendMessage(spSloRequest, ed, channel);
 
-                    // TODO : Validate SP Response!
+                    // TODO : Validate SP SLO Response!
 
                 }
 
@@ -296,7 +295,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
     }
 
     protected SSOResponseType buildSsoResponse(SSORequestAbstractType request) {
-        // TODO : Use Planning !!
+        // TODO : Use Planning planning to build SSO Response
         SSOResponseType response = new SSOResponseType();
 
         response.setID(request.getID());

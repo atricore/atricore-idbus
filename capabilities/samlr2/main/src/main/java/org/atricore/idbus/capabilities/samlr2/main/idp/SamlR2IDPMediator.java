@@ -42,7 +42,6 @@ import java.util.Collection;
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: SamlR2IDPMediator.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */
-// TODO : Extend SamlR2AbstractMediator
 public class SamlR2IDPMediator extends AbstractSamlR2Mediator {
 
     private static final Log logger = LogFactory.getLog( SamlR2IDPMediator.class );

@@ -182,7 +182,7 @@ public class ArtifactResolutionProducer extends SamlR2Producer {
         response.setMajorVersion(BigInteger.valueOf(1));
         response.setMinorVersion(BigInteger.valueOf(0));
 
-        // Issue instant (TODO)
+        // Issue instant
 
 
         // Content (not signed!)

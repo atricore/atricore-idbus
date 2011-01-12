@@ -113,7 +113,8 @@ public class SsoLocalBinding extends AbstractMediationBinding {
         if (logger.isTraceEnabled())
             logger.trace("Copy Fault to Exchange for Local binding!");
 
-        // TODO : Implement me!
+        // TODO : Is copyFaultMessageToExchange necessary ?
+        logger.warn("'copyFaultMessageToExchange' Not implemented !");
 
     }
 

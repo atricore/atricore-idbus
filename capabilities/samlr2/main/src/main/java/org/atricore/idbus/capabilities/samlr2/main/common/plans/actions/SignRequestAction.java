@@ -21,11 +21,16 @@
 
 package org.atricore.idbus.capabilities.samlr2.main.common.plans.actions;
 
+import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
+import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.common.AbstractSamlR2Mediator;
 import org.atricore.idbus.capabilities.samlr2.support.core.signature.SamlR2Signer;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.mediation.Channel;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
@@ -44,9 +49,13 @@ public class SignRequestAction extends AbstractSamlR2Action {
 
         Channel channel = (Channel) executionContext.getContextInstance().getVariable(VAR_CHANNEL);
         AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
-        
-        SamlR2Signer signer = mediator.getSigner();
 
+        if (!mediator.isEnableSignature()) {
+            logger.debug("Signature disabled for " + channel.getName());
+            return;
+        }
+
+        SamlR2Signer signer = mediator.getSigner();
         if (logger.isDebugEnabled())
             logger.debug("Signing SAMLR2 Request : " + request.getID() + " in channel " + channel.getName());
 

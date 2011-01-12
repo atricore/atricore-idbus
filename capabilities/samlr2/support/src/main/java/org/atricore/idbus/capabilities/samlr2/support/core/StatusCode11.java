@@ -21,7 +21,7 @@ public enum StatusCode11 {
             ("VersionMismatch", "The SAML responder could not process the request because the version of the request message was incorrect."),
     ;
 
-    // TODO : Add subcodes
+    // TODO : Add SAML 1.1 Status codes
 
     StatusCode11(String name, String description) {
         this.value = name;

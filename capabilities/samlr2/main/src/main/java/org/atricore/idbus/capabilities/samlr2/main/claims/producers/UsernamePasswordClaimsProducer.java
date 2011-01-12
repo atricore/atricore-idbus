@@ -189,7 +189,7 @@ public class UsernamePasswordClaimsProducer extends SamlR2Producer
         ClaimSet claims = new ClaimSetImpl();
         claims.addClaim(claim);
 
-        SamlR2ClaimsResponse claimsResponse = new SamlR2ClaimsResponse (claimsRequest.getId()/*TODO*/,
+        SamlR2ClaimsResponse claimsResponse = new SamlR2ClaimsResponse (claimsRequest.getId() /* TODO : Generate new ID !*/,
                 channel, claimsRequest.getId(), claims, claimsRequest.getRelayState());
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();

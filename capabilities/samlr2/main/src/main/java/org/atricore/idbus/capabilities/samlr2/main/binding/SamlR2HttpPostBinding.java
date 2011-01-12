@@ -91,7 +91,7 @@ public class SamlR2HttpPostBinding extends AbstractMediationHttpBinding {
 
                 // Store relay state to send it back later
                 if (relayState != null) {
-                    // TODO : Use issuer as part of the key
+                    // TODO : Use issuer as part of the key, hard to keep track of it on responses
                     state.setLocalVariable("urn:org:atricore:idbus:samr2:protocol:relayState:" + samlRequest.getID(), relayState);
                 }
 

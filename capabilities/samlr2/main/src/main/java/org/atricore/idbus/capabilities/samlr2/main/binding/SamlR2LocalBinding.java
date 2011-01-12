@@ -58,7 +58,7 @@ public class SamlR2LocalBinding extends AbstractMediationBinding {
 
                 if (sessionIndexes != null) {
                     if (sessionIndexes.size() > 0) {
-                        // TODO : Right now we support only one session index!
+
                         String sessionIndex = sessionIndexes.get(0);
 
                         ProviderStateContext ctx = createProviderStateContext();
@@ -116,7 +116,8 @@ public class SamlR2LocalBinding extends AbstractMediationBinding {
         if (logger.isTraceEnabled())
             logger.trace("Copy Fault to Exchange for Local binding!");
 
-        // TODO : Implement me!
+        // TODO : Is copyFaultMessageToExchange necessary ?
+        logger.warn("'copyFaultMessageToExchange' Not implemented !");
     }
 
     @Override

@@ -72,7 +72,7 @@ public class SsoHttpPostBinding extends AbstractMediationHttpBinding {
             throw new IllegalArgumentException("Unknown message, no valid HTTP Method header found!");
         }
 
-        // TODO ! Implement me ... ?
+        // TODO : Implement SSO HTTP Post binding ... ?
 
 
         // HTTP Request Parameters from HTTP Request body

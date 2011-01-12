@@ -38,8 +38,5 @@ public class InitializeAuthnResponseAction extends AbstractSamlR2Action {
         ResponseType response = (ResponseType) out.getContent();
         AuthnRequestType request = (AuthnRequestType) in.getContent();
 
-
-        // TODO :
-
     }
 }

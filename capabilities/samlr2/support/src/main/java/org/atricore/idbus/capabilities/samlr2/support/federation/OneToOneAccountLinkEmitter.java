@@ -62,10 +62,10 @@ public class OneToOneAccountLinkEmitter implements AccountLinkEmitter {
                         return new DynamicAccountLinkImpl( subject, subjectNameID.getName() );
 
                     case TRANSIENT:
-                        // TODO : Is this OK ?!
+                        // TODO : Implement better TRANSIENT NameID support
                         return new DynamicAccountLinkImpl( subject, subjectNameID.getName() );
                     default:
-                        // TODO : What to do with PERSISTENT, EMAIL, etc !!!!
+                        // TODO : Implement PERSISTENT, EMAIL NameID support
                         logger.error("Name ID Format unsupported " + fmt);
                         break;
                 }

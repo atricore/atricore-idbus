@@ -47,11 +47,6 @@ public interface SAMLR2Constants {
 
     static final String SAML_IDBUS_NS = "urn:oasis:names:tc:SAML:2.0:idbus";
 
-
-
-    /**
-     * TODO : move, this is josso specific
-     */
     static final String SSOUSER_PROPERTY_NS= "urn:org:atricore:idbus:user:property";
 
 

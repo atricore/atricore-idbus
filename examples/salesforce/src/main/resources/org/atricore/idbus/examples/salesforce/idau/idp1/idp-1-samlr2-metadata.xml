@@ -21,7 +21,7 @@
   -->
 
 <md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="id9uvH6lD7oa2zwey0JzQcpzJrKXY"
-                     entityID="http://localhost:8081/IDBUS/IDP-1/SAML2/MD">
+                     entityID="http://localhost:8081/IDBUS/IDP-1/SAML2/MD" >
     <md:AttributeAuthorityDescriptor ID="idwGpHRH6meLr2hJ0Ko6fkMtSJ330"
                                      protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
         <md:KeyDescriptor use="signing">
@@ -97,7 +97,7 @@
         <md:AssertionIDRequestService Binding="urn:oasis:names:tc:SAML:2.0:bindings:URI"
                                       Location="http://poc.atricore.com:8081/nidp/saml2/assertion"/>
     </md:AttributeAuthorityDescriptor>
-    <md:IDPSSODescriptor ID="idSy31Pds0meYpkaDLFG6-eWqL0WA"
+    <md:IDPSSODescriptor ID="idSy31Pds0meYpkaDLFG6-eWqL0WA" WantAuthnRequestsSigned="true"
                          protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
         <md:KeyDescriptor use="signing">
             <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
@@ -168,7 +168,7 @@
         <md:ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP"
                                       Location="http://poc.atricore.com:8081/IDBUS/IDP-1/SAML2/ARTIFACT/SOAP" index="0"
                                       isDefault="true"/>
-        
+
         <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
                                 Location="http://poc.atricore.com:8081/IDBUS/IDP-1/SAML2/SLO/POST"
                                 ResponseLocation="http://poc.atricore.com:8081/IDBUS/IDP-1/SAML2/SLO_RESPONSE/POST"/>
@@ -186,7 +186,7 @@
         <md:ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
                                 Location="http://poc.atricore.com:8081/IDBUS/IDP-1/SAML2/RNI"
                                 ResponseLocation="http://poc.atricore.com:8081/IDBUS/IDP-1/SAML2/MNI_RESPONSE/SOAP"/>
-        
+
         <md:ManageNameIDService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
                                 Location="http://poc.atricore.com:8081/IDBUS/SAML2/RNI/REDIR"
                                 ResponseLocation="http://poc.atricore.com:8081/IDBUS/IDP-1/SAML2/MNI_RESPONSE/REDIR"/>

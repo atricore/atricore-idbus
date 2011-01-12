@@ -91,7 +91,7 @@ public class SamlR2SoapBinding extends AbstractMediationSoapBinding {
 
                     if (sessionIndexes != null) {
                         if (sessionIndexes.size() > 0) {
-                            // TODO : Right now we support only one session index!
+
                             String sessionIndex = sessionIndexes.get(0);
 
                             ProviderStateContext ctx = createProviderStateContext();

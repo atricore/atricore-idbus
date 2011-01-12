@@ -69,7 +69,6 @@ public class SSOLogMessageBuilder implements LogMessageBuilder {
             } else if (content == null) {
                 logger.debug("No Message content");
             } else {
-                // TODO : Support Atricore SSO Messages
                 logger.warn("Unknown Message content " + content);
             }
 

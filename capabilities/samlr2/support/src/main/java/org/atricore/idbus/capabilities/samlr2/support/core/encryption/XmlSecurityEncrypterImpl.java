@@ -342,7 +342,7 @@ public class XmlSecurityEncrypterImpl implements SamlR2Encrypter {
             keyGenerator.init( keyLength );
             return keyGenerator.generateKey();
         } catch ( NoSuchAlgorithmException e ) {
-            //TODO: suport default algorithm
+            logger.error(e.getMessage(), e);
         }
         return null;
     }

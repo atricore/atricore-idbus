@@ -322,7 +322,7 @@ public class SamlR11HttpArtifactBinding extends AbstractMediationHttpBinding {
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2ArtifactToSamlR2ArtifactResolvePlan.class);
         IdentityPlanExecutionExchange idPlanExchange = new IdentityPlanExecutionExchangeImpl();
 
-        // TODO !
+        // TODO : Can we resolve endpoint
         IdentityMediationEndpoint idEndpoint = null;
 
         // Publish some important attributes:

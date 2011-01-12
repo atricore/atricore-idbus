@@ -33,7 +33,7 @@ import org.jbpm.graph.exe.ExecutionContext;
 public class EncryptAssertionAttributesAction extends AbstractSAMLR2AssertionAction {
 
     protected void doExecute ( IdentityArtifact in, IdentityArtifact out, ExecutionContext executionContext ) throws Exception {
-        // TODO :
+        // TODO : Implement Assertion Attribute Encryption
         AssertionType assertion = null;
     }
 }

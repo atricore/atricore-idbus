@@ -48,7 +48,7 @@ public enum SamlR2Service {
     AuthnQueryService(SAMLR2MetadataConstants.AuthnQueryService_QNAME),
 
     /**
-     * This service is an extension to SAML (TODO : Move to SSOService enum)
+     * This service is an extension to SAML 
      */
     SPInitiatedSingleSignOnService(SAMLR2MetadataConstants.SPInitiatedSingleSignOnService_QNAME),
 

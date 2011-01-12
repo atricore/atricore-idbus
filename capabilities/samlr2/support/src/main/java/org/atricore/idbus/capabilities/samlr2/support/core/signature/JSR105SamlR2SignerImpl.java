@@ -721,11 +721,14 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             // also specify the SHA1 digest algorithm and the ENVELOPED Transform.
             // The URI must be the assertion ID
 
+            List<Transform> transforms = new ArrayList<Transform>();
+            transforms.add(fac.newTransform (Transform.ENVELOPED, (TransformParameterSpec) null));
+            // Magically, this solves assertion DS validation when embedded in a signed response :)
+            transforms.add(fac.newTransform (CanonicalizationMethod.EXCLUSIVE, (TransformParameterSpec) null));
+
             Reference ref = fac.newReference
                     ("#" + id, fac.newDigestMethod(DigestMethod.SHA1, null),
-                            Collections.singletonList(
-                                    fac.newTransform (Transform.ENVELOPED,
-                                            (TransformParameterSpec) null)),
+                            transforms,
                             null, null);
 
             // Use signature method based on key algorithm.
@@ -825,8 +828,6 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             }
             throw new KeySelectorException("No KeyValue element found!");
         }
-
-        // TODO : FIXME this should also work for key types other than DSA/RSA
 
         static boolean algEquals(String algURI, String algName) {
             if (algName.equalsIgnoreCase("DSA") &&

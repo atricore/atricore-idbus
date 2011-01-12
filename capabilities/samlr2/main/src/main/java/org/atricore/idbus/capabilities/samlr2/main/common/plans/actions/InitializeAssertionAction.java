@@ -47,8 +47,6 @@ import java.util.Date;
  * </ul>
  * </p>
  *
- * TODO : This class could also be AuthnAssertionInitialization ?
- *
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id: InitializeAssertionAction.java 1359 2009-07-19 16:57:57Z sgonzalez $
  */

@@ -79,17 +79,17 @@ public class SamlR2SecurityTokenEmitter extends AbstractSecurityTokenEmitter imp
      */
     public boolean canEmit(Object requestToken, String tokenType) {
 
-        // TODO : Should we know about different token types ?
         Boolean isUserNameToken = requestToken instanceof UsernameTokenType
                 && WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType);
+
         logger.debug( "isUserNameToken = " + isUserNameToken);
 
         Boolean isRememberMeToken = isRememberMeToken( requestToken )
                 && WSTConstants.WST_SAMLR2_TOKEN_TYPE.equals(tokenType);
         logger.debug( "isRememberMeToken = " + isRememberMeToken);
 
+        // Outcome :
         logger.debug( "canEmit?" + (isUserNameToken || isRememberMeToken));
-
         return isUserNameToken || isRememberMeToken;
     }
 

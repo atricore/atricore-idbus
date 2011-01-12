@@ -73,11 +73,13 @@ public class SamlR2HttpRedirectBinding extends AbstractMediationHttpBinding {
             // HTTP Request Parameters from HTTP Request body
             MediationState state = createMediationState(exchange);
 
-            // POST SamlR2Binding supports the following parameters
+            // HTTP Redirect SamlR2Binding supports the following parameters
             String base64SAMLRequest = state.getTransientVariable("SAMLRequest");
             String base64SAMLResponse = state.getTransientVariable("SAMLResponse");
             String relayState = state.getTransientVariable("RelayState");
-            String sigAlg = state.getTransientVariable("SigAlg"); // TODO : Use HTTP Redirect binding Signature Algorithm
+
+            String sigAlg = state.getTransientVariable("SigAlg");    // TODO : Use HTTP Redirect binding Signature Algorithm
+            String signature = state.getTransientVariable("Signature"); // TODO : Validate HTTP Redirect binding Signature
 
             if (base64SAMLRequest != null && base64SAMLResponse != null) {
                 throw new IllegalStateException("Received both SAML Request and SAML Response");

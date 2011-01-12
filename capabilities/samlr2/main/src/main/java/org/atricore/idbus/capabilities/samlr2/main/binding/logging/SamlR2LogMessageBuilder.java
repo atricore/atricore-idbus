@@ -114,7 +114,6 @@ public class SamlR2LogMessageBuilder implements LogMessageBuilder {
             } else if (content == null) {
                 logger.warn("No Message content");
             } else {
-                // TODO : Support Atricore SSO Messages
                 logger.warn("Unknown Message content " + content);
             }
 

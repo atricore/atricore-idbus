@@ -79,7 +79,7 @@ public class SamlR2BindingFactory extends MediationBindingFactory implements App
             case SAMLR2_LOCAL:
                 mb = new SamlR2LocalBinding(channel);
                 break;
-            case SAMLR2_PAOS: // TODO : Implement PAOS ?
+            case SAMLR2_PAOS: // TODO : Implement SAML R2 PAOS Binding
                 mb = null;
                 break;
             case SAMLR11_SOAP:

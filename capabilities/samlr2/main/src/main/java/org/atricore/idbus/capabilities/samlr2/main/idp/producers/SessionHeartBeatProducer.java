@@ -44,7 +44,7 @@ public class SessionHeartBeatProducer extends SamlR2Producer {
         if (content instanceof IDPSessionHeartBeatRequestType) {
             doProcessSessionHeartBeat(exchange, (IDPSessionHeartBeatRequestType) content);
         } else {
-            // TODO : Support other SSO Messages that can be sent thorough back channel
+
             throw new IdentityMediationFault(StatusCode.TOP_RESPONDER.getValue(),
                     null,
                     StatusDetails.UNKNOWN_REQUEST.getValue(),

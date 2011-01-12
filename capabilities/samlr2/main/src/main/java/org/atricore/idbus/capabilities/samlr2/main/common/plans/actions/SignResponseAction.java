@@ -22,16 +22,22 @@
 package org.atricore.idbus.capabilities.samlr2.main.common.plans.actions;
 
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
+import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.IDPSSODescriptorType;
+import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.common.AbstractSamlR2Mediator;
 import org.atricore.idbus.capabilities.samlr2.support.core.signature.SamlR2Signer;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.mediation.channel.FederationChannel;
 import org.atricore.idbus.kernel.planning.IdentityArtifact;
 import org.jbpm.graph.exe.ExecutionContext;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,47 +57,72 @@ public class SignResponseAction extends AbstractSamlR2Action {
         AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
 
-        // TODO : Add enable assertion signature property
-        if (!mediator.isEnableSignature()) {
-            logger.debug("Signature is disabled for " + channel.getName());
-            return ;
+        CircleOfTrustMemberDescriptor dest =
+                (CircleOfTrustMemberDescriptor) executionContext.getContextInstance().getVariable(VAR_DESTINATION_COT_MEMBER);
+
+        boolean signAssertion = false;
+
+        if (dest != null) {
+
+            EntityDescriptorType entity = (EntityDescriptorType) dest.getMetadata().getEntry();
+
+            // This is the destination entity, we need to figure out the role:
+            for (RoleDescriptorType role : entity.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
+                if (role instanceof SPSSODescriptorType) {
+                    SPSSODescriptorType spRole = (SPSSODescriptorType) role;
+                    signAssertion = spRole.isWantAssertionsSigned();
+                    break;
+                }
+            }
+
         }
 
+
         // If the response has an assertion, remove the signature and re-sign it ... (we're discarding STS signature!)
-        if (((ResponseType)response).getAssertionOrEncryptedAssertion().size() > 0) {
+        if (signAssertion) {
 
 
-            List<Object> assertions = new ArrayList<Object>();
-            for (Object o : ((ResponseType)response).getAssertionOrEncryptedAssertion()) {
+            if (((ResponseType)response).getAssertionOrEncryptedAssertion().size() > 0) {
 
-                if (o instanceof AssertionType) {
+                List assertions = new ArrayList();
+                for (Object o : ((ResponseType)response).getAssertionOrEncryptedAssertion()) {
 
-                    AssertionType assertion = (AssertionType) o;
+                    if (o instanceof AssertionType) {
 
-                    if (logger.isDebugEnabled())
-                        logger.debug("Signing SAMLR2 Assertion: " + assertion.getID() + " in channel " + channel.getName());
+                        AssertionType assertion = (AssertionType) o;
 
-                    // The Assertion is now eveloped within a SAML Response so we need to sign a second time within this context.
-                    assertion.setSignature(null);
+                        if (logger.isDebugEnabled())
+                            logger.debug("Signing SAMLR2 Assertion: " + assertion.getID() + " in channel " + channel.getName());
 
-                    AssertionType signedAssertion = signer.sign(assertion);
-                    assertions.add(signedAssertion);
+                        // The Assertion is now eveloped within a SAML Response so we need to sign a second time within this context.
+                        assertion.setSignature(null);
 
+                        // TODO : Properly Implement assertion signature !
+                        logger.error("Assertion Signature not support NOT available !!!");
+                        AssertionType signedAssertion =  signer.sign(assertion);
+                        assertions.add(signedAssertion);
+
+                    }
 
                 }
+                // Replace assertions
+                ((ResponseType)response).getAssertionOrEncryptedAssertion().clear();
+                ((ResponseType)response).getAssertionOrEncryptedAssertion().addAll(assertions);
 
             }
-            // Replace assertions
-            ((ResponseType)response).getAssertionOrEncryptedAssertion().clear();
-            ((ResponseType)response).getAssertionOrEncryptedAssertion().addAll(assertions);
 
         }
 
         if (logger.isDebugEnabled())
             logger.debug("Signing SAMLR2 Response: " + response.getID() + " in channel " + channel.getName());
 
-        out.replaceContent(signer.sign(response));
 
+        if (!mediator.isEnableSignature()) {
+            logger.debug("Signature is disabled for " + channel.getName());
+            return ;
+        }
+
+        out.replaceContent(signer.sign(response));
 
     }
 }

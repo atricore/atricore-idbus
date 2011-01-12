@@ -30,7 +30,7 @@ import javax.xml.namespace.QName;
  */
 public interface SAMLR2MessagingConstants {
 
-    // TODO : REMFACTOR!
+    // TODO : REFACTOR !
     static final String SAMLR2_INBOUND_MSG = "urn:org:atricore:idbus:samlr2:inbound-msg";
 
     static final QName SERVICE_NAME = new QName("urn:oasis:names:tc:SAML:2.0:wsdl", "SAMLService");

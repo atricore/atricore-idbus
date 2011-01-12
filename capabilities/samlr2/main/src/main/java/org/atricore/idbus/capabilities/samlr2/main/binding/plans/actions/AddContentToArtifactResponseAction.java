@@ -31,7 +31,6 @@ public class AddContentToArtifactResponseAction  extends AbstractSamlR2Action {
 
         ObjectFactory of = new ObjectFactory();
 
-        // TODO : Use switch and leave reflection for unknown types ?
         String type = content.getClass().getSimpleName();
         String ofMethodName = "create" + type.substring(0, type.length() - "Type".length());
         Method m = of.getClass().getMethod(ofMethodName, content.getClass());

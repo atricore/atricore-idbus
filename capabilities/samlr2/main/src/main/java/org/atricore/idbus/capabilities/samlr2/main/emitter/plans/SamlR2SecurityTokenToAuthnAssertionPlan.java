@@ -77,7 +77,6 @@ public class SamlR2SecurityTokenToAuthnAssertionPlan extends AbstractSAMLR2Asser
                 SSOUser ssoUser = s.getPrincipals(SSOUser.class).iterator().next();
                 username = ssoUser.getName(); 
             } else {
-                // TODO : Support other token types!
                 throw new IdentityPlanningException("Unsupported token " + requestToken.getClass().getName());
             }
 
