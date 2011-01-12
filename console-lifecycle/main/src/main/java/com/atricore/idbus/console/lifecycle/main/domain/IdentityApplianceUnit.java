@@ -1,6 +1,5 @@
 package com.atricore.idbus.console.lifecycle.main.domain;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.ExecutionEnvironment;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.Provider;
 
 import java.io.Serializable;

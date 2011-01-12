@@ -18,7 +18,8 @@ import org.w3._2001._04.xmlenc_.EncryptionMethodType;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.util.ArrayList;

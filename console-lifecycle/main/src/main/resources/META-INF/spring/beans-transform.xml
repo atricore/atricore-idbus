@@ -36,7 +36,7 @@
     </bean>
 
     <bean name="idpRemoteTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPRemoteTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPExternalTransformer"/>
 
     <bean name="idpFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
@@ -55,12 +55,12 @@
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.STSTransformer"/>
 
     <bean name="spTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer">
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPLocalTransformer">
         <property name="sampleKeystore" ref="sampleKeystore"/>
     </bean>
 
     <bean name="spRemoteTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPRemoteTransformer"/>
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPExternalTransformer"/>
     
     <bean name="spFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">

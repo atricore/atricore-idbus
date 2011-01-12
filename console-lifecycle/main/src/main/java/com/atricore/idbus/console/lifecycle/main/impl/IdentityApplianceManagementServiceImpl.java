@@ -58,7 +58,10 @@ import org.w3._2000._09.xmldsig_.X509DataType;
 
 import javax.jdo.FetchPlan;
 import javax.xml.bind.JAXBElement;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;

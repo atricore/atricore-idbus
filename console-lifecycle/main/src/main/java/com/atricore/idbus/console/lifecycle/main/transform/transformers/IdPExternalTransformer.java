@@ -28,9 +28,9 @@ import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.B
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class IdPRemoteTransformer extends AbstractTransformer {
+public class IdPExternalTransformer extends AbstractTransformer {
 
-    private static final Log logger = LogFactory.getLog(IdPRemoteTransformer.class);
+    private static final Log logger = LogFactory.getLog(IdPExternalTransformer.class);
 
     @Override
     public boolean accept(TransformEvent event) {

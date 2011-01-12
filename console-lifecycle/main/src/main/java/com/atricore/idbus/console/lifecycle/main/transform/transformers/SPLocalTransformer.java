@@ -46,15 +46,15 @@ import java.util.Date;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.newBean;
+import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
  * @version $Id$
  */
-public class SPTransformer extends AbstractTransformer implements InitializingBean {
+public class SPLocalTransformer extends AbstractTransformer implements InitializingBean {
     
-    private static final Log logger = LogFactory.getLog(SPTransformer.class);
+    private static final Log logger = LogFactory.getLog(SPLocalTransformer.class);
 
     private Keystore sampleKeystore;
 
@@ -290,6 +290,10 @@ public class SPTransformer extends AbstractTransformer implements InitializingBe
 
             // signer
             setPropertyRef(spMediator, "signer", signer.getName());
+
+            // By default, we sign request/responses
+            setPropertyValue(spMediator, "enableSignature", true);
+
         } else {
             throw new TransformException("No Signer defined for " + sp.getName());
         }

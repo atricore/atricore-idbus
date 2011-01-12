@@ -1,6 +1,5 @@
 package com.atricore.idbus.console.lifecycle.main.exception;
 
-import com.atricore.idbus.console.lifecycle.main.domain.metadata.Activation;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.ExecutionEnvironment;
 
 /**
