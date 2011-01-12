@@ -53,14 +53,16 @@ public class InitializeResponseAction extends AbstractSamlR2Action {
 
         StatusResponseType response = (StatusResponseType) out.getContent();
         RequestAbstractType request = (RequestAbstractType) executionContext.getContextInstance().getVariable(VAR_REQUEST);
+
         String responseMode = (String) executionContext.getContextInstance().getVariable(VAR_RESPONSE_MODE);
 
         // ID [required]
         response.setID(uuidGenerator.generateId());
 
         if (request != null) {
-            if (responseMode == null || ( responseMode != null && !responseMode.equalsIgnoreCase("unsolicited"))) {
+            if (responseMode == null || !responseMode.equalsIgnoreCase("unsolicited")) {
                 response.setInResponseTo(request.getID());
+
             } else {
                 logger.debug("Response is Unsolicited");
             }

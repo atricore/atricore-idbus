@@ -345,6 +345,7 @@ public class SingleSignOnProducer extends SamlR2Producer {
             // Send extra information to STS, using the emission context
             securityTokenEmissionCtx.setMember(resolveProviderDescriptor(authnRequest.getIssuer()));
             // TODO !!! : securityTokenEmissionCtx.setRoleMetadata(null);
+            authnState.setAuthnRequest(authnRequest);
             securityTokenEmissionCtx.setAuthnState(authnState);
             securityTokenEmissionCtx.setSessionIndex(secCtx.getSessionIndex());
             securityTokenEmissionCtx.setSsoSession(sessionMgr.getSession(secCtx.getSessionIndex()));
