@@ -37,9 +37,10 @@ public interface LiveUpdateAjaxService {
     public GetRepositoryUpdatesResponse getRepositoryUpdates(GetRepositoryUpdatesRequest getRepositoriesUpdatesRequest) throws LiveUpdateException;
     public GetAvailableUpdatesResponse getAvailableUpdates() throws LiveUpdateException;
     public GetAvailableUpdatesResponse getAvailableUpdates(GetAvailableUpdatesRequest getAvailableUpdatesRequest) throws LiveUpdateException;
+    public CheckForUpdatesResponse checkForUpdates() throws LiveUpdateException;
     public CheckForUpdatesResponse checkForUpdates(CheckForUpdatesRequest checkForUpdatesRequest) throws LiveUpdateException;
     public ApplyUpdatesResponse applyUpdate(ApplyUpdateRequest applyUpdateRequest) throws LiveUpdateException;
-
-
+    public GetUpdateProfileResponse getUpdateProfile() throws LiveUpdateException;
+    public GetUpdateProfileResponse getUpdateProfile(GetUpdateProfileRequest getUpdateProfileRequest) throws LiveUpdateException;
 
 }

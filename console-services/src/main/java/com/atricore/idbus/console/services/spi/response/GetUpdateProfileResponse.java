@@ -21,25 +21,23 @@
 
 package com.atricore.idbus.console.services.spi.response;
 
-import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
-
-import java.util.Collection;
+import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 
 /**
- * Author: Dusan Fisic
- * Mail: dfisic@atricore.org
- * Date: 1/13/11 - 2:50 PM
+ * @author: Dusan Fisic
+ * @email: dfisic@atricore.org
+ * Date: 1/14/11 - 7:25 PM
  */
+public class GetUpdateProfileResponse {
 
-public class GetAvailableUpdatesResponse {
+    private ProfileType profile;
 
-    private Collection<UpdateDescriptorType>  updateDescriptors;
-
-    public Collection<UpdateDescriptorType> getUpdateDescriptors() {
-        return updateDescriptors;
+    public ProfileType getProfile() {
+        return profile;
     }
 
-    public void setUpdateDescriptors(Collection<UpdateDescriptorType> updateDescriptors) {
-        this.updateDescriptors = updateDescriptors;
+    public void setProfile(ProfileType profile) {
+        this.profile = profile;
     }
+
 }

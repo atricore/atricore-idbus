@@ -28,6 +28,7 @@ import com.atricore.idbus.console.services.spi.LiveUpdateAjaxService;
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
+import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -111,8 +112,8 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
         try{
             if (logger.isTraceEnabled())
                 logger.trace("Processing getAvailableUpdates [grp: "+ getAvailableUpdatesRequest.getGroup() +
-                                             " name: " + getAvailableUpdatesRequest.getName() +
-                                             " version: " + getAvailableUpdatesRequest.getVersion()+ "]");
+                        " name: " + getAvailableUpdatesRequest.getName() +
+                        " version: " + getAvailableUpdatesRequest.getVersion()+ "]");
 
             Collection<UpdateDescriptorType> updates = updateManager.getAvailableUpdates(
                     getAvailableUpdatesRequest.getGroup(),
@@ -130,12 +131,116 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
             throw new LiveUpdateException("Error getting updates" + e.getMessage(), e);
         }
     }
-    public CheckForUpdatesResponse checkForUpdates(CheckForUpdatesRequest checkForUpdatesRequest) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+
+    public CheckForUpdatesResponse checkForUpdates() throws LiveUpdateException {
+        try{
+            if (logger.isTraceEnabled())
+                logger.trace("Processing checkForUpdates");
+
+            Collection<UpdateDescriptorType> updates = updateManager.checkForUpdates();
+
+            CheckForUpdatesResponse resp = new CheckForUpdatesResponse();
+
+            resp.setUpdateDescriptors(updates);
+
+            return resp;
+        } catch (Exception e) {
+            // Log the error ant throw an exception to the Ajax layer.
+            logger.error(e.getMessage(), e);
+            throw new LiveUpdateException("Error getting updates" + e.getMessage(), e);
+        }
     }
 
-    public ApplyUpdatesResponse applyUpdate(ApplyUpdateRequest applyUpdateRequest) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public CheckForUpdatesResponse checkForUpdates(CheckForUpdatesRequest checkForUpdatesRequest)
+            throws LiveUpdateException {
+        try{
+            if (logger.isTraceEnabled())
+                logger.trace("Processing getAvailableUpdates [grp: "+ checkForUpdatesRequest.getGroup() +
+                        " name: " + checkForUpdatesRequest.getName() +
+                        " version: " + checkForUpdatesRequest.getVersion()+ "]");
+
+            Collection<UpdateDescriptorType> updates = updateManager.checkForUpdates(
+                    checkForUpdatesRequest.getGroup(),
+                    checkForUpdatesRequest.getName(),
+                    checkForUpdatesRequest.getVersion());
+
+            CheckForUpdatesResponse resp = new CheckForUpdatesResponse();
+
+            resp.setUpdateDescriptors(updates);
+
+            return resp;
+        } catch (Exception e) {
+            // Log the error ant throw an exception to the Ajax layer.
+            logger.error(e.getMessage(), e);
+            throw new LiveUpdateException("Error getting updates" + e.getMessage(), e);
+        }
+    }
+
+    public ApplyUpdatesResponse applyUpdate(ApplyUpdateRequest applyUpdateRequest)
+            throws LiveUpdateException {
+        try{
+            if (logger.isTraceEnabled())
+                logger.trace("Processing getAvailableUpdates [grp: "+ applyUpdateRequest.getGroup() +
+                        " name: " + applyUpdateRequest.getName() +
+                        " version: " + applyUpdateRequest.getVersion()+
+                        " isOffline: " + applyUpdateRequest.isOffline() + "]");
+
+            updateManager.applyUpdate(
+                    applyUpdateRequest.getGroup(),
+                    applyUpdateRequest.getName(),
+                    applyUpdateRequest.getVersion(),
+                    applyUpdateRequest.isOffline());
+
+            ApplyUpdatesResponse resp = new ApplyUpdatesResponse();
+
+            return resp;
+        } catch (Exception e) {
+            // Log the error ant throw an exception to the Ajax layer.
+            logger.error(e.getMessage(), e);
+            throw new LiveUpdateException("Error getting updates" + e.getMessage(), e);
+        }
+    }
+
+    public GetUpdateProfileResponse getUpdateProfile() throws LiveUpdateException {
+        try{
+            if (logger.isTraceEnabled())
+                logger.trace("Processing getUpdateProfile");
+
+            ProfileType profile = updateManager.getUpdateProfile();
+
+            GetUpdateProfileResponse resp = new GetUpdateProfileResponse();
+            resp.setProfile(profile);
+
+            return resp;
+        } catch (Exception e) {
+            // Log the error ant throw an exception to the Ajax layer.
+            logger.error(e.getMessage(), e);
+            throw new LiveUpdateException("Error getting update profile" + e.getMessage(), e);
+        }
+    }
+
+    public GetUpdateProfileResponse getUpdateProfile(GetUpdateProfileRequest getUpdateProfileRequest)
+            throws LiveUpdateException {
+        try{
+            if (logger.isTraceEnabled())
+                logger.trace("Processing getUpdateProfile [grp: "+ getUpdateProfileRequest.getGroup() +
+                        " name: " + getUpdateProfileRequest.getName() +
+                        " version: " + getUpdateProfileRequest.getVersion()+ "]");
+
+            ProfileType profile = updateManager.getUpdateProfile(
+                    getUpdateProfileRequest.getGroup(),
+                    getUpdateProfileRequest.getName(),
+                    getUpdateProfileRequest.getVersion());
+
+            GetUpdateProfileResponse resp = new GetUpdateProfileResponse();
+            resp.setProfile(profile);
+
+            return resp;
+        } catch (Exception e) {
+            // Log the error ant throw an exception to the Ajax layer.
+            logger.error(e.getMessage(), e);
+            throw new LiveUpdateException("Error getting update profile" + e.getMessage(), e);
+        }
     }
 
     public void setUpdateManager(LiveUpdateManager updateManager) {

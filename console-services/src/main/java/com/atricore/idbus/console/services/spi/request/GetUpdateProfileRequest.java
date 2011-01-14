@@ -19,27 +19,41 @@
  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.services.spi.response;
-
-import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
-
-import java.util.Collection;
+package com.atricore.idbus.console.services.spi.request;
 
 /**
- * Author: Dusan Fisic
- * Mail: dfisic@atricore.org
- * Date: 1/13/11 - 2:50 PM
+ * @author: Dusan Fisic
+ * @email: dfisic@atricore.org
+ * Date: 1/14/11 - 7:26 PM
  */
+public class GetUpdateProfileRequest {
 
-public class GetAvailableUpdatesResponse {
+    private String group;
+    private String name;
+    private String version;
 
-    private Collection<UpdateDescriptorType>  updateDescriptors;
-
-    public Collection<UpdateDescriptorType> getUpdateDescriptors() {
-        return updateDescriptors;
+    public String getGroup() {
+        return group;
     }
 
-    public void setUpdateDescriptors(Collection<UpdateDescriptorType> updateDescriptors) {
-        this.updateDescriptors = updateDescriptors;
+    public void setGroup(String group) {
+        this.group = group;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
 }
