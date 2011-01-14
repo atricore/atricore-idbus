@@ -38,9 +38,7 @@ public class DateUtils {
     private static final java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat
             ("yyyy-MM-dd'T'HH:mm:ss'Z'");
     private static final java.util.TimeZone tz = java.util.TimeZone.getTimeZone("UTC");
-    private static final ParsePosition startParsePos = new ParsePosition(0);
-    private static final FieldPosition firstFieldPos = new FieldPosition(0);
-
+    
     static {
         dateFormat.setTimeZone(tz);
     }
@@ -61,14 +59,14 @@ public class DateUtils {
         final StringBuffer strDate;
 
         StringBuffer strDateBuffer = new StringBuffer();
-        strDate = dateFormat.format(date, strDateBuffer, firstFieldPos);
+        strDate = dateFormat.format(date, strDateBuffer, new FieldPosition(0));
         return strDate.toString();
     }
 
     public static java.util.Date toDate(String strDate) {
 
         try {
-            java.util.Date date = dateFormat.parse(strDate.trim(), startParsePos);
+            java.util.Date date = dateFormat.parse(strDate.trim(), new ParsePosition(0));
             return date;
         } catch (Exception e) {
         }
