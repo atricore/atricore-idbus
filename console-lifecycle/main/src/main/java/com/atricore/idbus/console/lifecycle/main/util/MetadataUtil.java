@@ -21,11 +21,18 @@
 
 package com.atricore.idbus.console.lifecycle.main.util;
 
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.GoogleAppsServiceProvider;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.SalesforceServiceProvider;
 import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.IndexedEndpointType;
+import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
 import oasis.names.tc.saml._2_0.metadata.SSODescriptorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
+import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
+import org.atricore.idbus.capabilities.samlr2.support.core.util.DateUtils;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerException;
 import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 import org.w3c.dom.Document;
@@ -33,10 +40,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.bind.*;
+import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.*;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -97,6 +106,61 @@ public class MetadataUtil {
         logger.debug(doc);
 
         return doc;
+    }
+
+    public static EntityDescriptorType createSalesforceDescriptor(SalesforceServiceProvider salesforceProvider) throws Exception {
+        // EntityDescriptorType
+        EntityDescriptorType ed = new EntityDescriptorType();
+        ed.setEntityID("https://saml.salesforce.com");
+        Date date = DateUtils.toDate("2021-01-10T13:24:45Z");
+        XMLGregorianCalendar validUntilDate = DateUtils.toXMLGregorianCalendar(date);
+        validUntilDate.setMillisecond(47);
+        ed.setValidUntil(validUntilDate);
+
+        // SPSSODescriptor
+        SPSSODescriptorType spSSODescriptor = new SPSSODescriptorType();
+        spSSODescriptor.setWantAssertionsSigned(true);
+        spSSODescriptor.getProtocolSupportEnumeration().add(SAMLR2Constants.SAML_PROTOCOL_NS);
+        spSSODescriptor.getNameIDFormat().add(NameIDFormat.UNSPECIFIED.getValue());
+
+        // AssertionConsumerService
+        IndexedEndpointType assertionConsumerService = new IndexedEndpointType();
+        assertionConsumerService.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
+        assertionConsumerService.setLocation("https://login.salesforce.com");
+        assertionConsumerService.setIndex(0);
+        assertionConsumerService.setIsDefault(true);
+        spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService);
+
+        ed.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor().add(spSSODescriptor);
+
+        return ed;
+    }
+
+    public static EntityDescriptorType createGoogleAppsDescriptor(GoogleAppsServiceProvider googleAppsProvider) throws Exception {
+        // EntityDescriptorType
+        EntityDescriptorType ed = new EntityDescriptorType();
+        ed.setEntityID("google.com/a/" + googleAppsProvider.getDomain());
+        XMLGregorianCalendar validUntilDate = DateUtils.toXMLGregorianCalendar(DateUtils.toDate("2021-01-10T13:24:45Z"));
+        validUntilDate.setMillisecond(47);
+        ed.setValidUntil(validUntilDate);
+
+        // SPSSODescriptor
+        SPSSODescriptorType spSSODescriptor = new SPSSODescriptorType();
+        spSSODescriptor.setWantAssertionsSigned(true);
+        spSSODescriptor.getProtocolSupportEnumeration().add(SAMLR2Constants.SAML_PROTOCOL_NS);
+        spSSODescriptor.getNameIDFormat().add(NameIDFormat.UNSPECIFIED.getValue());
+
+        // AssertionConsumerService
+        IndexedEndpointType assertionConsumerService = new IndexedEndpointType();
+        assertionConsumerService.setBinding(SamlR2Binding.SAMLR2_POST.getValue());
+        assertionConsumerService.setLocation("https://www.google.com/a/" + googleAppsProvider.getDomain() + "/acs");
+        assertionConsumerService.setIndex(0);
+        assertionConsumerService.setIsDefault(true);
+        spSSODescriptor.getAssertionConsumerService().add(assertionConsumerService);
+
+        ed.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor().add(spSSODescriptor);
+
+        return ed;
     }
 
     public static JAXBContext createSamlR2JAXBContext() throws JAXBException {

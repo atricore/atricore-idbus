@@ -195,6 +195,14 @@ public class EmbeddedIcons {
     [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
     public static var externalSpIcon:Class;
 
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
+    public static var salesforceIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
+    public static var googleAppsIcon:Class;
+
     //TODO add BP icon
     [Bindable]
     [Embed(source="/assets/icons/notation/48x48/service_provider.png")]
@@ -244,6 +252,14 @@ public class EmbeddedIcons {
     [Bindable]
     [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
     public static var externalSpMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
+    public static var salesforceMiniIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/notation/22x22/service_provider.png")]
+    public static var googleAppsMiniIcon:Class;
 
     //TODO add BP icon
     [Bindable]

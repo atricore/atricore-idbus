@@ -8,7 +8,9 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.factory.InitializingBean;
@@ -248,7 +250,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         // IDPSSODescriptor
         IDPSSODescriptorType idpSSODescriptor = new IDPSSODescriptorType();
         idpSSODescriptor.setID("idSy31Pds0meYpkaDLFG6-eWqL0WA");
-        idpSSODescriptor.getProtocolSupportEnumeration().add("urn:oasis:names:tc:SAML:2.0:protocol");
+        idpSSODescriptor.getProtocolSupportEnumeration().add(SAMLR2Constants.SAML_PROTOCOL_NS);
 
         // signing key descriptor
         KeyDescriptorType signingKeyDescriptor = new KeyDescriptorType();
@@ -436,8 +438,8 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         idpSSODescriptor.getManageNameIDService().add(manageNameIDServiceRedirect);
 
         // TODO : Make configurable
-        idpSSODescriptor.getNameIDFormat().add("urn:oasis:names:tc:SAML:2.0:nameid-format:persistent");
-        idpSSODescriptor.getNameIDFormat().add("urn:oasis:names:tc:SAML:2.0:nameid-format:transient");
+        idpSSODescriptor.getNameIDFormat().add(NameIDFormat.PERSISTENT.getValue());
+        idpSSODescriptor.getNameIDFormat().add(NameIDFormat.TRANSIENT.getValue());
 
         // SingleSignOnService
         if (ssoEnabled) {

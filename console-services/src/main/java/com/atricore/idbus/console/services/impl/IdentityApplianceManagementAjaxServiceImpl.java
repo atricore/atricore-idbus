@@ -441,6 +441,19 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return res;
     }
 
+    public ExportProviderCertificateResponse exportProviderCertificate(ExportProviderCertificateRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ExportProviderCertificateRequest ecReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ExportProviderCertificateRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ExportProviderCertificateResponse ecRes;
+        try {
+            ecRes = idApplianceManagementService.exportProviderCertificate(ecReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(ecRes, ExportProviderCertificateResponse.class);
+    }
+
     /****************************
      * List methods
      ***************************/

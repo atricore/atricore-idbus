@@ -232,6 +232,11 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="exportProviderCertificateCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ExportProviderCertificateCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
 
     <!-- Mediators -->
     <object id="manageCertificateMediator"
@@ -359,6 +364,14 @@
             class="com.atricore.idbus.console.modeling.diagram.view.externalsp.ExternalServiceProviderCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="salesforceCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.salesforce.SalesforceCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="googleAppsCreateMediator"
+            class="com.atricore.idbus.console.modeling.diagram.view.googleapps.GoogleAppsCreateMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="activationCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.activation.ActivationCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -369,6 +382,10 @@
     </object>
      <object id="exportIdentityApplianceMediator"
             class="com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="exportProviderCertificateMediator"
+            class="com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProviderCertificateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <object id="browserMediator" class="com.atricore.idbus.console.modeling.browser.BrowserMediator">
@@ -459,6 +476,8 @@
         <property name="serviceProviderMediator" ref="serviceProviderCreateMediator"/>
         <property name="externalIdentityProviderMediator" ref="externalIdentityProviderCreateMediator"/>
         <property name="externalServiceProviderMediator" ref="externalServiceProviderCreateMediator"/>
+        <property name="salesforceMediator" ref="salesforceCreateMediator"/>
+        <property name="googleAppsMediator" ref="googleAppsCreateMediator"/>
         <!--<property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>-->
         <!--<property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>-->
         <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
@@ -484,6 +503,7 @@
         <property name="activationCreateMediator" ref="activationCreateMediator"/>
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
+        <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
     </object>
 
     <object id="accountManagementPopUpManager" class="com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager">
@@ -555,6 +575,7 @@
         <property name="jdbcDriversListCommand" ref="jdbcDriversListCommand"/>
         <property name="getMetadataInfoCommand" ref="getMetadataInfoCommand"/>
         <property name="getCertificateInfoCommand" ref="getCertificateInfoCommand"/>
+        <property name="exportProviderCertificateCommand" ref="exportProviderCertificateCommand"/>
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>
@@ -574,6 +595,8 @@
         <property name="diagramMediator" ref="diagramMediator"/>
         <property name="identityProviderCreateMediator" ref="identityProviderCreateMediator"/>
         <property name="externalIdentityProviderCreateMediator" ref="externalIdentityProviderCreateMediator"/>
+        <property name="salesforceCreateMediator" ref="salesforceCreateMediator"/>
+        <property name="googleAppsCreateMediator" ref="googleAppsCreateMediator"/>
         <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator" />
         <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator" />
@@ -610,6 +633,7 @@
         <property name="activationCreateMediator" ref="activationCreateMediator"/>
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
+        <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
 
     </object>
 

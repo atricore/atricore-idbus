@@ -58,6 +58,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _serviceProviderCreateMediator:IIocMediator;
     private var _externalIdentityProviderCreateMediator:IIocMediator;
     private var _externalServiceProviderCreateMediator:IIocMediator;
+    private var _salesforceCreateMediator:IIocMediator;
+    private var _googleAppsCreateMediator:IIocMediator;
 //    private var _idpChannelCreateMediator:IIocMediator;
 //    private var _spChannelCreateMediator:IIocMediator;
     private var _identityVaultCreateMediator:IIocMediator;
@@ -99,6 +101,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _activationCreateMediator:IIocMediator;
     private var _federatedConnectionCreateMediator:IIocMediator;
     private var _exportIdentityApplianceMediator:IIocMediator;
+    private var _exportProviderCertificateMediator:IIocMediator;
 
 
     /* Commands */
@@ -150,6 +153,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _jdbcDriversListCommand:IIocCommand;
     private var _getMetadataInfoCommand:IIocCommand;
     private var _getCertificateInfoCommand:IIocCommand;
+    private var _exportProviderCertificateCommand:IIocCommand;
 
 
     public function get applicationMediator():IIocMediator {
@@ -246,6 +250,22 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set identityVaultCreateMediator(value:IIocMediator):void {
         _identityVaultCreateMediator = value;
+    }
+
+    public function get salesforceCreateMediator():IIocMediator {
+        return _salesforceCreateMediator;
+    }
+
+    public function set salesforceCreateMediator(value:IIocMediator):void {
+        _salesforceCreateMediator = value;
+    }
+
+    public function get googleAppsCreateMediator():IIocMediator {
+        return _googleAppsCreateMediator;
+    }
+
+    public function set googleAppsCreateMediator(value:IIocMediator):void {
+        _googleAppsCreateMediator = value;
     }
 
     public function get dbIdentitySourceCreateMediator():IIocMediator {
@@ -542,6 +562,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set exportIdentityApplianceMediator(value:IIocMediator):void {
         _exportIdentityApplianceMediator = value;
+    }
+
+    public function get exportProviderCertificateMediator():IIocMediator {
+        return _exportProviderCertificateMediator;
+    }
+
+    public function set exportProviderCertificateMediator(value:IIocMediator):void {
+        _exportProviderCertificateMediator = value;
     }
 
     public function get serviceRegistry():IIocProxy {
@@ -977,6 +1005,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _getCertificateInfoCommand = value;
     }
 
+    public function get exportProviderCertificateCommand():IIocCommand {
+        return _exportProviderCertificateCommand;
+    }
+
+    public function set exportProviderCertificateCommand(value:IIocCommand):void {
+        _exportProviderCertificateCommand = value;
+    }
+
     override public function execute(note:INotification):void {
         var registry:ServiceRegistry = setupServiceRegistry();
 
@@ -1030,6 +1066,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_JDBC_DRIVERS, jdbcDriversListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_METADATA_INFO, getMetadataInfoCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_CERTIFICATE_INFO, getCertificateInfoCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.PROVIDER_CERTIFICATE_EXPORT, exportProviderCertificateCommand.getConfigName());
 
         // setup for first level mediators
         applicationMediator.setViewComponent(app);
@@ -1067,6 +1104,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(serviceProviderCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(externalIdentityProviderCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(externalServiceProviderCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(salesforceCreateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(googleAppsCreateMediator.getConfigName());
 //        iocFacade.registerMediatorByConfigName(idpChannelCreateMediator.getConfigName());
 //        iocFacade.registerMediatorByConfigName(spChannelCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(identityVaultCreateMediator.getConfigName());
@@ -1093,6 +1132,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(activationCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(federatedConnectionCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(exportIdentityApplianceMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(exportProviderCertificateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(changePasswordMediator.getConfigName());
 
         // IDENTITY_APPLIANCE_LIST_LOAD notification is sent from

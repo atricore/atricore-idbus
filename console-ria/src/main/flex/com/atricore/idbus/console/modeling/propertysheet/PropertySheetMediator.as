@@ -59,6 +59,8 @@ import com.atricore.idbus.console.modeling.propertysheet.view.externalsp.Externa
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionIDPChannelSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.federatedconnection.FederatedConnectionSPChannelSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.googleapps.GoogleAppsContractSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.googleapps.GoogleAppsCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.identitylookup.IdentityLookupCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.identityvault.EmbeddedDBIdentityVaultCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.idp.BasicAuthenticationSection;
@@ -67,6 +69,8 @@ import com.atricore.idbus.console.modeling.propertysheet.view.idp.IdentityProvid
 import com.atricore.idbus.console.modeling.propertysheet.view.jossoactivation.JOSSOActivationCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.ldapidentitysource.LdapIdentitySourceLookupSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.salesforce.SalesforceContractSection;
+import com.atricore.idbus.console.modeling.propertysheet.view.salesforce.SalesforceCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderContractSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.sp.ServiceProviderCoreSection;
 import com.atricore.idbus.console.modeling.propertysheet.view.xmlidentitysource.XmlIdentitySourceCoreSection;
@@ -83,6 +87,7 @@ import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
+import com.atricore.idbus.console.services.dto.GoogleAppsServiceProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceState;
 import com.atricore.idbus.console.services.dto.IdentityLookup;
@@ -102,6 +107,7 @@ import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Profile;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.Resource;
+import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.SamlR2ProviderConfig;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProviderChannel;
@@ -155,6 +161,10 @@ public class PropertySheetMediator extends IocMediator {
     private var _externalSpCoreSection:ExternalServiceProviderCoreSection;
     private var _externalSpContractSection:ExternalServiceProviderContractSection;
     private var _externalSpCertificateSection:ExternalServiceProviderCertificateSection;
+    private var _salesforceCoreSection:SalesforceCoreSection;
+    private var _salesforceContractSection:SalesforceContractSection;
+    private var _googleAppsCoreSection:GoogleAppsCoreSection;
+    private var _googleAppsContractSection:GoogleAppsContractSection;
     private var _embeddedDbVaultCoreSection:EmbeddedDBIdentityVaultCoreSection;
     private var _externalDbVaultCoreSection:ExternalDBIdentityVaultCoreSection;
     private var _ldapIdentitySourceCoreSection:LdapIdentitySourceCoreSection;
@@ -285,6 +295,10 @@ public class PropertySheetMediator extends IocMediator {
 //                    enableIdpChannelPropertyTabs();
 //                } else if (_currentIdentityApplianceElement is ServiceProviderChannel) {
 //                    enableSpChannelPropertyTabs();
+                } else if (_currentIdentityApplianceElement is SalesforceServiceProvider) {
+                    enableSalesforcePropertyTabs();
+                } else if (_currentIdentityApplianceElement is GoogleAppsServiceProvider) {
+                    enableGoogleAppsPropertyTabs();
                 } else if (_currentIdentityApplianceElement is ExternalIdentityProvider) {
                     enableExternalIdentityProviderPropertyTabs();
                 } else if (_currentIdentityApplianceElement is ExternalServiceProvider) {
@@ -904,6 +918,13 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
+    private function handleExportCertificateClick(event:MouseEvent):void {
+        var provider:Provider = _currentIdentityApplianceElement as Provider;
+        if (provider != null) {
+            sendNotification(ApplicationFacade.EXPORT_PROVIDER_CERTIFICATE);
+        }
+    }
+
     private function initCertificateSection(config:SamlR2ProviderConfig):void {
         if (config.useSampleStore) {
             _certificateSection.useDefaultKeystore.selected = true;
@@ -920,6 +941,8 @@ public class PropertySheetMediator extends IocMediator {
         }
 
         sendNotification(ApplicationFacade.GET_CERTIFICATE_INFO, config);
+
+        _certificateSection.btnExportCertificate.addEventListener(MouseEvent.CLICK, handleExportCertificateClick);
         
         _certificateSection.certificateManagementType.addEventListener(ItemClickEvent.ITEM_CLICK, handleSectionChange);
         _certificateSection.certificateKeyPair.addEventListener(Event.CHANGE, handleSectionChange);
@@ -1453,6 +1476,144 @@ public class PropertySheetMediator extends IocMediator {
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
         _applianceSaved = false;
         _dirty = false;
+    }
+
+    protected function enableSalesforcePropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        // Core Tab
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _salesforceCoreSection = new SalesforceCoreSection();
+        corePropertyTab.addElement(_salesforceCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _salesforceCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSalesforceCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleSalesforceCorePropertyTabRollOut);
+
+        // Contract Tab
+        var contractPropertyTab:Group = new Group();
+        contractPropertyTab.id = "propertySheetMetadataSection";
+        contractPropertyTab.name = "Contract";
+        contractPropertyTab.width = Number("100%");
+        contractPropertyTab.height = Number("100%");
+        contractPropertyTab.setStyle("borderStyle", "solid");
+
+        _salesforceContractSection = new SalesforceContractSection();
+        contractPropertyTab.addElement(_salesforceContractSection);
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
+    }
+
+    private function handleSalesforceCorePropertyTabCreationComplete(event:Event):void {
+        var salesforceProvider:SalesforceServiceProvider;
+
+        salesforceProvider = _currentIdentityApplianceElement as SalesforceServiceProvider;
+
+        // if salesforceProvider is null that means some other element was selected before completing this
+        if (salesforceProvider != null) {
+            // bind view
+            _salesforceCoreSection.salesforceProviderName.text = salesforceProvider.name;
+            _salesforceCoreSection.salesforceProvDescription.text = salesforceProvider.description;
+
+            _salesforceCoreSection.salesforceProviderName.addEventListener(Event.CHANGE, handleSectionChange);
+            _salesforceCoreSection.salesforceProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
+
+            //clear all existing validators and add idp core section validators
+            _validators = [];
+            _validators.push(_salesforceCoreSection.nameValidator);
+        }
+    }
+
+    private function handleSalesforceCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+
+            var salesforceProvider:SalesforceServiceProvider = _currentIdentityApplianceElement as SalesforceServiceProvider;
+
+            salesforceProvider.name = _salesforceCoreSection.salesforceProviderName.text;
+            salesforceProvider.description = _salesforceCoreSection.salesforceProvDescription.text;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
+    }
+
+    protected function enableGoogleAppsPropertyTabs():void {
+        _propertySheetsViewStack.removeAllChildren();
+
+        // Core Tab
+        var corePropertyTab:Group = new Group();
+        corePropertyTab.id = "propertySheetCoreSection";
+        corePropertyTab.name = "Core";
+        corePropertyTab.width = Number("100%");
+        corePropertyTab.height = Number("100%");
+        corePropertyTab.setStyle("borderStyle", "solid");
+
+        _googleAppsCoreSection = new GoogleAppsCoreSection();
+        corePropertyTab.addElement(_googleAppsCoreSection);
+        _propertySheetsViewStack.addNewChild(corePropertyTab);
+        _tabbedPropertiesTabBar.selectedIndex = 0;
+
+        _googleAppsCoreSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleGoogleAppsCorePropertyTabCreationComplete);
+        corePropertyTab.addEventListener(MouseEvent.ROLL_OUT, handleGoogleAppsCorePropertyTabRollOut);
+
+        // Contract Tab
+        var contractPropertyTab:Group = new Group();
+        contractPropertyTab.id = "propertySheetMetadataSection";
+        contractPropertyTab.name = "Contract";
+        contractPropertyTab.width = Number("100%");
+        contractPropertyTab.height = Number("100%");
+        contractPropertyTab.setStyle("borderStyle", "solid");
+
+        _googleAppsContractSection = new GoogleAppsContractSection();
+        contractPropertyTab.addElement(_googleAppsContractSection);
+        _propertySheetsViewStack.addNewChild(contractPropertyTab);
+    }
+
+    private function handleGoogleAppsCorePropertyTabCreationComplete(event:Event):void {
+        var googleAppsProvider:GoogleAppsServiceProvider;
+
+        googleAppsProvider = _currentIdentityApplianceElement as GoogleAppsServiceProvider;
+
+        // if googleAppsProvider is null that means some other element was selected before completing this
+        if (googleAppsProvider != null) {
+            // bind view
+            _googleAppsCoreSection.googleAppsProviderName.text = googleAppsProvider.name;
+            _googleAppsCoreSection.googleAppsProvDescription.text = googleAppsProvider.description;
+            _googleAppsCoreSection.googleAppsProvDomain.text = googleAppsProvider.domain;
+
+            _googleAppsCoreSection.googleAppsProviderName.addEventListener(Event.CHANGE, handleSectionChange);
+            _googleAppsCoreSection.googleAppsProvDescription.addEventListener(Event.CHANGE, handleSectionChange);
+            _googleAppsCoreSection.googleAppsProvDomain.addEventListener(Event.CHANGE, handleSectionChange);
+
+            //clear all existing validators and add idp core section validators
+            _validators = [];
+            _validators.push(_googleAppsCoreSection.nameValidator);
+            _validators.push(_googleAppsCoreSection.domainValidator);
+        }
+    }
+
+    private function handleGoogleAppsCorePropertyTabRollOut(e:Event):void {
+        if (_dirty && validate(true)) {
+
+            var googleAppsProvider:GoogleAppsServiceProvider = _currentIdentityApplianceElement as GoogleAppsServiceProvider;
+
+            googleAppsProvider.name = _googleAppsCoreSection.googleAppsProviderName.text;
+            googleAppsProvider.description = _googleAppsCoreSection.googleAppsProvDescription.text;
+            googleAppsProvider.domain = _googleAppsCoreSection.googleAppsProvDomain.text;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
+        }
     }
 
     protected function enableIdentityVaultPropertyTabs():void {

@@ -91,6 +91,19 @@ public class PaletteMediator extends IocMediator {
         var pr:PaletteRoot  = new PaletteRoot("Identity Appliance Modeler Palette", null, null);
         pr.add(saml2PaletteDrawer);
 
+        var cloudPaletteDrawer:PaletteDrawer = new PaletteDrawer("Cloud Entities", null, null);
+
+        cloudPaletteDrawer.add(
+                new PaletteEntry("Salesforce", EmbeddedIcons.salesforceMiniIcon, "Salesforce Entry", DiagramElementTypes.SALESFORCE_ELEMENT_TYPE)
+
+                );
+        cloudPaletteDrawer.add(
+                new PaletteEntry("Google Apps", EmbeddedIcons.googleAppsMiniIcon, "Google Apps Entry", DiagramElementTypes.GOOGLE_APPS_ELEMENT_TYPE)
+
+                );
+
+        pr.add(cloudPaletteDrawer);
+
         var identitySourcesPaletteDrawer:PaletteDrawer = new PaletteDrawer("Identity Sources", null, null);
         identitySourcesPaletteDrawer.add(
                 new PaletteEntry("Identity Vault", EmbeddedIcons.vaultMiniIcon, "Identity Vault Entry", DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE)

@@ -8,7 +8,9 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.factory.InitializingBean;
@@ -120,7 +122,7 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
         SPSSODescriptorType spSSODescriptor = new SPSSODescriptorType();
         // TODO : Take ID from provider entityId attribute (To be created)
         spSSODescriptor.setID(idGenerator.generateId());
-        spSSODescriptor.getProtocolSupportEnumeration().add("urn:oasis:names:tc:SAML:2.0:protocol");
+        spSSODescriptor.getProtocolSupportEnumeration().add(SAMLR2Constants.SAML_PROTOCOL_NS);
 
         // signing key descriptor
         KeyDescriptorType signingKeyDescriptor = new KeyDescriptorType();
@@ -327,8 +329,8 @@ public class SamlR2SPTransformer extends AbstractTransformer implements Initiali
         spSSODescriptor.getManageNameIDService().add(manageNameIDServiceRedirect);
         
         // TODO : Make configurable
-        spSSODescriptor.getNameIDFormat().add("urn:oasis:names:tc:SAML:2.0:nameid-format:persistent");
-        spSSODescriptor.getNameIDFormat().add("urn:oasis:names:tc:SAML:2.0:nameid-format:transient");
+        spSSODescriptor.getNameIDFormat().add(NameIDFormat.PERSISTENT.getValue());
+        spSSODescriptor.getNameIDFormat().add(NameIDFormat.TRANSIENT.getValue());
 
         // AssertionConsumerService
         if (ssoEnabled) {

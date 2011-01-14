@@ -65,6 +65,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const DISPOSE_IDENTITY_APPLIANCE:String = "disposeIdentityAppliance";
     public static const IMPORT_IDENTITY_APPLIANCE:String = "importIdentityAppliance";
     public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
+    public static const EXPORT_PROVIDER_CERTIFICATE:String = "exportProviderCertificate";
     public static const ADD_GROUP:String = "addGroup";
     public static const ADD_USER:String = "addUser";
     public static const DELETE_GROUP:String = "deleteGroup";
@@ -84,6 +85,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
     public static const GET_METADATA_INFO:String = "getMetadataInfo";
     public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
+    public static const PROVIDER_CERTIFICATE_EXPORT:String = "providerCertificateExport";
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
@@ -111,6 +113,8 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const CREATE_SERVICE_PROVIDER_ELEMENT:String = "createServiceProviderElement";
     public static const CREATE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT:String = "createExternalIdentityProviderElement";
     public static const CREATE_EXTERNAL_SERVICE_PROVIDER_ELEMENT:String = "createExternalServiceProviderElement";
+    public static const CREATE_SALESFORCE_ELEMENT:String = "createSalesforceElement";
+    public static const CREATE_GOOGLE_APPS_ELEMENT:String = "createGoogleAppsElement";
     public static const DIAGRAM_ELEMENT_CREATION_COMPLETE:String = "diagramElementCreationComplete";
     public static const DIAGRAM_ELEMENT_SELECTED:String = "diagramElementSelected";
     public static const DIAGRAM_ELEMENT_UPDATED:String = "diagramElementUpdated";
@@ -129,6 +133,8 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const CREATE_IDENTITY_VAULT_ELEMENT:String = "createIdentityVaultElement";
     public static const REMOVE_SERVICE_PROVIDER_ELEMENT:String = "removeServiceProviderElement";
     public static const REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT:String = "removeExternalServiceProviderElement";
+    public static const REMOVE_SALESFORCE_ELEMENT:String = "removeSalesforceElement";
+    public static const REMOVE_GOOGLE_APPS_ELEMENT:String = "removeGoogleAppsElement";
     public static const CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJbossExecutionEnvironmentElement";
     public static const CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWeblogicExecutionEnvironmentElement";
     public static const CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT:String = "createTomcatExecutionEnvironmentElement";

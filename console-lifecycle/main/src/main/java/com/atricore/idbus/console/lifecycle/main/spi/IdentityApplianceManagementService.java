@@ -44,6 +44,8 @@ public interface IdentityApplianceManagementService {
 
     ExportIdentityApplianceProjectResponse exportIdentityApplianceProject(ExportIdentityApplianceProjectRequest request) throws IdentityServerException;
 
+    ExportProviderCertificateResponse exportProviderCertificate(ExportProviderCertificateRequest request) throws IdentityServerException;
+
     //-----------------------< CRUD Operations >
 
     /**

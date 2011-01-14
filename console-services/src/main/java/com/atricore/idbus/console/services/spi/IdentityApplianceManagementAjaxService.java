@@ -92,4 +92,6 @@ public interface IdentityApplianceManagementAjaxService {
 
     GetMetadataInfoResponse getMetadataInfo(GetMetadataInfoRequest req) throws IdentityServerException;
     GetCertificateInfoResponse getCertificateInfo(GetCertificateInfoRequest req) throws IdentityServerException;
+
+    ExportProviderCertificateResponse exportProviderCertificate(ExportProviderCertificateRequest req) throws IdentityServerException;
 }

@@ -33,10 +33,10 @@
     <bean name="idauBaseComponentsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauBaseComponentsTransformer"/>
 
-    <bean name="idpTransformer"
+    <bean name="idpLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer"/>
 
-    <bean name="idpRemoteTransformer"
+    <bean name="idpExternalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPExternalTransformer"/>
 
     <bean name="idpFederatedConnectionATransformer"
@@ -55,12 +55,18 @@
     <bean name="stsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.STSTransformer"/>
 
-    <bean name="spTransformer"
+    <bean name="spLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPLocalTransformer"/>
 
-    <bean name="spRemoteTransformer"
+    <bean name="spExternalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPExternalTransformer"/>
 
+    <bean name="salesforceTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SalesforceTransformer"/>
+
+    <bean name="googleAppsTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.GoogleAppsTransformer"/>
+    
     <bean name="spFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
@@ -203,8 +209,8 @@
                                         <ref bean="idauBaseComponentsTransformer"/>
 
                                         <!-- IDP Transformers -->
-                                        <ref bean="idpTransformer"/>
-                                        <ref bean="idpRemoteTransformer"/>
+                                        <ref bean="idpLocalTransformer"/>
+                                        <ref bean="idpExternalTransformer"/>
                                         <ref bean="samlr2IdPTransformer"/>
 
                                         <ref bean="idpFederatedConnectionATransformer"/>
@@ -214,8 +220,10 @@
                                         <ref bean="stsTransformer"/>
 
                                         <!-- SP Transformers -->
-                                        <ref bean="spTransformer"/>
-                                        <ref bean="spRemoteTransformer"/>
+                                        <ref bean="spLocalTransformer"/>
+                                        <ref bean="salesforceTransformer"/>
+                                        <ref bean="googleAppsTransformer"/>
+                                        <ref bean="spExternalTransformer"/>
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
                                         <ref bean="spJOSSOActivationTransformer"/>
