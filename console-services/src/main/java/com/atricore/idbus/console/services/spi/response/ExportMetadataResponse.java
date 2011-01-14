@@ -21,15 +21,15 @@
 
 package com.atricore.idbus.console.services.spi.response;
 
-public class ExportProviderCertificateResponse extends AbstractManagementResponse {
+public class ExportMetadataResponse extends AbstractManagementResponse {
 
-    private byte[] certificate;
+    private byte[] metadata;
 
-    public byte[] getCertificate() {
-        return certificate;
+    public byte[] getMetadata() {
+        return metadata;
     }
 
-    public void setCertificate(byte[] certificate) {
-        this.certificate = certificate;
+    public void setMetadata(byte[] metadata) {
+        this.metadata = metadata;
     }
 }

@@ -65,7 +65,8 @@
         <url-pattern>/messagebroker/*</url-pattern>
     </servlet-mapping>
 
-    <servlet>
+    <!-- Uncomment DispatcherServlet if you want to use Spring Controllers -->
+    <!--servlet>
 		<servlet-name>dispatcher</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<init-param>
@@ -82,8 +83,9 @@
 	<servlet-mapping>
 		<servlet-name>dispatcher</servlet-name>
 		<url-pattern>*.do</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping-->
 
+    <!-- Upload servlet -->
     <!--servlet>
         <servlet-name>uploadHandler</servlet-name>
         <servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>

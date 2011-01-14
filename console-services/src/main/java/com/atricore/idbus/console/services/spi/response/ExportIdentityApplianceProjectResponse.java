@@ -21,15 +21,44 @@
 
 package com.atricore.idbus.console.services.spi.response;
 
-public class ExportProviderCertificateResponse extends AbstractManagementResponse {
+public class ExportIdentityApplianceProjectResponse extends AbstractManagementResponse {
 
-    private byte[] certificate;
+    private String name;
 
-    public byte[] getCertificate() {
-        return certificate;
+    private int revision;
+
+    private byte[] zip;
+
+    public ExportIdentityApplianceProjectResponse() {
+        super();
     }
 
-    public void setCertificate(byte[] certificate) {
-        this.certificate = certificate;
+    public ExportIdentityApplianceProjectResponse(String name, int revision, byte[] zip) {
+        super();
+        this.zip = zip;
+    }
+
+    public byte[] getZip() {
+        return zip;
+    }
+
+    public void setZip(byte[] zip) {
+        this.zip = zip;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getRevision() {
+        return revision;
+    }
+
+    public void setRevision(int revision) {
+        this.revision = revision;
     }
 }

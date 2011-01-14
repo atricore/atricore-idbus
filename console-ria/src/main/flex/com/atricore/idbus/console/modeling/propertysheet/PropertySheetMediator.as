@@ -781,6 +781,8 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
+            _ipContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
+
             _ipContractSection.signAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipContractSection.encryptAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
@@ -918,6 +920,12 @@ public class PropertySheetMediator extends IocMediator {
         }
     }
 
+    private function handleExportMetadataClick(event:MouseEvent):void {
+        if (_currentIdentityApplianceElement is Provider || _currentIdentityApplianceElement is FederatedConnection) {
+            sendNotification(ApplicationFacade.EXPORT_METADATA);
+        }
+    }
+    
     private function handleExportCertificateClick(event:MouseEvent):void {
         var provider:Provider = _currentIdentityApplianceElement as Provider;
         if (provider != null) {
@@ -1160,6 +1168,8 @@ public class PropertySheetMediator extends IocMediator {
                     _spContractSection.samlProfileSLOCheck.selected = true;
                 }
             }
+
+            _spContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
 
             _spContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _spContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);

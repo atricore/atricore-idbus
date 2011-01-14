@@ -64,8 +64,6 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const STOP_IDENTITY_APPLIANCE:String = "stopIdentityAppliance";
     public static const DISPOSE_IDENTITY_APPLIANCE:String = "disposeIdentityAppliance";
     public static const IMPORT_IDENTITY_APPLIANCE:String = "importIdentityAppliance";
-    public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
-    public static const EXPORT_PROVIDER_CERTIFICATE:String = "exportProviderCertificate";
     public static const ADD_GROUP:String = "addGroup";
     public static const ADD_USER:String = "addUser";
     public static const DELETE_GROUP:String = "deleteGroup";
@@ -85,7 +83,9 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
     public static const GET_METADATA_INFO:String = "getMetadataInfo";
     public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
+    public static const IDENTITY_APPLIANCE_EXPORT:String = "identityApplianceExport";
     public static const PROVIDER_CERTIFICATE_EXPORT:String = "providerCertificateExport";
+    public static const METADATA_EXPORT:String = "metadataExport";
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
@@ -169,6 +169,9 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const ACCOUNT_VIEW_SELECTED:String = "accountViewSelected";
     public static const APPLIANCE_VALIDATION_ERRORS:String = "applianceValidationErrors";
     public static const APPLIANCE_SAVED:String = "applianceSaved";
+    public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
+    public static const EXPORT_PROVIDER_CERTIFICATE:String = "exportProviderCertificate";
+    public static const EXPORT_METADATA:String = "exportMetadata";
 
 
     public function ApplicationFacade(p_configuration:* = null) {

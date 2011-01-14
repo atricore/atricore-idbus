@@ -46,5 +46,7 @@
         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'serviceProv.encrypt.auth.requests')}:">
             <s:CheckBox id="encryptAuthRequestCheck"/>
         </mx:FormItem-->
+
+        <s:Button id="btnExportMetadata" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'export.metadata')}"/>
     </mx:Form>
 </s:Group>

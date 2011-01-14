@@ -122,7 +122,7 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(beRes, DisposeIdentityApplianceResponse.class);
     }
 
-    public ExportIdentityApplianceResponse ExportIdentityAppliance(ExportIdentityApplianceRequest req) throws IdentityServerException {
+    public ExportIdentityApplianceResponse exportIdentityAppliance(ExportIdentityApplianceRequest req) throws IdentityServerException {
         com.atricore.idbus.console.lifecycle.main.spi.request.ExportIdentityApplianceRequest beReq =
                 dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ExportIdentityApplianceRequest.class);
 
@@ -133,6 +133,19 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
             throw new IdentityServerException(e);
         }
         return dozerMapper.map(beRes, ExportIdentityApplianceResponse.class);
+    }
+
+    public ExportIdentityApplianceProjectResponse exportIdentityApplianceProject(ExportIdentityApplianceProjectRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ExportIdentityApplianceProjectRequest beReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ExportIdentityApplianceProjectRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ExportIdentityApplianceProjectResponse beRes = null;
+        try {
+            beRes = idApplianceManagementService.exportIdentityApplianceProject(beReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(beRes, ExportIdentityApplianceProjectResponse.class);
     }
 
     public ImportIdentityApplianceResponse importIdentityApplianceProject(ImportIdentityApplianceRequest req) throws IdentityServerException {
@@ -454,6 +467,19 @@ public class IdentityApplianceManagementAjaxServiceImpl implements IdentityAppli
         return dozerMapper.map(ecRes, ExportProviderCertificateResponse.class);
     }
 
+    public ExportMetadataResponse exportMetadata(ExportMetadataRequest req) throws IdentityServerException {
+        com.atricore.idbus.console.lifecycle.main.spi.request.ExportMetadataRequest emReq =
+                dozerMapper.map(req,  com.atricore.idbus.console.lifecycle.main.spi.request.ExportMetadataRequest.class);
+
+        com.atricore.idbus.console.lifecycle.main.spi.response.ExportMetadataResponse emRes;
+        try {
+            emRes = idApplianceManagementService.exportMetadata(emReq);
+        } catch (com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException e) {
+            throw new IdentityServerException(e);
+        }
+        return dozerMapper.map(emRes, ExportMetadataResponse.class);
+    }
+    
     /****************************
      * List methods
      ***************************/

@@ -61,6 +61,7 @@
         <symbol>com.atricore.idbus.console.modeling.diagram.view.googleapps.GoogleAppsCreateMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProviderCertificateMediator</symbol>
+        <symbol>com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.browser.BrowserMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.palette.PaletteMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.AccountManagementMediator</symbol>
@@ -114,6 +115,9 @@
         <symbol>com.atricore.idbus.console.modeling.main.controller.JDBCDriversListCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.GetMetadataInfoCommand</symbol>
         <symbol>com.atricore.idbus.console.modeling.main.controller.GetCertificateInfoCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.ExportIdentityApplianceCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.ExportProviderCertificateCommand</symbol>
+        <symbol>com.atricore.idbus.console.modeling.main.controller.ExportMetadataCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.AddGroupCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.AddUserCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.DeleteGroupCommand</symbol>

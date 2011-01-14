@@ -85,12 +85,13 @@
         <property name="pspTargetId" value="pst-default" />
     </bean>
 
-    <bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">
+    <!--bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">
         <property name="idApplianceManagementService" ref="idApplianceManagementService"/>
-    </bean>
+    </bean-->
 
-    <context:component-scan base-package="com.atricore.idbus.console.web" />
+    <!-- Uncomment this if you want to use Spring Controllers -->
+    <!--context:component-scan base-package="com.atricore.idbus.console.web" />
 
-    <context:annotation-config />
+    <context:annotation-config /-->
     
 </beans>

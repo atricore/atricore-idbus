@@ -232,8 +232,18 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="exportIdentityApplianceCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ExportIdentityApplianceCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="exportProviderCertificateCommand"
             class="com.atricore.idbus.console.modeling.main.controller.ExportProviderCertificateCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
+    <object id="exportMetadataCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ExportMetadataCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
@@ -388,6 +398,10 @@
             class="com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProviderCertificateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="exportMetadataMediator"
+            class="com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+    </object>
     <object id="browserMediator" class="com.atricore.idbus.console.modeling.browser.BrowserMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
@@ -504,6 +518,7 @@
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
         <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
+        <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
     </object>
 
     <object id="accountManagementPopUpManager" class="com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager">
@@ -576,6 +591,8 @@
         <property name="getMetadataInfoCommand" ref="getMetadataInfoCommand"/>
         <property name="getCertificateInfoCommand" ref="getCertificateInfoCommand"/>
         <property name="exportProviderCertificateCommand" ref="exportProviderCertificateCommand"/>
+        <property name="exportIdentityApplianceCommand" ref="exportIdentityApplianceCommand"/>
+        <property name="exportMetadataCommand" ref="exportMetadataCommand"/>
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>
@@ -634,6 +651,7 @@
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
         <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
+        <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
 
     </object>
 

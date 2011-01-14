@@ -19,17 +19,8 @@
  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.services.spi.response;
+package com.atricore.idbus.console.services.spi.request;
 
-public class ExportProviderCertificateResponse extends AbstractManagementResponse {
+public class ExportMetadataRequest extends AbstractManagementRequest {
 
-    private byte[] certificate;
-
-    public byte[] getCertificate() {
-        return certificate;
-    }
-
-    public void setCertificate(byte[] certificate) {
-        this.certificate = certificate;
-    }
 }

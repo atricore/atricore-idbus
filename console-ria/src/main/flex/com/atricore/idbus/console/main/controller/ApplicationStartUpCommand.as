@@ -102,6 +102,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _federatedConnectionCreateMediator:IIocMediator;
     private var _exportIdentityApplianceMediator:IIocMediator;
     private var _exportProviderCertificateMediator:IIocMediator;
+    private var _exportMetadataMediator:IIocMediator;
 
 
     /* Commands */
@@ -153,7 +154,9 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _jdbcDriversListCommand:IIocCommand;
     private var _getMetadataInfoCommand:IIocCommand;
     private var _getCertificateInfoCommand:IIocCommand;
+    private var _exportIdentityApplianceCommand:IIocCommand;
     private var _exportProviderCertificateCommand:IIocCommand;
+    private var _exportMetadataCommand:IIocCommand;
 
 
     public function get applicationMediator():IIocMediator {
@@ -570,6 +573,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set exportProviderCertificateMediator(value:IIocMediator):void {
         _exportProviderCertificateMediator = value;
+    }
+
+    public function get exportMetadataMediator():IIocMediator {
+        return _exportMetadataMediator;
+    }
+
+    public function set exportMetadataMediator(value:IIocMediator):void {
+        _exportMetadataMediator = value;
     }
 
     public function get serviceRegistry():IIocProxy {
@@ -1005,12 +1016,28 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _getCertificateInfoCommand = value;
     }
 
+    public function get exportIdentityApplianceCommand():IIocCommand {
+        return _exportIdentityApplianceCommand;
+    }
+
+    public function set exportIdentityApplianceCommand(value:IIocCommand):void {
+        _exportIdentityApplianceCommand = value;
+    }
+
     public function get exportProviderCertificateCommand():IIocCommand {
         return _exportProviderCertificateCommand;
     }
 
     public function set exportProviderCertificateCommand(value:IIocCommand):void {
         _exportProviderCertificateCommand = value;
+    }
+
+    public function get exportMetadataCommand():IIocCommand {
+        return _exportMetadataCommand;
+    }
+
+    public function set exportMetadataCommand(value:IIocCommand):void {
+        _exportMetadataCommand = value;
     }
 
     override public function execute(note:INotification):void {
@@ -1066,7 +1093,9 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_JDBC_DRIVERS, jdbcDriversListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_METADATA_INFO, getMetadataInfoCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_CERTIFICATE_INFO, getCertificateInfoCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.IDENTITY_APPLIANCE_EXPORT, exportIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.PROVIDER_CERTIFICATE_EXPORT, exportProviderCertificateCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.METADATA_EXPORT, exportMetadataCommand.getConfigName());
 
         // setup for first level mediators
         applicationMediator.setViewComponent(app);
@@ -1133,6 +1162,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(federatedConnectionCreateMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(exportIdentityApplianceMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(exportProviderCertificateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(exportMetadataMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(changePasswordMediator.getConfigName());
 
         // IDENTITY_APPLIANCE_LIST_LOAD notification is sent from

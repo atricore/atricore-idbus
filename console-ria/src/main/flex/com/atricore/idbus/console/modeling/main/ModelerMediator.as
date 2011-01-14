@@ -336,6 +336,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             ApplicationFacade.AUTOSAVE_IDENTITY_APPLIANCE,
             ApplicationFacade.EXPORT_IDENTITY_APPLIANCE,
             ApplicationFacade.EXPORT_PROVIDER_CERTIFICATE,
+            ApplicationFacade.EXPORT_METADATA,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             LookupIdentityApplianceByIdCommand.SUCCESS,
@@ -641,6 +642,9 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 break;
             case ApplicationFacade.EXPORT_PROVIDER_CERTIFICATE:
                 popupManager.showCreateExportProviderCertificateWindow(notification);
+                break;
+            case ApplicationFacade.EXPORT_METADATA:
+                popupManager.showCreateExportMetadataWindow(notification);
                 break;
         }
 

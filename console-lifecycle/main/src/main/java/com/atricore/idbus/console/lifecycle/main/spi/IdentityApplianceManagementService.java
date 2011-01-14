@@ -46,6 +46,8 @@ public interface IdentityApplianceManagementService {
 
     ExportProviderCertificateResponse exportProviderCertificate(ExportProviderCertificateRequest request) throws IdentityServerException;
 
+    ExportMetadataResponse exportMetadata(ExportMetadataRequest request) throws IdentityServerException;
+
     //-----------------------< CRUD Operations >
 
     /**

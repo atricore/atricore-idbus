@@ -41,7 +41,9 @@ public interface IdentityApplianceManagementAjaxService {
 
     DisposeIdentityApplianceResponse disposeIdentityAppliance(DisposeIdentityApplianceRequest req) throws IdentityServerException;
     
-    ExportIdentityApplianceResponse ExportIdentityAppliance(ExportIdentityApplianceRequest request) throws IdentityServerException;
+    ExportIdentityApplianceResponse exportIdentityAppliance(ExportIdentityApplianceRequest request) throws IdentityServerException;
+
+    ExportIdentityApplianceProjectResponse exportIdentityApplianceProject(ExportIdentityApplianceProjectRequest request) throws IdentityServerException;
 
     ManageIdentityApplianceLifeCycleResponse manageIdentityApplianceLifeCycle(ManageIdentityApplianceLifeCycleRequest req) throws IdentityServerException;
 
@@ -94,4 +96,6 @@ public interface IdentityApplianceManagementAjaxService {
     GetCertificateInfoResponse getCertificateInfo(GetCertificateInfoRequest req) throws IdentityServerException;
 
     ExportProviderCertificateResponse exportProviderCertificate(ExportProviderCertificateRequest req) throws IdentityServerException;
+
+    ExportMetadataResponse exportMetadata(ExportMetadataRequest req) throws IdentityServerException;
 }

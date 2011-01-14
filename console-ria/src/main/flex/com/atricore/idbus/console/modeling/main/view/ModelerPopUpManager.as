@@ -47,10 +47,10 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tom
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver.WebserverExecutionEnvironmentCreateForm;
-import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver.WebserverExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver.WebserverExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver.WebserverExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.externalidp.ExternalIdentityProviderCreateForm;
@@ -77,12 +77,11 @@ import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediato
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceView;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceView;
-
 import com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceView;
-
+import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataMediator;
+import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataView;
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProviderCertificateMediator;
-
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProviderCertificateView;
 
 import mx.core.UIComponent;
@@ -124,6 +123,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _federatedConnectionCreateMediator:FederatedConnectionCreateMediator;
     private var _exportIdentityApplianceMediator:ExportIdentityApplianceMediator;
     private var _exportProviderCertificateMediator:ExportProviderCertificateMediator;
+    private var _exportMetadataMediator:ExportMetadataMediator;
 
     // views
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
@@ -156,6 +156,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _federatedConnectionCreateForm:FederatedConnectionCreateForm;
     private var _exportIdentityApplianceView:ExportIdentityApplianceView;
     private var _exportProviderCertificateView:ExportProviderCertificateView;
+    private var _exportMetadataView:ExportMetadataView;
 
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
@@ -400,6 +401,14 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set exportProviderCertificateMediator(value:ExportProviderCertificateMediator):void {
         _exportProviderCertificateMediator = value;
+    }
+
+    public function get exportMetadataMediator():ExportMetadataMediator {
+        return _exportMetadataMediator;
+    }
+
+    public function set exportMetadataMediator(value:ExportMetadataMediator):void {
+        _exportMetadataMediator = value;
     }
 
     public function showCreateIdentityProviderWindow(notification:INotification):void {
@@ -1031,6 +1040,27 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleExportProviderCertificateViewCreated(event:FlexEvent):void {
         exportProviderCertificateMediator.setViewComponent(_exportProviderCertificateView);
         exportProviderCertificateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateExportMetadataWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createExportMetadataView();
+        _progress.title = "Export SAML Metadata";
+        _progress.width = 300;
+        _progress.height = 150;
+//        _popup.x = (_popupParent.width / 2) - 225;
+//        _popup.y = 80;
+        showProgress(_exportMetadataView);
+    }
+
+    private function createExportMetadataView():void {
+        _exportMetadataView = new ExportMetadataView();
+        _exportMetadataView.addEventListener(FlexEvent.CREATION_COMPLETE, handleExportMetadataViewCreated);
+    }
+
+    private function handleExportMetadataViewCreated(event:FlexEvent):void {
+        exportMetadataMediator.setViewComponent(_exportMetadataView);
+        exportMetadataMediator.handleNotification(_lastWindowNotification);
     }
 }
 }

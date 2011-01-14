@@ -19,17 +19,26 @@
  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.services.spi.response;
+package com.atricore.idbus.console.services.spi.request;
 
-public class ExportProviderCertificateResponse extends AbstractManagementResponse {
+public class ExportIdentityApplianceProjectRequest extends AbstractManagementRequest {
 
-    private byte[] certificate;
+    private String applianceId;
 
-    public byte[] getCertificate() {
-        return certificate;
+    public ExportIdentityApplianceProjectRequest() {
+        super();
     }
 
-    public void setCertificate(byte[] certificate) {
-        this.certificate = certificate;
+    public ExportIdentityApplianceProjectRequest(String applianceId) {
+        super();
+        this.applianceId = applianceId;
+    }
+
+    public String getApplianceId() {
+        return applianceId;
+    }
+
+    public void setApplianceId(String applianceId) {
+        this.applianceId = applianceId;
     }
 }

@@ -1179,6 +1179,17 @@ public class IdentityApplianceManagementServiceImpl implements
         return response;
     }
 
+    public ExportMetadataResponse exportMetadata(ExportMetadataRequest request) throws IdentityServerException {
+        ExportMetadataResponse response = new ExportMetadataResponse();
+        try {
+            response.setMetadata(new byte[1]);
+        } catch (Exception e){
+            logger.error("Error exporting SAML metadata", e);
+            throw new IdentityServerException(e);
+        }
+        return response;
+    }
+
     private X509Certificate getCertificate(KeyDescriptorType keyMd) {
         X509Certificate x509Cert = null;
         byte[] x509CertificateBin = null;

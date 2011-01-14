@@ -1,8 +1,9 @@
-package com.atricore.idbus.console.modeling.main.view.export {
+package com.atricore.idbus.console.modeling.propertysheet.view.export {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
-import com.atricore.idbus.console.modeling.main.controller.ExportIdentityApplianceCommand;
-import com.atricore.idbus.console.services.spi.response.ExportIdentityApplianceProjectResponse;
+import com.atricore.idbus.console.modeling.main.controller.ExportMetadataCommand;
+import com.atricore.idbus.console.services.dto.Provider;
+import com.atricore.idbus.console.services.spi.response.ExportMetadataResponse;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -13,15 +14,15 @@ import mx.events.CloseEvent;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class ExportIdentityApplianceMediator extends IocMediator {
+public class ExportMetadataMediator extends IocMediator {
 
     private var _projectProxy:ProjectProxy;
 
     private var _fileRef:FileReference;
 
-    private var _exportedAppliance:Object;
+    private var _exportedMetadata:Object;
 
-    public function ExportIdentityApplianceMediator(name:String = null, viewComp:ExportIdentityApplianceView = null) {
+    public function ExportMetadataMediator(name:String = null, viewComp:ExportMetadataView = null) {
         super(name, viewComp);
     }
 
@@ -49,14 +50,16 @@ public class ExportIdentityApplianceMediator extends IocMediator {
     private function init():void {
         view.btnSave.addEventListener(MouseEvent.CLICK, handleSave);
 
-        _exportedAppliance = null;
-        
-        if (projectProxy.currentIdentityAppliance != null) {
+        _exportedMetadata = null;
+
+        var provider:Provider = projectProxy.currentIdentityApplianceElement as Provider;
+
+        if (provider != null) {
 
             view.progBar.setProgress(0, 0);
-            view.progBar.label = "Exporting Identity Appliance...";
+            view.progBar.label = "Exporting SAML Metadata...";
 
-            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_EXPORT, projectProxy.currentIdentityAppliance.id.toString());
+            sendNotification(ApplicationFacade.METADATA_EXPORT);
         } else {
             closeWindow();
         }
@@ -65,8 +68,7 @@ public class ExportIdentityApplianceMediator extends IocMediator {
     private function handleSave(event:MouseEvent):void {
         _fileRef = new FileReference();
         _fileRef.addEventListener(Event.COMPLETE, saveCompleteHandler);
-        _fileRef.save(_exportedAppliance, projectProxy.currentIdentityAppliance.idApplianceDefinition.name + "-1.0." +
-                    projectProxy.currentIdentityAppliance.idApplianceDefinition.revision + ".zip");
+        _fileRef.save(_exportedMetadata, projectProxy.currentIdentityApplianceElement.name + "-samlr2-metadata.xml");
     }
 
     private function saveCompleteHandler(event:Event):void {
@@ -74,28 +76,28 @@ public class ExportIdentityApplianceMediator extends IocMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [ExportIdentityApplianceCommand.SUCCESS,
-                ExportIdentityApplianceCommand.FAILURE];
+        return [ExportMetadataCommand.SUCCESS,
+                ExportMetadataCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ExportIdentityApplianceCommand.SUCCESS:
-                var resp:ExportIdentityApplianceProjectResponse = notification.getBody() as ExportIdentityApplianceProjectResponse;
-                _exportedAppliance = resp.zip;
+            case ExportMetadataCommand.SUCCESS:
+                var resp:ExportMetadataResponse = notification.getBody() as ExportMetadataResponse;
+                _exportedMetadata = resp.metadata;
                 view.progBar.indeterminate = false;
                 view.progBar.setProgress(100, 100);
-                if (_exportedAppliance != null && _exportedAppliance.length > 0) {
-                    view.progBar.label = "Appliance successfully exported";
+                if (_exportedMetadata != null && _exportedMetadata.length > 0) {
+                    view.progBar.label = "Metadata successfully exported";
                     view.btnSave.enabled = true;
                 } else {
-                    view.progBar.label = "Error exporting Appliance!!!";
+                    view.progBar.label = "Error exporting metadata!!!";
                 }
                 break;
-            case ExportIdentityApplianceCommand.FAILURE:
+            case ExportMetadataCommand.FAILURE:
                 view.progBar.indeterminate = false;
                 view.progBar.setProgress(100, 100);
-                view.progBar.label = "Error exporting Appliance!!!";
+                view.progBar.label = "Error exporting metadata!!!";
                 break;
         }
     }
@@ -104,8 +106,8 @@ public class ExportIdentityApplianceMediator extends IocMediator {
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
-    protected function get view():ExportIdentityApplianceView {
-        return viewComponent as ExportIdentityApplianceView;
+    protected function get view():ExportMetadataView {
+        return viewComponent as ExportMetadataView;
     }
 }
 }
