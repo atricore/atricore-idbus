@@ -19,26 +19,14 @@
  *   02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.services.spi.response;
-
-import com.atricore.idbus.console.services.dto.ProfileTypeDTO;
-import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
+package com.atricore.idbus.console.services.dto;
 
 /**
  * @author: Dusan Fisic
  * @email: dfisic@atricore.org
- * Date: 1/14/11 - 7:25 PM
+ * Date: 1/17/11 - 2:57 PM
  */
-public class GetUpdateProfileResponse {
+public class UpdatesIndexTypeDTO {
 
-    private ProfileTypeDTO profile;
-
-    public ProfileTypeDTO getProfile() {
-        return profile;
-    }
-
-    public void setProfile(ProfileTypeDTO profile) {
-        this.profile = profile;
-    }
 
 }

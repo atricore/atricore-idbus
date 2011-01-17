@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.services.spi.response;
 
+import com.atricore.idbus.console.services.dto.UpdatesIndexTypeDTO;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 
 /**
@@ -31,13 +32,13 @@ import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 
 public class GetRepositoryUpdatesResponse {
 
-    private UpdatesIndexType updatesIndex;
+    private UpdatesIndexTypeDTO updatesIndex;
 
-    public UpdatesIndexType getUpdatesIndex() {
+    public UpdatesIndexTypeDTO getUpdatesIndex() {
         return updatesIndex;
     }
 
-    public void setUpdatesIndex(UpdatesIndexType updatesIndex) {
+    public void setUpdatesIndex(UpdatesIndexTypeDTO updatesIndex) {
         this.updatesIndex = updatesIndex;
     }
 }

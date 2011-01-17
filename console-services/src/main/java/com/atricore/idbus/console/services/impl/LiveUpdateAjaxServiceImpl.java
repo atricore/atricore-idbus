@@ -77,7 +77,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
             GetRepositoryUpdatesResponse resp = new GetRepositoryUpdatesResponse();
 
-            resp.setUpdatesIndex(updates);
+            //resp.setUpdatesIndex(updates);
 
             return resp;
         } catch (Exception e) {
@@ -97,7 +97,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
             GetAvailableUpdatesResponse resp = new GetAvailableUpdatesResponse();
 
-            resp.setUpdateDescriptors(updates);
+            //resp.setUpdateDescriptors(updates);
 
             return resp;
         } catch (Exception e) {
@@ -122,7 +122,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
             GetAvailableUpdatesResponse resp = new GetAvailableUpdatesResponse();
 
-            resp.setUpdateDescriptors(updates);
+            //resp.setUpdateDescriptors(updates);
 
             return resp;
         } catch (Exception e) {
@@ -141,7 +141,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
             CheckForUpdatesResponse resp = new CheckForUpdatesResponse();
 
-            resp.setUpdateDescriptors(updates);
+            //resp.setUpdateDescriptors(updates);
 
             return resp;
         } catch (Exception e) {
@@ -166,7 +166,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
             CheckForUpdatesResponse resp = new CheckForUpdatesResponse();
 
-            resp.setUpdateDescriptors(updates);
+            //resp.setUpdateDescriptors(updates);
 
             return resp;
         } catch (Exception e) {
@@ -209,7 +209,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
             ProfileType profile = updateManager.getUpdateProfile();
 
             GetUpdateProfileResponse resp = new GetUpdateProfileResponse();
-            resp.setProfile(profile);
+            //resp.setProfile(profile);
 
             return resp;
         } catch (Exception e) {
@@ -233,7 +233,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
                     getUpdateProfileRequest.getVersion());
 
             GetUpdateProfileResponse resp = new GetUpdateProfileResponse();
-            resp.setProfile(profile);
+            //resp.setProfile(profile);
 
             return resp;
         } catch (Exception e) {

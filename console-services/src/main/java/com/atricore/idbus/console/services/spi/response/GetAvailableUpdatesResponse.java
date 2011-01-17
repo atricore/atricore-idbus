@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.services.spi.response;
 
+import com.atricore.idbus.console.services.dto.UpdateDescriptorTypeDTO;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 
 import java.util.Collection;
@@ -33,13 +34,13 @@ import java.util.Collection;
 
 public class GetAvailableUpdatesResponse {
 
-    private Collection<UpdateDescriptorType>  updateDescriptors;
+    private Collection<UpdateDescriptorTypeDTO>  updateDescriptors;
 
-    public Collection<UpdateDescriptorType> getUpdateDescriptors() {
+    public Collection<UpdateDescriptorTypeDTO> getUpdateDescriptors() {
         return updateDescriptors;
     }
 
-    public void setUpdateDescriptors(Collection<UpdateDescriptorType> updateDescriptors) {
+    public void setUpdateDescriptors(Collection<UpdateDescriptorTypeDTO> updateDescriptors) {
         this.updateDescriptors = updateDescriptors;
     }
 }
