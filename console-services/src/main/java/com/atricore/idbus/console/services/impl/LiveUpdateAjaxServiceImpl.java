@@ -24,6 +24,8 @@ package com.atricore.idbus.console.services.impl;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
+import com.atricore.idbus.console.services.dto.UpdateDescriptorTypeDTO;
+import com.atricore.idbus.console.services.dto.UpdatesIndexTypeDTO;
 import com.atricore.idbus.console.services.spi.LiveUpdateAjaxService;
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
@@ -34,7 +36,9 @@ import org.apache.commons.logging.LogFactory;
 
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Author: Dusan Fisic
@@ -77,7 +81,13 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
             GetRepositoryUpdatesResponse resp = new GetRepositoryUpdatesResponse();
 
-            //resp.setUpdatesIndex(updates);
+            List<UpdateDescriptorTypeDTO> updatesDesc = toUpdateDescriptorTypeDtoList(updates.getUpdateDescriptor());
+
+            UpdatesIndexTypeDTO updatesDto = new UpdatesIndexTypeDTO();
+            updatesDto.setId(updates.getID());
+            updatesDto.setUpdateDescriptor(updatesDesc);
+
+            resp.setUpdatesIndex(updatesDto);
 
             return resp;
         } catch (Exception e) {
@@ -94,10 +104,9 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
                 logger.trace("Processing getAvailableUpdates");
 
             Collection<UpdateDescriptorType> updates = updateManager.getAvailableUpdates();
-
             GetAvailableUpdatesResponse resp = new GetAvailableUpdatesResponse();
 
-            //resp.setUpdateDescriptors(updates);
+            resp.setUpdateDescriptors(toUpdateDescriptorTypeDtoList(updates));
 
             return resp;
         } catch (Exception e) {
@@ -122,7 +131,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
             GetAvailableUpdatesResponse resp = new GetAvailableUpdatesResponse();
 
-            //resp.setUpdateDescriptors(updates);
+            resp.setUpdateDescriptors(toUpdateDescriptorTypeDtoList(updates));
 
             return resp;
         } catch (Exception e) {
@@ -141,7 +150,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
             CheckForUpdatesResponse resp = new CheckForUpdatesResponse();
 
-            //resp.setUpdateDescriptors(updates);
+            resp.setUpdateDescriptors(toUpdateDescriptorTypeDtoList(updates));
 
             return resp;
         } catch (Exception e) {
@@ -166,7 +175,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
             CheckForUpdatesResponse resp = new CheckForUpdatesResponse();
 
-            //resp.setUpdateDescriptors(updates);
+            resp.setUpdateDescriptors(toUpdateDescriptorTypeDtoList(updates));
 
             return resp;
         } catch (Exception e) {
@@ -245,6 +254,24 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
     public void setUpdateManager(LiveUpdateManager updateManager) {
         this.updateManager = updateManager;
+    }
+
+    private List<UpdateDescriptorTypeDTO> toUpdateDescriptorTypeDtoList(Collection<UpdateDescriptorType> coll) {
+        List<UpdateDescriptorTypeDTO> retList = new ArrayList<UpdateDescriptorTypeDTO>();
+
+        for (UpdateDescriptorType descType : coll) {
+            UpdateDescriptorTypeDTO dtoObj = new UpdateDescriptorTypeDTO();
+            dtoObj.setId(descType.getID());
+            dtoObj.setDescription(descType.getDescription());
+            dtoObj.setGroup(descType.getInstallableUnit().getGroup());
+            dtoObj.setName(descType.getInstallableUnit().getName());
+            dtoObj.setVersion(descType.getInstallableUnit().getVersion());
+            dtoObj.setUpdateNature(descType.getInstallableUnit().getUpdateNature().toString());
+            dtoObj.setIssueInstant(descType.getIssueInstant().toGregorianCalendar().getTime());
+            retList.add(dtoObj);
+        }
+
+        return retList;
     }
 
 }

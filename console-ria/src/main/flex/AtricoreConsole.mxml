@@ -31,6 +31,7 @@
                xmlns:lifecycle="com.atricore.idbus.console.lifecycle.*"
                xmlns:account="com.atricore.idbus.console.account.main.*"
                xmlns:setup="com.atricore.idbus.console.setup.*"
+               xmlns:liveupdate="com.atricore.idbus.console.liveupdate.main.*"
                height="100%" width="100%" minWidth="955" minHeight="600"
                preloader="com.atricore.idbus.console.branding.AtricoreConsolePreloader"
                creationComplete="onCreationComplete()">
@@ -101,11 +102,11 @@
 
         <heading:AtricoreHeading id="brandedHeading" includeIn="splash,operation">
             <!--<comp:MessageBox id="messageBox" x="400" width="70%" height="70%" includeIn="splash,operation"-->
-                             <!--showEffect="{wipeRight}" verticalAlign="middle" horizontalAlign="center"/>-->
+            <!--showEffect="{wipeRight}" verticalAlign="middle" horizontalAlign="center"/>-->
             <mx:MenuBar id="userActionMenuBar" includeIn="operation" labelField="@label" iconField="@icon"
                         textAlign="center">
                 <fx:XMLList>
-                    <topmenu label="Administrator" icon="userProfileIcon" >
+                    <topmenu label="Administrator" icon="userProfileIcon">
                         <submenu label="Change Password"/>
                         <submenu label="Logout"/>
                     </topmenu>
@@ -122,6 +123,7 @@
             <modeler:ModelerView id="modelerView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.modelerTab.name')}"/>
             <lifecycle:LifecycleView id="lifecycleView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.lifecycleTab.name')}"/>
             <account:AccountManagementView id="accountManagementView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.accountTab.name')}"/>
+            <liveupdate:LiveUpdateView id="liveUpdateView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.liveupdate.name')}"/>
             <!--setup:SetupView id="setupView" name="Setup"/-->
             <!--<s:Group width="95%" height="95%" name="Setup">-->
             <!--<s:Label text="Setup"/>-->
