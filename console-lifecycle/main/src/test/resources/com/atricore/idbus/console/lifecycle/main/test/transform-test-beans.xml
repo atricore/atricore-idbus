@@ -39,6 +39,9 @@
     <bean name="idpExternalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPExternalTransformer"/>
 
+    <bean name="idpDefaultSPChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPDefaultSPChannelTransformer"/>
+    
     <bean name="idpFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
         <property name="roleA" value="true"/>
@@ -66,6 +69,9 @@
 
     <bean name="googleAppsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.GoogleAppsTransformer"/>
+
+    <bean name="spDefaultIdPChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPDefaultIdPChannelTransformer"/>
     
     <bean name="spFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
@@ -213,6 +219,7 @@
                                         <ref bean="idpExternalTransformer"/>
                                         <ref bean="samlr2IdPTransformer"/>
 
+                                        <ref bean="idpDefaultSPChannelTransformer"/>
                                         <ref bean="idpFederatedConnectionATransformer"/>
                                         <ref bean="idpFederatedConnectionBTransformer"/>
 
@@ -224,6 +231,7 @@
                                         <ref bean="salesforceTransformer"/>
                                         <ref bean="googleAppsTransformer"/>
                                         <ref bean="spExternalTransformer"/>
+                                        <ref bean="spDefaultIdPChannelTransformer"/>
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
                                         <ref bean="spJOSSOActivationTransformer"/>

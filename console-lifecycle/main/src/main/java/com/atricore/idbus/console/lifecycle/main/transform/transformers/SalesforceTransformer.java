@@ -91,7 +91,7 @@ public class SalesforceTransformer extends AbstractTransformer {
             event.getContext().getCurrentModule().addResource(spMetadata);
 
         } catch (Exception e) {
-            throw new TransformException("Error creating Salesforce entity descriptor for '" + provider.getName() + "'");
+            throw new TransformException("Error creating Salesforce entity descriptor for '" + provider.getName() + "'", e);
         }
 
         // ResourceCircleOfTrustMemberDescriptor

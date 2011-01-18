@@ -85,6 +85,7 @@
                     <s:TextInput id="idpChannelLocationPath" width="130"/>
                 </mx:FormItem>
 
+                <s:Button id="btnExportMetadata" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'export.metadata')}" enabled="false"/>
         </mx:Form>
     </utils:TitledBorderBox>
 

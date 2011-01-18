@@ -976,7 +976,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             node.data.x = node.vnode.viewX + (0.2 * node.vnode.view.width) / 2.4;
             node.data.y = node.vnode.viewY + (0.2 * node.vnode.view.height) / 2.4;;
         }
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED, "nodesMoved");
     }
 
     private function allNodesMovedEventHandler(event:VNodeMovedEvent):void {
@@ -986,7 +986,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 node.data.y = node.vnode.viewY;
             }
         }
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED, "nodesMoved");
     }
 
     private function nodeRemoveEventHandler(event:VNodeRemoveEvent):void

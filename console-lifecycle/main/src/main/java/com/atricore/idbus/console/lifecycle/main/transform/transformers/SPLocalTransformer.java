@@ -46,7 +46,6 @@ import java.util.Date;
 import java.util.List;
 
 import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.*;
-import static com.atricore.idbus.console.lifecycle.support.springmetadata.util.BeanUtils.setPropertyValue;
 
 /**
  * @author <a href="mailto:sgonzalez@atricore.org">Sebastian Gonzalez Oyuela</a>
@@ -79,7 +78,8 @@ public class SPLocalTransformer extends AbstractTransformer implements Initializ
 
     @Override
     public boolean accept(TransformEvent event) {
-        return event.getData() instanceof ServiceProvider;
+        return event.getData() instanceof ServiceProvider &&
+                !((ServiceProvider)event.getData()).isRemote();
     }
 
     @Override

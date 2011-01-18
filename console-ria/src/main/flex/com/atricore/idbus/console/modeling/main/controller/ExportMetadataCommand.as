@@ -64,8 +64,12 @@ public class ExportMetadataCommand extends IocSimpleCommand implements IResponde
     }
 
     override public function execute(notification:INotification):void {
+        var params:Array = notification.getBody() as Array;
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
         var req:ExportMetadataRequest = new ExportMetadataRequest();
+        req.applianceId = params[0];
+        req.providerName = params[1];
+        req.channelName = params[2];
         var call:Object = service.exportMetadata(req);
         call.addResponder(this);
     }

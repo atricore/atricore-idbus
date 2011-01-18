@@ -67,9 +67,13 @@ public class ExportProviderCertificateMediator extends IocMediator {
     }
 
     private function handleSave(event:MouseEvent):void {
-        _fileRef = new FileReference();
-        _fileRef.addEventListener(Event.COMPLETE, saveCompleteHandler);
-        _fileRef.save(_exportedCertificate, projectProxy.currentIdentityApplianceElement.name + ".pem");
+        if (_exportedCertificate != null && _exportedCertificate.length > 0) {
+            _fileRef = new FileReference();
+            _fileRef.addEventListener(Event.COMPLETE, saveCompleteHandler);
+            _fileRef.save(_exportedCertificate, projectProxy.currentIdentityApplianceElement.name + ".pem");
+        } else {
+            closeWindow();
+        }
     }
 
     private function saveCompleteHandler(event:Event):void {
@@ -88,17 +92,20 @@ public class ExportProviderCertificateMediator extends IocMediator {
                 _exportedCertificate = resp.certificate;
                 view.progBar.indeterminate = false;
                 view.progBar.setProgress(100, 100);
+                view.btnSave.enabled = true;
                 if (_exportedCertificate != null && _exportedCertificate.length > 0) {
                     view.progBar.label = "Certificate successfully exported";
-                    view.btnSave.enabled = true;
                 } else {
                     view.progBar.label = "Error exporting certificate!!!";
+                    view.btnSave.label = "Close";
                 }
                 break;
             case ExportProviderCertificateCommand.FAILURE:
                 view.progBar.indeterminate = false;
                 view.progBar.setProgress(100, 100);
                 view.progBar.label = "Error exporting certificate!!!";
+                view.btnSave.label = "Close";
+                view.btnSave.enabled = true;
                 break;
         }
     }
