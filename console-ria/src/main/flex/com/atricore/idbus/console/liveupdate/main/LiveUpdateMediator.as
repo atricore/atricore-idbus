@@ -20,11 +20,15 @@
  */
 
 package com.atricore.idbus.console.liveupdate.main {
+import com.atricore.idbus.console.liveupdate.main.controller.ListUpdatesCommand;
 import com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.services.dto.UpdateDescriptorType;
+import com.atricore.idbus.console.services.spi.response.GetAvailableUpdatesResponse;
 
 import flash.events.Event;
 
+import mx.collections.ArrayCollection;
 import mx.events.FlexEvent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
@@ -86,7 +90,9 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.UPDATE_VIEW_SELECTED
+        return [ApplicationFacade.UPDATE_VIEW_SELECTED,
+            ListUpdatesCommand.SUCCESS,
+            ListUpdatesCommand.FAILURE
         ];
     }
 
@@ -94,6 +100,14 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
         switch (notification.getName()) {
             case ApplicationFacade.UPDATE_VIEW_SELECTED:
                 init();
+                sendNotification(ApplicationFacade.LIST_UPDATES);
+                break;
+
+            case ListUpdatesCommand.SUCCESS:
+                view.updatesList.dataProvider = _liveUpdateProxy.availableUpdatesList;
+                view.validateNow();
+                break;
+            case ListUpdatesCommand.FAILURE:
                 break;
         }
     }
@@ -103,9 +117,9 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
         return viewComponent as LiveUpdateView;
     }
 
-    protected function set view(amv:LiveUpdateView):void
+    protected function set view(luv:LiveUpdateView):void
     {
-        viewComponent = amv;
+        viewComponent = luv;
     }
 }
 }

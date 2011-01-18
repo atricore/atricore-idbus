@@ -35,7 +35,7 @@
     <fx:Script>
         <![CDATA[
         import com.atricore.idbus.console.main.EmbeddedIcons;
-        import mx.collections.ArrayCollection;
+
         public var icon:Class = EmbeddedIcons.liveUpdateMiniIcon;
         ]]>
     </fx:Script>
@@ -47,8 +47,27 @@
                 <mx:DataGridColumn dataField="group" headerText="Group"/>
                 <mx:DataGridColumn dataField="version" headerText="Version"/>
                 <mx:DataGridColumn dataField="description" headerText="Description"/>
-                <mx:DataGridColumn dataField="nature" headerText="Nature"/>
-                <mx:DataGridColumn dataField="date" headerText="Date"/>
+                <mx:DataGridColumn dataField="updateNature" headerText="Nature"/>
+                <mx:DataGridColumn dataField="issueInstant" headerText="Date">
+                    <mx:itemRenderer>
+                        <fx:Component>
+                            <mx:VBox>
+                                <fx:Script>
+                                <![CDATA[
+                                    import mx.formatters.DateFormatter;
+
+                                    private function formatFieldDate(date:Date):String {
+                                        var formatter:DateFormatter = new DateFormatter();
+                                        formatter.formatString = "MM/DD/YY - J:NN";
+                                        return formatter.format(date);
+                                    }
+                                    ]]>
+                                </fx:Script>
+                                <s:Label text="{formatFieldDate(data.issueInstant)}" />
+                            </mx:VBox>
+                        </fx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
             </mx:columns>
         </mx:DataGrid>
     </s:VGroup>

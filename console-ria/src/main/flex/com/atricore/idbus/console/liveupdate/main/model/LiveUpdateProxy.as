@@ -21,29 +21,30 @@
 
 package com.atricore.idbus.console.liveupdate.main.model
 {
+import mx.collections.ArrayCollection;
+
 import org.osmf.traits.IDisposable;
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 public class LiveUpdateProxy extends IocProxy implements IDisposable
 {
-
-    private var _updatesList:Array;
+    private var _availableUpdatesList:ArrayCollection;
 
     public function LiveUpdateProxy()
     {
         super(NAME);
     }
 
-    public function get updatesList():Array {
-        return _updatesList;
+    public function get availableUpdatesList():ArrayCollection {
+        return _availableUpdatesList;
     }
 
-    public function set updatesList(value:Array):void {
-        _updatesList = value;
+    public function set availableUpdatesList(value:ArrayCollection):void {
+        _availableUpdatesList = value;
     }
 
     public function dispose():void {
-        _updatesList = null;
+        _availableUpdatesList = null;
 
     }
 }

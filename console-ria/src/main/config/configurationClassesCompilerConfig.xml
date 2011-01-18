@@ -122,6 +122,7 @@
         <symbol>com.atricore.idbus.console.account.main.controller.ListUsersCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.SearchGroupsCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.SearchUsersCommand</symbol>
+        <symbol>com.atricore.idbus.console.liveupdate.main.controller.ListUpdatesCommand</symbol>
         <symbol>mx.messaging.channels.AMFChannel</symbol>
         <symbol>mx.messaging.ChannelSet</symbol>
         <symbol>mx.rpc.remoting.mxml.RemoteObject</symbol>

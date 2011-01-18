@@ -30,6 +30,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const IDENTITY_APPLIANCE_MANAGEMENT_SERVICE:String = "identityApplianceManagementService";
     public static const PROFILE_MANAGEMENT_SERVICE:String = "profileManagementService";
     public static const SIGN_ON_SERVICE:String = "signOnService";
+    public static const LIVE_UPDATE_SERVICE:String = "liveUpdateService";
 
     public static const ADMIN_GROUP:String = "Administrators";
 
@@ -84,6 +85,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
     public static const GET_METADATA_INFO:String = "getMetadataInfo";
     public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
+    public static const LIST_UPDATES:String = "listUpdates";
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";

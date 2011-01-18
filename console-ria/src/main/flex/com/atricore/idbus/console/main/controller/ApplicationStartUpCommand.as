@@ -151,6 +151,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _jdbcDriversListCommand:IIocCommand;
     private var _getMetadataInfoCommand:IIocCommand;
     private var _getCertificateInfoCommand:IIocCommand;
+    private var _listUpdatesCommand:IIocCommand;
 
 
     public function get applicationMediator():IIocMediator {
@@ -986,6 +987,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _getCertificateInfoCommand = value;
     }
 
+    public function get listUpdatesCommand():IIocCommand {
+        return _listUpdatesCommand;
+    }
+
+    public function set listUpdatesCommand(value:IIocCommand):void {
+        _listUpdatesCommand = value;
+    }
+
     override public function execute(note:INotification):void {
         var registry:ServiceRegistry = setupServiceRegistry();
 
@@ -1039,6 +1048,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_JDBC_DRIVERS, jdbcDriversListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_METADATA_INFO, getMetadataInfoCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_CERTIFICATE_INFO, getCertificateInfoCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_UPDATES, listUpdatesCommand.getConfigName());
 
         // setup for first level mediators
         applicationMediator.setViewComponent(app);
@@ -1123,6 +1133,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         registry.registerRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE, ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.PROFILE_MANAGEMENT_SERVICE, ApplicationFacade.PROFILE_MANAGEMENT_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.SIGN_ON_SERVICE, ApplicationFacade.SIGN_ON_SERVICE);
+        registry.registerRemoteObjectService(ApplicationFacade.LIVE_UPDATE_SERVICE, ApplicationFacade.LIVE_UPDATE_SERVICE);
 
         return registry;
     }

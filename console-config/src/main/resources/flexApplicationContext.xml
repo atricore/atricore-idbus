@@ -109,12 +109,12 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <!--<object id="spChannelRemoveCommand"-->
-            <!--class="com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand">-->
-        <!--<property name="projectProxy" ref="projectProxy"/>-->
+    <!--class="com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand">-->
+    <!--<property name="projectProxy" ref="projectProxy"/>-->
     <!--</object>-->
     <!--<object id="idpChannelRemoveCommand"-->
-            <!--class="com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand">-->
-        <!--<property name="projectProxy" ref="projectProxy"/>-->
+    <!--class="com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand">-->
+    <!--<property name="projectProxy" ref="projectProxy"/>-->
     <!--</object>-->
     <object id="identityProviderRemoveCommand"
             class="com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand">
@@ -234,6 +234,12 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
 
+    <object id="listUpdatesCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.ListUpdatesCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
     <!-- Mediators -->
     <object id="manageCertificateMediator"
             class="com.atricore.idbus.console.main.view.certificate.ManageCertificateMediator">
@@ -345,12 +351,12 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <!--<object id="idpChannelCreateMediator"-->
-            <!--class="com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator">-->
-        <!--<property name="projectProxy" ref="projectProxy"/>-->
+    <!--class="com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator">-->
+    <!--<property name="projectProxy" ref="projectProxy"/>-->
     <!--</object>-->
     <!--<object id="spChannelCreateMediator"-->
-            <!--class="com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator">-->
-        <!--<property name="projectProxy" ref="projectProxy"/>-->
+    <!--class="com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator">-->
+    <!--<property name="projectProxy" ref="projectProxy"/>-->
     <!--</object>-->
     <object id="serviceProviderCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator">
@@ -368,7 +374,7 @@
             class="com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-     <object id="exportIdentityApplianceMediator"
+    <object id="exportIdentityApplianceMediator"
             class="com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
@@ -487,7 +493,7 @@
         <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator" />
         <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator" />
         <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator" />
-        <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator" />        
+        <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator" />
         <property name="activationCreateMediator" ref="activationCreateMediator"/>
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
@@ -562,6 +568,7 @@
         <property name="jdbcDriversListCommand" ref="jdbcDriversListCommand"/>
         <property name="getMetadataInfoCommand" ref="getMetadataInfoCommand"/>
         <property name="getCertificateInfoCommand" ref="getCertificateInfoCommand"/>
+        <property name="listUpdatesCommand" ref="listUpdatesCommand"/>
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>
@@ -594,7 +601,7 @@
         <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
         <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
         <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator" />
-        <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator" />                        
+        <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator" />
         <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator" />
         <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator" />
         <!--<property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>-->
