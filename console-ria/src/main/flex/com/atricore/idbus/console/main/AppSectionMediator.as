@@ -9,6 +9,8 @@ public class AppSectionMediator extends IocMediator {
 
     private var _viewFactory:AppSectionViewFactory;
 
+    private var _viewPriority:int = 0;
+
     public function AppSectionMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
     }
@@ -25,6 +27,14 @@ public class AppSectionMediator extends IocMediator {
         _viewFactory = value;
     }
 
+
+    public function get viewPriority():int {
+        return _viewPriority;
+    }
+
+    public function set viewPriority(value:int):void {
+        _viewPriority = value;
+    }
 
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.APP_SECTION_CHANGE_START,

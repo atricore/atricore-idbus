@@ -309,26 +309,33 @@ public class ApplicationMediator extends IocMediator {
 
     public function login():void {
 
+        // Dynamically discover all app section mediators
         _appSections = new Array();
-
         var appSectionMediatorNames:Array = iocFacade.container.getObjectNamesForType(AppSectionMediator);
-
         appSectionMediatorNames.forEach(function(mediatorName:String, idx:int, arr:Array):void {
-
             // App Section Mediator found
             var mediator:AppSectionMediator = iocFacade.container.getObject(mediatorName) as AppSectionMediator;
-            var view:IVisualElement = mediator.viewFactory.createView();
-
-            // Add new section to stack view:
-            app.modulesViewStack.addNewChild(view);
-
-            // wired mediator with view
-            mediator.setViewComponent(view);
-
             // Store mediators for later use
             _appSections.push(mediator);
 
         });
+
+        // Sort sections before building the view
+        function sortAppSections(a:AppSectionMediator, b:AppSectionMediator):int {
+            return a.viewPriority - b.viewPriority;
+        }
+        _appSections.sort(sortAppSections);
+
+        // Wire stack view with app section views
+        _appSections.forEach(function(mediator:AppSectionMediator, idx:int, arr:Array):void {
+            // Add new section to stack view:
+            // wired mediator with view
+            var view:IVisualElement = mediator.viewFactory.createView();
+            mediator.setViewComponent(view);
+
+            app.modulesViewStack.addNewChild(view);
+        });
+
 
         app.stackButtonBar.addEventListener(IndexChangeEvent.CHANGE, handleStackChange);
         app.stackButtonBar.selectedIndex = 0;

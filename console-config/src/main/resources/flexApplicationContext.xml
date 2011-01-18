@@ -588,11 +588,14 @@
         <property name="projectProxy" ref="projectProxy"/>
 
         <property name="viewFactory" ref="modelerViewFactory"/>
+        <property name="viewPriority" value="10"/>
     </object>
 
     <object id="lifecycleMediator" class="com.atricore.idbus.console.lifecycle.main.LifecycleViewMediator">
         <property name="projectProxy" ref="projectProxy"/>
+
         <property name="viewFactory" ref="lifecycleViewFactory"/>
+        <property name="viewPriority" value="20"/>
     </object>
 
     <object id="accountManagementMediator" class="com.atricore.idbus.console.account.main.AccountManagementMediator">
@@ -602,6 +605,7 @@
         <property name="usersMediator" ref="usersMediator"/>
 
         <property name="viewFactory" ref="accountManagementViewFactory"/>
+        <property name="viewPriority" value="30"/>
     </object>
 
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
