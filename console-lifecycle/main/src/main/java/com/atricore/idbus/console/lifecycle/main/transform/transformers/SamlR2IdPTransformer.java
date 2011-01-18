@@ -470,7 +470,8 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         OrganizationType organization = new OrganizationType();
         LocalizedNameType organizationName = new LocalizedNameType();
         organizationName.setLang("en");
-        organizationName.setValue("Atricore IDBUs SAMLR2 JOSSO IDP Sample");
+        // TODO : Take this from appliance/system setup/license
+        organizationName.setValue("Atricore JOSSO 2 IDP");
         organization.getOrganizationName().add(organizationName);
         LocalizedNameType organizationDisplayName = new LocalizedNameType();
         organizationDisplayName.setLang("en");
