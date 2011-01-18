@@ -268,6 +268,7 @@ public class PropertySheetMediator extends IocMediator {
             ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
             ApplicationFacade.DIAGRAM_ELEMENT_SELECTED,
             ApplicationFacade.APPLIANCE_SAVED,
+            ApplicationFacade.IDENTITY_APPLIANCE_CHANGED,
             FolderExistsCommand.FOLDER_EXISTS,
             FolderExistsCommand.FOLDER_DOESNT_EXISTS,
             FoldersExistsCommand.FOLDERS_EXISTENCE_CHECKED,
@@ -420,6 +421,13 @@ public class PropertySheetMediator extends IocMediator {
                 var gciResp:GetCertificateInfoResponse = notification.getBody() as GetCertificateInfoResponse;
                 if (gciResp != null) {
                     updateInternalProviderCertificateSection(gciResp);
+                }
+                break;
+            case ApplicationFacade.IDENTITY_APPLIANCE_CHANGED:
+                var changeAction:String = notification.getBody() as String;
+                if (changeAction == null || changeAction != "nodesMoved") {
+                    _applianceSaved = false;
+                    disableExportButtons();
                 }
                 break;
         }
@@ -781,7 +789,10 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            _ipContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
+            if (_applianceSaved) {
+                _ipContractSection.btnExportMetadata.enabled = true;
+                _ipContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
+            }
 
             _ipContractSection.signAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _ipContractSection.encryptAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
@@ -921,8 +932,47 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function handleExportMetadataClick(event:MouseEvent):void {
-        if (_currentIdentityApplianceElement is Provider || _currentIdentityApplianceElement is FederatedConnection) {
-            sendNotification(ApplicationFacade.EXPORT_METADATA);
+        if (_currentIdentityApplianceElement is Provider) {
+            var applianceId:String = projectProxy.currentIdentityAppliance.id.toString();
+            sendNotification(ApplicationFacade.EXPORT_METADATA, [applianceId, _currentIdentityApplianceElement.name, null, false]);
+        }
+    }
+
+    private function handleExportSPChannelMetadataClick(event:MouseEvent):void {
+        if (_currentIdentityApplianceElement is FederatedConnection) {
+            var applianceId:String = projectProxy.currentIdentityAppliance.id.toString();
+            var fedConn:FederatedConnection = _currentIdentityApplianceElement as FederatedConnection;
+            var provider:Provider;
+            var spChannel:ServiceProviderChannel;
+            if (fedConn != null) {
+                if (fedConn.channelA is ServiceProviderChannel) {
+                    spChannel = fedConn.channelA as ServiceProviderChannel;
+                    provider = fedConn.roleA;
+                } else if (fedConn.channelB is ServiceProviderChannel) {
+                    spChannel = fedConn.channelB as ServiceProviderChannel;
+                    provider = fedConn.roleB;
+                }
+            }
+            sendNotification(ApplicationFacade.EXPORT_METADATA, [applianceId, provider.name, spChannel.name, spChannel.overrideProviderSetup]);
+        }
+    }
+
+    private function handleExportIDPChannelMetadataClick(event:MouseEvent):void {
+        if (_currentIdentityApplianceElement is FederatedConnection) {
+            var applianceId:String = projectProxy.currentIdentityAppliance.id.toString();
+            var fedConn:FederatedConnection = _currentIdentityApplianceElement as FederatedConnection;
+            var provider:Provider;
+            var idpChannel:IdentityProviderChannel;
+            if (fedConn != null) {
+                if (fedConn.channelA is IdentityProviderChannel) {
+                    idpChannel = fedConn.channelA as IdentityProviderChannel;
+                    provider = fedConn.roleA;
+                } else if (fedConn.channelB is IdentityProviderChannel) {
+                    idpChannel = fedConn.channelB as IdentityProviderChannel;
+                    provider = fedConn.roleB;
+                }
+            }
+            sendNotification(ApplicationFacade.EXPORT_METADATA, [applianceId, provider.name, idpChannel.name, idpChannel.overrideProviderSetup]);
         }
     }
     
@@ -950,8 +1000,11 @@ public class PropertySheetMediator extends IocMediator {
 
         sendNotification(ApplicationFacade.GET_CERTIFICATE_INFO, config);
 
-        _certificateSection.btnExportCertificate.addEventListener(MouseEvent.CLICK, handleExportCertificateClick);
-        
+        if (_applianceSaved) {
+            _certificateSection.btnExportCertificate.enabled = true;
+            _certificateSection.btnExportCertificate.addEventListener(MouseEvent.CLICK, handleExportCertificateClick);
+        }
+
         _certificateSection.certificateManagementType.addEventListener(ItemClickEvent.ITEM_CLICK, handleSectionChange);
         _certificateSection.certificateKeyPair.addEventListener(Event.CHANGE, handleSectionChange);
         _certificateSection.keystoreFormat.addEventListener(Event.CHANGE, handleSectionChange);
@@ -1169,7 +1222,10 @@ public class PropertySheetMediator extends IocMediator {
                 }
             }
 
-            _spContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
+            if (_applianceSaved) {
+                _spContractSection.btnExportMetadata.enabled = true;
+                _spContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
+            }
 
             _spContractSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _spContractSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
@@ -1290,6 +1346,7 @@ public class PropertySheetMediator extends IocMediator {
         _externalIdpContractSection = new ExternalIdentityProviderContractSection();
         contractPropertyTab.addElement(_externalIdpContractSection);
         _propertySheetsViewStack.addNewChild(contractPropertyTab);
+        _externalIdpContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalIdentityProviderContractPropertyTabCreationComplete);
 
         // Certificate Tab
         var certificatePropertyTab:Group = new Group();
@@ -1312,9 +1369,7 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function handleExternalIdentityProviderCorePropertyTabCreationComplete(event:Event):void {
-        var identityProvider:ExternalIdentityProvider;
-
-        identityProvider = _currentIdentityApplianceElement as ExternalIdentityProvider;
+        var identityProvider:ExternalIdentityProvider = _currentIdentityApplianceElement as ExternalIdentityProvider;
 
         // if identityProvider is null that means some other element was selected before completing this
         if (identityProvider != null) {
@@ -1349,6 +1404,18 @@ public class PropertySheetMediator extends IocMediator {
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
             _dirty = false;
+        }
+    }
+
+    private function handleExternalIdentityProviderContractPropertyTabCreationComplete(event:Event):void {
+        var identityProvider:ExternalIdentityProvider = _currentIdentityApplianceElement as ExternalIdentityProvider;
+
+        // if identityProvider is null that means some other element was selected before completing this
+        if (identityProvider != null) {
+            if (_applianceSaved) {
+                _externalIdpContractSection.btnExportMetadata.enabled = true;
+                _externalIdpContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
+            }
         }
     }
 
@@ -1404,6 +1471,7 @@ public class PropertySheetMediator extends IocMediator {
         _externalSpContractSection = new ExternalServiceProviderContractSection();
         contractPropertyTab.addElement(_externalSpContractSection);
         _propertySheetsViewStack.addNewChild(contractPropertyTab);
+        _externalSpContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleExternalServiceProviderContractPropertyTabCreationComplete);
 
         // Certificate Tab
         var certificatePropertyTab:Group = new Group();
@@ -1426,9 +1494,7 @@ public class PropertySheetMediator extends IocMediator {
     }
 
     private function handleExternalServiceProviderCorePropertyTabCreationComplete(event:Event):void {
-        var serviceProvider:ExternalServiceProvider;
-
-        serviceProvider = _currentIdentityApplianceElement as ExternalServiceProvider;
+        var serviceProvider:ExternalServiceProvider = _currentIdentityApplianceElement as ExternalServiceProvider;
 
         // if serviceProvider is null that means some other element was selected before completing this
         if (serviceProvider != null) {
@@ -1463,6 +1529,18 @@ public class PropertySheetMediator extends IocMediator {
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
             _dirty = false;
+        }
+    }
+
+    private function handleExternalServiceProviderContractPropertyTabCreationComplete(event:Event):void {
+        var serviceProvider:ExternalServiceProvider = _currentIdentityApplianceElement as ExternalServiceProvider;
+
+        // if serviceProvider is null that means some other element was selected before completing this
+        if (serviceProvider != null) {
+            if (_applianceSaved) {
+                _externalSpContractSection.btnExportMetadata.enabled = true;
+                _externalSpContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
+            }
         }
     }
 
@@ -1518,12 +1596,11 @@ public class PropertySheetMediator extends IocMediator {
         _salesforceContractSection = new SalesforceContractSection();
         contractPropertyTab.addElement(_salesforceContractSection);
         _propertySheetsViewStack.addNewChild(contractPropertyTab);
+        _salesforceContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleSalesforceContractPropertyTabCreationComplete);
     }
 
     private function handleSalesforceCorePropertyTabCreationComplete(event:Event):void {
-        var salesforceProvider:SalesforceServiceProvider;
-
-        salesforceProvider = _currentIdentityApplianceElement as SalesforceServiceProvider;
+        var salesforceProvider:SalesforceServiceProvider = _currentIdentityApplianceElement as SalesforceServiceProvider;
 
         // if salesforceProvider is null that means some other element was selected before completing this
         if (salesforceProvider != null) {
@@ -1552,6 +1629,18 @@ public class PropertySheetMediator extends IocMediator {
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
             _dirty = false;
+        }
+    }
+
+    private function handleSalesforceContractPropertyTabCreationComplete(event:Event):void {
+        var salesforceProvider:SalesforceServiceProvider = _currentIdentityApplianceElement as SalesforceServiceProvider;
+
+        // if salesforceProvider is null that means some other element was selected before completing this
+        if (salesforceProvider != null) {
+            if (_applianceSaved) {
+                _salesforceContractSection.btnExportMetadata.enabled = true;
+                _salesforceContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
+            }
         }
     }
 
@@ -1585,12 +1674,11 @@ public class PropertySheetMediator extends IocMediator {
         _googleAppsContractSection = new GoogleAppsContractSection();
         contractPropertyTab.addElement(_googleAppsContractSection);
         _propertySheetsViewStack.addNewChild(contractPropertyTab);
+        _googleAppsContractSection.addEventListener(FlexEvent.CREATION_COMPLETE, handleGoogleAppsContractPropertyTabCreationComplete);
     }
 
     private function handleGoogleAppsCorePropertyTabCreationComplete(event:Event):void {
-        var googleAppsProvider:GoogleAppsServiceProvider;
-
-        googleAppsProvider = _currentIdentityApplianceElement as GoogleAppsServiceProvider;
+        var googleAppsProvider:GoogleAppsServiceProvider = _currentIdentityApplianceElement as GoogleAppsServiceProvider;
 
         // if googleAppsProvider is null that means some other element was selected before completing this
         if (googleAppsProvider != null) {
@@ -1623,6 +1711,18 @@ public class PropertySheetMediator extends IocMediator {
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
             _applianceSaved = false;
             _dirty = false;
+        }
+    }
+
+    private function handleGoogleAppsContractPropertyTabCreationComplete(event:Event):void {
+        var googleAppsProvider:GoogleAppsServiceProvider = _currentIdentityApplianceElement as GoogleAppsServiceProvider;
+
+        // if googleAppsProvider is null that means some other element was selected before completing this
+        if (googleAppsProvider != null) {
+            if (_applianceSaved) {
+                _googleAppsContractSection.btnExportMetadata.enabled = true;
+                _googleAppsContractSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportMetadataClick);
+            }
         }
     }
 
@@ -2229,18 +2329,27 @@ public class PropertySheetMediator extends IocMediator {
             }
             setSpChannelFields();
 
+            if (_applianceSaved) {
+                _federatedConnectionSPChannelSection.btnExportMetadata.enabled = true;
+                _federatedConnectionSPChannelSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportSPChannelMetadataClick);
+            }
+            
             _federatedConnectionSPChannelSection.spChannelSamlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelSamlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelSamlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelSamlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelSamlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelSamlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
-            _federatedConnectionSPChannelSection.spChannelAuthMechanism.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionSPChannelSection.signAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionSPChannelSection.encryptAuthAssertionCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelLocationDomain.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionSPChannelSection.spChannelLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionSPChannelSection.spChannelAuthContractCombo.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionSPChannelSection.spChannelAuthMechanism.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionSPChannelSection.spChannelAuthAssertionEmissionPolicyCombo.addEventListener(Event.CHANGE, handleSectionChange);
 
             //clear all existing validators and add sp channel section validators
             if (spChannel.overrideProviderSetup) {
@@ -2379,9 +2488,15 @@ public class PropertySheetMediator extends IocMediator {
             }
             setIdpChannelFields();
 
+            if (_applianceSaved) {
+                _federatedConnectionIDPChannelSection.btnExportMetadata.enabled = true;
+                _federatedConnectionIDPChannelSection.btnExportMetadata.addEventListener(MouseEvent.CLICK, handleExportIDPChannelMetadataClick);
+            }
+
             _federatedConnectionIDPChannelSection.samlBindingHttpPostCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.samlBindingHttpRedirectCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.samlBindingArtifactCheck.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionIDPChannelSection.samlBindingSoapCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.samlProfileSSOCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.samlProfileSLOCheck.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.idpChannelLocationProtocol.addEventListener(Event.CHANGE, handleSectionChange);
@@ -2389,6 +2504,7 @@ public class PropertySheetMediator extends IocMediator {
             _federatedConnectionIDPChannelSection.idpChannelLocationPort.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.idpChannelLocationContext.addEventListener(Event.CHANGE, handleSectionChange);
             _federatedConnectionIDPChannelSection.idpChannelLocationPath.addEventListener(Event.CHANGE, handleSectionChange);
+            _federatedConnectionIDPChannelSection.accountLinkagePolicyCombo.addEventListener(Event.CHANGE, handleSectionChange);
 
             //clear all existing validators and add idp channel section validators
             if (idpChannel.overrideProviderSetup) {
@@ -3802,6 +3918,7 @@ public class PropertySheetMediator extends IocMediator {
         _certificateSection.lblUploadMsg.visible = false;
 
         _dirty = true;
+        disableExportButtons();
     }
 
     private function uploadCompleteHandler(event:Event):void {
@@ -3900,6 +4017,7 @@ public class PropertySheetMediator extends IocMediator {
         }
 
         _dirty = true;
+        disableExportButtons();
     }
 
     private function uploadMetadataCompleteHandler(event:Event):void {
@@ -4061,10 +4179,32 @@ public class PropertySheetMediator extends IocMediator {
         _tabbedPropertiesTabBar.visible = true;
         _propertySheetsViewStack.visible = true;
     }
-    private function handleSectionChange(event:Event) {
+    private function handleSectionChange(event:Event):void {
         _dirty = true;
+        disableExportButtons();
     }
 
+    private function disableExportButtons():void {
+        if (_certificateSection != null)
+            _certificateSection.btnExportCertificate.enabled = false;
+        if (_ipContractSection != null)
+            _ipContractSection.btnExportMetadata.enabled = false;
+        if (_spContractSection != null)
+            _spContractSection.btnExportMetadata.enabled = false;
+        if (_federatedConnectionIDPChannelSection != null)
+            _federatedConnectionIDPChannelSection.btnExportMetadata.enabled = false;
+        if (_federatedConnectionSPChannelSection != null)
+            _federatedConnectionSPChannelSection.btnExportMetadata.enabled = false;
+        if (_externalIdpContractSection != null)
+            _externalIdpContractSection.btnExportMetadata.enabled = false;
+        if (_externalSpContractSection != null)
+            _externalSpContractSection.btnExportMetadata.enabled = false;
+        if (_salesforceContractSection != null)
+            _salesforceContractSection.btnExportMetadata.enabled = false;
+        if (_googleAppsContractSection != null)
+            _googleAppsContractSection.btnExportMetadata.enabled = false;
+    }
+    
     protected function get view():PropertySheetView
     {
         return viewComponent as PropertySheetView;
@@ -4114,6 +4254,7 @@ public class PropertySheetMediator extends IocMediator {
             _validators.push(_federatedConnectionSPChannelSection.pathValidator);
         }
         _dirty = true;
+        disableExportButtons();
     }
 
     private function handleUseInheritedSPSettingsChange(event:Event):void {
@@ -4127,6 +4268,7 @@ public class PropertySheetMediator extends IocMediator {
             _validators.push(_federatedConnectionIDPChannelSection.pathValidator);
         }
         _dirty = true;
+        disableExportButtons();
     }
 
     private function reflectSPSettingsInIdpChannelTab():void {

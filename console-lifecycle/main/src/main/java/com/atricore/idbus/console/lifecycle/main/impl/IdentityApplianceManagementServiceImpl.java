@@ -1182,7 +1182,9 @@ public class IdentityApplianceManagementServiceImpl implements
     public ExportMetadataResponse exportMetadata(ExportMetadataRequest request) throws IdentityServerException {
         ExportMetadataResponse response = new ExportMetadataResponse();
         try {
-            response.setMetadata(new byte[1]);
+            syncAppliances();
+            IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
+            response.setMetadata(builder.exportMetadata(appliance, request.getProviderName(), request.getChannelName()));
         } catch (Exception e){
             logger.error("Error exporting SAML metadata", e);
             throw new IdentityServerException(e);

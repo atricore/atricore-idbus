@@ -72,38 +72,35 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
             String baseDestPath = (String) event.getContext().get("idauPath");
             String providerBeanName = normalizeBeanName(provider.getName());
 
-            boolean defaultChannelAdded = false;
             List<ServiceProviderChannel> spChannels = new ArrayList<ServiceProviderChannel>();
 
             for (FederatedConnection fedConn : provider.getFederatedConnectionsA()) {
                 ServiceProviderChannel spChannel = (ServiceProviderChannel) fedConn.getChannelA();
-                if (spChannel.isOverrideProviderSetup() || !defaultChannelAdded) {
+                if (spChannel.isOverrideProviderSetup()) {
                     spChannels.add(spChannel);
-                }
-                if (!spChannel.isOverrideProviderSetup()) {
-                    defaultChannelAdded = true;
                 }
             }
 
             for (FederatedConnection fedConn : provider.getFederatedConnectionsB()) {
                 ServiceProviderChannel spChannel = (ServiceProviderChannel) fedConn.getChannelB();
-                if (spChannel.isOverrideProviderSetup() || !defaultChannelAdded) {
+                if (spChannel.isOverrideProviderSetup()) {
                     spChannels.add(spChannel);
-                }
-                if (!spChannel.isOverrideProviderSetup()) {
-                    defaultChannelAdded = true;
                 }
             }
 
+            // generate metadata for default channel
+            IdProjectResource<EntityDescriptorType> idpMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
+                baseDestPath + providerBeanName, providerBeanName, "saml2", generateSPChannelMetadata(provider, null));
+            idpMetadata.setClassifier("jaxb");
+            module.addResource(idpMetadata);
+
+            // generate metadata for override channels
             for (ServiceProviderChannel spChannel : spChannels) {
-                String resourceName = providerBeanName;
-                if (spChannel.isOverrideProviderSetup()) {
-                    resourceName = normalizeBeanName(spChannel.getName());
-                }
-                IdProjectResource<EntityDescriptorType> idpMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
+                String resourceName = normalizeBeanName(spChannel.getName());
+                IdProjectResource<EntityDescriptorType> channelMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
                     baseDestPath + providerBeanName, resourceName, "saml2", generateSPChannelMetadata(provider, spChannel));
-                idpMetadata.setClassifier("jaxb");
-                module.addResource(idpMetadata);
+                channelMetadata.setClassifier("jaxb");
+                module.addResource(channelMetadata);
             }
         } catch (Exception e) {
             throw new TransformException(e);
@@ -321,9 +318,9 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         // services
 
         // profiles
-        Set<Profile> activeProfiles = spChannel.getActiveProfiles();
-        if (!spChannel.isOverrideProviderSetup()) {
-            activeProfiles = provider.getActiveProfiles();
+        Set<Profile> activeProfiles = provider.getActiveProfiles();
+        if (spChannel != null) {
+            activeProfiles = spChannel.getActiveProfiles();
         }
         boolean ssoEnabled = false;
         boolean sloEnabled = false;
@@ -336,9 +333,9 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         }
 
         // bindings
-        Set<Binding> activeBindings = spChannel.getActiveBindings();
-        if (!spChannel.isOverrideProviderSetup()) {
-            activeBindings = provider.getActiveBindings();
+        Set<Binding> activeBindings = provider.getActiveBindings();
+        if (spChannel != null) {
+            activeBindings = spChannel.getActiveBindings();
         }
         boolean postEnabled = false;
         boolean redirectEnabled = false;
@@ -367,7 +364,8 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
 
             IndexedEndpointType artifactResolutionServiceLocal = new IndexedEndpointType();
             artifactResolutionServiceLocal.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
-            artifactResolutionServiceLocal.setLocation("local://" + spChannel.getLocation().getUri() + "/SAML2/ARTIFACT/LOCAL");
+            artifactResolutionServiceLocal.setLocation("local://" + (spChannel != null ?
+                    spChannel.getLocation().getUri().toUpperCase() : provider.getLocation().getUri().toUpperCase()) + "/SAML2/ARTIFACT/LOCAL");
             artifactResolutionServiceLocal.setIndex(1);
             artifactResolutionServiceLocal.setIsDefault(true);
             idpSSODescriptor.getArtifactResolutionService().add(artifactResolutionServiceLocal);
@@ -415,7 +413,8 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
 
             EndpointType singleLogoutServiceLocal = new EndpointType();
             singleLogoutServiceLocal.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
-            singleLogoutServiceLocal.setLocation("local://" + spChannel.getLocation().getUri() + "/SAML2/SLO/LOCAL");
+            singleLogoutServiceLocal.setLocation("local://" + (spChannel != null ?
+                    spChannel.getLocation().getUri().toUpperCase() : provider.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
             idpSSODescriptor.getSingleLogoutService().add(singleLogoutServiceLocal);
         }
 

@@ -2,7 +2,6 @@ package com.atricore.idbus.console.modeling.propertysheet.view.export {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.modeling.main.controller.ExportMetadataCommand;
-import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.spi.response.ExportMetadataResponse;
 
 import flash.events.Event;
@@ -22,6 +21,11 @@ public class ExportMetadataMediator extends IocMediator {
 
     private var _exportedMetadata:Object;
 
+    private var _applianceId:String;
+    private var _providerName:String;
+    private var _channelName:String;
+    private var _override:Boolean;
+    
     public function ExportMetadataMediator(name:String = null, viewComp:ExportMetadataView = null) {
         super(name, viewComp);
     }
@@ -43,8 +47,6 @@ public class ExportMetadataMediator extends IocMediator {
         }
 
         super.setViewComponent(viewComponent);
-
-        init();
     }
 
     private function init():void {
@@ -52,23 +54,30 @@ public class ExportMetadataMediator extends IocMediator {
 
         _exportedMetadata = null;
 
-        var provider:Provider = projectProxy.currentIdentityApplianceElement as Provider;
-
-        if (provider != null) {
+        if (_applianceId != null && _providerName != null) {
 
             view.progBar.setProgress(0, 0);
             view.progBar.label = "Exporting SAML Metadata...";
 
-            sendNotification(ApplicationFacade.METADATA_EXPORT);
+            sendNotification(ApplicationFacade.METADATA_EXPORT, [_applianceId, _providerName, _channelName]);
         } else {
             closeWindow();
         }
     }
 
     private function handleSave(event:MouseEvent):void {
-        _fileRef = new FileReference();
-        _fileRef.addEventListener(Event.COMPLETE, saveCompleteHandler);
-        _fileRef.save(_exportedMetadata, projectProxy.currentIdentityApplianceElement.name + "-samlr2-metadata.xml");
+        if (_exportedMetadata != null && _exportedMetadata.length > 0) {
+            var mdName = _providerName;
+            if (_channelName != null && _override) {
+                mdName = _channelName;
+            }
+            mdName = mdName.toLowerCase().replace(/\s+/g, "-") + "-samlr2-metadata.xml";
+            _fileRef = new FileReference();
+            _fileRef.addEventListener(Event.COMPLETE, saveCompleteHandler);
+            _fileRef.save(_exportedMetadata, mdName);
+        } else {
+            closeWindow();
+        }
     }
 
     private function saveCompleteHandler(event:Event):void {
@@ -82,22 +91,33 @@ public class ExportMetadataMediator extends IocMediator {
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
+            case ApplicationFacade.EXPORT_METADATA:
+                var params:Array = notification.getBody() as Array;
+                _applianceId = params[0];
+                _providerName = params[1];
+                _channelName = params[2];
+                _override = params[3];
+                init();
+                break;
             case ExportMetadataCommand.SUCCESS:
                 var resp:ExportMetadataResponse = notification.getBody() as ExportMetadataResponse;
                 _exportedMetadata = resp.metadata;
                 view.progBar.indeterminate = false;
                 view.progBar.setProgress(100, 100);
+                view.btnSave.enabled = true;
                 if (_exportedMetadata != null && _exportedMetadata.length > 0) {
                     view.progBar.label = "Metadata successfully exported";
-                    view.btnSave.enabled = true;
                 } else {
                     view.progBar.label = "Error exporting metadata!!!";
+                    view.btnSave.label = "Close";
                 }
                 break;
             case ExportMetadataCommand.FAILURE:
                 view.progBar.indeterminate = false;
                 view.progBar.setProgress(100, 100);
                 view.progBar.label = "Error exporting metadata!!!";
+                view.btnSave.label = "Close";
+                view.btnSave.enabled = true;
                 break;
         }
     }
