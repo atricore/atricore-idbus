@@ -83,7 +83,7 @@
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>
-        <property name="modelerMediator" ref="modelerMediator"/>
+        <!--property name="modelerMediator" ref="modelerMediator"/-->
         <property name="manageCertificateMediator" ref="manageCertificateMediator"/>
         <property name="uploadProgressMediator" ref="uploadProgressMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
@@ -143,7 +143,11 @@
     </object>
 
     <object id="modelerStartupCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.ModelerStartUpCommand"/>
+            class="com.atricore.idbus.console.modeling.main.controller.ModelerStartUpCommand"
+            >
+        <property name="modelerMediator" ref="modelerMediator"/>
+
+    </object>
 
 
     <!-- Commands -->
@@ -596,7 +600,7 @@
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
         <property name="popupManager" ref="consolePopUpManager"/>
 
-        <property name="modelerMediator" ref="modelerMediator"/>
+        <!--property name="modelerMediator" ref="modelerMediator"/-->
         <property name="lifecycleViewMediator" ref="lifecycleViewMediator"/>
         <property name="accountManagementMediator" ref="accountManagementMediator"/>
 

@@ -138,7 +138,7 @@
                 sp.name = jossoSPName.text;
 
                 // temporary location
-                var spLoc = new Location();
+                var spLoc:Location = new Location();
                 spLoc.protocol = "";
                 spLoc.host = "";
                 spLoc.port = 80;

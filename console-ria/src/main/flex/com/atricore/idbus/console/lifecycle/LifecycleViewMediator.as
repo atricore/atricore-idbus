@@ -216,16 +216,18 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
 
             sendNotification(ProcessingMediator.START, "Building appliance ...");
             for (var i:int = 0; i < items.length; i++) {
-                var appliance:IdentityAppliance = items[i] as IdentityAppliance;
-                sendNotification(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, [appliance.id.toString(), false]);
+                var a1:IdentityAppliance = items[i] as IdentityAppliance;
+                sendNotification(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, [a1.id.toString(), false]);
             }
+
         } else if (sourceGrid.id == "grdDeployedAppliances") {
+
             trace("Undeploying Appliances " + items);
 
             sendNotification(ProcessingMediator.START, "Undeploying appliance ...");
-            for (var i:int = 0; i < items.length; i++) {
-                var appliance:IdentityAppliance = items[i] as IdentityAppliance;
-                sendNotification(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, appliance.id.toString());
+            for (var j:int = 0; j < items.length; j++) {
+                var a2:IdentityAppliance = items[j] as IdentityAppliance;
+                sendNotification(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, a2.id.toString());
             }
         }
     }
@@ -418,7 +420,7 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 if (projectProxy.currentView == viewName) {
                     updateAppliancesList(false, true);
                     sendNotification(ProcessingMediator.STOP);
-                    _removedApplianceId = null;
+                    _removedApplianceId = Number.MIN_VALUE;
                 }
                 break;
             case IdentityApplianceRemoveCommand.FAILURE:
@@ -427,7 +429,7 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                             "There was an error removing appliance.");
-                    _removedApplianceId = null;
+                    _removedApplianceId = Number.MIN_VALUE;
                 }
                 break;
             case ApplicationFacade.LOGOUT:
@@ -447,33 +449,38 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
     }
 
     private function handleGridButton(event:LifecycleGridButtonEvent):void {
+
+        var appliance:IdentityAppliance = null;
+
         switch (event.action) {
             case LifecycleGridButtonEvent.ACTION_EDIT :
-                var appliance:IdentityAppliance = event.data as IdentityAppliance;
+                appliance = event.data as IdentityAppliance;
                 sendNotification(ProcessingMediator.START, "Opening identity appliance...");
                 projectProxy.currentIdentityAppliance = null;
                 sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, appliance.id.toString());
                 break;
             case LifecycleGridButtonEvent.ACTION_REMOVE :
-                var appliance:IdentityAppliance = event.data as IdentityAppliance;
+
+                appliance = event.data as IdentityAppliance;
                 if(appliance.state.toString() == IdentityApplianceState.PROJECTED.toString()
                         || appliance.state.toString() == IdentityApplianceState.DISPOSED.toString()){
-                    Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null, function(event:CloseEvent) {
-                        if (event.detail == Alert.YES) {
-                            // verify that a removal can be performed
-                            _removedApplianceId = appliance.id;
-                            sendNotification(ProcessingMediator.START, "Removing appliance ...");
-                            var ria:RemoveIdentityApplianceElementRequest = new RemoveIdentityApplianceElementRequest(appliance);
-                            sendNotification(ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT, ria);
-                        }
+                    Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null,
+                              function(event:CloseEvent):void {
+                                    if (event.detail == Alert.YES) {
+                                        // verify that a removal can be performed
+                                        _removedApplianceId = appliance.id;
+                                        sendNotification(ProcessingMediator.START, "Removing appliance ...");
+                                        var ria:RemoveIdentityApplianceElementRequest = new RemoveIdentityApplianceElementRequest(appliance);
+                                        sendNotification(ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT, ria);
+                                    }
                     }, null, Alert.YES);
                 } else {
                     Alert.show("You can only delete projected and disposed appliances", "Removal information", Alert.OK);
                 }
                 break;
             case LifecycleGridButtonEvent.ACTION_START :
-                var appliance:IdentityAppliance = event.data as IdentityAppliance;
+                appliance = event.data as IdentityAppliance;
                 if(appliance.state.toString() == IdentityApplianceState.DEPLOYED.toString()){
                     sendNotification(ProcessingMediator.START, "Starting appliance ...");
                     sendNotification(ApplicationFacade.START_IDENTITY_APPLIANCE, appliance.id.toString());
@@ -482,7 +489,7 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 }
                 break;
             case LifecycleGridButtonEvent.ACTION_STOP :
-                var appliance:IdentityAppliance = event.data as IdentityAppliance;
+                appliance = event.data as IdentityAppliance;
                 if(appliance.state.toString() == IdentityApplianceState.STARTED.toString()){
                     sendNotification(ProcessingMediator.START, "Stopping appliance ...");
                     sendNotification(ApplicationFacade.STOP_IDENTITY_APPLIANCE, appliance.id.toString());
@@ -491,17 +498,17 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 }
                 break;
             case LifecycleGridButtonEvent.ACTION_UNDEPLOY :
-                var appliance:IdentityAppliance = event.data as IdentityAppliance;
+                appliance = event.data as IdentityAppliance;
                 sendNotification(ProcessingMediator.START, "Undeploying appliance ...");
                 sendNotification(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, appliance.id.toString());                
                 break;
             case LifecycleGridButtonEvent.ACTION_BUILD :
-                var appliance:IdentityAppliance = event.data as IdentityAppliance;
+                appliance = event.data as IdentityAppliance;
                 sendNotification(ProcessingMediator.START, "Rebuilding appliance ...");
                 sendNotification(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, [appliance.id.toString(), false]);
                 break;
             case LifecycleGridButtonEvent.ACTION_DISPOSE :
-                var appliance:IdentityAppliance = event.data as IdentityAppliance;
+                appliance = event.data as IdentityAppliance;
                 sendNotification(ProcessingMediator.START, "Disposing appliance ...");
                 sendNotification(ApplicationFacade.DISPOSE_IDENTITY_APPLIANCE, appliance.id.toString());
                 break;
@@ -528,8 +535,8 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
             var modifiedAppliance:IdentityAppliance = projectProxy.commandResultIdentityAppliance;
             if (modifiedAppliance != null) {
                 for (var i:int = 0; i < projectProxy.identityApplianceList.length; i++) {
-                    var appliance:IdentityAppliance = projectProxy.identityApplianceList[i] as IdentityAppliance;
-                    if (modifiedAppliance.id == appliance.id) {
+                    var a1:IdentityAppliance = projectProxy.identityApplianceList[i] as IdentityAppliance;
+                    if (modifiedAppliance.id == a1.id) {
                         projectProxy.identityApplianceList[i] = modifiedAppliance;
                         break;
                     }
@@ -537,10 +544,10 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
             }
 
             if (remove) {
-                for (var i:int = 0; i < projectProxy.identityApplianceList.length; i++) {
-                    var appliance:IdentityAppliance = projectProxy.identityApplianceList[i] as IdentityAppliance;
-                    if (_removedApplianceId == appliance.id) {
-                        projectProxy.identityApplianceList.removeItemAt(i);
+                for (var j:int = 0; j < projectProxy.identityApplianceList.length; j++) {
+                    var a2:IdentityAppliance = projectProxy.identityApplianceList[j] as IdentityAppliance;
+                    if (_removedApplianceId == a2.id) {
+                        projectProxy.identityApplianceList.removeItemAt(j);
                         break;
                     }
                 }

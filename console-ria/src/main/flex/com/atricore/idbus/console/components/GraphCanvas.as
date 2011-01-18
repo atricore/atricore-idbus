@@ -39,16 +39,16 @@ public class GraphCanvas extends Canvas {
         graphics.lineStyle(1, _gridDotColor);
         graphics.beginFill(_gridDotColor);
 
-        for (var y:int=_gridSquareSize; y<unscaledHeight; y=y+_gridSquareSize) {
-            for (var x:int=0; x<unscaledWidth; x=x+_gridDotDistance) {
-                graphics.drawRect(x - 0.5, y - 0.5, 0.7, 0.7);
+        for (var y1:int=_gridSquareSize; y1<unscaledHeight; y1=y1+_gridSquareSize) {
+            for (var x1:int=0; x1<unscaledWidth; x1=x1+_gridDotDistance) {
+                graphics.drawRect(x1 - 0.5, y1 - 0.5, 0.7, 0.7);
                 //graphics.drawCircle(x, y, 0.5);
             }
         }
 
-        for (var x:int=_gridSquareSize; x<unscaledWidth; x=x+_gridSquareSize) {
-            for (var y:int=0; y<unscaledHeight; y=y+_gridDotDistance) {
-                graphics.drawRect(x - 0.5, y - 0.5, 0.7, 0.7);
+        for (var x2:int=_gridSquareSize; x2<unscaledWidth; x2=x2+_gridSquareSize) {
+            for (var y2:int=0; y2<unscaledHeight; y2=y2+_gridDotDistance) {
+                graphics.drawRect(x2 - 0.5, y2 - 0.5, 0.7, 0.7);
                 //graphics.drawCircle(x, y, 0.5);
             }
         }

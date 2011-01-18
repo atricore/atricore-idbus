@@ -39,7 +39,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.ApplicationStartUpCommand.SUCCESS";
     public static const FAILURE:String = "com.atricore.idbus.console.main.controller.ApplicationStartUpCommand.FAILURE";
 
-    // TODO : EXTENSIONS Remove specific components
+    // TODO : EXTENSIONS Remove All specific components
     /* Proxies */
     private var _serviceRegistry:IIocProxy;
     private var _projectProxy:IIocProxy;
@@ -49,7 +49,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     /* Mediators */
     private var _applicationMediator:IIocMediator;
-    private var _modelerMediator:IIocMediator;
+    // private var _modelerMediator:IIocMediator;
     private var _browserMediator:IIocMediator;
     private var _diagramMediator:IIocMediator;
     private var _paletteMediator:IIocMediator;
@@ -170,14 +170,6 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set applicationMediator(value:IIocMediator):void {
         _applicationMediator = value;
-    }
-
-    public function get modelerMediator():IIocMediator {
-        return _modelerMediator;
-    }
-
-    public function set modelerMediator(value:IIocMediator):void {
-        _modelerMediator = value;
     }
 
     public function get browserMediator():IIocMediator {
@@ -1052,7 +1044,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
         // Wire all STARTUP commands and send STARTUP notifications :)
         var startupCmdNames:Array = iocFacade.container.getObjectNamesForType(AppSectionStartUpCommand);
-        startupCmdNames.forEach(function(cmdName:String, idx:int, arr:Array) {
+        startupCmdNames.forEach(function(cmdName:String, idx:int, arr:Array):void {
             iocFacade.registerCommandByConfigName(ApplicationFacade.STARTUP_APP_SECTION, cmdName);
         });
 
@@ -1118,7 +1110,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
         loginMediator.setViewComponent(app.loginView);
         iocFacade.registerMediatorByConfigName(loginMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(modelerMediator.getConfigName());
+
         iocFacade.registerMediatorByConfigName(lifecycleViewMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(accountManagementMediator.getConfigName());
 

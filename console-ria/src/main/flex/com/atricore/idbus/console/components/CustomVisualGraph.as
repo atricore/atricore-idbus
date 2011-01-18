@@ -107,7 +107,7 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
             resetConnectionModeParameters();
             _canvas.removeEventListener(MouseEvent.MOUSE_UP, dragEnd);
         } else {
-            var draggedNode = data as IVisualNode;
+            var draggedNode:IVisualNode = data as IVisualNode;
             if (draggedNode != null && _nodeMoved) {
                 dispatchEvent(new VNodeMovedEvent(VNodeMovedEvent.VNODE_MOVED, draggedNode.node.stringid, true, false, 0));
             } else if (_allNodesMoved) {

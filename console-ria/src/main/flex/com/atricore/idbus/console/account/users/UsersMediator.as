@@ -253,7 +253,7 @@ public class UsersMediator extends IocMediator implements IDisposable{
             var delAlert:Alert = Alert.show(alertBody,
                     resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.delete.title'),
                     3, view,
-                    function (event:CloseEvent) {
+                    function (event:CloseEvent):void {
                         if (event.detail == Alert.YES) {
                             sendNotification(ApplicationFacade.DELETE_USER, _accountManagementProxy.currentUser);
                             sendNotification(ProcessingMediator.START);

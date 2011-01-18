@@ -573,7 +573,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             case IdentityApplianceUpdateCommand.SUCCESS:
                 var silentUpdate:Boolean = notification.getBody() as Boolean;
                 if (!silentUpdate) {
-                    var reopenGraph = view.btnSave.enabled;
+                    var reopenGraph:Boolean = view.btnSave.enabled;
                     view.btnSave.enabled = false;
                     sendNotification(ApplicationFacade.APPLIANCE_SAVED);
                     sendNotification(ProcessingMediator.STOP);

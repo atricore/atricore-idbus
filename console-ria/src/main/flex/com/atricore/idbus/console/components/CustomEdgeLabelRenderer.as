@@ -55,7 +55,7 @@ public class CustomEdgeLabelRenderer extends UIComponent implements IDataRendere
             //trace("Edge is invisible " + edge.node1.stringid + ' --> ' + edge.node2.stringid);
             //this.visible = false;
         } else {
-            var edgeVO:Object = data.data;
+
             if (enableLabel && edgeVO.edgeLabel) {
                 //label = new Label();
                 label = new TextField();

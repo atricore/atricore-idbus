@@ -193,7 +193,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         resetGraph();
         updateGraph();
 
-        _currentIdentityApplianceId = null;
+        _currentIdentityApplianceId = Number.MIN_VALUE;
 
 
     }
@@ -235,39 +235,39 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 if (_projectProxy.currentIdentityAppliance != null) {
                     _currentIdentityApplianceId = _projectProxy.currentIdentityAppliance.id;
                 } else {
-                    _currentIdentityApplianceId = null;
+                    _currentIdentityApplianceId = Number.MIN_VALUE;
                 }
                 break;
             case ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA:
                 updateGraphData();
                 break;
             case ApplicationFacade.PALETTE_ELEMENT_SELECTED:
-                var elementType:int = notification.getBody() as int;
+                var paletteElementType:int = notification.getBody() as int;
 
                 if (_applianceId != null) {
-                    if (elementType == DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE) {
+                    if (paletteElementType == DiagramElementTypes.FEDERATED_CONNECTION_ELEMENT_TYPE) {
                         _identityApplianceDiagram.enterFederatedConnectionMode();
-                    } else if (elementType == DiagramElementTypes.ACTIVATION_ELEMENT_TYPE) {
+                    } else if (paletteElementType == DiagramElementTypes.ACTIVATION_ELEMENT_TYPE) {
                         _identityApplianceDiagram.enterActivationMode();
-                    } else if (elementType == DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE) {
+                    } else if (paletteElementType == DiagramElementTypes.IDENTITY_LOOKUP_ELEMENT_TYPE) {
                         _identityApplianceDiagram.enterIdentityLookupMode();
                     } else {
-                        _identityApplianceDiagram.enterNodeCreationMode(elementType);
+                        _identityApplianceDiagram.enterNodeCreationMode(paletteElementType);
                     }
                 }
                 break;
             case ApplicationFacade.DRAG_ELEMENT_TO_DIAGRAM:
-                var elementType:int = notification.getBody() as int;
+                var dragElementType:int = notification.getBody() as int;
 
-                switch (elementType) {
+                switch (dragElementType) {
                     case DiagramElementTypes.IDENTITY_PROVIDER_ELEMENT_TYPE:
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {
                         //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
-                        var ownerIdentityAppliance:IdentityAppliance = _identityAppliance;
+                        var idpOwnerAppliance:IdentityAppliance = _identityAppliance;
 
                         var cip:CreateIdentityProviderElementRequest = new CreateIdentityProviderElementRequest(
-                                ownerIdentityAppliance,
+                                idpOwnerAppliance,
                             //                                        _currentlySelectedNode.stringid
                                 null
                                 );
@@ -283,10 +283,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {
                         //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
-                        ownerIdentityAppliance = _identityAppliance;
+                        var spOwnerAppliance:IdentityAppliance = _identityAppliance;
 
                         var csp:CreateServiceProviderElementRequest = new CreateServiceProviderElementRequest(
-                                ownerIdentityAppliance,
+                                spOwnerAppliance ,
                             //                                        _currentlySelectedNode.stringid
                                 null
                                 );
@@ -302,10 +302,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {
                         //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
-                        var ownerIdentityAppliance:IdentityAppliance = _identityAppliance;
+                        var extIdpOwnerAppliance:IdentityAppliance = _identityAppliance;
 
                         var ceip:CreateExternalIdentityProviderElementRequest = new CreateExternalIdentityProviderElementRequest(
-                                ownerIdentityAppliance,
+                                extIdpOwnerAppliance,
                             //                                        _currentlySelectedNode.stringid
                                 null
                                 );
@@ -321,10 +321,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {
                         //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
-                        ownerIdentityAppliance = _identityAppliance;
+                        var extSpOwnerAppliance:IdentityAppliance = _identityAppliance;
 
                         var cesp:CreateExternalServiceProviderElementRequest = new CreateExternalServiceProviderElementRequest(
-                                ownerIdentityAppliance,
+                                extSpOwnerAppliance,
                             //                                        _currentlySelectedNode.stringid
                                 null
                                 );
@@ -340,10 +340,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {
                         //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
-                        ownerIdentityAppliance = _identityAppliance;
+                        var salesforceOwnerAppliance:IdentityAppliance = _identityAppliance;
 
                         var csf:CreateSalesforceElementRequest = new CreateSalesforceElementRequest(
-                                ownerIdentityAppliance,
+                                salesforceOwnerAppliance,
                             //                                        _currentlySelectedNode.stringid
                                 null
                                 );
@@ -359,10 +359,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         // assert that source end is an Identity Appliance
                         //                            if (_currentlySelectedNode.data is IdentityAppliance) {
                         //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
-                        ownerIdentityAppliance = _identityAppliance;
+                        var googleAppsOnwerAppliance:IdentityAppliance = _identityAppliance;
 
                         var cga:CreateGoogleAppsElementRequest = new CreateGoogleAppsElementRequest(
-                                ownerIdentityAppliance,
+                                googleAppsOnwerAppliance,
                             //                                        _currentlySelectedNode.stringid
                                 null
                                 );
@@ -375,10 +375,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
                         break;
                     case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
-                        ownerIdentityAppliance = _identityAppliance;
+                        var idVaultOwnerAppliance:IdentityAppliance = _identityAppliance;
 
                         var civ:CreateIdentityVaultElementRequest = new CreateIdentityVaultElementRequest(
-                                ownerIdentityAppliance, null);
+                                idVaultOwnerAppliance, null);
 
                         // this notification will be grabbed by the modeler mediator which will open
                         // the corresponding form
@@ -386,10 +386,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
                         break;
                     case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:
-                        ownerIdentityAppliance = _identityAppliance;
+                        var dbIdSourceOwnerAppliance:IdentityAppliance = _identityAppliance;
 
                         var cdiv:CreateDbIdentitySourceElementRequest = new CreateDbIdentitySourceElementRequest(
-                                ownerIdentityAppliance, null);
+                                dbIdSourceOwnerAppliance, null);
 
                         // this notification will be grabbed by the modeler mediator which will open
                         // the corresponding form
@@ -397,10 +397,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                         //
                         break;
                     case DiagramElementTypes.LDAP_IDENTITY_SOURCE_ELEMENT_TYPE:
-                        ownerIdentityAppliance = _identityAppliance;
+                        var ldapIdSourceOwnerAppliance:IdentityAppliance = _identityAppliance;
 
                         var cliv:CreateLdapIdentitySourceElementRequest = new CreateLdapIdentitySourceElementRequest(
-                                ownerIdentityAppliance, null);
+                                ldapIdSourceOwnerAppliance, null);
 
                         // this notification will be grabbed by the modeler mediator which will open
                         // the corresponding form
@@ -408,10 +408,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
                         break;
                     case DiagramElementTypes.XML_IDENTITY_SOURCE_ELEMENT_TYPE:
-                        ownerIdentityAppliance = _identityAppliance;
+                        var xmlIdSourceOwnerAppliance:IdentityAppliance = _identityAppliance;
 
                         var cxiv:CreateXmlIdentitySourceElementRequest = new CreateXmlIdentitySourceElementRequest(
-                                ownerIdentityAppliance, null);
+                                xmlIdSourceOwnerAppliance, null);
 
                         // this notification will be grabbed by the modeler mediator which will open
                         // the corresponding form
@@ -649,51 +649,51 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             case ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE:
                 var element:Object = projectProxy.currentIdentityApplianceElement;
                 if (element is IdentityLookup) {
-                    var identityLookup:IdentityLookup = element as IdentityLookup;
-                    var providerNode:IVisualNode = findNodeElementBySemanticElement(identityLookup.provider);
-                    var identitySourceNode:IVisualNode = findNodeElementBySemanticElement(identityLookup.identitySource);
+                    var identityLookup1:IdentityLookup = element as IdentityLookup;
+                    var providerNode:IVisualNode = findNodeElementBySemanticElement(identityLookup1.provider);
+                    var identitySourceNode:IVisualNode = findNodeElementBySemanticElement(identityLookup1.identitySource);
                     GraphDataManager.linkVNodes(_identityApplianceDiagram, identitySourceNode, providerNode,
-                            identityLookup,EmbeddedIcons.connectionIdentityLookupMiniIcon, "Identity Lookup Connection");
+                            identityLookup1,EmbeddedIcons.connectionIdentityLookupMiniIcon, "Identity Lookup Connection");
                     _identityApplianceDiagram.exitConnectionMode();
                 } else if (element is FederatedConnection) {
-                    var federatedConnection:FederatedConnection = element as FederatedConnection;
-                    var provider1Node:IVisualNode = findNodeElementBySemanticElement(federatedConnection.roleA);
-                    var provider2Node:IVisualNode = findNodeElementBySemanticElement(federatedConnection.roleB);
+                    var federatedConnection1:FederatedConnection = element as FederatedConnection;
+                    var provider1Node:IVisualNode = findNodeElementBySemanticElement(federatedConnection1.roleA);
+                    var provider2Node:IVisualNode = findNodeElementBySemanticElement(federatedConnection1.roleB);
                     GraphDataManager.linkVNodes(_identityApplianceDiagram, provider2Node, provider1Node,
-                            federatedConnection, EmbeddedIcons.connectionFederatedMiniIcon, "Federated Connection");
+                            federatedConnection1, EmbeddedIcons.connectionFederatedMiniIcon, "Federated Connection");
                     _identityApplianceDiagram.exitConnectionMode();
                 } else if (element is JOSSOActivation) {
-                    var activation:JOSSOActivation = element as JOSSOActivation;
-                    var spNode:IVisualNode = findNodeElementBySemanticElement(activation.sp);
-                    var execEnvNode:IVisualNode = findNodeElementBySemanticElement(activation.executionEnv);
+                    var activation1:JOSSOActivation = element as JOSSOActivation;
+                    var spNode:IVisualNode = findNodeElementBySemanticElement(activation1.sp);
+                    var execEnvNode:IVisualNode = findNodeElementBySemanticElement(activation1.executionEnv);
                     GraphDataManager.linkVNodes(_identityApplianceDiagram, execEnvNode, spNode,
-                            activation, EmbeddedIcons.connectionActivationIcon, "Activation Connection");
+                            activation1, EmbeddedIcons.connectionActivationIcon, "Activation Connection");
                     _identityApplianceDiagram.exitConnectionMode();
                 } else {
                     GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), element, null, null, null, null, true, Constants.IDENTITY_BUS_DEEP);
                 }
 
-                view.callLater(function () {
+                view.callLater(function ():void {
                     sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_SELECTED);
                 });
 
                 break;
             case ApplicationFacade.DIAGRAM_ELEMENT_REMOVE_COMPLETE:
-                var element:Object = notification.getBody();
-                if (element is IdentityLookup) {
-                    var identityLookup:IdentityLookup = element as IdentityLookup;
-                    var edge:IVisualEdge = findEdgeElementBySemanticElement(identityLookup);
-                    GraphDataManager.removeVEdge(_identityApplianceDiagram, edge, true);
-                } else if (element is FederatedConnection) {
-                    var federatedConnection:FederatedConnection = element as FederatedConnection;
-                    var edge:IVisualEdge = findEdgeElementBySemanticElement(federatedConnection);
-                    GraphDataManager.removeVEdge(_identityApplianceDiagram, edge, true);
-                } else if (element is JOSSOActivation) {
-                    var activation:JOSSOActivation = element as JOSSOActivation;
-                    var edge:IVisualEdge = findEdgeElementBySemanticElement(activation);
-                    GraphDataManager.removeVEdge(_identityApplianceDiagram, edge, true);
+                var element1:Object = notification.getBody();
+                if (element1 is IdentityLookup) {
+                    var identityLookup2:IdentityLookup = element1 as IdentityLookup;
+                    var edge1:IVisualEdge = findEdgeElementBySemanticElement(identityLookup2);
+                    GraphDataManager.removeVEdge(_identityApplianceDiagram, edge1, true);
+                } else if (element1 is FederatedConnection) {
+                    var federatedConnection2:FederatedConnection = element1 as FederatedConnection;
+                    var edge2:IVisualEdge = findEdgeElementBySemanticElement(federatedConnection2);
+                    GraphDataManager.removeVEdge(_identityApplianceDiagram, edge2, true);
+                } else if (element1 is JOSSOActivation) {
+                    var activation2:JOSSOActivation = element1 as JOSSOActivation;
+                    var edge3:IVisualEdge = findEdgeElementBySemanticElement(activation2);
+                    GraphDataManager.removeVEdge(_identityApplianceDiagram, edge3, true);
                 } else {
-                    var node:IVisualNode = findNodeElementBySemanticElement(element);
+                    var node:IVisualNode = findNodeElementBySemanticElement(element1);
                     GraphDataManager.removeNode(_identityApplianceDiagram, node, true);
                 }
                 unselectAllNodes();
@@ -756,7 +756,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     var provider:Provider = identityApplianceDefinition.providers[i];
                     var providerGraphNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), provider, null, null, null, null, true, Constants.PROVIDER_DEEP);
                     providerNodes[provider] = providerGraphNode;
-                    var provider:Provider = identityApplianceDefinition.providers[i];
+
                     if (provider is FederatedProvider) {
                         var locProv:FederatedProvider = provider as FederatedProvider;
                         if(locProv.identityLookup != null && locProv.identityLookup.identitySource != null){
@@ -806,18 +806,18 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     if(identityApplianceDefinition.providers[j] is FederatedProvider){
                         var fedProvider:FederatedProvider = identityApplianceDefinition.providers[j] as FederatedProvider;
                         for each (var fedConnA:FederatedConnection in fedProvider.federatedConnectionsA){
-                            var graphNodeRoleA:IVisualNode = providerNodes[fedProvider];
-                            var graphNodeRoleB:IVisualNode = providerNodes[fedConnA.roleB];
-                            if(!DiagramUtil.nodeLinkExists(graphNodeRoleA.node, graphNodeRoleB.node)){ //avoid double linking
-                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB,
+                            var graphNodeRoleA1:IVisualNode = providerNodes[fedProvider];
+                            var graphNodeRoleB1:IVisualNode = providerNodes[fedConnA.roleB];
+                            if(!DiagramUtil.nodeLinkExists(graphNodeRoleA1.node, graphNodeRoleB1.node)){ //avoid double linking
+                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA1, graphNodeRoleB1,
                                         fedConnA, EmbeddedIcons.connectionFederatedIcon, "Federated Connection");
                             }
                         }
                         for each (var fedConnB:FederatedConnection in fedProvider.federatedConnectionsB){
-                            var graphNodeRoleA:IVisualNode = providerNodes[fedConnB.roleA];
-                            var graphNodeRoleB:IVisualNode = providerNodes[fedProvider];
-                            if(!DiagramUtil.nodeLinkExists(graphNodeRoleA.node, graphNodeRoleB.node)){ //avoid double linking
-                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA, graphNodeRoleB,
+                            var graphNodeRoleA2:IVisualNode = providerNodes[fedConnB.roleA];
+                            var graphNodeRoleB2:IVisualNode = providerNodes[fedProvider];
+                            if(!DiagramUtil.nodeLinkExists(graphNodeRoleA2.node, graphNodeRoleB2.node)){ //avoid double linking
+                                GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA2, graphNodeRoleB2,
                                         fedConnB, EmbeddedIcons.connectionFederatedIcon, "Federated Connection");
                             }
                         }

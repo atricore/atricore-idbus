@@ -168,7 +168,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _popup.styleName = "modelerPopup";
     }
 
-    public function set manageCertificateMediator(value:ManageCertificateMediator) {
+    public function set manageCertificateMediator(value:ManageCertificateMediator):void {
         _manageCertificateMediator = value;
     }
 

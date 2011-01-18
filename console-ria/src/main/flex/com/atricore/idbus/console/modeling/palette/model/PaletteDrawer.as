@@ -48,11 +48,11 @@ public class PaletteDrawer extends PaletteContainer {
         return initialState == INITIAL_STATE_PINNED_OPEN;
     }
 
-    public function get showDefaultIcon() : Boolean  {
+    public function isShowDefaultIcon():Boolean  {
         return _showDefaultIcon;
     }
 
-    public function set showDefaultIcon(showDefaultIcon: Boolean) {
+    public function setShowDefaultIcon(showDefaultIcon: Boolean):void {
         _showDefaultIcon = showDefaultIcon;
     }
 }
