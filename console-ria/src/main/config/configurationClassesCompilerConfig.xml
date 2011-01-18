@@ -61,6 +61,7 @@
         <symbol>com.atricore.idbus.console.modeling.browser.BrowserMediator</symbol>
         <symbol>com.atricore.idbus.console.modeling.palette.PaletteMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.AccountManagementMediator</symbol>
+        <symbol>com.atricore.idbus.console.liveupdate.main.LiveUpdateMediator</symbol>
         <symbol>com.atricore.idbus.console.account.groups.GroupsMediator</symbol>
         <symbol>com.atricore.idbus.console.account.groupproperties.GroupPropertiesMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.addgroup.AddGroupMediator</symbol>
@@ -130,6 +131,7 @@
         <symbol>com.atricore.idbus.console.main.model.SecureContextProxy</symbol>
         <symbol>com.atricore.idbus.console.main.model.ProfileProxy</symbol>
         <symbol>com.atricore.idbus.console.account.main.model.AccountManagementProxy</symbol>
+        <symbol>com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy</symbol>
 
         <symbol>com.atricore.idbus.console.modeling.main.view.ModelerPopUpManager</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager</symbol>

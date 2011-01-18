@@ -23,6 +23,7 @@ package com.atricore.idbus.console.main
 {
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.branding.AtricoreConsolePreloader;
+import com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy;
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
 import com.atricore.idbus.console.main.controller.LoginCommand;
 import com.atricore.idbus.console.main.controller.NotFirstRunCommand;
@@ -58,7 +59,9 @@ public class ApplicationMediator extends IocMediator {
     public static const MODELER_VIEW_INDEX:int = 0;
     public static const LIFECYCLE_VIEW_INDEX:int = 1;
     public static const ACCOUNT_VIEW_INDEX:int = 2;
-    public static const LICENSE_VIEW_INDEX:int = 3;
+    public static const UPDATE_VIEW_INDEX:int = 3;
+	public static const LICENSE_VIEW_INDEX:int = 4;
+    
 
     public var userProfileIcon:Class = EmbeddedIcons.userProfileIcon;
 
@@ -67,11 +70,13 @@ public class ApplicationMediator extends IocMediator {
     private var _keystoreProxy:KeystoreProxy;
     private var _profileProxy:ProfileProxy;
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _liveUpdateProxy:LiveUpdateProxy;
 
     private var _popupManager:ConsolePopUpManager;
     private var _modelerMediator:IIocMediator;
     private var _lifecycleViewMediator:IIocMediator;
     private var _accountManagementMediator:IIocMediator;
+    private var _liveUpdateMediator:IIocMediator;
 
     private var _userActionMenuBar:MenuBar;
 
@@ -105,6 +110,14 @@ public class ApplicationMediator extends IocMediator {
         _accountManagementMediator = value;
     }
 
+    public function get liveUpdateMediator():IIocMediator {
+        return _liveUpdateMediator;
+    }
+
+    public function set liveUpdateMediator(value:IIocMediator):void {
+        _liveUpdateMediator = value;
+    }
+
     public function get popupManager():ConsolePopUpManager {
         return _popupManager;
     }
@@ -119,7 +132,6 @@ public class ApplicationMediator extends IocMediator {
 
     public function get secureContextProxy():SecureContextProxy {
         return _secureContextProxy;
-
     }
 
     public function get projectProxy():ProjectProxy {
@@ -152,6 +164,14 @@ public class ApplicationMediator extends IocMediator {
 
     public function set accountManagementProxy(value:AccountManagementProxy):void {
         _accountManagementProxy = value;
+    }
+
+    public function get liveUpdateProxy():LiveUpdateProxy {
+        return _liveUpdateProxy;
+    }
+
+    public function set liveUpdateProxy(value:LiveUpdateProxy):void {
+        _liveUpdateProxy = value;
     }
 
     public function get userActionMenuBar():MenuBar {
@@ -202,6 +222,9 @@ public class ApplicationMediator extends IocMediator {
         } else if (selectedIndex == LICENSE_VIEW_INDEX) {
             app.modulesViewStack.selectedIndex = LICENSE_VIEW_INDEX;
             sendNotification(ApplicationFacade.LICENSE_VIEW_SELECTED);
+        } else if (selectedIndex == UPDATE_VIEW_INDEX) {
+            app.modulesViewStack.selectedIndex = UPDATE_VIEW_INDEX;
+            sendNotification(ApplicationFacade.UPDATE_VIEW_SELECTED);
         }
     }
 
@@ -236,6 +259,7 @@ public class ApplicationMediator extends IocMediator {
             ApplicationFacade.DISPLAY_APPLIANCE_MODELER,
             ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE,
             ApplicationFacade.DISPLAY_APPLIANCE_ACCOUNT,
+            ApplicationFacade.DISPLAY_LIVE_UPDATE,
             ApplicationFacade.DISPLAY_CHANGE_PASSWORD,
             ProcessingMediator.START,
             ProcessingMediator.STOP
@@ -289,6 +313,8 @@ public class ApplicationMediator extends IocMediator {
                     sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE);
                 } else if (viewIndex == ACCOUNT_VIEW_INDEX) {
                     sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_ACCOUNT);
+                } else if (viewIndex == UPDATE_VIEW_INDEX) {
+                    sendNotification(ApplicationFacade.DISPLAY_LIVE_UPDATE);
                 }
                 break;
             case ApplicationFacade.DISPLAY_APPLIANCE_MODELER:
@@ -310,6 +336,13 @@ public class ApplicationMediator extends IocMediator {
                 if (app.modulesViewStack.selectedIndex != ACCOUNT_VIEW_INDEX) {
                     app.modulesViewStack.selectedIndex = ACCOUNT_VIEW_INDEX;
                     sendNotification(ApplicationFacade.ACCOUNT_VIEW_SELECTED);
+                }
+                break;
+            case ApplicationFacade.DISPLAY_LIVE_UPDATE:
+                app.stackButtonBar.selectedIndex = UPDATE_VIEW_INDEX;
+                if (app.modulesViewStack.selectedIndex != UPDATE_VIEW_INDEX) {
+                    app.modulesViewStack.selectedIndex = UPDATE_VIEW_INDEX;
+                    sendNotification(ApplicationFacade.UPDATE_VIEW_SELECTED);
                 }
                 break;
             case ApplicationFacade.DISPLAY_CHANGE_PASSWORD:
@@ -337,6 +370,7 @@ public class ApplicationMediator extends IocMediator {
         modelerMediator.setViewComponent(app.modelerView);
         lifecycleViewMediator.setViewComponent(app.lifecycleView);
         accountManagementMediator.setViewComponent(app.accountManagementView);
+        liveUpdateMediator.setViewComponent(app.liveUpdateView);
 
         app.stackButtonBar.addEventListener(IndexChangeEvent.CHANGE, handleStackChange);
         app.stackButtonBar.selectedIndex = 0;

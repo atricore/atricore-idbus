@@ -188,7 +188,7 @@
                         <Require-Bundle>
                             com.atricore.idbus.console.lifecycle.main,
                             com.atricore.idbus.console.activation.main,
-                            com.atricore.idbus.console.liveservices.main
+                            com.atricore.idbus.console.liveservices.liveupdate.main
                         </Require-Bundle>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
@@ -319,6 +319,12 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.spml</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+            <artifactId>com.atricore.idbus.console.liveservices.liveupdate.main</artifactId>
             <scope>provided</scope>
         </dependency>
 

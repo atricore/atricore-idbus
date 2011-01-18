@@ -407,6 +407,10 @@ public class EmbeddedIcons {
     public static var accountMiniIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/ui/world_network_22x22.png")]
+    public static var liveUpdateMiniIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/main/setup_22.png")]
     public static var setupMiniIcon:Class;
 

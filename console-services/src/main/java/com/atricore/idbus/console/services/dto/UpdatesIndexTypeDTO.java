@@ -21,6 +21,8 @@
 
 package com.atricore.idbus.console.services.dto;
 
+import java.util.List;
+
 /**
  * @author: Dusan Fisic
  * @email: dfisic@atricore.org
@@ -28,5 +30,22 @@ package com.atricore.idbus.console.services.dto;
  */
 public class UpdatesIndexTypeDTO {
 
+    private String id;
+    protected List<UpdateDescriptorTypeDTO> updateDescriptor;
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public List<UpdateDescriptorTypeDTO> getUpdateDescriptor() {
+        return updateDescriptor;
+    }
+
+    public void setUpdateDescriptor(List<UpdateDescriptorTypeDTO> updateDescriptor) {
+        this.updateDescriptor = updateDescriptor;
+    }
 }

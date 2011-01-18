@@ -14,6 +14,7 @@
     <object id="profileProxy" class="com.atricore.idbus.console.main.model.ProfileProxy"/>
     <object id="secureContextProxy" class="com.atricore.idbus.console.main.model.SecureContextProxy"/>
     <object id="accountManagementProxy" class="com.atricore.idbus.console.account.main.model.AccountManagementProxy"/>
+    <object id="liveUpdateProxy" class="com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy"/>
 
     <!-- Commands -->
     <object id="loginCommand" class="com.atricore.idbus.console.main.controller.LoginCommand">
@@ -429,12 +430,17 @@
         <property name="usersMediator" ref="usersMediator"/>
     </object>
 
+    <object id="liveUpdateMediator" class="com.atricore.idbus.console.liveupdate.main.LiveUpdateMediator">
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
         <property name="popupManager" ref="consolePopUpManager"/>
 
         <property name="modelerMediator" ref="modelerMediator"/>
         <property name="lifecycleViewMediator" ref="lifecycleViewMediator"/>
         <property name="accountManagementMediator" ref="accountManagementMediator"/>
+        <property name="liveUpdateMediator" ref="liveUpdateMediator"/>
 
         <property name="secureContextProxy" ref="secureContextProxy"/>
         <property name="projectProxy" ref="projectProxy"/>
@@ -442,6 +448,7 @@
         <property name="profileProxy" ref="profileProxy"/>
         <property name="secureContextProxy" ref="secureContextProxy"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
     </object>
 
     <!-- support components -->
@@ -597,6 +604,7 @@
         <property name="browserMediator" ref="browserMediator"/>
         <property name="paletteMediator" ref="paletteMediator"/>
         <property name="accountManagementMediator" ref="accountManagementMediator"/>
+        <property name="liveUpdateMediator" ref="liveUpdateMediator"/>
         <property name="groupsMediator" ref="groupsMediator"/>
         <property name="groupPropertiesMediator" ref="groupPropertiesMediator"/>
         <property name="addGroupMediator" ref="addGroupMediator"/>

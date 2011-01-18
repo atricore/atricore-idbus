@@ -101,6 +101,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const DISPLAY_APPLIANCE_MODELER:String = "displayApplianceModeler";
     public static const DISPLAY_APPLIANCE_LIFECYCLE:String = "displayApplianceLifecycle";
     public static const DISPLAY_APPLIANCE_ACCOUNT:String = "displayApplianceAccount";
+    public static const DISPLAY_LIVE_UPDATE:String = "displayLiveUpdate";
     public static const DISPLAY_VIEW:String = "displayView";
     public static const PALETTE_ELEMENT_SELECTED:String = "paletteElementSelected";
     public static const REFRESH_DIAGRAM:String = "refreshDiagram";
@@ -162,6 +163,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const LIFECYCLE_VIEW_SELECTED:String = "lifecycleViewSelected";
     public static const ACCOUNT_VIEW_SELECTED:String = "accountViewSelected";
     public static const LICENSE_VIEW_SELECTED:String = "licenseViewSelected";
+    public static const UPDATE_VIEW_SELECTED:String = "updateViewSelected";
     public static const APPLIANCE_VALIDATION_ERRORS:String = "applianceValidationErrors";
     public static const APPLIANCE_SAVED:String = "applianceSaved";
 
