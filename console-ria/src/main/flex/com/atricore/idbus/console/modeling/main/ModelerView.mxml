@@ -37,6 +37,7 @@
          xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
          width="100%" height="100%"
          skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
+         name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.modelerTab.name')}"
         >
 
     <fx:Metadata>

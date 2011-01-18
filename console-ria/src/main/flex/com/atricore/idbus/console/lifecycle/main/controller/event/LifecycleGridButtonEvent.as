@@ -1,10 +1,10 @@
-package com.atricore.idbus.console.lifecycle.controller.event
+package com.atricore.idbus.console.lifecycle.main.controller.event
 {
 import flash.events.Event;
 
 public class LifecycleGridButtonEvent extends Event
 {
-    public static const CLICK:String = "LifecycleGridButtonEvent.CLICK";
+    public static const CLICK:String = "com.atricore.idbus.console.lifecycle.main.controller.event.LifecycleGridButtonEvent.CLICK";
 
     public static const ACTION_EDIT:int = 0;
     public static const ACTION_REMOVE:int = 1;

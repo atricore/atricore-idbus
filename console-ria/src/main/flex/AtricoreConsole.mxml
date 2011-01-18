@@ -101,10 +101,9 @@
     <s:VGroup paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
               width="100%" height="100%" includeIn="splash,operation">
 
+        <!-- TODO : Use a branding factory -->
         <heading:AtricoreHeading id="brandedHeading" includeIn="splash,operation">
-            <!--<comp:MessageBox id="messageBox" x="400" width="70%" height="70%" includeIn="splash,operation"-->
-                             <!--showEffect="{wipeRight}" verticalAlign="middle" horizontalAlign="center"/>-->
-            <mx:MenuBar id="userActionMenuBar" includeIn="operation" labelField="@label" iconField="@icon"
+            <mx:MenuBar id="userActionMenuBar" excludeFrom="splash" labelField="@label" iconField="@icon"
                         textAlign="center">
                 <fx:XMLList>
                     <topmenu label="Administrator" icon="userProfileIcon" >

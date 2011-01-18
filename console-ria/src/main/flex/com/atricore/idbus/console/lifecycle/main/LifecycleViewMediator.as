@@ -1,7 +1,8 @@
-package com.atricore.idbus.console.lifecycle
+package com.atricore.idbus.console.lifecycle.main
 {
+import com.atricore.idbus.console.lifecycle.*;
 import com.atricore.idbus.console.components.CustomDataGrid;
-import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+import com.atricore.idbus.console.lifecycle.main.controller.event.LifecycleGridButtonEvent;
 import com.atricore.idbus.console.main.AppSectionMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;

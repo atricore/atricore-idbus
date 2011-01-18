@@ -15,10 +15,7 @@ public class ModelerViewFactory extends AppSectionViewFactory {
     }
 
     override public function createView():AppSectionView {
-        var view:ModelerView  = new ModelerView();
-        // TODO : Use resource bundle, place property in parent !
-        view.name = "Identity Appliance Modeler";
-        return view;
+        return  new ModelerView();
     }
 }
 }

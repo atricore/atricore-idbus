@@ -46,7 +46,9 @@
 
 
         <!-- Lifecycle classes -->
-        <symbol>com.atricore.idbus.console.lifecycle.LifecycleViewMediator</symbol>
+        <symbol>com.atricore.idbus.console.lifecycle.main.LifecycleViewMediator</symbol>
+        <symbol>com.atricore.idbus.console.lifecycle.main.LifecycleViewFactory</symbol>
+        <symbol>com.atricore.idbus.console.lifecycle.main.controller.LifecycleStartUpCommand</symbol>
 
         <!-- Modeling classes -->
 
@@ -130,6 +132,8 @@
 
         <!-- Account Management classes -->
         <symbol>com.atricore.idbus.console.account.main.AccountManagementMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.main.AccountManagementViewFactory</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.AccountManagementStartUpCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.AddGroupCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.AddUserCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.DeleteGroupCommand</symbol>

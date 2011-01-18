@@ -63,13 +63,13 @@ public class ApplicationMediator extends IocMediator {
     private var _selectedAppSectionIndex:int;
 
     // TODO : Remove Dependencies to specific services
+
     private var _secureContextProxy:SecureContextProxy;
     private var _projectProxy:ProjectProxy;
     private var _keystoreProxy:KeystoreProxy;
     private var _profileProxy:ProfileProxy;
     private var _accountManagementProxy:AccountManagementProxy;
 
-    // TODO : Remove Dependencies to specific sections
     private var _popupManager:ConsolePopUpManager;
 
     private var _userActionMenuBar:MenuBar;

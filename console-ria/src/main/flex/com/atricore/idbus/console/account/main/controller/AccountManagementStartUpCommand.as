@@ -4,8 +4,8 @@
 package com.atricore.idbus.console.account.main.controller {
 import com.atricore.idbus.console.main.controller.AppSectionStartUpCommand;
 
-public class AccountManagementStartupCommand extends AppSectionStartUpCommand {
-    public function AccountManagementStartupCommand() {
+public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
+    public function AccountManagementStartUpCommand() {
     }
 }
 }

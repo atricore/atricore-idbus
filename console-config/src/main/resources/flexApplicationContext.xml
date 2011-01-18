@@ -153,7 +153,7 @@
     </object>
 
     <object id="accountManagementStartupCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.AccountManagementStartUpCommand">
+            class="com.atricore.idbus.console.account.main.controller.AccountManagementStartUpCommand">
         <property name="appSectionMediator" ref="accountManagementMediator"/>
     </object>
 
@@ -590,7 +590,7 @@
         <property name="viewFactory" ref="modelerViewFactory"/>
     </object>
 
-    <object id="lifecycleMediator" class="com.atricore.idbus.console.lifecycle.LifecycleViewMediator">
+    <object id="lifecycleMediator" class="com.atricore.idbus.console.lifecycle.main.LifecycleViewMediator">
         <property name="projectProxy" ref="projectProxy"/>
         <property name="viewFactory" ref="lifecycleViewFactory"/>
     </object>
@@ -607,16 +607,12 @@
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
         <property name="popupManager" ref="consolePopUpManager"/>
 
-        <!--property name="modelerMediator" ref="modelerMediator"/-->
-        <property name="lifecycleViewMediator" ref="lifecycleMediator"/>
-        <property name="accountManagementMediator" ref="accountManagementMediator"/>
-
         <property name="secureContextProxy" ref="secureContextProxy"/>
         <property name="projectProxy" ref="projectProxy"/>
         <property name="keystoreProxy" ref="keystoreProxy"/>
         <property name="profileProxy" ref="profileProxy"/>
-        <property name="secureContextProxy" ref="secureContextProxy"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+
     </object>
 
     <!-- support components -->

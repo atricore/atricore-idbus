@@ -15,7 +15,7 @@
           xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
           width="100%" height="100%"
           skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
-        >
+          name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.lifecycleTab.name')}">
 
     <fx:Metadata>
         [ResourceBundle("console")]
@@ -61,8 +61,8 @@
                                     <s:HGroup gap="4" horizontalAlign="center" click="event.stopImmediatePropagation()">
                                         <fx:Script>
                                             <![CDATA[
-                                                import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                                import com.atricore.idbus.console.main.EmbeddedIcons;
+                                            import com.atricore.idbus.console.lifecycle.main.controller.event.LifecycleGridButtonEvent;
+                                            import com.atricore.idbus.console.main.EmbeddedIcons;
                                             ]]>
                                         </fx:Script>
                                         <components:IconButton iconUp="{EmbeddedIcons.editApplianceIcon}"
@@ -117,9 +117,9 @@
                                     </s:states>
                                     <s:HGroup gap="4" horizontalAlign="center" click="event.stopImmediatePropagation()">
                                         <fx:Script>
-                                            <![CDATA[
-                                                import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                                import com.atricore.idbus.console.main.EmbeddedIcons;
+                                             <![CDATA[
+                                            import com.atricore.idbus.console.lifecycle.main.controller.event.LifecycleGridButtonEvent;
+                                            import com.atricore.idbus.console.main.EmbeddedIcons;
                                             ]]>
                                         </fx:Script>
                                         <components:IconButton iconUp="{EmbeddedIcons.editApplianceIcon}"
@@ -184,9 +184,9 @@
                                     <s:HGroup gap="4" horizontalAlign="center" click="event.stopImmediatePropagation()">
                                         <fx:Script>
                                             <![CDATA[
-                                                import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                                import com.atricore.idbus.console.lifecycle.main.controller.event.LifecycleGridButtonEvent;
                                                 import com.atricore.idbus.console.main.EmbeddedIcons;
-                                        ]]>
+                                            ]]>
                                         </fx:Script>
                                         <components:IconButton iconUp="{EmbeddedIcons.startApplianceIcon}"
                                                                iconWidth="22" iconHeight="22"
@@ -253,9 +253,9 @@
                                     <s:HGroup gap="4" horizontalAlign="center"
                                              click="event.stopImmediatePropagation()">
                                         <fx:Script>
-                                            <![CDATA[
-                                                import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                                import com.atricore.idbus.console.main.EmbeddedIcons;
+                                             <![CDATA[
+                                            import com.atricore.idbus.console.lifecycle.main.controller.event.LifecycleGridButtonEvent;
+                                            import com.atricore.idbus.console.main.EmbeddedIcons;
                                             ]]>
                                         </fx:Script>
                                         <components:IconButton iconUp="{EmbeddedIcons.trashApplianceIcon}"

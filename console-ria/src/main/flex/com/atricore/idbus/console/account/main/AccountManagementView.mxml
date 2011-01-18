@@ -39,6 +39,7 @@
          xmlns:user="com.atricore.idbus.console.account.users.*"
          width="100%" height="100%"
          skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
+         name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.accountTab.name')}"
         >
 
     <fx:Metadata>
