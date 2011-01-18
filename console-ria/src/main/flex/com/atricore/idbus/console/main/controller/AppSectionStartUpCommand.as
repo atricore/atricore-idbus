@@ -50,6 +50,7 @@ public class AppSectionStartUpCommand extends IocSimpleCommand implements IRespo
 
 
     public function result(data:Object):void {
+        // TODO : Need to propagate failure event!
         if (data.result == null) {
             //sendNotification(FAILURE);
             return;
@@ -59,6 +60,7 @@ public class AppSectionStartUpCommand extends IocSimpleCommand implements IRespo
     }
 
     public function fault(info:Object):void {
+        // TODO : Need to propagate failure event!
         //sendNotification(FAILURE);
     }
 
