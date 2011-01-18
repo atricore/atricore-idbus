@@ -44,6 +44,9 @@ public class BuildIdentityApplianceCommand extends IocSimpleCommand implements I
     private var _projectProxy:ProjectProxy;
 
 
+    public function BuildIdentityApplianceCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

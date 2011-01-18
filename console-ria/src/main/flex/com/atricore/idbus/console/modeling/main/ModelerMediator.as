@@ -20,6 +20,7 @@
  */
 
 package com.atricore.idbus.console.modeling.main {
+import com.atricore.idbus.console.main.AppSectionMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
@@ -65,7 +66,7 @@ import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class ModelerMediator extends IocMediator implements IDisposable {
+public class ModelerMediator extends AppSectionMediator implements IDisposable {
 
     public static const viewName:String = "ModelerView";
 
@@ -93,7 +94,6 @@ public class ModelerMediator extends IocMediator implements IDisposable {
     private var _tempSelectedViewIndex:int;
 
     private var _fileRef:FileReference;
-
 
     public function ModelerMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);

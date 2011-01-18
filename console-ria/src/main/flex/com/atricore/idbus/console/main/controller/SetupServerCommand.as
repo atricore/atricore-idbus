@@ -43,6 +43,9 @@ public class SetupServerCommand extends IocSimpleCommand implements IResponder
     private var _registry:ServiceRegistry;
 
 
+    public function SetupServerCommand() {
+    }
+
     public function get profileProxy():ProfileProxy {
         return _profileProxy;
     }

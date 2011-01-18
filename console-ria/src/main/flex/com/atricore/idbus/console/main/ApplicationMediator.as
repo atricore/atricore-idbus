@@ -40,6 +40,7 @@ import flash.events.Event;
 
 import mx.controls.Alert;
 import mx.controls.MenuBar;
+import mx.core.IVisualElement;
 import mx.events.FlexEvent;
 import mx.events.MenuEvent;
 import mx.events.StateChangeEvent;
@@ -61,14 +62,16 @@ public class ApplicationMediator extends IocMediator {
 
     public var userProfileIcon:Class = EmbeddedIcons.userProfileIcon;
 
+    // TODO : Remove Dependencies to specific services
     private var _secureContextProxy:SecureContextProxy;
     private var _projectProxy:ProjectProxy;
     private var _keystoreProxy:KeystoreProxy;
     private var _profileProxy:ProfileProxy;
     private var _accountManagementProxy:AccountManagementProxy;
 
+    // TODO : Remove Dependencies to specific sections
     private var _popupManager:ConsolePopUpManager;
-    private var _modelerMediator:IIocMediator;
+    // private var _modelerMediator:IIocMediator;
     private var _lifecycleViewMediator:IIocMediator;
     private var _accountManagementMediator:IIocMediator;
 
@@ -80,13 +83,14 @@ public class ApplicationMediator extends IocMediator {
 
     }
 
+    /*
     public function get modelerMediator():IIocMediator {
         return _modelerMediator;
     }
 
     public function set modelerMediator(value:IIocMediator):void {
         _modelerMediator = value;
-    }
+    } */
 
     public function get lifecycleViewMediator():IIocMediator {
         return _lifecycleViewMediator;
@@ -187,6 +191,9 @@ public class ApplicationMediator extends IocMediator {
 
     public function handleStackChange(event:IndexChangeEvent):void {
         var selectedIndex:int = (event.currentTarget as ButtonBar).selectedIndex;
+
+        // TODO : Remove dependecines with app. sections
+        // TODO : Trigger notification to allow app. sections to do stuff before changing the view.
         if (event.oldIndex == MODELER_VIEW_INDEX) {
             sendNotification(ApplicationFacade.AUTOSAVE_IDENTITY_APPLIANCE, selectedIndex);
         } else if (selectedIndex == MODELER_VIEW_INDEX) {
@@ -330,7 +337,24 @@ public class ApplicationMediator extends IocMediator {
     }
 
     public function login():void {
-        modelerMediator.setViewComponent(app.modelerView);
+
+        var appSectionMediatorNames:Array = iocFacade.container.getObjectNamesForType(AppSectionMediator);
+
+        appSectionMediatorNames.forEach(function(mediatorName:String, idx:int, arr:Array):void {
+
+            // App Section Mediator found
+            var mediator:AppSectionMediator = iocFacade.container.getObject(mediatorName) as AppSectionMediator;
+
+            // Use a factory ?
+            var view:IVisualElement = iocFacade.container.getObject(mediator.viewName) as IVisualElement;
+
+            app.modulesViewStack.addNewChild(view);
+            mediator.setViewComponent(view);
+        });
+
+
+        //modelerMediator.setViewComponent(app.modelerView);
+
         lifecycleViewMediator.setViewComponent(app.lifecycleView);
         accountManagementMediator.setViewComponent(app.accountManagementView);
 

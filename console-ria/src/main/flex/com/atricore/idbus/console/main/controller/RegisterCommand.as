@@ -41,6 +41,8 @@ public class RegisterCommand extends IocSimpleCommand implements IResponder {
     private var _profileProxy:ProfileProxy;
     private var _registry:ServiceRegistry;
 
+    public function RegisterCommand() {
+    }
 
     public function get profileProxy():ProfileProxy {
         return _profileProxy;

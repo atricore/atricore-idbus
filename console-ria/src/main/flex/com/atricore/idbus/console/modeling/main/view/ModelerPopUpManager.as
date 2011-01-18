@@ -158,6 +158,11 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _exportProviderCertificateView:ExportProviderCertificateView;
     private var _exportMetadataView:ExportMetadataView;
 
+
+    public function ModelerPopUpManager() {
+        super();
+    }
+
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
         _popup.styleName = "modelerPopup";

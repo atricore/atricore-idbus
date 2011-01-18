@@ -43,7 +43,11 @@ public class EditUserCommand extends IocSimpleCommand implements IResponder {
 
     private var _registry:ServiceRegistry;
     private var _accountManagementProxy:AccountManagementProxy;
-    private var user:User; 
+    private var user:User;
+
+
+    public function EditUserCommand() {
+    }
 
     public function get registry():ServiceRegistry {
         return _registry;

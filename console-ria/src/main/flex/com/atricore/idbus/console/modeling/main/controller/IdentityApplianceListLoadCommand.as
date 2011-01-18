@@ -43,6 +43,8 @@ public class IdentityApplianceListLoadCommand extends IocSimpleCommand implement
     private var _projectProxy:ProjectProxy;
     private var _registry:ServiceRegistry;
 
+    public function IdentityApplianceListLoadCommand() {
+    }
 
     public function get registry():ServiceRegistry {
         return _registry;

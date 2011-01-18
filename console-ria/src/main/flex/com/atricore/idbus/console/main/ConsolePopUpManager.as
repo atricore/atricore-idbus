@@ -48,6 +48,10 @@ public class ConsolePopUpManager extends BasePopUpManager {
     protected var _changePasswordForm:ChangePasswordView;
 
 
+    public function ConsolePopUpManager() {
+        super();
+    }
+
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
         _popup.styleName = "mainPopup";

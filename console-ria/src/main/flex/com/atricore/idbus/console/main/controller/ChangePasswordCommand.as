@@ -47,6 +47,9 @@ public class ChangePasswordCommand extends IocSimpleCommand implements IResponde
     private var _secureContext:SecureContextProxy;
 
 
+    public function ChangePasswordCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

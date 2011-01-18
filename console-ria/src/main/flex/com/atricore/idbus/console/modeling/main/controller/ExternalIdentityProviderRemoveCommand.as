@@ -36,6 +36,10 @@ public class ExternalIdentityProviderRemoveCommand extends IocSimpleCommand {
 
     private var _projectProxy:ProjectProxy;
 
+
+    public function ExternalIdentityProviderRemoveCommand() {
+    }
+
     public function get projectProxy():ProjectProxy {
         return _projectProxy;
     }

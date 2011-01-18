@@ -46,6 +46,10 @@ public class IdentityApplianceUpdateCommand extends IocSimpleCommand implements 
 
     private var _silentUpdate:Boolean;
 
+
+    public function IdentityApplianceUpdateCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

@@ -67,6 +67,10 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     private var _searchUsersForm:SearchUsersForm;
 
 
+    public function AccountManagementPopUpManager() {
+        super();
+    }
+
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
         _popup.styleName = "accountManPopup";

@@ -6,6 +6,10 @@ public class CheckFoldersRequest {
     private var _folders:ArrayCollection;
     private var _environmentName:String;
 
+
+    public function CheckFoldersRequest() {
+    }
+
     public function get folders():ArrayCollection {
         return _folders;
     }

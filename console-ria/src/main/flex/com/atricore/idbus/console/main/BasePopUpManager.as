@@ -68,6 +68,9 @@ public class BasePopUpManager {
     protected var _processingView:ProcessingView;
 
 
+    public function BasePopUpManager() {
+    }
+
     public function init(facade:IFacade, popupParent:UIComponent):void {
         _facade = facade;
         _popupParent = popupParent;

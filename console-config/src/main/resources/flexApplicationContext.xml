@@ -578,6 +578,8 @@
         <property name="propertySheetMediator" ref="propertySheetMediator"/>
         <property name="popupManager" ref="modelerPopUpManager"/>
         <property name="projectProxy" ref="projectProxy"/>
+
+        <property name="viewName" value="modelerView"/>
     </object>
 
     <object id="lifecycleViewMediator" class="com.atricore.idbus.console.lifecycle.LifecycleViewMediator">
@@ -663,6 +665,9 @@
         <property name="searchUsersMediator" ref="searchUsersMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
     </object>
+
+    <!-- Views -->
+    <object id="modelerView" class="com.atricore.idbus.console.modeling.main.ModelerView"/>
 
 
 </objects>

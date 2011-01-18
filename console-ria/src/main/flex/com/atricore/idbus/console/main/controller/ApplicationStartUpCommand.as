@@ -39,6 +39,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.ApplicationStartUpCommand.SUCCESS";
     public static const FAILURE:String = "com.atricore.idbus.console.main.controller.ApplicationStartUpCommand.FAILURE";
 
+    // TODO : EXTENSIONS Remove specific components
     /* Proxies */
     private var _serviceRegistry:IIocProxy;
     private var _projectProxy:IIocProxy;
@@ -159,6 +160,9 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _exportProviderCertificateCommand:IIocCommand;
     private var _exportMetadataCommand:IIocCommand;
 
+
+    public function ApplicationStartUpCommand() {
+    }
 
     public function get applicationMediator():IIocMediator {
         return _applicationMediator;
@@ -1055,7 +1059,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         var startupCtx:StartupContext = new StartupContext(app, registry);
         sendNotification(ApplicationFacade.STARTUP_APP_SECTION, startupCtx);
 
-        // TODO : Move this to specific StartupAppSection command instances !
+        // TODO : EXTENSIONS Move this to specific StartupAppSection command instances !
         // first register commands (some commands are needed for mediator creation/initialization)
         iocFacade.registerCommandByConfigName(ApplicationFacade.SETUP_SERVER, setupServerCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LOGIN, loginCommand.getConfigName());
@@ -1191,7 +1195,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         var registry:ServiceRegistry = serviceRegistry as ServiceRegistry;
         registry.setChannel(channel);
 
-
+        // TODO : EXTENSIONS Remove and send to specific startup-commands
         registry.registerRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE, ApplicationFacade.USER_PROVISIONING_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE, ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.PROFILE_MANAGEMENT_SERVICE, ApplicationFacade.PROFILE_MANAGEMENT_SERVICE);

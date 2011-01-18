@@ -8,6 +8,10 @@ public class ActivateExecutionEnvironmentRequest {
     private var _replaceConfFiles:Boolean;
     private var _installSamples:Boolean;
 
+
+    public function ActivateExecutionEnvironmentRequest() {
+    }
+
     public function get executionEnvironment():ExecutionEnvironment {
         return _executionEnvironment;
     }

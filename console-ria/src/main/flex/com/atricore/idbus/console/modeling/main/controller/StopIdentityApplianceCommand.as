@@ -46,6 +46,8 @@ public class StopIdentityApplianceCommand extends IocSimpleCommand implements IR
 
     private var _registry:ServiceRegistry;
 
+    public function StopIdentityApplianceCommand() {
+    }
 
     public function get registry():ServiceRegistry {
         return _registry;

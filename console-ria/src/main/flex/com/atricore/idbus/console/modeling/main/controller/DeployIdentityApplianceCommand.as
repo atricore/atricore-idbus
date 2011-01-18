@@ -44,6 +44,8 @@ public class DeployIdentityApplianceCommand extends IocSimpleCommand implements 
 
     private var _registry:ServiceRegistry;
 
+    public function DeployIdentityApplianceCommand() {
+    }
 
     public function get registry():ServiceRegistry {
         return _registry;

@@ -57,7 +57,6 @@ public class KeystoreProxy extends IocProxy implements IDisposable
     }
 
     public function dispose():void {
-        _viewAction = null;
         _currentKeystore = null;
     }
 

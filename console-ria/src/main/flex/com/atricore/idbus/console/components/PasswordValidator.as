@@ -11,6 +11,11 @@ public class PasswordValidator extends Validator
     private var _noMatchError: String;
     private var _defaultLength: Number;
 
+
+    public function PasswordValidator() {
+        super();
+    }
+
     [Inspectable(category="General", defaultValue="Fields did not match")]
     public function set noMatchError( argError:String):void{
         _noMatchError = argError;
