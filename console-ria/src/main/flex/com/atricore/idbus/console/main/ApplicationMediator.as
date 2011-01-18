@@ -58,6 +58,7 @@ public class ApplicationMediator extends IocMediator {
     public static const MODELER_VIEW_INDEX:int = 0;
     public static const LIFECYCLE_VIEW_INDEX:int = 1;
     public static const ACCOUNT_VIEW_INDEX:int = 2;
+    public static const LICENSE_VIEW_INDEX:int = 3;
 
     public var userProfileIcon:Class = EmbeddedIcons.userProfileIcon;
 
@@ -198,6 +199,9 @@ public class ApplicationMediator extends IocMediator {
         } else if (selectedIndex == ACCOUNT_VIEW_INDEX) {
             app.modulesViewStack.selectedIndex = ACCOUNT_VIEW_INDEX;
             sendNotification(ApplicationFacade.ACCOUNT_VIEW_SELECTED);
+        } else if (selectedIndex == LICENSE_VIEW_INDEX) {
+            app.modulesViewStack.selectedIndex = LICENSE_VIEW_INDEX;
+            sendNotification(ApplicationFacade.LICENSE_VIEW_SELECTED);
         }
     }
 

@@ -31,6 +31,7 @@
                xmlns:lifecycle="com.atricore.idbus.console.lifecycle.*"
                xmlns:account="com.atricore.idbus.console.account.main.*"
                xmlns:setup="com.atricore.idbus.console.setup.*"
+               xmlns:license="com.atricore.idbus.console.licensing.*"
                height="100%" width="100%" minWidth="955" minHeight="600"
                preloader="com.atricore.idbus.console.branding.AtricoreConsolePreloader"
                creationComplete="onCreationComplete()">
@@ -122,6 +123,7 @@
             <modeler:ModelerView id="modelerView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.modelerTab.name')}"/>
             <lifecycle:LifecycleView id="lifecycleView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.lifecycleTab.name')}"/>
             <account:AccountManagementView id="accountManagementView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.accountTab.name')}"/>
+            <license:LicenseView id="licenseView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.licenseTab.name')}" />
             <!--setup:SetupView id="setupView" name="Setup"/-->
             <!--<s:Group width="95%" height="95%" name="Setup">-->
             <!--<s:Label text="Setup"/>-->
