@@ -2,6 +2,7 @@
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 package com.atricore.idbus.console.main.controller {
+import com.atricore.idbus.console.main.AppSectionMediator;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 
 import mx.messaging.config.ServerConfig;
@@ -21,7 +22,7 @@ public class AppSectionStartUpCommand extends IocSimpleCommand implements IRespo
 
     public static const FAILURE:String = "com.atricore.idbus.console.main.controller.UpCommand.FAILURE";
 
-    private var _serviceRegistry:IIocProxy;
+    private var _appSectionMediator:AppSectionMediator;
 
     public function AppSectionStartUpCommand() {
     }
@@ -29,11 +30,17 @@ public class AppSectionStartUpCommand extends IocSimpleCommand implements IRespo
     override public function execute(note:INotification):void {
         var ctx:StartupContext = note.getBody() as StartupContext;
         setupServices(ctx);
-
         setupCommands(ctx);
-
         setupMediators(ctx);
+    }
 
+
+    public function get appSectionMediator():AppSectionMediator {
+        return _appSectionMediator;
+    }
+
+    public function set appSectionMediator(value:AppSectionMediator):void {
+        _appSectionMediator = value;
     }
 
     protected function setupServices(ctx:StartupContext):void{
@@ -45,7 +52,7 @@ public class AppSectionStartUpCommand extends IocSimpleCommand implements IRespo
     }
 
     protected function setupMediators(ctx:StartupContext):void{
-
+        iocFacade.registerMediatorByConfigName(appSectionMediator.getConfigName());
     }
 
 

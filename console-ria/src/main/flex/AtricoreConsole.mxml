@@ -91,6 +91,8 @@
     <fx:Style source="../resources/style/yflexskin.css"/>
     <fx:Style source="../resources/style/style.css"/>
 
+
+    <!-- We can use states as Eclipse uses layouts :) -->
     <s:states>
         <s:State name="splash"/>
         <s:State name="operation"/>
@@ -114,19 +116,17 @@
         </heading:AtricoreHeading>
 
         <login:LoginView id="loginView" includeIn="splash"/>
+
         <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name"
                      skinClass="com.atricore.idbus.console.skin.buttonbar.IconButtonBarSkin" requireSelection="true"
-                     includeIn="operation"/>
+                     excludeFrom="splash"/>
 
-        <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%" includeIn="operation">
+        <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%" excludeFrom="splash">
+            <!-- Dynamically contributed -->
             <!--modeler:ModelerView id="modelerView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.modelerTab.name')}"/-->
-            <lifecycle:LifecycleView id="lifecycleView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.lifecycleTab.name')}"/>
-            <account:AccountManagementView id="accountManagementView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.accountTab.name')}"/>
-            <!--setup:SetupView id="setupView" name="Setup"/-->
-            <!--<s:Group width="95%" height="95%" name="Setup">-->
-            <!--<s:Label text="Setup"/>-->
-            <!--<s:BitmapImage id="icon" source="{EmbeddedIcons.setupMiniIcon}" />-->
-            <!--</s:Group>-->
+            <!--lifecycle:LifecycleView id="lifecycleView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.lifecycleTab.name')}"/-->
+            <!--account:AccountManagementView id="accountManagementView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.accountTab.name')}"/-->
+
 
         </comp:CustomViewStack>
 

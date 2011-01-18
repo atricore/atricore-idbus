@@ -90,7 +90,7 @@
         <property name="loginMediator" ref="loginMediator"/>
         <property name="changePasswordMediator" ref="changePasswordMediator"/>
         <property name="setupWizardViewMediator" ref="setupWizardViewMediator"/>
-        <property name="lifecycleViewMediator" ref="lifecycleViewMediator"/>
+        <property name="lifecycleViewMediator" ref="lifecycleMediator"/>
         <property name="buildApplianceMediator" ref="buildApplianceMediator"/>
         <property name="deployApplianceMediator" ref="deployApplianceMediator"/>
         <property name="simpleSSOWizardViewMediator" ref="simpleSSOWizardViewMediator"/>
@@ -143,12 +143,19 @@
     </object>
 
     <object id="modelerStartupCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.ModelerStartUpCommand"
-            >
-        <property name="modelerMediator" ref="modelerMediator"/>
-
+            class="com.atricore.idbus.console.modeling.main.controller.ModelerStartUpCommand">
+        <property name="appSectionMediator" ref="modelerMediator"/>
     </object>
 
+    <object id="lifecycleStartupCommand"
+            class="com.atricore.idbus.console.lifecycle.main.controller.LifecycleStartUpCommand">
+        <property name="appSectionMediator" ref="lifecycleMediator"/>
+    </object>
+
+    <object id="accountManagementStartupCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.AccountManagementStartUpCommand">
+        <property name="appSectionMediator" ref="accountManagementMediator"/>
+    </object>
 
     <!-- Commands -->
     <object id="loginCommand" class="com.atricore.idbus.console.main.controller.LoginCommand">
@@ -398,9 +405,6 @@
     <object id="setupWizardViewMediator" class="com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator">
         <property name="profileProxy" ref="profileProxy"/>
     </object>
-    <object id="lifecycleViewMediator" class="com.atricore.idbus.console.lifecycle.LifecycleViewMediator">
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
     <object id="buildApplianceMediator"
             class="com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -583,11 +587,12 @@
         <property name="popupManager" ref="modelerPopUpManager"/>
         <property name="projectProxy" ref="projectProxy"/>
 
-        <property name="viewName" value="modelerView"/>
+        <property name="viewFactory" ref="modelerViewFactory"/>
     </object>
 
-    <object id="lifecycleViewMediator" class="com.atricore.idbus.console.lifecycle.LifecycleViewMediator">
+    <object id="lifecycleMediator" class="com.atricore.idbus.console.lifecycle.LifecycleViewMediator">
         <property name="projectProxy" ref="projectProxy"/>
+        <property name="viewFactory" ref="lifecycleViewFactory"/>
     </object>
 
     <object id="accountManagementMediator" class="com.atricore.idbus.console.account.main.AccountManagementMediator">
@@ -595,13 +600,15 @@
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
         <property name="groupsMediator" ref="groupsMediator"/>
         <property name="usersMediator" ref="usersMediator"/>
+
+        <property name="viewFactory" ref="accountManagementViewFactory"/>
     </object>
 
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
         <property name="popupManager" ref="consolePopUpManager"/>
 
         <!--property name="modelerMediator" ref="modelerMediator"/-->
-        <property name="lifecycleViewMediator" ref="lifecycleViewMediator"/>
+        <property name="lifecycleViewMediator" ref="lifecycleMediator"/>
         <property name="accountManagementMediator" ref="accountManagementMediator"/>
 
         <property name="secureContextProxy" ref="secureContextProxy"/>
@@ -670,8 +677,9 @@
         <property name="processingMediator" ref="processingMediator"/>
     </object>
 
-    <!-- Views -->
-    <object id="modelerView" class="com.atricore.idbus.console.modeling.main.ModelerView"/>
-
+    <!-- App Section View Factories -->
+    <object id="modelerViewFactory" class="com.atricore.idbus.console.modeling.main.ModelerViewFactory"/>
+    <object id="lifecycleViewFactory" class="com.atricore.idbus.console.lifecycle.main.LifecycleViewFactory"/>
+    <object id="accountManagementViewFactory" class="com.atricore.idbus.console.account.main.AccountManagementViewFactory"/>
 
 </objects>

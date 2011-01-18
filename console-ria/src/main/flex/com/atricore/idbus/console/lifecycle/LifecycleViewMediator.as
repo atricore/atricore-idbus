@@ -2,6 +2,7 @@ package com.atricore.idbus.console.lifecycle
 {
 import com.atricore.idbus.console.components.CustomDataGrid;
 import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+import com.atricore.idbus.console.main.AppSectionMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
@@ -37,7 +38,7 @@ import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class LifecycleViewMediator extends IocMediator implements IDisposable {
+public class LifecycleViewMediator extends AppSectionMediator implements IDisposable {
 
     public static const viewName:String = "LifecycleView";
 
@@ -291,7 +292,8 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.LIFECYCLE_VIEW_SELECTED,
+        return [ApplicationFacade.APP_SECTION_CHANGE_START,
+            ApplicationFacade.APP_SECTION_CHANGE_END,
             BuildIdentityApplianceCommand.SUCCESS,
             BuildIdentityApplianceCommand.FAILURE,
             DeployIdentityApplianceCommand.SUCCESS,
@@ -312,10 +314,24 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.LIFECYCLE_VIEW_SELECTED:
-                projectProxy.currentView = viewName;
-                sendNotification(ApplicationFacade.CLEAR_MSG);
-                initGrids();
+            case ApplicationFacade.APP_SECTION_CHANGE_START:
+                var currentView:String = notification.getBody() as String;
+                if (currentView != viewName) {
+                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
+                } else {
+                    // TODO : Make sure that we can leave this view !!!! : Send
+                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
+                    //  sendNotification(ApplicationFacade.APP_SECTION_CHANGE_REJECTED);
+
+                }
+                break;
+            case ApplicationFacade.APP_SECTION_CHANGE_END:
+                var newView:String = notification.getBody() as String;
+                if (newView == viewName) {
+                    projectProxy.currentView = viewName;
+                    sendNotification(ApplicationFacade.CLEAR_MSG);
+                    initGrids();
+                }
                 break;
             case BuildIdentityApplianceCommand.SUCCESS:
                 if (projectProxy.currentView == viewName) {
@@ -433,7 +449,9 @@ public class LifecycleViewMediator extends IocMediator implements IDisposable {
                 }
                 break;
             case ApplicationFacade.LOGOUT:
-
+                break;
+            default:
+                super.handleNotification(notification);
                 break;
         }
     }

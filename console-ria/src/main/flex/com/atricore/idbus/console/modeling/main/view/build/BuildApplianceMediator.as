@@ -24,6 +24,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.main.ModelerViewFactory;
 import com.atricore.idbus.console.modeling.main.ModelerMediator;
 import com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand;
 
@@ -77,11 +78,11 @@ public class BuildApplianceMediator extends IocFormMediator
         return [BuildIdentityApplianceCommand.SUCCESS,
                 BuildIdentityApplianceCommand.FAILURE];
     }
-    
+
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case BuildIdentityApplianceCommand.SUCCESS:
-                if (projectProxy.currentView == ModelerMediator.viewName) {
+                if (projectProxy.currentView == ModelerViewFactory.VIEW_NAME) {
                     projectProxy.currentIdentityAppliance = projectProxy.commandResultIdentityAppliance;
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
@@ -93,7 +94,7 @@ public class BuildApplianceMediator extends IocFormMediator
                 }
                 break;
             case BuildIdentityApplianceCommand.FAILURE:
-                if (projectProxy.currentView == ModelerMediator.viewName) {
+                if (projectProxy.currentView == ModelerViewFactory.VIEW_NAME) {
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         "There was an error building appliance.");

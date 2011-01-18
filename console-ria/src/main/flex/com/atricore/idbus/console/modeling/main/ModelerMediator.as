@@ -68,7 +68,7 @@ import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class ModelerMediator extends AppSectionMediator implements IDisposable {
 
-    public static const viewName:String = "ModelerView";
+    //public static const viewName:String = "ModelerView";
 
     public static const BUNDLE:String = "console";
 
@@ -161,7 +161,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
         _created = true;
         _tempSelectedViewIndex = -1;
 
-        event.target.removeEventListener(FlexEvent.CREATION_COMPLETE,creationCompleteHandler);
+        event.target.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 
         /* Remove unused title in both modeler's and diagram's panel */
         view.titleDisplay.width = 0;
@@ -214,6 +214,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
         view.btnImport.addEventListener(MouseEvent.CLICK, handleImportClick);
         view.btnExport.addEventListener(MouseEvent.CLICK, handleExportClick);
     }
+
     public function dispose():void {
         // Clean up:
         //      - Remove event listeners
@@ -289,7 +290,12 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.MODELER_VIEW_SELECTED,
+        var notifications:Array = super.listNotificationInterests();
+
+
+        return [
+            ApplicationFacade.APP_SECTION_CHANGE_START,
+            ApplicationFacade.APP_SECTION_CHANGE_END,
             ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
             ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT,
             ApplicationFacade.CREATE_IDENTITY_PROVIDER_ELEMENT,
@@ -352,9 +358,23 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.MODELER_VIEW_SELECTED:
-                projectProxy.currentView = viewName;
-                init();
+            case ApplicationFacade.APP_SECTION_CHANGE_START:
+                var currentView:String = notification.getBody() as String;
+                if (currentView != viewName) {
+                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
+                } else {
+                    // TODO : Make sure that we can leave this view !!!! : Send
+                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
+                    //  sendNotification(ApplicationFacade.APP_SECTION_CHANGE_REJECTED);
+
+                }
+                break;
+            case ApplicationFacade.APP_SECTION_CHANGE_END:
+                var newView:String = notification.getBody() as String;
+                if (newView == viewName) {
+                    projectProxy.currentView = viewName;
+                    init();
+                }
                 break;
             case ApplicationFacade.UPDATE_IDENTITY_APPLIANCE:
                 updateIdentityAppliance();
@@ -646,9 +666,14 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             case ApplicationFacade.EXPORT_METADATA:
                 popupManager.showCreateExportMetadataWindow(notification);
                 break;
+            default:
+                // Let super mediator handle notifications.
+                super.handleNotification(notification);
+                break;
         }
 
     }
+
 
     private function updateIdentityAppliance():void {
         _identityAppliance = projectProxy.currentIdentityAppliance;
@@ -682,13 +707,11 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
         return (item as IdentityAppliance).idApplianceDefinition.name;
     }
 
-    protected function get view():ModelerView
-    {
+    protected function get view():ModelerView {
         return viewComponent as ModelerView;
     }
 
-    protected function set view(md:ModelerView):void
-    {
+    protected function set view(md:ModelerView):void {
         viewComponent = md;
     }
 }

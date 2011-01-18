@@ -56,11 +56,11 @@ public class ApplicationMediator extends IocMediator {
     // Canonical name of the Mediator
     public static const REGISTER_HEAD:String = "User Registration";
 
-    public static const MODELER_VIEW_INDEX:int = 0;
-    public static const LIFECYCLE_VIEW_INDEX:int = 1;
-    public static const ACCOUNT_VIEW_INDEX:int = 2;
-
     public var userProfileIcon:Class = EmbeddedIcons.userProfileIcon;
+
+    private var _appSections:Array;
+
+    private var _selectedAppSectionIndex:int;
 
     // TODO : Remove Dependencies to specific services
     private var _secureContextProxy:SecureContextProxy;
@@ -71,9 +71,6 @@ public class ApplicationMediator extends IocMediator {
 
     // TODO : Remove Dependencies to specific sections
     private var _popupManager:ConsolePopUpManager;
-    // private var _modelerMediator:IIocMediator;
-    private var _lifecycleViewMediator:IIocMediator;
-    private var _accountManagementMediator:IIocMediator;
 
     private var _userActionMenuBar:MenuBar;
 
@@ -81,31 +78,6 @@ public class ApplicationMediator extends IocMediator {
 
         super(p_mediatorName, p_viewComponent);
 
-    }
-
-    /*
-    public function get modelerMediator():IIocMediator {
-        return _modelerMediator;
-    }
-
-    public function set modelerMediator(value:IIocMediator):void {
-        _modelerMediator = value;
-    } */
-
-    public function get lifecycleViewMediator():IIocMediator {
-        return _lifecycleViewMediator;
-    }
-
-    public function set lifecycleViewMediator(value:IIocMediator):void {
-        _lifecycleViewMediator = value;
-    }
-
-    public function get accountManagementMediator():IIocMediator {
-        return _accountManagementMediator;
-    }
-
-    public function set accountManagementMediator(value:IIocMediator):void {
-        _accountManagementMediator = value;
     }
 
     public function get popupManager():ConsolePopUpManager {
@@ -192,20 +164,15 @@ public class ApplicationMediator extends IocMediator {
     public function handleStackChange(event:IndexChangeEvent):void {
         var selectedIndex:int = (event.currentTarget as ButtonBar).selectedIndex;
 
-        // TODO : Remove dependecines with app. sections
-        // TODO : Trigger notification to allow app. sections to do stuff before changing the view.
-        if (event.oldIndex == MODELER_VIEW_INDEX) {
-            sendNotification(ApplicationFacade.AUTOSAVE_IDENTITY_APPLIANCE, selectedIndex);
-        } else if (selectedIndex == MODELER_VIEW_INDEX) {
-            app.modulesViewStack.selectedIndex = MODELER_VIEW_INDEX;
-            sendNotification(ApplicationFacade.MODELER_VIEW_SELECTED);
-        } else if (selectedIndex == LIFECYCLE_VIEW_INDEX) {
-            app.modulesViewStack.selectedIndex = LIFECYCLE_VIEW_INDEX;
-            sendNotification(ApplicationFacade.LIFECYCLE_VIEW_SELECTED);
-        } else if (selectedIndex == ACCOUNT_VIEW_INDEX) {
-            app.modulesViewStack.selectedIndex = ACCOUNT_VIEW_INDEX;
-            sendNotification(ApplicationFacade.ACCOUNT_VIEW_SELECTED);
-        }
+        var currentMediator:AppSectionMediator = _appSections[event.oldIndex];
+
+
+        // TODO : Is there a better way ?
+        _selectedAppSectionIndex = selectedIndex;
+
+        // Send old and new view names ...
+        sendNotification(ApplicationFacade.APP_SECTION_CHANGE_START, currentMediator.viewName);
+
     }
 
     public function handleShowConsole(event:Event):void {
@@ -222,7 +189,8 @@ public class ApplicationMediator extends IocMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.SHOW_ERROR_MSG,
+        return [ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED,
+            ApplicationFacade.SHOW_ERROR_MSG,
             //            ApplicationFacade.SHOW_SUCCESS_MSG,
             ApplicationFacade.CLEAR_MSG,
             ApplicationStartUpCommand.SUCCESS,
@@ -270,6 +238,7 @@ public class ApplicationMediator extends IocMediator {
                 app.preloader.visible = true;
                 break;
             case LoginCommand.SUCCESS:
+                // Login SUCCESS, switch application state to operational :
                 app.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, switchedMode);
                 app.currentState = "operation";
                 break;
@@ -284,16 +253,17 @@ public class ApplicationMediator extends IocMediator {
             case ApplicationFacade.CLEAR_MSG :
                 //                app.messageBox.clearAndHide();
                 break;
-            case ApplicationFacade.DISPLAY_VIEW:
-                var viewIndex:int = notification.getBody() as int;
-                if (viewIndex == MODELER_VIEW_INDEX) {
-                    sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
-                } else if (viewIndex == LIFECYCLE_VIEW_INDEX) {
-                    sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE);
-                } else if (viewIndex == ACCOUNT_VIEW_INDEX) {
-                    sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_ACCOUNT);
-                }
+            case ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED:
+                    var selectedMediator:AppSectionMediator = _appSections[_selectedAppSectionIndex];
+                    app.stackButtonBar.selectedIndex = _selectedAppSectionIndex;
+                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_END, selectedMediator.viewName);
                 break;
+            case ApplicationFacade.APP_SECTION_CHANGE_REJECTED:
+
+                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_END, null);
+                break;
+
+            /*
             case ApplicationFacade.DISPLAY_APPLIANCE_MODELER:
                 app.stackButtonBar.selectedIndex = MODELER_VIEW_INDEX;
                 if (app.modulesViewStack.selectedIndex != MODELER_VIEW_INDEX) {
@@ -315,6 +285,7 @@ public class ApplicationMediator extends IocMediator {
                     sendNotification(ApplicationFacade.ACCOUNT_VIEW_SELECTED);
                 }
                 break;
+                */
             case ApplicationFacade.DISPLAY_CHANGE_PASSWORD:
                 popupManager.showChangePasswordWindow(notification);
                 break;
@@ -338,25 +309,26 @@ public class ApplicationMediator extends IocMediator {
 
     public function login():void {
 
+        _appSections = new Array();
+
         var appSectionMediatorNames:Array = iocFacade.container.getObjectNamesForType(AppSectionMediator);
 
         appSectionMediatorNames.forEach(function(mediatorName:String, idx:int, arr:Array):void {
 
             // App Section Mediator found
             var mediator:AppSectionMediator = iocFacade.container.getObject(mediatorName) as AppSectionMediator;
+            var view:IVisualElement = mediator.viewFactory.createView();
 
-            // Use a factory ?
-            var view:IVisualElement = iocFacade.container.getObject(mediator.viewName) as IVisualElement;
-
+            // Add new section to stack view:
             app.modulesViewStack.addNewChild(view);
+
+            // wired mediator with view
             mediator.setViewComponent(view);
+
+            // Store mediators for later use
+            _appSections.push(mediator);
+
         });
-
-
-        //modelerMediator.setViewComponent(app.modelerView);
-
-        lifecycleViewMediator.setViewComponent(app.lifecycleView);
-        accountManagementMediator.setViewComponent(app.accountManagementView);
 
         app.stackButtonBar.addEventListener(IndexChangeEvent.CHANGE, handleStackChange);
         app.stackButtonBar.selectedIndex = 0;

@@ -2,22 +2,50 @@
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 package com.atricore.idbus.console.main {
+import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class AppSectionMediator extends IocMediator {
 
-    private var _viewName:String ;
+    private var _viewFactory:AppSectionViewFactory;
 
     public function AppSectionMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
     }
 
-    public function get viewName():String {
-        return _viewName;
+    public function get viewName():String{
+        return _viewFactory.viewName;
     }
 
-    public function set viewName(value:String):void {
-        _viewName = value;
+    public function get viewFactory():AppSectionViewFactory {
+        return _viewFactory;
     }
+
+    public function set viewFactory(value:AppSectionViewFactory):void {
+        _viewFactory = value;
+    }
+
+
+    override public function listNotificationInterests():Array {
+        return [ApplicationFacade.APP_SECTION_CHANGE_START,
+            ApplicationFacade.APP_SECTION_CHANGE_END];
+    }
+
+
+    override public function handleNotification(notification:INotification):void {
+         switch (notification.getName()) {
+             case ApplicationFacade.APP_SECTION_CHANGE_START:
+                     var currentView:String = notification.getBody() as String;
+                    // by default, accept APP_SECTION_CHANGE
+                     if (currentView == viewName) {
+                         sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
+                     }
+                break;
+             default:
+                break;
+         }
+    }
+
+
 }
 }

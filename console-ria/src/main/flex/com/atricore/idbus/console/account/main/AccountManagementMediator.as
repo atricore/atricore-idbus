@@ -24,6 +24,7 @@ import com.atricore.idbus.console.account.groups.GroupsView;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
 import com.atricore.idbus.console.account.users.UsersView;
+import com.atricore.idbus.console.main.AppSectionMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 
 import flash.events.Event;
@@ -40,7 +41,7 @@ import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 import spark.components.Group;
 import spark.events.IndexChangeEvent;
 
-public class AccountManagementMediator extends IocMediator implements IDisposable{
+public class AccountManagementMediator extends AppSectionMediator implements IDisposable{
 
     public static const BUNDLE:String = "console";
     private var resMan:IResourceManager = ResourceManager.getInstance();
@@ -156,14 +157,32 @@ public class AccountManagementMediator extends IocMediator implements IDisposabl
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.ACCOUNT_VIEW_SELECTED
+        return [ApplicationFacade.APP_SECTION_CHANGE_START,
+            ApplicationFacade.APP_SECTION_CHANGE_END
         ];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.ACCOUNT_VIEW_SELECTED:
-                init();
+            case ApplicationFacade.APP_SECTION_CHANGE_START:
+                var currentView:String = notification.getBody() as String;
+                if (currentView != viewName) {
+                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
+                } else {
+                    // TODO : Make sure that we can leave this view !!!! : Send
+                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
+                    //  sendNotification(ApplicationFacade.APP_SECTION_CHANGE_REJECTED);
+
+                }
+                break;
+            case ApplicationFacade.APP_SECTION_CHANGE_END:
+                var newView:String = notification.getBody() as String;
+                if (newView == viewName) {
+                    init();
+                }
+                break;
+            default:
+                super.handleNotification(notification);
                 break;
         }
     }

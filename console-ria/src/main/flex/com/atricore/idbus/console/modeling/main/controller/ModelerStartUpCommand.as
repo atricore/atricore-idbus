@@ -13,8 +13,6 @@ import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 
 public class ModelerStartUpCommand extends AppSectionStartUpCommand{
 
-    private var _modelerMediator:IIocMediator;
-
     public function ModelerStartUpCommand() {
     }
 
@@ -26,7 +24,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand{
     override protected function setupMediators(ctx:StartupContext):void {
         super.setupMediators(ctx);
         // TODO : Setup mediators for Modeler
-        iocFacade.registerMediatorByConfigName(modelerMediator.getConfigName());
+
     }
 
 
@@ -36,12 +34,5 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand{
     }
 
 
-    public function get modelerMediator():IIocMediator {
-        return _modelerMediator;
-    }
-
-    public function set modelerMediator(value:IIocMediator):void {
-        _modelerMediator = value;
-    }
 }
 }
