@@ -21,6 +21,8 @@
 
 package com.atricore.idbus.console.main
 {
+import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
+
 import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
 import org.springextensions.actionscript.puremvc.patterns.facade.IocFacade;
 
@@ -37,6 +39,9 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
 
     // command-backed notifications
     public static const STARTUP:String = "startup";
+    public static const STARTUP_APP_SECTION:String = "startupAppSection";
+
+
     public static const SETUP_SERVER:String = "Note.SetupServer";
     public static const REGISTER:String = "Note.Register";
     public static const CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE:String = "createSimpleSSOIdentityAppliance";
@@ -195,6 +200,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     override protected function initializeController():void {
         super.initializeController();
 
+        // Startup Command should listen for notification STARTUP
         registerCommandByConfigName(STARTUP, CommandNames.STARTUP_CMD);
     }
 

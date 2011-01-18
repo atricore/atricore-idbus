@@ -35,6 +35,7 @@ import org.springextensions.actionscript.puremvc.interfaces.IIocProxy;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
 public class ApplicationStartUpCommand extends IocSimpleCommand implements IResponder {
+
     public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.ApplicationStartUpCommand.SUCCESS";
     public static const FAILURE:String = "com.atricore.idbus.console.main.controller.ApplicationStartUpCommand.FAILURE";
 
@@ -1045,6 +1046,16 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
         var app:AtricoreConsole = note.getBody() as AtricoreConsole;
 
+        // Wire all STARTUP commands and send STARTUP notifications :)
+        var startupCmdNames:Array = iocFacade.container.getObjectNamesForType(AppSectionStartUpCommand);
+        startupCmdNames.forEach(function(cmdName:String, idx:int, arr:Array) {
+            iocFacade.registerCommandByConfigName(ApplicationFacade.STARTUP_APP_SECTION, cmdName);
+        });
+
+        var startupCtx:StartupContext = new StartupContext(app, registry);
+        sendNotification(ApplicationFacade.STARTUP_APP_SECTION, startupCtx);
+
+        // TODO : Move this to specific StartupAppSection command instances !
         // first register commands (some commands are needed for mediator creation/initialization)
         iocFacade.registerCommandByConfigName(ApplicationFacade.SETUP_SERVER, setupServerCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LOGIN, loginCommand.getConfigName());
@@ -1175,10 +1186,12 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     }
 
     protected function setupServiceRegistry():ServiceRegistry {
+        // Setup service registry
         var channel:Channel = ServerConfig.getChannel("my-amf");
-
         var registry:ServiceRegistry = serviceRegistry as ServiceRegistry;
         registry.setChannel(channel);
+
+
         registry.registerRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE, ApplicationFacade.USER_PROVISIONING_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE, ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.PROFILE_MANAGEMENT_SERVICE, ApplicationFacade.PROFILE_MANAGEMENT_SERVICE);
