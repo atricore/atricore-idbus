@@ -83,14 +83,14 @@
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>
-        <!--property name="modelerMediator" ref="modelerMediator"/-->
+
         <property name="manageCertificateMediator" ref="manageCertificateMediator"/>
         <property name="uploadProgressMediator" ref="uploadProgressMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
         <property name="loginMediator" ref="loginMediator"/>
         <property name="changePasswordMediator" ref="changePasswordMediator"/>
         <property name="setupWizardViewMediator" ref="setupWizardViewMediator"/>
-        <property name="lifecycleViewMediator" ref="lifecycleMediator"/>
+
         <property name="buildApplianceMediator" ref="buildApplianceMediator"/>
         <property name="deployApplianceMediator" ref="deployApplianceMediator"/>
         <property name="simpleSSOWizardViewMediator" ref="simpleSSOWizardViewMediator"/>
@@ -123,7 +123,7 @@
         <property name="externalServiceProviderCreateMediator" ref="externalServiceProviderCreateMediator"/>
         <property name="browserMediator" ref="browserMediator"/>
         <property name="paletteMediator" ref="paletteMediator"/>
-        <property name="accountManagementMediator" ref="accountManagementMediator"/>
+
         <property name="groupsMediator" ref="groupsMediator"/>
         <property name="groupPropertiesMediator" ref="groupPropertiesMediator"/>
         <property name="addGroupMediator" ref="addGroupMediator"/>
@@ -591,7 +591,7 @@
         <property name="viewPriority" value="10"/>
     </object>
 
-    <object id="lifecycleMediator" class="com.atricore.idbus.console.lifecycle.main.LifecycleViewMediator">
+    <object id="lifecycleMediator" class="com.atricore.idbus.console.lifecycle.main.LifecycleMediator">
         <property name="projectProxy" ref="projectProxy"/>
 
         <property name="viewFactory" ref="lifecycleViewFactory"/>

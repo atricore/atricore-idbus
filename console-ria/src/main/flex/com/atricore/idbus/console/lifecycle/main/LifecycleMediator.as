@@ -39,7 +39,7 @@ import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class LifecycleViewMediator extends AppSectionMediator implements IDisposable {
+public class LifecycleMediator extends AppSectionMediator implements IDisposable {
 
     public static const viewName:String = "LifecycleView";
 
@@ -49,7 +49,7 @@ public class LifecycleViewMediator extends AppSectionMediator implements IDispos
 
     private var _created:Boolean;
 
-    public function LifecycleViewMediator(name:String = null, viewComp:LifecycleView = null) {
+    public function LifecycleMediator(name:String = null, viewComp:LifecycleView = null) {
         super(name, viewComp);
 
     }

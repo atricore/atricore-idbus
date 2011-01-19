@@ -24,6 +24,7 @@ package com.atricore.idbus.console.main.controller
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 
+import mx.controls.Alert;
 import mx.messaging.Channel;
 import mx.messaging.config.ServerConfig;
 import mx.rpc.IResponder;
@@ -49,7 +50,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     /* Mediators */
     private var _applicationMediator:IIocMediator;
-    // private var _modelerMediator:IIocMediator;
+
     private var _browserMediator:IIocMediator;
     private var _diagramMediator:IIocMediator;
     private var _paletteMediator:IIocMediator;
@@ -87,9 +88,9 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _loginMediator:IIocMediator;
     private var _changePasswordMediator:IIocMediator;
     private var _setupWizardViewMediator:IIocMediator;
-    private var _lifecycleViewMediator:IIocMediator;
+
     private var _simpleSSOWizardViewMediator:IIocMediator;
-    private var _accountManagementMediator:IIocMediator;
+
     private var _groupsMediator:IIocMediator;
     private var _groupPropertiesMediator:IIocMediator;
     private var _addGroupMediator:IIocMediator;
@@ -420,28 +421,12 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _setupWizardViewMediator = value;
     }
 
-    public function get lifecycleViewMediator():IIocMediator {
-        return _lifecycleViewMediator;
-    }
-
-    public function set lifecycleViewMediator(value:IIocMediator):void {
-        _lifecycleViewMediator = value;
-    }
-
     public function get simpleSSOWizardViewMediator():IIocMediator {
         return _simpleSSOWizardViewMediator;
     }
 
     public function set simpleSSOWizardViewMediator(value:IIocMediator):void {
         _simpleSSOWizardViewMediator = value;
-    }
-
-    public function get accountManagementMediator():IIocMediator {
-        return _accountManagementMediator;
-    }
-
-    public function set accountManagementMediator(value:IIocMediator):void {
-        _accountManagementMediator = value;
     }
 
     public function get groupsMediator():IIocMediator {
@@ -1043,9 +1028,16 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         var app:AtricoreConsole = note.getBody() as AtricoreConsole;
 
         // Wire all STARTUP commands and send STARTUP notifications :)
-        var startupCmdNames:Array = iocFacade.container.getObjectNamesForType(AppSectionStartUpCommand);
-        startupCmdNames.forEach(function(cmdName:String, idx:int, arr:Array):void {
-            iocFacade.registerCommandByConfigName(ApplicationFacade.STARTUP_APP_SECTION, cmdName);
+        var appSectionStartUpCmdNames:Array = iocFacade.container.getObjectNamesForType(AppSectionStartUpCommand);
+        appSectionStartUpCmdNames.forEach(function(appSectionStartUpCmdName:String, idx:int, arr:Array):void {
+
+            var appSectionStartUpCmd:AppSectionStartUpCommand =
+                    iocFacade.container.getObject(appSectionStartUpCmdName) as AppSectionStartUpCommand;
+
+            iocFacade.registerCommandByConfigName(ApplicationFacade.STARTUP_APP_SECTION,
+                    appSectionStartUpCmd.getConfigName());
+
+
         });
 
         var startupCtx:StartupContext = new StartupContext(app, registry);
@@ -1110,9 +1102,6 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
         loginMediator.setViewComponent(app.loginView);
         iocFacade.registerMediatorByConfigName(loginMediator.getConfigName());
-
-        iocFacade.registerMediatorByConfigName(lifecycleViewMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(accountManagementMediator.getConfigName());
 
         // setup for second level modeler mediators
         iocFacade.registerMediatorByConfigName(browserMediator.getConfigName());

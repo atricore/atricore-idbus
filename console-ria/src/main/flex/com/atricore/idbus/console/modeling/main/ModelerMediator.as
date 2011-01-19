@@ -290,9 +290,6 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
     }
 
     override public function listNotificationInterests():Array {
-        var notifications:Array = super.listNotificationInterests();
-
-
         return [
             ApplicationFacade.APP_SECTION_CHANGE_START,
             ApplicationFacade.APP_SECTION_CHANGE_END,

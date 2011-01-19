@@ -163,11 +163,9 @@ public class ApplicationMediator extends IocMediator {
 
     public function handleStackChange(event:IndexChangeEvent):void {
         var selectedIndex:int = (event.currentTarget as ButtonBar).selectedIndex;
-
         var currentMediator:AppSectionMediator = _appSections[event.oldIndex];
 
-
-        // TODO : Is there a better way ?
+        // TODO : Is there a better way, with a proxy ?
         _selectedAppSectionIndex = selectedIndex;
 
         // Send old and new view names ...
@@ -190,6 +188,7 @@ public class ApplicationMediator extends IocMediator {
 
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED,
+                ApplicationFacade.APP_SECTION_CHANGE_REJECTED,
             ApplicationFacade.SHOW_ERROR_MSG,
             //            ApplicationFacade.SHOW_SUCCESS_MSG,
             ApplicationFacade.CLEAR_MSG,
@@ -254,12 +253,18 @@ public class ApplicationMediator extends IocMediator {
                 //                app.messageBox.clearAndHide();
                 break;
             case ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED:
+                    // Get selected mediator
                     var selectedMediator:AppSectionMediator = _appSections[_selectedAppSectionIndex];
+
                     app.stackButtonBar.selectedIndex = _selectedAppSectionIndex;
-                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_END, selectedMediator.viewName);
+                    if (app.modulesViewStack.selectedIndex != _selectedAppSectionIndex) {
+                        app.modulesViewStack.selectedIndex = _selectedAppSectionIndex;
+                        sendNotification(ApplicationFacade.APP_SECTION_CHANGE_END, selectedMediator.viewName);
+                    }
+
                 break;
             case ApplicationFacade.APP_SECTION_CHANGE_REJECTED:
-
+                    // Do nothing !
                     sendNotification(ApplicationFacade.APP_SECTION_CHANGE_END, null);
                 break;
 
@@ -313,6 +318,7 @@ public class ApplicationMediator extends IocMediator {
         _appSections = new Array();
         var appSectionMediatorNames:Array = iocFacade.container.getObjectNamesForType(AppSectionMediator);
         appSectionMediatorNames.forEach(function(mediatorName:String, idx:int, arr:Array):void {
+
             // App Section Mediator found
             var mediator:AppSectionMediator = iocFacade.container.getObject(mediatorName) as AppSectionMediator;
             // Store mediators for later use
@@ -338,6 +344,7 @@ public class ApplicationMediator extends IocMediator {
 
 
         app.stackButtonBar.addEventListener(IndexChangeEvent.CHANGE, handleStackChange);
+
         app.stackButtonBar.selectedIndex = 0;
         if (_secureContextProxy.currentUser != null) {
             app.userActionMenuBar.dataProvider.source[0].@label = _secureContextProxy.currentUser.commonName;

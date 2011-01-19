@@ -46,7 +46,7 @@
 
 
         <!-- Lifecycle classes -->
-        <symbol>com.atricore.idbus.console.lifecycle.main.LifecycleViewMediator</symbol>
+        <symbol>com.atricore.idbus.console.lifecycle.main.LifecycleMediator</symbol>
         <symbol>com.atricore.idbus.console.lifecycle.main.LifecycleViewFactory</symbol>
         <symbol>com.atricore.idbus.console.lifecycle.main.controller.LifecycleStartUpCommand</symbol>
 
