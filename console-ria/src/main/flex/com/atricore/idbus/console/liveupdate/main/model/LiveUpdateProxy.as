@@ -21,6 +21,8 @@
 
 package com.atricore.idbus.console.liveupdate.main.model
 {
+import com.atricore.idbus.console.services.dto.UpdateDescriptorType;
+
 import mx.collections.ArrayCollection;
 
 import org.osmf.traits.IDisposable;
@@ -29,6 +31,8 @@ import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 public class LiveUpdateProxy extends IocProxy implements IDisposable
 {
     private var _availableUpdatesList:ArrayCollection;
+
+    private var _selectedUpdate:UpdateDescriptorType;
 
     public function LiveUpdateProxy()
     {
@@ -46,6 +50,14 @@ public class LiveUpdateProxy extends IocProxy implements IDisposable
     public function dispose():void {
         _availableUpdatesList = null;
 
+    }
+
+    public function get selectedUpdate():UpdateDescriptorType {
+        return _selectedUpdate;
+    }
+
+    public function set selectedUpdate(value:UpdateDescriptorType):void {
+        _selectedUpdate = value;
     }
 }
 }

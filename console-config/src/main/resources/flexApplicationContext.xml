@@ -240,6 +240,18 @@
         <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
     </object>
 
+    <object id="checkForUpdatesCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.CheckForUpdatesCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
+    <object id="applyUpdateCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.ApplyUpdateCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
     <!-- Mediators -->
     <object id="manageCertificateMediator"
             class="com.atricore.idbus.console.main.view.certificate.ManageCertificateMediator">
@@ -569,6 +581,8 @@
         <property name="getMetadataInfoCommand" ref="getMetadataInfoCommand"/>
         <property name="getCertificateInfoCommand" ref="getCertificateInfoCommand"/>
         <property name="listUpdatesCommand" ref="listUpdatesCommand"/>
+        <property name="checkForUpdatesCommand" ref="checkForUpdatesCommand"/>
+        <property name="applyUpdateCommand" ref="applyUpdateCommand"/>
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>

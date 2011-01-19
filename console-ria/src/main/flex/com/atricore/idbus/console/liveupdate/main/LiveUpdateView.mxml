@@ -70,6 +70,9 @@
                 </mx:DataGridColumn>
             </mx:columns>
         </mx:DataGrid>
+
+        <s:Button id="btnInstallUpdate" enabled="false"
+                  label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.installUpdateBtn')}" />
     </s:VGroup>
 
 </s:Panel>

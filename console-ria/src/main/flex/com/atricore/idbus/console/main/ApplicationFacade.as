@@ -86,6 +86,8 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const GET_METADATA_INFO:String = "getMetadataInfo";
     public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
     public static const LIST_UPDATES:String = "listUpdates";
+    public static const CHECK_FOR_UPDATES:String = "checkForUpdates";
+    public static const APPLY_UPDATE:String = "applyUpdate";
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
