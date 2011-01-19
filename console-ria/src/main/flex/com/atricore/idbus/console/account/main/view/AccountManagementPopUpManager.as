@@ -46,7 +46,7 @@ import org.puremvc.as3.interfaces.INotification;
 
 public class AccountManagementPopUpManager extends BasePopUpManager {
 
-    var resMan:IResourceManager = ResourceManager.getInstance();
+    private var resMan:IResourceManager = ResourceManager.getInstance();
 
     // mediators
     private var _groupsMediator:GroupsMediator;

@@ -19,7 +19,7 @@
     <!-- fill -->
     <s:Rect x="400" width="100%" height="100%">
         <s:fill>
-            <s:BitmapFill source="@Embed('/assets/icons/ui/atricore_console_tile.png')" repeat="true"/>
+            <s:BitmapFill source="@Embed('/assets/icons/ui/atricore_console_tile.png')" fillMode="{BitmapFillMode.REPEAT}" />
         </s:fill>
     </s:Rect>
 
@@ -34,5 +34,8 @@
         <s:Group id="contentGroup" width="100%" height="100%" minWidth="0" minHeight="0" />
     </s:Group>
 
+    <fx:Script><![CDATA[
+        import mx.graphics.BitmapFillMode;
+        ]]></fx:Script>
 </s:Skin>
         

@@ -52,7 +52,9 @@
                 <groupId>org.sonatype.flexmojos</groupId>
                 <artifactId>flexmojos-maven-plugin</artifactId>
                 <configuration>
-                   <configFile>src/main/config/configurationClassesCompilerConfig.xml</configFile>
+                   <configFiles>
+                       <file>src/main/config/configurationClassesCompilerConfig.xml</file>
+                   </configFiles>
                 </configuration>
             </plugin>
 

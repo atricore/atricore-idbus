@@ -34,6 +34,7 @@
 
     <properties>
 
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <atricore.idbus.version>1.1.0-SNAPSHOT</atricore.idbus.version>
         <idbus.kernel.version>1.1.0-SNAPSHOT</idbus.kernel.version>

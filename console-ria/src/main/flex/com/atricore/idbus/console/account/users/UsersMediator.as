@@ -56,9 +56,6 @@ public class UsersMediator extends IocMediator implements IDisposable{
 
     private var _updatedUserIndex:Number;
 
-    [Bindable]
-
-
     public function UsersMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
     }

@@ -54,9 +54,6 @@ public class GroupsMediator extends IocMediator implements IDisposable{
 
     private var _updatedGroupIndex:Number;
 
-    [Bindable]
-
-
     public function GroupsMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
     }
