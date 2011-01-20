@@ -30,6 +30,7 @@ import mx.messaging.config.ServerConfig;
 import mx.rpc.IResponder;
 
 import org.puremvc.as3.interfaces.*;
+import org.springextensions.actionscript.ioc.IObjectDefinition;
 import org.springextensions.actionscript.puremvc.interfaces.IIocCommand;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.interfaces.IIocProxy;
@@ -1024,24 +1025,30 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     override public function execute(note:INotification):void {
         var registry:ServiceRegistry = setupServiceRegistry();
-
         var app:AtricoreConsole = note.getBody() as AtricoreConsole;
+        var startupCtx:StartupContext = new StartupContext(app, registry);
 
         // Wire all STARTUP commands and send STARTUP notifications :)
         var appSectionStartUpCmdNames:Array = iocFacade.container.getObjectNamesForType(AppSectionStartUpCommand);
+
         appSectionStartUpCmdNames.forEach(function(appSectionStartUpCmdName:String, idx:int, arr:Array):void {
 
+            // Get command object
             var appSectionStartUpCmd:AppSectionStartUpCommand =
                     iocFacade.container.getObject(appSectionStartUpCmdName) as AppSectionStartUpCommand;
 
-            iocFacade.registerCommandByConfigName(ApplicationFacade.STARTUP_APP_SECTION,
-                    appSectionStartUpCmd.getConfigName());
+            // Build note name
+            var od:IObjectDefinition = iocFacade.container.getObjectDefinition(appSectionStartUpCmdName);
+            var appSectionStartUpNote:String = od.className + ".APP_SECTION_STARTUP";
 
+            // Register command for note
+            iocFacade.registerCommandByConfigName(appSectionStartUpNote , appSectionStartUpCmd.getConfigName());
+
+            // Send notification, including startup context
+            sendNotification(appSectionStartUpNote, startupCtx);
 
         });
 
-        var startupCtx:StartupContext = new StartupContext(app, registry);
-        sendNotification(ApplicationFacade.STARTUP_APP_SECTION, startupCtx);
 
         // TODO : EXTENSIONS Move this to specific StartupAppSection command instances !
         // first register commands (some commands are needed for mediator creation/initialization)
