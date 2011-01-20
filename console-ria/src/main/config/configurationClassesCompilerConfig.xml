@@ -7,7 +7,7 @@
         </locale>
     </compiler>
     -->
-    
+
     <includes>
         <!--
         <symbol>mx.logging.targets.TraceTarget</symbol>
@@ -125,6 +125,8 @@
         <symbol>com.atricore.idbus.console.liveupdate.main.controller.ListUpdatesCommand</symbol>
         <symbol>com.atricore.idbus.console.liveupdate.main.controller.CheckForUpdatesCommand</symbol>
         <symbol>com.atricore.idbus.console.liveupdate.main.controller.ApplyUpdateCommand</symbol>
+        <symbol>com.atricore.idbus.console.liveupdate.main.controller.GetUpdateProfileCommand</symbol>
+        <symbol>mx.messaging.channels.AMFChannel</symbol>
         <symbol>mx.messaging.channels.AMFChannel</symbol>
         <symbol>mx.messaging.ChannelSet</symbol>
         <symbol>mx.rpc.remoting.mxml.RemoteObject</symbol>

@@ -154,6 +154,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _listUpdatesCommand:IIocCommand;
     private var _checkForUpdatesCommand:IIocCommand;
     private var _applyUpdateCommand:IIocCommand;
+    private var _getUpdateProfileCommand:IIocCommand;
 
 
     public function get applicationMediator():IIocMediator {
@@ -1014,6 +1015,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _checkForUpdatesCommand = value;
     }
 
+    public function get getUpdateProfileCommand():IIocCommand {
+        return _getUpdateProfileCommand;
+    }
+
+    public function set getUpdateProfileCommand(value:IIocCommand):void {
+        _getUpdateProfileCommand = value;
+    }
+
     override public function execute(note:INotification):void {
         var registry:ServiceRegistry = setupServiceRegistry();
 
@@ -1069,7 +1078,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_CERTIFICATE_INFO, getCertificateInfoCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_UPDATES, listUpdatesCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_FOR_UPDATES, checkForUpdatesCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.APPLY_UPDATE, listUpdatesCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.APPLY_UPDATE, applyUpdateCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.GET_UPDATE_PROFILE, getUpdateProfileCommand.getConfigName());
 
         // setup for first level mediators
         applicationMediator.setViewComponent(app);

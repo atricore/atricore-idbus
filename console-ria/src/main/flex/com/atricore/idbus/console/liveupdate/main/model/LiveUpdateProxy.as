@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.liveupdate.main.model
 {
+import com.atricore.idbus.console.services.dto.ProfileType;
 import com.atricore.idbus.console.services.dto.UpdateDescriptorType;
 
 import mx.collections.ArrayCollection;
@@ -33,6 +34,8 @@ public class LiveUpdateProxy extends IocProxy implements IDisposable
     private var _availableUpdatesList:ArrayCollection;
 
     private var _selectedUpdate:UpdateDescriptorType;
+
+    private var _selectedProfile:ProfileType;
 
     public function LiveUpdateProxy()
     {
@@ -58,6 +61,15 @@ public class LiveUpdateProxy extends IocProxy implements IDisposable
 
     public function set selectedUpdate(value:UpdateDescriptorType):void {
         _selectedUpdate = value;
+    }
+
+
+    public function get selectedProfile():ProfileType {
+        return _selectedProfile;
+    }
+
+    public function set selectedProfile(value:ProfileType):void {
+        _selectedProfile = value;
     }
 }
 }

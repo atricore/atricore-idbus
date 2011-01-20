@@ -22,18 +22,23 @@
 package com.atricore.idbus.console.liveupdate.main {
 import com.atricore.idbus.console.liveupdate.main.controller.ApplyUpdateCommand;
 import com.atricore.idbus.console.liveupdate.main.controller.CheckForUpdatesCommand;
+import com.atricore.idbus.console.liveupdate.main.controller.GetUpdateProfileCommand;
 import com.atricore.idbus.console.liveupdate.main.controller.ListUpdatesCommand;
 import com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.services.dto.ProfileType;
 import com.atricore.idbus.console.services.dto.UpdateDescriptorType;
 
 import com.atricore.idbus.console.services.spi.request.ApplyUpdateRequest;
+
+import com.atricore.idbus.console.services.spi.request.GetUpdateProfileRequest;
 
 import flash.events.Event;
 
 import flash.events.MouseEvent;
 
+import flash.text.TextFieldAutoSize;
 import flash.text.TextFormat;
 
 import mx.collections.ArrayCollection;
@@ -101,6 +106,12 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
         var selectedUpdate:UpdateDescriptorType = e.currentTarget.selectedItem as UpdateDescriptorType;
         _liveUpdateProxy.selectedUpdate = selectedUpdate;
 
+        var profileReq:GetUpdateProfileRequest  = new GetUpdateProfileRequest();
+        profileReq.group = selectedUpdate.group;
+        profileReq.name = selectedUpdate.name;
+        profileReq.version = selectedUpdate.version;
+        sendNotification(ApplicationFacade.GET_UPDATE_PROFILE, profileReq);
+
         if (view.updatesList.selectedIndex != -1)
             view.btnInstallUpdate.enabled = true;
         else
@@ -126,18 +137,12 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
                                            else
                                                PopUpManager.removePopUp(updAlert);
                                        });
-        updAlert.width = 500;
-        updAlert.height = 300;
+        updAlert.width = 550;
+        updAlert.height = 200;
         // align text in alert box
         updAlert.callLater(function():void {
-            var textField:IUITextField =  IUITextField(updAlert.mx_internal::alertForm.mx_internal::textField);
-
-            var textFormat:TextFormat = new TextFormat();
-            textFormat.align = "center";
-
-            textField.setActualSize(textField.getExplicitOrMeasuredWidth(),textField.getExplicitOrMeasuredHeight());
-            textField.x = 0;
-            textField.setTextFormat(textFormat);
+            updAlert.mx_internal::alertForm.mx_internal::textField.autoSize = TextFieldAutoSize.CENTER;
+            updAlert.mx_internal::alertForm.mx_internal::textField.wordWrap = false ;
         });
     }
 
@@ -148,13 +153,14 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
         updateInfo+=resMan.getString(AtricoreConsole.BUNDLE, 'liveupdate.header.group') + ":  " + update.group + "\n";
         updateInfo+=resMan.getString(AtricoreConsole.BUNDLE, 'liveupdate.header.name') + ":  " + update.name + "\n";
         updateInfo+=resMan.getString(AtricoreConsole.BUNDLE, 'liveupdate.header.version') + ":  " + update.version + "\n";
-        if (reqs.length>0) {
+        if (_liveUpdateProxy.selectedProfile != null) {
             updateInfo+=resMan.getString(AtricoreConsole.BUNDLE, 'liveupdate.dependencies.warning') + ": \n";
 
-            for(var count:int = 0; count < reqs.length; count++) {
-                updateInfo+= reqs.getItemAt(count).group + " / " +
-                        reqs.getItemAt(count).name + " / " +
-                        reqs.getItemAt(count).versionExpresion + "\n";
+            var insUnits:ArrayCollection = _liveUpdateProxy.selectedProfile.installableUnits;
+            for(var count:int = 0; count < insUnits.length; count++) {
+                updateInfo+= insUnits.getItemAt(count).group + " / " +
+                        insUnits.getItemAt(count).name + " / " +
+                        insUnits.getItemAt(count).version + "\n";
             }
         }
         return updateInfo;
@@ -167,7 +173,9 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
             ApplyUpdateCommand.SUCCESS,
             ApplyUpdateCommand.FAILURE,
             CheckForUpdatesCommand.SUCCESS,
-            CheckForUpdatesCommand.FAILURE
+            CheckForUpdatesCommand.FAILURE,
+            GetUpdateProfileCommand.SUCCESS,
+            GetUpdateProfileCommand.FAILURE
         ];
     }
 
@@ -185,12 +193,22 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
                 break;
             case ApplyUpdateCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
+                var msg:String = resMan.getString(AtricoreConsole.BUNDLE, 'liveupdate.restart.warning');
+                var wMsg:Alert = Alert.show(msg, "Warning!", Alert.OK , view,
+                                               function (event:CloseEvent) {
+                                                   PopUpManager.removePopUp(wMsg);
+                                               });
                 break;
             case ApplyUpdateCommand.SUCCESS:
                 break;
             case CheckForUpdatesCommand.SUCCESS:
                 break;
             case CheckForUpdatesCommand.FAILURE:
+                break;
+            case GetUpdateProfileCommand.SUCCESS:
+                break;
+            case GetUpdateProfileCommand.FAILURE:
+                _liveUpdateProxy.selectedProfile = null;
                 break;
         }
     }

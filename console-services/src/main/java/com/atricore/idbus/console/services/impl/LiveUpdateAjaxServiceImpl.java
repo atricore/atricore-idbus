@@ -24,20 +24,17 @@ package com.atricore.idbus.console.services.impl;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
+import com.atricore.idbus.console.services.dto.ProfileTypeDTO;
 import com.atricore.idbus.console.services.dto.RequiredFeatureTypeDTO;
 import com.atricore.idbus.console.services.dto.UpdateDescriptorTypeDTO;
 import com.atricore.idbus.console.services.dto.UpdatesIndexTypeDTO;
 import com.atricore.idbus.console.services.spi.LiveUpdateAjaxService;
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
-import com.atricore.liveservices.liveupdate._1_0.md.RequiredFeatureType;
-import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
-import com.atricore.liveservices.liveupdate._1_0.md.VersionRangeType;
+import com.atricore.liveservices.liveupdate._1_0.md.*;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -221,7 +218,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
             ProfileType profile = updateManager.getUpdateProfile();
 
             GetUpdateProfileResponse resp = new GetUpdateProfileResponse();
-            //resp.setProfile(profile);
+            resp.setProfile(toProfileTypeDTO(profile));
 
             return resp;
         } catch (Exception e) {
@@ -245,7 +242,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
                     getUpdateProfileRequest.getVersion());
 
             GetUpdateProfileResponse resp = new GetUpdateProfileResponse();
-            //resp.setProfile(profile);
+            resp.setProfile(toProfileTypeDTO(profile));
 
             return resp;
         } catch (Exception e) {
@@ -290,6 +287,27 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
         }
 
         return retList;
+    }
+
+    private ProfileTypeDTO toProfileTypeDTO(ProfileType profile) {
+        ProfileTypeDTO retProfile = new ProfileTypeDTO();
+        retProfile.setId(profile.getID());
+        retProfile.setName(profile.getName());
+        Collection<UpdateDescriptorTypeDTO> instUnits = new ArrayList<UpdateDescriptorTypeDTO>();
+        for (InstallableUnitType iUnit : profile.getInstallableUnit()) {
+            UpdateDescriptorTypeDTO updDesc = new UpdateDescriptorTypeDTO();
+            updDesc.setId(iUnit.getID());
+            updDesc.setName(iUnit.getName());
+            updDesc.setGroup(iUnit.getGroup());
+            updDesc.setVersion(iUnit.getVersion());
+            updDesc.setDescription(iUnit.getDescription());
+            updDesc.setUpdateNature(iUnit.getUpdateNature().toString());
+            updDesc.setRequirements(toRequiredFeatureTypeDTOCollection(iUnit.getRequirement()));
+            instUnits.add(updDesc);
+        }
+        retProfile.setInstallableUnits(instUnits);
+
+        return retProfile;
     }
 
 }
