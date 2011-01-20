@@ -33,7 +33,7 @@
                xmlns:setup="com.atricore.idbus.console.setup.*"
                height="100%" width="100%" minWidth="955" minHeight="600"
                preloader="com.atricore.idbus.console.branding.AtricoreConsolePreloader"
-               creationComplete="onCreationComplete()">
+               preinitialize="onCreationComplete()">
     <s:layout>
         <s:BasicLayout/>
     </s:layout>
@@ -41,6 +41,7 @@
 
     <fx:Script>
       <![CDATA[
+        import com.atricore.idbus.console.branding.AtricoreConsolePreloader;
         import com.atricore.idbus.console.main.ApplicationFacade;
 
         import com.atricore.idbus.console.main.EmbeddedIcons;
@@ -116,19 +117,11 @@
 
         <login:LoginView id="loginView" includeIn="splash"/>
 
-        <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(modulesViewStack.content)}" labelField="name"
+        <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(appSectionsViewStack.content)}" labelField="name"
                      skinClass="com.atricore.idbus.console.skin.buttonbar.IconButtonBarSkin" requireSelection="true"
                      excludeFrom="splash"/>
 
-        <comp:CustomViewStack id="modulesViewStack" width="100%" height="100%" excludeFrom="splash">
-            <!-- Dynamically contributed -->
-            <!--modeler:ModelerView id="modelerView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.modelerTab.name')}"/-->
-            <!--lifecycle:LifecycleView id="lifecycleView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.lifecycleTab.name')}"/-->
-            <!--account:AccountManagementView id="accountManagementView" name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.accountTab.name')}"/-->
-
-
-        </comp:CustomViewStack>
-
+        <comp:CustomViewStack id="appSectionsViewStack" width="100%" height="100%" excludeFrom="splash"/>
 
     </s:VGroup>
 </s:Application>

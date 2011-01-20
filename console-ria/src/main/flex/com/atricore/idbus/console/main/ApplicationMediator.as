@@ -257,8 +257,8 @@ public class ApplicationMediator extends IocMediator {
                     var selectedMediator:AppSectionMediator = _appSections[_selectedAppSectionIndex];
 
                     app.stackButtonBar.selectedIndex = _selectedAppSectionIndex;
-                    if (app.modulesViewStack.selectedIndex != _selectedAppSectionIndex) {
-                        app.modulesViewStack.selectedIndex = _selectedAppSectionIndex;
+                    if (app.appSectionsViewStack.selectedIndex != _selectedAppSectionIndex) {
+                        app.appSectionsViewStack.selectedIndex = _selectedAppSectionIndex;
                         sendNotification(ApplicationFacade.APP_SECTION_CHANGE_END, selectedMediator.viewName);
                     }
 
@@ -339,7 +339,7 @@ public class ApplicationMediator extends IocMediator {
             var view:IVisualElement = mediator.viewFactory.createView();
             mediator.setViewComponent(view);
 
-            app.modulesViewStack.addNewChild(view);
+            app.appSectionsViewStack.addNewChild(view);
         });
 
 
