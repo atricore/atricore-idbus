@@ -236,10 +236,18 @@
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>console-ce-branding</artifactId>
+                <version>${pom.version}</version>
+                <type>swc</type>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>console-ee-branding</artifactId>
                 <version>${pom.version}</version>
                 <type>swc</type>
             </dependency>
+
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
