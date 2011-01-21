@@ -153,15 +153,13 @@ public class ApplicationMediator extends IocMediator {
         if (getViewComponent() != null) {
             app.stackButtonBar.removeEventListener(IndexChangeEvent.CHANGE, handleStackChange);
             app.removeEventListener(FlexEvent.SHOW, handleShowConsole);
-
-            // Apply branding:
-
-            var brandedHeader:AtricoreHeading = app.mainVGroup.getElementAt(0) as AtricoreHeading;
-            brandedHeader.setStyle("skinClass",  brandingFactory.getHeaderSkinClass());
-
         }
 
         super.setViewComponent(p_viewComponent);
+
+        // Apply branding:
+        var brandedHeader:AtricoreHeading = app.mainVGroup.getElementAt(0) as AtricoreHeading;
+        brandedHeader.setStyle("skinClass",  brandingFactory.getHeaderSkinClass());
 
         init();
     }

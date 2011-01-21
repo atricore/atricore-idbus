@@ -615,7 +615,7 @@
         <property name="profileProxy" ref="profileProxy"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
 
-        <property name="brandinFactory" ref="brandingFactory"/>
+        <property name="brandingFactory" ref="brandingFactory"/>
 
     </object>
 
