@@ -147,8 +147,11 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
         //      - Stop timers
         //      - Set references to null
 
-        view.accountManagementTabBar.removeEventListener(IndexChangeEvent.CHANGE, stackChanged);
-        view = null;
+        if (_created) {
+            _created = false;
+            view.accountManagementTabBar.removeEventListener(IndexChangeEvent.CHANGE, stackChanged);
+            view = null;
+        }
     }
 
     private function stackChanged(event:IndexChangeEvent):void {
@@ -157,7 +160,8 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
 
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.APP_SECTION_CHANGE_START,
-            ApplicationFacade.APP_SECTION_CHANGE_END
+            ApplicationFacade.APP_SECTION_CHANGE_END,
+            ApplicationFacade.LOGOUT
         ];
     }
 
@@ -174,6 +178,9 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
                 if (newView == viewName) {
                     init();
                 }
+                break;
+            case ApplicationFacade.LOGOUT:
+                this.dispose();
                 break;
             default:
                 super.handleNotification(notification);

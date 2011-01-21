@@ -118,7 +118,6 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
             var disposedAppliancesSelectedIndex:int = -1;
 
             // reset appliance(s) selection
-            var grid:AdvancedDataGrid = view.grdSavedAppliances;
             view.grdSavedAppliances.selectedIndex = savedAppliancesSelectedIndex;
             view.grdStagedAppliances.selectedIndex = stagedAppliancesSelectedIndex;
             view.grdDeployedAppliances.selectedIndex = deployedAppliancesSelectedIndex;
@@ -183,7 +182,8 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
         //      - Remove event listeners
         //      - Stop timers
         //      - Set references to null
-       
+
+        _created = false;
     }
 
 
@@ -440,6 +440,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
                 }
                 break;
             case ApplicationFacade.LOGOUT:
+                this.dispose();
                 break;
             default:
                 super.handleNotification(notification);
