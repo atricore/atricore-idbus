@@ -36,7 +36,6 @@ import mx.resources.ResourceManager;
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
-import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 import spark.components.Group;
 import spark.events.IndexChangeEvent;
@@ -166,13 +165,8 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
         switch (notification.getName()) {
             case ApplicationFacade.APP_SECTION_CHANGE_START:
                 var currentView:String = notification.getBody() as String;
-                if (currentView != viewName) {
+                if (currentView == viewName) {
                     sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
-                } else {
-                    // TODO : Make sure that we can leave this view !!!! : Send
-                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
-                    //  sendNotification(ApplicationFacade.APP_SECTION_CHANGE_REJECTED);
-
                 }
                 break;
             case ApplicationFacade.APP_SECTION_CHANGE_END:

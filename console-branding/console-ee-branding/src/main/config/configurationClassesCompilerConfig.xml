@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flex-config>
     <includes>
+
+
+        <symbol>com.atricore.idbus.console.branding.ee.AtricoreEEBrandingFactory</symbol>
+        <!--symbol>com.atricore.idbus.console.branding.ee.AtricoreEEApplicationSkin</symbol-->
+
         <!-- General classes -->
+
         <!--
         <symbol>mx.logging.targets.TraceTarget</symbol>
         <symbol>org.pranaframework.ioc.factory.MethodInvokingObject</symbol>

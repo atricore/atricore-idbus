@@ -84,6 +84,12 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>console-ria-base</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>console-config</artifactId>
             <classifier>resources</classifier>
             <type>zip</type>
@@ -93,6 +99,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>console-lib</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>console-ee-branding</artifactId>
             <type>swc</type>
         </dependency>
 

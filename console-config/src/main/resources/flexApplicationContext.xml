@@ -617,6 +617,8 @@
         <property name="profileProxy" ref="profileProxy"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
 
+        <property name="brandinFactory" ref="brandingFactory"/>
+
     </object>
 
     <!-- support components -->
@@ -681,5 +683,8 @@
     <object id="modelerViewFactory" class="com.atricore.idbus.console.modeling.main.ModelerViewFactory"/>
     <object id="lifecycleViewFactory" class="com.atricore.idbus.console.lifecycle.main.LifecycleViewFactory"/>
     <object id="accountManagementViewFactory" class="com.atricore.idbus.console.account.main.AccountManagementViewFactory"/>
+
+    <!-- Branding Factory -->
+    <object id="brandingFactory" class="com.atricore.idbus.console.branding.ee.AtricoreEEBrandingFactory"/>
 
 </objects>

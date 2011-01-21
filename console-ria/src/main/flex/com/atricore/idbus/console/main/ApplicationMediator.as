@@ -22,7 +22,9 @@
 package com.atricore.idbus.console.main
 {
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.base.branding.AtricoreConsoleBrandingFactory;
 import com.atricore.idbus.console.branding.AtricoreConsolePreloader;
+import com.atricore.idbus.console.branding.heading.AtricoreHeading;
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
 import com.atricore.idbus.console.main.controller.LoginCommand;
 import com.atricore.idbus.console.main.controller.NotFirstRunCommand;
@@ -58,6 +60,8 @@ public class ApplicationMediator extends IocMediator {
 
     public var userProfileIcon:Class = EmbeddedIcons.userProfileIcon;
 
+    private var _brandingFactory:AtricoreConsoleBrandingFactory;
+
     private var _appSections:Array;
 
     private var _selectedAppSectionIndex:int;
@@ -78,6 +82,15 @@ public class ApplicationMediator extends IocMediator {
 
         super(p_mediatorName, p_viewComponent);
 
+    }
+
+
+    public function get brandingFactory():AtricoreConsoleBrandingFactory {
+        return _brandingFactory;
+    }
+
+    public function set brandingFactory(value:AtricoreConsoleBrandingFactory):void {
+        _brandingFactory = value;
     }
 
     public function get popupManager():ConsolePopUpManager {
@@ -141,6 +154,12 @@ public class ApplicationMediator extends IocMediator {
         if (getViewComponent() != null) {
             app.stackButtonBar.removeEventListener(IndexChangeEvent.CHANGE, handleStackChange);
             app.removeEventListener(FlexEvent.SHOW, handleShowConsole);
+
+            // Apply branding:
+
+            var brandedHeader:AtricoreHeading = app.mainVGroup.getElementAt(0) as AtricoreHeading;
+            brandedHeader.setStyle("skinClass",  brandingFactory.getHeaderSkinClass());
+
         }
 
         super.setViewComponent(p_viewComponent);

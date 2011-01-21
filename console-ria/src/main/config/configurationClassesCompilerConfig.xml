@@ -10,6 +10,14 @@
     
     <includes>
 
+        <!-- Base classes -->
+        <symbol>com.atricore.idbus.console.base.branding.AtricoreConsoleBrandingFactory</symbol>
+
+        <!-- EE Extensions -->
+        <symbol>com.atricore.idbus.console.branding.ee.AtricoreEEBrandingFactory</symbol>
+
+        <!-- CE Extensions -->
+
         <!-- Main classes -->
 
         <symbol>com.atricore.idbus.console.main.ApplicationMediator</symbol>
@@ -167,6 +175,7 @@
         <!-- Flex Automation
         <symbol>com.gorillalogic.flexmonkium.FlexMonkium</symbol>
         -->
+
 
     </includes>
 </flex-config>

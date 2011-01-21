@@ -4,7 +4,6 @@
 package com.atricore.idbus.console.modeling.main {
 import com.atricore.idbus.console.main.AppSectionView;
 import com.atricore.idbus.console.main.AppSectionViewFactory;
-import com.atricore.idbus.console.modeling.main.ModelerView;
 
 public class ModelerViewFactory extends AppSectionViewFactory {
 
@@ -15,7 +14,7 @@ public class ModelerViewFactory extends AppSectionViewFactory {
     }
 
     override public function createView():AppSectionView {
-        return  new ModelerView();
+        return new ModelerView();
     }
 }
 }

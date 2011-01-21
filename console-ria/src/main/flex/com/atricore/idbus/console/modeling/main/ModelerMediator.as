@@ -64,7 +64,6 @@ import mx.events.FlexEvent;
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
-import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class ModelerMediator extends AppSectionMediator implements IDisposable {
 
@@ -91,7 +90,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
     private var _paletteMediator:IIocMediator;
     private var _propertySheetMediator:IIocMediator;
 
-    private var _tempSelectedViewIndex:int;
+    private var _appSectionChangeInProgress:Boolean;
 
     private var _fileRef:FileReference;
 
@@ -159,7 +158,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
 
     private function creationCompleteHandler(event:Event):void {
         _created = true;
-        _tempSelectedViewIndex = -1;
+        _appSectionChangeInProgress = false;
 
         event.target.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 
@@ -222,7 +221,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
         //      - Set references to null
 
         _identityAppliance = null;
-        _tempSelectedViewIndex = -1;
+        _appSectionChangeInProgress = false;
 
         view.btnSave.enabled = false;
         view.btnExport.enabled = false;
@@ -357,13 +356,15 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
         switch (notification.getName()) {
             case ApplicationFacade.APP_SECTION_CHANGE_START:
                 var currentView:String = notification.getBody() as String;
-                if (currentView != viewName) {
-                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
-                } else {
-                    // TODO : Make sure that we can leave this view !!!! : Send
-                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
-                    //  sendNotification(ApplicationFacade.APP_SECTION_CHANGE_REJECTED);
-
+                if (currentView == viewName) {
+                    // check for null because we try to open Modeler after login and the view might not be created yet
+                    if (view != null && view.btnSave != null && view.btnSave.enabled) {
+                        _appSectionChangeInProgress = true;
+                        sendNotification(ProcessingMediator.START, "Autosaving Identity Appliance...");
+                        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
+                    } else {
+                        sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
+                    }
                 }
                 break;
             case ApplicationFacade.APP_SECTION_CHANGE_END:
@@ -372,6 +373,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                     projectProxy.currentView = viewName;
                     init();
                 }
+                _appSectionChangeInProgress = false;
                 break;
             case ApplicationFacade.UPDATE_IDENTITY_APPLIANCE:
                 updateIdentityAppliance();
@@ -598,9 +600,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                     //sendNotification(ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA);
                     sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);  //appliance name might be changed
                     sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
-                    if (_tempSelectedViewIndex != -1) {
-                        sendNotification(ApplicationFacade.DISPLAY_VIEW, _tempSelectedViewIndex);
-                        _tempSelectedViewIndex = -1;
+                    if (_appSectionChangeInProgress) {
+                        sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
+                        _appSectionChangeInProgress = false;
                     }
                 } else {
                     // TODO: refactor this
@@ -614,9 +616,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         "There was an error updating appliance.");
-                if (_tempSelectedViewIndex != -1) {
-                    sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
-                    _tempSelectedViewIndex = -1;
+                if (_appSectionChangeInProgress) {
+                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_REJECTED, viewName);
+                    _appSectionChangeInProgress = false;
                 }
                 break;
             case ApplicationFacade.APPLIANCE_VALIDATION_ERRORS:
@@ -633,19 +635,9 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                     Alert.show(msg, "Validation Errors");
                 }
                 projectProxy.identityApplianceValidationErrors = null;
-                if (_tempSelectedViewIndex != -1) {
-                    sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
-                    _tempSelectedViewIndex = -1;
-                }
-                break;
-            case ApplicationFacade.AUTOSAVE_IDENTITY_APPLIANCE:
-                var selectedIndex:int = notification.getBody() as int;
-                if (view.btnSave.enabled) {
-                    _tempSelectedViewIndex = selectedIndex;
-                    sendNotification(ProcessingMediator.START, "Autosaving Identity Appliance...");
-                    sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
-                } else {
-                    sendNotification(ApplicationFacade.DISPLAY_VIEW, selectedIndex);
+                if (_appSectionChangeInProgress) {
+                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_REJECTED, viewName);
+                    _appSectionChangeInProgress = false;
                 }
                 break;
             case JDBCDriversListCommand.FAILURE:
