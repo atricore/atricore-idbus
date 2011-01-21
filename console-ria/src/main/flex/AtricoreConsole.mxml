@@ -56,6 +56,7 @@
             // --- Configuring IoC facade through addConfigSource()
             m_facade = ApplicationFacade.getInstance();
             m_facade.addConfigSource("flex/flexApplicationContext.xml");
+            m_facade.addConfigSource("flex/flexApplicationContextExt.xml");
             m_facade.addEventListener(Event.COMPLETE, startupApp);
             m_facade.initializeIocContainer();
         }

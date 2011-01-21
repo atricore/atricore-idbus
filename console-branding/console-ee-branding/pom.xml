@@ -81,14 +81,6 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>console-config</artifactId>
-            <classifier>resources</classifier>
-            <type>zip</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>console-lib</artifactId>
             <scope>provided</scope>
             <type>swc</type>

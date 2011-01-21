@@ -216,12 +216,15 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-config</artifactId>
                 <version>${pom.version}</version>
+                <type>zip</type>
+                <classifier>resources-${console.distribution}</classifier>
             </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-lib</artifactId>
                 <version>${pom.version}</version>
+                <type>swc</type>
             </dependency>
 
             <dependency>
@@ -238,11 +241,19 @@
                 <type>swc</type>
             </dependency>
 
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>console-ria</artifactId>
+                <version>${pom.version}</version>
+                <classifier>ee</classifier>
+                <type>swf</type>
+            </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-ria</artifactId>
                 <version>${pom.version}</version>
+                <classifier>ce</classifier>
                 <type>swf</type>
             </dependency>
 
@@ -358,14 +369,6 @@
                 <groupId>org.atricore.idbus.bundles</groupId>
                 <artifactId>org.atricore.idbus.bundles.javax-jdo2-v2_3-ec</artifactId>
                 <version>${idbus.bundle.javax-jdo2-v2_3-ec.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>console-config</artifactId>
-                <version>${project.version}</version>
-                <classifier>resources</classifier>
-                <type>zip</type>
             </dependency>
 
             <dependency>
@@ -1524,6 +1527,21 @@
                 <module>console-web</module>
             </modules>
         </profile>
+
+        <profile>
+            <id>ee</id>
+            <properties>
+                <console.distribution>ee</console.distribution>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>ce</id>
+            <properties>
+                <console.distribution>ce</console.distribution>
+            </properties>
+        </profile>
+
     </profiles>
 </project>
 

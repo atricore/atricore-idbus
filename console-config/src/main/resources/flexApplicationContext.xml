@@ -682,7 +682,4 @@
     <object id="lifecycleViewFactory" class="com.atricore.idbus.console.lifecycle.main.LifecycleViewFactory"/>
     <object id="accountManagementViewFactory" class="com.atricore.idbus.console.account.main.AccountManagementViewFactory"/>
 
-    <!-- Branding Factory -->
-    <object id="brandingFactory" class="com.atricore.idbus.console.branding.ee.AtricoreEEBrandingFactory"/>
-
 </objects>

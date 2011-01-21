@@ -34,7 +34,47 @@
     <packaging>pom</packaging>
 
     <build>
+
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources-ce</directory>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources-ee</directory>
+            </resource>
+        </resources>
+
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>none</phase>
+                    </execution>
+
+                    <execution>
+                        <id>ce</id>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/resources-ce.xml</descriptor>
+                            </descriptors>
+
+                            <appendAssemblyId/>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -47,12 +87,14 @@
                         <phase>package</phase>
                         <configuration>
                             <descriptors>
-                                <descriptor>src/main/assembly/resources.xml</descriptor>
+                                <descriptor>src/main/assembly/resources-ee.xml</descriptor>
                             </descriptors>
+                            <appendAssemblyId/>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
 </project>
