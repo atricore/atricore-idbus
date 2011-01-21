@@ -1272,7 +1272,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
         //      - Stop timers
         //      - Set references to null
         resetGraph();
-        _currentIdentityApplianceId= -1;
+        _currentIdentityApplianceId= Number.MIN_VALUE;
         view.graphScroller.visible = false;
     }
 }

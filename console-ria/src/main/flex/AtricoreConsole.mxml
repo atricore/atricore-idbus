@@ -33,7 +33,7 @@
                xmlns:setup="com.atricore.idbus.console.setup.*"
                height="100%" width="100%" minWidth="955" minHeight="600"
                preloader="com.atricore.idbus.console.branding.AtricoreConsolePreloader"
-               preinitialize="onCreationComplete()">
+               creationComplete="onCreationComplete()">
     <s:layout>
         <s:BasicLayout/>
     </s:layout>
@@ -41,14 +41,10 @@
 
     <fx:Script>
       <![CDATA[
-        import com.atricore.idbus.console.branding.AtricoreConsolePreloader;
         import com.atricore.idbus.console.main.ApplicationFacade;
-
         import com.atricore.idbus.console.main.EmbeddedIcons;
 
         import mx.collections.ArrayList;
-
-        import mx.core.IVisualElement;
 
         import org.puremvc.as3.patterns.observer.Notification;
 

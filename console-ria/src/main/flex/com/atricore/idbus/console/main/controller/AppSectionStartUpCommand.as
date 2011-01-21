@@ -3,24 +3,17 @@
  */
 package com.atricore.idbus.console.main.controller {
 import com.atricore.idbus.console.main.AppSectionMediator;
-import com.atricore.idbus.console.main.service.ServiceRegistry;
 
-import mx.messaging.config.ServerConfig;
 import mx.rpc.IResponder;
-import mx.messaging.Channel;
-
 
 import org.puremvc.as3.interfaces.INotification;
-import org.springextensions.actionscript.puremvc.interfaces.IIocProxy;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
-
-
 
 public class AppSectionStartUpCommand extends IocSimpleCommand implements IResponder{
 
     public static const SUCCESS:String = "com.atricore.idbus.console.main.controller.StartUpCommand.SUCCESS";
 
-    public static const FAILURE:String = "com.atricore.idbus.console.main.controller.UpCommand.FAILURE";
+    public static const FAILURE:String = "com.atricore.idbus.console.main.controller.StartUpCommand.FAILURE";
 
     private var _appSectionMediator:AppSectionMediator;
 

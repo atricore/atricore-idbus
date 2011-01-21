@@ -336,7 +336,7 @@ public class ApplicationMediator extends IocMediator {
         _appSections.forEach(function(mediator:AppSectionMediator, idx:int, arr:Array):void {
             // Add new section to stack view:
             // wired mediator with view
-            var view:IVisualElement = mediator.viewFactory.createView();
+            var view:IVisualElement = mediator.viewFactory.createView() as IVisualElement;
             mediator.setViewComponent(view);
 
             app.appSectionsViewStack.addNewChild(view);
@@ -349,7 +349,7 @@ public class ApplicationMediator extends IocMediator {
         if (_secureContextProxy.currentUser != null) {
             app.userActionMenuBar.dataProvider.source[0].@label = _secureContextProxy.currentUser.commonName;
         }
-        app.userActionMenuBar.addEventListener(MenuEvent.ITEM_CLICK, handleUserMenuAction)
+        app.userActionMenuBar.addEventListener(MenuEvent.ITEM_CLICK, handleUserMenuAction);
         sendNotification(ApplicationFacade.CLEAR_MSG);
         sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
     }
