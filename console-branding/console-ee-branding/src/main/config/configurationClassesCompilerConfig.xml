@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flex-config>
+    <includes>
+        <!-- General classes -->
+        <!--
+        <symbol>mx.logging.targets.TraceTarget</symbol>
+        <symbol>org.pranaframework.ioc.factory.MethodInvokingObject</symbol>
+        -->
+        <symbol>flash.utils.Dictionary</symbol>
+        <symbol>mx.messaging.channels.AMFChannel</symbol>
+        <symbol>mx.messaging.ChannelSet</symbol>
+        <symbol>mx.rpc.remoting.mxml.RemoteObject</symbol>
+        <!-- Flex Automation
+        <symbol>com.gorillalogic.flexmonkium.FlexMonkium</symbol>
+        -->
+
+    </includes>
+</flex-config>

@@ -9,11 +9,6 @@
     -->
     
     <includes>
-        <!--
-        <symbol>mx.logging.targets.TraceTarget</symbol>
-        <symbol>org.pranaframework.ioc.factory.MethodInvokingObject</symbol>
-        -->
-        <symbol>flash.utils.Dictionary</symbol>
 
         <!-- Main classes -->
 
@@ -160,8 +155,12 @@
         <symbol>com.atricore.idbus.console.account.userproperties.UserPropertiesMediator</symbol>
 
 
-
         <!-- General classes -->
+        <!--
+        <symbol>mx.logging.targets.TraceTarget</symbol>
+        <symbol>org.pranaframework.ioc.factory.MethodInvokingObject</symbol>
+        -->
+        <symbol>flash.utils.Dictionary</symbol>
         <symbol>mx.messaging.channels.AMFChannel</symbol>
         <symbol>mx.messaging.ChannelSet</symbol>
         <symbol>mx.rpc.remoting.mxml.RemoteObject</symbol>

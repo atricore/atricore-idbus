@@ -31,9 +31,9 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>console-ria</artifactId>
-    <packaging>swf</packaging>
-    <name>Atricore Console :: Rich Internet Application (RIA)</name>
+    <artifactId>console-ee-branding</artifactId>
+    <packaging>swc</packaging>
+    <name>Atricore Console :: Rich Internet Application (RIA) EE Branding</name>
 
     <build>
         <sourceDirectory>src/main/flex</sourceDirectory>
@@ -42,9 +42,11 @@
             <resource>
                 <directory>${basedir}/src/main/resources</directory>
             </resource>
+            <!--
             <resource>
                 <directory>${basedir}/target/generated-resources</directory>
             </resource>
+            -->
         </resources>
 
         <plugins>
@@ -58,6 +60,7 @@
                 </configuration>
             </plugin>
 
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -76,6 +79,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
 
         </plugins>
     </build>
@@ -210,4 +214,3 @@
 
 </project>
 
-        
