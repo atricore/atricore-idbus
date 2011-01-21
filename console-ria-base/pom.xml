@@ -11,7 +11,7 @@
     <artifactId>console-ria-base</artifactId>
     <packaging>swc</packaging>
 
-    <name>Atricore Console :: Rich Internet Application Base (RIA)</name>
+    <name>Atricore Console :: Rich Internet Application (RIA) Base</name>
 
 
     <build>
