@@ -35,7 +35,6 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
-import com.atricore.idbus.console.modeling.main.ModelerViewFactory;
 import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 
@@ -367,7 +366,9 @@ public class ApplicationMediator extends IocMediator {
         }
         app.userActionMenuBar.addEventListener(MenuEvent.ITEM_CLICK, handleUserMenuAction);
         sendNotification(ApplicationFacade.CLEAR_MSG);
-        sendNotification(ApplicationFacade.APP_SECTION_CHANGE, ModelerViewFactory.VIEW_NAME);
+
+        // By default, switch to first app section view
+        sendNotification(ApplicationFacade.APP_SECTION_CHANGE, _appSections[0].viewFactory.viewName);
     }
 
     public function logout():void {
