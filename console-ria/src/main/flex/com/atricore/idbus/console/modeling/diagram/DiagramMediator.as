@@ -84,13 +84,11 @@ import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.Provider;
 import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
-
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
 import flash.display.DisplayObject;
 import flash.events.MouseEvent;
 import flash.utils.Dictionary;
-
 import flash.utils.setTimeout;
 
 import mx.collections.ArrayCollection;

@@ -33,6 +33,7 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
+import com.atricore.idbus.console.modeling.main.ModelerViewFactory;
 import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator;
 import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 
@@ -46,7 +47,6 @@ import mx.events.MenuEvent;
 import mx.events.StateChangeEvent;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 import spark.components.ButtonBar;
@@ -187,7 +187,8 @@ public class ApplicationMediator extends IocMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED,
+        return [ApplicationFacade.APP_SECTION_CHANGE,
+                ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED,
                 ApplicationFacade.APP_SECTION_CHANGE_REJECTED,
             ApplicationFacade.SHOW_ERROR_MSG,
             //            ApplicationFacade.SHOW_SUCCESS_MSG,
@@ -252,45 +253,39 @@ public class ApplicationMediator extends IocMediator {
             case ApplicationFacade.CLEAR_MSG :
                 //                app.messageBox.clearAndHide();
                 break;
-            case ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED:
-                    // Get selected mediator
-                    var selectedMediator:AppSectionMediator = _appSections[_selectedAppSectionIndex];
+            case ApplicationFacade.APP_SECTION_CHANGE:
+                // manual app. section change trigger
+                var viewName:String = notification.getBody() as String;
+                var currentMediator:AppSectionMediator = _appSections[_selectedAppSectionIndex];
 
-                    app.stackButtonBar.selectedIndex = _selectedAppSectionIndex;
-                    if (app.appSectionsViewStack.selectedIndex != _selectedAppSectionIndex) {
-                        app.appSectionsViewStack.selectedIndex = _selectedAppSectionIndex;
-                        sendNotification(ApplicationFacade.APP_SECTION_CHANGE_END, selectedMediator.viewName);
-                    }
+                _selectedAppSectionIndex = getAppSectionIndex(viewName);
+
+                sendNotification(ApplicationFacade.APP_SECTION_CHANGE_START, currentMediator.viewName);
+                break;
+            case ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED:
+                // Get selected mediator
+                var selectedMediator:AppSectionMediator = _appSections[_selectedAppSectionIndex];
+
+                app.stackButtonBar.selectedIndex = _selectedAppSectionIndex;
+                if (app.appSectionsViewStack.selectedIndex != _selectedAppSectionIndex) {
+                    app.appSectionsViewStack.selectedIndex = _selectedAppSectionIndex;
+                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_END, selectedMediator.viewName);
+                }
 
                 break;
             case ApplicationFacade.APP_SECTION_CHANGE_REJECTED:
-                    // Do nothing !
-                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_END, null);
-                break;
+                // open rejected view
+                var rejectedViewName:String = notification.getBody() as String;
+                _selectedAppSectionIndex = getAppSectionIndex(rejectedViewName);
 
-            /*
-            case ApplicationFacade.DISPLAY_APPLIANCE_MODELER:
-                app.stackButtonBar.selectedIndex = MODELER_VIEW_INDEX;
-                if (app.modulesViewStack.selectedIndex != MODELER_VIEW_INDEX) {
-                    app.modulesViewStack.selectedIndex = MODELER_VIEW_INDEX;
-                    sendNotification(ApplicationFacade.MODELER_VIEW_SELECTED);
-                }
+                app.callLater(function ():void {
+                    app.stackButtonBar.selectedIndex = _selectedAppSectionIndex;
+                    if (app.appSectionsViewStack.selectedIndex != _selectedAppSectionIndex) {
+                        app.appSectionsViewStack.selectedIndex = _selectedAppSectionIndex;
+                    }
+                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_END, null);
+                });
                 break;
-            case ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE:
-                app.stackButtonBar.selectedIndex = LIFECYCLE_VIEW_INDEX;
-                if (app.modulesViewStack.selectedIndex != LIFECYCLE_VIEW_INDEX) {
-                    app.modulesViewStack.selectedIndex = LIFECYCLE_VIEW_INDEX;
-                    sendNotification(ApplicationFacade.LIFECYCLE_VIEW_SELECTED);
-                }
-                break;
-            case ApplicationFacade.DISPLAY_APPLIANCE_ACCOUNT:
-                app.stackButtonBar.selectedIndex = ACCOUNT_VIEW_INDEX;
-                if (app.modulesViewStack.selectedIndex != ACCOUNT_VIEW_INDEX) {
-                    app.modulesViewStack.selectedIndex = ACCOUNT_VIEW_INDEX;
-                    sendNotification(ApplicationFacade.ACCOUNT_VIEW_SELECTED);
-                }
-                break;
-                */
             case ApplicationFacade.DISPLAY_CHANGE_PASSWORD:
                 popupManager.showChangePasswordWindow(notification);
                 break;
@@ -332,6 +327,8 @@ public class ApplicationMediator extends IocMediator {
         }
         _appSections.sort(sortAppSections);
 
+        app.appSectionsViewStack.removeAllChildren();
+
         // Wire stack view with app section views
         _appSections.forEach(function(mediator:AppSectionMediator, idx:int, arr:Array):void {
             // Add new section to stack view:
@@ -351,7 +348,7 @@ public class ApplicationMediator extends IocMediator {
         }
         app.userActionMenuBar.addEventListener(MenuEvent.ITEM_CLICK, handleUserMenuAction);
         sendNotification(ApplicationFacade.CLEAR_MSG);
-        sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+        sendNotification(ApplicationFacade.APP_SECTION_CHANGE, ModelerViewFactory.VIEW_NAME);
     }
 
     public function logout():void {
@@ -362,6 +359,17 @@ public class ApplicationMediator extends IocMediator {
         accountManagementProxy.dispose();
 
         sendNotification(ApplicationFacade.LOGOUT);
+    }
+
+    private function getAppSectionIndex(viewName:String):int {
+        var index:int = -1;
+        for (var i:int = 0; i < _appSections.length; i++) {
+            if (_appSections[i].viewName == viewName) {
+                index = i;
+                break;
+            }
+        }
+        return index;
     }
 
     public function get app():AtricoreConsole {

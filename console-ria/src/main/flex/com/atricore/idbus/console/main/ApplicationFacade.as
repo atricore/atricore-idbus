@@ -41,6 +41,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const STARTUP:String = "startup";
     public static const STARTUP_APP_SECTION:String = "startupAppSection";
 
+    public static const APP_SECTION_CHANGE:String = "AppSectionChange";
     public static const APP_SECTION_CHANGE_START:String = "AppSectionChangeStart";
     public static const APP_SECTION_CHANGE_CONFIRMED:String = "AppSectionChangeConfirmed";
     public static const APP_SECTION_CHANGE_REJECTED:String = "AppSectionChangeRejected";

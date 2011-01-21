@@ -1,6 +1,5 @@
 package com.atricore.idbus.console.lifecycle.main
 {
-import com.atricore.idbus.console.lifecycle.*;
 import com.atricore.idbus.console.components.CustomDataGrid;
 import com.atricore.idbus.console.lifecycle.main.controller.event.LifecycleGridButtonEvent;
 import com.atricore.idbus.console.main.AppSectionMediator;
@@ -8,6 +7,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
+import com.atricore.idbus.console.modeling.main.ModelerViewFactory;
 import com.atricore.idbus.console.modeling.main.controller.BuildIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand;
 import com.atricore.idbus.console.modeling.main.controller.DisposeIdentityApplianceCommand;
@@ -30,18 +30,13 @@ import mx.controls.Alert;
 import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 import mx.events.CloseEvent;
 import mx.events.DragEvent;
-
 import mx.events.FlexEvent;
-
 import mx.managers.DragManager;
 
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
-import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class LifecycleMediator extends AppSectionMediator implements IDisposable {
-
-    public static const viewName:String = "LifecycleView";
 
     private var _projectProxy:ProjectProxy;
 
@@ -317,13 +312,8 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
         switch (notification.getName()) {
             case ApplicationFacade.APP_SECTION_CHANGE_START:
                 var currentView:String = notification.getBody() as String;
-                if (currentView != viewName) {
+                if (currentView == viewName) {
                     sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
-                } else {
-                    // TODO : Make sure that we can leave this view !!!! : Send
-                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
-                    //  sendNotification(ApplicationFacade.APP_SECTION_CHANGE_REJECTED);
-
                 }
                 break;
             case ApplicationFacade.APP_SECTION_CHANGE_END:
@@ -476,7 +466,8 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
                 appliance = event.data as IdentityAppliance;
                 sendNotification(ProcessingMediator.START, "Opening identity appliance...");
                 projectProxy.currentIdentityAppliance = null;
-                sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+                //sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+                sendNotification(ApplicationFacade.APP_SECTION_CHANGE, ModelerViewFactory.VIEW_NAME);
                 sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, appliance.id.toString());
                 break;
             case LifecycleGridButtonEvent.ACTION_REMOVE :
@@ -539,7 +530,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
         if (appliance != null) {
             sendNotification(ProcessingMediator.START, "Opening identity appliance...");
             projectProxy.currentIdentityAppliance = null;
-            sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
+            sendNotification(ApplicationFacade.APP_SECTION_CHANGE, ModelerViewFactory.VIEW_NAME);
             sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, appliance.id.toString());
         }
     }
