@@ -24,7 +24,8 @@ import com.atricore.idbus.console.account.groups.GroupsView;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
 import com.atricore.idbus.console.account.users.UsersView;
-import com.atricore.idbus.console.main.AppSectionMediator;
+import com.atricore.idbus.console.base.app.BaseAppFacade;
+import com.atricore.idbus.console.base.extensions.appsection.AppSectionMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 
 import flash.events.Event;
@@ -159,21 +160,21 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.APP_SECTION_CHANGE_START,
-            ApplicationFacade.APP_SECTION_CHANGE_END,
+        return [BaseAppFacade.APP_SECTION_CHANGE_START,
+            BaseAppFacade.APP_SECTION_CHANGE_END,
             ApplicationFacade.LOGOUT
         ];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.APP_SECTION_CHANGE_START:
+            case BaseAppFacade.APP_SECTION_CHANGE_START:
                 var currentView:String = notification.getBody() as String;
                 if (currentView == viewName) {
-                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
+                    sendNotification(BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED);
                 }
                 break;
-            case ApplicationFacade.APP_SECTION_CHANGE_END:
+            case BaseAppFacade.APP_SECTION_CHANGE_END:
                 var newView:String = notification.getBody() as String;
                 if (newView == viewName) {
                     init();

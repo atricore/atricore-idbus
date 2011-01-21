@@ -1,5 +1,5 @@
 <AppSectionView
-            xmlns="com.atricore.idbus.console.main.*"
+            xmlns="com.atricore.idbus.console.base.extensions.appsection.*"
           xmlns:mx="library://ns.adobe.com/flex/mx"
           xmlns:fx="http://ns.adobe.com/mxml/2009"
           xmlns:s="library://ns.adobe.com/flex/spark"

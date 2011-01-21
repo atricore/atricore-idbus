@@ -1,8 +1,9 @@
 package com.atricore.idbus.console.lifecycle.main
 {
+import com.atricore.idbus.console.base.app.BaseAppFacade;
+import com.atricore.idbus.console.base.extensions.appsection.AppSectionMediator;
 import com.atricore.idbus.console.components.CustomDataGrid;
 import com.atricore.idbus.console.lifecycle.main.controller.event.LifecycleGridButtonEvent;
-import com.atricore.idbus.console.main.AppSectionMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
@@ -25,7 +26,6 @@ import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
 import mx.collections.HierarchicalData;
-import mx.controls.AdvancedDataGrid;
 import mx.controls.Alert;
 import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
 import mx.events.CloseEvent;
@@ -288,8 +288,8 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.APP_SECTION_CHANGE_START,
-            ApplicationFacade.APP_SECTION_CHANGE_END,
+        return [BaseAppFacade.APP_SECTION_CHANGE_START,
+            BaseAppFacade.APP_SECTION_CHANGE_END,
             BuildIdentityApplianceCommand.SUCCESS,
             BuildIdentityApplianceCommand.FAILURE,
             DeployIdentityApplianceCommand.SUCCESS,
@@ -310,13 +310,13 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.APP_SECTION_CHANGE_START:
+            case BaseAppFacade.APP_SECTION_CHANGE_START:
                 var currentView:String = notification.getBody() as String;
                 if (currentView == viewName) {
-                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
+                    sendNotification(BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED);
                 }
                 break;
-            case ApplicationFacade.APP_SECTION_CHANGE_END:
+            case BaseAppFacade.APP_SECTION_CHANGE_END:
                 var newView:String = notification.getBody() as String;
                 if (newView == viewName) {
                     projectProxy.currentView = viewName;
@@ -468,7 +468,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
                 sendNotification(ProcessingMediator.START, "Opening identity appliance...");
                 projectProxy.currentIdentityAppliance = null;
                 //sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
-                sendNotification(ApplicationFacade.APP_SECTION_CHANGE, ModelerViewFactory.VIEW_NAME);
+                sendNotification(BaseAppFacade.APP_SECTION_CHANGE, ModelerViewFactory.VIEW_NAME);
                 sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, appliance.id.toString());
                 break;
             case LifecycleGridButtonEvent.ACTION_REMOVE :
@@ -531,7 +531,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
         if (appliance != null) {
             sendNotification(ProcessingMediator.START, "Opening identity appliance...");
             projectProxy.currentIdentityAppliance = null;
-            sendNotification(ApplicationFacade.APP_SECTION_CHANGE, ModelerViewFactory.VIEW_NAME);
+            sendNotification(BaseAppFacade.APP_SECTION_CHANGE, ModelerViewFactory.VIEW_NAME);
             sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, appliance.id.toString());
         }
     }

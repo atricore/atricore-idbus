@@ -1,7 +1,9 @@
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-package com.atricore.idbus.console.main {
+package com.atricore.idbus.console.base.extensions.appsection {
+import com.atricore.idbus.console.base.app.BaseAppFacade;
+
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
@@ -37,18 +39,18 @@ public class AppSectionMediator extends IocMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.APP_SECTION_CHANGE_START,
-            ApplicationFacade.APP_SECTION_CHANGE_END];
+        return [BaseAppFacade.APP_SECTION_CHANGE_START,
+            BaseAppFacade.APP_SECTION_CHANGE_END];
     }
 
 
     override public function handleNotification(notification:INotification):void {
          switch (notification.getName()) {
-             case ApplicationFacade.APP_SECTION_CHANGE_START:
+             case BaseAppFacade.APP_SECTION_CHANGE_START:
                      var currentView:String = notification.getBody() as String;
                     // by default, accept APP_SECTION_CHANGE
                      if (currentView == viewName) {
-                         sendNotification(ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED);
+                         sendNotification(BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED);
                      }
                 break;
              default:

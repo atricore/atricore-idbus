@@ -22,7 +22,9 @@
 package com.atricore.idbus.console.main
 {
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.base.app.BaseAppFacade;
 import com.atricore.idbus.console.base.branding.AtricoreConsoleBrandingFactory;
+import com.atricore.idbus.console.base.extensions.appsection.AppSectionMediator;
 import com.atricore.idbus.console.branding.AtricoreConsolePreloader;
 import com.atricore.idbus.console.branding.heading.AtricoreHeading;
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
@@ -185,7 +187,7 @@ public class ApplicationMediator extends IocMediator {
         _selectedAppSectionIndex = selectedIndex;
 
         // Send old and new view names ...
-        sendNotification(ApplicationFacade.APP_SECTION_CHANGE_START, currentMediator.viewName);
+        sendNotification(BaseAppFacade.APP_SECTION_CHANGE_START, currentMediator.viewName);
 
     }
 
@@ -203,9 +205,9 @@ public class ApplicationMediator extends IocMediator {
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.APP_SECTION_CHANGE,
-                ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED,
-                ApplicationFacade.APP_SECTION_CHANGE_REJECTED,
+        return [BaseAppFacade.APP_SECTION_CHANGE,
+                BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED,
+                BaseAppFacade.APP_SECTION_CHANGE_REJECTED,
             ApplicationFacade.SHOW_ERROR_MSG,
             //            ApplicationFacade.SHOW_SUCCESS_MSG,
             ApplicationFacade.CLEAR_MSG,
@@ -269,27 +271,27 @@ public class ApplicationMediator extends IocMediator {
             case ApplicationFacade.CLEAR_MSG :
                 //                app.messageBox.clearAndHide();
                 break;
-            case ApplicationFacade.APP_SECTION_CHANGE:
+            case BaseAppFacade.APP_SECTION_CHANGE:
                 // manual app. section change trigger
                 var viewName:String = notification.getBody() as String;
                 var currentMediator:AppSectionMediator = _appSections[_selectedAppSectionIndex];
 
                 _selectedAppSectionIndex = getAppSectionIndex(viewName);
 
-                sendNotification(ApplicationFacade.APP_SECTION_CHANGE_START, currentMediator.viewName);
+                sendNotification(BaseAppFacade.APP_SECTION_CHANGE_START, currentMediator.viewName);
                 break;
-            case ApplicationFacade.APP_SECTION_CHANGE_CONFIRMED:
+            case BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED:
                 // Get selected mediator
                 var selectedMediator:AppSectionMediator = _appSections[_selectedAppSectionIndex];
 
                 app.stackButtonBar.selectedIndex = _selectedAppSectionIndex;
                 if (app.appSectionsViewStack.selectedIndex != _selectedAppSectionIndex) {
                     app.appSectionsViewStack.selectedIndex = _selectedAppSectionIndex;
-                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_END, selectedMediator.viewName);
+                    sendNotification(BaseAppFacade.APP_SECTION_CHANGE_END, selectedMediator.viewName);
                 }
 
                 break;
-            case ApplicationFacade.APP_SECTION_CHANGE_REJECTED:
+            case BaseAppFacade.APP_SECTION_CHANGE_REJECTED:
                 // open rejected view
                 var rejectedViewName:String = notification.getBody() as String;
                 _selectedAppSectionIndex = getAppSectionIndex(rejectedViewName);
@@ -299,7 +301,7 @@ public class ApplicationMediator extends IocMediator {
                     if (app.appSectionsViewStack.selectedIndex != _selectedAppSectionIndex) {
                         app.appSectionsViewStack.selectedIndex = _selectedAppSectionIndex;
                     }
-                    sendNotification(ApplicationFacade.APP_SECTION_CHANGE_END, null);
+                    sendNotification(BaseAppFacade.APP_SECTION_CHANGE_END, null);
                 });
                 break;
             case ApplicationFacade.DISPLAY_CHANGE_PASSWORD:
@@ -366,7 +368,7 @@ public class ApplicationMediator extends IocMediator {
         sendNotification(ApplicationFacade.CLEAR_MSG);
 
         // By default, switch to first app section view
-        sendNotification(ApplicationFacade.APP_SECTION_CHANGE, _appSections[0].viewFactory.viewName);
+        sendNotification(BaseAppFacade.APP_SECTION_CHANGE, _appSections[0].viewFactory.viewName);
     }
 
     public function logout():void {
