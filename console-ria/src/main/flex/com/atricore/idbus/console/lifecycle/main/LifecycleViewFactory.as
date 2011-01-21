@@ -2,7 +2,6 @@
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 package com.atricore.idbus.console.lifecycle.main {
-import com.atricore.idbus.console.lifecycle.*;
 import com.atricore.idbus.console.main.AppSectionView;
 import com.atricore.idbus.console.main.AppSectionViewFactory;
 

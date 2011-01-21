@@ -220,14 +220,17 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
         //      - Stop timers
         //      - Set references to null
 
-        _identityAppliance = null;
-        _appSectionChangeInProgress = false;
+        if (_created) {
+            _created = false;
+            _identityAppliance = null;
+            _appSectionChangeInProgress = false;
 
-        view.btnSave.enabled = false;
-        view.btnExport.enabled = false;
-        view.appliances.selectedItem = null;
-        (browserMediator as BrowserMediator).dispose();
-        (diagramMediator as DiagramMediator).dispose();
+            view.btnSave.enabled = false;
+            view.btnExport.enabled = false;
+            view.appliances.selectedItem = null;
+            (browserMediator as BrowserMediator).dispose();
+            (diagramMediator as DiagramMediator).dispose();
+        }
     }
 
     private function handleNewClick(event:MouseEvent):void {
