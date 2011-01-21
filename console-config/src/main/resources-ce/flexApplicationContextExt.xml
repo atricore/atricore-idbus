@@ -5,5 +5,10 @@
         xsi:schemaLocation="
         http://www.springactionscript.org/schema/objects
         http://www.springactionscript.org/schema/objects/spring-actionscript-objects-1.0.xsd">
+
     <!-- CE Console Extensions -->
+
+    <!-- Branding Factory -->
+    <object id="brandingFactory" class="com.atricore.idbus.console.branding.ce.AtricoreCEBrandingFactory"/>
+
 </objects>

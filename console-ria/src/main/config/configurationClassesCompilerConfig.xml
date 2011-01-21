@@ -10,16 +10,19 @@
     
     <includes>
 
+        <!-- REMEMBER : Keep this file tidy :) -->
+
         <!-- Base classes -->
         <symbol>com.atricore.idbus.console.base.branding.AtricoreConsoleBrandingFactory</symbol>
 
         <!-- EE Extensions -->
         <symbol>com.atricore.idbus.console.branding.ee.AtricoreEEBrandingFactory</symbol>
 
+
         <!-- CE Extensions -->
+        <symbol>com.atricore.idbus.console.branding.ce.AtricoreCEBrandingFactory</symbol>
 
         <!-- Main classes -->
-
         <symbol>com.atricore.idbus.console.main.ApplicationMediator</symbol>
         <symbol>com.atricore.idbus.console.main.service.ServiceRegistry</symbol>
         <symbol>com.atricore.idbus.console.main.ApplicationMediator</symbol>
