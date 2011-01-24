@@ -81,6 +81,11 @@
         <property name="exportProviderCertificateCommand" ref="exportProviderCertificateCommand"/>
         <property name="exportIdentityApplianceCommand" ref="exportIdentityApplianceCommand"/>
         <property name="exportMetadataCommand" ref="exportMetadataCommand"/>
+        <property name="listUpdatesCommand" ref="listUpdatesCommand"/>
+        <property name="checkForUpdatesCommand" ref="checkForUpdatesCommand"/>
+        <property name="applyUpdateCommand" ref="applyUpdateCommand"/>
+        <property name="getUpdateProfileCommand" ref="getUpdateProfileCommand"/>
+
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>
@@ -143,6 +148,7 @@
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
         <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
         <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
+        <property name="liveUpdateMediator" ref="liveUpdateMediator"/>
 
     </object>
 
@@ -705,6 +711,5 @@
         <property name="searchUsersMediator" ref="searchUsersMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
     </object>
-
 
 </objects>
