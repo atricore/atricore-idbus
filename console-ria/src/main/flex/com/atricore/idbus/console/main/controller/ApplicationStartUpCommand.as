@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.main.controller
 {
+import com.atricore.idbus.console.base.extensions.appsection.AppSectionStartUpCommand;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 

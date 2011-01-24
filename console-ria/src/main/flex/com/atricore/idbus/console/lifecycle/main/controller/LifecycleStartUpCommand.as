@@ -2,10 +2,10 @@
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 package com.atricore.idbus.console.lifecycle.main.controller {
+import com.atricore.idbus.console.base.app.BaseStartupContext;
+import com.atricore.idbus.console.base.extensions.appsection.AppSectionStartUpCommand;
 import com.atricore.idbus.console.lifecycle.main.LifecycleMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.controller.AppSectionStartUpCommand;
-import com.atricore.idbus.console.main.controller.StartupContext;
 
 import org.springextensions.actionscript.puremvc.interfaces.IIocCommand;
 
@@ -29,11 +29,11 @@ public class LifecycleStartUpCommand extends AppSectionStartUpCommand {
         appSectionMediator = value;
     }
 
-    override protected function setupMediators(ctx:StartupContext):void {
+    override protected function setupMediators(ctx:BaseStartupContext):void {
         iocFacade.registerMediatorByConfigName(lifecycleMediator.getConfigName());
     }
 
-    override protected function setupCommands(ctx:StartupContext):void {
+    override protected function setupCommands(ctx:BaseStartupContext):void {
         iocFacade.registerCommandByConfigName(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, buildIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE, deployIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, undeployIdentityApplianceCommand.getConfigName());

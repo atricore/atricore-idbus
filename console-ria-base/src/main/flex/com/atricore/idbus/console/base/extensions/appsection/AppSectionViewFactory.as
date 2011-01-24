@@ -1,7 +1,7 @@
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-package com.atricore.idbus.console.main {
+package com.atricore.idbus.console.base.extensions.appsection {
 public class AppSectionViewFactory {
 
     private var _viewName:String;

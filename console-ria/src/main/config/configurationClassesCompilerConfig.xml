@@ -26,7 +26,7 @@
         <symbol>com.atricore.idbus.console.main.ApplicationMediator</symbol>
         <symbol>com.atricore.idbus.console.main.service.ServiceRegistry</symbol>
         <symbol>com.atricore.idbus.console.main.ApplicationMediator</symbol>
-        <symbol>com.atricore.idbus.console.main.AppSectionViewFactory</symbol>
+        <symbol>com.atricore.idbus.console.base.extensions.appsection.AppSectionViewFactory</symbol>
 
         <symbol>com.atricore.idbus.console.main.controller.ApplicationStartUpCommand</symbol>
         <symbol>com.atricore.idbus.console.main.controller.LoginCommand</symbol>

@@ -3,9 +3,9 @@
  */
 package com.atricore.idbus.console.account.main.controller {
 import com.atricore.idbus.console.account.main.AccountManagementMediator;
+import com.atricore.idbus.console.base.app.BaseStartupContext;
+import com.atricore.idbus.console.base.extensions.appsection.AppSectionStartUpCommand;
 import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.controller.AppSectionStartUpCommand;
-import com.atricore.idbus.console.main.controller.StartupContext;
 
 import org.springextensions.actionscript.puremvc.interfaces.IIocCommand;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
@@ -45,7 +45,7 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
         appSectionMediator = value;
     }
 
-    override protected function setupMediators(ctx:StartupContext):void {
+    override protected function setupMediators(ctx:BaseStartupContext):void {
         iocFacade.registerMediatorByConfigName(appSectionMediator.getConfigName());
 
         iocFacade.registerMediatorByConfigName(groupsMediator.getConfigName());
@@ -60,7 +60,7 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(searchUsersMediator.getConfigName());
     }
 
-    override protected function setupCommands(ctx:StartupContext):void {
+    override protected function setupCommands(ctx:BaseStartupContext):void {
         iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_GROUP, addGroupCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_USER, addUserCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DELETE_GROUP, deleteGroupCommand.getConfigName());

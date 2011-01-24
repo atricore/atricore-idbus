@@ -21,12 +21,9 @@
 
 package com.atricore.idbus.console.main
 {
-import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
+import com.atricore.idbus.console.base.app.BaseAppFacade;
 
-import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
-import org.springextensions.actionscript.puremvc.patterns.facade.IocFacade;
-
-public class ApplicationFacade extends IocFacade implements IIocFacade {
+public class ApplicationFacade extends BaseAppFacade {
 
     public static const USER_PROVISIONING_SERVICE:String = "userProvisioningService";
     public static const IDENTITY_APPLIANCE_MANAGEMENT_SERVICE:String = "identityApplianceManagementService";
@@ -39,14 +36,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
 
     // command-backed notifications
     public static const STARTUP:String = "startup";
-    public static const STARTUP_APP_SECTION:String = "startupAppSection";
-
-    public static const APP_SECTION_CHANGE:String = "AppSectionChange";
-    public static const APP_SECTION_CHANGE_START:String = "AppSectionChangeStart";
-    public static const APP_SECTION_CHANGE_CONFIRMED:String = "AppSectionChangeConfirmed";
-    public static const APP_SECTION_CHANGE_REJECTED:String = "AppSectionChangeRejected";
-    public static const APP_SECTION_CHANGE_END:String = "appSectionChangeEnd";
-
+    
     public static const SETUP_SERVER:String = "Note.SetupServer";
     public static const REGISTER:String = "Note.Register";
     public static const CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE:String = "createSimpleSSOIdentityAppliance";

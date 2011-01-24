@@ -2,15 +2,15 @@
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 package com.atricore.idbus.console.modeling.main.controller {
+import com.atricore.idbus.console.base.app.BaseStartupContext;
+import com.atricore.idbus.console.base.extensions.appsection.AppSectionStartUpCommand;
 import com.atricore.idbus.console.main.ApplicationFacade;
-import com.atricore.idbus.console.main.controller.AppSectionStartUpCommand;
-import com.atricore.idbus.console.main.controller.StartupContext;
 import com.atricore.idbus.console.modeling.main.ModelerMediator;
 
 import org.springextensions.actionscript.puremvc.interfaces.IIocCommand;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 
-public class ModelerStartUpCommand extends AppSectionStartUpCommand{
+public class ModelerStartUpCommand extends AppSectionStartUpCommand {
 
     // Mediators
     private var _browserMediator:IIocMediator;
@@ -87,7 +87,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand{
         appSectionMediator = value;
     }
 
-    override protected function setupMediators(ctx:StartupContext):void {
+    override protected function setupMediators(ctx:BaseStartupContext):void {
         iocFacade.registerMediatorByConfigName(appSectionMediator.getConfigName());
 
         iocFacade.registerMediatorByConfigName(browserMediator.getConfigName());
@@ -126,7 +126,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand{
         iocFacade.registerMediatorByConfigName(exportMetadataMediator.getConfigName());
     }
 
-    override protected function setupCommands(ctx:StartupContext):void {
+    override protected function setupCommands(ctx:BaseStartupContext):void {
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, createSimpleSSOIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, identityApplianceCreateCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IMPORT_IDENTITY_APPLIANCE, identityApplianceImportCommand.getConfigName());
