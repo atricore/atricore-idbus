@@ -3,6 +3,8 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.service;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateEngine;
+import com.atricore.idbus.console.liveservices.liveupdate.main.notifications.NotificationHandler;
+import com.atricore.idbus.console.liveservices.liveupdate.main.notifications.NotificationScheme;
 import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepository;
@@ -70,6 +72,8 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
     private String certProviderName = "SUN";
 
     private CertStore certStore;
+
+    private List<NotificationHandler> notificationHandlers;
 
 
     public void init() throws LiveUpdateException {
@@ -236,7 +240,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
     // Analyze MD and see if updates apply. (use license information ....)
     public Collection<UpdateDescriptorType> checkForUpdates() throws LiveUpdateException {
         mdManager.refreshRepositories();
-        // TODO : Notify if new updates were found !
+        // TODO : Notify if new updates were found , use notification handlers!
         return getAvailableUpdates();
     }
 
@@ -377,7 +381,28 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
 
     }
 
-// -------------------------------------------< Properties >
+    public void addNotificationScheme(NotificationScheme scheme) throws LiveUpdateException {
+        // TODO : Implement me
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+
+    public void removeNotificationScheme(NotificationScheme scheme) throws LiveUpdateException {
+        // TODO : Implement me
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+
+    public Collection<NotificationScheme> listNotificationSchemes() throws LiveUpdateException {
+        // TODO : Implement me
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+
+    public NotificationScheme getNotificationScheme(String name) throws LiveUpdateException {
+        // TODO : Implement me
+        throw new UnsupportedOperationException("Not implemented!");
+    }
+
+    // -------------------------------------------< Properties >
+
     public void setConfig(Properties config) {
         this.config = config;
     }
@@ -466,5 +491,13 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
 
     public void setStartupCheckInterval(int startupCheckInterval) {
         this.startupCheckInterval = startupCheckInterval;
+    }
+
+    public List<NotificationHandler> getNotificationHandlers() {
+        return notificationHandlers;
+    }
+
+    public void setNotificationHandlers(List<NotificationHandler> notificationHandlers) {
+        this.notificationHandlers = notificationHandlers;
     }
 }
