@@ -45,6 +45,7 @@ import com.atricore.idbus.console.lifecycle.main.spi.request.*;
 import com.atricore.idbus.console.lifecycle.main.spi.response.*;
 import com.atricore.idbus.console.lifecycle.main.util.MetadataUtil;
 import oasis.names.tc.saml._2_0.metadata.*;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
@@ -55,6 +56,7 @@ import org.atricore.idbus.kernel.main.federation.metadata.MetadataDefinition;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3._2000._09.xmldsig_.X509DataType;
+import sun.security.provider.X509Factory;
 
 import javax.jdo.FetchPlan;
 import javax.xml.bind.JAXBElement;
@@ -1114,6 +1116,80 @@ public class IdentityApplianceManagementServiceImpl implements
             throw new IdentityServerException(e);
         }
         return res;
+    }
+
+    public ExportProviderCertificateResponse exportProviderCertificate(ExportProviderCertificateRequest request) throws IdentityServerException {
+        ExportProviderCertificateResponse response = new ExportProviderCertificateResponse();
+        try {
+            SamlR2ProviderConfig config = request.getConfig();
+
+            // signer and encrypter are the same
+            Keystore signer = config.getSigner();
+            if (signer == null && config.isUseSampleStore()) {
+                signer = sampleKeystore;
+            }
+            if (signer != null) {
+                byte[] keystore = signer.getStore().getValue();
+                KeyStore jks = KeyStore.getInstance("PKCS#12".equals(signer.getType()) ? "PKCS12" : "JKS");
+                jks.load(new ByteArrayInputStream(keystore), signer.getPassword().toCharArray());
+                X509Certificate signerCertificate = (X509Certificate) jks.getCertificate(signer.getCertificateAlias());
+                if (signerCertificate != null) {
+                    StringWriter stringWriter = new StringWriter();
+                    BufferedWriter bufWriter = new BufferedWriter(stringWriter);
+
+                    // write header
+                    bufWriter.write(X509Factory.BEGIN_CERT);
+                    bufWriter.newLine();
+
+                    // write encoded
+                    char[]  buf = new char[64];
+                    byte[] encoded = Base64.encodeBase64(signerCertificate.getEncoded());
+
+                    for (int i = 0; i < encoded.length; i += buf.length) {
+                        int index = 0;
+
+                        while (index != buf.length) {
+                            if ((i + index) >= encoded.length) {
+                                break;
+                            }
+                            buf[index] = (char) encoded[i + index];
+                            index++;
+                        }
+                        bufWriter.write(buf, 0, index);
+                        bufWriter.newLine();
+                    }
+
+                    // write footer
+                    bufWriter.write(X509Factory.END_CERT);
+                    bufWriter.newLine();
+
+                    // flush and close
+                    bufWriter.flush();
+                    stringWriter.close();
+                    bufWriter.close();
+
+                    // set response
+                    response.setCertificate(stringWriter.toString().getBytes());
+                }
+            }
+        } catch (Exception e){
+            logger.error("Error exporting provider certificate", e);
+            throw new IdentityServerException(e);
+        }
+        return response;
+    }
+
+    public ExportMetadataResponse exportMetadata(ExportMetadataRequest request) throws IdentityServerException {
+        ExportMetadataResponse response = new ExportMetadataResponse();
+        try {
+            syncAppliances();
+            IdentityAppliance appliance = identityApplianceDAO.findById(Long.parseLong(request.getApplianceId()));
+            response.setMetadata(builder.exportMetadata(appliance, request.getProviderName(), request.getChannelName()));
+        } catch (Exception e){
+            logger.error("Error exporting SAML metadata", e);
+            throw new IdentityServerException(e);
+        }
+        return response;
     }
 
     private X509Certificate getCertificate(KeyDescriptorType keyMd) {

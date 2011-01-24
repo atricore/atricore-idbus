@@ -1,7 +1,5 @@
 package com.atricore.idbus.console.lifecycle.main.spi.request;
 
-import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
-
 /**
  * Author: Dejan Maric
  */

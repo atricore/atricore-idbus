@@ -2,7 +2,6 @@ package com.atricore.idbus.console.lifecycle.main.impl;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.metadata.IdentityApplianceDefinition;
-import com.atricore.idbus.console.lifecycle.main.exception.ApplianceValidationException;
 import com.atricore.idbus.console.lifecycle.main.exception.IdentityServerException;
 import com.atricore.idbus.console.lifecycle.main.spi.ApplianceMarshaller;
 import com.atricore.idbus.console.lifecycle.main.spi.IdentityApplianceDefinitionWalker;

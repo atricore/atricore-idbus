@@ -8,7 +8,9 @@ import com.atricore.idbus.console.lifecycle.main.transform.TransformEvent;
 import oasis.names.tc.saml._2_0.metadata.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.factory.InitializingBean;
@@ -18,7 +20,8 @@ import org.w3._2001._04.xmlenc_.EncryptionMethodType;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.StringWriter;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.util.ArrayList;
@@ -69,38 +72,35 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
             String baseDestPath = (String) event.getContext().get("idauPath");
             String providerBeanName = normalizeBeanName(provider.getName());
 
-            boolean defaultChannelAdded = false;
             List<ServiceProviderChannel> spChannels = new ArrayList<ServiceProviderChannel>();
 
             for (FederatedConnection fedConn : provider.getFederatedConnectionsA()) {
                 ServiceProviderChannel spChannel = (ServiceProviderChannel) fedConn.getChannelA();
-                if (spChannel.isOverrideProviderSetup() || !defaultChannelAdded) {
+                if (spChannel.isOverrideProviderSetup()) {
                     spChannels.add(spChannel);
-                }
-                if (!spChannel.isOverrideProviderSetup()) {
-                    defaultChannelAdded = true;
                 }
             }
 
             for (FederatedConnection fedConn : provider.getFederatedConnectionsB()) {
                 ServiceProviderChannel spChannel = (ServiceProviderChannel) fedConn.getChannelB();
-                if (spChannel.isOverrideProviderSetup() || !defaultChannelAdded) {
+                if (spChannel.isOverrideProviderSetup()) {
                     spChannels.add(spChannel);
-                }
-                if (!spChannel.isOverrideProviderSetup()) {
-                    defaultChannelAdded = true;
                 }
             }
 
+            // generate metadata for default channel
+            IdProjectResource<EntityDescriptorType> idpMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
+                baseDestPath + providerBeanName, providerBeanName, "saml2", generateSPChannelMetadata(provider, null));
+            idpMetadata.setClassifier("jaxb");
+            module.addResource(idpMetadata);
+
+            // generate metadata for override channels
             for (ServiceProviderChannel spChannel : spChannels) {
-                String resourceName = providerBeanName;
-                if (spChannel.isOverrideProviderSetup()) {
-                    resourceName = normalizeBeanName(spChannel.getName());
-                }
-                IdProjectResource<EntityDescriptorType> idpMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
+                String resourceName = normalizeBeanName(spChannel.getName());
+                IdProjectResource<EntityDescriptorType> channelMetadata = new IdProjectResource<EntityDescriptorType>(idGen.generateId(),
                     baseDestPath + providerBeanName, resourceName, "saml2", generateSPChannelMetadata(provider, spChannel));
-                idpMetadata.setClassifier("jaxb");
-                module.addResource(idpMetadata);
+                channelMetadata.setClassifier("jaxb");
+                module.addResource(channelMetadata);
             }
         } catch (Exception e) {
             throw new TransformException(e);
@@ -247,7 +247,7 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         // IDPSSODescriptor
         IDPSSODescriptorType idpSSODescriptor = new IDPSSODescriptorType();
         idpSSODescriptor.setID("idSy31Pds0meYpkaDLFG6-eWqL0WA");
-        idpSSODescriptor.getProtocolSupportEnumeration().add("urn:oasis:names:tc:SAML:2.0:protocol");
+        idpSSODescriptor.getProtocolSupportEnumeration().add(SAMLR2Constants.SAML_PROTOCOL_NS);
 
         // signing key descriptor
         KeyDescriptorType signingKeyDescriptor = new KeyDescriptorType();
@@ -318,9 +318,9 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         // services
 
         // profiles
-        Set<Profile> activeProfiles = spChannel.getActiveProfiles();
-        if (!spChannel.isOverrideProviderSetup()) {
-            activeProfiles = provider.getActiveProfiles();
+        Set<Profile> activeProfiles = provider.getActiveProfiles();
+        if (spChannel != null) {
+            activeProfiles = spChannel.getActiveProfiles();
         }
         boolean ssoEnabled = false;
         boolean sloEnabled = false;
@@ -333,9 +333,9 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         }
 
         // bindings
-        Set<Binding> activeBindings = spChannel.getActiveBindings();
-        if (!spChannel.isOverrideProviderSetup()) {
-            activeBindings = provider.getActiveBindings();
+        Set<Binding> activeBindings = provider.getActiveBindings();
+        if (spChannel != null) {
+            activeBindings = spChannel.getActiveBindings();
         }
         boolean postEnabled = false;
         boolean redirectEnabled = false;
@@ -364,7 +364,8 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
 
             IndexedEndpointType artifactResolutionServiceLocal = new IndexedEndpointType();
             artifactResolutionServiceLocal.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
-            artifactResolutionServiceLocal.setLocation("local://" + spChannel.getLocation().getUri() + "/SAML2/ARTIFACT/LOCAL");
+            artifactResolutionServiceLocal.setLocation("local://" + (spChannel != null ?
+                    spChannel.getLocation().getUri().toUpperCase() : provider.getLocation().getUri().toUpperCase()) + "/SAML2/ARTIFACT/LOCAL");
             artifactResolutionServiceLocal.setIndex(1);
             artifactResolutionServiceLocal.setIsDefault(true);
             idpSSODescriptor.getArtifactResolutionService().add(artifactResolutionServiceLocal);
@@ -412,7 +413,8 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
 
             EndpointType singleLogoutServiceLocal = new EndpointType();
             singleLogoutServiceLocal.setBinding(SamlR2Binding.SAMLR2_LOCAL.getValue());
-            singleLogoutServiceLocal.setLocation("local://" + spChannel.getLocation().getUri() + "/SAML2/SLO/LOCAL");
+            singleLogoutServiceLocal.setLocation("local://" + (spChannel != null ?
+                    spChannel.getLocation().getUri().toUpperCase() : provider.getLocation().getUri().toUpperCase()) + "/SAML2/SLO/LOCAL");
             idpSSODescriptor.getSingleLogoutService().add(singleLogoutServiceLocal);
         }
 
@@ -435,8 +437,8 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         idpSSODescriptor.getManageNameIDService().add(manageNameIDServiceRedirect);
 
         // TODO : Make configurable
-        idpSSODescriptor.getNameIDFormat().add("urn:oasis:names:tc:SAML:2.0:nameid-format:persistent");
-        idpSSODescriptor.getNameIDFormat().add("urn:oasis:names:tc:SAML:2.0:nameid-format:transient");
+        idpSSODescriptor.getNameIDFormat().add(NameIDFormat.PERSISTENT.getValue());
+        idpSSODescriptor.getNameIDFormat().add(NameIDFormat.TRANSIENT.getValue());
 
         // SingleSignOnService
         if (ssoEnabled) {
@@ -468,7 +470,8 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
         OrganizationType organization = new OrganizationType();
         LocalizedNameType organizationName = new LocalizedNameType();
         organizationName.setLang("en");
-        organizationName.setValue("Atricore IDBUs SAMLR2 JOSSO IDP Sample");
+        // TODO : Take this from appliance/system setup/license
+        organizationName.setValue("Atricore JOSSO 2 IDP");
         organization.getOrganizationName().add(organizationName);
         LocalizedNameType organizationDisplayName = new LocalizedNameType();
         organizationDisplayName.setLang("en");

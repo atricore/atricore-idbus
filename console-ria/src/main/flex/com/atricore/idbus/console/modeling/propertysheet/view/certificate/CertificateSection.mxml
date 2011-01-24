@@ -46,6 +46,8 @@
                 <s:RadioButton groupName="certificateManagementType" id="useDefaultKeystore" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.useDefaultKeystore')}"/>
                 <!--s:RadioButton groupName="certificateManagementType" id="autoGenerate" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.autoGenerate')}"/-->
                 <s:RadioButton groupName="certificateManagementType" id="uploadKeystore" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.type.uploadKeystore')}"/>
+
+                <s:Button id="btnExportCertificate" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.export')}" enabled="false"/>
             </mx:Form>
         </utils:TitledBorderBox>
 

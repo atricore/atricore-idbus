@@ -30,13 +30,16 @@
     <bean name="idauBaseComponentsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdauBaseComponentsTransformer"/>
 
-    <bean name="idpTransformer"
+    <bean name="idpLocalTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPLocalTransformer">
         <property name="sampleKeystore" ref="sampleKeystore"/>
     </bean>
 
-    <bean name="idpRemoteTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPRemoteTransformer"/>
+    <bean name="idpExternalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPExternalTransformer"/>
+
+    <bean name="idpDefaultSPChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdPDefaultSPChannelTransformer"/>
 
     <bean name="idpFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.IdpFederatedConnectionTransformer">
@@ -54,13 +57,22 @@
     <bean name="stsTransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.STSTransformer"/>
 
-    <bean name="spTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPTransformer">
+    <bean name="spLocalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPLocalTransformer">
         <property name="sampleKeystore" ref="sampleKeystore"/>
     </bean>
 
-    <bean name="spRemoteTransformer"
-          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPRemoteTransformer"/>
+    <bean name="spExternalTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPExternalTransformer"/>
+
+    <bean name="salesforceTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SalesforceTransformer"/>
+
+    <bean name="googleAppsTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.GoogleAppsTransformer"/>
+
+    <bean name="spDefaultIdPChannelTransformer"
+          class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPDefaultIdPChannelTransformer"/>
     
     <bean name="spFederatedConnectionATransformer"
           class="com.atricore.idbus.console.lifecycle.main.transform.transformers.SPFederatedConnectionTransformer">
@@ -264,10 +276,11 @@
                                         <ref bean="idauBaseComponentsTransformer"/>
 
                                         <!-- IDP Transformers -->
-                                        <ref bean="idpTransformer"/>
-                                        <ref bean="idpRemoteTransformer"/>
+                                        <ref bean="idpLocalTransformer"/>
+                                        <ref bean="idpExternalTransformer"/>
                                         <ref bean="samlr2IdPTransformer"/>
 
+                                        <ref bean="idpDefaultSPChannelTransformer"/>
                                         <ref bean="idpFederatedConnectionATransformer"/>
                                         <ref bean="idpFederatedConnectionBTransformer"/>
 
@@ -275,8 +288,11 @@
                                         <ref bean="stsTransformer"/>
 
                                         <!-- SP Transformers -->
-                                        <ref bean="spTransformer"/>
-                                        <ref bean="spRemoteTransformer"/>
+                                        <ref bean="spLocalTransformer"/>
+                                        <ref bean="salesforceTransformer"/>
+                                        <ref bean="googleAppsTransformer"/>
+                                        <ref bean="spExternalTransformer"/>
+                                        <ref bean="spDefaultIdPChannelTransformer"/>
                                         <ref bean="spFederatedConnectionATransformer"/>
                                         <ref bean="spFederatedConnectionBTransformer"/>
                                         <ref bean="spJOSSOActivationTransformer"/>

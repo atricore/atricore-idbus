@@ -42,10 +42,12 @@ import com.atricore.idbus.console.modeling.diagram.model.request.CreateExecution
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateExternalServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateFederatedConnectionElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateGoogleAppsElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateIdentityVaultElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateLdapIdentitySourceElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.CreateSalesforceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.CreateXmlIdentitySourceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveActivationElementRequest;
@@ -53,10 +55,12 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecution
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveGoogleAppsElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.renderers.node.NodeDetailedRenderer;
 import com.atricore.idbus.console.modeling.diagram.view.util.DiagramUtil;
@@ -69,6 +73,7 @@ import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
 import com.atricore.idbus.console.services.dto.FederatedProvider;
+import com.atricore.idbus.console.services.dto.GoogleAppsServiceProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentityLookup;
@@ -77,6 +82,7 @@ import com.atricore.idbus.console.services.dto.IdentitySource;
 import com.atricore.idbus.console.services.dto.JOSSOActivation;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.Provider;
+import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
@@ -330,6 +336,44 @@ public class DiagramMediator extends IocMediator implements IDisposable {
 
 
                         break;
+                    case DiagramElementTypes.SALESFORCE_ELEMENT_TYPE:
+                        // assert that source end is an Identity Appliance
+                        //                            if (_currentlySelectedNode.data is IdentityAppliance) {
+                        //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
+                        ownerIdentityAppliance = _identityAppliance;
+
+                        var csf:CreateSalesforceElementRequest = new CreateSalesforceElementRequest(
+                                ownerIdentityAppliance,
+                            //                                        _currentlySelectedNode.stringid
+                                null
+                                );
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_SALESFORCE_ELEMENT, csf);
+                        //                            }
+
+
+                        break;
+                    case DiagramElementTypes.GOOGLE_APPS_ELEMENT_TYPE:
+                        // assert that source end is an Identity Appliance
+                        //                            if (_currentlySelectedNode.data is IdentityAppliance) {
+                        //                                var ownerIdentityAppliance:IdentityAppliance = _currentlySelectedNode.data as IdentityAppliance;
+                        ownerIdentityAppliance = _identityAppliance;
+
+                        var cga:CreateGoogleAppsElementRequest = new CreateGoogleAppsElementRequest(
+                                ownerIdentityAppliance,
+                            //                                        _currentlySelectedNode.stringid
+                                null
+                                );
+
+                        // this notification will be grabbed by the modeler mediator which will open
+                        // the corresponding form
+                        sendNotification(ApplicationFacade.CREATE_GOOGLE_APPS_ELEMENT, cga);
+                        //                            }
+
+
+                        break;
                     case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                         ownerIdentityAppliance = _identityAppliance;
 
@@ -528,6 +572,24 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             // this notification will be grabbed by the modeler mediator which will invoke
                             // the corresponding command for processing the removal operation.
                             sendNotification(ApplicationFacade.REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT, resp);
+                            break;
+                        case DiagramElementTypes.SALESFORCE_ELEMENT_TYPE:
+                            var salesforceProvider:SalesforceServiceProvider = _currentlySelectedNode.data as SalesforceServiceProvider;
+
+                            var rsf:RemoveSalesforceElementRequest = new RemoveSalesforceElementRequest(salesforceProvider);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_SALESFORCE_ELEMENT, rsf);
+                            break;
+                        case DiagramElementTypes.GOOGLE_APPS_ELEMENT_TYPE:
+                            var googleAppsProvider:GoogleAppsServiceProvider = _currentlySelectedNode.data as GoogleAppsServiceProvider;
+
+                            var rga:RemoveGoogleAppsElementRequest = new RemoveGoogleAppsElementRequest(googleAppsProvider);
+
+                            // this notification will be grabbed by the modeler mediator which will invoke
+                            // the corresponding command for processing the removal operation.
+                            sendNotification(ApplicationFacade.REMOVE_GOOGLE_APPS_ELEMENT, rga);
                             break;
                         case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                             var identityVault:EmbeddedIdentitySource = _currentlySelectedNode.data as EmbeddedIdentitySource;
@@ -914,7 +976,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
             node.data.x = node.vnode.viewX + (0.2 * node.vnode.view.width) / 2.4;
             node.data.y = node.vnode.viewY + (0.2 * node.vnode.view.height) / 2.4;;
         }
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED, "nodesMoved");
     }
 
     private function allNodesMovedEventHandler(event:VNodeMovedEvent):void {
@@ -924,7 +986,7 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 node.data.y = node.vnode.viewY;
             }
         }
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED, "nodesMoved");
     }
 
     private function nodeRemoveEventHandler(event:VNodeRemoveEvent):void
@@ -946,6 +1008,10 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                 elementType = DiagramElementTypes.EXTERNAL_IDENTITY_PROVIDER_ELEMENT_TYPE;
             } else if (node.data is ExternalServiceProvider) {
                 elementType = DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE;
+            } else if (node.data is SalesforceServiceProvider) {
+                elementType = DiagramElementTypes.SALESFORCE_ELEMENT_TYPE;
+            } else if (node.data is GoogleAppsServiceProvider) {
+                elementType = DiagramElementTypes.GOOGLE_APPS_ELEMENT_TYPE;
             } else if (node.data is DbIdentitySource) {
                 elementType = DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE;
             } else if (node.data is EmbeddedIdentitySource) {

@@ -47,10 +47,10 @@ import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tom
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.tomcat.TomcatExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.wasce.WASCEExecutionEnvironmentCreateMediator;
-import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver.WebserverExecutionEnvironmentCreateForm;
-import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver.WebserverExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.weblogic.WeblogicExecutionEnvironmentCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver.WebserverExecutionEnvironmentCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.webserver.WebserverExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.executionenvironment.windowsiis.WindowsIISExecutionEnvironmentCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.externalidp.ExternalIdentityProviderCreateForm;
@@ -59,12 +59,16 @@ import com.atricore.idbus.console.modeling.diagram.view.externalsp.ExternalServi
 import com.atricore.idbus.console.modeling.diagram.view.externalsp.ExternalServiceProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.googleapps.GoogleAppsCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.googleapps.GoogleAppsCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.identityvault.IdentityVaultCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.idp.IdentityProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.ldapidentitysource.LdapIdentitySourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.ldapidentitysource.LdapIdentitySourceCreateMediator;
+import com.atricore.idbus.console.modeling.diagram.view.salesforce.SalesforceCreateForm;
+import com.atricore.idbus.console.modeling.diagram.view.salesforce.SalesforceCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateForm;
@@ -73,9 +77,12 @@ import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediato
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceView;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceView;
-
 import com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceView;
+import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataMediator;
+import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataView;
+import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProviderCertificateMediator;
+import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProviderCertificateView;
 
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
@@ -91,6 +98,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _serviceProviderMediator:ServiceProviderCreateMediator;
     private var _externalIdentityProviderMediator:ExternalIdentityProviderCreateMediator;
     private var _externalServiceProviderMediator:ExternalServiceProviderCreateMediator;
+    private var _salesforceMediator:SalesforceCreateMediator;
+    private var _googleAppsMediator:GoogleAppsCreateMediator;
     private var _identityVaultCreateMediator:IdentityVaultCreateMediator;
     private var _dbIdentitySourceCreateMediator:DbIdentitySourceCreateMediator;
     private var _ldapIdentitySourceCreateMediator:LdapIdentitySourceCreateMediator;
@@ -113,12 +122,16 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _activationCreateMediator:ActivationCreateMediator;
     private var _federatedConnectionCreateMediator:FederatedConnectionCreateMediator;
     private var _exportIdentityApplianceMediator:ExportIdentityApplianceMediator;
+    private var _exportProviderCertificateMediator:ExportProviderCertificateMediator;
+    private var _exportMetadataMediator:ExportMetadataMediator;
 
     // views
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
     private var _serviceProviderCreateForm:ServiceProviderCreateForm;
     private var _externalIdentityProviderCreateForm:ExternalIdentityProviderCreateForm;
     private var _externalServiceProviderCreateForm:ExternalServiceProviderCreateForm;
+    private var _salesforceCreateForm:SalesforceCreateForm;
+    private var _googleAppsCreateForm:GoogleAppsCreateForm;
     private var _identityVaultCreateForm:IdentityVaultCreateForm;
     private var _dbIdentitySourceCreateForm:DbIdentitySourceCreateForm;
     private var _ldapIdentitySourceCreateForm:LdapIdentitySourceCreateForm;
@@ -142,6 +155,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _activationCreateForm:ActivationCreateForm;
     private var _federatedConnectionCreateForm:FederatedConnectionCreateForm;
     private var _exportIdentityApplianceView:ExportIdentityApplianceView;
+    private var _exportProviderCertificateView:ExportProviderCertificateView;
+    private var _exportMetadataView:ExportMetadataView;
 
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
@@ -186,6 +201,22 @@ public class ModelerPopUpManager extends BasePopUpManager {
 
     public function set externalServiceProviderMediator(value:ExternalServiceProviderCreateMediator):void {
         _externalServiceProviderMediator = value;
+    }
+
+    public function get salesforceMediator():SalesforceCreateMediator {
+        return _salesforceMediator;
+    }
+
+    public function set salesforceMediator(value:SalesforceCreateMediator):void {
+        _salesforceMediator = value;
+    }
+
+    public function get googleAppsMediator():GoogleAppsCreateMediator {
+        return _googleAppsMediator;
+    }
+
+    public function set googleAppsMediator(value:GoogleAppsCreateMediator):void {
+        _googleAppsMediator = value;
     }
 
     public function get identityVaultCreateMediator():IdentityVaultCreateMediator {
@@ -364,6 +395,22 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _exportIdentityApplianceMediator = value;
     }
 
+    public function get exportProviderCertificateMediator():ExportProviderCertificateMediator {
+        return _exportProviderCertificateMediator;
+    }
+
+    public function set exportProviderCertificateMediator(value:ExportProviderCertificateMediator):void {
+        _exportProviderCertificateMediator = value;
+    }
+
+    public function get exportMetadataMediator():ExportMetadataMediator {
+        return _exportMetadataMediator;
+    }
+
+    public function set exportMetadataMediator(value:ExportMetadataMediator):void {
+        _exportMetadataMediator = value;
+    }
+
     public function showCreateIdentityProviderWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createIdentityProviderCreateForm();
@@ -448,6 +495,48 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleExternalServiceProviderCreateFormCreated(event:FlexEvent):void {
         externalServiceProviderMediator.setViewComponent(_externalServiceProviderCreateForm);
         externalServiceProviderMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateSalesforceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createSalesforceCreateForm();
+        _popup.title = "New Salesforce Definition";
+        _popup.width = 410;
+        _popup.height = 140;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_salesforceCreateForm);
+    }
+
+    private function createSalesforceCreateForm():void {
+        _salesforceCreateForm = new SalesforceCreateForm();
+        _salesforceCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleSalesforceCreateFormCreated);
+    }
+
+    private function handleSalesforceCreateFormCreated(event:FlexEvent):void {
+        salesforceMediator.setViewComponent(_salesforceCreateForm);
+        salesforceMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateGoogleAppsWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createGoogleAppsCreateForm();
+        _popup.title = "New Google Apps Definition";
+        _popup.width = 410;
+        _popup.height = 170;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_googleAppsCreateForm);
+    }
+
+    private function createGoogleAppsCreateForm():void {
+        _googleAppsCreateForm = new GoogleAppsCreateForm();
+        _googleAppsCreateForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleGoogleAppsCreateFormCreated);
+    }
+
+    private function handleGoogleAppsCreateFormCreated(event:FlexEvent):void {
+        googleAppsMediator.setViewComponent(_googleAppsCreateForm);
+        googleAppsMediator.handleNotification(_lastWindowNotification);
     }
 
     public function showCreateIdentityVaultWindow(notification:INotification):void {
@@ -930,6 +1019,48 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private function handleExportIdentityApplianceViewCreated(event:FlexEvent):void {
         exportIdentityApplianceMediator.setViewComponent(_exportIdentityApplianceView);
         exportIdentityApplianceMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateExportProviderCertificateWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createExportProviderCertificateView();
+        _progress.title = "Export Provider Certificate";
+        _progress.width = 300;
+        _progress.height = 150;
+//        _popup.x = (_popupParent.width / 2) - 225;
+//        _popup.y = 80;
+        showProgress(_exportProviderCertificateView);
+    }
+
+    private function createExportProviderCertificateView():void {
+        _exportProviderCertificateView = new ExportProviderCertificateView();
+        _exportProviderCertificateView.addEventListener(FlexEvent.CREATION_COMPLETE, handleExportProviderCertificateViewCreated);
+    }
+
+    private function handleExportProviderCertificateViewCreated(event:FlexEvent):void {
+        exportProviderCertificateMediator.setViewComponent(_exportProviderCertificateView);
+        exportProviderCertificateMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateExportMetadataWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createExportMetadataView();
+        _progress.title = "Export SAML Metadata";
+        _progress.width = 300;
+        _progress.height = 150;
+//        _popup.x = (_popupParent.width / 2) - 225;
+//        _popup.y = 80;
+        showProgress(_exportMetadataView);
+    }
+
+    private function createExportMetadataView():void {
+        _exportMetadataView = new ExportMetadataView();
+        _exportMetadataView.addEventListener(FlexEvent.CREATION_COMPLETE, handleExportMetadataViewCreated);
+    }
+
+    private function handleExportMetadataViewCreated(event:FlexEvent):void {
+        exportMetadataMediator.setViewComponent(_exportMetadataView);
+        exportMetadataMediator.handleNotification(_lastWindowNotification);
     }
 }
 }
