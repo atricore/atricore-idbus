@@ -2,7 +2,7 @@
 <!--
   ~ Atricore IDBus
   ~
-  ~ Copyright (c) 2009, Atricore Inc.
+  ~ Copyright 2009, Atricore Inc.
   ~
   ~ This is free software; you can redistribute it and/or modify it
   ~ under the terms of the GNU Lesser General Public License as
@@ -25,30 +25,14 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+
     <parent>
-        <groupId>com.atricore.idbus.console</groupId>
-        <artifactId>console</artifactId>
+        <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+        <artifactId>console-liveupdate</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-
     <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
-    <artifactId>console-liveupdate</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
-    <name>Atricore Console :: Live Services POM</name>
-
-    <prerequisites>
-        <maven>2.0.9</maven>
-    </prerequisites>
-
-    <modules>
-        <module>support/atricore-liveupdate-v1.0</module>
-        <module>main</module>
-        <module>management</module>
-        <module>command</module>
-        <module>admin</module>
-        <module>test</module>
-    </modules>
+    <artifactId>com.atricore.idbus.console.liveservices.liveupdate.management</artifactId>
 
 </project>
