@@ -25,6 +25,7 @@ import com.atricore.idbus.console.liveupdate.main.controller.CheckForUpdatesComm
 import com.atricore.idbus.console.liveupdate.main.controller.GetUpdateProfileCommand;
 import com.atricore.idbus.console.liveupdate.main.controller.ListUpdatesCommand;
 import com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy;
+import com.atricore.idbus.console.liveupdate.main.view.LiveUpdatePopUpManager;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.services.dto.ProfileType;
@@ -62,6 +63,7 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
     private var resMan:IResourceManager = ResourceManager.getInstance();
 
     private var _liveUpdateProxy:LiveUpdateProxy;
+    private var _liveUpdatePopUpManager:LiveUpdatePopUpManager;
 
     private var _created:Boolean;
 
@@ -77,6 +79,14 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
         _liveUpdateProxy = value;
     }
 
+    public function get liveUpdatePopUpManager():LiveUpdatePopUpManager {
+        return _liveUpdatePopUpManager;
+    }
+
+    public function set liveUpdatePopUpManager(value:LiveUpdatePopUpManager):void {
+        _liveUpdatePopUpManager = value;
+    }
+
     override public function setViewComponent(p_viewComponent:Object):void {
         if (getViewComponent() != null) {
         }
@@ -88,6 +98,7 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
 
     private function creationCompleteHandler(event:Event):void {
         _created = true;
+        liveUpdatePopUpManager.init(iocFacade, view);
         init();
     }
 
@@ -99,6 +110,7 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
 
             view.updatesList.addEventListener(ListEvent.ITEM_CLICK , updateListSelectHandler);
             view.btnInstallUpdate.addEventListener(MouseEvent.CLICK, handleInstallUpdateClick);
+            view.btnUpdateNofification.addEventListener(MouseEvent.CLICK, handleUpdateNofificationClick);
         }
     }
 
@@ -146,6 +158,11 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
         });
     }
 
+    private function handleUpdateNofificationClick(event:MouseEvent):void {
+        trace("Update Notification Button Click: " + event);
+        sendNotification(ApplicationFacade.DISPLAY_UPDATE_NOTIFICATIONS);
+    }
+
     private function updateBasicInfo(update:UpdateDescriptorType):String {
         var updateInfo:String = "";
         var reqs:ArrayCollection = update.requirements;
@@ -168,6 +185,7 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
 
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.UPDATE_VIEW_SELECTED,
+            ApplicationFacade.DISPLAY_UPDATE_NOTIFICATIONS,
             ListUpdatesCommand.SUCCESS,
             ListUpdatesCommand.FAILURE,
             ApplyUpdateCommand.SUCCESS,
@@ -185,6 +203,9 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
                 init();
                 sendNotification(ApplicationFacade.LIST_UPDATES);
                 break;
+            case ApplicationFacade.DISPLAY_UPDATE_NOTIFICATIONS:
+                liveUpdatePopUpManager.showUpdateNotificationWindow(notification);
+                break;
             case ListUpdatesCommand.SUCCESS:
                 view.updatesList.dataProvider = _liveUpdateProxy.availableUpdatesList;
                 view.validateNow();
@@ -195,9 +216,9 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
                 sendNotification(ProcessingMediator.STOP);
                 var msg:String = resMan.getString(AtricoreConsole.BUNDLE, 'liveupdate.restart.warning');
                 var wMsg:Alert = Alert.show(msg, "Warning!", Alert.OK , view,
-                                               function (event:CloseEvent) {
-                                                   PopUpManager.removePopUp(wMsg);
-                                               });
+                                           function (event:CloseEvent) {
+                                               PopUpManager.removePopUp(wMsg);
+                                           });
                 break;
             case ApplyUpdateCommand.SUCCESS:
                 break;
@@ -230,6 +251,8 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
         //      - Set references to null
 
         view.updatesList.removeEventListener(ListEvent.ITEM_CLICK , updateListSelectHandler);
+        view.btnInstallUpdate.removeEventListener(MouseEvent.CLICK, handleInstallUpdateClick);
+        view.btnUpdateNofification.removeEventListener(MouseEvent.CLICK, handleUpdateNofificationClick);
         view = null;
     }
 }

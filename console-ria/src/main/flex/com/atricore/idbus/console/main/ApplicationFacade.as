@@ -185,6 +185,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
     public static const EXPORT_PROVIDER_CERTIFICATE:String = "exportProviderCertificate";
     public static const EXPORT_METADATA:String = "exportMetadata";
+    public static const DISPLAY_UPDATE_NOTIFICATIONS:String = "displayUpdateNotifications";
 
 
     public function ApplicationFacade(p_configuration:* = null) {

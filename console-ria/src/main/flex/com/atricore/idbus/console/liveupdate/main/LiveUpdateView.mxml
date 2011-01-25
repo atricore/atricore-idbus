@@ -71,8 +71,12 @@
             </mx:columns>
         </mx:DataGrid>
 
-        <s:Button id="btnInstallUpdate" enabled="false"
-                  label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.installUpdateBtn')}" />
+        <s:HGroup paddingLeft="10" paddingRight="10">
+            <s:Button id="btnInstallUpdate" enabled="false"
+                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.installUpdateBtn')}" />
+            <s:Button id="btnUpdateNofification" enabled="true"
+                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.updateNofificationBtn')}" />
+        </s:HGroup>
     </s:VGroup>
 
 </s:Panel>

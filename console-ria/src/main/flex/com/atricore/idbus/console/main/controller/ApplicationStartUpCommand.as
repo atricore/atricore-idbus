@@ -90,6 +90,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _simpleSSOWizardViewMediator:IIocMediator;
     private var _accountManagementMediator:IIocMediator;
     private var _liveUpdateMediator:IIocMediator;
+    private var _updateNotificationMediator:IIocMediator;
     private var _groupsMediator:IIocMediator;
     private var _groupPropertiesMediator:IIocMediator;
     private var _addGroupMediator:IIocMediator;
@@ -458,6 +459,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set liveUpdateMediator(value:IIocMediator):void {
         _liveUpdateMediator = value;
+    }
+
+    public function get updateNotificationMediator():IIocMediator {
+        return _updateNotificationMediator;
+    }
+
+    public function set updateNotificationMediator(value:IIocMediator):void {
+        _updateNotificationMediator = value;
     }
 
     public function get groupsMediator():IIocMediator {
@@ -1170,6 +1179,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(lifecycleViewMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(accountManagementMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(liveUpdateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(updateNotificationMediator.getConfigName());
 
         // setup for second level modeler mediators
         iocFacade.registerMediatorByConfigName(browserMediator.getConfigName());

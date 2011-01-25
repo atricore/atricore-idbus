@@ -149,6 +149,7 @@
         <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
         <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
         <property name="liveUpdateMediator" ref="liveUpdateMediator"/>
+        <property name="updateNotificationMediator" ref="updateNotificationMediator"/>
 
     </object>
 
@@ -631,6 +632,12 @@
 
     <object id="liveUpdateMediator" class="com.atricore.idbus.console.liveupdate.main.LiveUpdateMediator">
         <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+        <property name="liveUpdatePopUpManager" ref="liveUpdatePopUpManager"/>
+    </object>
+
+    <object id="updateNotificationMediator"
+            class="com.atricore.idbus.console.liveupdate.main.view.notifications.UpdateNotificationMediator" >
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
     </object>
 
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
@@ -710,6 +717,11 @@
         <property name="editUserMediator" ref="editUserMediator"/>
         <property name="searchUsersMediator" ref="searchUsersMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
+    </object>
+
+    <object id="liveUpdatePopUpManager"
+            class="com.atricore.idbus.console.liveupdate.main.view.LiveUpdatePopUpManager">
+        <property name="updateNotificationMediator" ref="updateNotificationMediator"/>
     </object>
 
 </objects>
