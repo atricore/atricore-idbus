@@ -23,11 +23,11 @@
          xmlns:fx="http://ns.adobe.com/mxml/2009"
          xmlns:s="library://ns.adobe.com/flex/spark"
          left="10" top="10" right="10" bottom="10" horizontalAlign="center" verticalAlign="top" horizontalCenter="0">
-    <s:Label text="Filename" id="txtFile" enabled="true" width="290" textAlign="center" paddingTop="15" horizontalCenter="0"/>
+    <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'upload.filename')}" id="txtFile" enabled="true" width="290" textAlign="center" paddingTop="15" horizontalCenter="0"/>
     <mx:ProgressBar width="250" id="progBar" mode="manual" minimum="0" maximum="100" labelPlacement="center"
                     textAlign="center" horizontalCenter="0"/>
     <mx:Spacer height="5"/>
-    <s:Button label="Cancel" id="btnCancelFinish"/>
+    <s:Button label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'upload.cancel')}" id="btnCancelFinish"/>
     <!--s:Button label="Cancel" id="btnCancel"/>
     <s:Button label="Finish" id="btnFinish" visible="false"/-->
 </s:VGroup>

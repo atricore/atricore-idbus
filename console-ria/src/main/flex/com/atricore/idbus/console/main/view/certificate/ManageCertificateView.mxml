@@ -59,7 +59,7 @@
                     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystoreFormat')}:">
                         <s:DropDownList id="keystoreFormat" width="{inputWidth}" selectedIndex="0">
                             <mx:ArrayCollection>
-                                 <fx:Object label="Java Keystore" data="JKS"/>
+                                 <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystoreFormat.jks')}" data="JKS"/>
                              </mx:ArrayCollection>
                         </s:DropDownList>
                     </mx:FormItem>

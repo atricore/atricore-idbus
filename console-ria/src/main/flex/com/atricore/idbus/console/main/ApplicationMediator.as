@@ -48,6 +48,8 @@ import mx.core.IVisualElement;
 import mx.events.FlexEvent;
 import mx.events.MenuEvent;
 import mx.events.StateChangeEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
@@ -56,9 +58,9 @@ import spark.components.ButtonBar;
 import spark.events.IndexChangeEvent;
 
 public class ApplicationMediator extends IocMediator {
-    // Canonical name of the Mediator
-    public static const REGISTER_HEAD:String = "User Registration";
 
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
+    
     public var userProfileIcon:Class = EmbeddedIcons.userProfileIcon;
 
     private var _brandingFactory:AtricoreConsoleBrandingFactory;
@@ -263,7 +265,7 @@ public class ApplicationMediator extends IocMediator {
             case ApplicationFacade.SHOW_ERROR_MSG :
                 //              app.messageBox.showFailureMessage(notification.getBody() as String);
                 var errString:String = notification.getBody() as String;
-                Alert.show(errString, "Error");
+                Alert.show(errString, resourceManager.getString(AtricoreConsole.BUNDLE, "alert.error"));
                 break;
             //            case ApplicationFacade.SHOW_SUCCESS_MSG :
             //                app.messageBox.showSuccessMessage(notification.getBody() as String);

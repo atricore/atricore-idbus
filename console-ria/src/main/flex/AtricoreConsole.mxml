@@ -76,6 +76,12 @@
         <mx:WipeUp id="wipeUp" duration="200"/>
         <mx:WipeRight id="wipeRight" duration="200"/>
 
+        <fx:XMLList id="userMenuData">
+            <topmenu label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.menu.user.defaultUser')}" icon="userProfileIcon" >
+                <submenu label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.menu.user.changePassword')}"/>
+                <submenu label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.menu.user.logout')}"/>
+            </topmenu>
+        </fx:XMLList>
     </fx:Declarations>
 
     <fx:Metadata>
@@ -98,14 +104,7 @@
 
         <heading:AtricoreHeading id="brandedHeading" includeIn="splash,operation" >
             <mx:MenuBar id="userActionMenuBar" excludeFrom="splash" labelField="@label" iconField="@icon"
-                        textAlign="center">
-                <fx:XMLList>
-                    <topmenu label="Administrator" icon="userProfileIcon" >
-                        <submenu label="Change Password"/>
-                        <submenu label="Logout"/>
-                    </topmenu>
-                </fx:XMLList>
-            </mx:MenuBar>
+                        textAlign="center" dataProvider="{userMenuData}"/>
         </heading:AtricoreHeading>
 
         <login:LoginView id="loginView" includeIn="splash"/>

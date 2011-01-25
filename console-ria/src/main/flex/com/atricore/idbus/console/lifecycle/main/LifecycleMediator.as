@@ -32,12 +32,16 @@ import mx.events.CloseEvent;
 import mx.events.DragEvent;
 import mx.events.FlexEvent;
 import mx.managers.DragManager;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 
 public class LifecycleMediator extends AppSectionMediator implements IDisposable {
 
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
+    
     private var _projectProxy:ProjectProxy;
 
     private var _removedApplianceId:Number;
@@ -211,7 +215,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
         if (sourceGrid.id == "grdSavedAppliances") {
             trace("Building Appliances " + items);
 
-            sendNotification(ProcessingMediator.START, "Building appliance ...");
+            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.build"));
             for (var i:int = 0; i < items.length; i++) {
                 var a1:IdentityAppliance = items[i] as IdentityAppliance;
                 sendNotification(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, [a1.id.toString(), false]);
@@ -221,7 +225,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
 
             trace("Undeploying Appliances " + items);
 
-            sendNotification(ProcessingMediator.START, "Undeploying appliance ...");
+            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.undeploy"));
             for (var j:int = 0; j < items.length; j++) {
                 var a2:IdentityAppliance = items[j] as IdentityAppliance;
                 sendNotification(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, a2.id.toString());
@@ -235,7 +239,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
 
         trace("Deploying Appliances " + items);
 
-        sendNotification(ProcessingMediator.START, "Deploying appliance ...");
+        sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.deploy"));
         for (var i:int = 0; i < items.length; i++) {
             var appliance:IdentityAppliance = items[i] as IdentityAppliance;
             sendNotification(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE, [appliance.id.toString(), false]);
@@ -248,7 +252,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
 
         trace("Disposing Appliances " + items);
 
-        sendNotification(ProcessingMediator.START, "Disposing appliance ...");
+        sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.dispose"));
         for (var i:int = 0; i < items.length; i++) {
             var appliance:IdentityAppliance = items[i] as IdentityAppliance;
             sendNotification(ApplicationFacade.DISPOSE_IDENTITY_APPLIANCE, appliance.id.toString());
@@ -337,7 +341,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
                     updateAppliancesList(true);
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                            "There was an error building appliance.");
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.error.build"));
                 }
                 break;
             case DeployIdentityApplianceCommand.SUCCESS:
@@ -353,7 +357,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
                     updateAppliancesList(true);
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                            "There was an error deploying appliance.");
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.error.deploy"));
                 }
                 break;
             case UndeployIdentityApplianceCommand.SUCCESS:
@@ -369,7 +373,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
                     updateAppliancesList(true);
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                            "There was an error uneploying appliance.");
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.error.undeploy"));
                 }
                 break;
             case StartIdentityApplianceCommand.SUCCESS:
@@ -385,7 +389,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
                     updateAppliancesList(true);
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                            "There was an error starting appliance.");
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.error.start"));
                 }
                 break;
             case StopIdentityApplianceCommand.SUCCESS:
@@ -401,7 +405,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
                     updateAppliancesList(true);
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                            "There was an error stopping appliance.");
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.error.stop"));
                 }
                 break;
             case DisposeIdentityApplianceCommand.SUCCESS:
@@ -417,7 +421,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
                     updateAppliancesList(true);
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                            "There was an error disposing appliance.");
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.error.dispose"));
                 }
                 break;
             case IdentityApplianceListLoadCommand.SUCCESS:
@@ -435,7 +439,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
                     updateAppliancesList(true);
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                            "There was an error removing appliance.");
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.error.remove"));
                     _removedApplianceId = Number.MIN_VALUE;
                 }
                 break;
@@ -465,7 +469,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
         switch (event.action) {
             case LifecycleGridButtonEvent.ACTION_EDIT :
                 appliance = event.data as IdentityAppliance;
-                sendNotification(ProcessingMediator.START, "Opening identity appliance...");
+                sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.open"));
                 projectProxy.currentIdentityAppliance = null;
                 //sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
                 sendNotification(BaseAppFacade.APP_SECTION_CHANGE, ModelerViewFactory.VIEW_NAME);
@@ -476,51 +480,55 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
                 appliance = event.data as IdentityAppliance;
                 if(appliance.state.toString() == IdentityApplianceState.PROJECTED.toString()
                         || appliance.state.toString() == IdentityApplianceState.DISPOSED.toString()){
-                    Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null,
+                    Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.remove.confirm.msg"),
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.remove.confirm.title"), Alert.YES | Alert.NO, null,
                               function(event:CloseEvent):void {
                                     if (event.detail == Alert.YES) {
                                         // verify that a removal can be performed
                                         _removedApplianceId = appliance.id;
-                                        sendNotification(ProcessingMediator.START, "Removing appliance ...");
+                                        sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.remove"));
                                         var ria:RemoveIdentityApplianceElementRequest = new RemoveIdentityApplianceElementRequest(appliance);
                                         sendNotification(ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT, ria);
                                     }
                     }, null, Alert.YES);
                 } else {
-                    Alert.show("You can only delete projected and disposed appliances", "Removal information", Alert.OK);
+                    Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.error.remove.validation"),
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "alert.information"), Alert.OK);
                 }
                 break;
             case LifecycleGridButtonEvent.ACTION_START :
                 appliance = event.data as IdentityAppliance;
                 if(appliance.state.toString() == IdentityApplianceState.DEPLOYED.toString()){
-                    sendNotification(ProcessingMediator.START, "Starting appliance ...");
+                    sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.start"));
                     sendNotification(ApplicationFacade.START_IDENTITY_APPLIANCE, appliance.id.toString());
                 } else {
-                    Alert.show("Appliance is already started", "Information", Alert.OK);
+                    Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.error.alreadyStarted"),
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "alert.information"), Alert.OK);
                 }
                 break;
             case LifecycleGridButtonEvent.ACTION_STOP :
                 appliance = event.data as IdentityAppliance;
                 if(appliance.state.toString() == IdentityApplianceState.STARTED.toString()){
-                    sendNotification(ProcessingMediator.START, "Stopping appliance ...");
+                    sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.stop"));
                     sendNotification(ApplicationFacade.STOP_IDENTITY_APPLIANCE, appliance.id.toString());
                 } else {
-                    Alert.show("Appliance is already stopped", "Information", Alert.OK);
+                    Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.error.alreadyStopped"),
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "alert.information"), Alert.OK);
                 }
                 break;
             case LifecycleGridButtonEvent.ACTION_UNDEPLOY :
                 appliance = event.data as IdentityAppliance;
-                sendNotification(ProcessingMediator.START, "Undeploying appliance ...");
+                sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.undeploy"));
                 sendNotification(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, appliance.id.toString());                
                 break;
             case LifecycleGridButtonEvent.ACTION_BUILD :
                 appliance = event.data as IdentityAppliance;
-                sendNotification(ProcessingMediator.START, "Rebuilding appliance ...");
+                sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.rebuild"));
                 sendNotification(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, [appliance.id.toString(), false]);
                 break;
             case LifecycleGridButtonEvent.ACTION_DISPOSE :
                 appliance = event.data as IdentityAppliance;
-                sendNotification(ProcessingMediator.START, "Disposing appliance ...");
+                sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.dispose"));
                 sendNotification(ApplicationFacade.DISPOSE_IDENTITY_APPLIANCE, appliance.id.toString());
                 break;
         }
@@ -529,7 +537,7 @@ public class LifecycleMediator extends AppSectionMediator implements IDisposable
     private function handleGridDoubleClick(event:MouseEvent):void {
         var appliance:IdentityAppliance = event.currentTarget.selectedItem as IdentityAppliance;
         if (appliance != null) {
-            sendNotification(ProcessingMediator.START, "Opening identity appliance...");
+            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "lifecycle.progress.open"));
             projectProxy.currentIdentityAppliance = null;
             sendNotification(BaseAppFacade.APP_SECTION_CHANGE, ModelerViewFactory.VIEW_NAME);
             sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, appliance.id.toString());
