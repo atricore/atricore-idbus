@@ -47,5 +47,7 @@ public class DiagramElementTypes {
     public static const JBOSS_PORTAL_EXECUTION_ENVIRONMENT_ELEMENT_TYPE = 23;
     public static const IDENTITY_SOURCE_ELEMENT_TYPE = 24;
     public static const EXECUTION_ENVIRONMENT_ELEMENT_TYPE = 25;
+    public static const SALESFORCE_ELEMENT_TYPE = 26;
+    public static const GOOGLE_APPS_ELEMENT_TYPE = 27;
 }
 }

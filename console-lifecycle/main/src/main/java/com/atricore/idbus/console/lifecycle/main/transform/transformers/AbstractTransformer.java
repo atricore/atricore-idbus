@@ -75,6 +75,9 @@ public abstract class AbstractTransformer implements Transformer {
 
     protected String resolveLocationUrl(Provider provider, Channel channel) {
 
+        if (channel == null)
+            return resolveLocationUrl(provider);
+        
         Location cl = channel.getLocation();
         Location pl = provider.getLocation();
         Location al = provider.getIdentityAppliance().getLocation();

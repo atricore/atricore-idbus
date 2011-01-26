@@ -24,17 +24,17 @@ package com.atricore.idbus.console.services.impl;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
+import com.atricore.idbus.console.services.dto.ProfileTypeDTO;
+import com.atricore.idbus.console.services.dto.RequiredFeatureTypeDTO;
 import com.atricore.idbus.console.services.dto.UpdateDescriptorTypeDTO;
 import com.atricore.idbus.console.services.dto.UpdatesIndexTypeDTO;
 import com.atricore.idbus.console.services.spi.LiveUpdateAjaxService;
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
-import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
+import com.atricore.liveservices.liveupdate._1_0.md.*;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,7 +81,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
             GetRepositoryUpdatesResponse resp = new GetRepositoryUpdatesResponse();
 
-            List<UpdateDescriptorTypeDTO> updatesDesc = toUpdateDescriptorTypeDtoList(updates.getUpdateDescriptor());
+            List<UpdateDescriptorTypeDTO> updatesDesc = toUpdateDescriptorTypeDtoCollection(updates.getUpdateDescriptor());
 
             UpdatesIndexTypeDTO updatesDto = new UpdatesIndexTypeDTO();
             updatesDto.setId(updates.getID());
@@ -106,7 +106,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
             Collection<UpdateDescriptorType> updates = updateManager.getAvailableUpdates();
             GetAvailableUpdatesResponse resp = new GetAvailableUpdatesResponse();
 
-            resp.setUpdateDescriptors(toUpdateDescriptorTypeDtoList(updates));
+            resp.setUpdateDescriptors(toUpdateDescriptorTypeDtoCollection(updates));
 
             return resp;
         } catch (Exception e) {
@@ -131,7 +131,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
             GetAvailableUpdatesResponse resp = new GetAvailableUpdatesResponse();
 
-            resp.setUpdateDescriptors(toUpdateDescriptorTypeDtoList(updates));
+            resp.setUpdateDescriptors(toUpdateDescriptorTypeDtoCollection(updates));
 
             return resp;
         } catch (Exception e) {
@@ -150,7 +150,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
             CheckForUpdatesResponse resp = new CheckForUpdatesResponse();
 
-            resp.setUpdateDescriptors(toUpdateDescriptorTypeDtoList(updates));
+            resp.setUpdateDescriptors(toUpdateDescriptorTypeDtoCollection(updates));
 
             return resp;
         } catch (Exception e) {
@@ -175,7 +175,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
             CheckForUpdatesResponse resp = new CheckForUpdatesResponse();
 
-            resp.setUpdateDescriptors(toUpdateDescriptorTypeDtoList(updates));
+            resp.setUpdateDescriptors(toUpdateDescriptorTypeDtoCollection(updates));
 
             return resp;
         } catch (Exception e) {
@@ -218,7 +218,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
             ProfileType profile = updateManager.getUpdateProfile();
 
             GetUpdateProfileResponse resp = new GetUpdateProfileResponse();
-            //resp.setProfile(profile);
+            resp.setProfile(toProfileTypeDTO(profile));
 
             return resp;
         } catch (Exception e) {
@@ -242,7 +242,7 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
                     getUpdateProfileRequest.getVersion());
 
             GetUpdateProfileResponse resp = new GetUpdateProfileResponse();
-            //resp.setProfile(profile);
+            resp.setProfile(toProfileTypeDTO(profile));
 
             return resp;
         } catch (Exception e) {
@@ -256,7 +256,21 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
         this.updateManager = updateManager;
     }
 
-    private List<UpdateDescriptorTypeDTO> toUpdateDescriptorTypeDtoList(Collection<UpdateDescriptorType> coll) {
+    private List<RequiredFeatureTypeDTO> toRequiredFeatureTypeDTOCollection(Collection<RequiredFeatureType> coll) {
+        List<RequiredFeatureTypeDTO> retList = new ArrayList<RequiredFeatureTypeDTO>();
+
+        for (RequiredFeatureType reqType : coll) {
+            RequiredFeatureTypeDTO dtoObj = new RequiredFeatureTypeDTO();
+            dtoObj.setGroup(reqType.getGroup());
+            dtoObj.setName(reqType.getName());
+            dtoObj.setVersionExpresion(reqType.getVersionRange().getExpression());
+            retList.add(dtoObj);
+        }
+
+        return retList;
+    }
+
+    private List<UpdateDescriptorTypeDTO> toUpdateDescriptorTypeDtoCollection(Collection<UpdateDescriptorType> coll) {
         List<UpdateDescriptorTypeDTO> retList = new ArrayList<UpdateDescriptorTypeDTO>();
 
         for (UpdateDescriptorType descType : coll) {
@@ -268,10 +282,32 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
             dtoObj.setVersion(descType.getInstallableUnit().getVersion());
             dtoObj.setUpdateNature(descType.getInstallableUnit().getUpdateNature().toString());
             dtoObj.setIssueInstant(descType.getIssueInstant().toGregorianCalendar().getTime());
+            dtoObj.setRequirements(toRequiredFeatureTypeDTOCollection(descType.getInstallableUnit().getRequirement()));
             retList.add(dtoObj);
         }
 
         return retList;
+    }
+
+    private ProfileTypeDTO toProfileTypeDTO(ProfileType profile) {
+        ProfileTypeDTO retProfile = new ProfileTypeDTO();
+        retProfile.setId(profile.getID());
+        retProfile.setName(profile.getName());
+        Collection<UpdateDescriptorTypeDTO> instUnits = new ArrayList<UpdateDescriptorTypeDTO>();
+        for (InstallableUnitType iUnit : profile.getInstallableUnit()) {
+            UpdateDescriptorTypeDTO updDesc = new UpdateDescriptorTypeDTO();
+            updDesc.setId(iUnit.getID());
+            updDesc.setName(iUnit.getName());
+            updDesc.setGroup(iUnit.getGroup());
+            updDesc.setVersion(iUnit.getVersion());
+            updDesc.setDescription(iUnit.getDescription());
+            updDesc.setUpdateNature(iUnit.getUpdateNature().toString());
+            updDesc.setRequirements(toRequiredFeatureTypeDTOCollection(iUnit.getRequirement()));
+            instUnits.add(updDesc);
+        }
+        retProfile.setInstallableUnits(instUnits);
+
+        return retProfile;
     }
 
 }

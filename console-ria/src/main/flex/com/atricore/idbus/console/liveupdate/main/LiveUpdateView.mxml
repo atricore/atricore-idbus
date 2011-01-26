@@ -35,7 +35,7 @@
     <fx:Script>
         <![CDATA[
         import com.atricore.idbus.console.main.EmbeddedIcons;
-        import mx.collections.ArrayCollection;
+
         public var icon:Class = EmbeddedIcons.liveUpdateMiniIcon;
         ]]>
     </fx:Script>
@@ -43,14 +43,40 @@
     <s:VGroup id="updatesVBox" width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
         <mx:DataGrid id="updatesList" width="100%" rowCount="10" resizeEffect="Resize" verticalAlign="middle">
             <mx:columns>
-                <mx:DataGridColumn dataField="name" headerText="Name"/>
-                <mx:DataGridColumn dataField="group" headerText="Group"/>
-                <mx:DataGridColumn dataField="version" headerText="Version"/>
-                <mx:DataGridColumn dataField="description" headerText="Description"/>
-                <mx:DataGridColumn dataField="nature" headerText="Nature"/>
-                <mx:DataGridColumn dataField="date" headerText="Date"/>
+                <mx:DataGridColumn dataField="group" width="0.3" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.group')}"/>
+                <mx:DataGridColumn dataField="name" width="0.2" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.name')}"/>
+                <mx:DataGridColumn dataField="version" width="0.1" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.version')}"/>
+                <mx:DataGridColumn dataField="updateNature" width="0.1" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.updateNature')}"/>
+                <mx:DataGridColumn dataField="description" width="0.2" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.description')}"/>
+                <mx:DataGridColumn dataField="issueInstant" width="0.1" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.releaseDate')}">
+                    <mx:itemRenderer>
+                        <fx:Component>
+                            <mx:VBox paddingLeft="5">
+                                <fx:Script>
+                                <![CDATA[
+                                    import mx.formatters.DateFormatter;
+
+                                    private function formatFieldDate(date:Date):String {
+                                        var formatter:DateFormatter = new DateFormatter();
+                                        formatter.formatString = "MM/DD/YYYY - J:NN";
+                                        return formatter.format(date);
+                                    }
+                                    ]]>
+                                </fx:Script>
+                                <s:Label text="{formatFieldDate(data.issueInstant)}" />
+                            </mx:VBox>
+                        </fx:Component>
+                    </mx:itemRenderer>
+                </mx:DataGridColumn>
             </mx:columns>
         </mx:DataGrid>
+
+        <s:HGroup paddingLeft="10" paddingRight="10">
+            <s:Button id="btnInstallUpdate" enabled="false"
+                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.installUpdateBtn')}" />
+            <s:Button id="btnUpdateNofification" enabled="true"
+                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.updateNofificationBtn')}" />
+        </s:HGroup>
     </s:VGroup>
 
 </s:Panel>

@@ -46,6 +46,7 @@
         import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
         import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
+        import com.atricore.idbus.console.services.dto.GoogleAppsServiceProvider;
         import com.atricore.idbus.console.services.dto.IdentityAppliance;
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnit;
         import com.atricore.idbus.console.services.dto.IdentityApplianceUnitType;
@@ -57,6 +58,7 @@
         import com.atricore.idbus.console.services.dto.LdapIdentitySource;
         import com.atricore.idbus.console.services.dto.LiferayExecutionEnvironment;
         import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
+        import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
         import com.atricore.idbus.console.services.dto.ServiceProvider;
 
         import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
@@ -118,6 +120,14 @@
                 var esp:ExternalServiceProvider = obj as ExternalServiceProvider;
                 _linkLabel = esp.name;
                 _linkIcon = EmbeddedIcons.externalSpIcon;
+            } else if (obj is SalesforceServiceProvider) {
+                var sf:SalesforceServiceProvider = obj as SalesforceServiceProvider;
+                _linkLabel = sf.name;
+                _linkIcon = EmbeddedIcons.salesforceIcon;
+            } else if (obj is GoogleAppsServiceProvider) {
+                var ga:GoogleAppsServiceProvider = obj as GoogleAppsServiceProvider;
+                _linkLabel = ga.name;
+                _linkIcon = EmbeddedIcons.googleAppsIcon;
             } else if (obj is BindingProvider) {
                 var bp:BindingProvider = obj as BindingProvider;
                 _linkLabel = bp.name;

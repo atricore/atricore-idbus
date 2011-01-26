@@ -68,6 +68,30 @@ public abstract class AbstractApplianceDefinitionVisitor implements IdentityAppl
         return true;
     }
 
+    public void arrive(SalesforceServiceProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(SalesforceServiceProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(SalesforceServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
+    public void arrive(GoogleAppsServiceProvider node) throws Exception {
+
+    }
+
+    public Object[] leave(GoogleAppsServiceProvider node, Object[] results) throws Exception {
+        return new Object[0];
+    }
+
+    public boolean walkNextChild(GoogleAppsServiceProvider node, Object child, Object resultOfPreviousChild, int indexOfNextChild) {
+        return true;
+    }
+
     public void arrive(IdentityProviderChannel node) throws Exception {
         
     }

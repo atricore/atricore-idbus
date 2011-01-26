@@ -33,6 +33,7 @@ import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalServiceProvider;
 import com.atricore.idbus.console.services.dto.FederatedConnection;
+import com.atricore.idbus.console.services.dto.GoogleAppsServiceProvider;
 import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import com.atricore.idbus.console.services.dto.IdentityApplianceDefinition;
 import com.atricore.idbus.console.services.dto.IdentityApplianceUnit;
@@ -45,6 +46,7 @@ import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.LdapIdentitySource;
 import com.atricore.idbus.console.services.dto.PHPExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.Provider;
+import com.atricore.idbus.console.services.dto.SalesforceServiceProvider;
 import com.atricore.idbus.console.services.dto.ServiceProvider;
 import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WeblogicExecutionEnvironment;
@@ -111,6 +113,10 @@ public class BrowserModelFactory {
                 providerNode.icon = EmbeddedIcons.externalSpMiniIcon;
             } else if (provider is ExternalIdentityProvider) {
                 providerNode.icon = EmbeddedIcons.externalIdpMiniIcon;
+            } else if (provider is SalesforceServiceProvider) {
+                providerNode.icon = EmbeddedIcons.salesforceMiniIcon;
+            } else if (provider is GoogleAppsServiceProvider) {
+                providerNode.icon = EmbeddedIcons.googleAppsMiniIcon;
             } else if (provider is BindingProvider) {
                 providerNode.icon = EmbeddedIcons.bpMiniIcon;
             }

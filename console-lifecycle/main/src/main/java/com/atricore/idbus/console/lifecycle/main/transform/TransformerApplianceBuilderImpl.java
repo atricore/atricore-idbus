@@ -2,13 +2,18 @@ package com.atricore.idbus.console.lifecycle.main.transform;
 
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityAppliance;
 import com.atricore.idbus.console.lifecycle.main.domain.IdentityApplianceDeployment;
+import com.atricore.idbus.console.lifecycle.main.domain.metadata.*;
 import com.atricore.idbus.console.lifecycle.main.spi.ApplianceBuilder;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
 
 import java.io.*;
+import java.net.URI;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -61,6 +66,70 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
             }
 
             return bout.toByteArray();
+        }
+
+        return null;
+    }
+
+    public byte[] exportMetadata(IdentityAppliance appliance, String providerName, String channelName) {
+        IdApplianceTransformationContext ctx = buildAppliance(appliance);
+
+        IdApplianceProject prj = ctx.getProject();
+        ProjectModuleLayout layout = prj.getRootModule().getLayout();
+
+        if (layout.getWorkDir() != null) {
+            String idauPath = (String) ctx.get("idauPath");
+            Provider provider = null;
+            Channel channel = null;
+
+            for (Provider p : appliance.getIdApplianceDefinition().getProviders()) {
+                if (p.getName().equals(providerName)) {
+                    provider = p;
+                    if (channelName != null) {
+                        Set<FederatedConnection> fedConns = new HashSet<FederatedConnection>();
+                        fedConns.addAll(((FederatedProvider) provider).getFederatedConnectionsA());
+                        fedConns.addAll(((FederatedProvider) provider).getFederatedConnectionsB());
+                        for (FederatedConnection fedConn : fedConns) {
+                            FederatedChannel fedChannelA = fedConn.getChannelA();
+                            FederatedChannel fedChannelB = fedConn.getChannelB();
+                            if (fedChannelA.getName().equals(channelName)) {
+                                channel = fedChannelA;
+                                break;
+                            } else if (fedChannelB.getName().equals(channelName)) {
+                                channel = fedChannelB;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (provider == null || (channelName != null && channel == null)) {
+                logger.error("Error exporting SAML metadata: no provider or channel with the given name.");
+                return new byte[0];
+            }
+
+            String providerBeanName = normalizeBeanName(provider.getName());
+            String resourceName = providerBeanName;
+            if (channel != null && channel.isOverrideProviderSetup()) {
+                resourceName = normalizeBeanName(channel.getName());
+            }
+
+            String metadataFile = layout.getWorkDir() + "/idau/src/main/resources/" +
+                    idauPath + providerBeanName + "/" + resourceName + "-samlr2-metadata.xml";
+
+            FileInputStream is = null;
+            try {
+                File file = new File(new URI(metadataFile));
+                is = new FileInputStream(file);
+                return IOUtils.toByteArray(is);
+            } catch (Exception e) {
+                logger.error("Error exporting SAML metadata: error reading file [" + metadataFile + "].");
+                return new byte[0];
+            } finally {
+                IOUtils.closeQuietly(is);
+            }
         }
 
         return null;
@@ -133,4 +202,8 @@ public class TransformerApplianceBuilderImpl implements ApplianceBuilder {
         }
     }
 
+    protected String normalizeBeanName(String name) {
+        String regex = "[ .]";
+        return name.replaceAll(regex, "-").toLowerCase();
+    }
 }

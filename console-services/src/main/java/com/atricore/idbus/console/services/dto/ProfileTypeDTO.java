@@ -21,10 +21,41 @@
 
 package com.atricore.idbus.console.services.dto;
 
+import java.util.Collection;
+import java.util.Date;
+
 /**
  * @author: Dusan Fisic
  * @email: dfisic@atricore.org
  * Date: 1/17/11 - 3:02 PM
  */
 public class ProfileTypeDTO {
+
+    private String id;
+    private String name;
+    private Collection<UpdateDescriptorTypeDTO> installableUnits;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Collection<UpdateDescriptorTypeDTO> getInstallableUnits() {
+        return installableUnits;
+    }
+
+    public void setInstallableUnits(Collection<UpdateDescriptorTypeDTO> installableUnits) {
+        this.installableUnits = installableUnits;
+    }
 }

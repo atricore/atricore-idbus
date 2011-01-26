@@ -21,6 +21,8 @@
 
 package com.atricore.idbus.console.main
 {
+import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
+
 import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
 import org.springextensions.actionscript.puremvc.patterns.facade.IocFacade;
 
@@ -32,12 +34,17 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const SIGN_ON_SERVICE:String = "signOnService";
     public static const LICENSE_MANAGEMENT_SERVICE = "licenseManagementService";
                                                       
+    public static const LIVE_UPDATE_SERVICE:String = "liveUpdateService";
+
     public static const ADMIN_GROUP:String = "Administrators";
 
     // Notification name constants application
 
     // command-backed notifications
     public static const STARTUP:String = "startup";
+    public static const STARTUP_APP_SECTION:String = "startupAppSection";
+
+
     public static const SETUP_SERVER:String = "Note.SetupServer";
     public static const REGISTER:String = "Note.Register";
     public static const CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE:String = "createSimpleSSOIdentityAppliance";
@@ -65,7 +72,6 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const STOP_IDENTITY_APPLIANCE:String = "stopIdentityAppliance";
     public static const DISPOSE_IDENTITY_APPLIANCE:String = "disposeIdentityAppliance";
     public static const IMPORT_IDENTITY_APPLIANCE:String = "importIdentityAppliance";
-    public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
     public static const ADD_GROUP:String = "addGroup";
     public static const ADD_USER:String = "addUser";
     public static const DELETE_GROUP:String = "deleteGroup";
@@ -87,6 +93,15 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
     public static const UPDATE_LICENSE:String = "updateLicense";
     
+    public static const LIST_UPDATES:String = "listUpdates";
+    public static const CHECK_FOR_UPDATES:String = "checkForUpdates";
+    public static const APPLY_UPDATE:String = "applyUpdate";
+    public static const GET_UPDATE_PROFILE:String = "getUpdateProfile";
+    public static const IDENTITY_APPLIANCE_EXPORT:String = "identityApplianceExport";
+    public static const PROVIDER_CERTIFICATE_EXPORT:String = "providerCertificateExport";
+    public static const METADATA_EXPORT:String = "metadataExport";
+
+
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
 //    public static const SHOW_SUCCESS_MSG:String = "showSuccessMsg";
@@ -115,6 +130,8 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const CREATE_SERVICE_PROVIDER_ELEMENT:String = "createServiceProviderElement";
     public static const CREATE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT:String = "createExternalIdentityProviderElement";
     public static const CREATE_EXTERNAL_SERVICE_PROVIDER_ELEMENT:String = "createExternalServiceProviderElement";
+    public static const CREATE_SALESFORCE_ELEMENT:String = "createSalesforceElement";
+    public static const CREATE_GOOGLE_APPS_ELEMENT:String = "createGoogleAppsElement";
     public static const DIAGRAM_ELEMENT_CREATION_COMPLETE:String = "diagramElementCreationComplete";
     public static const DIAGRAM_ELEMENT_SELECTED:String = "diagramElementSelected";
     public static const DIAGRAM_ELEMENT_UPDATED:String = "diagramElementUpdated";
@@ -133,6 +150,8 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const CREATE_IDENTITY_VAULT_ELEMENT:String = "createIdentityVaultElement";
     public static const REMOVE_SERVICE_PROVIDER_ELEMENT:String = "removeServiceProviderElement";
     public static const REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT:String = "removeExternalServiceProviderElement";
+    public static const REMOVE_SALESFORCE_ELEMENT:String = "removeSalesforceElement";
+    public static const REMOVE_GOOGLE_APPS_ELEMENT:String = "removeGoogleAppsElement";
     public static const CREATE_JBOSS_EXECUTION_ENVIRONMENT_ELEMENT:String = "createJbossExecutionEnvironmentElement";
     public static const CREATE_WEBLOGIC_EXECUTION_ENVIRONMENT_ELEMENT:String = "createWeblogicExecutionEnvironmentElement";
     public static const CREATE_TOMCAT_EXECUTION_ENVIRONMENT_ELEMENT:String = "createTomcatExecutionEnvironmentElement";
@@ -170,6 +189,10 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const APPLIANCE_VALIDATION_ERRORS:String = "applianceValidationErrors";
     public static const APPLIANCE_SAVED:String = "applianceSaved";
     public static const DISPLAY_UPDATE_LICENSE = "displayUpdateLicense";
+    public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
+    public static const EXPORT_PROVIDER_CERTIFICATE:String = "exportProviderCertificate";
+    public static const EXPORT_METADATA:String = "exportMetadata";
+    public static const DISPLAY_UPDATE_NOTIFICATIONS:String = "displayUpdateNotifications";
 
 
     public function ApplicationFacade(p_configuration:* = null) {
@@ -193,6 +216,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     override protected function initializeController():void {
         super.initializeController();
 
+        // Startup Command should listen for notification STARTUP
         registerCommandByConfigName(STARTUP, CommandNames.STARTUP_CMD);
     }
 

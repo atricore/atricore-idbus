@@ -92,9 +92,9 @@
         <property name="pspTargetId" value="pst-default" />
     </bean>
 
-    <bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">
+    <!--bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">
         <property name="idApplianceManagementService" ref="idApplianceManagementService"/>
-    </bean>
+    </bean-->
 
     <bean id="liveUpdateAjaxService" class="com.atricore.idbus.console.services.impl.LiveUpdateAjaxServiceImpl">
         <property name="updateManager" ref="updateManagerService"/>

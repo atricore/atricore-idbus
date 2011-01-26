@@ -21,30 +21,55 @@
 
 package com.atricore.idbus.console.liveupdate.main.model
 {
+import com.atricore.idbus.console.services.dto.ProfileType;
+import com.atricore.idbus.console.services.dto.UpdateDescriptorType;
+
+import mx.collections.ArrayCollection;
+
 import org.osmf.traits.IDisposable;
 import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 public class LiveUpdateProxy extends IocProxy implements IDisposable
 {
+    private var _availableUpdatesList:ArrayCollection;
 
-    private var _updatesList:Array;
+    private var _selectedUpdate:UpdateDescriptorType;
+
+    private var _selectedProfile:ProfileType;
 
     public function LiveUpdateProxy()
     {
         super(NAME);
     }
 
-    public function get updatesList():Array {
-        return _updatesList;
+    public function get availableUpdatesList():ArrayCollection {
+        return _availableUpdatesList;
     }
 
-    public function set updatesList(value:Array):void {
-        _updatesList = value;
+    public function set availableUpdatesList(value:ArrayCollection):void {
+        _availableUpdatesList = value;
     }
 
     public function dispose():void {
-        _updatesList = null;
+        _availableUpdatesList = null;
 
+    }
+
+    public function get selectedUpdate():UpdateDescriptorType {
+        return _selectedUpdate;
+    }
+
+    public function set selectedUpdate(value:UpdateDescriptorType):void {
+        _selectedUpdate = value;
+    }
+
+
+    public function get selectedProfile():ProfileType {
+        return _selectedProfile;
+    }
+
+    public function set selectedProfile(value:ProfileType):void {
+        _selectedProfile = value;
     }
 }
 }

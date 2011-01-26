@@ -102,7 +102,7 @@
         <javax.servlet.version>2.5</javax.servlet.version>
         <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
         <jaxws.api.version>2.1</jaxws.api.version>
-        <josso1.version>1.8.3</josso1.version>
+        <josso1.version>1.8.4-SNAPSHOT</josso1.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.14</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
@@ -1016,6 +1016,7 @@
                         </compiledLocales>
                         <configurationReport>true</configurationReport>
                         <keepGeneratedActionscript>false</keepGeneratedActionscript>
+                        <argLine>-Xmx512M</argLine>
                         <targetplayer>${flash.version}</targetplayer>
                         <licenses>
                             <flexbuilder3>1377-4004-5203-8817-7220-1547</flexbuilder3>

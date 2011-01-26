@@ -30,10 +30,12 @@ import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExecution
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveExternalServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveFederatedConnectionElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveGoogleAppsElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityApplianceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityLookupElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityProviderElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveIdentityVaultElementRequest;
+import com.atricore.idbus.console.modeling.diagram.model.request.RemoveSalesforceElementRequest;
 import com.atricore.idbus.console.modeling.diagram.model.request.RemoveServiceProviderElementRequest;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceImportCommand;
 import com.atricore.idbus.console.modeling.main.controller.IdentityApplianceListLoadCommand;
@@ -52,8 +54,6 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.net.FileFilter;
 import flash.net.FileReference;
-
-import flash.utils.ByteArray;
 
 import mx.collections.ArrayCollection;
 import mx.controls.Alert;
@@ -300,6 +300,10 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             ApplicationFacade.REMOVE_EXTERNAL_IDENTITY_PROVIDER_ELEMENT,
             ApplicationFacade.CREATE_EXTERNAL_SERVICE_PROVIDER_ELEMENT,
             ApplicationFacade.REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT,
+            ApplicationFacade.REMOVE_SALESFORCE_ELEMENT,
+            ApplicationFacade.REMOVE_GOOGLE_APPS_ELEMENT,
+            ApplicationFacade.CREATE_SALESFORCE_ELEMENT,
+            ApplicationFacade.CREATE_GOOGLE_APPS_ELEMENT,
             ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT,
             ApplicationFacade.CREATE_DB_IDENTITY_SOURCE_ELEMENT,
             ApplicationFacade.REMOVE_IDENTITY_SOURCE_ELEMENT,
@@ -331,6 +335,8 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             ApplicationFacade.LOGOUT,
             ApplicationFacade.AUTOSAVE_IDENTITY_APPLIANCE,
             ApplicationFacade.EXPORT_IDENTITY_APPLIANCE,
+            ApplicationFacade.EXPORT_PROVIDER_CERTIFICATE,
+            ApplicationFacade.EXPORT_METADATA,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
             LookupIdentityApplianceByIdCommand.SUCCESS,
@@ -404,6 +410,20 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             case ApplicationFacade.REMOVE_EXTERNAL_SERVICE_PROVIDER_ELEMENT:
                 var resp:RemoveExternalServiceProviderElementRequest = RemoveExternalServiceProviderElementRequest(notification.getBody());
                 sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, resp.serviceProvider);
+                break;
+            case ApplicationFacade.CREATE_SALESFORCE_ELEMENT:
+                popupManager.showCreateSalesforceWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_SALESFORCE_ELEMENT:
+                var rsf:RemoveSalesforceElementRequest = RemoveSalesforceElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, rsf.salesforceProvider);
+                break;
+            case ApplicationFacade.CREATE_GOOGLE_APPS_ELEMENT:
+                popupManager.showCreateGoogleAppsWindow(notification);
+                break;
+            case ApplicationFacade.REMOVE_GOOGLE_APPS_ELEMENT:
+                var rga:RemoveGoogleAppsElementRequest = RemoveGoogleAppsElementRequest(notification.getBody());
+                sendNotification(ApplicationFacade.EXTERNAL_SERVICE_PROVIDER_REMOVE, rga.googleAppsProvider);
                 break;
             case ApplicationFacade.CREATE_IDENTITY_VAULT_ELEMENT:
                 popupManager.showCreateIdentityVaultWindow(notification);
@@ -615,13 +635,17 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         "There was an error loading JDBC drivers list.");
                 break;
-
             case ApplicationFacade.EXPORT_IDENTITY_APPLIANCE:
                 if (projectProxy.currentIdentityAppliance != null) {
                     popupManager.showCreateExportIdentityApplianceWindow(notification);
                 }
                 break;
-
+            case ApplicationFacade.EXPORT_PROVIDER_CERTIFICATE:
+                popupManager.showCreateExportProviderCertificateWindow(notification);
+                break;
+            case ApplicationFacade.EXPORT_METADATA:
+                popupManager.showCreateExportMetadataWindow(notification);
+                break;
         }
 
     }

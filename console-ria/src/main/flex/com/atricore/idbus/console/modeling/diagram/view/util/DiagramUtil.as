@@ -85,6 +85,10 @@ public class DiagramUtil {
                 return EmbeddedIcons.externalIdpMiniIcon;
             case DiagramElementTypes.EXTERNAL_SERVICE_PROVIDER_ELEMENT_TYPE:
                 return EmbeddedIcons.externalSpMiniIcon;
+            case DiagramElementTypes.SALESFORCE_ELEMENT_TYPE:
+                return EmbeddedIcons.salesforceMiniIcon;
+            case DiagramElementTypes.GOOGLE_APPS_ELEMENT_TYPE:
+                return EmbeddedIcons.googleAppsMiniIcon;
             case DiagramElementTypes.IDENTITY_VAULT_ELEMENT_TYPE:
                 return EmbeddedIcons.vaultMiniIcon;
             case DiagramElementTypes.DB_IDENTITY_SOURCE_ELEMENT_TYPE:

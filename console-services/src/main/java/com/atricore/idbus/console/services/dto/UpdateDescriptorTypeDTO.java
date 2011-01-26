@@ -21,6 +21,9 @@
 
 package com.atricore.idbus.console.services.dto;
 
+import com.atricore.liveservices.liveupdate._1_0.md.UpdateNatureType;
+
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -36,6 +39,7 @@ public class UpdateDescriptorTypeDTO {
     private String description;
     private String updateNature;
     private Date issueInstant;
+    private Collection<RequiredFeatureTypeDTO> requirements;
 
     public String getId() {
         return id;
@@ -91,5 +95,13 @@ public class UpdateDescriptorTypeDTO {
 
     public void setIssueInstant(Date issueInstant) {
         this.issueInstant = issueInstant;
+    }
+
+    public Collection<RequiredFeatureTypeDTO> getRequirements() {
+        return requirements;
+    }
+
+    public void setRequirements(Collection<RequiredFeatureTypeDTO> requirements) {
+        this.requirements = requirements;
     }
 }
