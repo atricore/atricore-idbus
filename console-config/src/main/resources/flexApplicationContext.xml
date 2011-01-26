@@ -233,6 +233,11 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
+    <object id="updateLicenseCommand"
+            class="com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <!--<property name="projectProxy" ref="projectProxy"/>-->
+    </object>
 
     <!-- Mediators -->
     <object id="manageCertificateMediator"
@@ -434,6 +439,13 @@
         <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
     </object>
 
+    <object id="licenseMediator" class="com.atricore.idbus.console.licensing.LicenseMediator">
+        <property name="popupManager" ref="licensingPopUpManager"/>
+    </object>
+
+    <object id="updateLicenseMediator" class="com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator"/>
+
+
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
         <property name="popupManager" ref="consolePopUpManager"/>
 
@@ -441,6 +453,7 @@
         <property name="lifecycleViewMediator" ref="lifecycleViewMediator"/>
         <property name="accountManagementMediator" ref="accountManagementMediator"/>
         <property name="liveUpdateMediator" ref="liveUpdateMediator"/>
+        <property name="licenseMediator" ref="licenseMediator" />
 
         <property name="secureContextProxy" ref="secureContextProxy"/>
         <property name="projectProxy" ref="projectProxy"/>
@@ -505,6 +518,10 @@
         <property name="processingMediator" ref="processingMediator"/>
     </object>
 
+    <object id="licensingPopUpManager" class="com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager">
+        <property name="updateLicenseMediator" ref="updateLicenseMediator" />
+    </object>
+
     <object id="startupCommand" class="com.atricore.idbus.console.main.controller.ApplicationStartUpCommand">
         <!-- Proxies wiring -->
         <property name="serviceRegistry" ref="serviceRegistry"/>
@@ -562,6 +579,7 @@
         <property name="jdbcDriversListCommand" ref="jdbcDriversListCommand"/>
         <property name="getMetadataInfoCommand" ref="getMetadataInfoCommand"/>
         <property name="getCertificateInfoCommand" ref="getCertificateInfoCommand"/>
+        <property name="updateLicenseCommand" ref="updateLicenseCommand" />
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>
@@ -605,6 +623,8 @@
         <property name="paletteMediator" ref="paletteMediator"/>
         <property name="accountManagementMediator" ref="accountManagementMediator"/>
         <property name="liveUpdateMediator" ref="liveUpdateMediator"/>
+        <property name="licenseMediator" ref="licenseMediator" />
+        <property name="updateLicenseMediator" ref="updateLicenseMediator"/>
         <property name="groupsMediator" ref="groupsMediator"/>
         <property name="groupPropertiesMediator" ref="groupPropertiesMediator"/>
         <property name="addGroupMediator" ref="addGroupMediator"/>

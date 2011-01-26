@@ -21,11 +21,7 @@
 
 package com.atricore.idbus.console.services.dto;
 
-import com.atricore.liveservices.liveupdate._1_0.md.UpdateNatureType;
-import sun.util.calendar.LocalGregorianCalendar;
-
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 /**
  * @author: Dusan Fisic

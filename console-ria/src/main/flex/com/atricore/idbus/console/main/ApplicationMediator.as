@@ -77,6 +77,7 @@ public class ApplicationMediator extends IocMediator {
     private var _lifecycleViewMediator:IIocMediator;
     private var _accountManagementMediator:IIocMediator;
     private var _liveUpdateMediator:IIocMediator;
+    private var _licenseMediator:IIocMediator;
 
     private var _userActionMenuBar:MenuBar;
 
@@ -116,6 +117,14 @@ public class ApplicationMediator extends IocMediator {
 
     public function set liveUpdateMediator(value:IIocMediator):void {
         _liveUpdateMediator = value;
+    }
+
+    public function get licenseMediator():IIocMediator {
+        return _licenseMediator;
+    }
+
+    public function set licenseMediator(value:IIocMediator):void {
+        _licenseMediator = value;
     }
 
     public function get popupManager():ConsolePopUpManager {
@@ -260,6 +269,7 @@ public class ApplicationMediator extends IocMediator {
             ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE,
             ApplicationFacade.DISPLAY_APPLIANCE_ACCOUNT,
             ApplicationFacade.DISPLAY_LIVE_UPDATE,
+            ApplicationFacade.DISPLAY_LICENSING,
             ApplicationFacade.DISPLAY_CHANGE_PASSWORD,
             ProcessingMediator.START,
             ProcessingMediator.STOP
@@ -315,6 +325,8 @@ public class ApplicationMediator extends IocMediator {
                     sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_ACCOUNT);
                 } else if (viewIndex == UPDATE_VIEW_INDEX) {
                     sendNotification(ApplicationFacade.DISPLAY_LIVE_UPDATE);
+                } else if (viewIndex == LICENSE_VIEW_INDEX) {
+                    sendNotification(ApplicationFacade.DISPLAY_LICENSING);
                 }
                 break;
             case ApplicationFacade.DISPLAY_APPLIANCE_MODELER:
@@ -345,6 +357,13 @@ public class ApplicationMediator extends IocMediator {
                     sendNotification(ApplicationFacade.UPDATE_VIEW_SELECTED);
                 }
                 break;
+            case ApplicationFacade.DISPLAY_LICENSING:
+                app.stackButtonBar.selectedIndex = LICENSE_VIEW_INDEX;
+                if (app.modulesViewStack.selectedIndex != LICENSE_VIEW_INDEX) {
+                    app.modulesViewStack.selectedIndex = LICENSE_VIEW_INDEX;
+                    sendNotification(ApplicationFacade.LICENSE_VIEW_SELECTED);
+                }
+                break;
             case ApplicationFacade.DISPLAY_CHANGE_PASSWORD:
                 popupManager.showChangePasswordWindow(notification);
                 break;
@@ -371,6 +390,7 @@ public class ApplicationMediator extends IocMediator {
         lifecycleViewMediator.setViewComponent(app.lifecycleView);
         accountManagementMediator.setViewComponent(app.accountManagementView);
         liveUpdateMediator.setViewComponent(app.liveUpdateView);
+        licenseMediator.setViewComponent(app.licenseView);
 
         app.stackButtonBar.addEventListener(IndexChangeEvent.CHANGE, handleStackChange);
         app.stackButtonBar.selectedIndex = 0;

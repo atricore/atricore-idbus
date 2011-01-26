@@ -62,6 +62,8 @@
         <symbol>com.atricore.idbus.console.modeling.palette.PaletteMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.AccountManagementMediator</symbol>
         <symbol>com.atricore.idbus.console.liveupdate.main.LiveUpdateMediator</symbol>
+        <symbol>com.atricore.idbus.console.licensing.LicenseMediator</symbol>
+        <symbol>com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator</symbol>
         <symbol>com.atricore.idbus.console.account.groups.GroupsMediator</symbol>
         <symbol>com.atricore.idbus.console.account.groupproperties.GroupPropertiesMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.addgroup.AddGroupMediator</symbol>
@@ -122,6 +124,7 @@
         <symbol>com.atricore.idbus.console.account.main.controller.ListUsersCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.SearchGroupsCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.SearchUsersCommand</symbol>
+        <symbol>com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand</symbol>
         <symbol>mx.messaging.channels.AMFChannel</symbol>
         <symbol>mx.messaging.ChannelSet</symbol>
         <symbol>mx.rpc.remoting.mxml.RemoteObject</symbol>
@@ -135,6 +138,7 @@
 
         <symbol>com.atricore.idbus.console.modeling.main.view.ModelerPopUpManager</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager</symbol>
+        <symbol>com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager</symbol>
 
         <!-- Flex Automation
         <symbol>com.gorillalogic.flexmonkium.FlexMonkium</symbol>

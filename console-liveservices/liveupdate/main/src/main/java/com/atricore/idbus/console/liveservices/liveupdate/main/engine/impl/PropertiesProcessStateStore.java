@@ -29,7 +29,7 @@ public class PropertiesProcessStateStore implements ProcessStore {
 
     private String baseFolder;
 
-    private URI baseUri;
+//    private URI baseUri;
 
     public PropertiesProcessStateStore() {
 
@@ -37,28 +37,33 @@ public class PropertiesProcessStateStore implements ProcessStore {
 
     public void init() throws LiveUpdateException {
 
-        try {
+//        try {
 
-            if (baseFolder == null)
-                baseFolder = "file:" +
-                        System.getProperty("karaf.data",
+            if (baseFolder == null){
+                String separator = System.getProperty("file.separator");
+//                separator = (separator.equals("\\") ? "\\\\" : separator);
+                baseFolder = System.getProperty("karaf.data",
                         System.getProperty("java.io.tmpdir")) +
-                        "/liveservices/liveupdate/processes";
+//                        "liveservices/liveupdate/processes";
+                        separator +
+                        "liveservices" + separator + "liveupdate" + separator + "processes";
+//                baseFolder = baseFolder.replace("\\", "/");
+            }
 
             if (logger.isDebugEnabled())
                 logger.debug("Using baseFolder : " + baseFolder);
-            baseUri = new URI(baseFolder);
+//            baseUri = new URI(baseFolder);
 
-            File f = new File(baseUri);
+            File f = new File(baseFolder);
             if (!f.exists()) {
                 if (!f.mkdirs())
                     throw new LiveUpdateException("Cannot create folder " + baseFolder);
             } else if (!f.isDirectory()) {
                 throw new LiveUpdateException("Configured folder is not a directory : " + baseFolder);
             }
-        } catch (URISyntaxException e) {
-            throw new LiveUpdateException("Invalid base folder : " + e.getMessage(), e);
-        }
+//        } catch (URISyntaxException e) {
+//            throw new LiveUpdateException("Invalid base folder : " + e.getMessage(), e);
+//        }
     }
 
 
@@ -80,7 +85,8 @@ public class PropertiesProcessStateStore implements ProcessStore {
         if (state.getOperation() != null)
             props.setProperty("operation", state.getOperation());
 
-        URI profileUri = buildProfileFileURI(state.getId());
+//        URI profileUri = buildProfileFileURI(state.getId());
+        String profileUri = buildProfileFilePath(state.getId());
         
         props.setProperty("updateProfile", profileUri.toString());
 
@@ -88,7 +94,8 @@ public class PropertiesProcessStateStore implements ProcessStore {
         OutputStream profileOut = null;
         try {
 
-            URI file = buildFileURI(state.getId());
+//            URI file = buildFileURI(state.getId());
+            String file = buildFilePath(state.getId());
             out = new FileOutputStream(new File(file), false);
             props.store(out, "LiveUpdate process state " + state.getId());
 
@@ -112,7 +119,8 @@ public class PropertiesProcessStateStore implements ProcessStore {
     }
 
     public UpdateProcessState load(String id) throws LiveUpdateException {
-        URI file = buildFileURI(id);
+//        URI file = buildFileURI(id);
+        String file = buildFilePath(id);
         InputStream in = null;
         try {
             in = new FileInputStream(new File(file));
@@ -133,7 +141,8 @@ public class PropertiesProcessStateStore implements ProcessStore {
     }
 
     public Collection<UpdateProcessState> load() throws LiveUpdateException {
-        File baseFolderFile = new File(baseUri);
+//        File baseFolderFile = new File(baseUri);
+        File baseFolderFile = new File(baseFolder);
 
         List<UpdateProcessState> states = new ArrayList<UpdateProcessState>();
 
@@ -162,7 +171,8 @@ public class PropertiesProcessStateStore implements ProcessStore {
     }
 
     public void remove(String id) throws LiveUpdateException {
-        URI file = buildFileURI(id);
+//        URI file = buildFileURI(id);
+        String file = buildFilePath(id);
 
         File f = new File(file);
         if (f.exists() && !f.isDirectory()) {
@@ -171,7 +181,8 @@ public class PropertiesProcessStateStore implements ProcessStore {
             }
         }
 
-        URI profileFile = buildProfileFileURI(id);
+//        URI profileFile = buildProfileFileURI(id);
+        String profileFile = buildProfileFilePath(id);
         File pf = new File(profileFile);
         if (pf.exists() && !pf.isDirectory()) {
             if (!pf.delete()) {
@@ -210,22 +221,32 @@ public class PropertiesProcessStateStore implements ProcessStore {
 
     }
 
-    protected URI buildFileURI(String id) throws LiveUpdateException {
+//    protected URI buildFileURI(String id) throws LiveUpdateException {
+//        String n = baseFolder + "/" + id + "-proc.bin";
+//        try {
+//            return new URI(n);
+//        } catch (URISyntaxException e) {
+//            throw new LiveUpdateException("Invalid file name " + n);
+//        }
+//    }
+//
+//    protected URI buildProfileFileURI(String id) throws LiveUpdateException {
+//        String n = baseFolder + "/" + id + "-prof.bin";
+//        try {
+//            return new URI(n);
+//        } catch (URISyntaxException e) {
+//            throw new LiveUpdateException("Invalid file name " + n);
+//        }
+//    }
+
+    protected String buildFilePath(String id) throws LiveUpdateException {
         String n = baseFolder + "/" + id + "-proc.bin";
-        try {
-            return new URI(n);
-        } catch (URISyntaxException e) {
-            throw new LiveUpdateException("Invalid file name " + n);
-        }
+        return n;
     }
 
-    protected URI buildProfileFileURI(String id) throws LiveUpdateException {
+    protected String buildProfileFilePath(String id) throws LiveUpdateException {
         String n = baseFolder + "/" + id + "-prof.bin";
-        try {
-            return new URI(n);
-        } catch (URISyntaxException e) {
-            throw new LiveUpdateException("Invalid file name " + n);
-        }
-    }
+        return n;
+    }    
 
 }

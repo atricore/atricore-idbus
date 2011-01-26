@@ -10,7 +10,7 @@ public abstract class LicenseCommandSupport extends OsgiCommandSupport {
 
     @Override
     protected Object doExecute() throws Exception {
-        // Get serivice reference and all execute again
+        // Get service reference and all execute again
         LicenseManager svc = null;
 
         return doExecute(svc);

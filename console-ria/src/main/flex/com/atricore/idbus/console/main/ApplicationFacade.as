@@ -30,7 +30,8 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const IDENTITY_APPLIANCE_MANAGEMENT_SERVICE:String = "identityApplianceManagementService";
     public static const PROFILE_MANAGEMENT_SERVICE:String = "profileManagementService";
     public static const SIGN_ON_SERVICE:String = "signOnService";
-
+    public static const LICENSE_MANAGEMENT_SERVICE = "licenseManagementService";
+                                                      
     public static const ADMIN_GROUP:String = "Administrators";
 
     // Notification name constants application
@@ -84,7 +85,8 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
     public static const GET_METADATA_INFO:String = "getMetadataInfo";
     public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
-
+    public static const UPDATE_LICENSE:String = "updateLicense";
+    
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
 //    public static const SHOW_SUCCESS_MSG:String = "showSuccessMsg";
@@ -102,6 +104,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const DISPLAY_APPLIANCE_LIFECYCLE:String = "displayApplianceLifecycle";
     public static const DISPLAY_APPLIANCE_ACCOUNT:String = "displayApplianceAccount";
     public static const DISPLAY_LIVE_UPDATE:String = "displayLiveUpdate";
+    public static const DISPLAY_LICENSING:String = "displayLicensing";
     public static const DISPLAY_VIEW:String = "displayView";
     public static const PALETTE_ELEMENT_SELECTED:String = "paletteElementSelected";
     public static const REFRESH_DIAGRAM:String = "refreshDiagram";
@@ -166,6 +169,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const UPDATE_VIEW_SELECTED:String = "updateViewSelected";
     public static const APPLIANCE_VALIDATION_ERRORS:String = "applianceValidationErrors";
     public static const APPLIANCE_SAVED:String = "applianceSaved";
+    public static const DISPLAY_UPDATE_LICENSE = "displayUpdateLicense";
 
 
     public function ApplicationFacade(p_configuration:* = null) {

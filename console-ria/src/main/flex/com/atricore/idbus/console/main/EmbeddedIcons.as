@@ -48,7 +48,7 @@ public class EmbeddedIcons {
     }
 
     [Bindable]
-    [Embed(source="/assets/icons/ui/a3c_logo.jpeg")]
+    [Embed(source="/assets/icons/ui/a3c_logo.png")]
     static public var a3cLogo:Class;
 
     [Bindable]

@@ -73,6 +73,13 @@
         </properties>
     </destination>
 
+	<destination id="licenseManagementService">
+        <properties>
+            <factory>spring</factory>
+            <source>licenseManagementAjaxServiceBean</source>
+        </properties>
+    </destination>
+
     <!--<destination id="identityApplianceMetadataAjaxService">-->
         <!--<properties>-->
             <!--<factory>spring</factory>-->

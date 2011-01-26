@@ -101,10 +101,10 @@
                             org.osgi.service.command,
                             org.apache.felix.gogo.commands,
                             org.apache.karaf.shell.console,
-                            com.atricore.idbus.console.lifecycle.main.*,
+                            com.atricore.idbus.console.licensing.main.*,
                             *
                         </Import-Package>
-                        <Require-Bundle>com.atricore.idbus.console.lifecycle.main</Require-Bundle>
+                        <Require-Bundle>com.atricore.idbus.console.licensing.main</Require-Bundle>
                         <Private-Package>!*</Private-Package>
                         <_versionpolicy>${bnd.version.policy}</_versionpolicy>
                     </instructions>

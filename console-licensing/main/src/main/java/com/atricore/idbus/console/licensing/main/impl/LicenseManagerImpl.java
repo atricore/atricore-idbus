@@ -56,7 +56,7 @@ public class LicenseManagerImpl implements LicenseManager {
             "OVuOVWYfBNMwMNikL2JvOZAmNNFWZia4EGphS8Uh+yLRhHbpobRqT6+DOg==\n" +
             "-----END CERTIFICATE-----";
     
-    private String licensePath = "";
+    private String licensePath = "lib/license.xml";
     private LicenseSigner signer;
 
 

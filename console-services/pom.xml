@@ -134,6 +134,18 @@
             <artifactId>com.atricore.idbus.console.liveservices.liveupdate.atricore-liveupdate-v1_0</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.licensing</groupId>
+            <artifactId>com.atricore.idbus.console.licensing.main</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.licensing</groupId>
+            <artifactId>com.atricore.idbus.console.licensing.josso2-license-v1_0</artifactId>
+            <scope>provided</scope>
+        </dependency>         
      
         
         <dependency>

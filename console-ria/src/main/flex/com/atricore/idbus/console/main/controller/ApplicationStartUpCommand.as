@@ -87,6 +87,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _simpleSSOWizardViewMediator:IIocMediator;
     private var _accountManagementMediator:IIocMediator;
     private var _liveUpdateMediator:IIocMediator;
+    private var _licenseMediator:IIocMediator;
+    private var _updateLicenseMediator:IIocMediator;
     private var _groupsMediator:IIocMediator;
     private var _groupPropertiesMediator:IIocMediator;
     private var _addGroupMediator:IIocMediator;
@@ -151,6 +153,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _jdbcDriversListCommand:IIocCommand;
     private var _getMetadataInfoCommand:IIocCommand;
     private var _getCertificateInfoCommand:IIocCommand;
+    private var _updateLicenseCommand:IIocCommand;
 
 
     public function get applicationMediator():IIocMediator {
@@ -431,6 +434,22 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set liveUpdateMediator(value:IIocMediator):void {
         _liveUpdateMediator = value;
+    }
+
+    public function get licenseMediator():IIocMediator {
+        return _licenseMediator;
+    }
+
+    public function set licenseMediator(value:IIocMediator):void {
+        _licenseMediator = value;
+    }
+
+    public function get updateLicenseMediator():IIocMediator {
+        return _updateLicenseMediator;
+    }
+
+    public function set updateLicenseMediator(value:IIocMediator):void {
+        _updateLicenseMediator = value;
     }
 
     public function get groupsMediator():IIocMediator {
@@ -986,6 +1005,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _getCertificateInfoCommand = value;
     }
 
+    public function get updateLicenseCommand():IIocCommand {
+        return _updateLicenseCommand;
+    }
+
+    public function set updateLicenseCommand(value:IIocCommand):void {
+        _updateLicenseCommand = value;
+    }
+
     override public function execute(note:INotification):void {
         var registry:ServiceRegistry = setupServiceRegistry();
 
@@ -1039,6 +1066,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_JDBC_DRIVERS, jdbcDriversListCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_METADATA_INFO, getMetadataInfoCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.GET_CERTIFICATE_INFO, getCertificateInfoCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.UPDATE_LICENSE, updateLicenseCommand.getConfigName());
 
         // setup for first level mediators
         applicationMediator.setViewComponent(app);
@@ -1050,6 +1078,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(lifecycleViewMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(accountManagementMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(liveUpdateMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(licenseMediator.getConfigName());
 
         // setup for second level modeler mediators
         iocFacade.registerMediatorByConfigName(browserMediator.getConfigName());
@@ -1067,6 +1096,8 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerMediatorByConfigName(addUserMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(editUserMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(searchUsersMediator.getConfigName());
+
+        iocFacade.registerMediatorByConfigName(updateLicenseMediator.getConfigName());
 
         // register mediators for popup managers - popup managers will wire the corresponding view to it
         iocFacade.registerMediatorByConfigName(setupWizardViewMediator.getConfigName());
@@ -1123,6 +1154,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         registry.registerRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE, ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.PROFILE_MANAGEMENT_SERVICE, ApplicationFacade.PROFILE_MANAGEMENT_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.SIGN_ON_SERVICE, ApplicationFacade.SIGN_ON_SERVICE);
+        registry.registerRemoteObjectService(ApplicationFacade.LICENSE_MANAGEMENT_SERVICE, ApplicationFacade.LICENSE_MANAGEMENT_SERVICE);
 
         return registry;
     }

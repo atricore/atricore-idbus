@@ -19,13 +19,12 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.diagram.view.externalidp {
+package com.atricore.idbus.console.licensing.main.view.updatelicense {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.modeling.palette.PaletteMediator;
-import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
 
 import com.atricore.idbus.console.services.dto.Resource;
 
@@ -41,10 +40,10 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
+public class UpdateLicenseMediator extends IocFormMediator {
 
-    private var _projectProxy:ProjectProxy;
-    private var _newIdentityProvider:ExternalIdentityProvider;
+//    private var _projectProxy:ProjectProxy;
+    private var _newLicense:Resource;
     private var _uploadedFile:ByteArray;
     private var _uploadedFileName:String;
 
@@ -54,18 +53,10 @@ public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
     [Bindable]
     public var _selectedFiles:ArrayCollection;
 
-    public function ExternalIdentityProviderCreateMediator(name:String = null, viewComp:ExternalIdentityProviderCreateForm = null) {
+    public function UpdateLicenseMediator(name:String = null, viewComp:UpdateLicenseForm = null) {
         super(name, viewComp);
     }
 
-    public function get projectProxy():ProjectProxy {
-        return _projectProxy;
-    }
-
-    public function set projectProxy(value:ProjectProxy):void {
-        _projectProxy = value;
-    }
-    
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
             view.btnOk.removeEventListener(MouseEvent.CLICK, handleIdentityProviderSave);
@@ -87,20 +78,15 @@ public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
         view.btnCancel.addEventListener(MouseEvent.CLICK, handleCancel);
         
         // upload bindings
-        view.metadataFile.addEventListener(MouseEvent.CLICK, browseHandler);
-        BindingUtils.bindProperty(view.metadataFile, "dataProvider", this, "_selectedFiles");
-        
-        view.focusManager.setFocus(view.identityProviderName);
+        view.licenseFile.addEventListener(MouseEvent.CLICK, browseHandler);
+        BindingUtils.bindProperty(view.licenseFile, "dataProvider", this, "_selectedFiles");       
     }
 
     private function resetForm():void {
-        view.identityProviderName.text = "";
-        view.identityProviderName.errorString = "";
-        view.identityProvDescription.text = "";
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.metadataFile.prompt = "Browse medatada file";
+        view.licenseFile.prompt = "Browse medatada file";
         view.lblUploadMsg.text = "";
         view.lblUploadMsg.visible = false;
 
@@ -113,20 +99,24 @@ public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
 
     override public function bindModel():void {
 
-        var identityProvider:ExternalIdentityProvider = new ExternalIdentityProvider();
+//        var identityProvider:Resource = new Resource();
 
-        identityProvider.name = view.identityProviderName.text;
-        identityProvider.description = view.identityProvDescription.text;
-        identityProvider.isRemote = true;
+            var newResource:Resource = new Resource();
+            newResource.name = _uploadedFileName;
+            newResource.value = _uploadedFile;
 
-        var resource:Resource = new Resource();
-        resource.name = _uploadedFileName.substring(0, _uploadedFileName.lastIndexOf("."));
-        resource.displayName = _uploadedFileName;
-        resource.uri = _uploadedFileName;
-        resource.value = _uploadedFile;
-        identityProvider.metadata = resource;
+//        identityProvider.name = view.identityProviderName.text;
+//        identityProvider.description = view.identityProvDescription.text;
+//        identityProvider.isRemote = true;
+//
+//        var resource:Resource = new Resource();
+//        resource.name = _uploadedFileName.substring(0, _uploadedFileName.lastIndexOf("."));
+//        resource.displayName = _uploadedFileName;
+//        resource.uri = _uploadedFileName;
+//        resource.value = _uploadedFile;
+//        identityProvider.metadata = resource;
 
-        _newIdentityProvider = identityProvider;
+        _newLicense = newResource;
     }
 
     private function handleIdentityProviderSave(event:MouseEvent):void {
@@ -146,14 +136,15 @@ public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
         }
     }
 
-    private function saveIdentityProvider():void {
+    private function updateLicense():void {
         bindModel();
-        _newIdentityProvider.identityAppliance = _projectProxy.currentIdentityAppliance.idApplianceDefinition;
-        _projectProxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newIdentityProvider);
-        _projectProxy.currentIdentityApplianceElement = _newIdentityProvider;
-        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
-        sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
-        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+        sendNotification(ApplicationFacade.UPDATE_LICENSE, _newLicense);
+//        _newLicense.identityAppliance = _projectProxy.currentIdentityAppliance.idApplianceDefinition;
+//        _projectProxy.currentIdentityAppliance.idApplianceDefinition.providers.addItem(_newLicense);
+//        _projectProxy.currentIdentityApplianceElement = _newLicense;
+//        sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_CREATION_COMPLETE);
+//        sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+//        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
         closeWindow();
     }
     
@@ -163,7 +154,6 @@ public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
 
     private function closeWindow():void {
         resetForm();
-        sendNotification(PaletteMediator.DESELECT_PALETTE_ELEMENT);
         view.parent.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
     }
 
@@ -180,10 +170,10 @@ public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
     }
 
     private function fileSelectHandler(evt:Event):void {
-        view.metadataFile.prompt = null;
+        view.licenseFile.prompt = null;
         _selectedFiles = new ArrayCollection();
         _selectedFiles.addItem(_fileRef.name);
-        view.metadataFile.selectedIndex = 0;
+        view.licenseFile.selectedIndex = 0;
 
         view.lblUploadMsg.text = "";
         view.lblUploadMsg.visible = false;
@@ -195,19 +185,23 @@ public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.metadataFile.prompt = "Browse metadata file";
+        view.licenseFile.prompt = "Browse license file";
 
-        saveIdentityProvider();
+        updateLicense();
     }
 
-    protected function get view():ExternalIdentityProviderCreateForm {
-        return viewComponent as ExternalIdentityProviderCreateForm;
+    protected function get view():UpdateLicenseForm {
+        return viewComponent as UpdateLicenseForm;
     }
+
+//    private function resetUpload():void {
+//        _uploadedFile = null;
+//        _uploadedFileName = null;
+//    }
 
     override public function registerValidators():void {
         FormUtility.clearValidationErrors(_validators);
         _validators = [];
-        _validators.push(view.nameValidator);
     }
 
     override public function listNotificationInterests():Array {
