@@ -25,7 +25,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-
     <parent>
         <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
         <artifactId>console-liveupdate</artifactId>
@@ -34,5 +33,6 @@
 
     <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
     <artifactId>com.atricore.idbus.console.liveservices.liveupdate.management</artifactId>
+    <name>Atricore Console :: LiveUpdate : Management</name>
 
 </project>

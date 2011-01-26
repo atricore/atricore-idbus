@@ -21,6 +21,9 @@
     <osgi:reference id="activationServiceBean" cardinality="1..1" timeout="60"
                     interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
 
+    <osgi:reference id="updateManagerService" cardinality="1..1" timeout="60"
+                    interface="com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager"/>
+
     <osgi:list id="spmlServiceBeans" interface="org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client"
                cardinality="0..N" >
         <osgi:listener ref="spml-service-listener" bind-method="register" unbind-method="unregister"/>
@@ -89,9 +92,12 @@
         <property name="idApplianceManagementService" ref="idApplianceManagementService"/>
     </bean-->
 
-    <!-- Uncomment this if you want to use Spring Controllers -->
-    <!--context:component-scan base-package="com.atricore.idbus.console.web" />
+    <bean id="liveUpdateAjaxService" class="com.atricore.idbus.console.services.impl.LiveUpdateAjaxServiceImpl">
+        <property name="updateManager" ref="updateManagerService"/>
+    </bean>
 
-    <context:annotation-config /-->
+    <context:component-scan base-package="com.atricore.idbus.console.web" />
+
+    <context:annotation-config />
     
 </beans>

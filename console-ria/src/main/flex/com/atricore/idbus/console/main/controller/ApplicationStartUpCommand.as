@@ -198,6 +198,11 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         //iocFacade.registerCommandByConfigName(ApplicationFacade.REGISTER, registerCommand.getConfigName());
         //iocFacade.registerCommandByConfigName(ApplicationFacade.UPLOAD, uploadCommand.getConfigName());
 
+        //iocFacade.registerCommandByConfigName(ApplicationFacade.EXPORT_IDENTITY_APPLIANCE, exportIdentityApplianceCommand.getConfigName());
+        //iocFacade.registerCommandByConfigName(ApplicationFacade.EXPORT_METADATA, exportMetadataCommand.getConfigName());
+        //iocFacade.registerCommandByConfigName(ApplicationFacade.EXPORT_PROVIDER_CERTIFICATE, exportProviderCertificateCommand.getConfigName());
+
+
         // setup for first level mediators
         applicationMediator.setViewComponent(app);
         iocFacade.registerMediatorByConfigName(applicationMediator.getConfigName());
@@ -227,6 +232,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         registry.registerRemoteObjectService(ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE, ApplicationFacade.IDENTITY_APPLIANCE_MANAGEMENT_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.PROFILE_MANAGEMENT_SERVICE, ApplicationFacade.PROFILE_MANAGEMENT_SERVICE);
         registry.registerRemoteObjectService(ApplicationFacade.SIGN_ON_SERVICE, ApplicationFacade.SIGN_ON_SERVICE);
+        registry.registerRemoteObjectService(ApplicationFacade.LIVE_UPDATE_SERVICE, ApplicationFacade.LIVE_UPDATE_SERVICE);
 
         return registry;
     }

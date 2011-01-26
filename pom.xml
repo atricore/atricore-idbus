@@ -103,7 +103,7 @@
         <javax.servlet.version>2.5</javax.servlet.version>
         <javax.servlet.jstl.version>1.2</javax.servlet.jstl.version>
         <jaxws.api.version>2.1</jaxws.api.version>
-        <josso1.version>1.8.3</josso1.version>
+        <josso1.version>1.8.4-SNAPSHOT</josso1.version>
         <junit.version>4.4</junit.version>
         <log4j.version>1.2.14</log4j.version>
         <mysql.connector.version>5.1.10</mysql.connector.version>
@@ -1479,60 +1479,36 @@
 
     </pluginRepositories>
 
+    <modules>
+        <!-- TODO : Move this to other project -->
+        <module>console-tooling</module>
+        <module>console-licensing</module>
+        <module>console-liveservices/liveupdate</module>
+        <module>console-lifecycle</module>
+        <module>console-activation</module>
+
+        <!-- Flex specific modules -->
+        <module>console-config</module>
+        <module>console-services</module>
+        <module>console-lib</module>
+        <module>console-ria-base</module>
+        <module>console-branding/console-ee-branding</module>
+        <module>console-branding/console-ce-branding</module>
+        <module>console-ria</module>
+        <module>console-web</module>
+
+        <!-- IDAU for Console -->
+        <module>console-appliance/console-default-idau</module>
+        <module>console-appliance/console-jaas</module>
+
+    </modules>
 
     <profiles>
-
-        <profile>
-
-            <id>all</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-
-            <modules>
-                <!-- TODO : Move this to other project -->
-                <module>console-tooling</module>
-                <module>console-licensing</module>
-                <module>console-liveservices/liveupdate</module>
-                <module>console-lifecycle</module>
-                <module>console-activation</module>
-
-                <!-- Flex specific modules -->
-                <module>console-config</module>
-                <module>console-services</module>
-                <module>console-lib</module>
-                <module>console-ria-base</module>
-                <module>console-branding/console-ee-branding</module>
-                <module>console-branding/console-ce-branding</module>
-                <module>console-ria</module>
-                <module>console-web</module>
-
-                <!-- IDAU for Console -->
-                <module>console-appliance/console-default-idau</module>
-                <module>console-appliance/console-jaas</module>
-
-            </modules>
-
-        </profile>
 
         <profile>
             <id>qa</id>
             <modules>
                 <module>console-qa</module>
-            </modules>
-        </profile>
-
-        <profile>
-            <id>web</id>
-            <modules>
-                <!-- Flex specific modules -->
-                <module>console-config</module>
-                <module>console-services</module>
-                <module>console-lib</module>
-                <module>console-ria-base</module>
-                <module>console-branding/console-ee-branding</module>
-                <module>console-ria</module>
-                <module>console-web</module>
             </modules>
         </profile>
 

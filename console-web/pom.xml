@@ -198,7 +198,8 @@
                         </Bundle-ClassPath>
                         <Require-Bundle>
                             com.atricore.idbus.console.lifecycle.main,
-                            com.atricore.idbus.console.activation.main
+                            com.atricore.idbus.console.activation.main,
+                            com.atricore.idbus.console.liveservices.liveupdate.main
                         </Require-Bundle>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,
@@ -257,6 +258,8 @@
                             com.atricore.idbus.console.lifecycle.main.spi.request,
                             com.atricore.idbus.console.lifecycle.main.spi.response,
                             com.atricore.idbus.console.lifecycle.main.util,
+                            com.atricore.liveservices.liveupdate._1_0.md,
+                            com.atricore.liveservices.liveupdate._1_0.profile,
                             org.springframework.core.io,
                             org.springframework.context; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
                             org.springframework.beans; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
@@ -337,6 +340,12 @@
         <dependency>
             <groupId>org.atricore.idbus.kernel.common</groupId>
             <artifactId>org.atricore.idbus.kernel.common.spml</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.liveservices.liveupdate</groupId>
+            <artifactId>com.atricore.idbus.console.liveservices.liveupdate.main</artifactId>
             <scope>provided</scope>
         </dependency>
 

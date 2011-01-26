@@ -53,10 +53,10 @@
     </destination>
 
     <!--<destination id="identityBusMetadataManager">-->
-        <!--<properties>-->
-            <!--<factory>spring</factory>-->
-            <!--<source>identityBusMetadataManagerBean</source>-->
-        <!--</properties>-->
+    <!--<properties>-->
+    <!--<factory>spring</factory>-->
+    <!--<source>identityBusMetadataManagerBean</source>-->
+    <!--</properties>-->
     <!--</destination>-->
 
     <destination id="signOnService">
@@ -66,7 +66,7 @@
         </properties>
     </destination>
 
-	<destination id="identityApplianceManagementService">
+    <destination id="identityApplianceManagementService">
         <properties>
             <factory>spring</factory>
             <source>identityApplianceManagementAjaxServiceBean</source>
@@ -74,10 +74,17 @@
     </destination>
 
     <!--<destination id="identityApplianceMetadataAjaxService">-->
-        <!--<properties>-->
-            <!--<factory>spring</factory>-->
-            <!--<source>identityApplianceMetadataAjaxServiceBean</source>-->
-        <!--</properties>-->
+    <!--<properties>-->
+    <!--<factory>spring</factory>-->
+    <!--<source>identityApplianceMetadataAjaxServiceBean</source>-->
+    <!--</properties>-->
     <!--</destination>-->
-    
+
+    <destination id="liveUpdateService">
+        <properties>
+            <factory>spring</factory>
+            <source>liveUpdateAjaxService</source>
+        </properties>
+    </destination>
+
 </service>

@@ -29,6 +29,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const IDENTITY_APPLIANCE_MANAGEMENT_SERVICE:String = "identityApplianceManagementService";
     public static const PROFILE_MANAGEMENT_SERVICE:String = "profileManagementService";
     public static const SIGN_ON_SERVICE:String = "signOnService";
+    public static const LIVE_UPDATE_SERVICE:String = "liveUpdateService";
 
     public static const ADMIN_GROUP:String = "Administrators";
 
@@ -83,9 +84,14 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
     public static const GET_METADATA_INFO:String = "getMetadataInfo";
     public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
+    public static const LIST_UPDATES:String = "listUpdates";
+    public static const CHECK_FOR_UPDATES:String = "checkForUpdates";
+    public static const APPLY_UPDATE:String = "applyUpdate";
+    public static const GET_UPDATE_PROFILE:String = "getUpdateProfile";
     public static const IDENTITY_APPLIANCE_EXPORT:String = "identityApplianceExport";
     public static const PROVIDER_CERTIFICATE_EXPORT:String = "providerCertificateExport";
     public static const METADATA_EXPORT:String = "metadataExport";
+
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
@@ -103,6 +109,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const DISPLAY_APPLIANCE_MODELER:String = "displayApplianceModeler";
     public static const DISPLAY_APPLIANCE_LIFECYCLE:String = "displayApplianceLifecycle";
     public static const DISPLAY_APPLIANCE_ACCOUNT:String = "displayApplianceAccount";
+    public static const DISPLAY_LIVE_UPDATE:String = "displayLiveUpdate";
     public static const DISPLAY_VIEW:String = "displayView";
     public static const PALETTE_ELEMENT_SELECTED:String = "paletteElementSelected";
     public static const REFRESH_DIAGRAM:String = "refreshDiagram";

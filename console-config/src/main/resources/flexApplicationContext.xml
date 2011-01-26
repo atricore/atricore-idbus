@@ -14,6 +14,7 @@
     <object id="profileProxy" class="com.atricore.idbus.console.main.model.ProfileProxy"/>
     <object id="secureContextProxy" class="com.atricore.idbus.console.main.model.SecureContextProxy"/>
     <object id="accountManagementProxy" class="com.atricore.idbus.console.account.main.model.AccountManagementProxy"/>
+    <object id="liveUpdateProxy" class="com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy"/>
 
     <!-- StartUp Commands -->
     <object id="startupCommand"
@@ -35,6 +36,7 @@
         <!--property name="uploadCommand" ref="uploadCommand"/>
         <property name="setupServerCommand" ref="setupServerCommand"/>
         <property name="registerCommand" ref="registerCommand"/-->
+
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>
@@ -58,10 +60,10 @@
         <property name="externalIdentityProviderCreateMediator" ref="externalIdentityProviderCreateMediator"/>
         <property name="salesforceCreateMediator" ref="salesforceCreateMediator"/>
         <property name="googleAppsCreateMediator" ref="googleAppsCreateMediator"/>
-        <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator" />
+        <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator"/>
         <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
-        <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator" />
-        <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator" />
+        <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator"/>
+        <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator"/>
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
         <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator" />
         <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />
@@ -248,12 +250,12 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <!--<object id="spChannelRemoveCommand"-->
-            <!--class="com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand">-->
-        <!--<property name="projectProxy" ref="projectProxy"/>-->
+    <!--class="com.atricore.idbus.console.modeling.main.controller.SpChannelRemoveCommand">-->
+    <!--<property name="projectProxy" ref="projectProxy"/>-->
     <!--</object>-->
     <!--<object id="idpChannelRemoveCommand"-->
-            <!--class="com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand">-->
-        <!--<property name="projectProxy" ref="projectProxy"/>-->
+    <!--class="com.atricore.idbus.console.modeling.main.controller.IdpChannelRemoveCommand">-->
+    <!--<property name="projectProxy" ref="projectProxy"/>-->
     <!--</object>-->
     <object id="identityProviderRemoveCommand"
             class="com.atricore.idbus.console.modeling.main.controller.IdentityProviderRemoveCommand">
@@ -388,6 +390,30 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
 
+    <object id="listUpdatesCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.ListUpdatesCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
+    <object id="checkForUpdatesCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.CheckForUpdatesCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
+    <object id="applyUpdateCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.ApplyUpdateCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
+    <object id="getUpdateProfileCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.GetUpdateProfileCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
     <!-- Mediators -->
     <object id="manageCertificateMediator"
             class="com.atricore.idbus.console.main.view.certificate.ManageCertificateMediator">
@@ -496,12 +522,12 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
     <!--<object id="idpChannelCreateMediator"-->
-            <!--class="com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator">-->
-        <!--<property name="projectProxy" ref="projectProxy"/>-->
+    <!--class="com.atricore.idbus.console.modeling.diagram.view.idpchannel.IDPChannelCreateMediator">-->
+    <!--<property name="projectProxy" ref="projectProxy"/>-->
     <!--</object>-->
     <!--<object id="spChannelCreateMediator"-->
-            <!--class="com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator">-->
-        <!--<property name="projectProxy" ref="projectProxy"/>-->
+    <!--class="com.atricore.idbus.console.modeling.diagram.view.spchannel.SPChannelCreateMediator">-->
+    <!--<property name="projectProxy" ref="projectProxy"/>-->
     <!--</object>-->
     <object id="serviceProviderCreateMediator"
             class="com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator">
@@ -527,7 +553,7 @@
             class="com.atricore.idbus.console.modeling.diagram.view.federatedconnection.FederatedConnectionCreateMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-     <object id="exportIdentityApplianceMediator"
+    <object id="exportIdentityApplianceMediator"
             class="com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceMediator">
         <property name="projectProxy" ref="projectProxy"/>
     </object>
@@ -550,14 +576,16 @@
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
         <property name="groupPropertiesMediator" ref="groupPropertiesMediator"/>
     </object>
-    <object id="groupPropertiesMediator" class="com.atricore.idbus.console.account.groupproperties.GroupPropertiesMediator" />
+    <object id="groupPropertiesMediator"
+            class="com.atricore.idbus.console.account.groupproperties.GroupPropertiesMediator"/>
     <object id="addGroupMediator" class="com.atricore.idbus.console.account.main.view.addgroup.AddGroupMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
     <object id="editGroupMediator" class="com.atricore.idbus.console.account.main.view.editgroup.EditGroupMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
-    <object id="searchGroupsMediator" class="com.atricore.idbus.console.account.main.view.searchgroups.SearchGroupsMediator">
+    <object id="searchGroupsMediator"
+            class="com.atricore.idbus.console.account.main.view.searchgroups.SearchGroupsMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
     <object id="usersMediator" class="com.atricore.idbus.console.account.users.UsersMediator">
@@ -565,7 +593,8 @@
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
         <property name="userPropertiesMediator" ref="userPropertiesMediator"/>
     </object>
-    <object id="userPropertiesMediator" class="com.atricore.idbus.console.account.userproperties.UserPropertiesMediator" />
+    <object id="userPropertiesMediator"
+            class="com.atricore.idbus.console.account.userproperties.UserPropertiesMediator"/>
 
     <object id="addUserMediator" class="com.atricore.idbus.console.account.main.view.adduser.AddUserMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
@@ -573,7 +602,8 @@
     <object id="editUserMediator" class="com.atricore.idbus.console.account.main.view.edituser.EditUserMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
-    <object id="searchUsersMediator" class="com.atricore.idbus.console.account.main.view.searchusers.SearchUsersMediator">
+    <object id="searchUsersMediator"
+            class="com.atricore.idbus.console.account.main.view.searchusers.SearchUsersMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
 
@@ -604,6 +634,10 @@
 
         <property name="viewFactory" ref="accountManagementViewFactory"/>
         <property name="viewPriority" value="30"/>
+    </object>
+
+    <object id="liveUpdateMediator" class="com.atricore.idbus.console.liveupdate.main.LiveUpdateMediator">
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
     </object>
 
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
@@ -643,21 +677,24 @@
         <property name="buildApplianceMediator" ref="buildApplianceMediator"/>
         <property name="deployApplianceMediator" ref="deployApplianceMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
-        <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator" />
-        <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator" />
-        <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator" />
+        <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator"/>
+        <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator"/>
+        <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator"/>
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
-        <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator" />
-        <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />
-        <property name="jbossPortalExecutionEnvironmentCreateMediator" ref="jbossPortalExecutionEnvironmentCreateMediator" />
-        <property name="liferayPortalExecutionEnvironmentCreateMediator" ref="liferayPortalExecutionEnvironmentCreateMediator" />
-        <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
-        <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
-        <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
-        <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator" />
-        <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator" />
-        <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator" />
-        <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator" />        
+        <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator"/>
+        <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator"/>
+        <property name="jbossPortalExecutionEnvironmentCreateMediator"
+                  ref="jbossPortalExecutionEnvironmentCreateMediator"/>
+        <property name="liferayPortalExecutionEnvironmentCreateMediator"
+                  ref="liferayPortalExecutionEnvironmentCreateMediator"/>
+        <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator"/>
+        <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator"/>
+        <property name="windowsIISExecutionEnvironmentCreateMediator"
+                  ref="windowsIISExecutionEnvironmentCreateMediator"/>
+        <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator"/>
+        <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator"/>
+        <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator"/>
+        <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator"/>
         <property name="activationCreateMediator" ref="activationCreateMediator"/>
         <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
         <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
@@ -665,7 +702,8 @@
         <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
     </object>
 
-    <object id="accountManagementPopUpManager" class="com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager">
+    <object id="accountManagementPopUpManager"
+            class="com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager">
         <property name="groupsMediator" ref="groupsMediator"/>
         <property name="addGroupMediator" ref="addGroupMediator"/>
         <property name="editGroupMediator" ref="editGroupMediator"/>

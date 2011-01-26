@@ -35,6 +35,7 @@ import com.atricore.idbus.console.main.model.KeystoreProxy;
 import com.atricore.idbus.console.main.model.ProfileProxy;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
+import com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
 import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator;
@@ -76,6 +77,7 @@ public class ApplicationMediator extends IocMediator {
     private var _keystoreProxy:KeystoreProxy;
     private var _profileProxy:ProfileProxy;
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _liveUpdateProxy:LiveUpdateProxy;
 
     private var _popupManager:ConsolePopUpManager;
 
@@ -110,7 +112,6 @@ public class ApplicationMediator extends IocMediator {
 
     public function get secureContextProxy():SecureContextProxy {
         return _secureContextProxy;
-
     }
 
     public function get projectProxy():ProjectProxy {
@@ -143,6 +144,14 @@ public class ApplicationMediator extends IocMediator {
 
     public function set accountManagementProxy(value:AccountManagementProxy):void {
         _accountManagementProxy = value;
+    }
+
+    public function get liveUpdateProxy():LiveUpdateProxy {
+        return _liveUpdateProxy;
+    }
+
+    public function set liveUpdateProxy(value:LiveUpdateProxy):void {
+        _liveUpdateProxy = value;
     }
 
     public function get userActionMenuBar():MenuBar {
@@ -227,6 +236,7 @@ public class ApplicationMediator extends IocMediator {
             ApplicationFacade.DISPLAY_APPLIANCE_MODELER,
             ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE,
             ApplicationFacade.DISPLAY_APPLIANCE_ACCOUNT,
+            ApplicationFacade.DISPLAY_LIVE_UPDATE,
             ApplicationFacade.DISPLAY_CHANGE_PASSWORD,
             ProcessingMediator.START,
             ProcessingMediator.STOP
