@@ -1,9 +1,9 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.notifications;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 
 import java.util.Collection;
-import java.util.Properties;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -12,10 +12,9 @@ public interface NotificationHandler {
 
     boolean canHandle(NotificationScheme scheme);
 
-    void notify(UpdateDescriptorType update, NotificationScheme scheme);
+    void notify(Collection<UpdateDescriptorType> updates, NotificationScheme scheme) throws LiveUpdateException;
 
-    Properties marshall(NotificationScheme scheme);
+    void saveNotificationScheme(NotificationScheme scheme) throws LiveUpdateException;
 
-    NotificationScheme unmarshall(Properties props);
-
+    void removeNotificationScheme(NotificationScheme scheme) throws LiveUpdateException;
 }

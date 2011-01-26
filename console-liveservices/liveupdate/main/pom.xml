@@ -158,6 +158,18 @@
             <scope>provided</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>com.springsource.org.apache.velocity</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.javax.mail</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
@@ -203,6 +215,16 @@
 
     <build>
 
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/filtered-resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>

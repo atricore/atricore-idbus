@@ -117,6 +117,7 @@
         <xalan.version>2.7.1</xalan.version>
         <xercesImpl.version>2.9.1</xercesImpl.version>
         <xmlsec.version>1.4.3_2</xmlsec.version>
+        <javax.mail.version>1.4.1_2</javax.mail.version>
 
         <!-- Other props -->
         <compiler.fork>false</compiler.fork>
@@ -956,6 +957,12 @@
                 <version>${camel.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.javax.mail</artifactId>
+                <version>${javax.mail.version}</version>
+            </dependency>
+            
         </dependencies>
     </dependencyManagement>
 

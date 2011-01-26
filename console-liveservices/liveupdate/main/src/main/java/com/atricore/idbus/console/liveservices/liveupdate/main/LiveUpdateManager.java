@@ -76,9 +76,9 @@ public interface LiveUpdateManager {
     void cleanAllRepositories() throws LiveUpdateException;
 
     /**
-     * Add new notification scheme
+     * Add or update notification scheme
      */
-    void addNotificationScheme(NotificationScheme scheme) throws LiveUpdateException;
+    void saveNotificationScheme(NotificationScheme scheme) throws LiveUpdateException;
 
     /**
      * Remove notification scheme
@@ -86,12 +86,12 @@ public interface LiveUpdateManager {
     void removeNotificationScheme(NotificationScheme scheme) throws LiveUpdateException;
 
     /**
-     * List notification  scheme
+     * List notification schemes
      */
     Collection<NotificationScheme> listNotificationSchemes() throws LiveUpdateException;
 
     /**
-     * List notification  scheme
+     * Get notification scheme with the given name
      */
     NotificationScheme getNotificationScheme(String name) throws LiveUpdateException;
 
