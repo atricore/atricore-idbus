@@ -30,6 +30,7 @@ public class EMailNotificationHandler implements NotificationHandler {
     public void notify(Collection<UpdateDescriptorType> updates, NotificationScheme scheme) throws LiveUpdateException {
         EMailNotificationScheme emailScheme = (EMailNotificationScheme) scheme;
         List<UpdateDescriptorType> newUpdates = new ArrayList<UpdateDescriptorType>();
+        List<String> newUpdatesIDs = new ArrayList<String>();
 
         // find new updates (check for threshold and processed updates)
         String[] processedUpdates = store.getProcessedUpdates(scheme.getName());
@@ -37,6 +38,7 @@ public class EMailNotificationHandler implements NotificationHandler {
             if (update.getInstallableUnit().getUpdateNature().toString().equals(scheme.getThreshold()) &&
                     !ArrayUtils.contains(processedUpdates, update.getID())) {
                 newUpdates.add(update);
+                newUpdatesIDs.add(update.getID());
             }
         }
 
@@ -53,6 +55,8 @@ public class EMailNotificationHandler implements NotificationHandler {
         for (String recipient : emailScheme.getAddresses()) {
             mailer.sendTemplateHTMLEmail(sender, recipient, subject, template, model);
         }
+
+        store.addProcessedUpdates(scheme.getName(), newUpdatesIDs.toArray(new String[]{}));
     }
 
     public void saveNotificationScheme(NotificationScheme scheme) throws LiveUpdateException {
