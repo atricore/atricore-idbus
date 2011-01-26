@@ -44,7 +44,9 @@ import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class BrowserMediator extends IocMediator implements IDisposable {
-    private var _applianceRootNode;
+
+    private var _applianceRootNode:BrowserNode;
+
     private var _identityAppliance:IdentityAppliance;
     private var _projectProxy:ProjectProxy;
 
@@ -151,8 +153,8 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                                 providerNode.addChild(connectionsNode);
                                 connectionsNodeAdded = true;
                             }
-                            for each (var fedConn:FederatedConnection in locProv.federatedConnectionsA) {
-                                connectionsNode.addChild(BrowserModelFactory.createConnectionNode(fedConn, true, connectionsNode));
+                            for each (var fedConnA:FederatedConnection in locProv.federatedConnectionsA) {
+                                connectionsNode.addChild(BrowserModelFactory.createConnectionNode(fedConnA, true, connectionsNode));
                             }
                         }
                         if (locProv.federatedConnectionsB != null && locProv.federatedConnectionsB.length > 0) {
@@ -161,8 +163,8 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                                 providerNode.addChild(connectionsNode);
                                 connectionsNodeAdded = true;
                             }
-                            for each (var fedConn:FederatedConnection in locProv.federatedConnectionsB) {
-                                connectionsNode.addChild(BrowserModelFactory.createConnectionNode(fedConn, true, connectionsNode));
+                            for each (var fedConnB:FederatedConnection in locProv.federatedConnectionsB) {
+                                connectionsNode.addChild(BrowserModelFactory.createConnectionNode(fedConnB, true, connectionsNode));
                             }
                         }
                         // add identity source to provider node and identity lookup to connections node
@@ -173,18 +175,18 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                                 connectionsNodeAdded = true;
                             }
                             var idSource:IdentitySource = locProv.identityLookup.identitySource;
-                            var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(idSource, true, providerNode);
-                            providerNode.addChild(identityVaultNode);
+                            var newIdentityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(idSource, true, providerNode);
+                            providerNode.addChild(newIdentityVaultNode);
                             // add identityLookup to connections node
                             var identityLookupNode:BrowserNode = BrowserModelFactory.createConnectionNode(locProv.identityLookup, true, connectionsNode);
                             connectionsNode.addChild(identityLookupNode);
                             // add identityLookup to idSourceConnections map
-                            var connections:ArrayCollection = idSourceConnections[idSource];
-                            if (connections == null) {
-                                connections = new ArrayCollection();
+                            var idLookupConnections:ArrayCollection = idSourceConnections[idSource];
+                            if (idLookupConnections == null) {
+                                idLookupConnections = new ArrayCollection();
                             }
-                            connections.addItem(locProv.identityLookup);
-                            idSourceConnections[idSource] = connections;
+                            idLookupConnections.addItem(locProv.identityLookup);
+                            idSourceConnections[idSource] = idLookupConnections;
                         }
                         // add execution environment to provider node and activation to connections node
                         if (locProv is ServiceProvider) {
@@ -196,18 +198,18 @@ public class BrowserMediator extends IocMediator implements IDisposable {
                                     connectionsNodeAdded = true;
                                 }
                                 // add execution environment to provider node
-                                var executionNode:BrowserNode = BrowserModelFactory.createExecutionEnvironmentNode(sp.activation.executionEnv, true, providerNode);
-                                providerNode.addChild(executionNode);
+                                var executionNode1:BrowserNode = BrowserModelFactory.createExecutionEnvironmentNode(sp.activation.executionEnv, true, providerNode);
+                                providerNode.addChild(executionNode1);
                                 // add activation to connections node
                                 var activationNode:BrowserNode = BrowserModelFactory.createConnectionNode(sp.activation, true, connectionsNode);
                                 connectionsNode.addChild(activationNode);
                                 // add activation to execEnvConnections map
-                                var connections:ArrayCollection = idSourceConnections[sp.activation.executionEnv];
-                                if (connections == null) {
-                                    connections = new ArrayCollection();
+                                var activationConnections:ArrayCollection = idSourceConnections[sp.activation.executionEnv];
+                                if (activationConnections == null) {
+                                    activationConnections = new ArrayCollection();
                                 }
-                                connections.addItem(sp.activation);
-                                execEnvConnections[sp.activation.executionEnv] = connections;
+                                activationConnections.addItem(sp.activation);
+                                execEnvConnections[sp.activation.executionEnv] = activationConnections;
                             }
                         }
                     }
@@ -217,31 +219,31 @@ public class BrowserMediator extends IocMediator implements IDisposable {
 
             if (identityApplianceDefinition.identitySources != null) {
                 for (i = 0; i < identityApplianceDefinition.identitySources.length; i++) {
-                    var identityVaultNode:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identitySources[i], true, _applianceRootNode);
-                    _applianceRootNode.addChild(identityVaultNode);
+                    var identityVaultNode1:BrowserNode = BrowserModelFactory.createIdentityVaultNode(identityApplianceDefinition.identitySources[i], true, _applianceRootNode);
+                    _applianceRootNode.addChild(identityVaultNode1);
                     // set connections
-                    var connections:ArrayCollection = idSourceConnections[identityApplianceDefinition.identitySources[i]];
-                    if (connections != null && connections.length > 0) {
-                        var identitySourceConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false, identityVaultNode);
-                        for each (var connection:Connection in connections) {
-                            identitySourceConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(connection, true, identitySourceConnectionsNode));
+                    var connections1:ArrayCollection = idSourceConnections[identityApplianceDefinition.identitySources[i]];
+                    if (connections1 != null && connections1.length > 0) {
+                        var identitySourceConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false, identityVaultNode1);
+                        for each (var connection1:Connection in connections1) {
+                            identitySourceConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(connection1, true, identitySourceConnectionsNode));
                         }
-                        identityVaultNode.addChild(identitySourceConnectionsNode);
+                        identityVaultNode1.addChild(identitySourceConnectionsNode);
                     }
                 }
             }
             if (identityApplianceDefinition.executionEnvironments != null) {
                 for (var j:int = 0; j < identityApplianceDefinition.executionEnvironments.length; j++) {
-                    var executionNode:BrowserNode = BrowserModelFactory.createExecutionEnvironmentNode(identityApplianceDefinition.executionEnvironments[j], true, _applianceRootNode);
-                    _applianceRootNode.addChild(executionNode);
+                    var executionNode2:BrowserNode = BrowserModelFactory.createExecutionEnvironmentNode(identityApplianceDefinition.executionEnvironments[j], true, _applianceRootNode);
+                    _applianceRootNode.addChild(executionNode2);
                     // set connections
-                    var connections:ArrayCollection = execEnvConnections[identityApplianceDefinition.executionEnvironments[j]];
-                    if (connections != null && connections.length > 0) {
-                        var execEnvConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false,executionNode );
-                        for each (var connection:Connection in connections) {
-                            execEnvConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(connection, true, execEnvConnectionsNode));
+                    var connections2:ArrayCollection = execEnvConnections[identityApplianceDefinition.executionEnvironments[j]];
+                    if (connections2 != null && connections2.length > 0) {
+                        var execEnvConnectionsNode:BrowserNode = BrowserModelFactory.createConnectionsNode(false,executionNode2 );
+                        for each (var connection2:Connection in connections2) {
+                            execEnvConnectionsNode.addChild(BrowserModelFactory.createConnectionNode(connection2, true, execEnvConnectionsNode));
                         }
-                        executionNode.addChild(execEnvConnectionsNode);
+                        executionNode2.addChild(execEnvConnectionsNode);
                     }
                 }
             }
@@ -268,7 +270,7 @@ public class BrowserMediator extends IocMediator implements IDisposable {
         }
     }
 
-    private function updateNodeData(currentNode:BrowserNode, nodeName:String, newData:Object) {
+    private function updateNodeData(currentNode:BrowserNode, nodeName:String, newData:Object):void {
         if (currentNode.label == nodeName && currentNode.data != null) {
             currentNode.label = newData.name;
             currentNode.data = newData;

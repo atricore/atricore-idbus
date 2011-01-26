@@ -24,6 +24,8 @@ import com.atricore.idbus.console.account.groups.GroupsView;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
 import com.atricore.idbus.console.account.users.UsersView;
+import com.atricore.idbus.console.base.app.BaseAppFacade;
+import com.atricore.idbus.console.base.extensions.appsection.AppSectionMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 
 import flash.events.Event;
@@ -35,12 +37,11 @@ import mx.resources.ResourceManager;
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
-import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 import spark.components.Group;
 import spark.events.IndexChangeEvent;
 
-public class AccountManagementMediator extends IocMediator implements IDisposable{
+public class AccountManagementMediator extends AppSectionMediator implements IDisposable{
 
     public static const BUNDLE:String = "console";
     private var resMan:IResourceManager = ResourceManager.getInstance();
@@ -147,8 +148,11 @@ public class AccountManagementMediator extends IocMediator implements IDisposabl
         //      - Stop timers
         //      - Set references to null
 
-        view.accountManagementTabBar.removeEventListener(IndexChangeEvent.CHANGE, stackChanged);
-        view = null;
+        if (_created) {
+            _created = false;
+            view.accountManagementTabBar.removeEventListener(IndexChangeEvent.CHANGE, stackChanged);
+            view = null;
+        }
     }
 
     private function stackChanged(event:IndexChangeEvent):void {
@@ -156,14 +160,31 @@ public class AccountManagementMediator extends IocMediator implements IDisposabl
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.ACCOUNT_VIEW_SELECTED
+        return [BaseAppFacade.APP_SECTION_CHANGE_START,
+            BaseAppFacade.APP_SECTION_CHANGE_END,
+            ApplicationFacade.LOGOUT
         ];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.ACCOUNT_VIEW_SELECTED:
-                init();
+            case BaseAppFacade.APP_SECTION_CHANGE_START:
+                var currentView:String = notification.getBody() as String;
+                if (currentView == viewName) {
+                    sendNotification(BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED);
+                }
+                break;
+            case BaseAppFacade.APP_SECTION_CHANGE_END:
+                var newView:String = notification.getBody() as String;
+                if (newView == viewName) {
+                    init();
+                }
+                break;
+            case ApplicationFacade.LOGOUT:
+                this.dispose();
+                break;
+            default:
+                super.handleNotification(notification);
                 break;
         }
     }

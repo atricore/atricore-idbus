@@ -33,72 +33,25 @@
         <property name="loginCommand" ref="loginCommand"/>
         <property name="changePasswordCommand" ref="changePasswordCommand"/>
         <property name="notFirstRunCommand" ref="notFirstRunCommand"/>
-        <property name="uploadCommand" ref="uploadCommand"/>
+        <!--property name="uploadCommand" ref="uploadCommand"/>
         <property name="setupServerCommand" ref="setupServerCommand"/>
-        <property name="registerCommand" ref="registerCommand"/>
-        <property name="identityApplianceUpdateCommand" ref="identityApplianceUpdateCommand"/>
-        <property name="identityVaultRemoveCommand" ref="identityVaultRemoveCommand"/>
-        <property name="executionEnvironmentRemoveCommand" ref="executionEnvironmentRemoveCommand"/>
-        <property name="createSimpleSSOIdentityApplianceCommand" ref="createSimpleSSOIdentityApplianceCommand"/>
-        <property name="identityApplianceListLoadCommand" ref="identityApplianceListLoadCommand"/>
-        <property name="identityApplianceRemoveCommand" ref="identityApplianceRemoveCommand"/>
-        <property name="serviceProviderRemoveCommand" ref="serviceProviderRemoveCommand"/>
-        <property name="externalServiceProviderRemoveCommand" ref="externalServiceProviderRemoveCommand"/>
-        <property name="deployIdentityApplianceCommand" ref="deployIdentityApplianceCommand"/>
-        <property name="undeployIdentityApplianceCommand" ref="undeployIdentityApplianceCommand"/>
-        <property name="startIdentityApplianceCommand" ref="startIdentityApplianceCommand"/>
-        <property name="stopIdentityApplianceCommand" ref="stopIdentityApplianceCommand"/>
-        <property name="disposeIdentityApplianceCommand" ref="disposeIdentityApplianceCommand"/>
-        <property name="identityApplianceCreateCommand" ref="identityApplianceCreateCommand"/>
-        <property name="identityApplianceImportCommand" ref="identityApplianceImportCommand"/>
-        <!--<property name="spChannelRemoveCommand" ref="spChannelRemoveCommand"/>-->
-        <!--<property name="idpChannelRemoveCommand" ref="idpChannelRemoveCommand"/>-->
-        <property name="identityProviderRemoveCommand" ref="identityProviderRemoveCommand"/>
-        <property name="externalIdentityProviderRemoveCommand" ref="externalIdentityProviderRemoveCommand"/>
-        <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
-        <property name="identityLookupRemoveCommand" ref="identityLookupRemoveCommand"/>
-        <property name="federatedConnectionRemoveCommand" ref="federatedConnectionRemoveCommand"/>
-        <property name="createSimpleSSOSetupCommand" ref="createSimpleSSOSetupCommand"/>
-        <property name="buildIdentityApplianceCommand" ref="buildIdentityApplianceCommand"/>
-        <property name="lookupIdentityApplianceByIdCommand" ref="lookupIdentityApplianceByIdCommand"/>
-        <property name="addGroupCommand" ref="addGroupCommand"/>
-        <property name="addUserCommand" ref="addUserCommand"/>
-        <property name="deleteGroupCommand" ref="deleteGroupCommand"/>
-        <property name="deleteUserCommand" ref="deleteUserCommand"/>
-        <property name="editGroupCommand" ref="editGroupCommand"/>
-        <property name="editUserCommand" ref="editUserCommand"/>
-        <property name="listGroupsCommand" ref="listGroupsCommand"/>
-        <property name="listUsersCommand" ref="listUsersCommand"/>
-        <property name="searchGroupsCommand" ref="searchGroupsCommand"/>
-        <property name="searchUsersCommand" ref="searchUsersCommand"/>
-        <property name="createIdentityLookupCommand" ref="createIdentityLookupCommand"/>
-        <property name="activateExecEnvironmentCommand" ref="activateExecEnvironmentCommand"/>
-        <property name="folderExistsCommand" ref="folderExistsCommand"/>
-        <property name="foldersExistsCommand" ref="foldersExistsCommand"/>
-        <property name="jdbcDriversListCommand" ref="jdbcDriversListCommand"/>
-        <property name="getMetadataInfoCommand" ref="getMetadataInfoCommand"/>
-        <property name="getCertificateInfoCommand" ref="getCertificateInfoCommand"/>
-        <property name="exportProviderCertificateCommand" ref="exportProviderCertificateCommand"/>
-        <property name="exportIdentityApplianceCommand" ref="exportIdentityApplianceCommand"/>
-        <property name="exportMetadataCommand" ref="exportMetadataCommand"/>
-        <property name="listUpdatesCommand" ref="listUpdatesCommand"/>
-        <property name="checkForUpdatesCommand" ref="checkForUpdatesCommand"/>
-        <property name="applyUpdateCommand" ref="applyUpdateCommand"/>
-        <property name="getUpdateProfileCommand" ref="getUpdateProfileCommand"/>
+        <property name="registerCommand" ref="registerCommand"/-->
 
 
         <!-- Mediators wiring -->
         <property name="applicationMediator" ref="applicationMediator"/>
-        <property name="modelerMediator" ref="modelerMediator"/>
-        <property name="manageCertificateMediator" ref="manageCertificateMediator"/>
-        <property name="uploadProgressMediator" ref="uploadProgressMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
         <property name="loginMediator" ref="loginMediator"/>
         <property name="changePasswordMediator" ref="changePasswordMediator"/>
-        <property name="setupWizardViewMediator" ref="setupWizardViewMediator"/>
-        <property name="lifecycleViewMediator" ref="lifecycleViewMediator"/>
-        <property name="buildApplianceMediator" ref="buildApplianceMediator"/>
-        <property name="deployApplianceMediator" ref="deployApplianceMediator"/>
+        <!--property name="setupWizardViewMediator" ref="setupWizardViewMediator"/>
+        <property name="uploadProgressMediator" ref="uploadProgressMediator"/-->
+    </object>
+
+    <object id="modelerStartupCommand"
+            class="com.atricore.idbus.console.modeling.main.controller.ModelerStartUpCommand">
+        <property name="appSectionMediator" ref="modelerMediator"/>
+
+        <!-- Mediators -->
         <property name="simpleSSOWizardViewMediator" ref="simpleSSOWizardViewMediator"/>
         <property name="identityApplianceWizardMediator" ref="identityApplianceWizardMediator"/>
         <property name="propertySheetMediator" ref="propertySheetMediator"/>
@@ -112,27 +65,74 @@
         <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator"/>
         <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator"/>
         <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
-        <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator"/>
-        <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator"/>
-        <property name="jbossPortalExecutionEnvironmentCreateMediator"
-                  ref="jbossPortalExecutionEnvironmentCreateMediator"/>
-        <property name="liferayPortalExecutionEnvironmentCreateMediator"
-                  ref="liferayPortalExecutionEnvironmentCreateMediator"/>
-        <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator"/>
-        <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator"/>
-        <property name="windowsIISExecutionEnvironmentCreateMediator"
-                  ref="windowsIISExecutionEnvironmentCreateMediator"/>
-        <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator"/>
-        <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator"/>
-        <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator"/>
-        <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator"/>
-        <!--<property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>-->
-        <!--<property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>-->
+        <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator" />
+        <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />
+        <property name="jbossPortalExecutionEnvironmentCreateMediator" ref="jbossPortalExecutionEnvironmentCreateMediator" />
+        <property name="liferayPortalExecutionEnvironmentCreateMediator" ref="liferayPortalExecutionEnvironmentCreateMediator" />
+        <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
+        <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
+        <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
+        <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator" />
+        <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator" />
+        <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator" />
+        <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator" />
         <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>
         <property name="externalServiceProviderCreateMediator" ref="externalServiceProviderCreateMediator"/>
         <property name="browserMediator" ref="browserMediator"/>
         <property name="paletteMediator" ref="paletteMediator"/>
-        <property name="accountManagementMediator" ref="accountManagementMediator"/>
+        <property name="activationCreateMediator" ref="activationCreateMediator"/>
+        <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
+        <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
+        <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
+        <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
+
+        <!-- Commands -->
+        <property name="identityApplianceUpdateCommand" ref="identityApplianceUpdateCommand"/>
+        <property name="identityVaultRemoveCommand" ref="identityVaultRemoveCommand"/>
+        <property name="executionEnvironmentRemoveCommand" ref="executionEnvironmentRemoveCommand"/>
+        <property name="createSimpleSSOIdentityApplianceCommand" ref="createSimpleSSOIdentityApplianceCommand"/>
+        <property name="identityApplianceListLoadCommand" ref="identityApplianceListLoadCommand"/>
+        <property name="identityApplianceRemoveCommand" ref="identityApplianceRemoveCommand"/>
+        <property name="serviceProviderRemoveCommand" ref="serviceProviderRemoveCommand"/>
+        <property name="externalServiceProviderRemoveCommand" ref="externalServiceProviderRemoveCommand"/>
+        <property name="identityApplianceCreateCommand" ref="identityApplianceCreateCommand"/>
+        <property name="identityApplianceImportCommand" ref="identityApplianceImportCommand"/>
+        <property name="identityProviderRemoveCommand" ref="identityProviderRemoveCommand"/>
+        <property name="externalIdentityProviderRemoveCommand" ref="externalIdentityProviderRemoveCommand"/>
+        <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
+        <property name="identityLookupRemoveCommand" ref="identityLookupRemoveCommand"/>
+        <property name="federatedConnectionRemoveCommand" ref="federatedConnectionRemoveCommand"/>
+        <property name="lookupIdentityApplianceByIdCommand" ref="lookupIdentityApplianceByIdCommand"/>
+        <property name="createIdentityLookupCommand" ref="createIdentityLookupCommand" />
+        <property name="activateExecEnvironmentCommand" ref="activateExecEnvironmentCommand" />
+        <property name="folderExistsCommand" ref="folderExistsCommand" />
+        <property name="foldersExistsCommand" ref="foldersExistsCommand" />
+        <property name="jdbcDriversListCommand" ref="jdbcDriversListCommand"/>
+        <property name="getMetadataInfoCommand" ref="getMetadataInfoCommand"/>
+        <property name="getCertificateInfoCommand" ref="getCertificateInfoCommand"/>
+        <property name="exportProviderCertificateCommand" ref="exportProviderCertificateCommand"/>
+        <property name="exportIdentityApplianceCommand" ref="exportIdentityApplianceCommand"/>
+        <property name="exportMetadataCommand" ref="exportMetadataCommand"/>
+    </object>
+
+    <object id="lifecycleStartupCommand"
+            class="com.atricore.idbus.console.lifecycle.main.controller.LifecycleStartUpCommand">
+        <property name="appSectionMediator" ref="lifecycleMediator"/>
+
+        <!-- Commands -->
+        <property name="buildIdentityApplianceCommand" ref="buildIdentityApplianceCommand"/>
+        <property name="deployIdentityApplianceCommand" ref="deployIdentityApplianceCommand"/>
+        <property name="undeployIdentityApplianceCommand" ref="undeployIdentityApplianceCommand"/>
+        <property name="startIdentityApplianceCommand" ref="startIdentityApplianceCommand"/>
+        <property name="stopIdentityApplianceCommand" ref="stopIdentityApplianceCommand"/>
+        <property name="disposeIdentityApplianceCommand" ref="disposeIdentityApplianceCommand"/>
+    </object>
+
+    <object id="accountManagementStartupCommand"
+            class="com.atricore.idbus.console.account.main.controller.AccountManagementStartUpCommand">
+        <property name="appSectionMediator" ref="accountManagementMediator"/>
+
+        <!-- Mediators -->
         <property name="groupsMediator" ref="groupsMediator"/>
         <property name="groupPropertiesMediator" ref="groupPropertiesMediator"/>
         <property name="addGroupMediator" ref="addGroupMediator"/>
@@ -143,19 +143,19 @@
         <property name="addUserMediator" ref="addUserMediator"/>
         <property name="editUserMediator" ref="editUserMediator"/>
         <property name="searchUsersMediator" ref="searchUsersMediator"/>
-        <property name="activationCreateMediator" ref="activationCreateMediator"/>
-        <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
-        <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
-        <property name="exportProviderCertificateMediator" ref="exportProviderCertificateMediator"/>
-        <property name="exportMetadataMediator" ref="exportMetadataMediator"/>
-        <property name="liveUpdateMediator" ref="liveUpdateMediator"/>
-        <property name="updateNotificationMediator" ref="updateNotificationMediator"/>
 
+        <!-- Commands -->
+        <property name="addGroupCommand" ref="addGroupCommand"/>
+        <property name="addUserCommand" ref="addUserCommand"/>
+        <property name="deleteGroupCommand" ref="deleteGroupCommand"/>
+        <property name="deleteUserCommand" ref="deleteUserCommand"/>
+        <property name="editGroupCommand" ref="editGroupCommand"/>
+        <property name="editUserCommand" ref="editUserCommand"/>
+        <property name="listGroupsCommand" ref="listGroupsCommand"/>
+        <property name="listUsersCommand" ref="listUsersCommand"/>
+        <property name="searchGroupsCommand" ref="searchGroupsCommand"/>
+        <property name="searchUsersCommand" ref="searchUsersCommand"/>
     </object>
-
-    <object id="modelerStartupCommand"
-            class="com.atricore.idbus.console.modeling.main.controller.ModelerStartUpCommand"/>
-
 
     <!-- Commands -->
     <object id="loginCommand" class="com.atricore.idbus.console.main.controller.LoginCommand">
@@ -435,9 +435,6 @@
     <object id="setupWizardViewMediator" class="com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator">
         <property name="profileProxy" ref="profileProxy"/>
     </object>
-    <object id="lifecycleViewMediator" class="com.atricore.idbus.console.lifecycle.LifecycleViewMediator">
-        <property name="projectProxy" ref="projectProxy"/>
-    </object>
     <object id="buildApplianceMediator"
             class="com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator">
         <property name="projectProxy" ref="projectProxy"/>
@@ -623,10 +620,16 @@
         <property name="propertySheetMediator" ref="propertySheetMediator"/>
         <property name="popupManager" ref="modelerPopUpManager"/>
         <property name="projectProxy" ref="projectProxy"/>
+
+        <property name="viewFactory" ref="modelerViewFactory"/>
+        <property name="viewPriority" value="10"/>
     </object>
 
-    <object id="lifecycleViewMediator" class="com.atricore.idbus.console.lifecycle.LifecycleViewMediator">
+    <object id="lifecycleMediator" class="com.atricore.idbus.console.lifecycle.main.LifecycleMediator">
         <property name="projectProxy" ref="projectProxy"/>
+
+        <property name="viewFactory" ref="lifecycleViewFactory"/>
+        <property name="viewPriority" value="20"/>
     </object>
 
     <object id="accountManagementMediator" class="com.atricore.idbus.console.account.main.AccountManagementMediator">
@@ -634,6 +637,9 @@
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
         <property name="groupsMediator" ref="groupsMediator"/>
         <property name="usersMediator" ref="usersMediator"/>
+
+        <property name="viewFactory" ref="accountManagementViewFactory"/>
+        <property name="viewPriority" value="30"/>
     </object>
 
     <object id="liveUpdateMediator" class="com.atricore.idbus.console.liveupdate.main.LiveUpdateMediator">
@@ -656,19 +662,14 @@
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
         <property name="popupManager" ref="consolePopUpManager"/>
 
-        <property name="modelerMediator" ref="modelerMediator"/>
-        <property name="lifecycleViewMediator" ref="lifecycleViewMediator"/>
-        <property name="accountManagementMediator" ref="accountManagementMediator"/>
-        <property name="liveUpdateMediator" ref="liveUpdateMediator"/>
-        <property name="licenseMediator" ref="licenseMediator" />
-
         <property name="secureContextProxy" ref="secureContextProxy"/>
         <property name="projectProxy" ref="projectProxy"/>
         <property name="keystoreProxy" ref="keystoreProxy"/>
         <property name="profileProxy" ref="profileProxy"/>
-        <property name="secureContextProxy" ref="secureContextProxy"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
-        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+
+        <property name="brandingFactory" ref="brandingFactory"/>
+
     </object>
 
     <!-- support components -->
@@ -733,131 +734,9 @@
         <property name="processingMediator" ref="processingMediator"/>
     </object>
 
-    <object id="licensingPopUpManager" class="com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager">
-        <property name="updateLicenseMediator" ref="updateLicenseMediator" />
-    </object>
-
-    <object id="startupCommand" class="com.atricore.idbus.console.main.controller.ApplicationStartUpCommand">
-        <!-- Proxies wiring -->
-        <property name="serviceRegistry" ref="serviceRegistry"/>
-        <property name="projectProxy" ref="projectProxy"/>
-        <property name="keystoreProxy" ref="keystoreProxy"/>
-        <property name="profileProxy" ref="profileProxy"/>
-        <property name="secureContextProxy" ref="secureContextProxy"/>
-
-        <!-- Commands wiring -->
-        <property name="loginCommand" ref="loginCommand"/>
-        <property name="changePasswordCommand" ref="changePasswordCommand"/>
-        <property name="notFirstRunCommand" ref="notFirstRunCommand"/>
-        <property name="uploadCommand" ref="uploadCommand"/>
-        <property name="setupServerCommand" ref="setupServerCommand"/>
-        <property name="registerCommand" ref="registerCommand"/>
-        <property name="identityApplianceUpdateCommand" ref="identityApplianceUpdateCommand"/>
-        <property name="identityVaultRemoveCommand" ref="identityVaultRemoveCommand"/>
-        <property name="executionEnvironmentRemoveCommand" ref="executionEnvironmentRemoveCommand"/>
-        <property name="createSimpleSSOIdentityApplianceCommand" ref="createSimpleSSOIdentityApplianceCommand"/>
-        <property name="identityApplianceListLoadCommand" ref="identityApplianceListLoadCommand"/>
-        <property name="identityApplianceRemoveCommand" ref="identityApplianceRemoveCommand"/>
-        <property name="serviceProviderRemoveCommand" ref="serviceProviderRemoveCommand"/>
-        <property name="externalServiceProviderRemoveCommand" ref="externalServiceProviderRemoveCommand"/>
-        <property name="deployIdentityApplianceCommand" ref="deployIdentityApplianceCommand"/>
-        <property name="undeployIdentityApplianceCommand" ref="undeployIdentityApplianceCommand"/>
-        <property name="startIdentityApplianceCommand" ref="startIdentityApplianceCommand"/>
-        <property name="stopIdentityApplianceCommand" ref="stopIdentityApplianceCommand"/>
-        <property name="disposeIdentityApplianceCommand" ref="disposeIdentityApplianceCommand"/>
-        <property name="identityApplianceCreateCommand" ref="identityApplianceCreateCommand"/>
-        <property name="identityApplianceImportCommand" ref="identityApplianceImportCommand"/>
-        <!--<property name="spChannelRemoveCommand" ref="spChannelRemoveCommand"/>-->
-        <!--<property name="idpChannelRemoveCommand" ref="idpChannelRemoveCommand"/>-->
-        <property name="identityProviderRemoveCommand" ref="identityProviderRemoveCommand"/>
-        <property name="externalIdentityProviderRemoveCommand" ref="externalIdentityProviderRemoveCommand"/>
-        <property name="activationRemoveCommand" ref="activationRemoveCommand"/>
-        <property name="identityLookupRemoveCommand" ref="identityLookupRemoveCommand"/>
-        <property name="federatedConnectionRemoveCommand" ref="federatedConnectionRemoveCommand"/>
-        <property name="createSimpleSSOSetupCommand" ref="createSimpleSSOSetupCommand"/>
-        <property name="buildIdentityApplianceCommand" ref="buildIdentityApplianceCommand"/>
-        <property name="lookupIdentityApplianceByIdCommand" ref="lookupIdentityApplianceByIdCommand"/>
-        <property name="addGroupCommand" ref="addGroupCommand"/>
-        <property name="addUserCommand" ref="addUserCommand"/>
-        <property name="deleteGroupCommand" ref="deleteGroupCommand"/>
-        <property name="deleteUserCommand" ref="deleteUserCommand"/>
-        <property name="editGroupCommand" ref="editGroupCommand"/>
-        <property name="editUserCommand" ref="editUserCommand"/>
-        <property name="listGroupsCommand" ref="listGroupsCommand"/>
-        <property name="listUsersCommand" ref="listUsersCommand"/>
-        <property name="searchGroupsCommand" ref="searchGroupsCommand"/>
-        <property name="searchUsersCommand" ref="searchUsersCommand"/>
-        <property name="createIdentityLookupCommand" ref="createIdentityLookupCommand" />
-        <property name="activateExecEnvironmentCommand" ref="activateExecEnvironmentCommand" />
-        <property name="folderExistsCommand" ref="folderExistsCommand" />
-        <property name="foldersExistsCommand" ref="foldersExistsCommand" />
-        <property name="jdbcDriversListCommand" ref="jdbcDriversListCommand"/>
-        <property name="getMetadataInfoCommand" ref="getMetadataInfoCommand"/>
-        <property name="getCertificateInfoCommand" ref="getCertificateInfoCommand"/>
-        <property name="updateLicenseCommand" ref="updateLicenseCommand" />
-
-        <!-- Mediators wiring -->
-        <property name="applicationMediator" ref="applicationMediator"/>
-        <property name="modelerMediator" ref="modelerMediator"/>
-        <property name="manageCertificateMediator" ref="manageCertificateMediator"/>
-        <property name="uploadProgressMediator" ref="uploadProgressMediator"/>
-        <property name="processingMediator" ref="processingMediator"/>
-        <property name="loginMediator" ref="loginMediator"/>
-        <property name="changePasswordMediator" ref="changePasswordMediator"/>
-        <property name="setupWizardViewMediator" ref="setupWizardViewMediator"/>
-        <property name="lifecycleViewMediator" ref="lifecycleViewMediator"/>
-        <property name="buildApplianceMediator" ref="buildApplianceMediator"/>
-        <property name="deployApplianceMediator" ref="deployApplianceMediator"/>
-        <property name="simpleSSOWizardViewMediator" ref="simpleSSOWizardViewMediator"/>
-        <property name="identityApplianceWizardMediator" ref="identityApplianceWizardMediator"/>
-        <property name="propertySheetMediator" ref="propertySheetMediator"/>
-        <property name="diagramMediator" ref="diagramMediator"/>
-        <property name="identityProviderCreateMediator" ref="identityProviderCreateMediator"/>
-        <property name="externalIdentityProviderCreateMediator" ref="externalIdentityProviderCreateMediator"/>
-        <property name="identityVaultCreateMediator" ref="identityVaultCreateMediator" />
-        <property name="dbIdentitySourceCreateMediator" ref="dbIdentitySourceCreateMediator"/>
-        <property name="ldapIdentitySourceCreateMediator" ref="ldapIdentitySourceCreateMediator" />
-        <property name="xmlIdentitySourceCreateMediator" ref="xmlIdentitySourceCreateMediator" />
-        <property name="jbossExecutionEnvironmentCreateMediator" ref="jbossExecutionEnvironmentCreateMediator"/>
-        <property name="weblogicExecutionEnvironmentCreateMediator" ref="weblogicExecutionEnvironmentCreateMediator" />
-        <property name="tomcatExecutionEnvironmentCreateMediator" ref="tomcatExecutionEnvironmentCreateMediator" />
-        <property name="jbossPortalExecutionEnvironmentCreateMediator" ref="jbossPortalExecutionEnvironmentCreateMediator" />
-        <property name="liferayPortalExecutionEnvironmentCreateMediator" ref="liferayPortalExecutionEnvironmentCreateMediator" />
-        <property name="wasceExecutionEnvironmentCreateMediator" ref="wasceExecutionEnvironmentCreateMediator" />
-        <property name="apacheExecutionEnvironmentCreateMediator" ref="apacheExecutionEnvironmentCreateMediator" />
-        <property name="windowsIISExecutionEnvironmentCreateMediator" ref="windowsIISExecutionEnvironmentCreateMediator" />
-        <property name="alfrescoExecutionEnvironmentCreateMediator" ref="alfrescoExecutionEnvironmentCreateMediator" />
-        <property name="javaEEExecutionEnvironmentCreateMediator" ref="javaEEExecutionEnvironmentCreateMediator" />                        
-        <property name="phpBBExecutionEnvironmentCreateMediator" ref="phpBBExecutionEnvironmentCreateMediator" />
-        <property name="webserverExecutionEnvironmentCreateMediator" ref="webserverExecutionEnvironmentCreateMediator" />
-        <!--<property name="idpChannelCreateMediator" ref="idpChannelCreateMediator"/>-->
-        <!--<property name="spChannelCreateMediator" ref="spChannelCreateMediator"/>-->
-        <property name="serviceProviderCreateMediator" ref="serviceProviderCreateMediator"/>
-        <property name="externalServiceProviderCreateMediator" ref="externalServiceProviderCreateMediator"/>
-        <property name="browserMediator" ref="browserMediator"/>
-        <property name="paletteMediator" ref="paletteMediator"/>
-        <property name="accountManagementMediator" ref="accountManagementMediator"/>
-        <property name="liveUpdateMediator" ref="liveUpdateMediator"/>
-        <property name="licenseMediator" ref="licenseMediator" />
-        <property name="updateLicenseMediator" ref="updateLicenseMediator"/>
-        <property name="groupsMediator" ref="groupsMediator"/>
-        <property name="groupPropertiesMediator" ref="groupPropertiesMediator"/>
-        <property name="addGroupMediator" ref="addGroupMediator"/>
-        <property name="editGroupMediator" ref="editGroupMediator"/>
-        <property name="searchGroupsMediator" ref="searchGroupsMediator"/>
-        <property name="usersMediator" ref="usersMediator"/>
-        <property name="userPropertiesMediator" ref="userPropertiesMediator"/>
-        <property name="addUserMediator" ref="addUserMediator"/>
-        <property name="editUserMediator" ref="editUserMediator"/>
-        <property name="searchUsersMediator" ref="searchUsersMediator"/>
-        <property name="activationCreateMediator" ref="activationCreateMediator"/>
-        <property name="federatedConnectionCreateMediator" ref="federatedConnectionCreateMediator"/>
-        <property name="exportIdentityApplianceMediator" ref="exportIdentityApplianceMediator"/>
-    </object>
-
-    <object id="liveUpdatePopUpManager"
-            class="com.atricore.idbus.console.liveupdate.main.view.LiveUpdatePopUpManager">
-        <property name="updateNotificationMediator" ref="updateNotificationMediator"/>
-    </object>
+    <!-- App Section View Factories -->
+    <object id="modelerViewFactory" class="com.atricore.idbus.console.modeling.main.ModelerViewFactory"/>
+    <object id="lifecycleViewFactory" class="com.atricore.idbus.console.lifecycle.main.LifecycleViewFactory"/>
+    <object id="accountManagementViewFactory" class="com.atricore.idbus.console.account.main.AccountManagementViewFactory"/>
 
 </objects>

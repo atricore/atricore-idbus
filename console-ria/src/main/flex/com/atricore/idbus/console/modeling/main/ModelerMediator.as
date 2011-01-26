@@ -20,6 +20,8 @@
  */
 
 package com.atricore.idbus.console.modeling.main {
+import com.atricore.idbus.console.base.app.BaseAppFacade;
+import com.atricore.idbus.console.base.extensions.appsection.AppSectionMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
@@ -63,11 +65,10 @@ import mx.events.FlexEvent;
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
-import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
-public class ModelerMediator extends IocMediator implements IDisposable {
+public class ModelerMediator extends AppSectionMediator implements IDisposable {
 
-    public static const viewName:String = "ModelerView";
+    //public static const viewName:String = "ModelerView";
 
     public static const BUNDLE:String = "console";
 
@@ -90,10 +91,9 @@ public class ModelerMediator extends IocMediator implements IDisposable {
     private var _paletteMediator:IIocMediator;
     private var _propertySheetMediator:IIocMediator;
 
-    private var _tempSelectedViewIndex:int;
+    private var _appSectionChangeInProgress:Boolean;
 
     private var _fileRef:FileReference;
-
 
     public function ModelerMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
@@ -159,9 +159,9 @@ public class ModelerMediator extends IocMediator implements IDisposable {
 
     private function creationCompleteHandler(event:Event):void {
         _created = true;
-        _tempSelectedViewIndex = -1;
+        _appSectionChangeInProgress = false;
 
-        event.target.removeEventListener(FlexEvent.CREATION_COMPLETE,creationCompleteHandler);
+        event.target.removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 
         /* Remove unused title in both modeler's and diagram's panel */
         view.titleDisplay.width = 0;
@@ -214,20 +214,24 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         view.btnImport.addEventListener(MouseEvent.CLICK, handleImportClick);
         view.btnExport.addEventListener(MouseEvent.CLICK, handleExportClick);
     }
+
     public function dispose():void {
         // Clean up:
         //      - Remove event listeners
         //      - Stop timers
         //      - Set references to null
 
-        _identityAppliance = null;
-        _tempSelectedViewIndex = -1;
+        if (_created) {
+            _created = false;
+            _identityAppliance = null;
+            _appSectionChangeInProgress = false;
 
-        view.btnSave.enabled = false;
-        view.btnExport.enabled = false;
-        view.appliances.selectedItem = null;
-        (browserMediator as BrowserMediator).dispose();
-        (diagramMediator as DiagramMediator).dispose();
+            view.btnSave.enabled = false;
+            view.btnExport.enabled = false;
+            view.appliances.selectedItem = null;
+            (browserMediator as BrowserMediator).dispose();
+            (diagramMediator as DiagramMediator).dispose();
+        }
     }
 
     private function handleNewClick(event:MouseEvent):void {
@@ -289,7 +293,9 @@ public class ModelerMediator extends IocMediator implements IDisposable {
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.MODELER_VIEW_SELECTED,
+        return [
+            BaseAppFacade.APP_SECTION_CHANGE_START,
+            BaseAppFacade.APP_SECTION_CHANGE_END,
             ApplicationFacade.UPDATE_IDENTITY_APPLIANCE,
             ApplicationFacade.REMOVE_IDENTITY_APPLIANCE_ELEMENT,
             ApplicationFacade.CREATE_IDENTITY_PROVIDER_ELEMENT,
@@ -352,9 +358,26 @@ public class ModelerMediator extends IocMediator implements IDisposable {
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.MODELER_VIEW_SELECTED:
-                projectProxy.currentView = viewName;
-                init();
+            case BaseAppFacade.APP_SECTION_CHANGE_START:
+                var currentView:String = notification.getBody() as String;
+                if (currentView == viewName) {
+                    // check for null because we try to open Modeler after login and the view might not be created yet
+                    if (view != null && view.btnSave != null && view.btnSave.enabled) {
+                        _appSectionChangeInProgress = true;
+                        sendNotification(ProcessingMediator.START, "Autosaving Identity Appliance...");
+                        sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
+                    } else {
+                        sendNotification(BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED);
+                    }
+                }
+                break;
+            case BaseAppFacade.APP_SECTION_CHANGE_END:
+                var newView:String = notification.getBody() as String;
+                if (newView == viewName) {
+                    projectProxy.currentView = viewName;
+                    init();
+                }
+                _appSectionChangeInProgress = false;
                 break;
             case ApplicationFacade.UPDATE_IDENTITY_APPLIANCE:
                 updateIdentityAppliance();
@@ -573,7 +596,7 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             case IdentityApplianceUpdateCommand.SUCCESS:
                 var silentUpdate:Boolean = notification.getBody() as Boolean;
                 if (!silentUpdate) {
-                    var reopenGraph = view.btnSave.enabled;
+                    var reopenGraph:Boolean = view.btnSave.enabled;
                     view.btnSave.enabled = false;
                     sendNotification(ApplicationFacade.APPLIANCE_SAVED);
                     sendNotification(ProcessingMediator.STOP);
@@ -581,9 +604,9 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                     //sendNotification(ApplicationFacade.UPDATE_DIAGRAM_ELEMENTS_DATA);
                     sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_LIST_LOAD);  //appliance name might be changed
                     sendNotification(ApplicationFacade.REFRESH_DIAGRAM);
-                    if (_tempSelectedViewIndex != -1) {
-                        sendNotification(ApplicationFacade.DISPLAY_VIEW, _tempSelectedViewIndex);
-                        _tempSelectedViewIndex = -1;
+                    if (_appSectionChangeInProgress) {
+                        sendNotification(BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED);
+                        _appSectionChangeInProgress = false;
                     }
                 } else {
                     // TODO: refactor this
@@ -597,9 +620,9 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                         "There was an error updating appliance.");
-                if (_tempSelectedViewIndex != -1) {
-                    sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
-                    _tempSelectedViewIndex = -1;
+                if (_appSectionChangeInProgress) {
+                    sendNotification(BaseAppFacade.APP_SECTION_CHANGE_REJECTED, viewName);
+                    _appSectionChangeInProgress = false;
                 }
                 break;
             case ApplicationFacade.APPLIANCE_VALIDATION_ERRORS:
@@ -616,19 +639,9 @@ public class ModelerMediator extends IocMediator implements IDisposable {
                     Alert.show(msg, "Validation Errors");
                 }
                 projectProxy.identityApplianceValidationErrors = null;
-                if (_tempSelectedViewIndex != -1) {
-                    sendNotification(ApplicationFacade.DISPLAY_APPLIANCE_MODELER);
-                    _tempSelectedViewIndex = -1;
-                }
-                break;
-            case ApplicationFacade.AUTOSAVE_IDENTITY_APPLIANCE:
-                var selectedIndex:int = notification.getBody() as int;
-                if (view.btnSave.enabled) {
-                    _tempSelectedViewIndex = selectedIndex;
-                    sendNotification(ProcessingMediator.START, "Autosaving Identity Appliance...");
-                    sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
-                } else {
-                    sendNotification(ApplicationFacade.DISPLAY_VIEW, selectedIndex);
+                if (_appSectionChangeInProgress) {
+                    sendNotification(BaseAppFacade.APP_SECTION_CHANGE_REJECTED, viewName);
+                    _appSectionChangeInProgress = false;
                 }
                 break;
             case JDBCDriversListCommand.FAILURE:
@@ -646,9 +659,14 @@ public class ModelerMediator extends IocMediator implements IDisposable {
             case ApplicationFacade.EXPORT_METADATA:
                 popupManager.showCreateExportMetadataWindow(notification);
                 break;
+            default:
+                // Let super mediator handle notifications.
+                super.handleNotification(notification);
+                break;
         }
 
     }
+
 
     private function updateIdentityAppliance():void {
         _identityAppliance = projectProxy.currentIdentityAppliance;
@@ -682,13 +700,11 @@ public class ModelerMediator extends IocMediator implements IDisposable {
         return (item as IdentityAppliance).idApplianceDefinition.name;
     }
 
-    protected function get view():ModelerView
-    {
+    protected function get view():ModelerView {
         return viewComponent as ModelerView;
     }
 
-    protected function set view(md:ModelerView):void
-    {
+    protected function set view(md:ModelerView):void {
         viewComponent = md;
     }
 }

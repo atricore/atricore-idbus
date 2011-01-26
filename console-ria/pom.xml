@@ -33,9 +33,10 @@
 
     <artifactId>console-ria</artifactId>
     <packaging>swf</packaging>
-    <name>Atricore Console :: Server Rich Internet Application (RIA)</name>
+    <name>Atricore Console :: Rich Internet Application (RIA) ${console.distribution.descr}</name>
 
     <build>
+
         <sourceDirectory>src/main/flex</sourceDirectory>
 
         <resources>
@@ -48,13 +49,19 @@
         </resources>
 
         <plugins>
-            <plugin> <!-- Flex (SWC and SWF) compilation -->
+
+            <plugin>
+
                 <groupId>org.sonatype.flexmojos</groupId>
                 <artifactId>flexmojos-maven-plugin</artifactId>
                 <configuration>
-                   <configFile>src/main/config/configurationClassesCompilerConfig.xml</configFile>                    
+                    <configFiles>
+                        <file>src/main/config/configurationClassesCompilerConfig.xml</file>
+                    </configFiles>
+                    <classifier>${console.distribution}</classifier>
                 </configuration>
             </plugin>
+
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -82,10 +89,8 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>console-config</artifactId>
-            <classifier>resources</classifier>
-            <type>zip</type>
-            <scope>provided</scope>
+            <artifactId>console-ria-base</artifactId>
+            <type>swc</type>
         </dependency>
 
         <dependency>
@@ -93,6 +98,26 @@
             <artifactId>console-lib</artifactId>
             <type>swc</type>
         </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>console-config</artifactId>
+            <classifier>resources-${console.distribution}</classifier>
+            <type>zip</type>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>console-ce-branding</artifactId>
+            <type>swc</type>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>console-ee-branding</artifactId>
+            <type>swc</type>
+        </dependency>
+
 
         <dependency>
             <groupId>com.adobe.flex.framework</groupId>

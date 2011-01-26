@@ -1,5 +1,6 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main;
 
+import com.atricore.idbus.console.liveservices.liveupdate.main.notifications.NotificationScheme;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
@@ -73,5 +74,25 @@ public interface LiveUpdateManager {
      * Clear all repositories local information
      */
     void cleanAllRepositories() throws LiveUpdateException;
+
+    /**
+     * Add or update notification scheme
+     */
+    void saveNotificationScheme(NotificationScheme scheme) throws LiveUpdateException;
+
+    /**
+     * Remove notification scheme
+     */
+    void removeNotificationScheme(NotificationScheme scheme) throws LiveUpdateException;
+
+    /**
+     * List notification schemes
+     */
+    Collection<NotificationScheme> listNotificationSchemes() throws LiveUpdateException;
+
+    /**
+     * Get notification scheme with the given name
+     */
+    NotificationScheme getNotificationScheme(String name) throws LiveUpdateException;
 
 }

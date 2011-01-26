@@ -24,6 +24,7 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
+import com.atricore.idbus.console.modeling.main.ModelerViewFactory;
 import com.atricore.idbus.console.modeling.main.ModelerMediator;
 import com.atricore.idbus.console.modeling.main.controller.DeployIdentityApplianceCommand;
 
@@ -82,10 +83,11 @@ public class DeployApplianceMediator extends IocFormMediator
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case DeployIdentityApplianceCommand.SUCCESS:
-                if (projectProxy.currentView == ModelerMediator.viewName) {
+                if (projectProxy.currentView == ModelerViewFactory.VIEW_NAME) {
                     projectProxy.currentIdentityAppliance = projectProxy.commandResultIdentityAppliance;
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
+                    // TODO : Use resources bundle!
                     var msg:String = "Appliance has been successfully deployed.";
                     if (view.startAppliance.selected) {
                         msg = "Appliance has been successfully deployed and started.";
@@ -94,8 +96,9 @@ public class DeployApplianceMediator extends IocFormMediator
                 }
                 break;
             case DeployIdentityApplianceCommand.FAILURE:
-                if (projectProxy.currentView == ModelerMediator.viewName) {
+                if (projectProxy.currentView == ModelerViewFactory.VIEW_NAME) {
                     sendNotification(ProcessingMediator.STOP);
+                    // TODO : Use resources bundle!
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
                             "There was an error deploying appliance.");
                 }

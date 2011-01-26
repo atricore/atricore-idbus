@@ -36,13 +36,13 @@ public class DiagramUtil {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
             if (node1.data is ServiceProvider && node2.data is ExecutionEnvironment){
-                var sp:ServiceProvider = node1.data as ServiceProvider;
-                if(sp.activation == null){
+                var sp1:ServiceProvider = node1.data as ServiceProvider;
+                if(sp1.activation == null){
                     canBeLinked = true;
                 }
             } else if (node1.data is ExecutionEnvironment && node2.data is ServiceProvider) {
-                var sp:ServiceProvider = node2.data as ServiceProvider;
-                if(sp.activation == null){
+                var sp2:ServiceProvider = node2.data as ServiceProvider;
+                if(sp2.activation == null){
                     canBeLinked = true;
                 }
             }
@@ -54,13 +54,13 @@ public class DiagramUtil {
         var canBeLinked:Boolean = false;
         if (node1 != null && node2 != null && node1.id != node2.id) {
             if (node1.data is Provider && node2.data is IdentitySource){
-                var prov:Provider = node1.data as Provider;
-                if(prov.identityLookup == null){
+                var prov1:Provider = node1.data as Provider;
+                if(prov1.identityLookup == null){
                     canBeLinked = true;
                 }
             } else if (node1.data is IdentitySource && node2.data is Provider) {
-                var prov:Provider = node2.data as Provider;
-                if(prov.identityLookup == null){
+                var prov2:Provider = node2.data as Provider;
+                if(prov2.identityLookup == null){
                     canBeLinked = true;
                 }
             }

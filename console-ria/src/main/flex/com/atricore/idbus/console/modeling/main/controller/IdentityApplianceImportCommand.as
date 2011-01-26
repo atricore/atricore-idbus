@@ -45,6 +45,10 @@ public class IdentityApplianceImportCommand extends IocSimpleCommand implements 
     private var _registry:ServiceRegistry;
     private var _projectProxy:ProjectProxy;
 
+
+    public function IdentityApplianceImportCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

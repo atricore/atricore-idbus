@@ -43,6 +43,10 @@ public class ExportProviderCertificateCommand extends IocSimpleCommand implement
     private var _registry:ServiceRegistry;
     private var _projectProxy:ProjectProxy;
 
+
+    public function ExportProviderCertificateCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

@@ -8,6 +8,10 @@ public class CreateIdentityLookupElementRequest {
     private var _identitySource:IdentitySource;
     private var _notationalElementId:String;
 
+
+    public function CreateIdentityLookupElementRequest() {
+    }
+
     public function get provider():FederatedProvider {
         return _provider;
     }

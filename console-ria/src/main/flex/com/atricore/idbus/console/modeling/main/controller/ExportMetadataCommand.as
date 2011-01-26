@@ -42,6 +42,10 @@ public class ExportMetadataCommand extends IocSimpleCommand implements IResponde
     private var _registry:ServiceRegistry;
     private var _projectProxy:ProjectProxy;
 
+
+    public function ExportMetadataCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

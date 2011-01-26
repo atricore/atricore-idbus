@@ -11,6 +11,11 @@ public class PasswordValidator extends Validator
     private var _noMatchError: String;
     private var _defaultLength: Number;
 
+
+    public function PasswordValidator() {
+        super();
+    }
+
     [Inspectable(category="General", defaultValue="Fields did not match")]
     public function set noMatchError( argError:String):void{
         _noMatchError = argError;
@@ -59,7 +64,7 @@ public class PasswordValidator extends Validator
             }
             if (_defaultLength!=-1 && val.length < _defaultLength) {
                 results.push( new ValidationResult(true, null, "Password length",
-                        "Password must have at least " + _defaultLength + " characters."));
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "password.length.error", [_defaultLength])));
             }
         }
         return results;

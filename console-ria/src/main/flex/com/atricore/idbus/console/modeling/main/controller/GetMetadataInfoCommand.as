@@ -42,6 +42,10 @@ public class GetMetadataInfoCommand extends IocSimpleCommand implements IRespond
     private var _registry:ServiceRegistry;
     private var _projectProxy:ProjectProxy;
 
+
+    public function GetMetadataInfoCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

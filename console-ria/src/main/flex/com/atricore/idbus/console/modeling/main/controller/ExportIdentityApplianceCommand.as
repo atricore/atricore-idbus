@@ -42,6 +42,10 @@ public class ExportIdentityApplianceCommand extends IocSimpleCommand implements 
     private var _registry:ServiceRegistry;
     private var _projectProxy:ProjectProxy;
 
+
+    public function ExportIdentityApplianceCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

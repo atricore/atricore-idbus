@@ -45,6 +45,10 @@ public class EditGroupCommand extends IocSimpleCommand implements IResponder {
     private var _accountManagementProxy:AccountManagementProxy;
     private var group:Group;
 
+
+    public function EditGroupCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

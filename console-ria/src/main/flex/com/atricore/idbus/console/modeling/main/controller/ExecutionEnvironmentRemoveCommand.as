@@ -14,6 +14,10 @@ public class ExecutionEnvironmentRemoveCommand extends IocSimpleCommand {
 
     private var _projectProxy:ProjectProxy;
 
+
+    public function ExecutionEnvironmentRemoveCommand() {
+    }
+
     public function get projectProxy():ProjectProxy {
         return _projectProxy;
     }

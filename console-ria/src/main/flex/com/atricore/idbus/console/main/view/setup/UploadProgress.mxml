@@ -21,8 +21,8 @@
   -->
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="145" title="Progress Bar Window">
 	<mx:VBox left="10" top="10" right="10" bottom="10" horizontalAlign="center" verticalAlign="top">
-		<mx:Label text="Filename" id="txtFile" enabled="true" width="100%"/>
+		<mx:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'upload.filename')}" id="txtFile" enabled="true" width="100%"/>
 		<mx:ProgressBar width="100%" id="progBar" mode="manual"/>
-		<mx:Button label="Cancel" id="btnCancel"/>
+		<mx:Button label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'upload.cancel')}" id="btnCancel"/>
 	</mx:VBox>
 </mx:TitleWindow>

@@ -54,9 +54,6 @@ public class GroupsMediator extends IocMediator implements IDisposable{
 
     private var _updatedGroupIndex:Number;
 
-    [Bindable]
-
-
     public function GroupsMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
     }
@@ -249,7 +246,7 @@ public class GroupsMediator extends IocMediator implements IDisposable{
             var delAlert:Alert = Alert.show(alertBody,
                     resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.delete.title'),
                     3, view,
-                    function (event:CloseEvent) {
+                    function(event:CloseEvent):void {
                         if (event.detail == Alert.YES) {
                             sendNotification(ApplicationFacade.DELETE_GROUP, _accountManagementProxy.currentGroup);
                             sendNotification(ProcessingMediator.START);

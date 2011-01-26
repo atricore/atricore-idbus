@@ -32,12 +32,15 @@ import flash.events.MouseEvent;
 
 import mx.controls.Alert;
 import mx.events.FlexEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class LoginMediator extends IocMediator
 {
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     private var _loginValidators:Array;
 
@@ -114,7 +117,7 @@ public class LoginMediator extends IocMediator
             }
         }
         else {
-            sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "Missing or invalid data entered");
+            sendNotification(ApplicationFacade.SHOW_ERROR_MSG, resourceManager.getString(AtricoreConsole.BUNDLE, "login.error.validation"));
         }
     }
 
@@ -124,15 +127,14 @@ public class LoginMediator extends IocMediator
 
 
     public function handleLoginFailure():void {
-        sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                "The user name and/or password you entered are not correct. " +
-                "Please re-enter to log in again.");
+        sendNotification(ApplicationFacade.SHOW_ERROR_MSG, resourceManager.getString(AtricoreConsole.BUNDLE, "login.error.failure"));
     }
 
     public function handleEmailSuccess():void {
 //        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG,
 //                "An email with your password has been sent to your account.");
-        Alert.show("An email with your password has been sent to your account.", "Information");
+        Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "login.email.success"),
+                resourceManager.getString(AtricoreConsole.BUNDLE, "alert.information"));
     }
 
     public function resetLoginForm():void {

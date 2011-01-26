@@ -29,6 +29,8 @@ import com.atricore.idbus.console.main.model.ProfileProxy;
 import com.atricore.idbus.console.services.dto.User;
 
 import mx.events.CloseEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 import mx.utils.ObjectProxy;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -38,6 +40,8 @@ public class SetupWizardViewMediator extends IocMediator
 {
     public static const RUN:String = "Note.start.RunServerSetup";
 
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
+    
     private var _wizardDataModel:ObjectProxy = new ObjectProxy();
     private var _profileProxy : ProfileProxy;
 
@@ -96,7 +100,7 @@ public class SetupWizardViewMediator extends IocMediator
 
     public function handleServerSetupFailure():void {
         sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                "There was an error initializing the server");
+                resourceManager.getString(AtricoreConsole.BUNDLE, "setup.wizard.error"));
     }
 
     protected function get view():SetupWizardView

@@ -36,6 +36,9 @@ public class ServiceProviderRemoveCommand extends IocSimpleCommand {
 
     private var _projectProxy:ProjectProxy;
 
+    public function ServiceProviderRemoveCommand() {
+
+    }
 
     public function get projectProxy():ProjectProxy {
         return _projectProxy;

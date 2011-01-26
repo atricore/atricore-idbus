@@ -45,6 +45,9 @@ public class UndeployIdentityApplianceCommand extends IocSimpleCommand implement
     private var _registry:ServiceRegistry;
 
 
+    public function UndeployIdentityApplianceCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

@@ -43,10 +43,11 @@
     </prerequisites>
 
     <modules>
+        <module>support/atricore-liveupdate-v1.0</module>
         <module>main</module>
+        <module>management</module>
         <module>command</module>
         <module>admin</module>
-        <module>support/atricore-liveupdate-v1.0</module>
         <module>test</module>
     </modules>
 

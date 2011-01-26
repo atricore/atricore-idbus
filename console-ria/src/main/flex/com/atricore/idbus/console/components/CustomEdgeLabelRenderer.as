@@ -1,6 +1,5 @@
 package com.atricore.idbus.console.components {
 import com.atricore.idbus.console.main.EmbeddedIcons;
-
 import com.atricore.idbus.console.modeling.diagram.event.VEdgeRemoveEvent;
 
 import flash.events.MouseEvent;
@@ -12,8 +11,9 @@ import mx.controls.Button;
 import mx.controls.Image;
 import mx.core.IDataRenderer;
 import mx.core.UIComponent;
-
 import mx.events.CloseEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.un.cava.birdeye.ravis.enhancedGraphLayout.event.VGEdgeEvent;
 import org.un.cava.birdeye.ravis.graphLayout.data.IEdge;
@@ -55,7 +55,7 @@ public class CustomEdgeLabelRenderer extends UIComponent implements IDataRendere
             //trace("Edge is invisible " + edge.node1.stringid + ' --> ' + edge.node2.stringid);
             //this.visible = false;
         } else {
-            var edgeVO:Object = data.data;
+
             if (enableLabel && edgeVO.edgeLabel) {
                 //label = new Label();
                 label = new TextField();
@@ -141,7 +141,9 @@ public class CustomEdgeLabelRenderer extends UIComponent implements IDataRendere
     }
 
     private function confirmEdgeRemove(e:MouseEvent):void {
-        Alert.show("Are you sure you want to delete this connection?", "Confirm Removal",
+        var resourceManager:IResourceManager = ResourceManager.getInstance();
+        Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "connection.remove.msg"),
+                resourceManager.getString(AtricoreConsole.BUNDLE, "connection.remove.title"),
                 Alert.YES | Alert.NO, null, edgeRemoveConfirmed, null, Alert.YES);
     }
 

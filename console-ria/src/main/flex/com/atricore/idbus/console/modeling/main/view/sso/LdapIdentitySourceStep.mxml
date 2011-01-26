@@ -73,7 +73,7 @@
             }
 
             private function initFields():void {
-                callLater(function() {
+                callLater(function():void {
                     userRepositoryName.text = (previousStepData as IdentitySource).name;                    
                     initialContextFactory.text = "com.sun.jndi.ldap.LdapCtxFactory";
                     providerUrl.text = "ldap://localhost:389";

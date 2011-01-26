@@ -34,18 +34,18 @@
         <fx:Script>
         <![CDATA[
 
-            import com.atricore.idbus.console.services.dto.Location;
-            import com.atricore.idbus.console.services.dto.ServiceProvider;
-            import com.atricore.idbus.console.services.dto.JOSSOActivation;
-            import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
-            import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
             import com.atricore.idbus.console.modeling.diagram.model.request.CheckInstallFolderRequest;
             import com.atricore.idbus.console.modeling.main.view.sso.event.SsoEvent;
-            import com.atricore.idbus.console.services.dto.IdentityAppliance;
+            import com.atricore.idbus.console.services.dto.JOSSOActivation;
+            import com.atricore.idbus.console.services.dto.JbossExecutionEnvironment;
+            import com.atricore.idbus.console.services.dto.Location;
+            import com.atricore.idbus.console.services.dto.ServiceProvider;
+            import com.atricore.idbus.console.services.dto.TomcatExecutionEnvironment;
 
             [Bindable]
             private var validators:Array;
 
+            [Bindable]
             private var labelWidth:Number = 165;
 
             private var lastSPCreated:Boolean;
@@ -138,7 +138,7 @@
                 sp.name = jossoSPName.text;
 
                 // temporary location
-                var spLoc = new Location();
+                var spLoc:Location = new Location();
                 spLoc.protocol = "";
                 spLoc.host = "";
                 spLoc.port = 80;
@@ -218,7 +218,7 @@
             private function composeLocation():String {
                 var port:String = ( partnerappLocationPort.text == "" ? "" : ":" + partnerappLocationPort.text );
                 return partnerappLocationProtocol.labelDisplay.text + '://' + partnerappLocationDomain.text + port + '/' +
-                       partnerappLocationContext.text;
+                        partnerappLocationContext.text;
             }
         ]]>
     </fx:Script>

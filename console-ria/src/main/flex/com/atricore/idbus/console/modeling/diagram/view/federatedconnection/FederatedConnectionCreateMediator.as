@@ -431,13 +431,13 @@ public class FederatedConnectionCreateMediator extends IocFormMediator {
             }
 
             // set location
-            var loc:Location = new Location();
-            loc.protocol = view.spChannelLocationProtocol.labelDisplay.text;
-            loc.host = view.spChannelLocationDomain.text;
-            loc.port = parseInt(view.spChannelLocationPort.text);
-            loc.context = view.spChannelLocationContext.text;
-            loc.uri = view.spChannelLocationPath.text;
-            spChannel.location = loc;
+            var newLoc:Location = new Location();
+            newLoc.protocol = view.spChannelLocationProtocol.labelDisplay.text;
+            newLoc.host = view.spChannelLocationDomain.text;
+            newLoc.port = parseInt(view.spChannelLocationPort.text);
+            newLoc.context = view.spChannelLocationContext.text;
+            newLoc.uri = view.spChannelLocationPath.text;
+            spChannel.location = newLoc;
         }
 
         if((_roleA is ServiceProvider || _roleA is ExternalServiceProvider) && (_roleB is IdentityProvider || _roleB is ExternalIdentityProvider)){

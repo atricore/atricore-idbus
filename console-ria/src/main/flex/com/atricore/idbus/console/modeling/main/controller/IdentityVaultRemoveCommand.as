@@ -38,6 +38,8 @@ public class IdentityVaultRemoveCommand extends IocSimpleCommand {
 
     private var _projectProxy:ProjectProxy;
 
+    public function IdentityVaultRemoveCommand() {
+    }
 
     public function get projectProxy():ProjectProxy {
         return _projectProxy;

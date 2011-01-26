@@ -12,6 +12,7 @@ import flash.events.MouseEvent;
 import flash.geom.Point;
 
 import mx.managers.CursorManager;
+import mx.resources.ResourceManager;
 
 import org.un.cava.birdeye.ravis.enhancedGraphLayout.event.VGEdgeEvent;
 import org.un.cava.birdeye.ravis.enhancedGraphLayout.visual.EnhancedVisualGraph;
@@ -107,7 +108,7 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
             resetConnectionModeParameters();
             _canvas.removeEventListener(MouseEvent.MOUSE_UP, dragEnd);
         } else {
-            var draggedNode = data as IVisualNode;
+            var draggedNode:IVisualNode = data as IVisualNode;
             if (draggedNode != null && _nodeMoved) {
                 dispatchEvent(new VNodeMovedEvent(VNodeMovedEvent.VNODE_MOVED, draggedNode.node.stringid, true, false, 0));
             } else if (_allNodesMoved) {
@@ -332,7 +333,7 @@ public class CustomVisualGraph extends EnhancedVisualGraph {
         tmpEdge = graph.link(parentNode,node, edgeData);
 
         if (tmpEdge == null) {
-            throw Error("Could not create or find Graph edge!!!");
+            throw Error(ResourceManager.getInstance().getString(AtricoreConsole.BUNDLE, "graph.createEdge.error"));
         } else {
             if (tmpEdge.vedge == null) {
                 /* we have a new edge, so we create a new VEdge */

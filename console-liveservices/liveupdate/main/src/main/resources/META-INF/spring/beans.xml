@@ -27,6 +27,16 @@
         <property name="startupCheckInterval" value="${startupCheckInterval}"/>
         <property name="startupRunLevel" value="${maintenanceRunLevel}"/>
         <property name="dataFolder" value="${karaf.data}"/>
+        <property name="notificationHandlers">
+            <list>
+                <ref bean="emailNotificationHandler"/>
+            </list>
+        </property>
+        <property name="notificationStores">
+            <list>
+                <ref bean="emailNotificationStore"/>
+            </list>
+        </property>
     </bean>
 
     <bean name="liveUpdateSigner" class="com.atricore.liveservices.liveupdate._1_0.util.LiveUpdateSigner" init-method="init"/>
@@ -60,6 +70,19 @@
 
     <bean name="fileRepositoryTransport"
           class="com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.FileRepositoryTransport"/>
+
+    <!-- Notification Handlers -->
+    <bean name="emailNotificationHandler"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.notifications.EMailNotificationHandler">
+        <property name="store" ref="emailNotificationStore"/>
+        <property name="mailer" ref="mailer"/>
+        <property name="messageSource" ref="messageSource"/>
+    </bean>
+
+    <!-- Notification Stores -->
+    <bean name="emailNotificationStore"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.notifications.PropertiesEMailNotificationSchemeStore"
+          init-method="init"/>
 
     <!-- Profile Manager -->
     <bean name="profileManager" class="com.atricore.idbus.console.liveservices.liveupdate.main.profile.impl.ProfileManagerImpl">
@@ -151,6 +174,50 @@
     </bean>
 
     <bean name="installOperationsRegistry" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.InstallOperationsRegistryImpl"/>
+
+    <!-- Mailer -->
+    <bean name="mailer" class="com.atricore.idbus.console.liveservices.liveupdate.main.util.Mailer">
+        <property name="mailSender" ref="mailSender" />
+		<property name="velocityEngine" ref="velocityEngine" />
+    </bean>
+
+    <bean id="mailPropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:mail.properties" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+	</bean>
+    
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="${mail.host}" />
+		<property name="username" value="${mail.username}" />
+		<property name="password" value="${mail.password}" />
+		<property name="port" value="${mail.port}" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.timeout">25000</prop>
+				<!--
+				<prop key="mail.smtp.starttls.enable">true</prop>
+				<prop key="mail.smtp.socketFactory.class">javax.net.ssl.SSLSocketFactory</prop>
+				<prop key="mail.smtp.socketFactory.fallback">false</prop>
+				-->
+			</props>
+		</property>
+	</bean>
+
+    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+        <property name="velocityProperties">
+            <value>
+                resource.loader=class
+                class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+            </value>
+        </property>
+    </bean>
+
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="messages/messages"/>
+		<property name="fileEncodings" value="UTF-8" />
+		<property name="defaultEncoding" value="UTF-8" />
+    </bean>
 
     <!-- Export LiveUpdate service using OSGi -->
     <osgi:service id="liveUpdateMgrOsgi" ref="liveUpdateMgr"

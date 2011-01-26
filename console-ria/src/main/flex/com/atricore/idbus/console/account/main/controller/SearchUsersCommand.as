@@ -44,6 +44,10 @@ public class SearchUsersCommand extends IocSimpleCommand implements IResponder {
     private var _registry:ServiceRegistry;
     private var _accountManagementProxy:AccountManagementProxy;
 
+
+    public function SearchUsersCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

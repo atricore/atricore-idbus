@@ -67,7 +67,7 @@ public class ExportMetadataMediator extends IocMediator {
 
     private function handleSave(event:MouseEvent):void {
         if (_exportedMetadata != null && _exportedMetadata.length > 0) {
-            var mdName = _providerName;
+            var mdName:String = _providerName;
             if (_channelName != null && _override) {
                 mdName = _channelName;
             }

@@ -884,9 +884,9 @@ public class PropertySheetMediator extends IocMediator {
                         break;
                     }
                 }
-                for (var i:int = 0; i < _basicAuthenticationSection.hashEncoding.dataProvider.length; i++) {
-                    if (_basicAuthenticationSection.hashEncoding.dataProvider[i].data == basicAuthentication.hashEncoding) {
-                        _basicAuthenticationSection.hashEncoding.selectedIndex = i;
+                for (var j:int = 0; j < _basicAuthenticationSection.hashEncoding.dataProvider.length; j++) {
+                    if (_basicAuthenticationSection.hashEncoding.dataProvider[j].data == basicAuthentication.hashEncoding) {
+                        _basicAuthenticationSection.hashEncoding.selectedIndex = j;
                         break;
                     }
                 }
@@ -2007,9 +2007,9 @@ public class PropertySheetMediator extends IocMediator {
                     break;
                 }
             }
-            for (var i:int = 0; i < _ldapIdentitySourceCoreSection.ldapSearchScope.dataProvider.length; i++) {
-                if (_ldapIdentitySourceCoreSection.ldapSearchScope.dataProvider[i].data == ldapIdentitySource.ldapSearchScope) {
-                    _ldapIdentitySourceCoreSection.ldapSearchScope.selectedIndex = i;
+            for (var j:int = 0; j < _ldapIdentitySourceCoreSection.ldapSearchScope.dataProvider.length; j++) {
+                if (_ldapIdentitySourceCoreSection.ldapSearchScope.dataProvider[j].data == ldapIdentitySource.ldapSearchScope) {
+                    _ldapIdentitySourceCoreSection.ldapSearchScope.selectedIndex = j;
                     break;
                 }
             }
@@ -3783,7 +3783,7 @@ public class PropertySheetMediator extends IocMediator {
         _dirty = false;
     }
 
-    private function handleExecEnvActivationPropertyTabCreationComplete(event:Event) {
+    private function handleExecEnvActivationPropertyTabCreationComplete(event:Event):void {
         var execEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
         if (execEnv != null) {
             _executionEnvironmentActivateSection.replaceConfFiles.selected = execEnv.overwriteOriginalSetup;

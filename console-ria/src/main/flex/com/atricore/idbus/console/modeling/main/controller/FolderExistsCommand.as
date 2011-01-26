@@ -22,7 +22,11 @@ public class FolderExistsCommand extends IocSimpleCommand implements IResponder 
     public static const FOLDER_DOESNT_EXISTS : String = "FolderExistsCommand.FOLDER_DOESNT_EXISTS";
     public static const FAILURE : String = "FolderExistsCommand.FAILURE";
 
-    private var _registry:ServiceRegistry;    
+    private var _registry:ServiceRegistry;
+
+
+    public function FolderExistsCommand() {
+    }
 
     public function get registry():ServiceRegistry {
         return _registry;

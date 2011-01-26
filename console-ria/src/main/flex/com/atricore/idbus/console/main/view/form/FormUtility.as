@@ -21,7 +21,6 @@
 
 package com.atricore.idbus.console.main.view.form
 {
-import mx.collections.ArrayCollection;
 import mx.validators.Validator;
 
 public class FormUtility

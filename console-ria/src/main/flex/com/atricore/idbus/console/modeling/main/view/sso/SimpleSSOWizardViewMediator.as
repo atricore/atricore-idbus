@@ -182,15 +182,15 @@ public class SimpleSSOWizardViewMediator extends IocMediator
             case FolderExistsCommand.FOLDER_EXISTS:
                 var envName:String = notification.getBody() as String;
                 if(envName == "SSO_WIZARD_MADE_ENV"){
-                    var ssoEvent:SsoEvent = new SsoEvent(SsoEvent.DIRECTORY_EXISTS);
-                    view.dispatchEvent(ssoEvent);
+                    var ssoEvent1:SsoEvent = new SsoEvent(SsoEvent.DIRECTORY_EXISTS);
+                    view.dispatchEvent(ssoEvent1);
                 }
                 break;
             case FolderExistsCommand.FOLDER_DOESNT_EXISTS:
                 envName = notification.getBody() as String;
                 if(envName == "SSO_WIZARD_MADE_ENV"){
-                    var ssoEvent:SsoEvent = new SsoEvent(SsoEvent.DIRECTORY_DOESNT_EXIST);
-                    view.dispatchEvent(ssoEvent);
+                    var ssoEvent2:SsoEvent = new SsoEvent(SsoEvent.DIRECTORY_DOESNT_EXIST);
+                    view.dispatchEvent(ssoEvent2);
                 }
                 break;
             case JDBCDriversListCommand.SUCCESS:

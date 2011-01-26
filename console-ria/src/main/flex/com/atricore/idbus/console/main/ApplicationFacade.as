@@ -21,12 +21,9 @@
 
 package com.atricore.idbus.console.main
 {
-import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
+import com.atricore.idbus.console.base.app.BaseAppFacade;
 
-import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
-import org.springextensions.actionscript.puremvc.patterns.facade.IocFacade;
-
-public class ApplicationFacade extends IocFacade implements IIocFacade {
+public class ApplicationFacade extends BaseAppFacade {
 
     public static const USER_PROVISIONING_SERVICE:String = "userProvisioningService";
     public static const IDENTITY_APPLIANCE_MANAGEMENT_SERVICE:String = "identityApplianceManagementService";
@@ -42,9 +39,7 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
 
     // command-backed notifications
     public static const STARTUP:String = "startup";
-    public static const STARTUP_APP_SECTION:String = "startupAppSection";
-
-
+    
     public static const SETUP_SERVER:String = "Note.SetupServer";
     public static const REGISTER:String = "Note.Register";
     public static const CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE:String = "createSimpleSSOIdentityAppliance";
@@ -176,16 +171,11 @@ public class ApplicationFacade extends IocFacade implements IIocFacade {
     public static const DISPLAY_EDIT_USER:String = "displayEditUser";
     public static const DISPLAY_SEARCH_GROUPS:String = "displaySearchGroup";
     public static const DISPLAY_SEARCH_USERS:String = "displaySearchUser";
-    public static const DISPLAY_SEARCH_RESULTS_USERS = "displaySearchResultUsers";
-    public static const DISPLAY_SEARCH_RESULTS_GROUPS = "displaySearchResultGroups";
-    public static const DISPLAY_GROUP_PROPERTIES = "displayGroupProperties";
-    public static const DISPLAY_USER_PROPERTIES = "displayUserProperties";
-    public static const DISPLAY_CHANGE_PASSWORD = "displayChangePassword";
-    public static const MODELER_VIEW_SELECTED:String = "modelerViewSelected";
-    public static const LIFECYCLE_VIEW_SELECTED:String = "lifecycleViewSelected";
-    public static const ACCOUNT_VIEW_SELECTED:String = "accountViewSelected";
-    public static const LICENSE_VIEW_SELECTED:String = "licenseViewSelected";
-    public static const UPDATE_VIEW_SELECTED:String = "updateViewSelected";
+    public static const DISPLAY_SEARCH_RESULTS_USERS:String = "displaySearchResultUsers";
+    public static const DISPLAY_SEARCH_RESULTS_GROUPS:String = "displaySearchResultGroups";
+    public static const DISPLAY_GROUP_PROPERTIES:String = "displayGroupProperties";
+    public static const DISPLAY_USER_PROPERTIES:String = "displayUserProperties";
+    public static const DISPLAY_CHANGE_PASSWORD:String = "displayChangePassword";
     public static const APPLIANCE_VALIDATION_ERRORS:String = "applianceValidationErrors";
     public static const APPLIANCE_SAVED:String = "applianceSaved";
     public static const DISPLAY_UPDATE_LICENSE = "displayUpdateLicense";

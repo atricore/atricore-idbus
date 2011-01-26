@@ -3,6 +3,9 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.service;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.UpdateEngine;
+import com.atricore.idbus.console.liveservices.liveupdate.main.notifications.NotificationHandler;
+import com.atricore.idbus.console.liveservices.liveupdate.main.notifications.NotificationScheme;
+import com.atricore.idbus.console.liveservices.liveupdate.main.notifications.NotificationSchemeStore;
 import com.atricore.idbus.console.liveservices.liveupdate.main.profile.ProfileManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.MetadataRepository;
@@ -71,6 +74,9 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
 
     private CertStore certStore;
 
+    private List<NotificationHandler> notificationHandlers;
+
+    private List<NotificationSchemeStore> notificationStores;
 
     public void init() throws LiveUpdateException {
 
@@ -236,8 +242,15 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
     // Analyze MD and see if updates apply. (use license information ....)
     public Collection<UpdateDescriptorType> checkForUpdates() throws LiveUpdateException {
         mdManager.refreshRepositories();
-        // TODO : Notify if new updates were found !
-        return getAvailableUpdates();
+        Collection<UpdateDescriptorType> updates = getAvailableUpdates();
+        for (NotificationScheme scheme : listNotificationSchemes()) {
+            for (NotificationHandler handler : notificationHandlers) {
+                if (handler.canHandle(scheme)) {
+                    handler.notify(updates, scheme);
+                }
+            }
+        }
+        return updates;
     }
 
     public Collection<UpdateDescriptorType> checkForUpdates(String group, String name, String version) throws LiveUpdateException {
@@ -377,7 +390,43 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
 
     }
 
-// -------------------------------------------< Properties >
+    public void saveNotificationScheme(NotificationScheme scheme) throws LiveUpdateException {
+        for (NotificationHandler handler : notificationHandlers) {
+            if (handler.canHandle(scheme)) {
+                handler.saveNotificationScheme(scheme);
+            }
+        }
+    }
+
+    public void removeNotificationScheme(NotificationScheme scheme) throws LiveUpdateException {
+        for (NotificationHandler handler : notificationHandlers) {
+            if (handler.canHandle(scheme)) {
+                handler.removeNotificationScheme(scheme);
+            }
+        }
+    }
+
+    public Collection<NotificationScheme> listNotificationSchemes() throws LiveUpdateException {
+        List<NotificationScheme> schemes = new ArrayList<NotificationScheme>();
+        for (NotificationSchemeStore store : notificationStores) {
+            schemes.addAll(store.loadAll());
+        }
+        return schemes;
+    }
+
+    public NotificationScheme getNotificationScheme(String name) throws LiveUpdateException {
+        NotificationScheme scheme = null;
+        for (NotificationSchemeStore store : notificationStores) {
+            scheme = store.load(name);
+            if (scheme != null) {
+                break;
+            }
+        }
+        return scheme;
+    }
+
+    // -------------------------------------------< Properties >
+
     public void setConfig(Properties config) {
         this.config = config;
     }
@@ -466,5 +515,21 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
 
     public void setStartupCheckInterval(int startupCheckInterval) {
         this.startupCheckInterval = startupCheckInterval;
+    }
+
+    public List<NotificationHandler> getNotificationHandlers() {
+        return notificationHandlers;
+    }
+
+    public void setNotificationHandlers(List<NotificationHandler> notificationHandlers) {
+        this.notificationHandlers = notificationHandlers;
+    }
+
+    public List<NotificationSchemeStore> getNotificationStores() {
+        return notificationStores;
+    }
+
+    public void setNotificationStores(List<NotificationSchemeStore> notificationStores) {
+        this.notificationStores = notificationStores;
     }
 }

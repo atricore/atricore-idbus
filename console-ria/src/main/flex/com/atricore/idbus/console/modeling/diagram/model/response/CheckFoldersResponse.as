@@ -6,6 +6,10 @@ public class CheckFoldersResponse {
     private var _invalidFolders:ArrayCollection;
     private var _environmentName:String;
 
+
+    public function CheckFoldersResponse() {
+    }
+
     public function get invalidFolders():ArrayCollection {
         return _invalidFolders;
     }

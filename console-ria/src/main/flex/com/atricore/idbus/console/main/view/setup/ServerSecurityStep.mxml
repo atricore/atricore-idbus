@@ -81,7 +81,7 @@
                     _uploadProgress = UploadProgress(PopUpManager.createPopUp(this, UploadProgress, true));
                     _uploadProgress.btnCancel.removeEventListener("click", onUploadCanceled);
                     _uploadProgress.btnCancel.addEventListener("click", onUploadCanceled);
-                    _uploadProgress.title = "Uploading file to " + _strUploadDomain;
+                    _uploadProgress.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'upload.uploading.to') + " " + _strUploadDomain;
                     _uploadProgress.txtFile.text = _certFiles.fileList[_numCurrentUpload].name;
                     _uploadProgress.progBar.label = "0%";
                     PopUpManager.centerPopUp(_uploadProgress);
@@ -142,13 +142,15 @@
                 if (_numCurrentUpload < _certFiles.fileList.length) {
                     startUpload(false);
                 } else {
-                    Alert.show("File(s) have been uploaded.", "Upload successful");
+                    Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'upload.alert.success.msg'),
+                            resourceManager.getString(AtricoreConsole.BUNDLE, 'upload.alert.success.title'));
                 }
             }
 
             // Called on upload io error
             private function onUploadIoError(event:IOErrorEvent):void {
-                Alert.show("IO Error in uploading file.", "Error");
+                Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'upload.error.io'),
+                        resourceManager.getString(AtricoreConsole.BUNDLE, 'alert.error'));
                 PopUpManager.removePopUp(_uploadProgress);
                 _uploadProgress == null;
                 _refUploadFile.cancel();
@@ -157,7 +159,8 @@
 
             // Called on upload security error
             private function onUploadSecurityError(event:SecurityErrorEvent):void {
-                Alert.show("Security Error in uploading file.", "Error");
+                Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, 'upload.error.security'), 
+                        resourceManager.getString(AtricoreConsole.BUNDLE, 'alert.error'));
                 PopUpManager.removePopUp(_uploadProgress);
                 _uploadProgress == null;
                 _refUploadFile.cancel();

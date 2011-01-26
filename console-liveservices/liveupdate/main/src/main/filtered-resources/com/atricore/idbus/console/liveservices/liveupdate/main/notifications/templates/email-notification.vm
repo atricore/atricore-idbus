@@ -1,0 +1,22 @@
+<html>
+<body>
+$header
+<br/><br/>
+<strong>UPDATES</strong>
+<br/><br/>
+#foreach($update in $updates)
+<strong>Update $update.id - $update.installableUnit.group/$update.installableUnit.name/$update.installableUnit.version</strong>
+<br/>
+Update nature: $update.installableUnit.updateNature<br/>
+Description: $update.description<br/>
+Artifacts:<br/>
+#foreach($artifact in $update.installableUnit.artifact)
+- $artifact.group/$artifact.name/$artifact.version<br/>
+#end
+<br/><br/>
+#end
+<br/><br/>
+$footer
+<br/>
+</body>
+</html>

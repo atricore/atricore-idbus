@@ -1,7 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
 <!--
   ~ Atricore IDBus
   ~
-  ~ Copyright 2009, Atricore Inc.
+  ~ Copyright (c) 2009, Atricore Inc.
   ~
   ~ This is free software; you can redistribute it and/or modify it
   ~ under the terms of the GNU Lesser General Public License as
@@ -18,17 +20,15 @@
   ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
+<s:beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:osgi="http://www.springframework.org/schema/osgi"
+         xmlns:s="http://www.springframework.org/schema/beans"
+         xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/osgi  http://www.springframework.org/schema/osgi/spring-osgi.xsd"
+        >
 
-<assembly>
-    <id>resources</id>
-    <formats>
-        <format>zip</format>
-    </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
-    <fileSets>
-        <fileSet>
-            <directory>src/main/resources</directory>
-            <outputDirectory></outputDirectory>
-        </fileSet>
-    </fileSets>
-</assembly>
+    <!-- LiveUpdate Service MBean -->
+
+</s:beans>

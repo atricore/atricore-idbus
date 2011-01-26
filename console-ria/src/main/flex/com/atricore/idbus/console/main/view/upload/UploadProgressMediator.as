@@ -28,6 +28,8 @@ import flash.events.MouseEvent;
 import flash.net.FileReference;
 
 import mx.events.CloseEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
@@ -39,6 +41,8 @@ public class UploadProgressMediator extends IocMediator
     public static const UPLOAD_COMPLETED:String = "Note.UploadCompleted";
     public static const UPLOAD_CANCELED:String = "Note.UploadCanceled";
 
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
+    
     private var _fileRef:FileReference;
     
     public function UploadProgressMediator(name:String = null, viewComp:UploadProgress = null) {
@@ -74,7 +78,7 @@ public class UploadProgressMediator extends IocMediator
             case ApplicationFacade.SHOW_UPLOAD_PROGRESS:
                 if (view != null) {
                     _fileRef = notification.getBody() as FileReference;
-                    view.txtFile.text = "Uploading file: " + _fileRef.name;
+                    view.txtFile.text = resourceManager.getString(AtricoreConsole.BUNDLE, "upload.uploading") + ": " + _fileRef.name;
                     view.progBar.label = "0%";
                     init();
                     sendNotification(CREATED);
@@ -94,7 +98,7 @@ public class UploadProgressMediator extends IocMediator
                 }
                 break;
             case UPLOAD_COMPLETED:
-                view.btnCancelFinish.label = "Finish";
+                view.btnCancelFinish.label = resourceManager.getString(AtricoreConsole.BUNDLE, "upload.finish");
                 view.btnCancelFinish.enabled = true;
                 //view.btnCancel.visible = false;
                 //view.btnFinish.visible = true;
@@ -104,7 +108,7 @@ public class UploadProgressMediator extends IocMediator
 
     private function onUploadBtnCancelFinish(event:Event):void {
         closeWindow();
-        if (view.btnCancelFinish.label == "Cancel") {
+        if (view.btnCancelFinish.label == resourceManager.getString(AtricoreConsole.BUNDLE, "upload.cancel")) {
             //_fileRef.cancel();
             sendNotification(UPLOAD_CANCELED);
         }

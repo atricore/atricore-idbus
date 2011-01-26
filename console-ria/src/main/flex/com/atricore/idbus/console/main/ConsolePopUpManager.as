@@ -48,6 +48,10 @@ public class ConsolePopUpManager extends BasePopUpManager {
     protected var _changePasswordForm:ChangePasswordView;
 
 
+    public function ConsolePopUpManager() {
+        super();
+    }
+
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
         _popup.styleName = "mainPopup";
@@ -138,7 +142,7 @@ public class ConsolePopUpManager extends BasePopUpManager {
     public function showChangePasswordWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createChangePasswordForm();
-        _popup.title = "Change Password";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "main.menu.user.changePassword");
         _popup.width = 400;
         _popup.height = 180;
         showPopup(_changePasswordForm);

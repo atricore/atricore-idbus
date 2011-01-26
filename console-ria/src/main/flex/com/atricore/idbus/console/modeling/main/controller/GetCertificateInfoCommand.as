@@ -43,6 +43,10 @@ public class GetCertificateInfoCommand extends IocSimpleCommand implements IResp
     private var _registry:ServiceRegistry;
     private var _projectProxy:ProjectProxy;
 
+
+    public function GetCertificateInfoCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

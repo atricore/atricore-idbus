@@ -37,12 +37,16 @@ import mx.effects.Iris;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 import mx.managers.PopUpManager;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.IFacade;
 import org.puremvc.as3.interfaces.INotification;
 
 public class BasePopUpManager {
 
+    protected var resourceManager:IResourceManager = ResourceManager.getInstance();
+    
     protected var _app:AtricoreConsole;
 
     protected var _lastWindowNotification:INotification;
@@ -67,6 +71,9 @@ public class BasePopUpManager {
     protected var _processingMediator:ProcessingMediator;
     protected var _processingView:ProcessingView;
 
+
+    public function BasePopUpManager() {
+    }
 
     public function init(facade:IFacade, popupParent:UIComponent):void {
         _facade = facade;
@@ -234,7 +241,7 @@ public class BasePopUpManager {
     public function showProcessingWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createProcessingWindow();
-        _progress.title = "Progress";
+        _progress.title = resourceManager.getString(AtricoreConsole.BUNDLE, "processing.title");
         _progress.width = 300;
         _progress.height = 200;
         //_progress.x = (_popupParent.width / 2) - 225;

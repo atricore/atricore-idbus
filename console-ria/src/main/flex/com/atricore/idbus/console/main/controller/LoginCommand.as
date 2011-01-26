@@ -45,6 +45,9 @@ public class LoginCommand extends IocSimpleCommand implements IResponder
     private var _registry:ServiceRegistry;
     private var _secureContext:SecureContextProxy;
 
+    public function LoginCommand() {
+
+    }
 
     public function get registry():ServiceRegistry {
         return _registry;
@@ -80,7 +83,7 @@ public class LoginCommand extends IocSimpleCommand implements IResponder
 
         if (user!=null && user.groups!=null) {
             for(var i:uint = 0; i < user.groups.length; i++) {
-                var grp = user.groups[i];
+                var grp:* = user.groups[i];
                 if (grp.name == ApplicationFacade.ADMIN_GROUP) {
                     secureContext.currentUser = user;
                     break;

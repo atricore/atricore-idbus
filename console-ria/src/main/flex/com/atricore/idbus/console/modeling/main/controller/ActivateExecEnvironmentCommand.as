@@ -28,6 +28,8 @@ public class ActivateExecEnvironmentCommand extends IocSimpleCommand implements 
     private var _projectProxy:ProjectProxy;
     private var _registry:ServiceRegistry;
 
+    public function ActivateExecEnvironmentCommand() {
+    }
 
     public function get registry():ServiceRegistry {
         return _registry;

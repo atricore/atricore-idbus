@@ -25,7 +25,6 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.controller.ChangePasswordCommand;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.view.form.FormUtility;
-
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.services.spi.request.UpdateUserPasswordRequest;
 
@@ -34,14 +33,15 @@ import flash.events.MouseEvent;
 
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
-import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
-
-import spark.events.TextOperationEvent;
 
 public class ChangePasswordMediator extends IocFormMediator
 {
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
+    
     private var _changePasswordValidators:Array;
     private var _secureContextProxy:SecureContextProxy;
 
@@ -122,8 +122,7 @@ public class ChangePasswordMediator extends IocFormMediator
 
     public function handlePasswordChangeFailure():void {
         sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                "The old/new password you entered are not correct. " +
-                        "Please re-enter to log in again.");
+                resourceManager.getString(AtricoreConsole.BUNDLE, "provisioning.users.password.change.error.failure"));
     }
 
     public function resetPasswordChangeForm():void {

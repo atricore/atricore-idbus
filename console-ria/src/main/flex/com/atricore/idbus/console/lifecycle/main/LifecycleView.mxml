@@ -1,4 +1,6 @@
-<s:Panel xmlns:mx="library://ns.adobe.com/flex/mx"
+<AppSectionView
+            xmlns="com.atricore.idbus.console.base.extensions.appsection.*"
+          xmlns:mx="library://ns.adobe.com/flex/mx"
           xmlns:fx="http://ns.adobe.com/mxml/2009"
           xmlns:s="library://ns.adobe.com/flex/spark"
           xmlns:components="com.atricore.idbus.console.components.*"
@@ -13,7 +15,7 @@
           xmlns:lc="org.un.cava.birdeye.ravis.components.ui.controls.layouterControls.*"
           width="100%" height="100%"
           skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
-        >
+          name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.lifecycleTab.name')}">
 
     <fx:Metadata>
         [ResourceBundle("console")]
@@ -44,10 +46,10 @@
                                  dragIcon="{EmbeddedIcons.setupIcon}">
                 <comp:columns>
                     <mx:AdvancedDataGridColumn id="colSavedApplianceName" fontSize="12" color="#3679b0"
-                                               headerText="Identity Appliance"
+                                               headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.columns.appliance')}"
                                                headerStyleName="applianceHeader"
                                                showDataTips="true" dataField="name" wordWrap="true"/>
-                    <mx:AdvancedDataGridColumn headerText="Actions" width="70" sortable="false">
+                    <mx:AdvancedDataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.columns.actions')}" width="70" sortable="false">
                         <mx:itemRenderer>
                             <fx:Component>
                                 <s:MXAdvancedDataGridItemRenderer>
@@ -59,21 +61,21 @@
                                     <s:HGroup gap="4" horizontalAlign="center" click="event.stopImmediatePropagation()">
                                         <fx:Script>
                                             <![CDATA[
-                                                import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                                import com.atricore.idbus.console.main.EmbeddedIcons;
+                                            import com.atricore.idbus.console.lifecycle.main.controller.event.LifecycleGridButtonEvent;
+                                            import com.atricore.idbus.console.main.EmbeddedIcons;
                                             ]]>
                                         </fx:Script>
                                         <components:IconButton iconUp="{EmbeddedIcons.editApplianceIcon}"
                                                                iconWidth="22" iconHeight="22"
                                                                paddingTop="3" paddingLeft="3"
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
-                                                               toolTip="Edit Saved Identity Appliance"
+                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.toolTips.editSavedAppliance')}"
                                                                click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
                                         <components:IconButton iconUp="{EmbeddedIcons.trashApplianceIcon}"
                                                                iconWidth="22" iconHeight="22"
                                                                paddingTop="3" paddingLeft="3"
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
-                                                               toolTip="Remove Saved Identity Appliance"
+                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.toolTips.removeSavedAppliance')}"
                                                                click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
                                     </s:HGroup>
                                 </s:MXAdvancedDataGridItemRenderer>
@@ -101,10 +103,10 @@
                                  dragIcon="{EmbeddedIcons.deployApplianceIcon}">
                 <comp:columns>
                     <mx:AdvancedDataGridColumn id="colStagedApplianceName" fontSize="12" color="#3679b0"
-                                               headerText="Identity Appliance"
+                                               headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.columns.appliance')}"
                                                headerStyleName="applianceHeader"
                                                showDataTips="true" dataField="applianceLabel" wordWrap="true"/>
-                    <mx:AdvancedDataGridColumn headerText="Actions" width="90">
+                    <mx:AdvancedDataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.columns.actions')}" width="90">
                         <mx:itemRenderer>
                             <fx:Component>
                                 <s:MXAdvancedDataGridItemRenderer>
@@ -115,28 +117,28 @@
                                     </s:states>
                                     <s:HGroup gap="4" horizontalAlign="center" click="event.stopImmediatePropagation()">
                                         <fx:Script>
-                                            <![CDATA[
-                                                import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                                import com.atricore.idbus.console.main.EmbeddedIcons;
+                                             <![CDATA[
+                                            import com.atricore.idbus.console.lifecycle.main.controller.event.LifecycleGridButtonEvent;
+                                            import com.atricore.idbus.console.main.EmbeddedIcons;
                                             ]]>
                                         </fx:Script>
                                         <components:IconButton iconUp="{EmbeddedIcons.editApplianceIcon}"
                                                                iconWidth="22" iconHeight="22"
                                                                paddingTop="3" paddingLeft="3"
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
-                                                               toolTip="Edit Compiled Identity Appliance"
+                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.toolTips.editCompiledAppliance')}"
                                                                click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_EDIT));"/>
                                         <components:IconButton iconUp="{EmbeddedIcons.setupIcon}"
                                                                iconWidth="22" iconHeight="22"
                                                                paddingTop="3" paddingLeft="3"
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
-                                                               toolTip="Rebuild Identity Appliance"
+                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.toolTips.rebuildAppliance')}"
                                                                click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_BUILD));"/>
                                         <components:IconButton iconUp="{EmbeddedIcons.disposeApplianceIcon}"
                                                                iconWidth="22" iconHeight="22"
                                                                paddingTop="3" paddingLeft="3"
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
-                                                               toolTip="Dispose Identity Appliance"
+                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.toolTips.disposeAppliance')}"
                                                                click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_DISPOSE));"/>
                                     </s:HGroup>
                                 </s:MXAdvancedDataGridItemRenderer>
@@ -165,12 +167,12 @@
                                  dragIcon="{EmbeddedIcons.disposeApplianceIcon}">
                 <comp:columns>
                     <mx:AdvancedDataGridColumn id="colDeployedApplianceName" fontSize="12" color="#3679b0"
-                                               headerText="Identity Appliance"
+                                               headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.columns.appliance')}"
                                                headerStyleName="applianceHeader"
                                                showDataTips="true" dataField="applianceLabel" wordWrap="true"/>
-                    <mx:AdvancedDataGridColumn headerText="State" dataField="state" width="75" textAlign="center"
+                    <mx:AdvancedDataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.columns.state')}" dataField="state" width="75" textAlign="center"
                                                showDataTips="true"/>
-                    <mx:AdvancedDataGridColumn headerText="Actions" width="90">
+                    <mx:AdvancedDataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.columns.actions')}" width="90">
                         <mx:itemRenderer>
                             <fx:Component>
                                 <s:MXAdvancedDataGridItemRenderer>
@@ -182,33 +184,33 @@
                                     <s:HGroup gap="4" horizontalAlign="center" click="event.stopImmediatePropagation()">
                                         <fx:Script>
                                             <![CDATA[
-                                                import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
+                                                import com.atricore.idbus.console.lifecycle.main.controller.event.LifecycleGridButtonEvent;
                                                 import com.atricore.idbus.console.main.EmbeddedIcons;
-                                        ]]>
+                                            ]]>
                                         </fx:Script>
                                         <components:IconButton iconUp="{EmbeddedIcons.startApplianceIcon}"
                                                                iconWidth="22" iconHeight="22"
                                                                paddingTop="3" paddingLeft="3"
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
-                                                               toolTip="Start Identity Appliance"
+                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.toolTips.startAppliance')}"
                                                                click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_START));"/>
                                         <components:IconButton iconUp="{EmbeddedIcons.stopApplianceIcon}"
                                                                iconWidth="22" iconHeight="22"
                                                                paddingTop="3" paddingLeft="3"
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
-                                                               toolTip="Stop Identity Appliance"
+                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.toolTips.stopAppliance')}"
                                                                click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_STOP));"/>
                                         <components:IconButton iconUp="{EmbeddedIcons.undeployApplianceIcon}"
                                                                iconWidth="22" iconHeight="22"
                                                                paddingTop="3" paddingLeft="3"
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
-                                                               toolTip="Undeploy Identity Appliance"
+                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.toolTips.undeployAppliance')}"
                                                                click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_UNDEPLOY));"/>
                                         <!--components:IconButton iconUp="{EmbeddedIcons.trashApplianceIcon}"
                                                                iconWidth="22" iconHeight="22"
                                                                paddingTop="3" paddingLeft="3"
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
-                                                               toolTip="Remove Identity Appliance"
+                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.toolTips.removeAppliance')}"
                                                                click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/-->
                                     </s:HGroup>
                                 </s:MXAdvancedDataGridItemRenderer>
@@ -236,10 +238,10 @@
                                  dragProxyImage="mx.controls.dataGridClasses.DataGridDragProxy">
                 <comp:columns>
                     <mx:AdvancedDataGridColumn id="colDisposedApplianceName" fontSize="12" color="#3679b0"
-                                               headerText="Identity Appliance"
+                                               headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.columns.appliance')}"
                                                headerStyleName="applianceHeader"
                                                showDataTips="true" wordWrap="true"/>
-                    <mx:AdvancedDataGridColumn headerText="Actions" width="50">
+                    <mx:AdvancedDataGridColumn headerText="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.columns.actions')}" width="50">
                         <mx:itemRenderer>
                             <fx:Component>
                                 <s:MXAdvancedDataGridItemRenderer>
@@ -251,16 +253,16 @@
                                     <s:HGroup gap="4" horizontalAlign="center"
                                              click="event.stopImmediatePropagation()">
                                         <fx:Script>
-                                            <![CDATA[
-                                                import com.atricore.idbus.console.lifecycle.controller.event.LifecycleGridButtonEvent;
-                                                import com.atricore.idbus.console.main.EmbeddedIcons;
+                                             <![CDATA[
+                                            import com.atricore.idbus.console.lifecycle.main.controller.event.LifecycleGridButtonEvent;
+                                            import com.atricore.idbus.console.main.EmbeddedIcons;
                                             ]]>
                                         </fx:Script>
                                         <components:IconButton iconUp="{EmbeddedIcons.trashApplianceIcon}"
                                                                iconWidth="22" iconHeight="22"
                                                                paddingTop="3" paddingLeft="3"
                                                                skinClass="com.atricore.idbus.console.components.IconButtonSkin" isLinkButton="true"
-                                                               toolTip="Remove Identity Appliance"
+                                                               toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE, 'lifecycle.grid.toolTips.removeAppliance')}"
                                                                click="dispatchEvent(new LifecycleGridButtonEvent(true, true, data, LifecycleGridButtonEvent.ACTION_REMOVE));"/>
                                     </s:HGroup>
                                 </s:MXAdvancedDataGridItemRenderer>
@@ -272,4 +274,4 @@
         </s:VGroup>
         
     </mx:HDividedBox>
-</s:Panel>
+</AppSectionView>

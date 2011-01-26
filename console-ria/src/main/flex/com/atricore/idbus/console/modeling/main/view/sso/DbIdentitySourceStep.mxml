@@ -93,7 +93,7 @@
             }
 
             private function initFields():void {
-                callLater(function() {
+                callLater(function():void {
                     userRepositoryName.text = (previousStepData as IdentitySource).name;
                 });
                 focusManager.setFocus(connectionUrl);

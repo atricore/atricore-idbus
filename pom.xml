@@ -34,6 +34,7 @@
 
     <properties>
 
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <atricore.idbus.version>1.1.0-SNAPSHOT</atricore.idbus.version>
         <idbus.kernel.version>1.1.0-SNAPSHOT</idbus.kernel.version>
@@ -116,6 +117,7 @@
         <xalan.version>2.7.1</xalan.version>
         <xercesImpl.version>2.9.1</xercesImpl.version>
         <xmlsec.version>1.4.3_2</xmlsec.version>
+        <javax.mail.version>1.4.1_2</javax.mail.version>
 
         <!-- Other props -->
         <compiler.fork>false</compiler.fork>
@@ -215,18 +217,44 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-config</artifactId>
                 <version>${pom.version}</version>
+                <type>zip</type>
+                <classifier>resources-${console.distribution}</classifier>
             </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-lib</artifactId>
                 <version>${pom.version}</version>
+                <type>swc</type>
             </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>console-ria-base</artifactId>
+                <version>${pom.version}</version>
+                <type>swc</type>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>console-ce-branding</artifactId>
+                <version>${pom.version}</version>
+                <type>swc</type>
+            </dependency>
+
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>console-ee-branding</artifactId>
+                <version>${pom.version}</version>
+                <type>swc</type>
+            </dependency>
+
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>console-ria</artifactId>
                 <version>${pom.version}</version>
+                <classifier>${console.distribution}</classifier>
                 <type>swf</type>
             </dependency>
 
@@ -346,14 +374,6 @@
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>console-config</artifactId>
-                <version>${project.version}</version>
-                <classifier>resources</classifier>
-                <type>zip</type>
-            </dependency>
-
-            <dependency>
-                <groupId>${project.groupId}</groupId>
                 <artifactId>console-lib</artifactId>
                 <version>${project.version}</version>
                 <type>swc</type>
@@ -436,7 +456,7 @@
             </dependency>
 
             -->
-            
+
             <dependency>
                 <groupId>com.adobe.flex.framework</groupId>
                 <artifactId>datavisualization</artifactId>
@@ -897,7 +917,7 @@
                 <artifactId>commons-compress</artifactId>
                 <version>${commons-compress.version}</version>
             </dependency>
-            
+
             <!-- Test dependencies -->
             <dependency>
                 <groupId>junit</groupId>
@@ -937,6 +957,12 @@
                 <version>${camel.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.javax.mail</artifactId>
+                <version>${javax.mail.version}</version>
+            </dependency>
+            
         </dependencies>
     </dependencyManagement>
 
@@ -1454,30 +1480,58 @@
 
     </pluginRepositories>
 
-
     <modules>
+        <!-- TODO : Move this to other project -->
         <module>console-tooling</module>
         <module>console-licensing</module>
         <module>console-liveservices/liveupdate</module>
         <module>console-lifecycle</module>
         <module>console-activation</module>
+
+        <!-- Flex specific modules -->
         <module>console-config</module>
         <module>console-services</module>
         <module>console-lib</module>
+        <module>console-ria-base</module>
+        <module>console-branding/console-ee-branding</module>
+        <module>console-branding/console-ce-branding</module>
         <module>console-ria</module>
         <module>console-web</module>
+
+        <!-- IDAU for Console -->
         <module>console-appliance/console-default-idau</module>
         <module>console-appliance/console-jaas</module>
 
     </modules>
 
     <profiles>
+
         <profile>
             <id>qa</id>
             <modules>
                 <module>console-qa</module>
             </modules>
         </profile>
+
+        <profile>
+            <id>ee</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <console.distribution>ee</console.distribution>
+                <console.distribution.descr>EE</console.distribution.descr>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>ce</id>
+            <properties>
+                <console.distribution>ce</console.distribution>
+                <console.distribution.descr>CE</console.distribution.descr>
+            </properties>
+        </profile>
+
     </profiles>
 </project>
 

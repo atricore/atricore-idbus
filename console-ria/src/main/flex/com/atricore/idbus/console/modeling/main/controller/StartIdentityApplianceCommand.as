@@ -47,6 +47,9 @@ public class StartIdentityApplianceCommand extends IocSimpleCommand implements I
     private var _registry:ServiceRegistry;
 
 
+    public function StartIdentityApplianceCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

@@ -32,18 +32,20 @@
     <!--artifactId>idbus-server-web</artifactId-->
     <artifactId>com.atricore.idbus.console.web</artifactId>
     <packaging>war</packaging>
-    <name>Atricore Console :: Web distribution</name>
+    <name>Atricore Console :: Web distribution : ${console.distribution.descr}</name>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <directory>src/main/filtered-resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
-                </configuration>
-            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -53,9 +55,18 @@
                         <!-- add the generated manifest to the war -->
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
                     </archive>
+                    <classifier>${console.distribution}</classifier>
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -67,8 +78,7 @@
                         </goals>
                         <phase>generate-resources</phase>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/flex
-                            </outputDirectory>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/flex</outputDirectory>
                             <includeGroupIds>${project.groupId}</includeGroupIds>
                             <includeArtifactIds>console-config</includeArtifactIds>
                             <includeTypes>zip</includeTypes>
@@ -76,6 +86,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>maven-jetty-plugin</artifactId>
@@ -143,7 +154,6 @@
             <plugin>
                 <groupId>org.sonatype.flexmojos</groupId>
                 <artifactId>flexmojos-maven-plugin</artifactId>
-                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -151,6 +161,7 @@
                             <!-- Copy of Flex resource into WAR -->
                         </goals>
                     </execution>
+
                 </executions>
             </plugin>
             <plugin>
@@ -299,14 +310,22 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>console-ria</artifactId>
-            <type>swf</type>
+            <artifactId>console-services</artifactId>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>console-services</artifactId>
+            <artifactId>console-config</artifactId>
+            <classifier>resources-${console.distribution}</classifier>
+            <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>console-ria</artifactId>
+            <classifier>${console.distribution}</classifier>
+            <type>swf</type>
+        </dependency>
+
 
         <!--<dependency>-->
         <!--<groupId>${project.groupId}</groupId>-->
@@ -347,13 +366,6 @@
             <groupId>org.atricore.idbus.kernel</groupId>
             <artifactId>org.atricore.idbus.kernel.main</artifactId>
             <version>${idbus.kernel.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>console-config</artifactId>
-            <classifier>resources</classifier>
-            <type>zip</type>
         </dependency>
 
         <dependency>
@@ -704,12 +716,6 @@
 
                 <dependency>
                     <groupId>${project.groupId}</groupId>
-                    <artifactId>console-ria</artifactId>
-                    <type>swf</type>
-                </dependency>
-
-                <dependency>
-                    <groupId>${project.groupId}</groupId>
                     <artifactId>console-services</artifactId>
                 </dependency>
 
@@ -815,6 +821,8 @@
 
             </dependencies>
         </profile>
+
+
     </profiles>
 
 

@@ -44,6 +44,8 @@ public class CreateSimpleSSOIdentityApplianceCommand extends IocSimpleCommand im
     private var _projectProxy:ProjectProxy;
     private var _registry:ServiceRegistry;
 
+    public function CreateSimpleSSOIdentityApplianceCommand() {
+    }
 
     public function get registry():ServiceRegistry {
         return _registry;

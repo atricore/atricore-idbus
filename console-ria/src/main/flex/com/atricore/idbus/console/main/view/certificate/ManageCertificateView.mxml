@@ -26,7 +26,8 @@
          defaultButton="{btnConfirm}" styleName="unpadded" width="100%" height="100%" verticalGap="8">
 
     <fx:Script><![CDATA[
-        private static var INPUT_WIDTH:Number = 145;
+        [Bindable]
+        private var inputWidth:Number = 145;
     ]]></fx:Script>
 
     <fx:Declarations>
@@ -49,34 +50,34 @@
                 <s:VGroup width="100%" height="100%">
                     <s:HGroup width="100%" height="100%">
                         <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateKeyPair')}:">
-                            <s:DropDownList id="certificateKeyPair" width="{INPUT_WIDTH}" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.browseKeyPair')}"/>
+                            <s:DropDownList id="certificateKeyPair" width="{inputWidth}" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.browseKeyPair')}"/>
                         </mx:FormItem>
 
                         <s:Button id="btnUpload" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.upload')}" enabled="false"/>
                     </s:HGroup>
 
                     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystoreFormat')}:">
-                        <s:DropDownList id="keystoreFormat" width="{INPUT_WIDTH}" selectedIndex="0">
+                        <s:DropDownList id="keystoreFormat" width="{inputWidth}" selectedIndex="0">
                             <mx:ArrayCollection>
-                                 <fx:Object label="Java Keystore" data="JKS"/>
+                                 <fx:Object label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystoreFormat.jks')}" data="JKS"/>
                              </mx:ArrayCollection>
                         </s:DropDownList>
                     </mx:FormItem>
 
                     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keystorePassword')}:" required="true">
-                        <s:TextInput id="keystorePassword" width="{INPUT_WIDTH}"/>
+                        <s:TextInput id="keystorePassword" width="{inputWidth}"/>
                     </mx:FormItem>
 
                     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.certificateAlias')}:" required="true">
-                        <s:TextInput id="certificateAlias" width="{INPUT_WIDTH}"/>
+                        <s:TextInput id="certificateAlias" width="{inputWidth}"/>
                     </mx:FormItem>
 
                     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keyAlias')}:" required="true">
-                        <s:TextInput id="keyAlias" width="{INPUT_WIDTH}"/>
+                        <s:TextInput id="keyAlias" width="{inputWidth}"/>
                     </mx:FormItem>
 
                     <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'manageCertificate.form.keyPassword')}:" required="true">
-                        <s:TextInput id="keyPassword" width="{INPUT_WIDTH}"/>
+                        <s:TextInput id="keyPassword" width="{inputWidth}"/>
                     </mx:FormItem>
                     <mx:Spacer height="5" />
                 </s:VGroup>

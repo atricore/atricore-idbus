@@ -38,15 +38,11 @@ import com.atricore.idbus.console.main.BasePopUpManager;
 
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
-import mx.resources.IResourceManager;
-import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.IFacade;
 import org.puremvc.as3.interfaces.INotification;
 
 public class AccountManagementPopUpManager extends BasePopUpManager {
-
-    var resMan:IResourceManager = ResourceManager.getInstance();
 
     // mediators
     private var _groupsMediator:GroupsMediator;
@@ -66,6 +62,10 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     private var _searchGroupsForm:SearchGroupsForm;
     private var _searchUsersForm:SearchUsersForm;
 
+
+    public function AccountManagementPopUpManager() {
+        super();
+    }
 
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
@@ -140,7 +140,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createAddGroupForm();
         
-        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.add.form.heading');
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.add.form.heading');
         _popup.width = 400;
         _popup.height =200;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -163,7 +163,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createAddUserForm();
         
-        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.add.form.heading');
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.add.form.heading');
         _popup.width = 520;
         _popup.height = 450;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -185,7 +185,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createEditGroupForm();
 
-        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.edit.form.heading');
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.edit.form.heading');
         _popup.width = 400;
         _popup.height =200;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -207,7 +207,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createEditUserForm();
         
-        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.edit.form.heading');
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.edit.form.heading');
         _popup.width = 520;
         _popup.height = 450;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -230,7 +230,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createSearchGroupsForm();
 
-        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.search.panel.title');
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.search.panel.title');
         _popup.width = 400;
         _popup.height =200;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -252,7 +252,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createSearchUserForm();
         
-        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.users.search.panel.title');
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.search.panel.title');
         _popup.width = 300;
         _popup.height = 235;
         _popup.x = (_popupParent.width / 2) - 225;

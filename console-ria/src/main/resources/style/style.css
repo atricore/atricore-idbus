@@ -197,10 +197,11 @@ Label.storyHead {
 .messageText {
     font-size: 12;
 }
-
+/*
+// Not used
 ToolTip {
     font-size: 12;
-}
+}*/
 
 .storyView {
     padding-bottom: 0;
