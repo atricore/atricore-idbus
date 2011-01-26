@@ -734,6 +734,16 @@
         <property name="processingMediator" ref="processingMediator"/>
     </object>
 
+    <object id="licensingPopUpManager"
+            class="com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager">
+        <property name="updateLicenseMediator" ref="updateLicenseMediator"/>
+    </object>
+
+    <object id="liveUpdatePopUpManager"
+            class="com.atricore.idbus.console.liveupdate.main.view.LiveUpdatePopUpManager">
+        <property name="updateNotificationMediator" ref="updateNotificationMediator"/>
+    </object>
+
     <!-- App Section View Factories -->
     <object id="modelerViewFactory" class="com.atricore.idbus.console.modeling.main.ModelerViewFactory"/>
     <object id="lifecycleViewFactory" class="com.atricore.idbus.console.lifecycle.main.LifecycleViewFactory"/>

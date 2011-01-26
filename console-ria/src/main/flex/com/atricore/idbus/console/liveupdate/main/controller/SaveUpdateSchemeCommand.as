@@ -41,6 +41,9 @@ public class SaveUpdateSchemeCommand extends IocSimpleCommand implements IRespon
     private var _registry:ServiceRegistry;
     private var _liveUpdateProxy:LiveUpdateProxy;
 
+    public function SaveUpdateSchemeCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

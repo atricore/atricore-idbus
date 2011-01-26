@@ -43,6 +43,9 @@ public class ApplyUpdateCommand extends IocSimpleCommand implements IResponder {
     private var _registry:ServiceRegistry;
     private var _liveUpdateProxy:LiveUpdateProxy;
 
+    public function ApplyUpdateCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

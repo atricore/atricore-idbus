@@ -46,6 +46,9 @@ public class GetUpdateProfileCommand extends IocSimpleCommand implements IRespon
     private var _registry:ServiceRegistry;
     private var _liveUpdateProxy:LiveUpdateProxy;
 
+    public function GetUpdateProfileCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

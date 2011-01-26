@@ -43,6 +43,9 @@ public class CheckForUpdatesCommand extends IocSimpleCommand implements IRespond
     private var _registry:ServiceRegistry;
     private var _liveUpdateProxy:LiveUpdateProxy;
 
+    public function CheckForUpdatesCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }

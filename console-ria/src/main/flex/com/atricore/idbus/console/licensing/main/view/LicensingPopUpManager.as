@@ -35,13 +35,15 @@ import org.puremvc.as3.interfaces.INotification;
 
 public class LicensingPopUpManager extends BasePopUpManager {
 
-    var resMan:IResourceManager = ResourceManager.getInstance();
-
     // mediators
     private var _updateLicenseMediator:UpdateLicenseMediator;
 
     // views
     private var _updateLicenseForm:UpdateLicenseForm;
+
+    public function LicensingPopUpManager() {
+        super();
+    }
 
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
@@ -60,7 +62,7 @@ public class LicensingPopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createUpdateLicenseForm();
         
-        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'licensing.update.form.heading');
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.update.form.heading');
         _popup.width = 400;
         _popup.height =200;
         _popup.x = (_popupParent.width / 2) - 225;

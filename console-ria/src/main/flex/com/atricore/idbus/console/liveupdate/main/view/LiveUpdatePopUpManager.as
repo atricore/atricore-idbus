@@ -42,6 +42,10 @@ public class LiveUpdatePopUpManager extends BasePopUpManager {
     // views
     private var _updateNotificationForm:UpdateNotificationForm;
 
+    public function LiveUpdatePopUpManager() {
+        super();
+    }
+
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
         _popup.styleName = "liveUpdatePopup";

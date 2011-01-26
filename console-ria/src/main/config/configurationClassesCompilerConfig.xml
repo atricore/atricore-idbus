@@ -50,6 +50,8 @@
         <symbol>com.atricore.idbus.console.main.model.SecureContextProxy</symbol>
         <symbol>com.atricore.idbus.console.main.model.ProfileProxy</symbol>
 
+        <symbol>com.atricore.idbus.console.main.ConsolePopUpManager</symbol>
+
 
         <!-- Lifecycle classes -->
         <symbol>com.atricore.idbus.console.lifecycle.main.LifecycleMediator</symbol>
@@ -165,6 +167,21 @@
         <symbol>com.atricore.idbus.console.account.users.UsersMediator</symbol>
         <symbol>com.atricore.idbus.console.account.userproperties.UserPropertiesMediator</symbol>
 
+         <!-- Licensing classes -->
+        <symbol>com.atricore.idbus.console.licensing.LicenseMediator</symbol>
+        <symbol>com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand</symbol>
+        <symbol>com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager</symbol>
+
+        <!-- LiveUpdate classes -->
+        <symbol>com.atricore.idbus.console.liveupdate.main.LiveUpdateMediator</symbol>
+        <symbol>com.atricore.idbus.console.liveupdate.main.view.notifications.UpdateNotificationMediator</symbol>
+        <symbol>com.atricore.idbus.console.liveupdate.main.controller.ApplyUpdateCommand</symbol>
+        <symbol>com.atricore.idbus.console.liveupdate.main.controller.CheckForUpdatesCommand</symbol>
+        <symbol>com.atricore.idbus.console.liveupdate.main.controller.GetUpdateProfileCommand</symbol>
+        <symbol>com.atricore.idbus.console.liveupdate.main.controller.ListUpdatesCommand</symbol>
+        <symbol>com.atricore.idbus.console.liveupdate.main.controller.LoadUpdateSchemeCommand</symbol>
+        <symbol>com.atricore.idbus.console.liveupdate.main.controller.SaveUpdateSchemeCommand</symbol>
+        <symbol>com.atricore.idbus.console.liveupdate.main.view.LiveUpdatePopUpManager</symbol>
 
         <!-- General classes -->
         <!--

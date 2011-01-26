@@ -29,7 +29,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const IDENTITY_APPLIANCE_MANAGEMENT_SERVICE:String = "identityApplianceManagementService";
     public static const PROFILE_MANAGEMENT_SERVICE:String = "profileManagementService";
     public static const SIGN_ON_SERVICE:String = "signOnService";
-    public static const LICENSE_MANAGEMENT_SERVICE = "licenseManagementService";
+    public static const LICENSE_MANAGEMENT_SERVICE:String = "licenseManagementService";
                                                       
     public static const LIVE_UPDATE_SERVICE:String = "liveUpdateService";
 
@@ -178,12 +178,15 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const DISPLAY_CHANGE_PASSWORD:String = "displayChangePassword";
     public static const APPLIANCE_VALIDATION_ERRORS:String = "applianceValidationErrors";
     public static const APPLIANCE_SAVED:String = "applianceSaved";
-    public static const DISPLAY_UPDATE_LICENSE = "displayUpdateLicense";
+    public static const DISPLAY_UPDATE_LICENSE:String = "displayUpdateLicense";
     public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
     public static const EXPORT_PROVIDER_CERTIFICATE:String = "exportProviderCertificate";
     public static const EXPORT_METADATA:String = "exportMetadata";
     public static const DISPLAY_UPDATE_NOTIFICATIONS:String = "displayUpdateNotifications";
 
+    // TODO: remove this?
+    public static const LICENSE_VIEW_SELECTED:String = "licenseViewSelected";
+    public static const UPDATE_VIEW_SELECTED:String = "updateViewSelected";
 
     public function ApplicationFacade(p_configuration:* = null) {
         super(p_configuration);

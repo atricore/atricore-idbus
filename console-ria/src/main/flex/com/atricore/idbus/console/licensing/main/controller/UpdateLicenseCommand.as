@@ -42,6 +42,8 @@ public class UpdateLicenseCommand extends IocSimpleCommand implements IResponder
 
     private var _registry:ServiceRegistry;
 
+    public function UpdateLicenseCommand() {
+    }
 
     public function get registry():ServiceRegistry {
         return _registry;

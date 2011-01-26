@@ -37,7 +37,7 @@
     <s:HGroup>
         <s:CheckBox width="100" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.schemeEnabled')}"/>
         <s:Label text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.schemeName')}" />
-        <s:ComboBox id="cbUpdateNature" resize="">
+        <s:ComboBox id="cbUpdateNature">
             <s:dataProvider>
             <mx:ArrayList>
                 <fx:String>SECURITY</fx:String>

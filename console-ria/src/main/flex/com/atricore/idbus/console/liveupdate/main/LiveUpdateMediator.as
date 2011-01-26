@@ -141,7 +141,7 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
         var title:String = resMan.getString(AtricoreConsole.BUNDLE, 'liveupdate.installUpdate.title');
 
         var updAlert:Alert = Alert.show(alertBody, title, (Alert.OK | Alert.CANCEL), view,
-                                       function (event:CloseEvent) {
+                                       function (event:CloseEvent):void {
                                            if (event.detail == Alert.OK) {
                                                sendNotification(ApplicationFacade.APPLY_UPDATE, updReq);
                                                sendNotification(ProcessingMediator.START);
@@ -216,7 +216,7 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
                 sendNotification(ProcessingMediator.STOP);
                 var msg:String = resMan.getString(AtricoreConsole.BUNDLE, 'liveupdate.restart.warning');
                 var wMsg:Alert = Alert.show(msg, "Warning!", Alert.OK , view,
-                                           function (event:CloseEvent) {
+                                           function (event:CloseEvent):void {
                                                PopUpManager.removePopUp(wMsg);
                                            });
                 break;

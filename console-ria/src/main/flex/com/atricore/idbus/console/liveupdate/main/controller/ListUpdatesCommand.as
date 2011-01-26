@@ -42,6 +42,9 @@ public class ListUpdatesCommand extends IocSimpleCommand implements IResponder {
     private var _registry:ServiceRegistry;
     private var _liveUpdateProxy:LiveUpdateProxy;
 
+    public function ListUpdatesCommand() {
+    }
+
     public function get registry():ServiceRegistry {
         return _registry;
     }
