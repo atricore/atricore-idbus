@@ -199,7 +199,6 @@
                         <Require-Bundle>
                             com.atricore.idbus.console.lifecycle.main,
                             com.atricore.idbus.console.activation.main,
-                            com.atricore.idbus.console.liveservices.liveupdate.main,
                             com.atricore.idbus.console.licensing.main
                         </Require-Bundle>
                         <Import-Package>
@@ -259,8 +258,9 @@
                             com.atricore.idbus.console.lifecycle.main.spi.request,
                             com.atricore.idbus.console.lifecycle.main.spi.response,
                             com.atricore.idbus.console.lifecycle.main.util,
-                            com.atricore.liveservices.liveupdate._1_0.md,
-                            com.atricore.liveservices.liveupdate._1_0.profile,
+                            com.atricore.idbus.console.liveservices.liveupdate.*; resolution:=optional,
+                            com.atricore.liveservices.liveupdate._1_0.md; resolution:=optional,,
+                            com.atricore.liveservices.liveupdate._1_0.profile; resolution:=optional,,
                             org.springframework.core.io,
                             org.springframework.context; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
                             org.springframework.beans; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
