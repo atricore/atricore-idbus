@@ -35,4 +35,32 @@
     <artifactId>com.atricore.idbus.console.liveservices.liveupdate.management</artifactId>
     <name>Atricore Console :: LiveUpdate : Management</name>
 
+
+    <description>Atricore LiveUpdate Management</description>
+    <packaging>bundle</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${felix.plugin.version}</version>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Export-Package>com.atricore.idbus.console.liveservices.liveupdate.main.*;version=${pom.version}</Export-Package>
+                        <Spring-Context>*;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
+                        <Import-Package>
+                            org.springframework.context.support,
+                            org.springframework.beans.factory.config,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+
+    </build>
+
+
 </project>
