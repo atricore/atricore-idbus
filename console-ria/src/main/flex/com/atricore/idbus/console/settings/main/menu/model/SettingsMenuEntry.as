@@ -10,6 +10,7 @@ public class SettingsMenuEntry {
     private var _shortDescription:String;
     private var _mediatorName:String;
     private var _viewName:String;
+    private var _viewPriority:int = 0;
 
     public function SettingsMenuEntry() {
     }
@@ -52,6 +53,14 @@ public class SettingsMenuEntry {
 
     public function set viewName(value:String):void {
         _viewName = value;
+    }
+
+    public function get viewPriority():int {
+        return _viewPriority;
+    }
+
+    public function set viewPriority(value:int):void {
+        _viewPriority = value;
     }
 
     public function toString():String {

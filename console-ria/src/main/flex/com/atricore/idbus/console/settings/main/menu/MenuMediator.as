@@ -65,6 +65,12 @@ public class MenuMediator extends IocMediator {
             smr.add(settingsMenuDrawer);
         });
 
+        // Sort drawers
+        function sortMenuDrawers(a:SettingsMenuDrawer, b:SettingsMenuDrawer):int {
+            return a.viewPriority - b.viewPriority;
+        }
+        smr.children.sort(sortMenuDrawers);
+
         view.rptSettingsMenuRoot.dataProvider = smr;
         view.addEventListener(SettingsMenuEvent.CLICK, handleMenuClick);
     }

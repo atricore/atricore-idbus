@@ -16,7 +16,7 @@ public class SettingsMenuContainer extends SettingsMenuEntry {
         if (args[0] is Number) {
             _children[args[0]] = entry;
         } else {
-            _children[_children.length] = entry;
+            _children.push(entry);
         }
     }
 

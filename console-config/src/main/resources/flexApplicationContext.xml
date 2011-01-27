@@ -734,6 +734,7 @@
     <object id="licenseMenuDrawer" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer">
         <property name="label" value="Licensing"/>
         <property name="shortDescription" value="Licensing Drawer"/>
+        <property name="viewPriority" value="20"/>
         <property name="children">
             <array>
                 <value><ref>licenseManagementMenuEntry</ref></value>
