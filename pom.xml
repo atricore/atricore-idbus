@@ -1480,30 +1480,6 @@
 
     </pluginRepositories>
 
-    <modules>
-        <!-- TODO : Move this to other project -->
-        <module>console-tooling</module>
-        <module>console-licensing</module>
-        <module>console-liveservices/liveupdate</module>
-        <module>console-lifecycle</module>
-        <module>console-activation</module>
-
-        <!-- Flex specific modules -->
-        <module>console-config</module>
-        <module>console-services</module>
-        <module>console-lib</module>
-        <module>console-ria-base</module>
-        <module>console-branding/console-ee-branding</module>
-        <module>console-branding/console-ce-branding</module>
-        <module>console-ria</module>
-        <module>console-web</module>
-
-        <!-- IDAU for Console -->
-        <module>console-appliance/console-default-idau</module>
-        <module>console-appliance/console-jaas</module>
-
-    </modules>
-
     <profiles>
 
         <profile>
@@ -1522,6 +1498,31 @@
                 <console.distribution>ee</console.distribution>
                 <console.distribution.descr>EE</console.distribution.descr>
             </properties>
+
+            <modules>
+                <!-- TODO : Move this to other project -->
+                <module>console-tooling</module>
+                <module>console-licensing</module>
+                <module>console-liveservices/liveupdate</module>
+                <module>console-lifecycle</module>
+                <module>console-activation</module>
+
+                <!-- Flex specific modules -->
+                <module>console-config</module>
+                <module>console-services</module>
+                <module>console-lib</module>
+                <module>console-ria-base</module>
+                <module>console-branding/console-ee-branding</module>
+                <module>console-branding/console-ce-branding</module>
+                <module>console-ria</module>
+                <module>console-web</module>
+
+                <!-- IDAU for Console -->
+                <module>console-appliance/console-default-idau</module>
+                <module>console-appliance/console-jaas</module>
+
+            </modules>
+
         </profile>
 
         <profile>
@@ -1530,7 +1531,76 @@
                 <console.distribution>ce</console.distribution>
                 <console.distribution.descr>CE</console.distribution.descr>
             </properties>
+
+            <modules>
+                <!-- TODO : Move this to other project -->
+                <module>console-tooling</module>
+                <module>console-licensing</module>
+                <module>console-liveservices/liveupdate</module>
+                <module>console-lifecycle</module>
+                <module>console-activation</module>
+
+                <!-- Flex specific modules -->
+                <module>console-config</module>
+                <module>console-services</module>
+                <module>console-lib</module>
+                <module>console-ria-base</module>
+                <module>console-branding/console-ee-branding</module>
+                <module>console-branding/console-ce-branding</module>
+                <module>console-ria</module>
+                <module>console-web</module>
+
+                <!-- IDAU for Console -->
+                <module>console-appliance/console-default-idau</module>
+                <module>console-appliance/console-jaas</module>
+
+            </modules>
+
         </profile>
+
+        <profile>
+            <id>ee-web</id>
+            <properties>
+                <console.distribution>ee</console.distribution>
+                <console.distribution.descr>EE</console.distribution.descr>
+            </properties>
+
+            <modules>
+                <!-- Flex specific modules -->
+                <module>console-config</module>
+                <module>console-services</module>
+                <module>console-lib</module>
+                <module>console-ria-base</module>
+                <module>console-branding/console-ee-branding</module>
+                <module>console-branding/console-ce-branding</module>
+                <module>console-ria</module>
+                <module>console-web</module>
+
+            </modules>
+
+        </profile>
+
+        <profile>
+            <id>ce-web</id>
+            <properties>
+                <console.distribution>ce</console.distribution>
+                <console.distribution.descr>CE</console.distribution.descr>
+            </properties>
+
+            <modules>
+                <!-- Flex specific modules -->
+                <module>console-config</module>
+                <module>console-services</module>
+                <module>console-lib</module>
+                <module>console-ria-base</module>
+                <module>console-branding/console-ee-branding</module>
+                <module>console-branding/console-ce-branding</module>
+                <module>console-ria</module>
+                <module>console-web</module>
+            </modules>
+
+        </profile>
+
 
     </profiles>
 </project>
