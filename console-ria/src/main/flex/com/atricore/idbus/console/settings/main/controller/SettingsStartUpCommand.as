@@ -6,21 +6,21 @@ import com.atricore.idbus.console.base.app.BaseStartupContext;
 import com.atricore.idbus.console.base.extensions.appsection.AppSectionStartUpCommand;
 import com.atricore.idbus.console.settings.main.SettingsMediator;
 
+import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 
 public class SettingsStartUpCommand extends AppSectionStartUpCommand {
 
-    private var _settingsMediator:SettingsMediator;
+    private var _menuMediator:IIocMediator;
 
     public function SettingsStartUpCommand() {
     }
 
-
     public function get settingsMediator():SettingsMediator {
-        return _settingsMediator;
+        return appSectionMediator as SettingsMediator;
     }
 
     public function set settingsMediator(value:SettingsMediator):void {
-        _settingsMediator = value;
+        appSectionMediator = value;
     }
 
     override protected function setupCommands(ctx:BaseStartupContext):void {
@@ -29,9 +29,15 @@ public class SettingsStartUpCommand extends AppSectionStartUpCommand {
 
     override protected function setupMediators(ctx:BaseStartupContext):void {
         super.setupMediators(ctx);
-        iocFacade.registerMediatorByConfigName(settingsMediator.getConfigName());
-
+        iocFacade.registerMediatorByConfigName(menuMediator.getConfigName());
     }
 
+    public function get menuMediator():IIocMediator {
+        return _menuMediator;
+    }
+
+    public function set menuMediator(value:IIocMediator):void {
+        _menuMediator = value;
+    }
 }
 }

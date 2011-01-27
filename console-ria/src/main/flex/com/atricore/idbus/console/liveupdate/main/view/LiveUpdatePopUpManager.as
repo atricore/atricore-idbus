@@ -26,15 +26,12 @@ import com.atricore.idbus.console.main.BasePopUpManager;
 
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
-import mx.resources.IResourceManager;
-import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.IFacade;
 import org.puremvc.as3.interfaces.INotification;
+import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
 
 public class LiveUpdatePopUpManager extends BasePopUpManager {
-
-    private var resMan:IResourceManager = ResourceManager.getInstance();
 
     // mediators
     private var _updateNotificationMediator:UpdateNotificationMediator;
@@ -49,6 +46,7 @@ public class LiveUpdatePopUpManager extends BasePopUpManager {
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
         _popup.styleName = "liveUpdatePopup";
+        (facade as IIocFacade).registerMediatorByConfigName(updateNotificationMediator.getConfigName());
     }
 
     // Update Notification Popup
@@ -56,7 +54,7 @@ public class LiveUpdatePopUpManager extends BasePopUpManager {
         _lastWindowNotification = notification;
         createUpdateNotificationForm();
 
-        _popup.title = resMan.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.form.popupHeading');
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.form.popupHeading');
         _popup.width = 600;
         _popup.height =400;
         _popup.x = (_popupParent.width / 2) - 225;

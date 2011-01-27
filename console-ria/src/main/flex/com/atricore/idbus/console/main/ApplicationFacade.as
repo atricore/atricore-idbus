@@ -183,6 +183,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const EXPORT_PROVIDER_CERTIFICATE:String = "exportProviderCertificate";
     public static const EXPORT_METADATA:String = "exportMetadata";
     public static const DISPLAY_UPDATE_NOTIFICATIONS:String = "displayUpdateNotifications";
+    public static const SETTINGS_MENU_ELEMENT_SELECTED:String = "settingsMenuElementSelected";
 
     // TODO: remove this?
     public static const LICENSE_VIEW_SELECTED:String = "licenseViewSelected";
@@ -197,7 +198,7 @@ public class ApplicationFacade extends BaseAppFacade {
      */
     public static function getInstance(p_configSource:* = null):ApplicationFacade {
         if (instance == null) {
-            new ApplicationFacade(p_configSource);
+            instance = new ApplicationFacade(p_configSource);
         }
 
         return instance as ApplicationFacade;

@@ -88,7 +88,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     }
 
     override protected function setupMediators(ctx:BaseStartupContext):void {
-        iocFacade.registerMediatorByConfigName(appSectionMediator.getConfigName());
+        super.setupMediators(ctx);
 
         iocFacade.registerMediatorByConfigName(browserMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(diagramMediator.getConfigName());
@@ -127,6 +127,7 @@ public class ModelerStartUpCommand extends AppSectionStartUpCommand {
     }
 
     override protected function setupCommands(ctx:BaseStartupContext):void {
+        super.setupCommands(ctx);
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_SIMPLE_SSO_IDENTITY_APPLIANCE, createSimpleSSOIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, identityApplianceCreateCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.IMPORT_IDENTITY_APPLIANCE, identityApplianceImportCommand.getConfigName());

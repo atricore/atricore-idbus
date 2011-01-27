@@ -35,7 +35,6 @@
         <symbol>com.atricore.idbus.console.main.controller.UploadCommand</symbol>
         <symbol>com.atricore.idbus.console.main.controller.SetupServerCommand</symbol>
         <symbol>com.atricore.idbus.console.main.controller.RegisterCommand</symbol>
-        <symbol>com.atricore.idbus.console.main.controller.ApplicationStartUpCommand</symbol>
 
         <symbol>com.atricore.idbus.console.main.view.form.IocFormMediator</symbol>
         <symbol>com.atricore.idbus.console.main.view.certificate.ManageCertificateMediator</symbol>
@@ -167,7 +166,17 @@
         <symbol>com.atricore.idbus.console.account.users.UsersMediator</symbol>
         <symbol>com.atricore.idbus.console.account.userproperties.UserPropertiesMediator</symbol>
 
-         <!-- Licensing classes -->
+        <!-- Settings classes -->
+        <symbol>com.atricore.idbus.console.settings.main.SettingsMediator</symbol>
+        <symbol>com.atricore.idbus.console.settings.main.SettingsViewFactory</symbol>        
+        <symbol>com.atricore.idbus.console.settings.main.controller.SettingsStartUpCommand</symbol>
+        <symbol>com.atricore.idbus.console.settings.main.menu.MenuMediator</symbol>
+        <symbol>com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry</symbol>
+        <symbol>com.atricore.idbus.console.settings.main.menu.model.SettingsMenuContainer</symbol>
+        <symbol>com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer</symbol>
+        <symbol>com.atricore.idbus.console.settings.main.menu.model.SettingsMenuRoot</symbol>
+
+        <!-- Licensing classes -->
         <symbol>com.atricore.idbus.console.licensing.LicenseMediator</symbol>
         <symbol>com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand</symbol>
         <symbol>com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager</symbol>

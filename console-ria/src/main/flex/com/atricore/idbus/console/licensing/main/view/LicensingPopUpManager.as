@@ -20,18 +20,16 @@
  */
 
 package com.atricore.idbus.console.licensing.main.view {
-
 import com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseForm;
 import com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator;
 import com.atricore.idbus.console.main.BasePopUpManager;
 
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
-import mx.resources.IResourceManager;
-import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.IFacade;
 import org.puremvc.as3.interfaces.INotification;
+import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
 
 public class LicensingPopUpManager extends BasePopUpManager {
 
@@ -48,6 +46,7 @@ public class LicensingPopUpManager extends BasePopUpManager {
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
         _popup.styleName = "accountManPopup";
+        (facade as IIocFacade).registerMediatorByConfigName(updateLicenseMediator.getConfigName());
     }
 
     public function get updateLicenseMediator():UpdateLicenseMediator {

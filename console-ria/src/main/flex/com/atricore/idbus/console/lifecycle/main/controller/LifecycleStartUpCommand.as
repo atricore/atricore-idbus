@@ -30,10 +30,11 @@ public class LifecycleStartUpCommand extends AppSectionStartUpCommand {
     }
 
     override protected function setupMediators(ctx:BaseStartupContext):void {
-        iocFacade.registerMediatorByConfigName(lifecycleMediator.getConfigName());
+        super.setupMediators(ctx);
     }
 
     override protected function setupCommands(ctx:BaseStartupContext):void {
+        super.setupCommands(ctx);
         iocFacade.registerCommandByConfigName(ApplicationFacade.BUILD_IDENTITY_APPLIANCE, buildIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE, deployIdentityApplianceCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.UNDEPLOY_IDENTITY_APPLIANCE, undeployIdentityApplianceCommand.getConfigName());

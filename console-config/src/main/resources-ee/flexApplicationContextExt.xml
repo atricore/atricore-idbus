@@ -8,6 +8,68 @@
 
     <!-- EE Console Extensions -->
 
+    <!-- LiveUpdate -->
+    <object id="liveUpdateProxy" class="com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy"/>
+    
+    <object id="liveUpdateMediator" class="com.atricore.idbus.console.liveupdate.main.LiveUpdateMediator">
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+        <property name="liveUpdatePopUpManager" ref="liveUpdatePopUpManager"/>
+    </object>
+
+    <object id="updateNotificationMediator"
+            class="com.atricore.idbus.console.liveupdate.main.view.notifications.UpdateNotificationMediator" >
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
+    <object id="listUpdatesCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.ListUpdatesCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
+    <object id="checkForUpdatesCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.CheckForUpdatesCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
+    <object id="applyUpdateCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.ApplyUpdateCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
+    <object id="getUpdateProfileCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.GetUpdateProfileCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
+    <object id="liveUpdatePopUpManager"
+            class="com.atricore.idbus.console.liveupdate.main.view.LiveUpdatePopUpManager">
+        <property name="updateNotificationMediator" ref="updateNotificationMediator"/>
+    </object>
+    
+    <!-- LiveUpdate Settings Menu -->
+    <object id="liveServicesMenuDrawer" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer">
+        <property name="label" value="Live Services"/>
+        <property name="shortDescription" value="Live Services Drawer"/>
+        <property name="children">
+            <array>
+                <value><ref>liveUpdateMenuEntry</ref></value>
+            </array>
+        </property>
+    </object>
+
+    <object id="liveUpdateMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="LiveUpdate"/>
+        <property name="shortDescription" value="LiveUpdate Entry"/>
+        <property name="mediatorName" value="liveUpdateMediator"/>
+        <property name="viewName" value="liveUpdateView"/>
+    </object>
+
+    <object id="liveUpdateView" class="com.atricore.idbus.console.liveupdate.main.LiveUpdateView"/>
+    
     <!-- Branding Factory -->
     <object id="brandingFactory" class="com.atricore.idbus.console.branding.ee.AtricoreEEBrandingFactory"/>
 

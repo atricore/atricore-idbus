@@ -46,8 +46,7 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
     }
 
     override protected function setupMediators(ctx:BaseStartupContext):void {
-        iocFacade.registerMediatorByConfigName(appSectionMediator.getConfigName());
-
+        super.setupMediators(ctx);
         iocFacade.registerMediatorByConfigName(groupsMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(groupPropertiesMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(addGroupMediator.getConfigName());
@@ -61,6 +60,7 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
     }
 
     override protected function setupCommands(ctx:BaseStartupContext):void {
+        super.setupCommands(ctx);
         iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_GROUP, addGroupCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_USER, addUserCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DELETE_GROUP, deleteGroupCommand.getConfigName());

@@ -14,8 +14,7 @@
     <object id="profileProxy" class="com.atricore.idbus.console.main.model.ProfileProxy"/>
     <object id="secureContextProxy" class="com.atricore.idbus.console.main.model.SecureContextProxy"/>
     <object id="accountManagementProxy" class="com.atricore.idbus.console.account.main.model.AccountManagementProxy"/>
-    <object id="liveUpdateProxy" class="com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy"/>
-
+    
     <!-- StartUp Commands -->
     <object id="startupCommand"
             class="com.atricore.idbus.console.main.controller.ApplicationStartUpCommand">
@@ -155,6 +154,14 @@
         <property name="listUsersCommand" ref="listUsersCommand"/>
         <property name="searchGroupsCommand" ref="searchGroupsCommand"/>
         <property name="searchUsersCommand" ref="searchUsersCommand"/>
+    </object>
+
+    <object id="settingsStartupCommand"
+            class="com.atricore.idbus.console.settings.main.controller.SettingsStartUpCommand">
+        <property name="settingsMediator" ref="settingsMediator"/>
+
+        <!-- Mediators -->
+        <property name="menuMediator" ref="settingsMenuMediator"/>
     </object>
 
     <!-- Commands -->
@@ -396,30 +403,6 @@
         <property name="projectProxy" ref="projectProxy"/>
     </object>
 
-    <object id="listUpdatesCommand"
-            class="com.atricore.idbus.console.liveupdate.main.controller.ListUpdatesCommand">
-        <property name="registry" ref="serviceRegistry"/>
-        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
-    </object>
-
-    <object id="checkForUpdatesCommand"
-            class="com.atricore.idbus.console.liveupdate.main.controller.CheckForUpdatesCommand">
-        <property name="registry" ref="serviceRegistry"/>
-        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
-    </object>
-
-    <object id="applyUpdateCommand"
-            class="com.atricore.idbus.console.liveupdate.main.controller.ApplyUpdateCommand">
-        <property name="registry" ref="serviceRegistry"/>
-        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
-    </object>
-
-    <object id="getUpdateProfileCommand"
-            class="com.atricore.idbus.console.liveupdate.main.controller.GetUpdateProfileCommand">
-        <property name="registry" ref="serviceRegistry"/>
-        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
-    </object>
-
     <!-- Mediators -->
     <object id="manageCertificateMediator"
             class="com.atricore.idbus.console.main.view.certificate.ManageCertificateMediator">
@@ -642,14 +625,16 @@
         <property name="viewPriority" value="30"/>
     </object>
 
-    <object id="liveUpdateMediator" class="com.atricore.idbus.console.liveupdate.main.LiveUpdateMediator">
-        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
-        <property name="liveUpdatePopUpManager" ref="liveUpdatePopUpManager"/>
+    <object id="settingsMediator" class="com.atricore.idbus.console.settings.main.SettingsMediator">
+        <property name="projectProxy" ref="projectProxy"/>
+        <property name="menuMediator" ref="settingsMenuMediator"/>
+
+        <property name="viewFactory" ref="settingsViewFactory"/>
+        <property name="viewPriority" value="40"/>
     </object>
 
-    <object id="updateNotificationMediator"
-            class="com.atricore.idbus.console.liveupdate.main.view.notifications.UpdateNotificationMediator" >
-        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    <object id="settingsMenuMediator" class="com.atricore.idbus.console.settings.main.menu.MenuMediator">
+        <property name="projectProxy" ref="projectProxy"/>
     </object>
 
     <object id="licenseMediator" class="com.atricore.idbus.console.licensing.LicenseMediator">
@@ -739,14 +724,30 @@
         <property name="updateLicenseMediator" ref="updateLicenseMediator"/>
     </object>
 
-    <object id="liveUpdatePopUpManager"
-            class="com.atricore.idbus.console.liveupdate.main.view.LiveUpdatePopUpManager">
-        <property name="updateNotificationMediator" ref="updateNotificationMediator"/>
-    </object>
-
     <!-- App Section View Factories -->
     <object id="modelerViewFactory" class="com.atricore.idbus.console.modeling.main.ModelerViewFactory"/>
     <object id="lifecycleViewFactory" class="com.atricore.idbus.console.lifecycle.main.LifecycleViewFactory"/>
     <object id="accountManagementViewFactory" class="com.atricore.idbus.console.account.main.AccountManagementViewFactory"/>
+    <object id="settingsViewFactory" class="com.atricore.idbus.console.settings.main.SettingsViewFactory"/>
+
+    <!-- License Settings Menu -->
+    <object id="licenseMenuDrawer" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer">
+        <property name="label" value="Licensing"/>
+        <property name="shortDescription" value="Licensing Drawer"/>
+        <property name="children">
+            <array>
+                <value><ref>licenseManagementMenuEntry</ref></value>
+            </array>
+        </property>
+    </object>
+
+    <object id="licenseManagementMenuEntry" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry">
+        <property name="label" value="License Management"/>
+        <property name="shortDescription" value="License Management Entry"/>
+        <property name="mediatorName" value="licenseMediator"/>
+        <property name="viewName" value="licenseView"/>
+    </object>
+
+    <object id="licenseView" class="com.atricore.idbus.console.licensing.LicenseView"/>
 
 </objects>
