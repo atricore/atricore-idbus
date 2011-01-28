@@ -20,8 +20,10 @@
  */
 
 package com.atricore.idbus.console.licensing.main.view {
+import com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand;
 import com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseForm;
 import com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator;
+import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.BasePopUpManager;
 
 import mx.core.UIComponent;
@@ -39,6 +41,9 @@ public class LicensingPopUpManager extends BasePopUpManager {
     // views
     private var _updateLicenseForm:UpdateLicenseForm;
 
+    //commands
+    private var _updateLicenseCommand:UpdateLicenseCommand;
+
     public function LicensingPopUpManager() {
         super();
     }
@@ -47,6 +52,7 @@ public class LicensingPopUpManager extends BasePopUpManager {
         super.init(facade, popupParent);
         _popup.styleName = "accountManPopup";
         (facade as IIocFacade).registerMediatorByConfigName(updateLicenseMediator.getConfigName());
+        (facade as IIocFacade).registerCommandByConfigName(ApplicationFacade.UPDATE_LICENSE, updateLicenseCommand.getConfigName());
     }
 
     public function get updateLicenseMediator():UpdateLicenseMediator {
@@ -56,14 +62,22 @@ public class LicensingPopUpManager extends BasePopUpManager {
     public function set updateLicenseMediator(value:UpdateLicenseMediator):void {
         _updateLicenseMediator = value;
     }
-    
+
+    public function get updateLicenseCommand():UpdateLicenseCommand {
+        return _updateLicenseCommand;
+    }
+
+    public function set updateLicenseCommand(value:UpdateLicenseCommand):void {
+        _updateLicenseCommand = value;
+    }
+
     public function showUpdateLicenseWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createUpdateLicenseForm();
         
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.update.form.heading');
-        _popup.width = 400;
-        _popup.height =200;
+        _popup.width = 360;
+        _popup.height =140;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_updateLicenseForm);

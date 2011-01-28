@@ -7,8 +7,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,34 +18,32 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
 
     private String baseFolder;
 
-    private URI baseUri;
+//    private URI baseUri;
     
     public void init() throws LiveUpdateException {
-        try {
-            if (baseFolder == null)
-                baseFolder = "file:" +
-                        System.getProperty("karaf.data",
-                        System.getProperty("java.io.tmpdir")) +
-                        "/liveservices/liveupdate/notifications/email";
+        if (baseFolder == null){
+            String separator = System.getProperty("file.separator");
+            baseFolder = System.getProperty("karaf.data",
+                    System.getProperty("java.io.tmpdir")) +
+                    separator +
+                    "liveservices" + separator + "liveupdate" + separator + "notifications" + separator + "email";
+        }
 
-            if (logger.isDebugEnabled())
-                logger.debug("Using baseFolder : " + baseFolder);
-            baseUri = new URI(baseFolder);
+        if (logger.isDebugEnabled())
+            logger.debug("Using baseFolder : " + baseFolder);
+//            baseUri = new URI(baseFolder);
 
-            File f = new File(baseUri);
-            if (!f.exists()) {
-                if (!f.mkdirs())
-                    throw new LiveUpdateException("Cannot create folder " + baseFolder);
-            } else if (!f.isDirectory()) {
-                throw new LiveUpdateException("Configured folder is not a directory : " + baseFolder);
-            }
-        } catch (URISyntaxException e) {
-            throw new LiveUpdateException("Invalid base folder : " + e.getMessage(), e);
+        File f = new File(baseFolder);
+        if (!f.exists()) {
+            if (!f.mkdirs())
+                throw new LiveUpdateException("Cannot create folder " + baseFolder);
+        } else if (!f.isDirectory()) {
+            throw new LiveUpdateException("Configured folder is not a directory : " + baseFolder);
         }
     }
     
     public Collection<NotificationScheme> loadAll() throws LiveUpdateException {
-        File baseFolderFile = new File(baseUri);
+        File baseFolderFile = new File(baseFolder);
 
         List<NotificationScheme> schemes = new ArrayList<NotificationScheme>();
 
@@ -76,7 +72,7 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
     }
 
     public NotificationScheme load(String name) throws LiveUpdateException {
-        URI file = buildFileURI(name);
+        String file = buildFilePath(name);
         InputStream in = null;
         try {
             in = new FileInputStream(new File(file));
@@ -106,11 +102,11 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
         OutputStream out = null;
         OutputStream pfOut = null;
         try {
-            URI file = buildFileURI(scheme.getName());
+            String file = buildFilePath(scheme.getName());
             out = new FileOutputStream(new File(file), false);
             props.store(out, "Email notification scheme [" + scheme.getName() + "]");
 
-            URI processedFile = buildProcessedFileURI(scheme.getName());
+            String processedFile = buildProcessedFilePath(scheme.getName());
             File pf = new File(processedFile);
             if (!pf.exists()) {
                 Properties processedUpdatesProps = new Properties();
@@ -128,7 +124,7 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
     }
 
     public void remove(String name) throws LiveUpdateException {
-        URI file = buildFileURI(name);
+        String file = buildFilePath(name);
         File f = new File(file);
         if (f.exists() && !f.isDirectory()) {
             if (!f.delete()) {
@@ -136,7 +132,7 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
             }
         }
 
-        URI processedFile = buildProcessedFileURI(name);
+        String processedFile = buildProcessedFilePath(name);
         File pf = new File(processedFile);
         if (pf.exists() && !pf.isDirectory()) {
             if (!pf.delete()) {
@@ -146,7 +142,7 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
     }
 
     public String[] getProcessedUpdates(String name) throws LiveUpdateException {
-        URI processedFile = buildProcessedFileURI(name);
+        String processedFile = buildProcessedFilePath(name);
         InputStream in = null;
         try {
             in = new FileInputStream(new File(processedFile));
@@ -168,7 +164,7 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
     }
 
     public void addProcessedUpdates(String name, String[] updates) throws LiveUpdateException {
-        URI processedFile = buildProcessedFileURI(name);
+        String processedFile = buildProcessedFilePath(name);
         InputStream in = null;
         OutputStream out = null;
         try {
@@ -215,23 +211,17 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
         scheme.setAddresses(StringUtils.split(props.getProperty("addresses"), ","));
         return scheme;
     }
-    
-    protected URI buildFileURI(String name) throws LiveUpdateException {
-        String n = baseFolder + "/" + name.replace(" ", "_").toLowerCase() + ".properties";
-        try {
-            return new URI(n);
-        } catch (URISyntaxException e) {
-            throw new LiveUpdateException("Invalid file name " + n);
-        }
+
+    protected String buildFilePath(String name) throws LiveUpdateException {
+        String separator = System.getProperty("file.separator");
+        String n = baseFolder + separator + name.replace(" ", "_").toLowerCase() + ".properties";
+        return n;
     }
 
-    protected URI buildProcessedFileURI(String name) throws LiveUpdateException {
-        String n = baseFolder + "/" + name.replace(" ", "_").toLowerCase() + "-processed.properties";
-        try {
-            return new URI(n);
-        } catch (URISyntaxException e) {
-            throw new LiveUpdateException("Invalid file name " + n);
-        }
+    protected String buildProcessedFilePath(String name) throws LiveUpdateException {
+        String separator = System.getProperty("file.separator");
+        String n = baseFolder + separator + name.replace(" ", "_").toLowerCase() + "-processed.properties";
+        return n;
     }
 
     public String getBaseFolder() {

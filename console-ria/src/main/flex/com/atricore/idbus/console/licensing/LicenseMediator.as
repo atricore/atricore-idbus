@@ -48,9 +48,6 @@ import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 public class LicenseMediator extends IocMediator implements IDisposable {
 
 
-//    private var _uploadedFile:ByteArray;
-//    private var _uploadedFileName:String;
-
     private var _popupManager:LicensingPopUpManager;
 
     [Bindable]
@@ -76,18 +73,11 @@ public class LicenseMediator extends IocMediator implements IDisposable {
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
             view.btnUpdateLicense.removeEventListener(MouseEvent.CLICK, handleUpdateLicenseButton);
-
-//            if (_fileRef != null) {
-//                _fileRef.removeEventListener(Event.SELECT, fileSelectHandler);
-//                _fileRef.removeEventListener(Event.COMPLETE, uploadCompleteHandler);
-//            }
         }
 
         (viewComponent as LicenseView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 
         super.setViewComponent(viewComponent);
-
-//        init();
     }
 
     private function creationCompleteHandler(event:Event):void {
@@ -95,10 +85,6 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         
         popupManager.init(iocFacade, view);
         view.btnUpdateLicense.addEventListener(MouseEvent.CLICK, handleUpdateLicenseButton);
-
-        // upload bindings
-//        view.licenseFile.addEventListener(MouseEvent.CLICK, browseHandler);
-//        BindingUtils.bindProperty(view.licenseFile, "dataProvider", this, "_selectedFiles");
         init();
     }
 
@@ -137,17 +123,6 @@ public class LicenseMediator extends IocMediator implements IDisposable {
 
     public function handleUpdateLicenseButton(event:Event):void {
         sendNotification(ApplicationFacade.DISPLAY_UPDATE_LICENSE);
-//        if (_uploadedFile != null) {
-//            sendNotification(ProcessingMediator.START);
-//
-//            var newResource:Resource = new Resource();
-//            newResource.name = _uploadedFileName;
-//            newResource.value = _uploadedFile;
-//            sendNotification(ApplicationFacade.UPDATE_LICENSE, newResource);
-//        }
-//        else {
-//            event.stopImmediatePropagation();
-//        }
     }
 
     public function handleActivationFailure():void {
@@ -155,7 +130,7 @@ public class LicenseMediator extends IocMediator implements IDisposable {
                 "The license doesn't seem to be valid. " +
                 "Please upload valid license.");
     }
-//
+
     protected function get view():LicenseView
     {
         return viewComponent as LicenseView;
@@ -164,13 +139,6 @@ public class LicenseMediator extends IocMediator implements IDisposable {
 //    protected function set view(amv:LicenseView):void
 //    {
 //        viewComponent = amv;
-//    }
-//
-//    // upload functions
-// //
-//    private function resetUpload():void {
-//        _uploadedFile = null;
-//        _uploadedFileName = null;
 //    }
 
     public function dispose():void {

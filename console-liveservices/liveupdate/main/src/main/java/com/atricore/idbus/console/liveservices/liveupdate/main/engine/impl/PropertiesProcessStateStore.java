@@ -10,8 +10,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -37,33 +35,24 @@ public class PropertiesProcessStateStore implements ProcessStore {
 
     public void init() throws LiveUpdateException {
 
-//        try {
+        if (baseFolder == null){
+            String separator = System.getProperty("file.separator");
+            baseFolder = System.getProperty("karaf.data",
+                    System.getProperty("java.io.tmpdir")) +
+                    separator +
+                    "liveservices" + separator + "liveupdate" + separator + "processes";
+        }
 
-            if (baseFolder == null){
-                String separator = System.getProperty("file.separator");
-//                separator = (separator.equals("\\") ? "\\\\" : separator);
-                baseFolder = System.getProperty("karaf.data",
-                        System.getProperty("java.io.tmpdir")) +
-//                        "liveservices/liveupdate/processes";
-                        separator +
-                        "liveservices" + separator + "liveupdate" + separator + "processes";
-//                baseFolder = baseFolder.replace("\\", "/");
-            }
+        if (logger.isDebugEnabled())
+            logger.debug("Using baseFolder : " + baseFolder);
 
-            if (logger.isDebugEnabled())
-                logger.debug("Using baseFolder : " + baseFolder);
-//            baseUri = new URI(baseFolder);
-
-            File f = new File(baseFolder);
-            if (!f.exists()) {
-                if (!f.mkdirs())
-                    throw new LiveUpdateException("Cannot create folder " + baseFolder);
-            } else if (!f.isDirectory()) {
-                throw new LiveUpdateException("Configured folder is not a directory : " + baseFolder);
-            }
-//        } catch (URISyntaxException e) {
-//            throw new LiveUpdateException("Invalid base folder : " + e.getMessage(), e);
-//        }
+        File f = new File(baseFolder);
+        if (!f.exists()) {
+            if (!f.mkdirs())
+                throw new LiveUpdateException("Cannot create folder " + baseFolder);
+        } else if (!f.isDirectory()) {
+            throw new LiveUpdateException("Configured folder is not a directory : " + baseFolder);
+        }
     }
 
 
@@ -102,7 +91,7 @@ public class PropertiesProcessStateStore implements ProcessStore {
             String updateProfile = XmlUtils1.marshalProfile(state.getUpdateProfile(), "profile", false);
 
             InputStream profileIn = new ByteArrayInputStream(updateProfile.getBytes());
-            File profileFile = new File (new URI(props.getProperty("updateProfile")));
+            File profileFile = new File (props.getProperty("updateProfile"));
             profileOut = new FileOutputStream(profileFile, false);
 
             IOUtils.copy(profileIn, profileOut);
@@ -205,8 +194,8 @@ public class PropertiesProcessStateStore implements ProcessStore {
         InputStream in = null;
         try {
 
-            URI profileUri = new URI(props.getProperty("updateProfile"));
-            in = new FileInputStream(new File(profileUri));
+            String profilePath = props.getProperty("updateProfile");
+            in = new FileInputStream(new File(profilePath));
             ProfileType profile = XmlUtils1.unmarshallProfile(in, false);
             state.setUpdateProfile(profile);
         } catch (FileNotFoundException e) {
@@ -221,31 +210,15 @@ public class PropertiesProcessStateStore implements ProcessStore {
 
     }
 
-//    protected URI buildFileURI(String id) throws LiveUpdateException {
-//        String n = baseFolder + "/" + id + "-proc.bin";
-//        try {
-//            return new URI(n);
-//        } catch (URISyntaxException e) {
-//            throw new LiveUpdateException("Invalid file name " + n);
-//        }
-//    }
-//
-//    protected URI buildProfileFileURI(String id) throws LiveUpdateException {
-//        String n = baseFolder + "/" + id + "-prof.bin";
-//        try {
-//            return new URI(n);
-//        } catch (URISyntaxException e) {
-//            throw new LiveUpdateException("Invalid file name " + n);
-//        }
-//    }
-
     protected String buildFilePath(String id) throws LiveUpdateException {
-        String n = baseFolder + "/" + id + "-proc.bin";
+        String separator = System.getProperty("file.separator");
+        String n = baseFolder + separator + id + "-proc.bin";
         return n;
     }
 
     protected String buildProfileFilePath(String id) throws LiveUpdateException {
-        String n = baseFolder + "/" + id + "-prof.bin";
+        String separator = System.getProperty("file.separator");
+        String n = baseFolder + separator + id + "-prof.bin";
         return n;
     }    
 
