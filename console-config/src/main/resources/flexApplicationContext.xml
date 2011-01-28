@@ -643,6 +643,10 @@
 
     <object id="updateLicenseMediator" class="com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator"/>
 
+    <object id="updateLicenseCommand" class="com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand">
+        <property name="registry" ref="serviceRegistry" />
+    </object>
+
 
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
         <property name="popupManager" ref="consolePopUpManager"/>
@@ -722,6 +726,7 @@
     <object id="licensingPopUpManager"
             class="com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager">
         <property name="updateLicenseMediator" ref="updateLicenseMediator"/>
+        <property name="updateLicenseCommand" ref="updateLicenseCommand"/>
     </object>
 
     <!-- App Section View Factories -->

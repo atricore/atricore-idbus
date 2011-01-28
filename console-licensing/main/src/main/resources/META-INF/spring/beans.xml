@@ -15,7 +15,7 @@
                     http://www.springframework.org/schema/osgi-compendium
                     http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
-    <bean name="signer" class="com.atricore.josso2.licensing._1_0.util.LicenseSigner" />
+    <bean name="signer" class="com.atricore.josso2.licensing._1_0.util.LicenseSigner" init-method="init"/>       
 
     <bean name="licenseManager" class="com.atricore.idbus.console.licensing.main.impl.LicenseManagerImpl">
         <property name="signer" ref="signer" />

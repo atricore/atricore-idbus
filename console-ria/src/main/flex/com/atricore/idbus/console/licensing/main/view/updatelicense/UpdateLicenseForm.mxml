@@ -28,7 +28,7 @@
 
 
     <!--<s:HGroup>-->
-        <mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.license')}:">
+        <mx:FormItem labelWidth="80" paddingTop="10" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.license')}:">
             <s:DropDownList id="licenseFile" width="170" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.browseFile')}"
                             requireSelection="true"/>
         </mx:FormItem>
