@@ -24,27 +24,22 @@ import com.atricore.idbus.console.liveupdate.main.controller.ApplyUpdateCommand;
 import com.atricore.idbus.console.liveupdate.main.controller.CheckForUpdatesCommand;
 import com.atricore.idbus.console.liveupdate.main.controller.GetUpdateProfileCommand;
 import com.atricore.idbus.console.liveupdate.main.controller.ListUpdatesCommand;
+import com.atricore.idbus.console.liveupdate.main.controller.LoadUpdateSchemeCommand;
+import com.atricore.idbus.console.liveupdate.main.controller.SaveUpdateSchemeCommand;
 import com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy;
 import com.atricore.idbus.console.liveupdate.main.view.LiveUpdatePopUpManager;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-import com.atricore.idbus.console.services.dto.ProfileType;
 import com.atricore.idbus.console.services.dto.UpdateDescriptorType;
-
 import com.atricore.idbus.console.services.spi.request.ApplyUpdateRequest;
-
 import com.atricore.idbus.console.services.spi.request.GetUpdateProfileRequest;
 
 import flash.events.Event;
-
 import flash.events.MouseEvent;
-
 import flash.text.TextFieldAutoSize;
-import flash.text.TextFormat;
 
 import mx.collections.ArrayCollection;
 import mx.controls.Alert;
-import mx.core.IUITextField;
 import mx.core.mx_internal;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
@@ -61,36 +56,24 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
 
     public static const BUNDLE:String = "console";
     private var resMan:IResourceManager = ResourceManager.getInstance();
+    private var _created:Boolean;
 
     private var _liveUpdateProxy:LiveUpdateProxy;
     private var _liveUpdatePopUpManager:LiveUpdatePopUpManager;
 
-    private var _created:Boolean;
+    // LiveUpdate Commands
+    private var _applyUpdateCommand:ApplyUpdateCommand;
+    private var _checkForUpdatesCommand:CheckForUpdatesCommand;
+    private var _getUpdateProfileCommand:GetUpdateProfileCommand;
+    private var _listUpdatesCommand:ListUpdatesCommand;
+    private var _loadUpdateSchemeCommand:LoadUpdateSchemeCommand;
+    private var _saveUpdateSchemeCommand:SaveUpdateSchemeCommand;
 
     public function LiveUpdateMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
     }
 
-    public function get liveUpdateProxy():LiveUpdateProxy {
-        return _liveUpdateProxy;
-    }
-
-    public function set liveUpdateProxy(value:LiveUpdateProxy):void {
-        _liveUpdateProxy = value;
-    }
-
-    public function get liveUpdatePopUpManager():LiveUpdatePopUpManager {
-        return _liveUpdatePopUpManager;
-    }
-
-    public function set liveUpdatePopUpManager(value:LiveUpdatePopUpManager):void {
-        _liveUpdatePopUpManager = value;
-    }
-
     override public function setViewComponent(p_viewComponent:Object):void {
-        if (getViewComponent() != null) {
-        }
-
         (p_viewComponent as LiveUpdateView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 
         super.setViewComponent(p_viewComponent);
@@ -99,6 +82,7 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
     private function creationCompleteHandler(event:Event):void {
         _created = true;
         liveUpdatePopUpManager.init(iocFacade, view);
+        registerCommands();
         init();
     }
 
@@ -110,8 +94,20 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
 
             view.updatesList.addEventListener(ListEvent.ITEM_CLICK , updateListSelectHandler);
             view.btnInstallUpdate.addEventListener(MouseEvent.CLICK, handleInstallUpdateClick);
+            view.btnCheckForUpdates.addEventListener(MouseEvent.CLICK, handleCheckForUpdatesClick);
             view.btnUpdateNofification.addEventListener(MouseEvent.CLICK, handleUpdateNofificationClick);
+
+            sendNotification(ApplicationFacade.LIST_UPDATES);
         }
+    }
+
+    private function registerCommands():void {
+        iocFacade.registerCommandByConfigName(ApplicationFacade.APPLY_UPDATE, applyUpdateCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_FOR_UPDATES, checkForUpdatesCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.GET_UPDATE_PROFILE, getUpdateProfileCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_UPDATES, listUpdatesCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LOAD_UPDATE_SCHEME, loadUpdateSchemeCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.SAVE_UPDATE_SCHEME, saveUpdateSchemeCommand.getConfigName());
     }
 
     private function updateListSelectHandler(e:ListEvent):void {
@@ -158,6 +154,11 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
         });
     }
 
+    private function handleCheckForUpdatesClick(event:MouseEvent):void {
+        trace("Check for updates Button Click: " + event);
+        sendNotification(ApplicationFacade.CHECK_FOR_UPDATES);
+    }
+
     private function handleUpdateNofificationClick(event:MouseEvent):void {
         trace("Update Notification Button Click: " + event);
         sendNotification(ApplicationFacade.DISPLAY_UPDATE_NOTIFICATIONS);
@@ -184,8 +185,7 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
     }
 
     override public function listNotificationInterests():Array {
-        return [ApplicationFacade.UPDATE_VIEW_SELECTED,
-            ApplicationFacade.DISPLAY_UPDATE_NOTIFICATIONS,
+        return [ApplicationFacade.DISPLAY_UPDATE_NOTIFICATIONS,
             ListUpdatesCommand.SUCCESS,
             ListUpdatesCommand.FAILURE,
             ApplyUpdateCommand.SUCCESS,
@@ -199,10 +199,6 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case ApplicationFacade.UPDATE_VIEW_SELECTED:
-                init();
-                sendNotification(ApplicationFacade.LIST_UPDATES);
-                break;
             case ApplicationFacade.DISPLAY_UPDATE_NOTIFICATIONS:
                 liveUpdatePopUpManager.showUpdateNotificationWindow(notification);
                 break;
@@ -223,6 +219,7 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
             case ApplyUpdateCommand.SUCCESS:
                 break;
             case CheckForUpdatesCommand.SUCCESS:
+                sendNotification(ApplicationFacade.LIST_UPDATES);
                 break;
             case CheckForUpdatesCommand.FAILURE:
                 break;
@@ -244,6 +241,70 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
         viewComponent = luv;
     }
 
+    public function get liveUpdateProxy():LiveUpdateProxy {
+        return _liveUpdateProxy;
+    }
+
+    public function set liveUpdateProxy(value:LiveUpdateProxy):void {
+        _liveUpdateProxy = value;
+    }
+
+    public function get liveUpdatePopUpManager():LiveUpdatePopUpManager {
+        return _liveUpdatePopUpManager;
+    }
+
+    public function set liveUpdatePopUpManager(value:LiveUpdatePopUpManager):void {
+        _liveUpdatePopUpManager = value;
+    }
+
+    public function get applyUpdateCommand():ApplyUpdateCommand {
+        return _applyUpdateCommand;
+    }
+
+    public function set applyUpdateCommand(value:ApplyUpdateCommand):void {
+        _applyUpdateCommand = value;
+    }
+
+    public function get checkForUpdatesCommand():CheckForUpdatesCommand {
+        return _checkForUpdatesCommand;
+    }
+
+    public function set checkForUpdatesCommand(value:CheckForUpdatesCommand):void {
+        _checkForUpdatesCommand = value;
+    }
+
+    public function get getUpdateProfileCommand():GetUpdateProfileCommand {
+        return _getUpdateProfileCommand;
+    }
+
+    public function set getUpdateProfileCommand(value:GetUpdateProfileCommand):void {
+        _getUpdateProfileCommand = value;
+    }
+
+    public function get listUpdatesCommand():ListUpdatesCommand {
+        return _listUpdatesCommand;
+    }
+
+    public function set listUpdatesCommand(value:ListUpdatesCommand):void {
+        _listUpdatesCommand = value;
+    }
+
+    public function get loadUpdateSchemeCommand():LoadUpdateSchemeCommand {
+        return _loadUpdateSchemeCommand;
+    }
+
+    public function set loadUpdateSchemeCommand(value:LoadUpdateSchemeCommand):void {
+        _loadUpdateSchemeCommand = value;
+    }
+
+    public function get saveUpdateSchemeCommand():SaveUpdateSchemeCommand {
+        return _saveUpdateSchemeCommand;
+    }
+
+    public function set saveUpdateSchemeCommand(value:SaveUpdateSchemeCommand):void {
+        _saveUpdateSchemeCommand = value;
+    }
+
     public function dispose():void {
         // Clean up:
         //      - Remove event listeners
@@ -252,6 +313,7 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
 
         view.updatesList.removeEventListener(ListEvent.ITEM_CLICK , updateListSelectHandler);
         view.btnInstallUpdate.removeEventListener(MouseEvent.CLICK, handleInstallUpdateClick);
+        view.btnCheckForUpdates.removeEventListener(MouseEvent.CLICK, handleCheckForUpdatesClick);
         view.btnUpdateNofification.removeEventListener(MouseEvent.CLICK, handleUpdateNofificationClick);
         view = null;
     }

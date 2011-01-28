@@ -43,12 +43,12 @@
     <s:VGroup id="updatesVBox" width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
         <mx:DataGrid id="updatesList" width="100%" rowCount="10" resizeEffect="Resize" verticalAlign="middle">
             <mx:columns>
-                <mx:DataGridColumn dataField="group" width="0.3" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.group')}"/>
-                <mx:DataGridColumn dataField="name" width="0.2" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.name')}"/>
-                <mx:DataGridColumn dataField="version" width="0.1" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.version')}"/>
+                <mx:DataGridColumn dataField="group" width="0.4" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.group')}"/>
+                <mx:DataGridColumn dataField="name" width="0.15" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.name')}"/>
+                <mx:DataGridColumn dataField="version" width="0.05" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.version')}"/>
                 <mx:DataGridColumn dataField="updateNature" width="0.1" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.updateNature')}"/>
-                <mx:DataGridColumn dataField="description" width="0.2" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.description')}"/>
-                <mx:DataGridColumn dataField="issueInstant" width="0.1" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.releaseDate')}">
+                <mx:DataGridColumn dataField="description" width="0.15" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.description')}"/>
+                <mx:DataGridColumn dataField="issueInstant" width="0.15" headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'liveupdate.header.releaseDate')}">
                     <mx:itemRenderer>
                         <fx:Component>
                             <mx:VBox paddingLeft="5">
@@ -74,6 +74,8 @@
         <s:HGroup paddingLeft="10" paddingRight="10">
             <s:Button id="btnInstallUpdate" enabled="false"
                       label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.installUpdateBtn')}" />
+            <s:Button id="btnCheckForUpdates" enabled="true"
+                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.checkForUpdatesBtn')}" />
             <s:Button id="btnUpdateNofification" enabled="true"
                       label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.updateNofificationBtn')}" />
         </s:HGroup>
