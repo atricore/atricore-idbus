@@ -36,11 +36,11 @@ import mx.events.CloseEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
-public class UpdateNotificationMediator extends IocFormMediator
+public class NotificationSchemeMediator extends IocFormMediator
 {
     private var _liveUpdateProxy:LiveUpdateProxy;
 
-    public function UpdateNotificationMediator(name:String = null, viewComp:AddGroupForm = null) {
+    public function NotificationSchemeMediator(name:String = null, viewComp:AddGroupForm = null) {
         super(name, viewComp);
     }
 
@@ -132,9 +132,9 @@ public class UpdateNotificationMediator extends IocFormMediator
     private function handleClose(event:Event):void {
     }
 
-    protected function get view():UpdateNotificationForm
+    protected function get view():NotificationSchemeForm
     {
-        return viewComponent as UpdateNotificationForm;
+        return viewComponent as NotificationSchemeForm;
     }
 
     public function get liveUpdateProxy():LiveUpdateProxy {

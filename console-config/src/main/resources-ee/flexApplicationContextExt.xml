@@ -24,8 +24,8 @@
         <property name="saveUpdateSchemeCommand" ref="saveUpdateSchemeCommand"/>
     </object>
 
-    <object id="updateNotificationMediator"
-            class="com.atricore.idbus.console.liveupdate.main.view.notifications.UpdateNotificationMediator" >
+    <object id="notificationSchemeMediator"
+            class="com.atricore.idbus.console.liveupdate.main.view.notifications.NotificationSchemeMediator" >
         <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
     </object>
 
@@ -67,7 +67,7 @@
 
     <object id="liveUpdatePopUpManager"
             class="com.atricore.idbus.console.liveupdate.main.view.LiveUpdatePopUpManager">
-        <property name="updateNotificationMediator" ref="updateNotificationMediator"/>
+        <property name="notificationSchemeMediator" ref="notificationSchemeMediator"/>
     </object>
 
     <!-- LiveUpdate Settings Menu -->
