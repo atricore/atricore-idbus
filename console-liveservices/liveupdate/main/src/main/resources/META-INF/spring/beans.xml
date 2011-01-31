@@ -176,7 +176,7 @@
     <bean name="installOperationsRegistry" class="com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl.InstallOperationsRegistryImpl"/>
 
     <!-- Mailer -->
-    <bean name="mailer" class="com.atricore.idbus.console.liveservices.liveupdate.main.util.Mailer">
+    <bean name="mailer" class="com.atricore.idbus.console.liveservices.liveupdate.main.notifications.Mailer">
         <property name="mailSender" ref="mailSender" />
 		<property name="velocityEngine" ref="velocityEngine" />
     </bean>
