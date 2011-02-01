@@ -10,26 +10,22 @@
 
     <!-- LiveUpdate -->
     <object id="liveUpdateProxy" class="com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy"/>
-    
+
     <object id="liveUpdateMediator" class="com.atricore.idbus.console.liveupdate.main.LiveUpdateMediator">
         <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
         <property name="liveUpdatePopUpManager" ref="liveUpdatePopUpManager"/>
+
+        <!-- Register Commands -->
+        <property name="applyUpdateCommand" ref="applyUpdateCommand"/>
+        <property name="checkForUpdatesCommand" ref="checkForUpdatesCommand"/>
+        <property name="getUpdateProfileCommand" ref="getUpdateProfileCommand"/>
+        <property name="listUpdatesCommand" ref="listUpdatesCommand"/>
+        <property name="loadUpdateSchemeCommand" ref="loadUpdateSchemeCommand"/>
+        <property name="saveUpdateSchemeCommand" ref="saveUpdateSchemeCommand"/>
     </object>
 
-    <object id="updateNotificationMediator"
-            class="com.atricore.idbus.console.liveupdate.main.view.notifications.UpdateNotificationMediator" >
-        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
-    </object>
-
-    <object id="listUpdatesCommand"
-            class="com.atricore.idbus.console.liveupdate.main.controller.ListUpdatesCommand">
-        <property name="registry" ref="serviceRegistry"/>
-        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
-    </object>
-
-    <object id="checkForUpdatesCommand"
-            class="com.atricore.idbus.console.liveupdate.main.controller.CheckForUpdatesCommand">
-        <property name="registry" ref="serviceRegistry"/>
+    <object id="notificationSchemeMediator"
+            class="com.atricore.idbus.console.liveupdate.main.view.notifications.NotificationSchemeMediator" >
         <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
     </object>
 
@@ -45,11 +41,35 @@
         <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
     </object>
 
+    <object id="checkForUpdatesCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.CheckForUpdatesCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
+    <object id="listUpdatesCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.ListUpdatesCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
+    <object id="loadUpdateSchemeCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.LoadUpdateSchemeCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
+    <object id="saveUpdateSchemeCommand"
+            class="com.atricore.idbus.console.liveupdate.main.controller.SaveUpdateSchemeCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="liveUpdateProxy" ref="liveUpdateProxy"/>
+    </object>
+
     <object id="liveUpdatePopUpManager"
             class="com.atricore.idbus.console.liveupdate.main.view.LiveUpdatePopUpManager">
-        <property name="updateNotificationMediator" ref="updateNotificationMediator"/>
+        <property name="notificationSchemeMediator" ref="notificationSchemeMediator"/>
     </object>
-    
+
     <!-- LiveUpdate Settings Menu -->
     <object id="liveServicesMenuDrawer" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer">
         <property name="label" value="Live Services"/>
@@ -70,7 +90,7 @@
     </object>
 
     <object id="liveUpdateView" class="com.atricore.idbus.console.liveupdate.main.LiveUpdateView"/>
-    
+
     <!-- Branding Factory -->
     <object id="brandingFactory" class="com.atricore.idbus.console.branding.ee.AtricoreEEBrandingFactory"/>
 

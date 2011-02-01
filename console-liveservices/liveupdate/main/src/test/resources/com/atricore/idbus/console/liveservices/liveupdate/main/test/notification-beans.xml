@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:ctx="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans.xsd
+                    http://www.springframework.org/schema/context
+                    http://www.springframework.org/schema/context/spring-context.xsd
+                    http://www.springframework.org/schema/util
+                    http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <bean name="emailNotificationHandler" class="com.atricore.idbus.console.liveservices.liveupdate.main.notifications.EMailNotificationHandler">
+        <property name="store" ref="emailNotificationStore"/>
+        <property name="mailer" ref="mailer"/>
+        <property name="messageSource" ref="messageSource"/>
+    </bean>
+
+    <bean name="emailNotificationStore"
+          class="com.atricore.idbus.console.liveservices.liveupdate.main.notifications.PropertiesEMailNotificationSchemeStore"
+          init-method="init">
+        <property name="baseFolder" value="${build.directory}/liveservices/liveupdate/notifications/email"/>
+    </bean>
+
+    <bean name="emailNotificationScheme" class="com.atricore.idbus.console.liveservices.liveupdate.main.notifications.EMailNotificationScheme">
+        <property name="name" value="Test scheme"/>
+        <property name="threshold" value="UPGRADE"/>
+        <property name="smtpHost" value="smtp.atricore.com"/>
+        <property name="smtpUsername" value=""/>
+        <property name="smtpPassword" value=""/>
+        <property name="smtpPort" value="25"/>
+        <property name="addresses">
+            <list>
+                <value>gnastov@atricore.com</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="mailer" class="com.atricore.idbus.console.liveservices.liveupdate.main.notifications.Mailer">
+        <property name="mailSender" ref="mailSender" />
+		<property name="velocityEngine" ref="velocityEngine" />
+    </bean>
+
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.auth">true</prop>
+				<prop key="mail.smtp.timeout">25000</prop>
+			</props>
+		</property>
+	</bean>
+
+    <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+        <property name="velocityProperties">
+            <value>
+                resource.loader=class
+                class.resource.loader.class=org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
+            </value>
+        </property>
+    </bean>
+
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="com/atricore/idbus/console/liveservices/liveupdate/messages/messages"/>
+		<property name="fileEncodings" value="UTF-8" />
+		<property name="defaultEncoding" value="UTF-8" />
+    </bean>
+
+    <bean name="baseDir" class="java.lang.String">
+		<constructor-arg value="${basedir}"/>
+	</bean>
+
+    <bean name="buildDir" class="java.lang.String">
+		<constructor-arg value="${build.directory}"/>
+	</bean>
+    
+</beans>

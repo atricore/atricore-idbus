@@ -2,16 +2,16 @@
 <body>
 $header
 <br/><br/>
-<strong>UPDATES</strong>
+<strong>$title</strong>
 <br/><br/>
 #foreach($update in $updates)
-<strong>Update $update.id - $update.installableUnit.group/$update.installableUnit.name/$update.installableUnit.version</strong>
+<strong>$updateStr $update.ID - $update.installableUnit.group/$update.installableUnit.name/$update.installableUnit.version</strong>
 <br/>
-Update nature: $update.installableUnit.updateNature<br/>
-Description: $update.description<br/>
-Artifacts:<br/>
+$updateNatureStr: $update.installableUnit.updateNature<br/>
+$descriptionStr: $update.description<br/>
+$artifactsStr:<br/>
 #foreach($artifact in $update.installableUnit.artifact)
-- $artifact.group/$artifact.name/$artifact.version<br/>
+- $artifact.group/$artifact.name/$artifact.version/$artifact.type<br/>
 #end
 <br/><br/>
 #end

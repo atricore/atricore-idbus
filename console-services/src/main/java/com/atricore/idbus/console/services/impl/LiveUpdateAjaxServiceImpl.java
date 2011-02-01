@@ -52,7 +52,6 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
 
     private LiveUpdateManager updateManager;
 
-
     public GetRepositoriesResponse getRepositories() throws LiveUpdateException {
         try{
             if (logger.isTraceEnabled())

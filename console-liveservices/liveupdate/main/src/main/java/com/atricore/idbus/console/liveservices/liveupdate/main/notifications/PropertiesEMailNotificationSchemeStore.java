@@ -51,7 +51,8 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
             return schemes;
 
         for (File child : baseFolderFile.listFiles()) {
-            if (child.getName().endsWith(".properties")) {
+            if (child.getName().endsWith(".properties") &&
+                    !child.getName().endsWith("-processed.properties")) {
                 InputStream in = null;
                 try {
                     Properties props = new Properties();
@@ -195,10 +196,15 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
 
     public Properties marshall(NotificationScheme scheme) {
         // Convert scheme to properties
+        EMailNotificationScheme emailScheme = (EMailNotificationScheme) scheme;
         Properties props = new Properties();
-        props.setProperty("name", scheme.getName());
-        props.setProperty("threshold", scheme.getThreshold());
-        String addresses = StringUtils.join(((EMailNotificationScheme)scheme).getAddresses(), ",");
+        props.setProperty("name", emailScheme.getName());
+        props.setProperty("threshold", emailScheme.getThreshold());
+        props.setProperty("smtp.host", emailScheme.getSmtpHost());
+        props.setProperty("smtp.username", emailScheme.getSmtpUsername());
+        props.setProperty("smtp.password", emailScheme.getSmtpPassword());
+        props.setProperty("smtp.port", String.valueOf(emailScheme.getSmtpPort()));
+        String addresses = StringUtils.join(emailScheme.getAddresses(), ",");
         props.setProperty("addresses", addresses);
         return props;
     }
@@ -208,6 +214,10 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
         EMailNotificationScheme scheme = new EMailNotificationScheme();
         scheme.setName(props.getProperty("name"));
         scheme.setThreshold(props.getProperty("threshold"));
+        scheme.setSmtpHost(props.getProperty("smtp.host"));
+        scheme.setSmtpUsername(props.getProperty("smtp.username"));
+        scheme.setSmtpPassword(props.getProperty("smtp.password"));
+        scheme.setSmtpPort(Integer.valueOf(props.getProperty("smtp.port")));
         scheme.setAddresses(StringUtils.split(props.getProperty("addresses"), ","));
         return scheme;
     }

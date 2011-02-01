@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<mx:Form xmlns:mx="library://ns.adobe.com/flex/mx"
+         xmlns:fx="http://ns.adobe.com/mxml/2009"
+         xmlns:s="library://ns.adobe.com/flex/spark"
+         defaultButton="{submitNotificationScheme}" styleName="unpadded"
+         width="100%" height="100%" verticalGap="8">
+
+    <mx:TabNavigator id="idpTabNavigator" borderStyle="solid" width="100%" height="280" creationPolicy="all">
+
+        <!-- Email notifications TAB -->
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.form.heading')}">
+
+            <s:VGroup>
+                <mx:FormItem labelWidth="150"
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.schemeEnabled')}">
+                    <s:CheckBox width="100" selected="true" />
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="150"
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.threshold')}">
+                    <s:ComboBox id="cbUpdateNature" width="200">
+                        <s:dataProvider>
+                            <mx:ArrayList>
+                                <fx:String>SECURITY</fx:String>
+                                <fx:String>BUGFIX</fx:String>
+                                <fx:String>EMERGENCY_BUGFIX</fx:String>
+                                <fx:String>IMPROVEMENT</fx:String>
+                                <fx:String>NEW_FEATURE</fx:String>
+                                <fx:String>UPGRADE</fx:String>
+                                <fx:String>SERVICE_PACK</fx:String>
+                                <fx:String>DISTRO</fx:String>
+                            </mx:ArrayList>
+                        </s:dataProvider>
+                    </s:ComboBox>
+                </mx:FormItem>
+
+                <mx:FormItem labelWidth="150"
+                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.mailaddresses')}">
+
+                    <s:VGroup width="100%" height="100%">
+                        <s:HGroup width="100%">
+                            <mx:DataGrid id="mailList" width="80%" minWidth="300">
+                                <mx:columns>
+                                    <mx:DataGridColumn dataField="email" headerText="Email"/>
+                                </mx:columns>
+                            </mx:DataGrid>
+
+                            <s:VGroup width="20%" height="100%">
+                                <s:Button id="addEmailAdrBtn" width="100"
+                                          label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.mailaddresses.add')}" />
+                                <s:Button id="editEmailAdrBtn" width="100"
+                                          label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.mailaddresses.edit')}" />
+                                <s:Button id="deleteEmailAdrBtn" width="100"
+                                          label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.mailaddresses.delete')}" />
+                            </s:VGroup>
+                        </s:HGroup>
+                        <mx:TextInput id="emailInputEb" width="300"/>
+                    </s:VGroup>
+                </mx:FormItem>
+            </s:VGroup>
+        </s:NavigatorContent>
+
+        <!-- SMTP settings TAB -->
+        <s:NavigatorContent label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.smtpsettings.head')}">
+
+            <s:VGroup paddingLeft="50">
+
+                <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.smtpsettings')}"/>
+                <mx:HRule width="100%"/>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.smtpsettings.server')}:"
+                             labelWidth="150">
+                    <mx:TextInput id="smtpServer" width="200"/>
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.smtpsettings.port')}:"
+                             labelWidth="150">
+                    <mx:TextInput id="smtpPort" width="200" text="25" />
+                </mx:FormItem>
+
+                <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.authentication')}"/>
+                <mx:HRule width="100%"/>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.authentication.user')}:"
+                             labelWidth="150">
+                    <mx:TextInput id="userName" width="200" />
+                </mx:FormItem>
+
+                <mx:FormItem label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.authentication.password')}:"
+                             labelWidth="150">
+                    <mx:TextInput id="userPassword" width="200" displayAsPassword="true"/>
+                </mx:FormItem>
+            </s:VGroup>
+
+        </s:NavigatorContent>
+    </mx:TabNavigator>
+
+    <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
+        <s:Button id="submitNotificationScheme"
+                  label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.save')}" />
+        <s:Button id="cancelNotificationScheme" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'action.cancel')}"/>
+    </mx:ControlBar>
+</mx:Form>

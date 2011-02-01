@@ -11,6 +11,8 @@
                     http://www.springframework.org/schema/osgi
                     http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
+    <import resource="applicationContextExt.xml"/>
+
     <!-- ==================================================================== -->
     <!-- Idbus Server Management OSGI Services                                -->
     <!-- ==================================================================== -->
@@ -21,13 +23,9 @@
     <osgi:reference id="activationServiceBean" cardinality="1..1" timeout="60"
                     interface="com.atricore.idbus.console.activation.main.spi.ActivationService"/>
 
-    <osgi:reference id="updateManagerService" cardinality="1..1" timeout="60"
-                    interface="com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager"/>
-
     <osgi:reference id="licenseManagementService" cardinality="1..1" timeout="60"
-                    interface="com.atricore.idbus.console.licensing.main.LicenseManager"/>    
+                    interface="com.atricore.idbus.console.licensing.main.LicenseManager"/>
 
-                               
     <osgi:list id="spmlServiceBeans" interface="org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client"
                cardinality="0..N" >
         <osgi:listener ref="spml-service-listener" bind-method="register" unbind-method="unregister"/>
@@ -95,10 +93,6 @@
     <!--bean id="uploadHandler" class="com.atricore.idbus.console.web.servlets.UploadServletHandler">
         <property name="idApplianceManagementService" ref="idApplianceManagementService"/>
     </bean-->
-
-    <bean id="liveUpdateAjaxService" class="com.atricore.idbus.console.services.impl.LiveUpdateAjaxServiceImpl">
-        <property name="updateManager" ref="updateManagerService"/>
-    </bean>
 
     <bean id="licenseManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.LicenseManagementAjaxServiceImpl">
         <property name="licenseManager" ref="licenseManagementService"/>

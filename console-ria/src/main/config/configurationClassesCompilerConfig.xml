@@ -183,7 +183,7 @@
 
         <!-- LiveUpdate classes -->
         <symbol>com.atricore.idbus.console.liveupdate.main.LiveUpdateMediator</symbol>
-        <symbol>com.atricore.idbus.console.liveupdate.main.view.notifications.UpdateNotificationMediator</symbol>
+        <symbol>com.atricore.idbus.console.liveupdate.main.view.notifications.NotificationSchemeMediator</symbol>
         <symbol>com.atricore.idbus.console.liveupdate.main.controller.ApplyUpdateCommand</symbol>
         <symbol>com.atricore.idbus.console.liveupdate.main.controller.CheckForUpdatesCommand</symbol>
         <symbol>com.atricore.idbus.console.liveupdate.main.controller.GetUpdateProfileCommand</symbol>

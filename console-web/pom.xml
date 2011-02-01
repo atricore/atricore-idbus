@@ -51,6 +51,13 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <warSourceDirectory>src/main/webapp/</warSourceDirectory>
+                    <webResources>
+                        <resource>
+                            <!-- this is relative to the pom.xml directory -->
+                            <directory>${project.basedir}/src/main/resources-${console.distribution}</directory>
+                        </resource>
+                    </webResources>
+
                     <archive>
                         <!-- add the generated manifest to the war -->
                         <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
@@ -199,7 +206,6 @@
                         <Require-Bundle>
                             com.atricore.idbus.console.lifecycle.main,
                             com.atricore.idbus.console.activation.main,
-                            com.atricore.idbus.console.liveservices.liveupdate.main,
                             com.atricore.idbus.console.licensing.main
                         </Require-Bundle>
                         <Import-Package>
@@ -259,8 +265,10 @@
                             com.atricore.idbus.console.lifecycle.main.spi.request,
                             com.atricore.idbus.console.lifecycle.main.spi.response,
                             com.atricore.idbus.console.lifecycle.main.util,
-                            com.atricore.liveservices.liveupdate._1_0.md,
-                            com.atricore.liveservices.liveupdate._1_0.profile,
+                            com.atricore.idbus.console.liveservices.liveupdate; resolution:=optional,
+                            com.atricore.idbus.console.liveservices.liveupdate.main; resolution:=optional,
+                            com.atricore.liveservices.liveupdate._1_0.md; resolution:=optional,
+                            com.atricore.liveservices.liveupdate._1_0.profile; resolution:=optional,
                             com.atricore.josso2.licensing._1_0.license,
                             org.springframework.core.io,
                             org.springframework.context; version="[3.0.3.RELEASE,3.0.3.RELEASE]",

@@ -20,8 +20,8 @@
  */
 
 package com.atricore.idbus.console.liveupdate.main.view {
-import com.atricore.idbus.console.liveupdate.main.view.notifications.UpdateNotificationForm;
-import com.atricore.idbus.console.liveupdate.main.view.notifications.UpdateNotificationMediator;
+import com.atricore.idbus.console.liveupdate.main.view.notifications.NotificationSchemeForm;
+import com.atricore.idbus.console.liveupdate.main.view.notifications.NotificationSchemeMediator;
 import com.atricore.idbus.console.main.BasePopUpManager;
 
 import mx.core.UIComponent;
@@ -34,10 +34,10 @@ import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
 public class LiveUpdatePopUpManager extends BasePopUpManager {
 
     // mediators
-    private var _updateNotificationMediator:UpdateNotificationMediator;
+    private var _notificationSchemeMediator:NotificationSchemeMediator;
 
     // views
-    private var _updateNotificationForm:UpdateNotificationForm;
+    private var _updateNotificationForm:NotificationSchemeForm;
 
     public function LiveUpdatePopUpManager() {
         super();
@@ -46,7 +46,7 @@ public class LiveUpdatePopUpManager extends BasePopUpManager {
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
         _popup.styleName = "liveUpdatePopup";
-        (facade as IIocFacade).registerMediatorByConfigName(updateNotificationMediator.getConfigName());
+        (facade as IIocFacade).registerMediatorByConfigName(notificationSchemeMediator.getConfigName());
     }
 
     // Update Notification Popup
@@ -56,28 +56,28 @@ public class LiveUpdatePopUpManager extends BasePopUpManager {
 
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.form.popupHeading');
         _popup.width = 600;
-        _popup.height =400;
+        _popup.height =370;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_updateNotificationForm);
     }
 
     private function createUpdateNotificationForm():void {
-        _updateNotificationForm = new UpdateNotificationForm();
+        _updateNotificationForm = new NotificationSchemeForm();
         _updateNotificationForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleUpdateNotificationFormCreated);
     }
 
     private function handleUpdateNotificationFormCreated(event:FlexEvent):void {
-        updateNotificationMediator.setViewComponent(_updateNotificationForm);
-        updateNotificationMediator.handleNotification(_lastWindowNotification);
+        notificationSchemeMediator.setViewComponent(_updateNotificationForm);
+        notificationSchemeMediator.handleNotification(_lastWindowNotification);
     }
 
-    public function get updateNotificationMediator():UpdateNotificationMediator {
-        return _updateNotificationMediator;
+    public function get notificationSchemeMediator():NotificationSchemeMediator {
+        return _notificationSchemeMediator;
     }
 
-    public function set updateNotificationMediator(value:UpdateNotificationMediator):void {
-        _updateNotificationMediator = value;
+    public function set notificationSchemeMediator(value:NotificationSchemeMediator):void {
+        _notificationSchemeMediator = value;
     }
 }
 }

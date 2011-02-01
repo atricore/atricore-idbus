@@ -93,10 +93,12 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const CHECK_FOR_UPDATES:String = "checkForUpdates";
     public static const APPLY_UPDATE:String = "applyUpdate";
     public static const GET_UPDATE_PROFILE:String = "getUpdateProfile";
+    public static const LOAD_UPDATE_SCHEME:String = "loadUpdateScheme";
+    public static const SAVE_UPDATE_SCHEME:String = "saveUpdateScheme";
+
     public static const IDENTITY_APPLIANCE_EXPORT:String = "identityApplianceExport";
     public static const PROVIDER_CERTIFICATE_EXPORT:String = "providerCertificateExport";
     public static const METADATA_EXPORT:String = "metadataExport";
-
 
     // mediator-backed notifications
     public static const SHOW_ERROR_MSG:String = "showErrorMsg";
@@ -188,7 +190,6 @@ public class ApplicationFacade extends BaseAppFacade {
 
     // TODO: remove this?
     public static const LICENSE_VIEW_SELECTED:String = "licenseViewSelected";
-    public static const UPDATE_VIEW_SELECTED:String = "updateViewSelected";
 
     public function ApplicationFacade(p_configuration:* = null) {
         super(p_configuration);

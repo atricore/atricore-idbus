@@ -1,12 +1,13 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.notifications;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
-import com.atricore.idbus.console.liveservices.liveupdate.main.util.Mailer;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import java.util.*;
 
@@ -43,20 +44,28 @@ public class EMailNotificationHandler implements NotificationHandler {
         }
 
         // send emails
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("header", "");
-        model.put("updates", newUpdates);
-        model.put("footer", "");
+        if (newUpdates.size() > 0) {
+            Map<String, Object> model = new HashMap<String, Object>();
+            model.put("header", "<img src='cid:headerImage'>");
+            model.put("title", messageSource.getMessage("email.title", null, "UPDATES", null));
+            model.put("updateStr", messageSource.getMessage("email.update", null, "Update", null));
+            model.put("updateNatureStr", messageSource.getMessage("email.update.nature", null, "Update nature", null));
+            model.put("descriptionStr", messageSource.getMessage("email.update.description", null, "Description", null));
+            model.put("artifactsStr", messageSource.getMessage("email.update.artifacts", null, "Artifacts", null));
+            model.put("updates", newUpdates);
+            model.put("footer", "");
 
-        String template = "/com/atricore/idbus/console/liveservices/liveupdate/main/notifications/templates/email-notification.vm";
-        String subject = messageSource.getMessage("mail.subject", null, "JOSSO 2 Updates", null);;
-        String sender = "";
-        
-        for (String recipient : emailScheme.getAddresses()) {
-            mailer.sendTemplateHTMLEmail(sender, recipient, subject, template, model);
+            Map<String, Resource> inlineResources = new HashMap<String, Resource>();
+            inlineResources.put("headerImage", new ClassPathResource("images/a3c_logo.png"));
+
+            String template = "/com/atricore/idbus/console/liveservices/liveupdate/main/notifications/templates/email-notification.vm";
+            String subject = messageSource.getMessage("mail.subject", null, "JOSSO 2 Updates", null);
+            String sender = "updates@atricore.com";
+
+            mailer.sendTemplateHTMLEmail(emailScheme, sender, subject, template, model, inlineResources);
+
+            store.addProcessedUpdates(scheme.getName(), newUpdatesIDs.toArray(new String[]{}));
         }
-
-        store.addProcessedUpdates(scheme.getName(), newUpdatesIDs.toArray(new String[]{}));
     }
 
     public void saveNotificationScheme(NotificationScheme scheme) throws LiveUpdateException {

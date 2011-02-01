@@ -80,8 +80,8 @@ public class MenuMediator extends IocMediator {
             case SettingsMenuEvent.ACTION_MENU_ITEM_CLICKED:
                 // deselect previously selected item
                 if (selectedItem != null && selectedItem != event.target) {
-                    var uiComponentSel:ItemRenderer = selectedItem as ItemRenderer;
-                    uiComponentSel.selected = false;
+                    var uiComponentOldSel:ItemRenderer = selectedItem as ItemRenderer;
+                    uiComponentOldSel.selected = false;
                     selectedItem = null;
                 }
                 // select new item
