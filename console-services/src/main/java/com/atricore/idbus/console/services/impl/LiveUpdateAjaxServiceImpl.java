@@ -23,11 +23,10 @@ package com.atricore.idbus.console.services.impl;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
+import com.atricore.idbus.console.liveservices.liveupdate.main.notifications.EMailNotificationScheme;
+import com.atricore.idbus.console.liveservices.liveupdate.main.notifications.NotificationScheme;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
-import com.atricore.idbus.console.services.dto.ProfileTypeDTO;
-import com.atricore.idbus.console.services.dto.RequiredFeatureTypeDTO;
-import com.atricore.idbus.console.services.dto.UpdateDescriptorTypeDTO;
-import com.atricore.idbus.console.services.dto.UpdatesIndexTypeDTO;
+import com.atricore.idbus.console.services.dto.*;
 import com.atricore.idbus.console.services.spi.LiveUpdateAjaxService;
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
@@ -37,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -248,6 +248,61 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
             // Log the error ant throw an exception to the Ajax layer.
             logger.error(e.getMessage(), e);
             throw new LiveUpdateException("Error getting update profile" + e.getMessage(), e);
+        }
+    }
+
+    public UpdateNotificationSchemeResponse loadUpdateNotificationScheme(UpdateNotificationSchemeRequest updateNotificationSchemeRequest) throws LiveUpdateException {
+        try{
+            String schemeName = updateNotificationSchemeRequest.getNotificationScheme().getName();
+            if (logger.isTraceEnabled())
+                logger.trace("Processing loadUpdateNotificationScheme [schemeName: "+ schemeName);
+
+            EMailNotificationScheme scheme = (EMailNotificationScheme) updateManager.getNotificationScheme(schemeName);
+            NotificationSchemeDTO notifDTO = new NotificationSchemeDTO();
+
+            notifDTO.setName(scheme.getName());
+            notifDTO.setThreshold(scheme.getThreshold());
+            notifDTO.setEmailAddresses(Arrays.asList(scheme.getAddresses()));
+            notifDTO.setSmtpServer(scheme.getSmtpHost());
+            notifDTO.setSmtpPort(scheme.getSmtpPort());
+            notifDTO.setSmtpUsername(scheme.getSmtpUsername());
+            notifDTO.setSmtpPassword(scheme.getSmtpPassword());
+
+            UpdateNotificationSchemeResponse resp = new UpdateNotificationSchemeResponse();
+            resp.setNotificationScheme(notifDTO);
+
+            return resp;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new LiveUpdateException("Error loading update notification scheme" + e.getMessage(), e);
+        }
+
+    }
+
+    public UpdateNotificationSchemeResponse saveUpdateNotificationScheme(UpdateNotificationSchemeRequest updateNotificationSchemeRequest) throws LiveUpdateException {
+        try{
+            String schemeName = updateNotificationSchemeRequest.getNotificationScheme().getName();
+            if (logger.isTraceEnabled())
+                logger.trace("Processing saveUpdateNotificationScheme [schemeName: "+ schemeName);
+
+            EMailNotificationScheme notifSch = new EMailNotificationScheme();
+            NotificationSchemeDTO notifReq = updateNotificationSchemeRequest.getNotificationScheme();
+
+            notifSch.setName(notifReq.getName());
+            notifSch.setThreshold(notifReq.getThreshold());
+            notifSch.setAddresses((String [])notifReq.getEmailAddresses().toArray(new String[0]));
+            notifSch.setSmtpHost(notifReq.getSmtpServer());
+            notifSch.setSmtpPort(notifReq.getSmtpPort());
+            notifSch.setSmtpUsername(notifReq.getSmtpUsername());
+            notifSch.setSmtpPassword(notifReq.getSmtpPassword());
+
+            updateManager.saveNotificationScheme(notifSch);
+
+            UpdateNotificationSchemeResponse resp = new UpdateNotificationSchemeResponse();
+            return resp;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new LiveUpdateException("Error saving update notification scheme" + e.getMessage(), e);
         }
     }
 

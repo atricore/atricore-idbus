@@ -56,7 +56,7 @@ public class LiveUpdatePopUpManager extends BasePopUpManager {
 
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.form.popupHeading');
         _popup.width = 600;
-        _popup.height =370;
+        _popup.height =400;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_updateNotificationForm);

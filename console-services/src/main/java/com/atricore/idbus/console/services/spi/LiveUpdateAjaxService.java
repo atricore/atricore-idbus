@@ -42,5 +42,6 @@ public interface LiveUpdateAjaxService {
     public ApplyUpdatesResponse applyUpdate(ApplyUpdateRequest applyUpdateRequest) throws LiveUpdateException;
     public GetUpdateProfileResponse getUpdateProfile() throws LiveUpdateException;
     public GetUpdateProfileResponse getUpdateProfile(GetUpdateProfileRequest getUpdateProfileRequest) throws LiveUpdateException;
-
+    public UpdateNotificationSchemeResponse loadUpdateNotificationScheme(UpdateNotificationSchemeRequest updateNotificationSchemeRequest) throws LiveUpdateException;
+    public UpdateNotificationSchemeResponse saveUpdateNotificationScheme(UpdateNotificationSchemeRequest updateNotificationSchemeRequest) throws LiveUpdateException;
 }

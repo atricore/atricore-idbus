@@ -24,6 +24,8 @@ package com.atricore.idbus.console.liveupdate.main.controller
 import com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
+import com.atricore.idbus.console.services.spi.request.UpdateNotificationSchemeRequest;
+import com.atricore.idbus.console.services.spi.response.UpdateNotificationSchemeResponse;
 
 import mx.rpc.Fault;
 import mx.rpc.IResponder;
@@ -62,14 +64,14 @@ public class LoadUpdateSchemeCommand extends IocSimpleCommand implements IRespon
 
     override public function execute(notification:INotification):void {
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.LIVE_UPDATE_SERVICE);
-        //TODO loadScheme
-        var call:Object = service.getAvailableUpdates();
+        var req:UpdateNotificationSchemeRequest= notification.getBody() as UpdateNotificationSchemeRequest;
+        var call:Object = service.loadUpdateNotificationScheme(req);
         call.addResponder(this);
     }
 
     public function result(data:Object):void {
-        //var resp:GetAvailableUpdatesResponse = data.result as GetAvailableUpdatesResponse;
-        //_liveUpdateProxy.availableUpdatesList = resp.updateDescriptors;
+        var resp:UpdateNotificationSchemeResponse= data.result as UpdateNotificationSchemeResponse;
+        liveUpdateProxy.notificationScheme = resp.notificationScheme;
         sendNotification(SUCCESS);
     }
 

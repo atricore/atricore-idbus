@@ -267,6 +267,7 @@
                             com.atricore.idbus.console.lifecycle.main.util,
                             com.atricore.idbus.console.liveservices.liveupdate; resolution:=optional,
                             com.atricore.idbus.console.liveservices.liveupdate.main; resolution:=optional,
+                            com.atricore.idbus.console.liveservices.liveupdate.main.notifications; resolution:=optional,
                             com.atricore.liveservices.liveupdate._1_0.md; resolution:=optional,
                             com.atricore.liveservices.liveupdate._1_0.profile; resolution:=optional,
                             com.atricore.josso2.licensing._1_0.license,
