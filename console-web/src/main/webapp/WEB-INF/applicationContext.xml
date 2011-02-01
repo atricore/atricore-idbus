@@ -102,6 +102,7 @@
 
     <bean id="licenseManagementAjaxServiceBean" class="com.atricore.idbus.console.services.impl.LicenseManagementAjaxServiceImpl">
         <property name="licenseManager" ref="licenseManagementService"/>
+        <property name="dozerMapper" ref="dozerMapper" />
     </bean>
 
     <context:component-scan base-package="com.atricore.idbus.console.web" />

@@ -87,6 +87,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const GET_METADATA_INFO:String = "getMetadataInfo";
     public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
     public static const UPDATE_LICENSE:String = "updateLicense";
+    public static const GET_LICENSE:String = "getLicense";
     
     public static const LIST_UPDATES:String = "listUpdates";
     public static const CHECK_FOR_UPDATES:String = "checkForUpdates";

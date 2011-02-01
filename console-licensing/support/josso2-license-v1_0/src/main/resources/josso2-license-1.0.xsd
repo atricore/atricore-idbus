@@ -51,6 +51,7 @@
             <element ref="ds:Signature" minOccurs="0"/>
             <element ref="lic:licensedFeature" minOccurs="0" maxOccurs="unbounded" />
         </sequence>
+        <attribute name="LicensedTo" type="string" use="required"/>
         <attribute name="Version" type="string" use="required"/>
         <attribute name="ID" type="ID" use="required"/>
         <attribute name="IssueInstant" type="dateTime" use="required"/>

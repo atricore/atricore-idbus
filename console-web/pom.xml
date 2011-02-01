@@ -261,6 +261,7 @@
                             com.atricore.idbus.console.lifecycle.main.util,
                             com.atricore.liveservices.liveupdate._1_0.md,
                             com.atricore.liveservices.liveupdate._1_0.profile,
+                            com.atricore.josso2.licensing._1_0.license,
                             org.springframework.core.io,
                             org.springframework.context; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
                             org.springframework.beans; version="[3.0.3.RELEASE,3.0.3.RELEASE]",
@@ -354,7 +355,13 @@
             <groupId>com.atricore.idbus.console.licensing</groupId>
             <artifactId>com.atricore.idbus.console.licensing.main</artifactId>
             <scope>provided</scope>
-        </dependency>        
+        </dependency>
+
+        <dependency>
+            <groupId>com.atricore.idbus.console.licensing</groupId>
+            <artifactId>com.atricore.idbus.console.licensing.josso2-license-v1_0</artifactId>
+            <scope>provided</scope>
+        </dependency>            
 
         <dependency>
             <groupId>org.atricore.idbus.capabilities.spmlr2</groupId>

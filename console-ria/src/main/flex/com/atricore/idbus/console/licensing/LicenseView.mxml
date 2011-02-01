@@ -41,39 +41,17 @@
     <s:VGroup id="updateLicenseBox" width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
     <!--<mx:Panel width="25%" height="40%" horizontalAlign="center" title="Update License">-->
         <mx:Form width="100%" height="30%" verticalGap="4" defaultButton="{btnUpdateLicense}">
-            <!--<s:HGroup>-->
-                <!--<mx:FormItem required="true" label="License">-->
-                    <!--<mx:TextInput id="license" width="200"/>-->
-                <!--</mx:FormItem>-->
-                <!--<mx:FormItem>-->
-                    <!--<mx:Button id="btnBrowse" label="Browse..."/>-->
-                <!--</mx:FormItem>-->
-            <!--</s:HGroup>-->
-
-            <!--<mx:FormItem>-->
-                <!--<mx:Button id="btnActivate" label="Update"/>-->
-            <!--</mx:FormItem>-->
-
-            <!--<s:HGroup>-->
-                <!--<mx:FormItem labelWidth="80" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.license')}:">-->
-                    <!--<s:DropDownList id="licenseFile" width="170" prompt="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.browseFile')}"-->
-                                    <!--requireSelection="true"/>-->
-                <!--</mx:FormItem>-->
-                <mx:FormItem>
-                    <mx:Button id="btnUpdateLicense" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.update')}"/>
-                </mx:FormItem>
-            <!--</s:HGroup>-->
-            <!--<s:Label id="lblUploadMsg" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.uploadSuccess')}" visible="false" paddingLeft="95"/>-->
-
+            <mx:FormItem>
+                <mx:Button id="btnUpdateLicense" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.update')}"/>
+            </mx:FormItem>
         </mx:Form>
-    <!--</mx:Panel>-->
 
         <!--  current license information  -->
         <s:Label width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.currentLicense')}" styleName="h2"/>
 
         <s:HGroup>
             <s:Label width="150" text="Licensed to:"/>
-            <s:Label width="150" text="Atricore Inc."/>
+            <s:Label id="licensedTo" width="150" text="Atricore Inc."/>
         </s:HGroup>
     </s:VGroup>
 </s:Panel>

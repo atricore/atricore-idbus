@@ -21,28 +21,22 @@
 
 package com.atricore.idbus.console.licensing
 {
+import com.atricore.idbus.console.licensing.main.controller.GetLicenseCommand;
 import com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand;
+import com.atricore.idbus.console.licensing.main.model.LicenseProxy;
 import com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager;
+import com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
-
-import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-
-import com.atricore.idbus.console.services.dto.Resource;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
 
-import flash.net.FileFilter;
-import flash.net.FileReference;
-
-import flash.utils.ByteArray;
-
-import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.FlexEvent;
 
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
+import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 public class LicenseMediator extends IocMediator implements IDisposable {
@@ -50,8 +44,14 @@ public class LicenseMediator extends IocMediator implements IDisposable {
 
     private var _popupManager:LicensingPopUpManager;
 
-    [Bindable]
-    private var _fileRef:FileReference;
+    private var _licenseProxy:LicenseProxy;
+
+    //commands
+    private var _updateLicenseCommand:UpdateLicenseCommand;
+    private var _getLicenseCommand:GetLicenseCommand;
+
+    //mediators
+    private var _updateLicenseMediator:UpdateLicenseMediator;
 
     [Bindable]
     public var _selectedFiles:ArrayCollection;
@@ -89,10 +89,14 @@ public class LicenseMediator extends IocMediator implements IDisposable {
     }
 
     private function init():void {
+        (facade as IIocFacade).registerMediatorByConfigName(updateLicenseMediator.getConfigName());
+        (facade as IIocFacade).registerCommandByConfigName(ApplicationFacade.UPDATE_LICENSE, updateLicenseCommand.getConfigName());
+        (facade as IIocFacade).registerCommandByConfigName(ApplicationFacade.GET_LICENSE, getLicenseCommand.getConfigName());
         if (_created) {
             /* Remove unused title in account management panel */
             view.titleDisplay.width = 0;
             view.titleDisplay.height = 0;
+            sendNotification(ApplicationFacade.GET_LICENSE);
         }
 
     }
@@ -101,7 +105,9 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         return [ ApplicationFacade.LICENSE_VIEW_SELECTED,
             UpdateLicenseCommand.SUCCESS,
             UpdateLicenseCommand.FAILURE,
-            ApplicationFacade.DISPLAY_UPDATE_LICENSE];
+            ApplicationFacade.DISPLAY_UPDATE_LICENSE,
+            GetLicenseCommand.SUCCESS,
+            GetLicenseCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
@@ -118,6 +124,12 @@ public class LicenseMediator extends IocMediator implements IDisposable {
             case ApplicationFacade.DISPLAY_UPDATE_LICENSE:
                 popupManager.showUpdateLicenseWindow(notification);
                 break;
+            case GetLicenseCommand.SUCCESS:
+                displayLicenseInfo();
+                break;
+            case GetLicenseCommand.FAILURE:
+                //TODO show error - this should not happen
+                break;
         }
     }
 
@@ -131,6 +143,10 @@ public class LicenseMediator extends IocMediator implements IDisposable {
                 "Please upload valid license.");
     }
 
+    public function displayLicenseInfo():void {
+        view.licensedTo.text = _licenseProxy.license.licensedTo;
+    }
+
     protected function get view():LicenseView
     {
         return viewComponent as LicenseView;
@@ -140,6 +156,34 @@ public class LicenseMediator extends IocMediator implements IDisposable {
 //    {
 //        viewComponent = amv;
 //    }
+
+    public function set licenseProxy(value:LicenseProxy):void {
+        _licenseProxy = value;
+    }
+
+    public function get updateLicenseCommand():UpdateLicenseCommand {
+        return _updateLicenseCommand;
+    }
+
+    public function set updateLicenseCommand(value:UpdateLicenseCommand):void {
+        _updateLicenseCommand = value;
+    }
+
+    public function get updateLicenseMediator():UpdateLicenseMediator {
+        return _updateLicenseMediator;
+    }
+
+    public function set updateLicenseMediator(value:UpdateLicenseMediator):void {
+        _updateLicenseMediator = value;
+    }
+
+    public function get getLicenseCommand():GetLicenseCommand {
+        return _getLicenseCommand;
+    }
+
+    public function set getLicenseCommand(value:GetLicenseCommand):void {
+        _getLicenseCommand = value;
+    }
 
     public function dispose():void {
         // Clean up
