@@ -28,22 +28,18 @@ import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
-
 import com.atricore.idbus.console.services.dto.NotificationScheme;
 import com.atricore.idbus.console.services.spi.request.UpdateNotificationSchemeRequest;
 
 import flash.events.Event;
-import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
 
+import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
-
 import mx.events.ListEvent;
 
 import org.puremvc.as3.interfaces.INotification;
-
-import spark.components.TextInput;
 
 public class NotificationSchemeMediator extends IocFormMediator
 {
@@ -53,6 +49,9 @@ public class NotificationSchemeMediator extends IocFormMediator
 
     private var _notifScheme:NotificationScheme;
 
+    [Bindable]
+    public var _emailAddresses:ArrayCollection;
+    
     public function NotificationSchemeMediator(name:String = null, viewComp:AddGroupForm = null) {
         super(name, viewComp);
     }
@@ -83,8 +82,9 @@ public class NotificationSchemeMediator extends IocFormMediator
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
         view.focusManager.setFocus(view.cbUpdateNature);
 
-        view.mailList.dataProvider = new ArrayCollection();
-
+        _emailAddresses = new ArrayCollection();
+        BindingUtils.bindProperty(view.mailList, "dataProvider", this, "_emailAddresses");
+        
         var req:UpdateNotificationSchemeRequest = new UpdateNotificationSchemeRequest();
         req.notificationScheme = new NotificationScheme();
         req.notificationScheme.name = "default";
@@ -126,8 +126,11 @@ public class NotificationSchemeMediator extends IocFormMediator
         view.cbUpdateNature.selectedIndex = -1;
         FormUtility.clearValidationErrors(_validators);
         if (_liveUpdateProxy.notificationScheme != null) {
+            view.cbSchemeEnabled.selected = liveUpdateProxy.notificationScheme.enabled;
             view.cbUpdateNature.selectedItem = liveUpdateProxy.notificationScheme.threshold;
-            view.mailList.dataProvider = liveUpdateProxy.notificationScheme.emailAddresses;
+            for each (var emailAddress:String in liveUpdateProxy.notificationScheme.emailAddresses) {
+                _emailAddresses.addItem({email:emailAddress});
+            }
             view.smtpServer.text = liveUpdateProxy.notificationScheme.smtpServer;
             view.smtpPort.text = liveUpdateProxy.notificationScheme.smtpPort.toString();
             view.userName.text = liveUpdateProxy.notificationScheme.smtpUsername;
@@ -137,8 +140,13 @@ public class NotificationSchemeMediator extends IocFormMediator
 
     override public function bindModel():void {
         notifScheme.name = "default";
+        notifScheme.enabled = view.cbSchemeEnabled.selected;
         notifScheme.threshold = view.cbUpdateNature.selectedItem;
-        notifScheme.emailAddresses = ArrayCollection(view.mailList.dataProvider);
+        var emailAddresses:ArrayCollection = new ArrayCollection();
+        for each (var emailAddress:Object in _emailAddresses) {
+            emailAddresses.addItem(emailAddress["email"]);
+        }
+        notifScheme.emailAddresses = emailAddresses;
         notifScheme.smtpServer = view.smtpServer.text;
         notifScheme.smtpPort = Number(view.smtpPort.text);
         notifScheme.smtpUsername = view.userName.text;
@@ -156,16 +164,14 @@ public class NotificationSchemeMediator extends IocFormMediator
         var email:String = view.emailInputEb.text;
         if (email != "") {
             if (validate(true)) {
-                view.mailList.dataProvider.addItem({label:email, data:email});
-                view.mailList.dataProvider.refresh();
+                _emailAddresses.addItem({email:email});
+                view.emailInputEb.text = "";
             }
         }
     }
 
     private function handleDeleteEmail(event:MouseEvent):void {
-        view.mailList.dataProvider.removeItem(this.selectedEmail);
-        view.mailList.dataProvider.refresh();
-        view.mailList.validateNow();
+        _emailAddresses.removeItemAt(view.mailList.selectedIndex);
     }
 
     private function mailListSelectHandler(e:ListEvent):void {

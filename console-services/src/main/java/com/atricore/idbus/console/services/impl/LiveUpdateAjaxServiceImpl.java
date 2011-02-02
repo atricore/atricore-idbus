@@ -24,13 +24,15 @@ package com.atricore.idbus.console.services.impl;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.notifications.EMailNotificationScheme;
-import com.atricore.idbus.console.liveservices.liveupdate.main.notifications.NotificationScheme;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
 import com.atricore.idbus.console.services.dto.*;
 import com.atricore.idbus.console.services.spi.LiveUpdateAjaxService;
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
-import com.atricore.liveservices.liveupdate._1_0.md.*;
+import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
+import com.atricore.liveservices.liveupdate._1_0.md.RequiredFeatureType;
+import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
+import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -258,23 +260,27 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
                 logger.trace("Processing loadUpdateNotificationScheme [schemeName: "+ schemeName);
 
             EMailNotificationScheme scheme = (EMailNotificationScheme) updateManager.getNotificationScheme(schemeName);
-            NotificationSchemeDTO notifDTO = new NotificationSchemeDTO();
-
-            notifDTO.setName(scheme.getName());
-            notifDTO.setThreshold(scheme.getThreshold());
-            notifDTO.setEmailAddresses(Arrays.asList(scheme.getAddresses()));
-            notifDTO.setSmtpServer(scheme.getSmtpHost());
-            notifDTO.setSmtpPort(scheme.getSmtpPort());
-            notifDTO.setSmtpUsername(scheme.getSmtpUsername());
-            notifDTO.setSmtpPassword(scheme.getSmtpPassword());
 
             UpdateNotificationSchemeResponse resp = new UpdateNotificationSchemeResponse();
-            resp.setNotificationScheme(notifDTO);
+            
+            if (scheme != null) {
+                NotificationSchemeDTO notifDTO = new NotificationSchemeDTO();
+                notifDTO.setName(scheme.getName());
+                notifDTO.setEnabled(scheme.isEnabled());
+                notifDTO.setThreshold(scheme.getThreshold());
+                notifDTO.setEmailAddresses(Arrays.asList(scheme.getAddresses()));
+                notifDTO.setSmtpServer(scheme.getSmtpHost());
+                notifDTO.setSmtpPort(scheme.getSmtpPort());
+                notifDTO.setSmtpUsername(scheme.getSmtpUsername());
+                notifDTO.setSmtpPassword(scheme.getSmtpPassword());
+
+                resp.setNotificationScheme(notifDTO);
+            }
 
             return resp;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new LiveUpdateException("Error loading update notification scheme" + e.getMessage(), e);
+            throw new LiveUpdateException("Error loading update notification scheme " + e.getMessage(), e);
         }
 
     }
@@ -289,8 +295,9 @@ public class LiveUpdateAjaxServiceImpl implements LiveUpdateAjaxService {
             NotificationSchemeDTO notifReq = updateNotificationSchemeRequest.getNotificationScheme();
 
             notifSch.setName(notifReq.getName());
+            notifSch.setEnabled(notifReq.isEnabled());
             notifSch.setThreshold(notifReq.getThreshold());
-            notifSch.setAddresses((String [])notifReq.getEmailAddresses().toArray(new String[0]));
+            notifSch.setAddresses(notifReq.getEmailAddresses().toArray(new String[]{}));
             notifSch.setSmtpHost(notifReq.getSmtpServer());
             notifSch.setSmtpPort(notifReq.getSmtpPort());
             notifSch.setSmtpUsername(notifReq.getSmtpUsername());

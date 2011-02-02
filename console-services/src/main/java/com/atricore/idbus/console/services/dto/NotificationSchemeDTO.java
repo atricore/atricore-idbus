@@ -34,6 +34,7 @@ public class NotificationSchemeDTO implements Serializable {
 
     private String name;
     private String threshold;
+    private boolean enabled;
     private Collection<String> emailAddresses;
 
     private String smtpServer;
@@ -55,6 +56,14 @@ public class NotificationSchemeDTO implements Serializable {
 
     public void setThreshold(String threshold) {
         this.threshold = threshold;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Collection<String> getEmailAddresses() {

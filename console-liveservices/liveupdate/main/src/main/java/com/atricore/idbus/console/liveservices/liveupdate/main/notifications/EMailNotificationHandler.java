@@ -5,9 +5,8 @@ import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.VelocityContext;
 import org.springframework.context.MessageSource;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 import java.util.*;
 
@@ -44,25 +43,28 @@ public class EMailNotificationHandler implements NotificationHandler {
         }
 
         // send emails
-        if (newUpdates.size() > 0) {
-            Map<String, Object> model = new HashMap<String, Object>();
-            model.put("header", "<img src='cid:headerImage'>");
-            model.put("title", messageSource.getMessage("email.title", null, "UPDATES", null));
-            model.put("updateStr", messageSource.getMessage("email.update", null, "Update", null));
-            model.put("updateNatureStr", messageSource.getMessage("email.update.nature", null, "Update nature", null));
-            model.put("descriptionStr", messageSource.getMessage("email.update.description", null, "Description", null));
-            model.put("artifactsStr", messageSource.getMessage("email.update.artifacts", null, "Artifacts", null));
-            model.put("updates", newUpdates);
-            model.put("footer", "");
+        if (newUpdates.size() > 0 && emailScheme.getAddresses() != null &&
+                emailScheme.getAddresses().length > 0) {
 
-            Map<String, Resource> inlineResources = new HashMap<String, Resource>();
-            inlineResources.put("headerImage", new ClassPathResource("images/a3c_logo.png"));
+            VelocityContext veCtx = new VelocityContext();
+
+            veCtx.put("header", "<img src='cid:headerImage'>");
+            veCtx.put("title", messageSource.getMessage("email.title", null, "UPDATES", null));
+            veCtx.put("updateStr", messageSource.getMessage("email.update", null, "Update", null));
+            veCtx.put("updateNatureStr", messageSource.getMessage("email.update.nature", null, "Update nature", null));
+            veCtx.put("descriptionStr", messageSource.getMessage("email.update.description", null, "Description", null));
+            veCtx.put("artifactsStr", messageSource.getMessage("email.update.artifacts", null, "Artifacts", null));
+            veCtx.put("updates", newUpdates);
+            veCtx.put("footer", "");
+
+            Map<String, String> inlineResources = new HashMap<String, String>();
+            inlineResources.put("headerImage", "/images/a3c_logo.png");
 
             String template = "/com/atricore/idbus/console/liveservices/liveupdate/main/notifications/templates/email-notification.vm";
             String subject = messageSource.getMessage("mail.subject", null, "JOSSO 2 Updates", null);
             String sender = "updates@atricore.com";
 
-            mailer.sendTemplateHTMLEmail(emailScheme, sender, subject, template, model, inlineResources);
+            mailer.sendTemplateHTMLEmail(emailScheme, sender, subject, template, veCtx, inlineResources);
 
             store.addProcessedUpdates(scheme.getName(), newUpdatesIDs.toArray(new String[]{}));
         }

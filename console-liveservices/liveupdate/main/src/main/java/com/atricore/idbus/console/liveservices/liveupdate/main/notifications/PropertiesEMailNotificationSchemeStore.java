@@ -2,6 +2,7 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.notifications;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -179,7 +180,10 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
             props.load(in);
 
             String processedUpdates = props.getProperty("processed");
-            processedUpdates += "," + StringUtils.join(updates, ",");
+            if (processedUpdates != null && !processedUpdates.equals("")) {
+                processedUpdates += ",";
+            }
+            processedUpdates += StringUtils.join(updates, ",");
 
             props.setProperty("processed", processedUpdates);
 
@@ -199,6 +203,7 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
         EMailNotificationScheme emailScheme = (EMailNotificationScheme) scheme;
         Properties props = new Properties();
         props.setProperty("name", emailScheme.getName());
+        props.setProperty("enabled", String.valueOf(emailScheme.isEnabled()));
         props.setProperty("threshold", emailScheme.getThreshold());
         props.setProperty("smtp.host", emailScheme.getSmtpHost());
         props.setProperty("smtp.username", emailScheme.getSmtpUsername());
@@ -213,6 +218,7 @@ public class PropertiesEMailNotificationSchemeStore implements NotificationSchem
         // Convert properties to scheme
         EMailNotificationScheme scheme = new EMailNotificationScheme();
         scheme.setName(props.getProperty("name"));
+        scheme.setEnabled(BooleanUtils.toBoolean(props.getProperty("enabled")));
         scheme.setThreshold(props.getProperty("threshold"));
         scheme.setSmtpHost(props.getProperty("smtp.host"));
         scheme.setSmtpUsername(props.getProperty("smtp.username"));

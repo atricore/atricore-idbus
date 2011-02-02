@@ -38,7 +38,7 @@
             <s:VGroup>
                 <mx:FormItem labelWidth="150"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.schemeEnabled')}">
-                    <s:CheckBox width="100" selected="true" />
+                    <s:CheckBox width="100" id="cbSchemeEnabled" selected="true" />
                 </mx:FormItem>
 
                 <mx:FormItem labelWidth="150"

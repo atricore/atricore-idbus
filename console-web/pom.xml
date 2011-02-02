@@ -206,7 +206,8 @@
                         <Require-Bundle>
                             com.atricore.idbus.console.lifecycle.main,
                             com.atricore.idbus.console.activation.main,
-                            com.atricore.idbus.console.licensing.main
+                            com.atricore.idbus.console.licensing.main,
+                            org.apache.servicemix.bundles.javax.mail
                         </Require-Bundle>
                         <Import-Package>
                             org.apache.commons.logging; version="[1.0,1.1.99)"; provider=paxlogging,

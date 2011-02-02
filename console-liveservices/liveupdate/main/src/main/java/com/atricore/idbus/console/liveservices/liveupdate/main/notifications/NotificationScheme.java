@@ -9,4 +9,5 @@ public interface NotificationScheme {
 
     String getThreshold();
 
+    boolean isEnabled();
 }

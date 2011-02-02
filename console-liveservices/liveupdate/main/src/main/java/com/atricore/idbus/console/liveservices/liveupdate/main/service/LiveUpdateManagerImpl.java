@@ -244,9 +244,11 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
         mdManager.refreshRepositories();
         Collection<UpdateDescriptorType> updates = getAvailableUpdates();
         for (NotificationScheme scheme : listNotificationSchemes()) {
-            for (NotificationHandler handler : notificationHandlers) {
-                if (handler.canHandle(scheme)) {
-                    handler.notify(updates, scheme);
+            if (scheme.isEnabled()) {
+                for (NotificationHandler handler : notificationHandlers) {
+                    if (handler.canHandle(scheme)) {
+                        handler.notify(updates, scheme);
+                    }
                 }
             }
         }

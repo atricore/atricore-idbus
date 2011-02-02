@@ -246,9 +246,13 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>com.atricore.idbus.console.liveservices.liveupdate.main.*;version=${pom.version}</Export-Package>
                         <Spring-Context>*;wait-for-dependencies:=true;create-asynchronously:=false</Spring-Context>
+                        <Require-Bundle>
+                            org.apache.servicemix.bundles.javax.mail
+                        </Require-Bundle>
                         <Import-Package>
                             org.springframework.context.support,
                             org.springframework.beans.factory.config,
+                            org.springframework.ui.velocity,
                             *
                         </Import-Package>
                     </instructions>
