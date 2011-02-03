@@ -15,7 +15,8 @@
     <object id="secureContextProxy" class="com.atricore.idbus.console.main.model.SecureContextProxy"/>
     <object id="accountManagementProxy" class="com.atricore.idbus.console.account.main.model.AccountManagementProxy"/>
     <object id="licenseProxy" class="com.atricore.idbus.console.licensing.main.model.LicenseProxy" />
-    
+    <object id="schemasManagementProxy" class="com.atricore.idbus.console.account.main.model.SchemasManagementProxy"/>
+
     <!-- StartUp Commands -->
     <object id="startupCommand"
             class="com.atricore.idbus.console.main.controller.ApplicationStartUpCommand">
@@ -132,6 +133,8 @@
             class="com.atricore.idbus.console.account.main.controller.AccountManagementStartUpCommand">
         <property name="appSectionMediator" ref="accountManagementMediator"/>
 
+        <property name="serviceRegistry" ref="serviceRegistry"/>
+
         <!-- Mediators -->
         <property name="groupsMediator" ref="groupsMediator"/>
         <property name="groupPropertiesMediator" ref="groupPropertiesMediator"/>
@@ -143,6 +146,8 @@
         <property name="addUserMediator" ref="addUserMediator"/>
         <property name="editUserMediator" ref="editUserMediator"/>
         <property name="searchUsersMediator" ref="searchUsersMediator"/>
+        <property name="schemasMediator" ref="schemasMediator"/>
+        <property name="schemasPropertiesMediator" ref="schemasPropertiesMediator"/>
 
         <!-- Commands -->
         <property name="addGroupCommand" ref="addGroupCommand"/>
@@ -155,6 +160,8 @@
         <property name="listUsersCommand" ref="listUsersCommand"/>
         <property name="searchGroupsCommand" ref="searchGroupsCommand"/>
         <property name="searchUsersCommand" ref="searchUsersCommand"/>
+        <property name="listSchemaAttributesCommand" ref="listSchemaAttributesCommand"/>
+
     </object>
 
     <object id="settingsStartupCommand"
@@ -347,6 +354,11 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
+    <object id="listSchemaAttributesCommand"
+            class="com.atricore.idbus.console.account.main.controller.ListSchemaAttributesCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
+    </object>
 
     <object id="activateExecEnvironmentCommand"
             class="com.atricore.idbus.console.modeling.main.controller.ActivateExecEnvironmentCommand">
@@ -402,7 +414,7 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="projectProxy" ref="projectProxy"/>
     </object>
-    
+
     <object id="exportMetadataCommand"
             class="com.atricore.idbus.console.modeling.main.controller.ExportMetadataCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -602,6 +614,14 @@
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
 
+    <object id="schemasMediator" class="com.atricore.idbus.console.account.schema.SchemasMediator">
+        <!-- <property name="popupManager" ref="accountManagementPopUpManager"/> -->
+        <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
+        <property name="schemasPropertiesMediator" ref="schemasPropertiesMediator"/>
+    </object>
+    <object id="schemasPropertiesMediator"
+            class="com.atricore.idbus.console.account.schemaproperties.SchemaPropertiesMediator"/>
+
     <object id="modelerMediator" class="com.atricore.idbus.console.modeling.main.ModelerMediator">
         <property name="browserMediator" ref="browserMediator"/>
         <property name="diagramMediator" ref="diagramMediator"/>
@@ -623,9 +643,9 @@
 
     <object id="accountManagementMediator" class="com.atricore.idbus.console.account.main.AccountManagementMediator">
         <property name="popupManager" ref="accountManagementPopUpManager"/>
-        <property name="accountManagementProxy" ref="accountManagementProxy"/>
         <property name="groupsMediator" ref="groupsMediator"/>
         <property name="usersMediator" ref="usersMediator"/>
+        <property name="schemasMediator" ref="schemasMediator"/>
 
         <property name="viewFactory" ref="accountManagementViewFactory"/>
         <property name="viewPriority" value="30"/>
@@ -654,7 +674,7 @@
     <object id="updateLicenseMediator" class="com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator"/>
 
     <!--<object id="updateLicenseCommand" class="com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand">-->
-        <!--<property name="registry" ref="serviceRegistry" />-->
+    <!--<property name="registry" ref="serviceRegistry" />-->
     <!--</object>-->
 
 

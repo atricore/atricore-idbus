@@ -176,6 +176,10 @@ public class EmbeddedIcons {
     static public var groupsIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/account/search_group.png")]
+    static public var schemasIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/notation/48x48/identity_appliance.png")]
     static public var busIcon:Class;
 

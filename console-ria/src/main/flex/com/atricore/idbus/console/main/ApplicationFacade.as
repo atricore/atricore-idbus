@@ -30,8 +30,8 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const PROFILE_MANAGEMENT_SERVICE:String = "profileManagementService";
     public static const SIGN_ON_SERVICE:String = "signOnService";
     public static const LICENSE_MANAGEMENT_SERVICE:String = "licenseManagementService";
-                                                      
     public static const LIVE_UPDATE_SERVICE:String = "liveUpdateService";
+    public static const SCHEMAS_MANAGEMENT_SERVICE:String = "schemasManagementService";
 
     public static const ADMIN_GROUP:String = "Administrators";
 
@@ -77,6 +77,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const LIST_USERS:String = "listUsers";
     public static const SEARCH_GROUPS:String = "searchGroups";
     public static const SEARCH_USERS:String = "searchUsers";
+    public static const LIST_SCHEMA_ATTRIBUTES:String = "listSchemaAttributes";
     public static const CREATE_ACTIVATION:String = "createActivation";
     public static const CREATE_FEDERATED_CONNECTION:String = "createFederatedConnection";
     public static const CREATE_IDENTITY_LOOKUP:String = "createIdentityLookup";
@@ -178,6 +179,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const DISPLAY_SEARCH_RESULTS_GROUPS:String = "displaySearchResultGroups";
     public static const DISPLAY_GROUP_PROPERTIES:String = "displayGroupProperties";
     public static const DISPLAY_USER_PROPERTIES:String = "displayUserProperties";
+    public static const DISPLAY_SCHEMA_PROPERTIES:String = "displaySchemaProperties";
     public static const DISPLAY_CHANGE_PASSWORD:String = "displayChangePassword";
     public static const APPLIANCE_VALIDATION_ERRORS:String = "applianceValidationErrors";
     public static const APPLIANCE_SAVED:String = "applianceSaved";

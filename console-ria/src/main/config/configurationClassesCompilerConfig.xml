@@ -166,6 +166,11 @@
         <symbol>com.atricore.idbus.console.account.users.UsersMediator</symbol>
         <symbol>com.atricore.idbus.console.account.userproperties.UserPropertiesMediator</symbol>
 
+        <symbol>com.atricore.idbus.console.account.main.model.SchemasManagementProxy</symbol>
+        <symbol>com.atricore.idbus.console.account.schema.SchemasMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.schemaproperties.SchemaPropertiesMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.ListSchemaAttributesCommand</symbol>
+
         <!-- Settings classes -->
         <symbol>com.atricore.idbus.console.settings.main.SettingsMediator</symbol>
         <symbol>com.atricore.idbus.console.settings.main.SettingsViewFactory</symbol>        

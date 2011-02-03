@@ -45,6 +45,13 @@
         </properties>
     </destination>
 
+    <destination id="schemasManagementService">
+        <properties>
+            <factory>spring</factory>
+            <source>schemasManagementAjaxServiceBean</source>
+        </properties>
+    </destination>
+
     <destination id="profileManagementService">
         <properties>
             <factory>spring</factory>
@@ -73,7 +80,7 @@
         </properties>
     </destination>
 
-	<destination id="licenseManagementService">
+    <destination id="licenseManagementService">
         <properties>
             <factory>spring</factory>
             <source>licenseManagementAjaxServiceBean</source>

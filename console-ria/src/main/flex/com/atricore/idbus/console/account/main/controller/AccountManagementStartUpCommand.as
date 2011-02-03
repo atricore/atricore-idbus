@@ -6,11 +6,18 @@ import com.atricore.idbus.console.account.main.AccountManagementMediator;
 import com.atricore.idbus.console.base.app.BaseStartupContext;
 import com.atricore.idbus.console.base.extensions.appsection.AppSectionStartUpCommand;
 import com.atricore.idbus.console.main.ApplicationFacade;
+import com.atricore.idbus.console.main.service.ServiceRegistry;
+
+import mx.messaging.Channel;
+import mx.messaging.config.ServerConfig;
 
 import org.springextensions.actionscript.puremvc.interfaces.IIocCommand;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
+import org.springextensions.actionscript.puremvc.interfaces.IIocProxy;
 
 public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
+
+    private var _serviceRegistry:IIocProxy;
 
     private var _groupsMediator:IIocMediator;
     private var _groupPropertiesMediator:IIocMediator;
@@ -22,7 +29,9 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
     private var _addUserMediator:IIocMediator;
     private var _editUserMediator:IIocMediator;
     private var _searchUsersMediator:IIocMediator;
-    
+    private var _schemasMediator:IIocMediator;
+    private var _schemasPropertiesMediator:IIocMediator;
+
     private var _addGroupCommand:IIocCommand;
     private var _addUserCommand:IIocCommand;
     private var _deleteGroupCommand:IIocCommand;
@@ -33,6 +42,8 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
     private var _listUsersCommand:IIocCommand;
     private var _searchGroupsCommand:IIocCommand;
     private var _searchUsersCommand:IIocCommand;
+    private var _listSchemaAttributesCommand:IIocCommand;
+
 
     public function AccountManagementStartUpCommand() {
     }
@@ -57,6 +68,8 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(addUserMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(editUserMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(searchUsersMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(schemasMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(schemasPropertiesMediator.getConfigName());
     }
 
     override protected function setupCommands(ctx:BaseStartupContext):void {
@@ -71,8 +84,28 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_USERS, listUsersCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_GROUPS, searchGroupsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_USERS, searchUsersCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, listSchemaAttributesCommand.getConfigName());
     }
-    
+
+    override protected function setupServices(ctx:BaseStartupContext):void{
+        super.setupServices(ctx);
+        var channel:Channel = ServerConfig.getChannel("my-amf");
+        var registry:ServiceRegistry = serviceRegistry as ServiceRegistry;
+        registry.setChannel(channel);
+
+        registry.registerRemoteObjectService(ApplicationFacade.SCHEMAS_MANAGEMENT_SERVICE,
+                ApplicationFacade.SCHEMAS_MANAGEMENT_SERVICE);
+    }
+
+
+    public function get serviceRegistry():IIocProxy {
+        return _serviceRegistry;
+    }
+
+    public function set serviceRegistry(value:IIocProxy):void {
+        _serviceRegistry = value;
+    }
+
     public function get groupsMediator():IIocMediator {
         return _groupsMediator;
     }
@@ -153,6 +186,22 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
         _searchUsersMediator = value;
     }
 
+    public function get schemasMediator():IIocMediator {
+        return _schemasMediator;
+    }
+
+    public function set schemasMediator(value:IIocMediator):void {
+        _schemasMediator = value;
+    }
+
+    public function get schemasPropertiesMediator():IIocMediator {
+        return _schemasPropertiesMediator;
+    }
+
+    public function set schemasPropertiesMediator(value:IIocMediator):void {
+        _schemasPropertiesMediator = value;
+    }
+
     public function get addGroupCommand():IIocCommand {
         return _addGroupCommand;
     }
@@ -231,6 +280,14 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
 
     public function set searchUsersCommand(value:IIocCommand):void {
         _searchUsersCommand = value;
+    }
+
+    public function get listSchemaAttributesCommand():IIocCommand {
+        return _listSchemaAttributesCommand;
+    }
+
+    public function set listSchemaAttributesCommand(value:IIocCommand):void {
+        _listSchemaAttributesCommand = value;
     }
 }
 }

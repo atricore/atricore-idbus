@@ -23,6 +23,7 @@ package com.atricore.idbus.console.account.main {
 import com.atricore.idbus.console.account.groups.GroupsView;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
+import com.atricore.idbus.console.account.schema.SchemasView;
 import com.atricore.idbus.console.account.users.UsersView;
 import com.atricore.idbus.console.base.app.BaseAppFacade;
 import com.atricore.idbus.console.base.extensions.appsection.AppSectionMediator;
@@ -47,10 +48,10 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
     private var resMan:IResourceManager = ResourceManager.getInstance();
 
     private var _popupManager:AccountManagementPopUpManager;
-    private var _accountManagementProxy:AccountManagementProxy;
 
     private var _groupsMediator:IIocMediator;
     private var _usersMediator:IIocMediator;
+    private var _schemasMediator:IIocMediator;
 
     private var _created:Boolean;
 
@@ -60,14 +61,6 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
 
     public function get popupManager():AccountManagementPopUpManager {
         return _popupManager;
-    }
-
-    public function get accountManagementProxy():AccountManagementProxy {
-        return _accountManagementProxy;
-    }
-
-    public function set accountManagementProxy(value:AccountManagementProxy):void {
-        _accountManagementProxy = value;
     }
 
     public function set popupManager(value:AccountManagementPopUpManager):void {
@@ -90,6 +83,14 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
         _usersMediator = value;
     }
 
+    public function get schemasMediator():IIocMediator {
+        return _schemasMediator;
+    }
+
+    public function set schemasMediator(value:IIocMediator):void {
+        _schemasMediator = value;
+    }
+
     override public function setViewComponent(p_viewComponent:Object):void {
         if (getViewComponent() != null) {
         }
@@ -110,8 +111,10 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
         if (_created) {
             var groupsTab:Group = new Group();
             var usersTab:Group = new Group();
+            var schemasTab:Group = new Group();
             var gView:GroupsView  = new GroupsView();
             var uView:UsersView  = new UsersView();
+            var sView:SchemasView  = new SchemasView();
 
             /* Remove unused title in account management panel */
             view.titleDisplay.width = 0;
@@ -130,11 +133,18 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
             usersTab.height = Number("100%");
             usersTab.addElement(uView);
 
+            schemasTab.id = "schemasTab";
+            schemasTab.width = Number("100%");
+            schemasTab.height = Number("100%");
+            schemasTab.addElement(sView);
+
             groupsMediator.setViewComponent(gView);
             usersMediator.setViewComponent(uView);
+            schemasMediator.setViewComponent(sView);
 
             view.vsAccountMng.addNewChild(uView);
             view.vsAccountMng.addNewChild(gView);
+            view.vsAccountMng.addNewChild(sView);
 
             view.accountManagementTabBar.selectedIndex = 0;
             view.vsAccountMng.selectedIndex = 0;
