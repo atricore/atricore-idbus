@@ -55,10 +55,10 @@ public class SchemasManagementAjaxServiceImpl implements
 
     public void afterPropertiesSet() throws Exception {
         this.attrMap = new HashMap();
-        attrMap.put( 1, new AttributeDTO(1,"admin", "a", TypeDTOEnum.STRING, false, false));
-        attrMap.put( 2, new AttributeDTO(2,"admin", "specRole", TypeDTOEnum.STRING, true, false));
-        attrMap.put( 3, new AttributeDTO(2,"Administators", "a", TypeDTOEnum.STRING, false, false));
-        attrMap.put( 4, new AttributeDTO(2,"Administators", "b", TypeDTOEnum.STRING, true, false));
+        attrMap.put( 1, new AttributeDTO(1,"User", "a", TypeDTOEnum.STRING, false, false));
+        attrMap.put( 2, new AttributeDTO(2,"User", "specRole", TypeDTOEnum.STRING, true, false));
+        attrMap.put( 3, new AttributeDTO(2,"Group", "a", TypeDTOEnum.STRING, false, false));
+        attrMap.put( 4, new AttributeDTO(2,"Group", "b", TypeDTOEnum.STRING, true, false));
     }
 
     public AddSchemaAttributeResponse addSchemaAttribute(AddSchemaAttributeRequest req) throws Exception {

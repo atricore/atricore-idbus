@@ -21,9 +21,6 @@
 
 package com.atricore.idbus.console.account.main.model
 {
-import com.atricore.idbus.console.services.dto.Group;
-import com.atricore.idbus.console.services.dto.User;
-
 import com.atricore.idbus.console.services.dto.schema.Attribute;
 
 import mx.collections.ArrayCollection;

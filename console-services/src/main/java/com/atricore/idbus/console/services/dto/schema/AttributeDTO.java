@@ -30,23 +30,47 @@ public class AttributeDTO {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getEntity() {
         return entity;
+    }
+
+    public void setEntity(String entity) {
+        this.entity = entity;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public TypeDTOEnum getType() {
         return type;
+    }
+
+    public void setType(TypeDTOEnum type) {
+        this.type = type;
     }
 
     public boolean isRequired() {
         return required;
     }
 
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
     public boolean isMultivalued() {
         return multivalued;
+    }
+
+    public void setMultivalued(boolean multivalued) {
+        this.multivalued = multivalued;
     }
 }
