@@ -21,6 +21,7 @@
 
 package com.atricore.idbus.console.modeling.diagram
 {
+import com.atricore.idbus.console.base.diagram.DiagramElementTypes;
 import com.atricore.idbus.console.components.CustomEdgeLabelRenderer;
 import com.atricore.idbus.console.components.CustomEdgeRenderer;
 import com.atricore.idbus.console.components.CustomVisualGraph;

@@ -19,10 +19,8 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.palette.model {
+package com.atricore.idbus.console.base.palette.model {
 import mx.collections.ArrayList;
-
-import spark.primitives.BitmapImage;
 
 public class PaletteContainer extends PaletteEntry {
     private var _children:ArrayList;

@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.modeling.diagram {
+package com.atricore.idbus.console.base.diagram {
 public class DiagramElementTypes {
     public static const IDENTITY_PROVIDER_ELEMENT_TYPE:int = 0;
     public static const SERVICE_PROVIDER_ELEMENT_TYPE:int = 1;

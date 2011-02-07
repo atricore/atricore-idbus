@@ -1,6 +1,6 @@
 package com.atricore.idbus.console.modeling.diagram.view.util {
 import com.atricore.idbus.console.main.EmbeddedIcons;
-import com.atricore.idbus.console.modeling.diagram.DiagramElementTypes;
+import com.atricore.idbus.console.base.diagram.DiagramElementTypes;
 import com.atricore.idbus.console.services.dto.ExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.ExternalIdentityProvider;
 import com.atricore.idbus.console.services.dto.ExternalServiceProvider;

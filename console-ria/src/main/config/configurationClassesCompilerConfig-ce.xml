@@ -17,6 +17,7 @@
 
         <!-- CE Extensions -->
         <symbol>com.atricore.idbus.console.branding.ce.AtricoreCEBrandingFactory</symbol>
+        <symbol>com.atricore.idbus.console.branding.ce.CEPaletteItemProvider</symbol>
 
         <!-- Main classes -->
         <symbol>com.atricore.idbus.console.main.ApplicationMediator</symbol>

@@ -577,6 +577,7 @@
     </object>
     <object id="paletteMediator" class="com.atricore.idbus.console.modeling.palette.PaletteMediator">
         <property name="projectProxy" ref="projectProxy"/>
+        <property name="paletteProvider" ref="paletteProvider"/>
     </object>
     <object id="groupsMediator" class="com.atricore.idbus.console.account.groups.GroupsMediator">
         <property name="popupManager" ref="accountManagementPopUpManager"/>

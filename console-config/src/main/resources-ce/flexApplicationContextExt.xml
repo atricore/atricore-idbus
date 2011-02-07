@@ -11,4 +11,7 @@
     <!-- Branding Factory -->
     <object id="brandingFactory" class="com.atricore.idbus.console.branding.ce.AtricoreCEBrandingFactory"/>
 
+    <!-- Palette Provider -->
+    <object id="paletteProvider" class="com.atricore.idbus.console.branding.ce.CEPaletteItemProvider"/>
+
 </objects>

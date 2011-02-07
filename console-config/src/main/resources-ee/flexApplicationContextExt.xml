@@ -94,4 +94,7 @@
     <!-- Branding Factory -->
     <object id="brandingFactory" class="com.atricore.idbus.console.branding.ee.AtricoreEEBrandingFactory"/>
 
+    <!-- Palette Provider -->
+    <object id="paletteProvider" class="com.atricore.idbus.console.branding.ee.EEPaletteItemProvider"/>
+
 </objects>

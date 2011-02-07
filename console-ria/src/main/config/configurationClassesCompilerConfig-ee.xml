@@ -17,6 +17,7 @@
 
         <!-- EE Extensions -->
         <symbol>com.atricore.idbus.console.branding.ee.AtricoreEEBrandingFactory</symbol>
+        <symbol>com.atricore.idbus.console.branding.ee.EEPaletteItemProvider</symbol>
 
         <!-- Main classes -->
         <symbol>com.atricore.idbus.console.main.ApplicationMediator</symbol>
