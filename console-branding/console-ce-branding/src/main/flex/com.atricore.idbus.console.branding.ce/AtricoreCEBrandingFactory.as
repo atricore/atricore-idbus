@@ -21,6 +21,8 @@
 package com.atricore.idbus.console.branding.ce {
 import com.atricore.idbus.console.base.branding.AtricoreConsoleBrandingFactory;
 
+[ResourceBundle("branding")]
+
 public class AtricoreCEBrandingFactory extends AtricoreConsoleBrandingFactory {
 
     override public function getHeaderSkinClass():Class {

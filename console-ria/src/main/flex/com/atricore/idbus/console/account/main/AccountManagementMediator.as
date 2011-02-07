@@ -53,6 +53,8 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
     private var _usersMediator:IIocMediator;
     private var _schemasMediator:IIocMediator;
 
+    private var _accountManagementProxy:AccountManagementProxy;
+
     private var _created:Boolean;
 
     public function AccountManagementMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
@@ -89,6 +91,14 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
 
     public function set schemasMediator(value:IIocMediator):void {
         _schemasMediator = value;
+    }
+
+    public function get accountManagementProxy():AccountManagementProxy {
+        return _accountManagementProxy;
+    }
+
+    public function set accountManagementProxy(value:AccountManagementProxy):void {
+        _accountManagementProxy = value;
     }
 
     override public function setViewComponent(p_viewComponent:Object):void {
@@ -158,6 +168,8 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
         //      - Stop timers
         //      - Set references to null
 
+        accountManagementProxy.dispose();
+        
         if (_created) {
             _created = false;
             view.accountManagementTabBar.removeEventListener(IndexChangeEvent.CHANGE, stackChanged);

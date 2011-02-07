@@ -56,7 +56,7 @@
                 <artifactId>flexmojos-maven-plugin</artifactId>
                 <configuration>
                     <configFiles>
-                        <file>src/main/config/configurationClassesCompilerConfig.xml</file>
+                        <file>src/main/config/configurationClassesCompilerConfig-${console.distribution}.xml</file>
                     </configFiles>
                     <classifier>${console.distribution}</classifier>
                 </configuration>
@@ -108,16 +108,9 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>console-ce-branding</artifactId>
+            <artifactId>console-${console.distribution}-branding</artifactId>
             <type>swc</type>
         </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>console-ee-branding</artifactId>
-            <type>swc</type>
-        </dependency>
-
 
         <dependency>
             <groupId>com.adobe.flex.framework</groupId>

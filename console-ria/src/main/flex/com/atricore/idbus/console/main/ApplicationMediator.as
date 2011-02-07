@@ -21,7 +21,6 @@
 
 package com.atricore.idbus.console.main
 {
-import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.base.app.BaseAppFacade;
 import com.atricore.idbus.console.base.branding.AtricoreConsoleBrandingFactory;
 import com.atricore.idbus.console.base.extensions.appsection.AppSectionMediator;
@@ -35,11 +34,8 @@ import com.atricore.idbus.console.main.model.KeystoreProxy;
 import com.atricore.idbus.console.main.model.ProfileProxy;
 import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
-import com.atricore.idbus.console.liveupdate.main.model.LiveUpdateProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
-import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator;
-import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 
 import flash.events.Event;
 
@@ -76,9 +72,7 @@ public class ApplicationMediator extends IocMediator {
     private var _projectProxy:ProjectProxy;
     private var _keystoreProxy:KeystoreProxy;
     private var _profileProxy:ProfileProxy;
-    private var _accountManagementProxy:AccountManagementProxy;
-    private var _liveUpdateProxy:LiveUpdateProxy;
-
+    
     private var _popupManager:ConsolePopUpManager;
 
     private var _userActionMenuBar:MenuBar;
@@ -136,22 +130,6 @@ public class ApplicationMediator extends IocMediator {
 
     public function set profileProxy(value:ProfileProxy):void {
         _profileProxy = value;
-    }
-
-    public function get accountManagementProxy():AccountManagementProxy {
-        return _accountManagementProxy;
-    }
-
-    public function set accountManagementProxy(value:AccountManagementProxy):void {
-        _accountManagementProxy = value;
-    }
-
-    public function get liveUpdateProxy():LiveUpdateProxy {
-        return _liveUpdateProxy;
-    }
-
-    public function set liveUpdateProxy(value:LiveUpdateProxy):void {
-        _liveUpdateProxy = value;
     }
 
     public function get userActionMenuBar():MenuBar {
@@ -230,8 +208,6 @@ public class ApplicationMediator extends IocMediator {
             NotFirstRunCommand.FAILURE,
             LoginCommand.SUCCESS,
             SetupWizardViewMediator.RUN,
-            SimpleSSOWizardViewMediator.RUN,
-            IdentityApplianceWizardViewMediator.RUN,
             ApplicationFacade.DISPLAY_VIEW,
             ApplicationFacade.DISPLAY_APPLIANCE_MODELER,
             ApplicationFacade.DISPLAY_APPLIANCE_LIFECYCLE,
@@ -251,12 +227,6 @@ public class ApplicationMediator extends IocMediator {
                 break;
             case ApplicationStartUpCommand.FAILURE:
                 //TODO: popupManager.showSetupWizardWindow(notification);
-                break;
-            case SimpleSSOWizardViewMediator.RUN:
-                popupManager.showSimpleSSOWizardWindow(notification);
-                break;
-            case IdentityApplianceWizardViewMediator.RUN:
-                popupManager.showCreateIdentityApplianceWindow(notification);
                 break;
             case SetupServerCommand.SUCCESS:
                 break;
@@ -389,8 +359,7 @@ public class ApplicationMediator extends IocMediator {
         projectProxy.dispose();
         keystoreProxy.dispose();
         profileProxy.dispose();
-        accountManagementProxy.dispose();
-
+        
         sendNotification(ApplicationFacade.LOGOUT);
     }
 

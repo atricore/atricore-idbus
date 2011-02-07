@@ -186,6 +186,7 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
 
     override public function listNotificationInterests():Array {
         return [ApplicationFacade.DISPLAY_UPDATE_NOTIFICATIONS,
+            ApplicationFacade.LOGOUT,
             ListUpdatesCommand.SUCCESS,
             ListUpdatesCommand.FAILURE,
             ApplyUpdateCommand.SUCCESS,
@@ -227,6 +228,12 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
                 break;
             case GetUpdateProfileCommand.FAILURE:
                 _liveUpdateProxy.selectedProfile = null;
+                break;
+            case ApplicationFacade.LOGOUT:
+                this.dispose();
+                break;
+            default:
+                super.handleNotification(notification);
                 break;
         }
     }
@@ -311,11 +318,15 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
         //      - Stop timers
         //      - Set references to null
 
-        view.updatesList.removeEventListener(ListEvent.ITEM_CLICK , updateListSelectHandler);
-        view.btnInstallUpdate.removeEventListener(MouseEvent.CLICK, handleInstallUpdateClick);
-        view.btnCheckForUpdates.removeEventListener(MouseEvent.CLICK, handleCheckForUpdatesClick);
-        view.btnUpdateNofification.removeEventListener(MouseEvent.CLICK, handleUpdateNofificationClick);
-        view = null;
+        liveUpdateProxy.dispose();
+        
+        if (_created) {
+            view.updatesList.removeEventListener(ListEvent.ITEM_CLICK , updateListSelectHandler);
+            view.btnInstallUpdate.removeEventListener(MouseEvent.CLICK, handleInstallUpdateClick);
+            view.btnCheckForUpdates.removeEventListener(MouseEvent.CLICK, handleCheckForUpdatesClick);
+            view.btnUpdateNofification.removeEventListener(MouseEvent.CLICK, handleUpdateNofificationClick);
+            view = null;
+        }
     }
 }
 }

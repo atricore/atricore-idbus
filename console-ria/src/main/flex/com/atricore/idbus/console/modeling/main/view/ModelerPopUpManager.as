@@ -73,12 +73,16 @@ import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreate
 import com.atricore.idbus.console.modeling.diagram.view.sp.ServiceProviderCreateMediator;
 import com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateForm;
 import com.atricore.idbus.console.modeling.diagram.view.xmlidentitysource.XmlIdentitySourceCreateMediator;
+import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardView;
+import com.atricore.idbus.console.modeling.main.view.appliance.IdentityApplianceWizardViewMediator;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.build.BuildApplianceView;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.deploy.DeployApplianceView;
 import com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceMediator;
 import com.atricore.idbus.console.modeling.main.view.export.ExportIdentityApplianceView;
+import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardView;
+import com.atricore.idbus.console.modeling.main.view.sso.SimpleSSOWizardViewMediator;
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataMediator;
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportMetadataView;
 import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProviderCertificateMediator;
@@ -93,6 +97,8 @@ import org.puremvc.as3.interfaces.INotification;
 public class ModelerPopUpManager extends BasePopUpManager {
 
     // mediators
+    private var _simpleSSOWizardMediator:SimpleSSOWizardViewMediator;
+    private var _identityApplianceWizardMediator:IdentityApplianceWizardViewMediator;
     private var _manageCertificateMediator:ManageCertificateMediator;
     private var _identityProviderMediator:IdentityProviderCreateMediator;
     private var _serviceProviderMediator:ServiceProviderCreateMediator;
@@ -126,6 +132,8 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _exportMetadataMediator:ExportMetadataMediator;
 
     // views
+    private var _simpleSSOWizardView:SimpleSSOWizardView;
+    private var _identityApplianceWizardView:IdentityApplianceWizardView;
     private var _identityProviderCreateForm:IdentityProviderCreateForm;
     private var _serviceProviderCreateForm:ServiceProviderCreateForm;
     private var _externalIdentityProviderCreateForm:ExternalIdentityProviderCreateForm;
@@ -166,6 +174,22 @@ public class ModelerPopUpManager extends BasePopUpManager {
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
         _popup.styleName = "modelerPopup";
+    }
+
+    public function get simpleSSOWizardMediator():SimpleSSOWizardViewMediator {
+        return _simpleSSOWizardMediator;
+    }
+
+    public function set simpleSSOWizardMediator(value:SimpleSSOWizardViewMediator):void {
+        _simpleSSOWizardMediator = value;
+    }
+
+    public function get identityApplianceWizardMediator():IdentityApplianceWizardViewMediator {
+        return _identityApplianceWizardMediator;
+    }
+
+    public function set identityApplianceWizardMediator(value:IdentityApplianceWizardViewMediator):void {
+        _identityApplianceWizardMediator = value;
     }
 
     public function set manageCertificateMediator(value:ManageCertificateMediator):void {
@@ -416,6 +440,38 @@ public class ModelerPopUpManager extends BasePopUpManager {
         _exportMetadataMediator = value;
     }
 
+    public function showSimpleSSOWizardWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createSimpleSSOWizardView();
+        showWizard(_simpleSSOWizardView);
+    }
+
+    private function createSimpleSSOWizardView():void {
+        _simpleSSOWizardView = new SimpleSSOWizardView();
+        _simpleSSOWizardView.addEventListener(FlexEvent.CREATION_COMPLETE, handleSimpleSSOWizardViewCreated);
+    }
+
+    private function handleSimpleSSOWizardViewCreated(event:FlexEvent):void {
+        simpleSSOWizardMediator.setViewComponent(_simpleSSOWizardView);
+        simpleSSOWizardMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showCreateIdentityApplianceWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createIdentityApplianceWizardView();
+        showWizard(_identityApplianceWizardView);
+    }
+
+    private function createIdentityApplianceWizardView():void {
+        _identityApplianceWizardView = new IdentityApplianceWizardView();
+        _identityApplianceWizardView.addEventListener(FlexEvent.CREATION_COMPLETE, handleIdentityApplianceWizardViewCreated);
+    }
+
+    private function handleIdentityApplianceWizardViewCreated(event:FlexEvent):void {
+        identityApplianceWizardMediator.setViewComponent(_identityApplianceWizardView);
+        identityApplianceWizardMediator.handleNotification(_lastWindowNotification);
+    }
+    
     public function showCreateIdentityProviderWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createIdentityProviderCreateForm();

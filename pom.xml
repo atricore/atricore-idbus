@@ -1513,7 +1513,6 @@
                 <module>console-lib</module>
                 <module>console-ria-base</module>
                 <module>console-branding/console-ee-branding</module>
-                <module>console-branding/console-ce-branding</module>
                 <module>console-ria</module>
                 <module>console-web</module>
 
@@ -1545,7 +1544,6 @@
                 <module>console-services</module>
                 <module>console-lib</module>
                 <module>console-ria-base</module>
-                <module>console-branding/console-ee-branding</module>
                 <module>console-branding/console-ce-branding</module>
                 <module>console-ria</module>
                 <module>console-web</module>
@@ -1572,7 +1570,6 @@
                 <module>console-lib</module>
                 <module>console-ria-base</module>
                 <module>console-branding/console-ee-branding</module>
-                <module>console-branding/console-ce-branding</module>
                 <module>console-ria</module>
                 <module>console-web</module>
 
@@ -1593,7 +1590,6 @@
                 <module>console-services</module>
                 <module>console-lib</module>
                 <module>console-ria-base</module>
-                <module>console-branding/console-ee-branding</module>
                 <module>console-branding/console-ce-branding</module>
                 <module>console-ria</module>
                 <module>console-web</module>

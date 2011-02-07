@@ -1,25 +1,54 @@
 package com.atricore.idbus.console.branding
 {
-    import flash.display.DisplayObject;
-    import flash.display.GradientType;
-    import flash.display.Sprite;
-    import flash.events.Event;
-    import flash.events.ProgressEvent;
-    import flash.events.TimerEvent;
-    import flash.filters.DropShadowFilter;
-    import flash.geom.Matrix;
-    import flash.text.TextField;
-    import flash.text.TextFormat;
-    import flash.utils.Timer;
+import flash.display.DisplayObject;
+import flash.display.GradientType;
+import flash.display.Sprite;
+import flash.events.Event;
+import flash.events.ProgressEvent;
+import flash.events.TimerEvent;
+import flash.filters.DropShadowFilter;
+import flash.geom.Matrix;
+import flash.text.TextField;
+import flash.text.TextFormat;
+import flash.utils.Timer;
 
-    import mx.events.FlexEvent;
-    import mx.preloaders.IPreloaderDisplay;
+import mx.events.FlexEvent;
+import mx.preloaders.IPreloaderDisplay;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
+    [ResourceBundle("SharedResources")]
+    [ResourceBundle("collections")]
+    [ResourceBundle("components")]
+    [ResourceBundle("containers")]
+    [ResourceBundle("controls")]
+    [ResourceBundle("core")]
+    [ResourceBundle("effects")]
+    [ResourceBundle("formatters")]
+    [ResourceBundle("logging")]
+    [ResourceBundle("modules")]
+    [ResourceBundle("skins")]
+    [ResourceBundle("states")]
+    [ResourceBundle("styles")]
+    [ResourceBundle("utils")]
+    [ResourceBundle("validators")]
+    [ResourceBundle("datamanagement")]
+    [ResourceBundle("olap")]
+    [ResourceBundle("layout")]
+    [ResourceBundle("osmf")]
+    [ResourceBundle("sparkEffects")]
+    [ResourceBundle("textLayout")]
+    [ResourceBundle("messaging")]
+    [ResourceBundle("rpc")]
+    [ResourceBundle("console")]
+    [ResourceBundle("FlashmatticomponentsLabelsResourceBundle")]
+    [ResourceBundle("branding")]
 
     public class AtricoreConsolePreloader extends Sprite implements IPreloaderDisplay
     {
 
-        [Embed(source="/assets/icons/ui/atricore_console_banner.png")]
-        [Bindable] 
+        //[Embed(source="/assets/icons/ui/atricore_console_banner.png")]
+        //[Bindable]
         public var LogoClass:Class;
         private var logo:DisplayObject;
 
@@ -99,7 +128,11 @@ package com.atricore.idbus.console.branding
         }
 
         private function createAssets():void {
+            var resourceManager:IResourceManager = ResourceManager.getInstance();
+            loading = resourceManager.getString("branding", "preloader.loading") + " ";
+
             // load the logo first so that we can get its dimensions
+            LogoClass = resourceManager.getClass("branding", "preloader.image");
             logo = new LogoClass();
             var logoWidth:Number = logo.width;
             var logoHeight:Number = logo.height;

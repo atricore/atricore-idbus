@@ -345,6 +345,8 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             ApplicationFacade.EXPORT_METADATA,
             BuildApplianceMediator.RUN,
             DeployApplianceMediator.RUN,
+            SimpleSSOWizardViewMediator.RUN,
+            IdentityApplianceWizardViewMediator.RUN,
             LookupIdentityApplianceByIdCommand.SUCCESS,
             LookupIdentityApplianceByIdCommand.FAILURE,
             IdentityApplianceListLoadCommand.SUCCESS,
@@ -543,6 +545,12 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case DeployApplianceMediator.RUN:
                 popupManager.showDeployIdentityApplianceWindow(notification);
+                break;
+            case SimpleSSOWizardViewMediator.RUN:
+                popupManager.showSimpleSSOWizardWindow(notification);
+                break;
+            case IdentityApplianceWizardViewMediator.RUN:
+                popupManager.showCreateIdentityApplianceWindow(notification);
                 break;
             case LookupIdentityApplianceByIdCommand.SUCCESS:
                 var redrawGraph:Boolean = view.btnSave.enabled;
