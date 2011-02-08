@@ -1,18 +1,23 @@
 package com.atricore.idbus.console.liveservices.liveupdate.main.engine.operations;
 
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
+import com.atricore.idbus.console.liveservices.liveupdate.main.engine.AbstractInstallOperation;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallEvent;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.OperationStatus;
-import com.atricore.idbus.console.liveservices.liveupdate.main.engine.AbstractInstallOperation;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactsUtil;
+import com.atricore.idbus.console.liveservices.liveupdate.main.util.FilePathUtil;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -45,19 +50,19 @@ public class DownloadInstallersOperation extends AbstractInstallOperation {
                     // Input stream to read artifact from.
                     OutputStream out = null;
 
-                    String artFileName = ArtifactsUtil.getArtifactFilePath(systemFolder, art) ;
+                    String artFileName = ArtifactsUtil.getArtifactFilePath(systemFolder, art);
                     String artFolderName = ArtifactsUtil.getArtifactFolderPath(systemFolder, art);
 
                     try {
 
                         in = artMgr.getArtifactStream(art);
 
-                        File artFolder = new File(artFolderName);
+                        File artFolder = new File(new URI(FilePathUtil.fixFilePath(artFolderName)));
                         if (!artFolder.exists()) {
                             artFolder.mkdirs();
                         }
 
-                        File artFile = new File(artFileName);
+                        File artFile = new File(new URI(FilePathUtil.fixFilePath(artFileName)));
                         out = new FileOutputStream(artFile, false);
 
                         // Installers are not zipped, so just copy them as they are.

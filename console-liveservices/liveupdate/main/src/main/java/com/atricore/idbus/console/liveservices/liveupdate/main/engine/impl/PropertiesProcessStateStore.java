@@ -3,6 +3,7 @@ package com.atricore.idbus.console.liveservices.liveupdate.main.engine.impl;
 import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateException;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.ProcessStatus;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.ProcessStore;
+import com.atricore.idbus.console.liveservices.liveupdate.main.util.FilePathUtil;
 import com.atricore.liveservices.liveupdate._1_0.profile.ProfileType;
 import com.atricore.liveservices.liveupdate._1_0.util.XmlUtils1;
 import org.apache.commons.io.IOUtils;
@@ -10,6 +11,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -27,7 +30,7 @@ public class PropertiesProcessStateStore implements ProcessStore {
 
     private String baseFolder;
 
-//    private URI baseUri;
+    private URI baseUri;
 
     public PropertiesProcessStateStore() {
 
@@ -35,23 +38,26 @@ public class PropertiesProcessStateStore implements ProcessStore {
 
     public void init() throws LiveUpdateException {
 
-        if (baseFolder == null){
-            String separator = System.getProperty("file.separator");
-            baseFolder = System.getProperty("karaf.data",
-                    System.getProperty("java.io.tmpdir")) +
-                    separator +
-                    "liveservices" + separator + "liveupdate" + separator + "processes";
-        }
+        try {
+            if (baseFolder == null)
+                baseFolder = System.getProperty("karaf.data",
+                        System.getProperty("java.io.tmpdir")) +
+                        "/liveservices/liveupdate/processes";
 
-        if (logger.isDebugEnabled())
-            logger.debug("Using baseFolder : " + baseFolder);
+            if (logger.isDebugEnabled())
+                logger.debug("Using baseFolder : " + baseFolder);
 
-        File f = new File(baseFolder);
-        if (!f.exists()) {
-            if (!f.mkdirs())
-                throw new LiveUpdateException("Cannot create folder " + baseFolder);
-        } else if (!f.isDirectory()) {
-            throw new LiveUpdateException("Configured folder is not a directory : " + baseFolder);
+            baseUri = new URI(FilePathUtil.fixFilePath(baseFolder));
+
+            File f = new File(baseUri);
+            if (!f.exists()) {
+                if (!f.mkdirs())
+                    throw new LiveUpdateException("Cannot create folder " + baseFolder);
+            } else if (!f.isDirectory()) {
+                throw new LiveUpdateException("Configured folder is not a directory : " + baseFolder);
+            }
+        } catch (URISyntaxException e) {
+            throw new LiveUpdateException("Invalid base folder : " + e.getMessage(), e);
         }
     }
 
@@ -74,24 +80,22 @@ public class PropertiesProcessStateStore implements ProcessStore {
         if (state.getOperation() != null)
             props.setProperty("operation", state.getOperation());
 
-//        URI profileUri = buildProfileFileURI(state.getId());
-        String profileUri = buildProfileFilePath(state.getId());
-        
+        URI profileUri = buildProfileFileURI(state.getId());
+
         props.setProperty("updateProfile", profileUri.toString());
 
         OutputStream out = null;
         OutputStream profileOut = null;
         try {
 
-//            URI file = buildFileURI(state.getId());
-            String file = buildFilePath(state.getId());
+            URI file = buildFileURI(state.getId());
             out = new FileOutputStream(new File(file), false);
             props.store(out, "LiveUpdate process state " + state.getId());
 
             String updateProfile = XmlUtils1.marshalProfile(state.getUpdateProfile(), "profile", false);
 
             InputStream profileIn = new ByteArrayInputStream(updateProfile.getBytes());
-            File profileFile = new File (props.getProperty("updateProfile"));
+            File profileFile = new File(new URI(props.getProperty("updateProfile")));
             profileOut = new FileOutputStream(profileFile, false);
 
             IOUtils.copy(profileIn, profileOut);
@@ -108,8 +112,7 @@ public class PropertiesProcessStateStore implements ProcessStore {
     }
 
     public UpdateProcessState load(String id) throws LiveUpdateException {
-//        URI file = buildFileURI(id);
-        String file = buildFilePath(id);
+        URI file = buildFileURI(id);
         InputStream in = null;
         try {
             in = new FileInputStream(new File(file));
@@ -130,8 +133,7 @@ public class PropertiesProcessStateStore implements ProcessStore {
     }
 
     public Collection<UpdateProcessState> load() throws LiveUpdateException {
-//        File baseFolderFile = new File(baseUri);
-        File baseFolderFile = new File(baseFolder);
+        File baseFolderFile = new File(baseUri);
 
         List<UpdateProcessState> states = new ArrayList<UpdateProcessState>();
 
@@ -160,8 +162,7 @@ public class PropertiesProcessStateStore implements ProcessStore {
     }
 
     public void remove(String id) throws LiveUpdateException {
-//        URI file = buildFileURI(id);
-        String file = buildFilePath(id);
+        URI file = buildFileURI(id);
 
         File f = new File(file);
         if (f.exists() && !f.isDirectory()) {
@@ -170,8 +171,7 @@ public class PropertiesProcessStateStore implements ProcessStore {
             }
         }
 
-//        URI profileFile = buildProfileFileURI(id);
-        String profileFile = buildProfileFilePath(id);
+        URI profileFile = buildProfileFileURI(id);
         File pf = new File(profileFile);
         if (pf.exists() && !pf.isDirectory()) {
             if (!pf.delete()) {
@@ -195,13 +195,13 @@ public class PropertiesProcessStateStore implements ProcessStore {
         try {
 
             String profilePath = props.getProperty("updateProfile");
-            in = new FileInputStream(new File(profilePath));
+            in = new FileInputStream(new File(new URI(profilePath)));
             ProfileType profile = XmlUtils1.unmarshallProfile(in, false);
             state.setUpdateProfile(profile);
         } catch (FileNotFoundException e) {
-            throw new LiveUpdateException("Cannot file profile " + props.getProperty("updateProfile") + ". " + e.getMessage(), e);
+            throw new LiveUpdateException("Cannot find profile " + props.getProperty("updateProfile") + ". " + e.getMessage(), e);
         } catch (Exception e) {
-            throw new LiveUpdateException("Cannot file profile " + props.getProperty("updateProfile") + ". " + e.getMessage(), e);
+            throw new LiveUpdateException("Cannot find profile " + props.getProperty("updateProfile") + ". " + e.getMessage(), e);
         } finally {
             IOUtils.closeQuietly(in);
         }
@@ -210,16 +210,22 @@ public class PropertiesProcessStateStore implements ProcessStore {
 
     }
 
-    protected String buildFilePath(String id) throws LiveUpdateException {
-        String separator = System.getProperty("file.separator");
-        String n = baseFolder + separator + id + "-proc.bin";
-        return n;
+    protected URI buildFileURI(String id) throws LiveUpdateException {
+        String n = baseFolder + "/" + id + "-proc.bin";
+        try {
+            return new URI(FilePathUtil.fixFilePath(n));
+        } catch (URISyntaxException e) {
+            throw new LiveUpdateException("Invalid file name " + n);
+        }
     }
 
-    protected String buildProfileFilePath(String id) throws LiveUpdateException {
-        String separator = System.getProperty("file.separator");
-        String n = baseFolder + separator + id + "-prof.bin";
-        return n;
+    protected URI buildProfileFileURI(String id) throws LiveUpdateException {
+        String n = baseFolder + "/" + id + "-prof.bin";
+        try {
+            return new URI(FilePathUtil.fixFilePath(n));
+        } catch (URISyntaxException e) {
+            throw new LiveUpdateException("Invalid file name " + n);
+        }
     }    
 
 }

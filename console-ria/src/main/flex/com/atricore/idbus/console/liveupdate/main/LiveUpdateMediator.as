@@ -217,7 +217,14 @@ public class LiveUpdateMediator extends IocMediator implements IDisposable{
                                                PopUpManager.removePopUp(wMsg);
                                            });
                 break;
-            case ApplyUpdateCommand.SUCCESS:
+            case ApplyUpdateCommand.FAILURE:
+                // failure is probably result of IDBUS shutdown
+                sendNotification(ProcessingMediator.STOP);
+                var msgFailure:String = resMan.getString(AtricoreConsole.BUNDLE, 'liveupdate.restart.warning');
+                var wMsgFailure:Alert = Alert.show(msgFailure, "Warning!", Alert.OK , view,
+                                           function (event:CloseEvent):void {
+                                               PopUpManager.removePopUp(wMsgFailure);
+                                           });
                 break;
             case CheckForUpdatesCommand.SUCCESS:
                 sendNotification(ApplicationFacade.LIST_UPDATES);

@@ -7,6 +7,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.engine.OperationS
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactRepositoryManager;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.ArtifactsUtil;
 import com.atricore.idbus.console.liveservices.liveupdate.main.util.CompressionUtils;
+import com.atricore.idbus.console.liveservices.liveupdate.main.util.FilePathUtil;
 import com.atricore.liveservices.liveupdate._1_0.md.ArtifactKeyType;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import org.apache.commons.io.FileUtils;
@@ -37,13 +38,14 @@ public class InstallUpdatesOperation extends AbstractInstallOperation {
         // This is where everything will be unpacked ...
 
         if (unpackFolder == null)
-            unpackFolder = "file://" +
-                    System.getProperty("karaf.data",
+            unpackFolder = System.getProperty("karaf.data",
                     System.getProperty("java.io.tmpdir")) +
                     "/liveservices/liveupdate/unpack";
 
         if (logger.isDebugEnabled())
             logger.debug("Using unpackFolder : " + unpackFolder);
+
+        unpackFolder = FilePathUtil.fixFilePath(unpackFolder);
 
         try {
             File f = new File(new URI(unpackFolder));
@@ -85,7 +87,7 @@ public class InstallUpdatesOperation extends AbstractInstallOperation {
 
                         // copy extracted files
                         if (unpackedDir != null) {
-                            FileUtils.copyDirectory(unpackedDir, new File(new URI("file://" + System.getProperty("karaf.base"))));
+                            FileUtils.copyDirectory(unpackedDir, new File(new URI(FilePathUtil.fixFilePath(System.getProperty("karaf.base")))));
                         }
 
                     } catch (Exception e) {

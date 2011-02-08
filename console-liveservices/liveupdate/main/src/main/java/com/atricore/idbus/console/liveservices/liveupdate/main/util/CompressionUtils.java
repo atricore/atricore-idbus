@@ -40,7 +40,7 @@ public class CompressionUtils {
             }
             if (unpackedDir == null) {
             	File parent = file;
-            	while (parent.getParentFile() != null && !destFolder.equals("file://" + parent.getParentFile().getPath())) {
+            	while (parent.getParentFile() != null && !destFolder.equals(FilePathUtil.fixFilePath(parent.getParentFile().getPath()))) {
             		parent = parent.getParentFile();
             	}
             	unpackedDir = parent;
@@ -77,7 +77,7 @@ public class CompressionUtils {
             }
             if (unpackedDir == null) {
             	File parent = file;
-            	while (parent.getParentFile() != null && !destFolder.equals("file://" + parent.getParentFile().getPath())) {
+            	while (parent.getParentFile() != null && !destFolder.equals(FilePathUtil.fixFilePath(parent.getParentFile().getPath()))) {
             		parent = parent.getParentFile();
             	}
             	unpackedDir = parent;

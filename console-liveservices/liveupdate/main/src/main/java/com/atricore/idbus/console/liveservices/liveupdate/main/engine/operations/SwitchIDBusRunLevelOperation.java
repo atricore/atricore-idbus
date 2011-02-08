@@ -4,6 +4,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateExcepti
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.AbstractInstallOperation;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.InstallEvent;
 import com.atricore.idbus.console.liveservices.liveupdate.main.engine.OperationStatus;
+import com.atricore.idbus.console.liveservices.liveupdate.main.util.FilePathUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,7 +14,6 @@ import org.springframework.osgi.context.BundleContextAware;
 
 import java.io.*;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Properties;
 
 /**
@@ -91,11 +91,11 @@ public class SwitchIDBusRunLevelOperation extends AbstractInstallOperation imple
     }
 
     protected Properties loadConfig() throws Exception {
-        return loadConfigFromURI(new URI(configProperties));
+        return loadConfigFromURI(buildConfigPropertiesURI());
     }
 
     protected Properties loadConfigBackup() throws Exception {
-        return loadConfigFromURI(new URI(configProperties + ".bkp"));
+        return loadConfigFromURI(buildConfigPropertiesBkpURI());
     }
 
 
@@ -120,7 +120,7 @@ public class SwitchIDBusRunLevelOperation extends AbstractInstallOperation imple
     }
 
     protected void storeProperties(Properties props, String comments) throws Exception {
-        storeProperties(props, new URI(configProperties), comments);
+        storeProperties(props, buildConfigPropertiesURI(), comments);
     }
 
     protected void storeProperties(Properties props, URI cfgUri, String comments) throws Exception {
@@ -142,7 +142,7 @@ public class SwitchIDBusRunLevelOperation extends AbstractInstallOperation imple
 
     protected void backupProperties(boolean replace) throws Exception {
 
-        File f = new File(new URI(configProperties + ".bkp"));
+        File f = new File(buildConfigPropertiesBkpURI());
 
         if (!replace && f.exists()) {
             if (logger.isDebugEnabled())
@@ -162,7 +162,7 @@ public class SwitchIDBusRunLevelOperation extends AbstractInstallOperation imple
         InputStream in = null;
         OutputStream out = null;
         try {
-            in = new FileInputStream(new File(new URI(configProperties)));
+            in = new FileInputStream(new File(buildConfigPropertiesURI()));
             out = new FileOutputStream(f, false);
             IOUtils.copy(in, out);
         } finally {
@@ -173,7 +173,7 @@ public class SwitchIDBusRunLevelOperation extends AbstractInstallOperation imple
 
     protected void restoreProperties() throws Exception {
 
-        File f = new File(new URI(configProperties + ".bkp"));
+        File f = new File(buildConfigPropertiesBkpURI());
 
         if (!f.exists())
             return;
@@ -182,7 +182,7 @@ public class SwitchIDBusRunLevelOperation extends AbstractInstallOperation imple
         OutputStream out = null;
         try {
             in = new FileInputStream(f);
-            out = new FileOutputStream(new File(new URI(configProperties)), false);
+            out = new FileOutputStream(new File(buildConfigPropertiesURI()), false);
             IOUtils.copy(in, out);
         } finally {
             IOUtils.closeQuietly(in);
@@ -190,6 +190,13 @@ public class SwitchIDBusRunLevelOperation extends AbstractInstallOperation imple
         }
     }
 
+    protected URI buildConfigPropertiesURI() throws Exception {
+        return new URI(FilePathUtil.fixFilePath(configProperties));
+    }
+
+    protected URI buildConfigPropertiesBkpURI() throws Exception {
+        return new URI(FilePathUtil.fixFilePath(configProperties + ".bkp"));
+    }
 
     // --------------------------------------------------< Properties >
 

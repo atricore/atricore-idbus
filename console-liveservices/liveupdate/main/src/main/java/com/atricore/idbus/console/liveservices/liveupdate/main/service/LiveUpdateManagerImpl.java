@@ -12,6 +12,7 @@ import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Metada
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.Repository;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.RepositoryTransport;
 import com.atricore.idbus.console.liveservices.liveupdate.main.repository.impl.*;
+import com.atricore.idbus.console.liveservices.liveupdate.main.util.FilePathUtil;
 import com.atricore.liveservices.liveupdate._1_0.md.InstallableUnitType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdateDescriptorType;
 import com.atricore.liveservices.liveupdate._1_0.md.UpdatesIndexType;
@@ -347,6 +348,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
             // Certificate for DS validation
             // TODO : Use java.security.cert.CertStore to keep track of all certs :) !?
             String certFile =  config.getProperty(repoKeys + ".certificate");
+            certFile = FilePathUtil.fixFilePath(certFile);
             // TODO : Read/Decode/Validate the certificate file , use CertStore instance ..
             byte[] certificate = null;
 
@@ -359,7 +361,8 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
             try {
                 // Since we're handling the configuration properties, we cannot rely on spring properties resolver.
                 String l = config.getProperty(repoKeys + ".location");
-                l = l.replaceAll("\\$\\{karaf\\.data\\}", dataFolder);
+                l = l.replaceAll("\\$\\{karaf\\.data\\}", dataFolder.replace("\\", "/"));
+                l = FilePathUtil.fixFilePath(l);
                 location = new URI(l);
 
             } catch (Exception e) {
@@ -383,7 +386,7 @@ public class LiveUpdateManagerImpl implements LiveUpdateManager, BundleContextAw
             //repo.setUsername();
             //repo.setPassword();
 
-            repo.setRepoFolder(new URI ("file://" + dataFolder + "/liveservices/liveupdate/repos/cache/" + id));
+            repo.setRepoFolder(new URI(FilePathUtil.fixFilePath(dataFolder + "/liveservices/liveupdate/repos/cache/" + id)));
 
             return repo;
         } catch (Exception e) {
