@@ -40,18 +40,36 @@
 
     <s:VGroup id="updateLicenseBox" width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
     <!--<mx:Panel width="25%" height="40%" horizontalAlign="center" title="Update License">-->
-        <mx:Form width="100%" height="30%" verticalGap="4" defaultButton="{btnUpdateLicense}">
+        <mx:Form width="100%" height="20%" verticalGap="4" defaultButton="{btnUpdateLicense}">
             <mx:FormItem>
                 <mx:Button id="btnUpdateLicense" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.update')}"/>
             </mx:FormItem>
         </mx:Form>
 
         <!--  current license information  -->
-        <s:Label width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.currentLicense')}" styleName="h2"/>
+        <s:Label paddingLeft="25" paddingBottom="10" width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.currentLicense')}" styleName="h2"/>
 
-        <s:HGroup>
-            <s:Label width="150" text="Licensed to:"/>
-            <s:Label id="licensedTo" width="150" text="Atricore Inc."/>
-        </s:HGroup>
+        <!--<s:HGroup>-->
+            <!--<s:Label width="150" text="Licensed to:"/>-->
+            <!--<s:Label id="licensedTo" width="150" text="Atricore Inc."/>-->
+        <!--</s:HGroup>-->
+        <s:VGroup paddingLeft="25">
+            <s:HGroup paddingBottom="5">
+                <s:Label width="150" text="License Owner:"/>
+                <s:Label id="ownerName" width="150" text="Atricore Inc."/>
+            </s:HGroup>
+            <s:HGroup paddingBottom="5">
+                <s:Label width="150" text="Organization:"/>
+                <s:Label id="organization" width="150" text="Atricore Inc."/>
+            </s:HGroup>
+            <s:HGroup paddingBottom="5">
+                <s:Label width="150" text="Feature:"/>
+                <s:Label id="feature" width="150" text="Atricore Inc."/>
+            </s:HGroup>
+            <s:HGroup>
+                <s:Label width="150" text="Expires on:"/>
+                <s:Label id="expirationDate" width="150" text="Atricore Inc."/>
+            </s:HGroup>
+        </s:VGroup>
     </s:VGroup>
 </s:Panel>

@@ -28,6 +28,8 @@ import com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager;
 import com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator;
 import com.atricore.idbus.console.main.ApplicationFacade;
 
+import com.atricore.idbus.console.services.dto.LicensedFeatureType;
+
 import flash.events.Event;
 import flash.events.MouseEvent;
 
@@ -144,7 +146,11 @@ public class LicenseMediator extends IocMediator implements IDisposable {
     }
 
     public function displayLicenseInfo():void {
-        view.licensedTo.text = _licenseProxy.license.licensedTo;
+        view.organization.text = _licenseProxy.license.organization.organizationName;
+        view.ownerName.text = _licenseProxy.license.organization.owner;
+        var licFeature:LicensedFeatureType = _licenseProxy.license.licensedFeature.getItemAt(0) as LicensedFeatureType;
+        view.feature.text = licFeature.feature.name;
+        view.expirationDate.text = licFeature.expirationDate.toDateString();
     }
 
     protected function get view():LicenseView

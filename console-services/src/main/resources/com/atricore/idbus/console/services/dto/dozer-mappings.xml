@@ -659,9 +659,46 @@
         <class-a>com.atricore.josso2.licensing._1_0.license.LicenseType</class-a>
         <class-b>com.atricore.idbus.console.services.dto.LicenseTypeDTO</class-b>
         <field>
-            <a>licensedTo</a>
-            <b>licensedTo</b>
+            <a>licensedFeature</a>
+            <b>licensedFeature</b>
+            <a-hint>com.atricore.josso2.licensing._1_0.license.LicensedFeatureType</a-hint>
+            <b-hint>com.atricore.idbus.console.services.dto.LicensedFeatureTypeDTO</b-hint>
         </field>
+        <field>
+            <a>organization</a>
+            <b>organization</b>
+        </field>
+        <field>
+            <a>issueInstant</a>
+            <b>issueInstant</b>
+        </field>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.josso2.licensing._1_0.license.OrganizationType</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.OrganizationTypeDTO</class-b>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.josso2.licensing._1_0.license.LicensedFeatureType</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.LicensedFeatureTypeDTO</class-b>
+        <field>
+            <a>issueDate</a>
+            <b>issueDate</b>
+        </field>
+        <field>
+            <a>expirationDate</a>
+            <b>expirationDate</b>
+        </field>
+        <field>
+            <a>feature</a>
+            <b>feature</b>
+        </field>
+    </mapping>
+
+    <mapping>
+        <class-a>com.atricore.josso2.licensing._1_0.license.FeatureType</class-a>
+        <class-b>com.atricore.idbus.console.services.dto.FeatureTypeDTO</class-b>
     </mapping>
 
 </mappings>

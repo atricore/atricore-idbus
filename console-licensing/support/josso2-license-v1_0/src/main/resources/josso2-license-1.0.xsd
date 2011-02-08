@@ -50,8 +50,8 @@
         <sequence>
             <element ref="ds:Signature" minOccurs="0"/>
             <element ref="lic:licensedFeature" minOccurs="0" maxOccurs="unbounded" />
+            <element ref="lic:organization" minOccurs="0"/>
         </sequence>
-        <attribute name="LicensedTo" type="string" use="required"/>
         <attribute name="Version" type="string" use="required"/>
         <attribute name="ID" type="ID" use="required"/>
         <attribute name="IssueInstant" type="dateTime" use="required"/>
@@ -63,7 +63,7 @@
             <element ref="lic:feature" minOccurs="0"/>
         </sequence>
         <attribute name="IssueDate" type="dateTime" use="optional"/>
-        <attribute name="ExpirationDate" type="dateTime" use="optional"/>
+        <attribute name="ExpirationDate" type="dateTime" use="required"/>
     </complexType>
 
     <element name="feature" type="lic:FeatureType"/>
@@ -80,6 +80,12 @@
     <complexType name="FeaturePropertyType">
         <attribute name="Name" type="string" use="required"/>
         <attribute name="Value" type="string" use="required"/>
+    </complexType>
+
+    <element name="organization" type="lic:OrganizationType"/>
+    <complexType name="OrganizationType">
+        <attribute name="OrganizationName" type="string" use="required"/>
+        <attribute name="Owner" type="string" use="required"/>
     </complexType>
 
     <!-- RFU -->
