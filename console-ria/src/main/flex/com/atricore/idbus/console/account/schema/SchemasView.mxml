@@ -27,7 +27,7 @@
           xmlns:components="com.atricore.idbus.console.components.*"
           xmlns:properties="com.atricore.idbus.console.account.propertysheet.schema.*"
           width="100%" height="100%"
-          name="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schemas.panel.title')}"
+          name="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.panel.title')}"
         >
     <fx:Metadata>
         [ResourceBundle("console")]
@@ -52,15 +52,15 @@
                                     iconWidth="22" iconHeight="22"
                                     paddingTop="3" paddingLeft="3" isLinkButton="false"
                                     skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
-                                    toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schemas.create.attribute.label')}"
-                                    label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schemas.create.attribute.label')}"/>
+                                    toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.create.attribute.label')}"
+                                    label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.create.attribute.label')}"/>
         <components:IconLabelButton id="btnEditAttribute" enabled="false"
                                     iconUp="{EmbeddedIcons.editGroupIcon}"
                                     iconWidth="22" iconHeight="22"
                                     paddingTop="3" paddingLeft="3" isLinkButton="false"
                                     skinClass="com.atricore.idbus.console.skin.button.IconLabelButtonSkin"
-                                    toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schemas.edit.attribute.label')}"
-                                    label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schemas.edit.attribute.label')}"/>
+                                    toolTip="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.edit.attribute.label')}"
+                                    label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.edit.attribute.label')}"/>
         <components:IconLabelButton id="btnDeleteAttribute" enabled="false"
                                     iconUp="{EmbeddedIcons.deleteGroupIcon}"
                                     iconWidth="22" iconHeight="22"
@@ -74,15 +74,15 @@
         <mx:DataGrid id="schemaAttrList" width="100%" rowCount="10" resizeEffect="Resize" verticalAlign="middle">
             <mx:columns>
                 <mx:DataGridColumn dataField="entity"
-                                   headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schemas.list.entity')}"/>
+                                   headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.list.entity')}"/>
                 <mx:DataGridColumn dataField="name"
-                                   headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schemas.list.attribute')}"/>
+                                   headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.list.attribute')}"/>
                 <mx:DataGridColumn dataField="type"
-                                   headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schemas.list.type')}"/>
+                                   headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.list.type')}"/>
                 <mx:DataGridColumn dataField="required"
-                                   headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schemas.list.required')}"/>
+                                   headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.list.required')}"/>
                 <mx:DataGridColumn dataField="multivalued"
-                                   headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schemas.list.multivalued')}"/>
+                                   headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.list.multivalued')}"/>
             </mx:columns>
         </mx:DataGrid>
 

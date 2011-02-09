@@ -148,6 +148,8 @@
         <property name="searchUsersMediator" ref="searchUsersMediator"/>
         <property name="schemasMediator" ref="schemasMediator"/>
         <property name="schemasPropertiesMediator" ref="schemasPropertiesMediator"/>
+        <property name="addAttributeMediator" ref="addAttributeMediator"/>
+        <property name="editAttributeMediator" ref="editAttributeMediator"/>
 
         <!-- Commands -->
         <property name="addGroupCommand" ref="addGroupCommand"/>
@@ -616,12 +618,20 @@
     </object>
 
     <object id="schemasMediator" class="com.atricore.idbus.console.account.schema.SchemasMediator">
-        <!-- <property name="popupManager" ref="accountManagementPopUpManager"/> -->
+        <property name="popupManager" ref="accountManagementPopUpManager"/>
         <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
         <property name="schemasPropertiesMediator" ref="schemasPropertiesMediator"/>
     </object>
     <object id="schemasPropertiesMediator"
             class="com.atricore.idbus.console.account.schemaproperties.SchemaPropertiesMediator"/>
+
+    <object id="addAttributeMediator" class="com.atricore.idbus.console.account.main.view.addattribute.AddAttributeMediator">
+        <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
+    </object>
+
+    <object id="editAttributeMediator" class="com.atricore.idbus.console.account.main.view.editattribute.EditAttributeMediator">
+        <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
+    </object>
 
     <object id="modelerMediator" class="com.atricore.idbus.console.modeling.main.ModelerMediator">
         <property name="browserMediator" ref="browserMediator"/>
@@ -752,6 +762,8 @@
         <property name="editUserMediator" ref="editUserMediator"/>
         <property name="searchUsersMediator" ref="searchUsersMediator"/>
         <property name="processingMediator" ref="processingMediator"/>
+        <property name="addAttributeMediator" ref="addAttributeMediator"/>
+        <property name="editAttributeMediator" ref="editAttributeMediator"/>
     </object>
 
     <object id="licensingPopUpManager"

@@ -171,8 +171,10 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const SHOW_UPLOAD_PROGRESS:String = "uploadProgress";
     public static const DISPLAY_ADD_NEW_GROUP:String = "displayAddNewGroup";
     public static const DISPLAY_ADD_NEW_USER:String = "displayAddNewUser";
+    public static const DISPLAY_ADD_NEW_ATTRIBUTE:String = "displayAddNewAttribute";
     public static const DISPLAY_EDIT_GROUP:String = "displayEditGroup";
     public static const DISPLAY_EDIT_USER:String = "displayEditUser";
+    public static const DISPLAY_EDIT_ATTRIBUTE:String = "displayEditAttribute";
     public static const DISPLAY_SEARCH_GROUPS:String = "displaySearchGroup";
     public static const DISPLAY_SEARCH_USERS:String = "displaySearchUser";
     public static const DISPLAY_SEARCH_RESULTS_USERS:String = "displaySearchResultUsers";

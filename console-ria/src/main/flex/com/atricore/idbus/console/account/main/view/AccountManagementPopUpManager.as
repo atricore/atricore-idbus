@@ -21,10 +21,14 @@
 
 package com.atricore.idbus.console.account.main.view {
 import com.atricore.idbus.console.account.groups.GroupsMediator;
+import com.atricore.idbus.console.account.main.view.addattribute.AddAttributeForm;
+import com.atricore.idbus.console.account.main.view.addattribute.AddAttributeMediator;
 import com.atricore.idbus.console.account.main.view.addgroup.AddGroupForm;
 import com.atricore.idbus.console.account.main.view.addgroup.AddGroupMediator;
 import com.atricore.idbus.console.account.main.view.adduser.AddUserForm;
 import com.atricore.idbus.console.account.main.view.adduser.AddUserMediator;
+import com.atricore.idbus.console.account.main.view.editattribute.EditAttributeForm;
+import com.atricore.idbus.console.account.main.view.editattribute.EditAttributeMediator;
 import com.atricore.idbus.console.account.main.view.editgroup.EditGroupForm;
 import com.atricore.idbus.console.account.main.view.editgroup.EditGroupMediator;
 import com.atricore.idbus.console.account.main.view.edituser.EditUserForm;
@@ -49,16 +53,20 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     private var _usersMediator:UsersMediator;
     private var _addGroupMediator:AddGroupMediator;
     private var _addUserMediator:AddUserMediator;
+    private var _addAttributeMediator:AddAttributeMediator;
     private var _editGroupMediator:EditGroupMediator;
     private var _editUserMediator:EditUserMediator;
+    private var _editAttributeMediator:EditAttributeMediator;
     private var _searchGroupsMediator:SearchGroupsMediator;
     private var _searchUsersMediator:SearchUsersMediator;
 
     // views
     private var _addGroupForm:AddGroupForm;
     private var _addUserForm:AddUserForm;
+    private var _addAttributeForm:AddAttributeForm;
     private var _editGroupForm:EditGroupForm;
     private var _editUserForm:EditUserForm;
+    private var _editAttributeForm:EditAttributeForm;
     private var _searchGroupsForm:SearchGroupsForm;
     private var _searchUsersForm:SearchUsersForm;
 
@@ -104,6 +112,14 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         _addUserMediator = value;
     }
 
+    public function get addAttributeMediator():AddAttributeMediator {
+        return _addAttributeMediator;
+    }
+
+    public function set addAttributeMediator(value:AddAttributeMediator):void {
+        _addAttributeMediator = value;
+    }
+
     public function get editGroupMediator():EditGroupMediator {
         return _editGroupMediator;
     }
@@ -118,6 +134,14 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
 
     public function set editUserMediator(value:EditUserMediator):void {
         _editUserMediator = value;
+    }
+
+    public function get editAttributeMediator():EditAttributeMediator {
+        return _editAttributeMediator;
+    }
+
+    public function set editAttributeMediator(value:EditAttributeMediator):void {
+        _editAttributeMediator = value;
     }
 
     public function get searchGroupsMediator():SearchGroupsMediator {
@@ -139,7 +163,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     public function showAddGroupWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createAddGroupForm();
-        
+
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.add.form.heading');
         _popup.width = 400;
         _popup.height =200;
@@ -162,7 +186,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     public function showAddUserWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createAddUserForm();
-        
+
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.add.form.heading');
         _popup.width = 520;
         _popup.height = 450;
@@ -180,6 +204,30 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
         addUserMediator.setViewComponent(_addUserForm);
         addUserMediator.handleNotification(_lastWindowNotification);
     }
+
+    // Add Attribute Popup
+    public function showAddAttributeWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createAddAttributeForm();
+
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.attribute.add.form.heading');
+        _popup.width = 400;
+        _popup.height = 280;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_addAttributeForm);
+    }
+
+    private function createAddAttributeForm():void {
+        _addAttributeForm = new AddAttributeForm();
+        _addAttributeForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleAddAttributeFormCreated);
+    }
+
+    private function handleAddAttributeFormCreated(event:FlexEvent):void {
+        addAttributeMediator.setViewComponent(_addAttributeForm);
+        addAttributeMediator.handleNotification(_lastWindowNotification);
+    }
+
     // Edit Group Popup
     public function showEditGroupWindow(notification:INotification):void {
         _lastWindowNotification = notification;
@@ -206,7 +254,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     public function showEditUserWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createEditUserForm();
-        
+
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.edit.form.heading');
         _popup.width = 520;
         _popup.height = 450;
@@ -223,6 +271,29 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     private function handleEditUserFormCreated(event:FlexEvent):void {
         editUserMediator.setViewComponent(_editUserForm);
         editUserMediator.handleNotification(_lastWindowNotification);
+    }
+
+    // Edit Attribute Popup
+    public function showEditAttributeWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createEditAttributeForm();
+
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.attribute.edit.form.heading');
+        _popup.width = 400;
+        _popup.height = 280;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_editAttributeForm);
+    }
+
+    private function createEditAttributeForm():void {
+        _editAttributeForm = new EditAttributeForm();
+        _editAttributeForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleEditAttributeFormCreated);
+    }
+
+    private function handleEditAttributeFormCreated(event:FlexEvent):void {
+        editAttributeMediator.setViewComponent(_editAttributeForm);
+        editAttributeMediator.handleNotification(_lastWindowNotification);
     }
 
     // Search Groups Popup
@@ -251,7 +322,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
     public function showSearchUsersWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createSearchUserForm();
-        
+
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.users.search.panel.title');
         _popup.width = 300;
         _popup.height = 235;

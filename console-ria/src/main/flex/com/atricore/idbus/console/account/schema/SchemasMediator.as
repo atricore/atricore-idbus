@@ -47,7 +47,7 @@ public class SchemasMediator extends IocMediator implements IDisposable{
 
     public static const BUNDLE:String = "console";
 
-    //private var _popupManager:AccountManagementPopUpManager;
+    private var _popupManager:AccountManagementPopUpManager;
     private var _schemasManagementProxy:SchemasManagementProxy;
     private var _schemasPropertiesMediator:IIocMediator;
 
@@ -55,14 +55,6 @@ public class SchemasMediator extends IocMediator implements IDisposable{
 
     public function SchemasMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
-    }
-
-    public function get schemasManagementProxy():SchemasManagementProxy {
-        return _schemasManagementProxy;
-    }
-
-    public function set schemasManagementProxy(value:SchemasManagementProxy):void {
-        _schemasManagementProxy = value;
     }
 
     override public function setViewComponent(p_viewComponent:Object):void {
@@ -79,7 +71,7 @@ public class SchemasMediator extends IocMediator implements IDisposable{
 
         sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES);
         //schemasPropertiesMediator.setViewComponent(view.properties);
-        //popupManager.init(iocFacade, view);
+        popupManager.init(iocFacade, view);
     }
 
     public function dispose():void {
@@ -98,7 +90,9 @@ public class SchemasMediator extends IocMediator implements IDisposable{
 
     override public function listNotificationInterests():Array {
         return [ListSchemaAttributesCommand.SUCCESS,
-            ListSchemaAttributesCommand.FAILURE
+            ListSchemaAttributesCommand.FAILURE,
+            ApplicationFacade.DISPLAY_ADD_NEW_ATTRIBUTE,
+            ApplicationFacade.DISPLAY_EDIT_ATTRIBUTE
         ];
     }
 
@@ -123,18 +117,23 @@ public class SchemasMediator extends IocMediator implements IDisposable{
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error getting group list.");
                 break;
+            case ApplicationFacade.DISPLAY_ADD_NEW_ATTRIBUTE:
+                popupManager.showAddAttributeWindow(notification);
+                break;
+            case ApplicationFacade.DISPLAY_EDIT_ATTRIBUTE:
+                popupManager.showEditAttributeWindow(notification);
+                break;
         }
     }
 
-
     private function handleCreateAttributeClick(event:MouseEvent):void {
         trace("New Group Button Click: " + event);
-        //sendNotification(ApplicationFacade.DISPLAY_ADD_NEW_GROUP);
+        sendNotification(ApplicationFacade.DISPLAY_ADD_NEW_ATTRIBUTE);
     }
 
     private function handleEditAttributeClick(event:MouseEvent):void {
         trace("Edit Group Button Click: " + event);
-        //sendNotification(ApplicationFacade.DISPLAY_EDIT_GROUP);
+        sendNotification(ApplicationFacade.DISPLAY_EDIT_ATTRIBUTE);
     }
 
     private function handleDeleteAttributeClick(event:MouseEvent):void {
@@ -205,6 +204,22 @@ public class SchemasMediator extends IocMediator implements IDisposable{
 
     public function set schemasPropertiesMediator(value:IIocMediator):void {
         _schemasPropertiesMediator = value;
+    }
+
+    public function get schemasManagementProxy():SchemasManagementProxy {
+        return _schemasManagementProxy;
+    }
+
+    public function set schemasManagementProxy(value:SchemasManagementProxy):void {
+        _schemasManagementProxy = value;
+    }
+
+    public function get popupManager():AccountManagementPopUpManager {
+        return _popupManager;
+    }
+
+    public function set popupManager(value:AccountManagementPopUpManager):void {
+        _popupManager = value;
     }
 }
 }
