@@ -189,6 +189,11 @@
         <symbol>com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand</symbol>
         <symbol>com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager</symbol>
 
+        <!-- Help section classes -->
+        <symbol>com.atricore.idbus.console.help.main.HelpMediator</symbol>
+        <symbol>com.atricore.idbus.console.help.main.HelpViewFactory</symbol>
+        <symbol>com.atricore.idbus.console.help.main.controller.HelpStartUpCommand</symbol>
+        
         <!-- General classes -->
         <!--
         <symbol>mx.logging.targets.TraceTarget</symbol>

@@ -176,6 +176,11 @@
         <property name="menuMediator" ref="settingsMenuMediator"/>
     </object>
 
+    <object id="helpStartupCommand"
+            class="com.atricore.idbus.console.help.main.controller.HelpStartUpCommand">
+        <property name="helpMediator" ref="helpMediator"/>
+    </object>
+    
     <!-- Commands -->
     <object id="loginCommand" class="com.atricore.idbus.console.main.controller.LoginCommand">
         <property name="registry" ref="serviceRegistry"/>
@@ -700,7 +705,13 @@
     <!--<property name="registry" ref="serviceRegistry" />-->
     <!--</object>-->
 
+    <object id="helpMediator" class="com.atricore.idbus.console.help.main.HelpMediator">
+        <property name="projectProxy" ref="projectProxy"/>
 
+        <property name="viewFactory" ref="helpViewFactory"/>
+        <property name="viewPriority" value="50"/>
+    </object>
+    
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
         <property name="popupManager" ref="consolePopUpManager"/>
 
@@ -787,6 +798,7 @@
     <object id="lifecycleViewFactory" class="com.atricore.idbus.console.lifecycle.main.LifecycleViewFactory"/>
     <object id="accountManagementViewFactory" class="com.atricore.idbus.console.account.main.AccountManagementViewFactory"/>
     <object id="settingsViewFactory" class="com.atricore.idbus.console.settings.main.SettingsViewFactory"/>
+    <object id="helpViewFactory" class="com.atricore.idbus.console.help.main.HelpViewFactory"/>
 
     <!-- License Settings Menu -->
     <object id="licenseMenuDrawer" class="com.atricore.idbus.console.settings.main.menu.model.SettingsMenuDrawer">

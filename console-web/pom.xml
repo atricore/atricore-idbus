@@ -431,6 +431,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.google.code.flex-iframe</groupId>
+            <artifactId>flex-iframe</artifactId>
+            <type>swc</type>
+        </dependency>
+        
+        <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <scope>provided</scope>

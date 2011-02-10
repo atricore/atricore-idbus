@@ -30,7 +30,7 @@ import flash.external.ExternalInterface;
 /**
 
 	   full credit goes to: 
-		http://blog.earthbrowser.com/2009/01/simple-solution-for-mousewheel-event.html
+		http://blog.earthbrowser.com/2009/01/simple-solution-for-mousewheel-events.html
 	*/
 	public class MouseWheelEnabler
 	{

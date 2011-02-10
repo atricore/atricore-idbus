@@ -57,7 +57,8 @@
                 quality: "high",
                 allowscriptaccess: "always",
                 menu: "false",
-                scale: "noScale"
+                scale: "noScale",
+                wmode: "opaque"
             };
             var attributes = {
                 id: "atricore-console",

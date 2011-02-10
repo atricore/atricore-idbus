@@ -435,6 +435,10 @@ public class EmbeddedIcons {
     public static var setupMiniIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/ui/question_mark_22x22.png")]
+    public static var helpMiniIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/main/setup.png")]
     public static var setupIcon:Class;
 
