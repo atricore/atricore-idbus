@@ -78,6 +78,9 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const SEARCH_GROUPS:String = "searchGroups";
     public static const SEARCH_USERS:String = "searchUsers";
     public static const LIST_SCHEMA_ATTRIBUTES:String = "listSchemaAttributes";
+    public static const ADD_SCHEMA_ATTRIBUTE:String ="addAttribute";
+    public static const EDIT_SCHEMA_ATTRIBUTE:String ="editAttribute";
+    public static const DELETE_SCHEMA_ATTRIBUTE:String ="deleteAttribute";
     public static const CREATE_ACTIVATION:String = "createActivation";
     public static const CREATE_FEDERATED_CONNECTION:String = "createFederatedConnection";
     public static const CREATE_IDENTITY_LOOKUP:String = "createIdentityLookup";
@@ -194,6 +197,7 @@ public class ApplicationFacade extends BaseAppFacade {
 
     // TODO: remove this?
     public static const LICENSE_VIEW_SELECTED:String = "licenseViewSelected";
+
 
     public function ApplicationFacade(p_configuration:* = null) {
         super(p_configuration);

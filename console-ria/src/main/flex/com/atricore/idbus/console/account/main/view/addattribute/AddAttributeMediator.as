@@ -20,13 +20,15 @@
  */
 
 package com.atricore.idbus.console.account.main.view.addattribute {
-import com.atricore.idbus.console.account.main.controller.AddGroupCommand;
+import com.atricore.idbus.console.account.main.controller.AddAttributeCommand;
 import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.services.dto.schema.Attribute;
+
+import com.atricore.idbus.console.services.dto.schema.TypeDTOEnum;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -71,17 +73,17 @@ public class AddAttributeMediator extends IocFormMediator
     }
 
     override public function listNotificationInterests():Array {
-        return [AddGroupCommand.SUCCESS,
-            AddGroupCommand.FAILURE];
+        return [AddAttributeCommand.SUCCESS,
+            AddAttributeCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case AddGroupCommand.SUCCESS :
-                handleAddGroupSuccess();
+            case AddAttributeCommand.SUCCESS :
+                handleAddAttributeSuccess();
                 break;
-            case AddGroupCommand.FAILURE :
-                handleAddGroupFailure();
+            case AddAttributeCommand.FAILURE :
+                handleAddAttributeFailure();
                 break;
         }
     }
@@ -100,7 +102,7 @@ public class AddAttributeMediator extends IocFormMediator
         _newAttribute = new Attribute();
         _newAttribute.entity = view.cbEntity.selectedItem;
         _newAttribute.name = view.nameAttribute.text;
-        _newAttribute.type = view.cbType.selectedItem;
+        _newAttribute.type = new TypeDTOEnum(view.cbType.selectedItem , null);
         _newAttribute.required = view.required.selected;
         _newAttribute.multivalued = view.multivalued.selected;
 
@@ -112,7 +114,7 @@ public class AddAttributeMediator extends IocFormMediator
         if (validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
-            //sendNotification(ApplicationFacade.ADD_GROUP, _newGroup);
+            sendNotification(ApplicationFacade.ADD_SCHEMA_ATTRIBUTE, _newAttribute);
             closeWindow();
         }
         else {
@@ -120,14 +122,14 @@ public class AddAttributeMediator extends IocFormMediator
         }
     }
 
-    public function handleAddGroupSuccess():void {
+    public function handleAddAttributeSuccess():void {
         sendNotification(ProcessingMediator.STOP);
-        sendNotification(ApplicationFacade.LIST_GROUPS);
+        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES);
     }
 
-    public function handleAddGroupFailure():void {
+    public function handleAddAttributeFailure():void {
         sendNotification(ProcessingMediator.STOP);
-        sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error adding group.");
+        sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error adding attribute.");
     }
 
     private function handleCancel(event:MouseEvent):void {

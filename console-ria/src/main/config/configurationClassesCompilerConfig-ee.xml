@@ -163,16 +163,19 @@
         <symbol>com.atricore.idbus.console.account.users.UsersMediator</symbol>
         <symbol>com.atricore.idbus.console.account.userproperties.UserPropertiesMediator</symbol>
 
+        <!-- Schema classes -->
         <symbol>com.atricore.idbus.console.account.main.model.SchemasManagementProxy</symbol>
         <symbol>com.atricore.idbus.console.account.schema.SchemasMediator</symbol>
-        <symbol>com.atricore.idbus.console.account.schemaproperties.SchemaPropertiesMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.addattribute.AddAttributeMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.editattribute.EditAttributeMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.ListSchemaAttributesCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.AddAttributeCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.EditAttributeCommand</symbol>
+        <symbol>com.atricore.idbus.console.account.main.controller.DeleteAttributeCommand</symbol>
 
         <!-- Settings classes -->
         <symbol>com.atricore.idbus.console.settings.main.SettingsMediator</symbol>
-        <symbol>com.atricore.idbus.console.settings.main.SettingsViewFactory</symbol>        
+        <symbol>com.atricore.idbus.console.settings.main.SettingsViewFactory</symbol>
         <symbol>com.atricore.idbus.console.settings.main.controller.SettingsStartUpCommand</symbol>
         <symbol>com.atricore.idbus.console.settings.main.menu.MenuMediator</symbol>
         <symbol>com.atricore.idbus.console.settings.main.menu.model.SettingsMenuEntry</symbol>

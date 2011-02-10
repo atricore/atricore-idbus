@@ -147,7 +147,6 @@
         <property name="editUserMediator" ref="editUserMediator"/>
         <property name="searchUsersMediator" ref="searchUsersMediator"/>
         <property name="schemasMediator" ref="schemasMediator"/>
-        <property name="schemasPropertiesMediator" ref="schemasPropertiesMediator"/>
         <property name="addAttributeMediator" ref="addAttributeMediator"/>
         <property name="editAttributeMediator" ref="editAttributeMediator"/>
 
@@ -163,6 +162,9 @@
         <property name="searchGroupsCommand" ref="searchGroupsCommand"/>
         <property name="searchUsersCommand" ref="searchUsersCommand"/>
         <property name="listSchemaAttributesCommand" ref="listSchemaAttributesCommand"/>
+        <property name="addAttributeCommand" ref="addAttributeCommand"/>
+        <property name="editAttributeCommand" ref="editAttributeCommand"/>
+        <property name="deleteAttributeCommand" ref="deleteAttributeCommand"/>
 
     </object>
 
@@ -360,6 +362,18 @@
             class="com.atricore.idbus.console.account.main.controller.ListSchemaAttributesCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
+    </object>
+    <object id="addAttributeCommand"
+            class="com.atricore.idbus.console.account.main.controller.AddAttributeCommand">
+        <property name="registry" ref="serviceRegistry"/>
+    </object>
+    <object id="editAttributeCommand"
+            class="com.atricore.idbus.console.account.main.controller.EditAttributeCommand">
+        <property name="registry" ref="serviceRegistry"/>
+    </object>
+    <object id="deleteAttributeCommand"
+            class="com.atricore.idbus.console.account.main.controller.DeleteAttributeCommand">
+        <property name="registry" ref="serviceRegistry"/>
     </object>
 
     <object id="activateExecEnvironmentCommand"
@@ -620,10 +634,7 @@
     <object id="schemasMediator" class="com.atricore.idbus.console.account.schema.SchemasMediator">
         <property name="popupManager" ref="accountManagementPopUpManager"/>
         <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
-        <property name="schemasPropertiesMediator" ref="schemasPropertiesMediator"/>
     </object>
-    <object id="schemasPropertiesMediator"
-            class="com.atricore.idbus.console.account.schemaproperties.SchemaPropertiesMediator"/>
 
     <object id="addAttributeMediator" class="com.atricore.idbus.console.account.main.view.addattribute.AddAttributeMediator">
         <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
@@ -697,7 +708,7 @@
         <property name="projectProxy" ref="projectProxy"/>
         <property name="keystoreProxy" ref="keystoreProxy"/>
         <property name="profileProxy" ref="profileProxy"/>
-        
+
         <property name="brandingFactory" ref="brandingFactory"/>
 
     </object>

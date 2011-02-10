@@ -20,14 +20,15 @@
  */
 
 package com.atricore.idbus.console.account.main.view.editattribute {
-import com.atricore.idbus.console.account.main.view.addattribute.*;
-import com.atricore.idbus.console.account.main.controller.AddGroupCommand;
+import com.atricore.idbus.console.account.main.controller.EditAttributeCommand;
 import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.services.dto.schema.Attribute;
+
+import com.atricore.idbus.console.services.dto.schema.TypeDTOEnum;
 
 import flash.events.Event;
 import flash.events.MouseEvent;
@@ -39,7 +40,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class EditAttributeMediator extends IocFormMediator
 {
     private var _schemasManagementProxy:SchemasManagementProxy;
-    private var _newAttribute:Attribute;
+    private var _editedAttribute:Attribute;
 
     private var _processingStarted:Boolean;
 
@@ -65,6 +66,7 @@ public class EditAttributeMediator extends IocFormMediator
         view.cancelEditAttribute.addEventListener(MouseEvent.CLICK, handleCancel);
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
         view.focusManager.setFocus(view.cbEntity);
+        _editedAttribute = new Attribute();
         bindForm();
     }
 
@@ -73,22 +75,23 @@ public class EditAttributeMediator extends IocFormMediator
     }
 
     override public function listNotificationInterests():Array {
-        return [AddGroupCommand.SUCCESS,
-            AddGroupCommand.FAILURE];
+        return [EditAttributeCommand.SUCCESS,
+            EditAttributeCommand.FAILURE];
     }
 
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
-            case AddGroupCommand.SUCCESS :
-                handleAddGroupSuccess();
+            case EditAttributeCommand.SUCCESS :
+                handleEditAttributeSuccess();
                 break;
-            case AddGroupCommand.FAILURE :
-                handleAddGroupFailure();
+            case EditAttributeCommand.FAILURE :
+                handleEditAttributeFailure();
                 break;
         }
     }
 
     override public function bindForm():void {
+        _editedAttribute.id = schemasManagementProxy.currentSchemaAttribute.id;
         view.cbEntity.selectedItem = schemasManagementProxy.currentSchemaAttribute.entity;
         view.nameAttribute.text = schemasManagementProxy.currentSchemaAttribute.name;
         view.cbType.selectedItem = schemasManagementProxy.currentSchemaAttribute.type;
@@ -99,12 +102,12 @@ public class EditAttributeMediator extends IocFormMediator
     }
 
     override public function bindModel():void {
-        _newAttribute = new Attribute();
-        _newAttribute.entity = view.cbEntity.selectedItem;
-        _newAttribute.name = view.nameAttribute.text;
-        _newAttribute.type = view.cbType.selectedItem;
-        _newAttribute.required = view.required.selected;
-        _newAttribute.multivalued = view.multivalued.selected;
+
+        _editedAttribute.entity = view.cbEntity.selectedItem;
+        _editedAttribute.name = view.nameAttribute.text;
+        _editedAttribute.type = new TypeDTOEnum(view.cbType.selectedItem , null);
+        _editedAttribute.required = view.required.selected;
+        _editedAttribute.multivalued = view.multivalued.selected;
 
     }
 
@@ -114,7 +117,7 @@ public class EditAttributeMediator extends IocFormMediator
         if (validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
-            //sendNotification(ApplicationFacade.ADD_GROUP, _newGroup);
+            sendNotification(ApplicationFacade.EDIT_SCHEMA_ATTRIBUTE, _editedAttribute);
             closeWindow();
         }
         else {
@@ -122,14 +125,14 @@ public class EditAttributeMediator extends IocFormMediator
         }
     }
 
-    public function handleAddGroupSuccess():void {
+    public function handleEditAttributeSuccess():void {
         sendNotification(ProcessingMediator.STOP);
-        sendNotification(ApplicationFacade.LIST_GROUPS);
+        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES);
     }
 
-    public function handleAddGroupFailure():void {
+    public function handleEditAttributeFailure():void {
         sendNotification(ProcessingMediator.STOP);
-        sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error adding group.");
+        sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error changing attribute.");
     }
 
     private function handleCancel(event:MouseEvent):void {

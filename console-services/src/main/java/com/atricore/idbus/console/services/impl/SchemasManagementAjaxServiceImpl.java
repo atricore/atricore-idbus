@@ -37,6 +37,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 
 import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Author: Dusan Fisic
@@ -51,14 +52,19 @@ public class SchemasManagementAjaxServiceImpl implements
     private static Log logger = LogFactory.getLog(SchemasManagementAjaxServiceImpl.class);
 
     private HashMap<Integer,AttributeDTO> attrMap;
-
+    private Random randomGenerator = new Random();
 
     public void afterPropertiesSet() throws Exception {
         this.attrMap = new HashMap();
-        attrMap.put( 1, new AttributeDTO(1,"User", "a", TypeDTOEnum.STRING, false, false));
-        attrMap.put( 2, new AttributeDTO(2,"User", "specRole", TypeDTOEnum.STRING, true, false));
-        attrMap.put( 3, new AttributeDTO(2,"Group", "a", TypeDTOEnum.STRING, false, false));
-        attrMap.put( 4, new AttributeDTO(2,"Group", "b", TypeDTOEnum.STRING, true, false));
+
+        AttributeDTO at_one = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "a", TypeDTOEnum.STRING, false, false);
+        AttributeDTO at_two = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specRole", TypeDTOEnum.STRING, true, false);
+        AttributeDTO at_three = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "a", TypeDTOEnum.STRING, false, false);
+        AttributeDTO at_four = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "b", TypeDTOEnum.STRING, true, false);
+        attrMap.put(at_one.getId() , at_one );
+        attrMap.put(at_two.getId() , at_two);
+        attrMap.put(at_three.getId() , at_three);
+        attrMap.put(at_four.getId() , at_four);
     }
 
     public AddSchemaAttributeResponse addSchemaAttribute(AddSchemaAttributeRequest req) throws Exception {
@@ -68,9 +74,10 @@ public class SchemasManagementAjaxServiceImpl implements
                         "|" +
                         req.getAttribute().getEntity() +"]");
 
-
             if (req.getAttribute() != null) {
-                attrMap.put(req.getAttribute().getId(), req.getAttribute());
+                AttributeDTO at = req.getAttribute();
+                at.setId(randomGenerator.nextInt(1000));
+                attrMap.put(at.getId() , at);
             }
 
             AddSchemaAttributeResponse response = new AddSchemaAttributeResponse();
@@ -91,10 +98,9 @@ public class SchemasManagementAjaxServiceImpl implements
                 logger.trace("Processing addSchemaAttribute [" + req.getAttribute().getName()+
                         "|" +
                         req.getAttribute().getEntity() +"]");
-
-            if (req.getAttribute() != null) {
-                attrMap.put(req.getAttribute().getId(),req.getAttribute());
-            }
+            AttributeDTO uAttr = req.getAttribute();
+            attrMap.remove(uAttr.getId());
+            attrMap.put(uAttr.getId(), uAttr);
 
             UpdateSchemaAttributeResponse response = new UpdateSchemaAttributeResponse();
             return response;
