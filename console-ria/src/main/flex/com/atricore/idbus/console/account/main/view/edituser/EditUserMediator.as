@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.account.main.view.edituser {
 import com.atricore.idbus.console.account.main.controller.EditUserCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator;
 import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesTab;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
@@ -42,6 +43,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class EditUserMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _extraAttributesMediator:ExtraAttributesMediator;
     private var _editedUser:User;
 
     private var _processingStarted:Boolean;
@@ -56,6 +58,14 @@ public class EditUserMediator extends IocFormMediator
 
     public function set accountManagementProxy(value:AccountManagementProxy):void {
         _accountManagementProxy = value;
+    }
+
+    public function get extraAttributesMediator():ExtraAttributesMediator {
+        return _extraAttributesMediator;
+    }
+
+    public function set extraAttributesMediator(value:ExtraAttributesMediator):void {
+        _extraAttributesMediator = value;
     }
 
     override public function setViewComponent(viewComponent:Object):void {
@@ -84,8 +94,9 @@ public class EditUserMediator extends IocFormMediator
         if (    accountManagementProxy.attributesForEntity !=null &&
                 accountManagementProxy.attributesForEntity.length > 0) {
             var extraTab:ExtraAttributesTab = new ExtraAttributesTab();
-            extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
             view.tabNav.addChild(extraTab);
+            extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
+            extraAttributesMediator.setViewComponent(extraTab);
         }
 
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);

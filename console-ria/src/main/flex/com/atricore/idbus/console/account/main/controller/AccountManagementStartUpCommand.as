@@ -32,6 +32,7 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
     private var _schemasMediator:IIocMediator;
     private var _addAttributeMediator:IIocMediator;
     private var _editAttributeMediator:IIocMediator;
+    private var _extraAttributesMediator:IIocMediator;
 
     private var _addGroupCommand:IIocCommand;
     private var _addUserCommand:IIocCommand;
@@ -76,6 +77,7 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(schemasMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(addAttributeMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(editAttributeMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(extraAttributesMediator.getConfigName());
     }
 
     override protected function setupCommands(ctx:BaseStartupContext):void {
@@ -218,6 +220,14 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
 
     public function set editAttributeMediator(value:IIocMediator):void {
         _editAttributeMediator = value;
+    }
+
+    public function get extraAttributesMediator():IIocMediator {
+        return _extraAttributesMediator;
+    }
+
+    public function set extraAttributesMediator(value:IIocMediator):void {
+        _extraAttributesMediator = value;
     }
 
     public function get addGroupCommand():IIocCommand {

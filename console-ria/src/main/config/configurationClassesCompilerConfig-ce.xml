@@ -156,6 +156,7 @@
         <symbol>com.atricore.idbus.console.account.main.view.adduser.AddUserMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.edituser.EditUserMediator</symbol>
         <symbol>com.atricore.idbus.console.account.main.view.searchusers.SearchUsersMediator</symbol>
+        <symbol>com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator</symbol>
 
         <symbol>com.atricore.idbus.console.account.main.model.AccountManagementProxy</symbol>
         <symbol>com.atricore.idbus.console.account.groups.GroupsMediator</symbol>

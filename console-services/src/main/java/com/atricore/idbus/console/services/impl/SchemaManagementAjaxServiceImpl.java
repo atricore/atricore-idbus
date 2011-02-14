@@ -56,14 +56,29 @@ public class SchemaManagementAjaxServiceImpl implements
     public void afterPropertiesSet() throws Exception {
         this.attrMap = new HashMap();
 
-        AttributeDTO at_one = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "a", TypeDTOEnum.STRING, false, false);
-        AttributeDTO at_two = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specRole", TypeDTOEnum.STRING, true, false);
-        AttributeDTO at_three = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "a", TypeDTOEnum.STRING, false, false);
-        AttributeDTO at_four = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "b", TypeDTOEnum.STRING, true, false);
-        attrMap.put(at_one.getId() , at_one );
-        attrMap.put(at_two.getId() , at_two);
-        attrMap.put(at_three.getId() , at_three);
-        attrMap.put(at_four.getId() , at_four);
+        AttributeDTO atu_one = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specRole", TypeDTOEnum.STRING, false, false);
+        AttributeDTO atu_two = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specNUM", TypeDTOEnum.INT, false, false);
+        AttributeDTO atu_three = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specDate", TypeDTOEnum.DATE, true, false);
+        AttributeDTO atu_four = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specEmail", TypeDTOEnum.EMAIL, true, false);
+        AttributeDTO atu_five = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specURL", TypeDTOEnum.URL, false, false);
+
+        AttributeDTO atg_one = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specRole", TypeDTOEnum.STRING, false, false);
+        AttributeDTO atg_two = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specNUM", TypeDTOEnum.INT, true, false);
+        AttributeDTO atg_three = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specDate", TypeDTOEnum.DATE, false, false);
+        AttributeDTO atg_four = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specEmail", TypeDTOEnum.EMAIL, true, false);
+        AttributeDTO atg_five = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specURL", TypeDTOEnum.URL, true, false);
+
+        attrMap.put(atu_one.getId() , atu_one );
+        attrMap.put(atu_two.getId() , atu_two);
+        attrMap.put(atu_three.getId() , atu_three);
+        attrMap.put(atu_four.getId() , atu_four);
+        attrMap.put(atu_five.getId() , atu_five);
+
+        attrMap.put(atg_one.getId() , atg_one );
+        attrMap.put(atg_two.getId() , atg_two);
+        attrMap.put(atg_three.getId() , atg_three);
+        attrMap.put(atg_four.getId() , atg_four);
+        attrMap.put(atg_five.getId() , atg_five);
     }
 
     public AddSchemaAttributeResponse addSchemaAttribute(AddSchemaAttributeRequest req) throws Exception {

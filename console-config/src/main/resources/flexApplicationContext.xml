@@ -149,6 +149,7 @@
         <property name="schemasMediator" ref="schemasMediator"/>
         <property name="addAttributeMediator" ref="addAttributeMediator"/>
         <property name="editAttributeMediator" ref="editAttributeMediator"/>
+        <property name="extraAttributesMediator" ref="extraAttributesMediator"/>
 
         <!-- Commands -->
         <property name="addGroupCommand" ref="addGroupCommand"/>
@@ -615,9 +616,11 @@
             class="com.atricore.idbus.console.account.groupproperties.GroupPropertiesMediator"/>
     <object id="addGroupMediator" class="com.atricore.idbus.console.account.main.view.addgroup.AddGroupMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="extraAttributesMediator" ref="extraAttributesMediator"/>
     </object>
     <object id="editGroupMediator" class="com.atricore.idbus.console.account.main.view.editgroup.EditGroupMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="extraAttributesMediator" ref="extraAttributesMediator"/>
     </object>
     <object id="searchGroupsMediator"
             class="com.atricore.idbus.console.account.main.view.searchgroups.SearchGroupsMediator">
@@ -633,12 +636,18 @@
 
     <object id="addUserMediator" class="com.atricore.idbus.console.account.main.view.adduser.AddUserMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="extraAttributesMediator" ref="extraAttributesMediator"/>
     </object>
     <object id="editUserMediator" class="com.atricore.idbus.console.account.main.view.edituser.EditUserMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="extraAttributesMediator" ref="extraAttributesMediator"/>
     </object>
     <object id="searchUsersMediator"
             class="com.atricore.idbus.console.account.main.view.searchusers.SearchUsersMediator">
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+    </object>
+    <object id="extraAttributesMediator"
+            class="com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
 

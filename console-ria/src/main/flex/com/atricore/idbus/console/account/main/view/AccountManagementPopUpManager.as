@@ -166,7 +166,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
 
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.add.form.heading');
         _popup.width = 450;
-        _popup.height =240;
+        _popup.height =320;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_addGroupForm);
@@ -235,7 +235,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
 
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.edit.form.heading');
         _popup.width = 450;
-        _popup.height =240;
+        _popup.height =320;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_editGroupForm);
