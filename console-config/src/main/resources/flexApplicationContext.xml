@@ -162,6 +162,7 @@
         <property name="searchGroupsCommand" ref="searchGroupsCommand"/>
         <property name="searchUsersCommand" ref="searchUsersCommand"/>
         <property name="listSchemaAttributesCommand" ref="listSchemaAttributesCommand"/>
+        <property name="listSchemaAttributesForEntityCommand" ref="listSchemaAttributesForEntityCommand"/>
         <property name="addAttributeCommand" ref="addAttributeCommand"/>
         <property name="editAttributeCommand" ref="editAttributeCommand"/>
         <property name="deleteAttributeCommand" ref="deleteAttributeCommand"/>
@@ -367,6 +368,11 @@
             class="com.atricore.idbus.console.account.main.controller.ListSchemaAttributesCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
+    </object>
+    <object id="listSchemaAttributesForEntityCommand"
+            class="com.atricore.idbus.console.account.main.controller.ListSchemaAttributesForEntityCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
     <object id="addAttributeCommand"
             class="com.atricore.idbus.console.account.main.controller.AddAttributeCommand">

@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.account.main.view.adduser {
 import com.atricore.idbus.console.account.main.controller.AddUserCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesTab;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
@@ -85,6 +86,13 @@ public class AddUserMediator extends IocFormMediator
         view.groupsSection.addEventListener(FlexEvent.SHOW, initGroupsSection);
         view.securitySection.addEventListener(FlexEvent.SHOW, initSecuritySection);
         view.passwordSection.addEventListener(FlexEvent.SHOW, initPasswordSection);
+
+        if (    accountManagementProxy.attributesForEntity !=null &&
+                accountManagementProxy.attributesForEntity.length > 0) {
+            var extraTab:ExtraAttributesTab = new ExtraAttributesTab();
+            extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
+            view.tabNav.addChild(extraTab);
+        }
 
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
         view.focusManager.setFocus(view.userUsername);
@@ -181,6 +189,10 @@ public class AddUserMediator extends IocFormMediator
 
     private function initPasswordSection(event:FlexEvent):void {
         view.focusManager.setFocus(view.userPassword);
+    }
+
+    private function initExtraSection(event:FlexEvent):void {
+
     }
 
     private function closeWindow():void {

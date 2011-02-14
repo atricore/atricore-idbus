@@ -68,8 +68,8 @@
         <property name="pspTargetId" value="pst-default" />
     </bean>
 
-    <bean id="schemasManagementAjaxServiceBean"
-          class="com.atricore.idbus.console.services.impl.SchemasManagementAjaxServiceImpl">
+    <bean id="schemaManagementAjaxServiceBean"
+          class="com.atricore.idbus.console.services.impl.SchemaManagementAjaxServiceImpl">
     </bean>
 
     <bean id="applicationServerInitialization" init-method="init"

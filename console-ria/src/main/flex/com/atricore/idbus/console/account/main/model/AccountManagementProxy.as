@@ -31,7 +31,6 @@ import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 public class AccountManagementProxy extends IocProxy implements IDisposable
 {
-
     private var _groupsList:Array;
     private var _userList:Array;
 
@@ -40,6 +39,8 @@ public class AccountManagementProxy extends IocProxy implements IDisposable
 
     private var _searchedGroups:ArrayCollection;
     private var _searchedUsers:ArrayCollection;
+
+    private var _attributesForEntity:ArrayCollection;
 
     public function AccountManagementProxy()
     {
@@ -92,6 +93,14 @@ public class AccountManagementProxy extends IocProxy implements IDisposable
 
     public function set searchedUsers(value:ArrayCollection):void {
         _searchedUsers = value;
+    }
+
+    public function get attributesForEntity():ArrayCollection {
+        return _attributesForEntity;
+    }
+
+    public function set attributesForEntity(value:ArrayCollection):void {
+        _attributesForEntity = value;
     }
 
     public function dispose():void {

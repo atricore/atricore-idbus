@@ -19,10 +19,10 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.account.main.view.addgroup {
+package com.atricore.idbus.console.account.main.view.extraattributes {
+import com.atricore.idbus.console.account.main.view.addgroup.*;
 import com.atricore.idbus.console.account.main.controller.AddGroupCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
-import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesTab;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
@@ -34,34 +34,23 @@ import flash.events.MouseEvent;
 
 import mx.events.CloseEvent;
 
-import mx.events.FlexEvent;
-
 import org.puremvc.as3.interfaces.INotification;
 
-public class AddGroupMediator extends IocFormMediator
+/**
+ * Author: Dusan Fisic
+ * Mail: dfisic@atricore.org
+ * Date: 2/11/11 - 4:50 PM
+ */
+
+public class ExtraAttributesMediator extends IocFormMediator
 {
-    private var _accountManagementProxy:AccountManagementProxy;
-    private var _newGroup:Group;
 
-    private var _processingStarted:Boolean;
-
-    public function AddGroupMediator(name:String = null, viewComp:AddGroupForm = null) {
+    public function ExtraAttributesMediator(name:String = null, viewComp:ExtraAttributesTab = null) {
         super(name, viewComp);
-    }
-
-    public function get accountManagementProxy():AccountManagementProxy {
-        return _accountManagementProxy;
-    }
-
-    public function set accountManagementProxy(value:AccountManagementProxy):void {
-        _accountManagementProxy = value;
     }
 
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
-            view.cancelAddGroup.removeEventListener(MouseEvent.CLICK, handleCancel);
-            view.submitAddGroupButton.removeEventListener(MouseEvent.CLICK, onSubmitAddGroup);
-            view.generalSection.removeEventListener(FlexEvent.SHOW, initGeneralSection);
             if (view.parent != null) {
                 view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
             }
@@ -72,24 +61,11 @@ public class AddGroupMediator extends IocFormMediator
     }
 
     private function init():void {
-        view.cancelAddGroup.addEventListener(MouseEvent.CLICK, handleCancel);
-        view.submitAddGroupButton.addEventListener(MouseEvent.CLICK, onSubmitAddGroup);
-        view.generalSection.addEventListener(FlexEvent.SHOW, initGeneralSection);
-
-        if (    accountManagementProxy.attributesForEntity !=null &&
-                accountManagementProxy.attributesForEntity.length > 0) {
-            var extraTab:ExtraAttributesTab = new ExtraAttributesTab();
-            extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
-            view.tabNav.addChild(extraTab);
-        }
-
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
-        view.focusManager.setFocus(view.groupName);
     }
 
     override public function registerValidators():void {
-        _validators.push(view.nameGroupValidator);
-//        _validators.push(view.groupDescriptionValidator);
+        // _validators.push(view.groupDescriptionValidator);
     }
 
     override public function listNotificationInterests():Array {
@@ -109,40 +85,23 @@ public class AddGroupMediator extends IocFormMediator
     }
 
     override public function bindForm():void {
-        view.groupName.text = "";
-        view.groupDescription.text = "";
-
         FormUtility.clearValidationErrors(_validators);
     }
 
     override public function bindModel():void {
         var newGroupDef:Group = new Group();
-        newGroupDef.name = view.groupName.text;
-        newGroupDef.description = view.groupDescription.text;
-
-        _newGroup = newGroupDef;
     }
 
     private function onSubmitAddGroup(event:MouseEvent):void {
-        _processingStarted = true;
-
         if (validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
-            sendNotification(ApplicationFacade.ADD_GROUP, _newGroup);
+            //sendNotification(ApplicationFacade.ADD_GROUP, _newGroup);
             closeWindow();
         }
         else {
             event.stopImmediatePropagation();
         }
-    }
-
-    private function initGeneralSection(event:FlexEvent):void {
-        view.focusManager.setFocus(view.groupName);
-    }
-
-    private function initExtraSection(event:FlexEvent):void {
-
     }
 
     public function handleAddGroupSuccess():void {
@@ -166,9 +125,9 @@ public class AddGroupMediator extends IocFormMediator
     private function handleClose(event:Event):void {
     }
 
-    protected function get view():AddGroupForm
+    protected function get view():ExtraAttributesTab
     {
-        return viewComponent as AddGroupForm;
+        return viewComponent as ExtraAttributesTab;
     }
 
 }
