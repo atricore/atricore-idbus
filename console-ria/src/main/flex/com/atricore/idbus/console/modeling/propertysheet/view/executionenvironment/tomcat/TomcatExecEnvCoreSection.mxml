@@ -49,6 +49,7 @@
                         <utils:ListItemValueObject label="5.0.x" data="tc50"/>
                         <utils:ListItemValueObject label="5.5.x" data="tc55"/>
                         <utils:ListItemValueObject label="6.0.x" data="tc60"/>
+                        <utils:ListItemValueObject label="7.0.x" data="tc70"/>
                     </mx:ArrayCollection>
                 </s:dataProvider>
             </s:DropDownList>
