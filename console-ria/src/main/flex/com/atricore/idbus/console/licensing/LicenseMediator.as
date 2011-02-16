@@ -93,7 +93,9 @@ public class LicenseMediator extends IocMediator implements IDisposable {
     private function init():void {
         (facade as IIocFacade).registerMediatorByConfigName(updateLicenseMediator.getConfigName());
         (facade as IIocFacade).registerCommandByConfigName(ApplicationFacade.UPDATE_LICENSE, updateLicenseCommand.getConfigName());
-        (facade as IIocFacade).registerCommandByConfigName(ApplicationFacade.GET_LICENSE, getLicenseCommand.getConfigName());
+        if(!(facade as IIocFacade).hasCommand(getLicenseCommand.getConfigName())){
+            (facade as IIocFacade).registerCommandByConfigName(ApplicationFacade.GET_LICENSE, getLicenseCommand.getConfigName());
+        }
         if (_created) {
             /* Remove unused title in account management panel */
             view.titleDisplay.width = 0;

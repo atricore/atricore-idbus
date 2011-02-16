@@ -19,14 +19,17 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.licensing.main.controller
+package com.atricore.idbus.console.main.controller
 {
+import com.atricore.idbus.console.modeling.main.controller.*;
+import com.atricore.idbus.console.licensing.main.controller.*;
+import com.atricore.idbus.console.licensing.main.model.LicenseProxy;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
 
-import com.atricore.idbus.console.services.dto.Resource;
+import com.atricore.idbus.console.services.spi.request.GetLicenseRequest;
 
-import com.atricore.idbus.console.services.spi.request.ActivateLicenseRequest;
+import com.atricore.idbus.console.services.spi.response.GetLicenseResponse;
 
 import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
@@ -35,14 +38,15 @@ import mx.rpc.remoting.mxml.RemoteObject;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class UpdateLicenseCommand extends IocSimpleCommand implements IResponder
+public class CheckLicenseCommand extends IocSimpleCommand implements IResponder
 {
-    public static const SUCCESS:String = "com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand.SUCCESS";
-    public static const FAILURE:String = "com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand.FAILURE";
+    public static const SUCCESS:String = "com.atricore.idbus.console.licensing.main.controller.CheckLicenseCommand.SUCCESS";
+    public static const FAILURE:String = "com.atricore.idbus.console.licensing.main.controller.CheckLicenseCommand.FAILURE";
 
     private var _registry:ServiceRegistry;
+    private var _licenseProxy:LicenseProxy;
 
-    public function UpdateLicenseCommand() {
+    public function CheckLicenseCommand() {
     }
 
     public function get registry():ServiceRegistry {
@@ -54,41 +58,33 @@ public class UpdateLicenseCommand extends IocSimpleCommand implements IResponder
     }
 
     override public function execute(notification:INotification):void {
-        var resource:Resource = notification.getBody() as Resource;
-        var activateLicenseRequest:ActivateLicenseRequest = new ActivateLicenseRequest();
-
-        activateLicenseRequest.license = resource;
+        var getLicenseRequest:GetLicenseRequest = new GetLicenseRequest();
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.LICENSE_MANAGEMENT_SERVICE);
-        var call:Object = service.activateLicense(activateLicenseRequest);
+        var call:Object = service.getLicense(getLicenseRequest);
         call.addResponder(this);
     }
 
     public function result(data:Object):void {
-//        var signOnResponse:SignOnResponse = data.result as SignOnResponse;
-//        var user:User = signOnResponse.authenticatedUser;
-//
-//        if (user!=null && user.groups!=null) {
-//            for(var i:uint = 0; i < user.groups.length; i++) {
-//                var grp = user.groups[i];
-//                if (grp.name == ApplicationFacade.ADMIN_GROUP) {
-//                    secureContext.currentUser = user;
-//                    break;
-//                }
-//            }
-//        }
+        var getLicenseResponse:GetLicenseResponse = data.result as GetLicenseResponse;
+        if(getLicenseResponse.license != null){
+            _licenseProxy.license = getLicenseResponse.license;
+        }
 
-//        if (secureContext.currentUser !=null)
-//            sendNotification(SUCCESS);
-//        else
-//            sendNotification(FAILURE);
-        sendNotification(SUCCESS);
+        if (_licenseProxy.license !=null){
+            sendNotification(SUCCESS);
+        } else {
+            sendNotification(FAILURE);
+        }
     }
 
     public function fault(info:Object):void {
         trace((info as FaultEvent).fault.message);
         sendNotification(FAILURE);
     }
-
+    
+    public function set licenseProxy(value:LicenseProxy):void {
+        _licenseProxy = value;
+    }
 }
 }

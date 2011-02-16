@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Atricore Console
+  ~
+  ~ Copyright 2009-2010, Atricore Inc.
+  ~
+  ~ This is free software; you can redistribute it and/or modify it
+  ~ under the terms of the GNU Lesser General Public License as
+  ~ published by the Free Software Foundation; either version 2.1 of
+  ~ the License, or (at your option) any later version.
+  ~
+  ~ This software is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this software; if not, write to the Free
+  ~ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+  -->
+
+<!--<s:HGroup xmlns:mx="library://ns.adobe.com/flex/mx"-->
+         <!--xmlns:fx="http://ns.adobe.com/mxml/2009"-->
+         <!--xmlns:s="library://ns.adobe.com/flex/spark"-->
+         <!--xmlns:component="com.atricore.idbus.console.components.*"-->
+         <!--horizontalAlign="center" paddingTop="100" width="100%" height="100%">-->
+
+    <!--<fx:Metadata>-->
+        <!--[ResourceBundle("console")]-->
+    <!--</fx:Metadata>-->
+
+    <!--<fx:Script>-->
+        <!--<![CDATA[-->
+        <!--public var icon:Class = null;-->
+        <!--]]>-->
+    <!--</fx:Script>    -->
+
+    <!--<s:VGroup id="updateLicenseBox" width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">-->
+        <!--<s:Label id="activationLabel1" paddingLeft="25" paddingBottom="10" width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.productNotActivated1')}"/>-->
+        <!--<s:Label id="activationLabel2" paddingLeft="25" visible="true" paddingBottom="10" width="200" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.productNotActivated2')}"/>-->
+        <!--<mx:Form width="100%" height="20%" verticalGap="4" defaultButton="{btnActivateLicense}">-->
+            <!--<mx:FormItem>-->
+                <!--<mx:Button id="btnActivateLicense" enabled="true" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.activateProduct')}"/>-->
+            <!--</mx:FormItem>-->
+        <!--</mx:Form>-->
+
+    <!--</s:VGroup>-->
+<!--</s:HGroup>-->
+
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+         xmlns:component="com.atricore.idbus.console.components.*"
+         horizontalAlign="center" paddingTop="100" width="100%" height="100%">
+
+    <mx:Panel width="35%" height="40%" horizontalAlign="center" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'license.activation.title')}">
+        <mx:Label id="activationLabel1" paddingTop="20" paddingLeft="0" paddingBottom="0" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.productNotActivated1')}"/>
+        <mx:Label id="activationLabel2" paddingLeft="0" paddingBottom="0" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.productNotActivated2')}"/>
+        <mx:Form width="100%" height="20%" verticalGap="4" defaultButton="{btnActivateLicense}">
+        <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
+            <mx:Button id="btnActivateLicense" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.activateProduct')}"/>
+        </mx:ControlBar>
+        </mx:Form>
+    </mx:Panel>
+</mx:HBox>

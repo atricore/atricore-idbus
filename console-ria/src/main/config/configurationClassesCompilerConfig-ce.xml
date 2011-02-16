@@ -183,6 +183,10 @@
         <symbol>com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand</symbol>
         <symbol>com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager</symbol>
 
+        <symbol>com.atricore.idbus.console.main.view.license.ActivateLicenseMediator</symbol>
+        <symbol>com.atricore.idbus.console.main.view.license.LicenseActivationMediator</symbol>
+        <symbol>com.atricore.idbus.console.main.controller.ActivateLicenseCommand</symbol>
+
         <!-- General classes -->
         <!--
         <symbol>mx.logging.targets.TraceTarget</symbol>

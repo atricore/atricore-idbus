@@ -39,6 +39,8 @@ public class ApplicationFacade extends BaseAppFacade {
 
     // command-backed notifications
     public static const STARTUP:String = "startup";
+
+    public static const CHECK_LICENSE:String = "checkLicense";
     
     public static const SETUP_SERVER:String = "Note.SetupServer";
     public static const REGISTER:String = "Note.Register";
@@ -87,6 +89,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const LIST_JDBC_DRIVERS:String = "listJdbcDrivers";
     public static const GET_METADATA_INFO:String = "getMetadataInfo";
     public static const GET_CERTIFICATE_INFO:String = "getCertificateInfo";
+    public static const ACTIVATE_LICENSE:String = "activateLicense";
     public static const UPDATE_LICENSE:String = "updateLicense";
     public static const GET_LICENSE:String = "getLicense";
     
@@ -183,6 +186,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const DISPLAY_CHANGE_PASSWORD:String = "displayChangePassword";
     public static const APPLIANCE_VALIDATION_ERRORS:String = "applianceValidationErrors";
     public static const APPLIANCE_SAVED:String = "applianceSaved";
+    public static const DISPLAY_ACTIVATE_LICENSE:String = "displayActivateLicense";
     public static const DISPLAY_UPDATE_LICENSE:String = "displayUpdateLicense";
     public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
     public static const EXPORT_PROVIDER_CERTIFICATE:String = "exportProviderCertificate";

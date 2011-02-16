@@ -26,6 +26,7 @@
                xmlns:heading="com.atricore.idbus.console.branding.heading.*"
                xmlns:comp="com.atricore.idbus.console.components.*"
                xmlns:login="com.atricore.idbus.console.main.view.login.*"
+               xmlns:activation="com.atricore.idbus.console.main.view.license.*"
                height="100%" width="100%" minWidth="955" minHeight="600"
                preloader="com.atricore.idbus.console.branding.AtricoreConsolePreloader"
                creationComplete="onCreationComplete()">
@@ -64,6 +65,7 @@
         private function startupApp(p_event:Event):void {
             m_facade.removeEventListener(Event.COMPLETE, startupApp);
             m_facade.notifyObservers(new Notification(ApplicationFacade.STARTUP, this));
+            m_facade.notifyObservers(new Notification(ApplicationFacade.CHECK_LICENSE));
 
         }
         ]]>
@@ -94,26 +96,29 @@
 
     <!-- We can use states as Eclipse uses layouts :) -->
     <s:states>
+        <s:State name="activation"/>
         <s:State name="splash"/>
-        <s:State name="operation"/>
+        <s:State name="operation"/>        
     </s:states>
 
 
     <s:VGroup id="mainVGroup" paddingLeft="10" paddingRight="10" paddingTop="10" paddingBottom="10"
-              width="100%" height="100%" includeIn="splash,operation">
+              width="100%" height="100%" includeIn="activation,splash,operation">
 
-        <heading:AtricoreHeading id="brandedHeading" includeIn="splash,operation" >
-            <mx:MenuBar id="userActionMenuBar" excludeFrom="splash" labelField="@label" iconField="@icon"
+        <heading:AtricoreHeading id="brandedHeading" includeIn="activation,splash,operation" >
+            <mx:MenuBar id="userActionMenuBar" excludeFrom="activation,splash" labelField="@label" iconField="@icon"
                         textAlign="center" dataProvider="{userMenuData}"/>
         </heading:AtricoreHeading>
+
+        <activation:LicenseActivationView id="licenseActivationView" includeIn="activation"/>
 
         <login:LoginView id="loginView" includeIn="splash"/>
 
         <s:ButtonBar id="stackButtonBar" dataProvider="{new ArrayList(appSectionsViewStack.content)}" labelField="name"
                      skinClass="com.atricore.idbus.console.skin.buttonbar.IconButtonBarSkin" requireSelection="true"
-                     excludeFrom="splash"/>
+                     excludeFrom="activation,splash"/>
 
-        <comp:CustomViewStack id="appSectionsViewStack" width="100%" height="100%" excludeFrom="splash"/>
+        <comp:CustomViewStack id="appSectionsViewStack" width="100%" height="100%" excludeFrom="activation,splash"/>
 
     </s:VGroup>
 </s:Application>

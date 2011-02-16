@@ -26,6 +26,8 @@ import com.atricore.idbus.console.base.branding.AtricoreConsoleBrandingFactory;
 import com.atricore.idbus.console.base.extensions.appsection.AppSectionMediator;
 import com.atricore.idbus.console.branding.AtricoreConsolePreloader;
 import com.atricore.idbus.console.branding.heading.AtricoreHeading;
+import com.atricore.idbus.console.licensing.main.model.LicenseProxy;
+import com.atricore.idbus.console.main.controller.ActivateLicenseCommand;
 import com.atricore.idbus.console.main.controller.ApplicationStartUpCommand;
 import com.atricore.idbus.console.main.controller.LoginCommand;
 import com.atricore.idbus.console.main.controller.NotFirstRunCommand;
@@ -36,6 +38,8 @@ import com.atricore.idbus.console.main.model.ProjectProxy;
 import com.atricore.idbus.console.main.model.SecureContextProxy;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
+
+import com.atricore.idbus.console.main.controller.CheckLicenseCommand;
 
 import flash.events.Event;
 
@@ -49,6 +53,7 @@ import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 
 import org.puremvc.as3.interfaces.INotification;
+import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
 import spark.components.ButtonBar;
@@ -72,6 +77,11 @@ public class ApplicationMediator extends IocMediator {
     private var _projectProxy:ProjectProxy;
     private var _keystoreProxy:KeystoreProxy;
     private var _profileProxy:ProfileProxy;
+    private var _licenseProxy:LicenseProxy;
+
+    //login mediator
+    private var _loginMediator:IIocMediator;
+    private var _licenseActivationMediator:IIocMediator;
     
     private var _popupManager:ConsolePopUpManager;
 
@@ -130,6 +140,30 @@ public class ApplicationMediator extends IocMediator {
 
     public function set profileProxy(value:ProfileProxy):void {
         _profileProxy = value;
+    }
+
+    public function get licenseProxy():LicenseProxy {
+        return _licenseProxy;
+    }
+
+    public function set licenseProxy(value:LicenseProxy):void {
+        _licenseProxy = value;
+    }
+
+    public function get loginMediator():IIocMediator {
+        return _loginMediator;
+    }
+
+    public function set loginMediator(value:IIocMediator):void {
+        _loginMediator = value;
+    }
+
+    public function get licenseActivationMediator():IIocMediator {
+        return _licenseActivationMediator;
+    }
+
+    public function set licenseActivationMediator(value:IIocMediator):void {
+        _licenseActivationMediator = value;
     }
 
     public function get userActionMenuBar():MenuBar {
@@ -216,7 +250,10 @@ public class ApplicationMediator extends IocMediator {
             ApplicationFacade.DISPLAY_LICENSING,
             ApplicationFacade.DISPLAY_CHANGE_PASSWORD,
             ProcessingMediator.START,
-            ProcessingMediator.STOP
+            ProcessingMediator.STOP,
+            CheckLicenseCommand.SUCCESS,
+            CheckLicenseCommand.FAILURE,
+            ActivateLicenseCommand.SUCCESS
         ];
     }
 
@@ -296,6 +333,19 @@ public class ApplicationMediator extends IocMediator {
             case ProcessingMediator.STOP:
                 popupManager.hideProcessingWindow(notification);
                 break;
+            case CheckLicenseCommand.FAILURE:
+                showLicenseActivation();                
+                break;
+            case CheckLicenseCommand.SUCCESS:
+                // CheckLicense SUCCESS, switch application state to splash :
+                app.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, switchedMode);
+                app.currentState = "splash";
+                break;
+            case ActivateLicenseCommand.SUCCESS:
+                //product successfully activated
+                app.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, switchedMode);
+                app.currentState = "splash";
+                break;        
         }
     }
 
@@ -304,8 +354,22 @@ public class ApplicationMediator extends IocMediator {
             login();
         } else
         if (event.newState == "splash") {
-            logout();
+            if(event.oldState == "activation"){
+                //TODO call method to setup login command,mediator and view
+                showLogin();
+            } else {
+                logout();
+            }
         }
+    }
+
+    public function showLicenseActivation():void {
+        licenseActivationMediator.setViewComponent(app.licenseActivationView);
+    }
+
+    public function showLogin():void {
+        loginMediator.setViewComponent(app.loginView);
+        iocFacade.registerMediatorByConfigName(loginMediator.getConfigName());
     }
 
     public function login():void {

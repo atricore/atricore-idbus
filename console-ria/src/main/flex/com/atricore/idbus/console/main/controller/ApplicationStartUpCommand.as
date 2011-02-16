@@ -54,6 +54,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _processingMediator:IIocMediator;
     private var _loginMediator:IIocMediator;
     private var _changePasswordMediator:IIocMediator;
+    private var _licenseActivationMediator:IIocMediator;
     //private var _setupWizardViewMediator:IIocMediator;
     //private var _uploadProgressMediator:IIocMediator;
 
@@ -61,6 +62,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
     private var _loginCommand:IIocCommand;
     private var _changePasswordCommand:IIocCommand;
     private var _notFirstRunCommand:IIocCommand;
+    private var _checkLicenseCommand:IIocCommand;
     //private var _setupServerCommand:IIocCommand;    
     //private var _registerCommand:IIocCommand;
     //private var _uploadCommand:IIocCommand;
@@ -140,6 +142,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         _changePasswordMediator = value;
     }
 
+    public function get licenseActivationMediator():IIocMediator {
+        return _licenseActivationMediator;
+    }
+
+    public function set licenseActivationMediator(value:IIocMediator):void {
+        _licenseActivationMediator = value;
+    }
+
     public function get loginCommand():IIocCommand {
         return _loginCommand;
     }
@@ -162,6 +172,14 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
 
     public function set notFirstRunCommand(value:IIocCommand):void {
         _notFirstRunCommand = value;
+    }
+
+    public function get checkLicenseCommand():IIocCommand {
+        return _checkLicenseCommand;
+    }
+
+    public function set checkLicenseCommand(value:IIocCommand):void {
+        _checkLicenseCommand = value;
     }
 
     override public function execute(note:INotification):void {
@@ -194,6 +212,7 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         iocFacade.registerCommandByConfigName(ApplicationFacade.LOGIN, loginCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.CHANGE_PASSWORD, changePasswordCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.NOT_FIRST_RUN, notFirstRunCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.CHECK_LICENSE, checkLicenseCommand.getConfigName());
         //iocFacade.registerCommandByConfigName(ApplicationFacade.SETUP_SERVER, setupServerCommand.getConfigName());
         //iocFacade.registerCommandByConfigName(ApplicationFacade.REGISTER, registerCommand.getConfigName());
         //iocFacade.registerCommandByConfigName(ApplicationFacade.UPLOAD, uploadCommand.getConfigName());
@@ -207,8 +226,12 @@ public class ApplicationStartUpCommand extends IocSimpleCommand implements IResp
         applicationMediator.setViewComponent(app);
         iocFacade.registerMediatorByConfigName(applicationMediator.getConfigName());
 
-        loginMediator.setViewComponent(app.loginView);
-        iocFacade.registerMediatorByConfigName(loginMediator.getConfigName());
+        //register LicenseActivationMediator
+        iocFacade.registerMediatorByConfigName(licenseActivationMediator.getConfigName());
+
+        //LoginView is now set inside ApplicationMediator        
+//        loginMediator.setViewComponent(app.loginView);
+//        iocFacade.registerMediatorByConfigName(loginMediator.getConfigName());
 
         // register mediators for popup managers - popup managers will wire the corresponding view to it
         //iocFacade.registerMediatorByConfigName(setupWizardViewMediator.getConfigName());

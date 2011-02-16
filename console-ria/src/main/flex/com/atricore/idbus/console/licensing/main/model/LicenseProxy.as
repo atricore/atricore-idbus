@@ -7,6 +7,7 @@ import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 public class LicenseProxy extends IocProxy implements IDisposable {
 
     private var _license:LicenseType;
+    private var _app:AtricoreConsole;
 
     public function LicenseProxy() {
         super(NAME);
@@ -20,8 +21,17 @@ public class LicenseProxy extends IocProxy implements IDisposable {
         _license = value;
     }
 
+    public function get app():AtricoreConsole {
+        return _app;
+    }
+
+    public function set app(value:AtricoreConsole):void {
+        _app = value;
+    }
+
     public function dispose():void {
         license = null;
+        app = null;
     }
 }
 }

@@ -34,6 +34,7 @@
         <property name="loginCommand" ref="loginCommand"/>
         <property name="changePasswordCommand" ref="changePasswordCommand"/>
         <property name="notFirstRunCommand" ref="notFirstRunCommand"/>
+        <property name="checkLicenseCommand" ref="checkLicenseCommand"/>
         <!--property name="uploadCommand" ref="uploadCommand"/>
         <property name="setupServerCommand" ref="setupServerCommand"/>
         <property name="registerCommand" ref="registerCommand"/-->
@@ -44,6 +45,7 @@
         <property name="processingMediator" ref="processingMediator"/>
         <property name="loginMediator" ref="loginMediator"/>
         <property name="changePasswordMediator" ref="changePasswordMediator"/>
+        <property name="licenseActivationMediator" ref="licenseActivationMediator"/>
         <!--property name="setupWizardViewMediator" ref="setupWizardViewMediator"/>
         <property name="uploadProgressMediator" ref="uploadProgressMediator"/-->
     </object>
@@ -403,6 +405,15 @@
         <property name="registry" ref="serviceRegistry"/>
         <property name="licenseProxy" ref="licenseProxy"/>
     </object>
+    <object id="activateLicenseCommand"
+            class="com.atricore.idbus.console.main.controller.ActivateLicenseCommand">
+        <property name="registry" ref="serviceRegistry"/>
+    </object>
+    <object id="checkLicenseCommand"
+            class="com.atricore.idbus.console.main.controller.CheckLicenseCommand">
+        <property name="registry" ref="serviceRegistry"/>
+        <property name="licenseProxy" ref="licenseProxy"/>
+    </object>
 
     <object id="exportIdentityApplianceCommand"
             class="com.atricore.idbus.console.modeling.main.controller.ExportIdentityApplianceCommand">
@@ -675,9 +686,15 @@
 
     <object id="updateLicenseMediator" class="com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator"/>
 
-    <!--<object id="updateLicenseCommand" class="com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand">-->
-    <!--<property name="registry" ref="serviceRegistry" />-->
-    <!--</object>-->
+    <object id="licenseActivationMediator" class="com.atricore.idbus.console.main.view.license.LicenseActivationMediator">
+        <property name="popupManager" ref="licensingPopUpManager"/>
+        <property name="activateLicenseMediator" ref="activateLicenseMediator"/>
+        <property name="activateLicenseCommand" ref="activateLicenseCommand"/>
+        <!--<property name="getLicenseCommand" ref="getLicenseCommand"/>-->
+        <property name="licenseProxy" ref="licenseProxy"/>
+    </object>
+
+    <object id="activateLicenseMediator" class="com.atricore.idbus.console.main.view.license.ActivateLicenseMediator"/>
 
 
     <object id="applicationMediator" class="com.atricore.idbus.console.main.ApplicationMediator">
@@ -687,8 +704,12 @@
         <property name="projectProxy" ref="projectProxy"/>
         <property name="keystoreProxy" ref="keystoreProxy"/>
         <property name="profileProxy" ref="profileProxy"/>
+        <property name="licenseProxy" ref="licenseProxy"/>
         
         <property name="brandingFactory" ref="brandingFactory"/>
+
+        <property name="loginMediator" ref="loginMediator"/>
+        <property name="licenseActivationMediator" ref="licenseActivationMediator"/>
 
     </object>
 
@@ -757,6 +778,7 @@
     <object id="licensingPopUpManager"
             class="com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager">
         <property name="updateLicenseMediator" ref="updateLicenseMediator"/>
+        <property name="activateLicenseMediator" ref="activateLicenseMediator"/>
     </object>
 
     <!-- App Section View Factories -->

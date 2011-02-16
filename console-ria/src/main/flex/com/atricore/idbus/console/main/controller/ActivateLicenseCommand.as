@@ -19,7 +19,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-package com.atricore.idbus.console.licensing.main.controller
+package com.atricore.idbus.console.main.controller
 {
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.service.ServiceRegistry;
@@ -35,14 +35,14 @@ import mx.rpc.remoting.mxml.RemoteObject;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.command.IocSimpleCommand;
 
-public class UpdateLicenseCommand extends IocSimpleCommand implements IResponder
+public class ActivateLicenseCommand extends IocSimpleCommand implements IResponder
 {
-    public static const SUCCESS:String = "com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand.SUCCESS";
-    public static const FAILURE:String = "com.atricore.idbus.console.licensing.main.controller.UpdateLicenseCommand.FAILURE";
+    public static const SUCCESS:String = "com.atricore.idbus.console.licensing.main.controller.ActivateLicenseCommand.SUCCESS";
+    public static const FAILURE:String = "com.atricore.idbus.console.licensing.main.controller.ActivateLicenseCommand.FAILURE";
 
     private var _registry:ServiceRegistry;
 
-    public function UpdateLicenseCommand() {
+    public function ActivateLicenseCommand() {
     }
 
     public function get registry():ServiceRegistry {
@@ -65,23 +65,6 @@ public class UpdateLicenseCommand extends IocSimpleCommand implements IResponder
     }
 
     public function result(data:Object):void {
-//        var signOnResponse:SignOnResponse = data.result as SignOnResponse;
-//        var user:User = signOnResponse.authenticatedUser;
-//
-//        if (user!=null && user.groups!=null) {
-//            for(var i:uint = 0; i < user.groups.length; i++) {
-//                var grp = user.groups[i];
-//                if (grp.name == ApplicationFacade.ADMIN_GROUP) {
-//                    secureContext.currentUser = user;
-//                    break;
-//                }
-//            }
-//        }
-
-//        if (secureContext.currentUser !=null)
-//            sendNotification(SUCCESS);
-//        else
-//            sendNotification(FAILURE);
         sendNotification(SUCCESS);
     }
 

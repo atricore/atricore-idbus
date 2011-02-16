@@ -24,6 +24,9 @@ import com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicens
 import com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator;
 import com.atricore.idbus.console.main.BasePopUpManager;
 
+import com.atricore.idbus.console.main.view.license.ActivateLicenseForm;
+import com.atricore.idbus.console.main.view.license.ActivateLicenseMediator;
+
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
 
@@ -34,9 +37,11 @@ public class LicensingPopUpManager extends BasePopUpManager {
 
     // mediators
     private var _updateLicenseMediator:UpdateLicenseMediator;
+    private var _activateLicenseMediator:ActivateLicenseMediator;
 
     // views
     private var _updateLicenseForm:UpdateLicenseForm;
+    private var _activateLicenseForm:ActivateLicenseForm;
 
     //commands
 //    private var _updateLicenseCommand:UpdateLicenseCommand;
@@ -48,8 +53,6 @@ public class LicensingPopUpManager extends BasePopUpManager {
     override public function init(facade:IFacade, popupParent:UIComponent):void {
         super.init(facade, popupParent);
         _popup.styleName = "accountManPopup";
-//        (facade as IIocFacade).registerMediatorByConfigName(updateLicenseMediator.getConfigName());
-//        (facade as IIocFacade).registerCommandByConfigName(ApplicationFacade.UPDATE_LICENSE, updateLicenseCommand.getConfigName());
     }
 
     public function get updateLicenseMediator():UpdateLicenseMediator {
@@ -60,13 +63,13 @@ public class LicensingPopUpManager extends BasePopUpManager {
         _updateLicenseMediator = value;
     }
 
-//    public function get updateLicenseCommand():UpdateLicenseCommand {
-//        return _updateLicenseCommand;
-//    }
-//
-//    public function set updateLicenseCommand(value:UpdateLicenseCommand):void {
-//        _updateLicenseCommand = value;
-//    }
+    public function get activateLicenseMediator():ActivateLicenseMediator {
+        return _activateLicenseMediator;
+    }
+
+    public function set activateLicenseMediator(value:ActivateLicenseMediator):void {
+        _activateLicenseMediator = value;
+    }
 
     public function showUpdateLicenseWindow(notification:INotification):void {
         _lastWindowNotification = notification;
@@ -89,6 +92,29 @@ public class LicensingPopUpManager extends BasePopUpManager {
     private function handleUpdateLicenseFormCreated(event:FlexEvent):void {
         updateLicenseMediator.setViewComponent(_updateLicenseForm);
         updateLicenseMediator.handleNotification(_lastWindowNotification);
+    }
+
+    public function showActivateLicenseWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createActivateLicenseForm();
+
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.activate.form.heading');
+        _popup.width = 360;
+        _popup.height =140;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_activateLicenseForm);
+        //on show call bindForm()
+    }
+
+    private function createActivateLicenseForm():void {
+        _activateLicenseForm = new ActivateLicenseForm();
+        _activateLicenseForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleActivateLicenseFormCreated);
+    }
+
+    private function handleActivateLicenseFormCreated(event:FlexEvent):void {
+        activateLicenseMediator.setViewComponent(_activateLicenseForm);
+        activateLicenseMediator.handleNotification(_lastWindowNotification);
     }
 
 }
