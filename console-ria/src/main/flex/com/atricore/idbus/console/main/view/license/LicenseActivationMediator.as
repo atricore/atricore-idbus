@@ -96,23 +96,32 @@ public class LicenseActivationMediator extends IocMediator {
                 // do nothing AppMediator is taking care of it
                 break;
             case CheckLicenseCommand.FAILURE :
-                //handleCheckLicenseFailure();
+                handleCheckLicenseFailure();
                 break;
             case ApplicationFacade.DISPLAY_ACTIVATE_LICENSE:
                 popupManager.showActivateLicenseWindow(notification);
                 break;
             case ActivateLicenseCommand.FAILURE:
-                handleActivationFailure();
+                handleActivationFailure(notification);
                 break;
         }
     }
 
-    public function handleActivationFailure():void {
-        sendNotification(ApplicationFacade.SHOW_ERROR_MSG, resourceManager.getString(AtricoreConsole.BUNDLE, "licensing.activate.failure"));
+    public function handleActivationFailure(notification:INotification):void {
+        var errMsg:String = notification.getBody() as String;
+        sendNotification(ApplicationFacade.SHOW_ERROR_MSG, errMsg);
     }
 
     public function handleCheckLicenseFailure():void {
-        sendNotification(ApplicationFacade.SHOW_ERROR_MSG, resourceManager.getString(AtricoreConsole.BUNDLE, "licensing.activate.failure"));
+//        sendNotification(ApplicationFacade.SHOW_ERROR_MSG, resourceManager.getString(AtricoreConsole.BUNDLE, "licensing.checklicense.failure"));
+        //set proper label and enable activateLicense button
+        view.activationLabel1.text = resourceManager.getString(AtricoreConsole.BUNDLE, "licensing.productNotActivated1");
+        view.activationLabel2.text = resourceManager.getString(AtricoreConsole.BUNDLE, "licensing.productNotActivated2");
+        if(view.progressBar != null) {
+            view.licensePanel.removeChild(view.progressBar);
+        }
+        view.activationLabel2.visible = true;
+        view.btnActivateLicense.enabled = true;
     }
 
     public function resetLoginForm():void {

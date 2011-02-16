@@ -28,6 +28,8 @@ import com.atricore.idbus.console.services.dto.Resource;
 
 import com.atricore.idbus.console.services.spi.request.ActivateLicenseRequest;
 
+import com.atricore.idbus.console.services.spi.response.ActivateLicenseResponse;
+
 import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
 import mx.rpc.remoting.mxml.RemoteObject;
@@ -65,7 +67,12 @@ public class ActivateLicenseCommand extends IocSimpleCommand implements IRespond
     }
 
     public function result(data:Object):void {
-        sendNotification(SUCCESS);
+        var res:ActivateLicenseResponse = data.result as ActivateLicenseResponse;
+        if(res.errorMsg != null){
+            sendNotification(FAILURE, res.errorMsg);
+        } else {
+            sendNotification(SUCCESS);
+        }
     }
 
     public function fault(info:Object):void {

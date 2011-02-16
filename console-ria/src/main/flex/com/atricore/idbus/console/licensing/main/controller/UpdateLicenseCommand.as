@@ -28,6 +28,8 @@ import com.atricore.idbus.console.services.dto.Resource;
 
 import com.atricore.idbus.console.services.spi.request.ActivateLicenseRequest;
 
+import com.atricore.idbus.console.services.spi.response.ActivateLicenseResponse;
+
 import mx.rpc.IResponder;
 import mx.rpc.events.FaultEvent;
 import mx.rpc.remoting.mxml.RemoteObject;
@@ -65,24 +67,12 @@ public class UpdateLicenseCommand extends IocSimpleCommand implements IResponder
     }
 
     public function result(data:Object):void {
-//        var signOnResponse:SignOnResponse = data.result as SignOnResponse;
-//        var user:User = signOnResponse.authenticatedUser;
-//
-//        if (user!=null && user.groups!=null) {
-//            for(var i:uint = 0; i < user.groups.length; i++) {
-//                var grp = user.groups[i];
-//                if (grp.name == ApplicationFacade.ADMIN_GROUP) {
-//                    secureContext.currentUser = user;
-//                    break;
-//                }
-//            }
-//        }
-
-//        if (secureContext.currentUser !=null)
-//            sendNotification(SUCCESS);
-//        else
-//            sendNotification(FAILURE);
-        sendNotification(SUCCESS);
+        var res:ActivateLicenseResponse = data.result as ActivateLicenseResponse;
+        if(res.errorMsg != null){
+            sendNotification(FAILURE, res.errorMsg);
+        } else {
+            sendNotification(SUCCESS);
+        }
     }
 
     public function fault(info:Object):void {

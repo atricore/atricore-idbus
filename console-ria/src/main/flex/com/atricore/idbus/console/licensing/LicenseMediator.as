@@ -120,7 +120,7 @@ public class LicenseMediator extends IocMediator implements IDisposable {
                 // do nothing AppMediator is taking care of it
                 break;
             case UpdateLicenseCommand.FAILURE :
-                handleActivationFailure();
+                handleActivationFailure(notification);
                 break;
             case ApplicationFacade.LICENSE_VIEW_SELECTED:
                 init();
@@ -141,10 +141,11 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         sendNotification(ApplicationFacade.DISPLAY_UPDATE_LICENSE);
     }
 
-    public function handleActivationFailure():void {
-        sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                "The license doesn't seem to be valid. " +
-                "Please upload valid license.");
+    public function handleActivationFailure(notification:INotification):void {
+        var errMsg:String = notification.getBody() as String;
+        sendNotification(ApplicationFacade.SHOW_ERROR_MSG, errMsg);
+//                "The license doesn't seem to be valid. " +
+//                "Please upload valid license.");
     }
 
     public function displayLicenseInfo():void {

@@ -25,7 +25,7 @@ public class LicenseManagementAjaxServiceImpl implements LicenseManagementAjaxSe
         } catch (InvalidLicenseException e) {
             res.setErrorMsg("Invalid license file!");
         }
-        return null;
+        return res;
     }
 
     public GetLicenseResponse getLicense(GetLicenseRequest req) {

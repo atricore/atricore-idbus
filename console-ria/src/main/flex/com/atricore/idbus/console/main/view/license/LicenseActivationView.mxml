@@ -52,12 +52,14 @@
          xmlns:component="com.atricore.idbus.console.components.*"
          horizontalAlign="center" paddingTop="100" width="100%" height="100%">
 
-    <mx:Panel width="35%" height="40%" horizontalAlign="center" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'license.activation.title')}">
-        <mx:Label id="activationLabel1" paddingTop="20" paddingLeft="0" paddingBottom="0" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.productNotActivated1')}"/>
-        <mx:Label id="activationLabel2" paddingLeft="0" paddingBottom="0" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.productNotActivated2')}"/>
+    <mx:Panel id="licensePanel" width="35%" height="40%" horizontalAlign="center" title="{resourceManager.getString(AtricoreConsole.BUNDLE, 'license.activation.title')}">
+        <mx:Label id="activationLabel1" paddingTop="20" paddingLeft="0" paddingBottom="0" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.checkingProductLicense')}"/>
+        <mx:ProgressBar id="progressBar" indeterminate="true"  width="75%"
+            label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.checkingProductLicense')}"/>
+        <mx:Label id="activationLabel2" paddingLeft="0" visible="false" paddingBottom="0" text="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.productNotActivated2')}"/>
         <mx:Form width="100%" height="20%" verticalGap="4" defaultButton="{btnActivateLicense}">
         <mx:ControlBar horizontalAlign="center" width="100%" height="100%">
-            <mx:Button id="btnActivateLicense" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.activateProduct')}"/>
+            <mx:Button id="btnActivateLicense" enabled="false" label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.activateProduct')}"/>
         </mx:ControlBar>
         </mx:Form>
     </mx:Panel>
