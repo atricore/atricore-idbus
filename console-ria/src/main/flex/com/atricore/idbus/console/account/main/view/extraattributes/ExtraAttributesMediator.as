@@ -121,7 +121,7 @@ public class ExtraAttributesMediator extends IocFormMediator
 
     private function createStringField(fItem:FormItem,attr:Attribute):void {
         if (attr.multivalued) { //multivalued field - list
-
+            fItem.addElement(new MultiValuedField(attr));
         }
         else { // single text field
             var textInput:TextInput = new TextInput();
@@ -134,7 +134,7 @@ public class ExtraAttributesMediator extends IocFormMediator
 
     private function createNumberField(fItem:FormItem,attr:Attribute):void {
         if (attr.multivalued) { //multivalued field - list
-
+            fItem.addElement(new MultiValuedField(attr));
         }
         else { // single text field
             var numberInput:TextInput = new TextInput();
@@ -147,7 +147,7 @@ public class ExtraAttributesMediator extends IocFormMediator
 
     private function createDateField(fItem:FormItem,attr:Attribute):void {
         if (attr.multivalued) { //multivalued field - list
-
+            fItem.addElement(new MultiValuedField(attr));
         }
         else { // single text field
             var dateInput:DateField = new DateField();
@@ -160,7 +160,7 @@ public class ExtraAttributesMediator extends IocFormMediator
 
     private function createEmailField(fItem:FormItem,attr:Attribute):void {
         if (attr.multivalued) { //multivalued field - list
-
+            fItem.addElement(new MultiValuedField(attr));
         }
         else { // single text field
             var emailInput:TextInput = new TextInput();
@@ -173,7 +173,7 @@ public class ExtraAttributesMediator extends IocFormMediator
 
     private function createUrlField(fItem:FormItem,attr:Attribute):void {
         if (attr.multivalued) { //multivalued field - list
-
+            fItem.addElement(new MultiValuedField(attr));
         }
         else { // single text field
             var urlInput:TextInput = new TextInput();
