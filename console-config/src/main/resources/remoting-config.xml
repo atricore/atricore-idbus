@@ -48,7 +48,7 @@
     <destination id="schemasManagementService">
         <properties>
             <factory>spring</factory>
-            <source>schemasManagementAjaxServiceBean</source>
+            <source>schemaManagementAjaxServiceBean</source>
         </properties>
     </destination>
 

@@ -22,6 +22,8 @@
 package com.atricore.idbus.console.account.main.view.editgroup {
 import com.atricore.idbus.console.account.main.controller.EditGroupCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesTab;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
@@ -32,12 +34,14 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.events.CloseEvent;
+import mx.events.FlexEvent;
 
 import org.puremvc.as3.interfaces.INotification;
 
 public class EditGroupMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _extraAttributesMediator:ExtraAttributesMediator;
     private var _editedGroup:Group;
 
     private var _processingStarted:Boolean;
@@ -54,10 +58,19 @@ public class EditGroupMediator extends IocFormMediator
         _accountManagementProxy = value;
     }
 
+    public function get extraAttributesMediator():ExtraAttributesMediator {
+        return _extraAttributesMediator;
+    }
+
+    public function set extraAttributesMediator(value:ExtraAttributesMediator):void {
+        _extraAttributesMediator = value;
+    }
+
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
             view.cancelEditGroup.removeEventListener(MouseEvent.CLICK, handleCancel);
             view.submitEditGroupButton.removeEventListener(MouseEvent.CLICK, onSubmitEditGroup);
+            view.generalSection.removeEventListener(FlexEvent.SHOW, initGeneralSection);
             if (view.parent != null) {
                 view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
             }
@@ -70,6 +83,15 @@ public class EditGroupMediator extends IocFormMediator
     private function init():void {
         view.cancelEditGroup.addEventListener(MouseEvent.CLICK, handleCancel);
         view.submitEditGroupButton.addEventListener(MouseEvent.CLICK, onSubmitEditGroup);
+        view.generalSection.addEventListener(FlexEvent.SHOW, initGeneralSection);
+
+        if (    accountManagementProxy.attributesForEntity !=null &&
+                accountManagementProxy.attributesForEntity.length > 0) {
+            var extraTab:ExtraAttributesTab = new ExtraAttributesTab();
+            view.tabNav.addChild(extraTab);
+            extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
+            extraAttributesMediator.setViewComponent(extraTab);
+        }
 
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
         bindForm();
@@ -127,9 +149,16 @@ public class EditGroupMediator extends IocFormMediator
         }
     }
 
+    private function initGeneralSection(event:FlexEvent):void {
+        view.focusManager.setFocus(view.groupName);
+    }
+
+    private function initExtraSection(event:FlexEvent):void {
+
+    }
+
     public function handleEditGroupSuccess():void {
         sendNotification(ProcessingMediator.STOP);
-//        sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, "The the group was successfully updated.");
         sendNotification(ApplicationFacade.LIST_GROUPS);
     }
 

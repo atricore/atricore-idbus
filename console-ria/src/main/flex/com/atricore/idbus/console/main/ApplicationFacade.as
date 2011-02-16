@@ -80,6 +80,10 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const SEARCH_GROUPS:String = "searchGroups";
     public static const SEARCH_USERS:String = "searchUsers";
     public static const LIST_SCHEMA_ATTRIBUTES:String = "listSchemaAttributes";
+    public static const LIST_ENTITY_SCHEMA_ATTRIBUTES:String = "listSchemaAttributesForEntity";
+    public static const ADD_SCHEMA_ATTRIBUTE:String ="addAttribute";
+    public static const EDIT_SCHEMA_ATTRIBUTE:String ="editAttribute";
+    public static const DELETE_SCHEMA_ATTRIBUTE:String ="deleteAttribute";
     public static const CREATE_ACTIVATION:String = "createActivation";
     public static const CREATE_FEDERATED_CONNECTION:String = "createFederatedConnection";
     public static const CREATE_IDENTITY_LOOKUP:String = "createIdentityLookup";
@@ -174,8 +178,10 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const SHOW_UPLOAD_PROGRESS:String = "uploadProgress";
     public static const DISPLAY_ADD_NEW_GROUP:String = "displayAddNewGroup";
     public static const DISPLAY_ADD_NEW_USER:String = "displayAddNewUser";
+    public static const DISPLAY_ADD_NEW_ATTRIBUTE:String = "displayAddNewAttribute";
     public static const DISPLAY_EDIT_GROUP:String = "displayEditGroup";
     public static const DISPLAY_EDIT_USER:String = "displayEditUser";
+    public static const DISPLAY_EDIT_ATTRIBUTE:String = "displayEditAttribute";
     public static const DISPLAY_SEARCH_GROUPS:String = "displaySearchGroup";
     public static const DISPLAY_SEARCH_USERS:String = "displaySearchUser";
     public static const DISPLAY_SEARCH_RESULTS_USERS:String = "displaySearchResultUsers";
@@ -196,6 +202,7 @@ public class ApplicationFacade extends BaseAppFacade {
 
     // TODO: remove this?
     public static const LICENSE_VIEW_SELECTED:String = "licenseViewSelected";
+
 
     public function ApplicationFacade(p_configuration:* = null) {
         super(p_configuration);

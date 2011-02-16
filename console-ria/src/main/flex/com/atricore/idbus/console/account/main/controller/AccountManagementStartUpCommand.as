@@ -30,7 +30,9 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
     private var _editUserMediator:IIocMediator;
     private var _searchUsersMediator:IIocMediator;
     private var _schemasMediator:IIocMediator;
-    private var _schemasPropertiesMediator:IIocMediator;
+    private var _addAttributeMediator:IIocMediator;
+    private var _editAttributeMediator:IIocMediator;
+    private var _extraAttributesMediator:IIocMediator;
 
     private var _addGroupCommand:IIocCommand;
     private var _addUserCommand:IIocCommand;
@@ -43,6 +45,10 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
     private var _searchGroupsCommand:IIocCommand;
     private var _searchUsersCommand:IIocCommand;
     private var _listSchemaAttributesCommand:IIocCommand;
+    private var _listSchemaAttributesForEntityCommand:IIocCommand;
+    private var _addAttributeCommand:IIocCommand;
+    private var _editAttributeCommand:IIocCommand;
+    private var _deleteAttributeCommand:IIocCommand;
 
 
     public function AccountManagementStartUpCommand() {
@@ -69,7 +75,9 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerMediatorByConfigName(editUserMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(searchUsersMediator.getConfigName());
         iocFacade.registerMediatorByConfigName(schemasMediator.getConfigName());
-        iocFacade.registerMediatorByConfigName(schemasPropertiesMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(addAttributeMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(editAttributeMediator.getConfigName());
+        iocFacade.registerMediatorByConfigName(extraAttributesMediator.getConfigName());
     }
 
     override protected function setupCommands(ctx:BaseStartupContext):void {
@@ -85,6 +93,10 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_GROUPS, searchGroupsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_USERS, searchUsersCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, listSchemaAttributesCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_ENTITY_SCHEMA_ATTRIBUTES, listSchemaAttributesForEntityCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_SCHEMA_ATTRIBUTE, addAttributeCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.EDIT_SCHEMA_ATTRIBUTE, editAttributeCommand.getConfigName());
+        iocFacade.registerCommandByConfigName(ApplicationFacade.DELETE_SCHEMA_ATTRIBUTE, deleteAttributeCommand.getConfigName());
     }
 
     override protected function setupServices(ctx:BaseStartupContext):void{
@@ -194,12 +206,28 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
         _schemasMediator = value;
     }
 
-    public function get schemasPropertiesMediator():IIocMediator {
-        return _schemasPropertiesMediator;
+    public function get addAttributeMediator():IIocMediator {
+        return _addAttributeMediator;
     }
 
-    public function set schemasPropertiesMediator(value:IIocMediator):void {
-        _schemasPropertiesMediator = value;
+    public function set addAttributeMediator(value:IIocMediator):void {
+        _addAttributeMediator = value;
+    }
+
+    public function get editAttributeMediator():IIocMediator {
+        return _editAttributeMediator;
+    }
+
+    public function set editAttributeMediator(value:IIocMediator):void {
+        _editAttributeMediator = value;
+    }
+
+    public function get extraAttributesMediator():IIocMediator {
+        return _extraAttributesMediator;
+    }
+
+    public function set extraAttributesMediator(value:IIocMediator):void {
+        _extraAttributesMediator = value;
     }
 
     public function get addGroupCommand():IIocCommand {
@@ -288,6 +316,38 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
 
     public function set listSchemaAttributesCommand(value:IIocCommand):void {
         _listSchemaAttributesCommand = value;
+    }
+
+    public function get listSchemaAttributesForEntityCommand():IIocCommand {
+        return _listSchemaAttributesForEntityCommand;
+    }
+
+    public function set listSchemaAttributesForEntityCommand(value:IIocCommand):void {
+        _listSchemaAttributesForEntityCommand = value;
+    }
+
+    public function get addAttributeCommand():IIocCommand {
+        return _addAttributeCommand;
+    }
+
+    public function set addAttributeCommand(value:IIocCommand):void {
+        _addAttributeCommand = value;
+    }
+
+    public function get editAttributeCommand():IIocCommand {
+        return _editAttributeCommand;
+    }
+
+    public function set editAttributeCommand(value:IIocCommand):void {
+        _editAttributeCommand = value;
+    }
+
+    public function get deleteAttributeCommand():IIocCommand {
+        return _deleteAttributeCommand;
+    }
+
+    public function set deleteAttributeCommand(value:IIocCommand):void {
+        _deleteAttributeCommand = value;
     }
 }
 }

@@ -63,8 +63,7 @@ public class GroupPropertiesMediator extends IocMediator {
         _groupPropertiesSheetsViewStack = view.groupPropertiesSheetsViewStack;
         _groupPropertiesTabBar = view.groupPropertiesTabBar;
 
-        _groupPropertiesTabBar.selectedIndex = 0;
-        _groupPropertiesTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
+        //_groupPropertiesTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
     }
 
     private function stackChanged(event:IndexChangeEvent):void {

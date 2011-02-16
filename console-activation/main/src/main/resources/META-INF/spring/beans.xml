@@ -21,7 +21,8 @@
         <property name="printer" ref="printerServiceBean"/>
         <property name="installers">
             <list>
-                
+
+                <ref bean="tc70-installer"/>
                 <ref bean="tc60-installer"/>
                 <ref bean="tc55-installer"/>
                 <ref bean="tc50-installer"/>
@@ -49,6 +50,34 @@
     <!-- ============================================== -->
     <!-- Install Platforms                              -->
     <!-- ============================================== -->
+
+    <!-- Apache Tomcat 7.0.x -->
+
+    <bean name="tc70-installer" class="org.josso.tooling.gshell.install.installer.TomcatInstaller">
+        <constructor-arg index="0" ref="tc70"/>
+        <property name="printer" ref="printerServiceBean"/>
+    </bean>
+
+    <bean name="tc70" class="org.josso.tooling.gshell.install.TargetPlatformImpl">
+        <property name="id" value="tc70"/>
+        <property name="family" value="tomcat"/>
+        <property name="platformName" value="Apache Tomcat"/>
+        <property name="version" value="7.0.x"/>
+
+        <property name="binDir" value="${target}/bin"/>
+        <property name="libDir" value="${target}/lib"/>
+        <property name="configDir" value="${target}/conf"/>
+        <property name="deployDir" value="${target}/webapps"/>
+        <property name="endorsedLibDir" value="${target}/lib"/>
+
+        <property name="JOSSOConfDir" value="${target}/lib"/>
+        <property name="JOSSOLibDir" value="${target}/lib"/>
+        <property name="JOSSOSharedLibDir" value="${target}/lib"/>
+
+        <property name="JOSSOWarName" value="josso"/>
+        <property name="JOSSOWarExploded" value="true"/>
+
+    </bean>
 
     <!-- Apache Tomcat 6.0.x -->
 

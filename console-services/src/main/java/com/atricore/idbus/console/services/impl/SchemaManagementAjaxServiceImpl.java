@@ -23,7 +23,7 @@ package com.atricore.idbus.console.services.impl;
 
 import com.atricore.idbus.console.services.dto.schema.AttributeDTO;
 import com.atricore.idbus.console.services.dto.schema.TypeDTOEnum;
-import com.atricore.idbus.console.services.spi.SchemasManagementAjaxService;
+import com.atricore.idbus.console.services.spi.SchemaManagementAjaxService;
 import com.atricore.idbus.console.services.spi.request.schema.AddSchemaAttributeRequest;
 import com.atricore.idbus.console.services.spi.request.schema.ListSchemaAttributesRequest;
 import com.atricore.idbus.console.services.spi.request.schema.RemoveSchemaAttributeRequest;
@@ -36,7 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Author: Dusan Fisic
@@ -44,21 +44,41 @@ import java.util.HashMap;
  * Date: 1/13/11 - 2:50 PM
  */
 
-public class SchemasManagementAjaxServiceImpl implements
-        SchemasManagementAjaxService,
+public class SchemaManagementAjaxServiceImpl implements
+        SchemaManagementAjaxService,
         InitializingBean {
 
-    private static Log logger = LogFactory.getLog(SchemasManagementAjaxServiceImpl.class);
+    private static Log logger = LogFactory.getLog(SchemaManagementAjaxServiceImpl.class);
 
     private HashMap<Integer,AttributeDTO> attrMap;
-
+    private Random randomGenerator = new Random();
 
     public void afterPropertiesSet() throws Exception {
         this.attrMap = new HashMap();
-        attrMap.put( 1, new AttributeDTO(1,"User", "a", TypeDTOEnum.STRING, false, false));
-        attrMap.put( 2, new AttributeDTO(2,"User", "specRole", TypeDTOEnum.STRING, true, false));
-        attrMap.put( 3, new AttributeDTO(2,"Group", "a", TypeDTOEnum.STRING, false, false));
-        attrMap.put( 4, new AttributeDTO(2,"Group", "b", TypeDTOEnum.STRING, true, false));
+
+        AttributeDTO atu_one = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specRole", TypeDTOEnum.STRING, false, false);
+        AttributeDTO atu_two = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specNUM", TypeDTOEnum.INT, false, false);
+        AttributeDTO atu_three = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specDate", TypeDTOEnum.DATE, true, false);
+        AttributeDTO atu_four = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specEmail", TypeDTOEnum.EMAIL, true, false);
+        AttributeDTO atu_five = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specURL", TypeDTOEnum.URL, false, false);
+
+        AttributeDTO atg_one = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specRole", TypeDTOEnum.STRING, false, false);
+        AttributeDTO atg_two = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specNUM", TypeDTOEnum.INT, true, false);
+        AttributeDTO atg_three = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specDate", TypeDTOEnum.DATE, false, false);
+        AttributeDTO atg_four = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specEmail", TypeDTOEnum.EMAIL, true, false);
+        AttributeDTO atg_five = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specURL", TypeDTOEnum.URL, true, false);
+
+        attrMap.put(atu_one.getId() , atu_one );
+        attrMap.put(atu_two.getId() , atu_two);
+        attrMap.put(atu_three.getId() , atu_three);
+        attrMap.put(atu_four.getId() , atu_four);
+        attrMap.put(atu_five.getId() , atu_five);
+
+        attrMap.put(atg_one.getId() , atg_one );
+        attrMap.put(atg_two.getId() , atg_two);
+        attrMap.put(atg_three.getId() , atg_three);
+        attrMap.put(atg_four.getId() , atg_four);
+        attrMap.put(atg_five.getId() , atg_five);
     }
 
     public AddSchemaAttributeResponse addSchemaAttribute(AddSchemaAttributeRequest req) throws Exception {
@@ -68,9 +88,10 @@ public class SchemasManagementAjaxServiceImpl implements
                         "|" +
                         req.getAttribute().getEntity() +"]");
 
-
             if (req.getAttribute() != null) {
-                attrMap.put(req.getAttribute().getId(), req.getAttribute());
+                AttributeDTO at = req.getAttribute();
+                at.setId(randomGenerator.nextInt(1000));
+                attrMap.put(at.getId() , at);
             }
 
             AddSchemaAttributeResponse response = new AddSchemaAttributeResponse();
@@ -91,10 +112,9 @@ public class SchemasManagementAjaxServiceImpl implements
                 logger.trace("Processing addSchemaAttribute [" + req.getAttribute().getName()+
                         "|" +
                         req.getAttribute().getEntity() +"]");
-
-            if (req.getAttribute() != null) {
-                attrMap.put(req.getAttribute().getId(),req.getAttribute());
-            }
+            AttributeDTO uAttr = req.getAttribute();
+            attrMap.remove(uAttr.getId());
+            attrMap.put(uAttr.getId(), uAttr);
 
             UpdateSchemaAttributeResponse response = new UpdateSchemaAttributeResponse();
             return response;
@@ -122,6 +142,28 @@ public class SchemasManagementAjaxServiceImpl implements
         }
     }
 
+    public ListSchemaAttributesResponse listSchemaAttributes(String entity) throws Exception {
+        try{
+            if (logger.isTraceEnabled())
+                logger.trace("Processing listSchemaAttributes for entity [" + entity +"]");
+
+            ListSchemaAttributesResponse response = new ListSchemaAttributesResponse();
+            Collection entities = new ArrayList();
+
+            for (AttributeDTO atr : attrMap.values()) {
+                if (atr.getEntity().equals(entity))
+                    entities.add(atr);
+            }
+
+            response.setAttributesCollection(entities);
+            return response;
+        } catch (Exception e) {
+            // Log the error ant throw an exception to the Ajax layer.
+            logger.error(e.getMessage(), e);
+            throw new Exception("Error listing Schema Attributes for entity [" + entity +"]",e);
+        }
+    }
+
     public RemoveSchemaAttributeResponse removeSchemaAttribute(RemoveSchemaAttributeRequest req) throws Exception {
         try{
             if (logger.isTraceEnabled())
@@ -141,5 +183,7 @@ public class SchemasManagementAjaxServiceImpl implements
                     req.getAttributeId() +"]",e);
         }
     }
+
+
 }
 

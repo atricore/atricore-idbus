@@ -17,6 +17,10 @@ public class AttributeDTO {
 
     private boolean multivalued;
 
+    public AttributeDTO() {
+
+    }
+
     public AttributeDTO(int id, String entity, String name, TypeDTOEnum type, boolean required, boolean multivalued) {
         this.id = id;
         this.entity = entity;

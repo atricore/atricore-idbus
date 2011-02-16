@@ -22,6 +22,8 @@
 package com.atricore.idbus.console.account.main.view.adduser {
 import com.atricore.idbus.console.account.main.controller.AddUserCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesTab;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
@@ -40,6 +42,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class AddUserMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _extraAttributesMediator:ExtraAttributesMediator;
     private var _newUser:User;
 
     private var _processingStarted:Boolean;
@@ -54,6 +57,14 @@ public class AddUserMediator extends IocFormMediator
 
     public function set accountManagementProxy(value:AccountManagementProxy):void {
         _accountManagementProxy = value;
+    }
+
+    public function get extraAttributesMediator():ExtraAttributesMediator {
+        return _extraAttributesMediator;
+    }
+
+    public function set extraAttributesMediator(value:ExtraAttributesMediator):void {
+        _extraAttributesMediator = value;
     }
 
     override public function setViewComponent(viewComponent:Object):void {
@@ -85,6 +96,14 @@ public class AddUserMediator extends IocFormMediator
         view.groupsSection.addEventListener(FlexEvent.SHOW, initGroupsSection);
         view.securitySection.addEventListener(FlexEvent.SHOW, initSecuritySection);
         view.passwordSection.addEventListener(FlexEvent.SHOW, initPasswordSection);
+
+        if (    accountManagementProxy.attributesForEntity !=null &&
+                accountManagementProxy.attributesForEntity.length > 0) {
+            var extraTab:ExtraAttributesTab = new ExtraAttributesTab();
+            view.tabNav.addChild(extraTab);
+            extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
+            extraAttributesMediator.setViewComponent(extraTab);
+        }
 
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
         view.focusManager.setFocus(view.userUsername);
@@ -181,6 +200,10 @@ public class AddUserMediator extends IocFormMediator
 
     private function initPasswordSection(event:FlexEvent):void {
         view.focusManager.setFocus(view.userPassword);
+    }
+
+    private function initExtraSection(event:FlexEvent):void {
+
     }
 
     private function closeWindow():void {

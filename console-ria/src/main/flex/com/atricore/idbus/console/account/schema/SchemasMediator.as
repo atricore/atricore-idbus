@@ -20,6 +20,7 @@
  */
 
 package com.atricore.idbus.console.account.schema {
+import com.atricore.idbus.console.account.main.controller.DeleteAttributeCommand;
 import com.atricore.idbus.console.account.main.controller.ListSchemaAttributesCommand;
 import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
 import com.atricore.idbus.console.account.main.view.AccountManagementPopUpManager;
@@ -34,7 +35,6 @@ import mx.controls.Alert;
 import mx.events.CloseEvent;
 import mx.events.ListEvent;
 import mx.managers.PopUpManager;
-import mx.messaging.management.Attribute;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 
@@ -47,22 +47,13 @@ public class SchemasMediator extends IocMediator implements IDisposable{
 
     public static const BUNDLE:String = "console";
 
-    //private var _popupManager:AccountManagementPopUpManager;
+    private var _popupManager:AccountManagementPopUpManager;
     private var _schemasManagementProxy:SchemasManagementProxy;
-    private var _schemasPropertiesMediator:IIocMediator;
 
     private var _updatedSchemaAttrIndex:Number;
 
     public function SchemasMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
-    }
-
-    public function get schemasManagementProxy():SchemasManagementProxy {
-        return _schemasManagementProxy;
-    }
-
-    public function set schemasManagementProxy(value:SchemasManagementProxy):void {
-        _schemasManagementProxy = value;
     }
 
     override public function setViewComponent(p_viewComponent:Object):void {
@@ -79,7 +70,7 @@ public class SchemasMediator extends IocMediator implements IDisposable{
 
         sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES);
         //schemasPropertiesMediator.setViewComponent(view.properties);
-        //popupManager.init(iocFacade, view);
+        popupManager.init(iocFacade, view);
     }
 
     public function dispose():void {
@@ -98,7 +89,11 @@ public class SchemasMediator extends IocMediator implements IDisposable{
 
     override public function listNotificationInterests():Array {
         return [ListSchemaAttributesCommand.SUCCESS,
-            ListSchemaAttributesCommand.FAILURE
+            ListSchemaAttributesCommand.FAILURE,
+            DeleteAttributeCommand.SUCCESS,
+            DeleteAttributeCommand.FAILURE,
+            ApplicationFacade.DISPLAY_ADD_NEW_ATTRIBUTE,
+            ApplicationFacade.DISPLAY_EDIT_ATTRIBUTE
         ];
     }
 
@@ -123,18 +118,31 @@ public class SchemasMediator extends IocMediator implements IDisposable{
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error getting group list.");
                 break;
+            case DeleteAttributeCommand.SUCCESS:
+                sendNotification(ProcessingMediator.STOP);
+                sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES);
+                break;
+            case DeleteAttributeCommand.FAILURE:
+                sendNotification(ProcessingMediator.STOP);
+                sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error deleting attribute.");
+                break;
+            case ApplicationFacade.DISPLAY_ADD_NEW_ATTRIBUTE:
+                popupManager.showAddAttributeWindow(notification);
+                break;
+            case ApplicationFacade.DISPLAY_EDIT_ATTRIBUTE:
+                popupManager.showEditAttributeWindow(notification);
+                break;
         }
     }
 
-
     private function handleCreateAttributeClick(event:MouseEvent):void {
         trace("New Group Button Click: " + event);
-        //sendNotification(ApplicationFacade.DISPLAY_ADD_NEW_GROUP);
+        sendNotification(ApplicationFacade.DISPLAY_ADD_NEW_ATTRIBUTE);
     }
 
     private function handleEditAttributeClick(event:MouseEvent):void {
         trace("Edit Group Button Click: " + event);
-        //sendNotification(ApplicationFacade.DISPLAY_EDIT_GROUP);
+        sendNotification(ApplicationFacade.DISPLAY_EDIT_ATTRIBUTE);
     }
 
     private function handleDeleteAttributeClick(event:MouseEvent):void {
@@ -143,8 +151,7 @@ public class SchemasMediator extends IocMediator implements IDisposable{
     }
 
     public function schemaAttrListClickHandler(e:ListEvent):void {
-        var selectedAttr:com.atricore.idbus.console.services.dto.schema.Attribute =
-                e.currentTarget.selectedItem as com.atricore.idbus.console.services.dto.schema.Attribute;
+        var selectedAttr:Attribute = e.currentTarget.selectedItem as Attribute;
         schemasManagementProxy.currentSchemaAttribute = selectedAttr;
 
         if (view.btnDeleteAttribute != null)
@@ -157,11 +164,14 @@ public class SchemasMediator extends IocMediator implements IDisposable{
         //sendNotification(ApplicationFacade.DISPLAY_GROUP_PROPERTIES, selectedAttr);
     }
 
-    private function attrBasicInfo(attr:com.atricore.idbus.console.services.dto.schema.Attribute):String {
+    private function attrBasicInfo(attr:Attribute):String {
         var attrInfo:String = "";
         var resMan:IResourceManager = ResourceManager.getInstance();
-        //attrInfo+=resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.name') + ": " + group.name + "\n";
-        //attrInfo+=resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.description') + ": " + group.description + "\n";
+        attrInfo+=resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.list.entity') + ": " + attr.entity + "\n";
+        attrInfo+=resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.list.attribute') + ": " + attr.name + "\n";
+        attrInfo+=resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.list.type') + ": " + attr.type + "\n";
+        attrInfo+=resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.list.required') + ": " + attr.required + "\n";
+        attrInfo+=resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.list.multivalued') + ": " + attr.multivalued + "\n";
 
         return attrInfo;
     }
@@ -170,21 +180,21 @@ public class SchemasMediator extends IocMediator implements IDisposable{
         var resMan:IResourceManager = ResourceManager.getInstance();
 
         if (view.schemaAttrList.selectedIndex == -1)
-            Alert.show(resMan.getString(AtricoreConsole.BUNDLE , 'provisioning.error.group.noselected'));
+            Alert.show(resMan.getString(AtricoreConsole.BUNDLE , 'provisioning.error.schema.attribute.noselected'));
         else {
-            var alertBody:String = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.delete.answer');
+            var alertBody:String = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.delete.attribute.answer');
             alertBody += "\n" + attrBasicInfo(schemasManagementProxy.currentSchemaAttribute);
             var delAlert:Alert = Alert.show(alertBody,
-                    resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.delete.title'),
+                    resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.delete.attribute.title'),
                     3, view,
-                                           function(event:CloseEvent):void {
-                                               if (event.detail == Alert.YES) {
-                                                   sendNotification(ApplicationFacade.DELETE_GROUP, schemasManagementProxy.currentSchemaAttribute);
-                                                   sendNotification(ProcessingMediator.START);
-                                               }
-                                               else
-                                                   PopUpManager.removePopUp(delAlert);
-                                           });
+                    function(event:CloseEvent):void {
+                        if (event.detail == Alert.YES) {
+                            sendNotification(ApplicationFacade.DELETE_SCHEMA_ATTRIBUTE, schemasManagementProxy.currentSchemaAttribute);
+                            sendNotification(ProcessingMediator.START);
+                        }
+                        else
+                            PopUpManager.removePopUp(delAlert);
+                    });
 
         }
     }
@@ -199,12 +209,20 @@ public class SchemasMediator extends IocMediator implements IDisposable{
         viewComponent = gv;
     }
 
-    public function get schemasPropertiesMediator():IIocMediator {
-        return _schemasPropertiesMediator;
+    public function get schemasManagementProxy():SchemasManagementProxy {
+        return _schemasManagementProxy;
     }
 
-    public function set schemasPropertiesMediator(value:IIocMediator):void {
-        _schemasPropertiesMediator = value;
+    public function set schemasManagementProxy(value:SchemasManagementProxy):void {
+        _schemasManagementProxy = value;
+    }
+
+    public function get popupManager():AccountManagementPopUpManager {
+        return _popupManager;
+    }
+
+    public function set popupManager(value:AccountManagementPopUpManager):void {
+        _popupManager = value;
     }
 }
 }

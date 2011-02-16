@@ -22,6 +22,8 @@
 package com.atricore.idbus.console.account.main.view.edituser {
 import com.atricore.idbus.console.account.main.controller.EditUserCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesTab;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
@@ -34,11 +36,14 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
+import mx.events.FlexEvent;
+
 import org.puremvc.as3.interfaces.INotification;
 
 public class EditUserMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _extraAttributesMediator:ExtraAttributesMediator;
     private var _editedUser:User;
 
     private var _processingStarted:Boolean;
@@ -53,6 +58,14 @@ public class EditUserMediator extends IocFormMediator
 
     public function set accountManagementProxy(value:AccountManagementProxy):void {
         _accountManagementProxy = value;
+    }
+
+    public function get extraAttributesMediator():ExtraAttributesMediator {
+        return _extraAttributesMediator;
+    }
+
+    public function set extraAttributesMediator(value:ExtraAttributesMediator):void {
+        _extraAttributesMediator = value;
     }
 
     override public function setViewComponent(viewComponent:Object):void {
@@ -77,6 +90,14 @@ public class EditUserMediator extends IocFormMediator
 
         view.userPassword.addEventListener(Event.CHANGE, passwordChange);
         view.userRetypePassword.addEventListener(Event.CHANGE, passwordChange);
+
+        if (    accountManagementProxy.attributesForEntity !=null &&
+                accountManagementProxy.attributesForEntity.length > 0) {
+            var extraTab:ExtraAttributesTab = new ExtraAttributesTab();
+            view.tabNav.addChild(extraTab);
+            extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
+            extraAttributesMediator.setViewComponent(extraTab);
+        }
 
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
         bindForm();
@@ -105,6 +126,10 @@ public class EditUserMediator extends IocFormMediator
                 handleEditUserFailure();
                 break;
         }
+    }
+
+    private function initExtraSection(event:FlexEvent):void {
+
     }
 
     override public function bindForm():void {

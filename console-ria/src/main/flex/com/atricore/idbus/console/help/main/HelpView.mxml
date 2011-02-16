@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<AppSectionView xmlns="com.atricore.idbus.console.base.extensions.appsection.*"
+          xmlns:mx="library://ns.adobe.com/flex/mx"
+          xmlns:fx="http://ns.adobe.com/mxml/2009"
+          xmlns:s="library://ns.adobe.com/flex/spark"
+          xmlns:flexiframe="http://code.google.com/p/flex-iframe/"
+          width="100%" height="100%"
+          skinClass="com.atricore.idbus.console.skin.panel.NoTitleBarPanelSkin"
+          name="{resourceManager.getString(AtricoreConsole.BUNDLE, 'main.helpTab.name')}">
+
+    <fx:Metadata>
+        [ResourceBundle("console")]
+    </fx:Metadata>
+
+    <fx:Script>
+        <![CDATA[
+        import com.atricore.idbus.console.main.EmbeddedIcons;
+
+        public var icon:Class = EmbeddedIcons.helpMiniIcon;
+        ]]>
+    </fx:Script>
+
+    <flexiframe:IFrame id="helpIFrame"
+           label="Help"
+           source="http://www.josso.org/confluence/display/JOSSO1/JOSSO2"
+           width="100%"
+           height="100%"
+           visible="false"/>
+
+</AppSectionView>

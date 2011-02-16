@@ -22,6 +22,8 @@
 package com.atricore.idbus.console.account.main.view.addgroup {
 import com.atricore.idbus.console.account.main.controller.AddGroupCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator;
+import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesTab;
 import com.atricore.idbus.console.main.ApplicationFacade;
 import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
@@ -33,11 +35,14 @@ import flash.events.MouseEvent;
 
 import mx.events.CloseEvent;
 
+import mx.events.FlexEvent;
+
 import org.puremvc.as3.interfaces.INotification;
 
 public class AddGroupMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _extraAttributesMediator:ExtraAttributesMediator;
     private var _newGroup:Group;
 
     private var _processingStarted:Boolean;
@@ -54,10 +59,19 @@ public class AddGroupMediator extends IocFormMediator
         _accountManagementProxy = value;
     }
 
+    public function get extraAttributesMediator():ExtraAttributesMediator {
+        return _extraAttributesMediator;
+    }
+
+    public function set extraAttributesMediator(value:ExtraAttributesMediator):void {
+        _extraAttributesMediator = value;
+    }
+
     override public function setViewComponent(viewComponent:Object):void {
         if (getViewComponent() != null) {
             view.cancelAddGroup.removeEventListener(MouseEvent.CLICK, handleCancel);
             view.submitAddGroupButton.removeEventListener(MouseEvent.CLICK, onSubmitAddGroup);
+            view.generalSection.removeEventListener(FlexEvent.SHOW, initGeneralSection);
             if (view.parent != null) {
                 view.parent.removeEventListener(CloseEvent.CLOSE, handleClose);
             }
@@ -70,6 +84,16 @@ public class AddGroupMediator extends IocFormMediator
     private function init():void {
         view.cancelAddGroup.addEventListener(MouseEvent.CLICK, handleCancel);
         view.submitAddGroupButton.addEventListener(MouseEvent.CLICK, onSubmitAddGroup);
+        view.generalSection.addEventListener(FlexEvent.SHOW, initGeneralSection);
+
+        if (    accountManagementProxy.attributesForEntity !=null &&
+                accountManagementProxy.attributesForEntity.length > 0) {
+            var extraTab:ExtraAttributesTab = new ExtraAttributesTab();
+            view.tabNav.addChild(extraTab);
+            extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
+            extraAttributesMediator.setViewComponent(extraTab);
+        }
+
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
         view.focusManager.setFocus(view.groupName);
     }
@@ -112,7 +136,7 @@ public class AddGroupMediator extends IocFormMediator
 
     private function onSubmitAddGroup(event:MouseEvent):void {
         _processingStarted = true;
-        
+
         if (validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
@@ -124,6 +148,14 @@ public class AddGroupMediator extends IocFormMediator
         }
     }
 
+    private function initGeneralSection(event:FlexEvent):void {
+        view.focusManager.setFocus(view.groupName);
+    }
+
+    private function initExtraSection(event:FlexEvent):void {
+
+    }
+
     public function handleAddGroupSuccess():void {
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.LIST_GROUPS);
@@ -133,7 +165,7 @@ public class AddGroupMediator extends IocFormMediator
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.SHOW_ERROR_MSG, "There was an error adding group.");
     }
-    
+
     private function handleCancel(event:MouseEvent):void {
         closeWindow();
     }

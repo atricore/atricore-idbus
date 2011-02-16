@@ -26,4 +26,5 @@
     <platform label="Tomcat 5.0" data="tc50" />
     <platform label="Tomcat 5.5" data="tc55" />
     <platform label="Tomcat 6.0" data="tc60" />
+    <platform label="Tomcat 7.0" data="tc70" />
 </platforms>
