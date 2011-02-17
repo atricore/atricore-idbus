@@ -5,26 +5,16 @@ import com.atricore.idbus.console.licensing.main.InvalidLicenseException;
 import com.atricore.idbus.console.licensing.main.LicenseManager;
 import com.atricore.josso2.licensing._1_0.license.LicenseType;
 import com.atricore.josso2.licensing._1_0.util.*;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.logging.Log;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import javax.xml.bind.*;
-import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.dsig.dom.DOMValidateContext;
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import java.io.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import java.util.Iterator;
-import javax.xml.crypto.dsig.*;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -56,19 +46,20 @@ public class LicenseManagerImpl implements LicenseManager {
             "OVuOVWYfBNMwMNikL2JvOZAmNNFWZia4EGphS8Uh+yLRhHbpobRqT6+DOg==\n" +
             "-----END CERTIFICATE-----";
     
-    private String licensePath = "etc/license.xml";
+    private String licensePath = "etc/license.lic";
     private LicenseSigner signer;
 
 
     public void activateLicense(byte[] license) throws InvalidLicenseException {
         LicenseType licenseType = null;
-        try {
+        try {            
+            byte[] decoded = unzipAndDecodeLicense(license);
             //unmarshal
-            licenseType = XmlUtils.unmarshallLicense(new ByteArrayInputStream(license), false);
+            licenseType = XmlUtils.unmarshallLicense(new ByteArrayInputStream(decoded), false);
             //and call validate
             validateLicense(licenseType);
             //store license
-            storeLicense(licenseType);
+            storeLicense(license);
         } catch (JAXBException e) {
             logger.error("Error unmarshalling the license", e);
             throw new InvalidLicenseException(e);
@@ -77,11 +68,12 @@ public class LicenseManagerImpl implements LicenseManager {
         }
     }
 
+    @Deprecated
     public void activateLicense(LicenseType license) throws InvalidLicenseException {
         // 1. Validate consoleLicense
         validateLicense(license);
         // 3. Store consoleLicense file in etc (DB in the future ?)
-        storeLicense(license);
+//        storeLicense(license);
     }
 
     public void validateLicense() throws InvalidLicenseException {
@@ -97,6 +89,32 @@ public class LicenseManagerImpl implements LicenseManager {
 
     public LicenseType getLicense() throws InvalidLicenseException {
         return loadLicense();
+    }
+
+    protected byte[] unzipLicense(byte[] zippedLicense) throws InvalidLicenseException {
+        try {
+            ZipArchiveInputStream zis = new ZipArchiveInputStream(new ByteArrayInputStream(zippedLicense));
+            ZipArchiveEntry zipEntry = zis.getNextZipEntry();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            int c;
+            while ((c = zis.read()) != -1) {
+                bos.write(c);
+            }
+
+            return bos.toByteArray();
+            
+        } catch (IOException e) {
+            throw new InvalidLicenseException("Cannot read license.");
+        }
+    }
+
+    protected byte[] decodeLicense(byte[] encodedLicense) {
+        return Base64.decodeBase64(encodedLicense);
+    }
+
+    protected byte[] unzipAndDecodeLicense(byte[] license) throws InvalidLicenseException {
+        byte[] unzipped = unzipLicense(license);
+        return decodeLicense(unzipped);        
     }
 
     protected void validateLicense(LicenseType license) throws InvalidLicenseException {
@@ -130,8 +148,11 @@ public class LicenseManagerImpl implements LicenseManager {
         // Read consoleLicense from disk for now (we could use DB in the future!)
         LicenseType consoleLicense = null;
         File licenseFile = new File(licensePath);
+        byte[] encodedContent = readLicenseFile();
         try {
-            consoleLicense = XmlUtils.unmarshallLicense(new FileInputStream(licenseFile), false);
+            byte[] licenseContent = unzipAndDecodeLicense(encodedContent);
+            consoleLicense = XmlUtils.unmarshallLicense(new ByteArrayInputStream(licenseContent), false);
+
         } catch (JAXBException e) {
             logger.error("Problem unmarshalling consoleLicense file", e);
             throw new InvalidLicenseException(e);
@@ -144,19 +165,47 @@ public class LicenseManagerImpl implements LicenseManager {
         return consoleLicense;
     }
 
-    protected void storeLicense(LicenseType license) throws InvalidLicenseException {
+    protected void storeLicense(byte[] license) throws InvalidLicenseException {
         try {
-            String licenseString = XmlUtils.marshalLicense(license, false);
-            Writer out = new OutputStreamWriter(new FileOutputStream(licensePath));
-            out.write(licenseString);
-            out.close();
-        } catch (JAXBException e) {
-            logger.error("Error marshalling license", e);
+            FileOutputStream fos = new FileOutputStream(licensePath);
+            fos.write(license);
+            fos.close();
+        } catch (FileNotFoundException e) {
             throw new InvalidLicenseException(e);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new InvalidLicenseException(e);
         }
     }
+
+    protected byte[] readLicenseFile() throws InvalidLicenseException {
+        File licenseFile = new File(licensePath);
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(licenseFile);
+            byte[] content = new byte[(int)licenseFile.length()];
+            fis.read(content);
+            return content;
+        } catch (FileNotFoundException e) {
+            throw new InvalidLicenseException(e);
+        } catch (IOException e) {
+            throw new InvalidLicenseException(e);
+        }
+
+    }
+
+//    protected void storeLicense(LicenseType license) throws InvalidLicenseException {
+//        try {
+//            String licenseString = XmlUtils.marshalLicense(license, false);
+//            Writer out = new OutputStreamWriter(new FileOutputStream(licensePath));
+//            out.write(licenseString);
+//            out.close();
+//        } catch (JAXBException e) {
+//            logger.error("Error marshalling license", e);
+//            throw new InvalidLicenseException(e);
+//        } catch (Exception e) {
+//            throw new InvalidLicenseException(e);
+//        }
+//    }
 
     public void setLicensePath(String licensePath) {
         this.licensePath = licensePath;

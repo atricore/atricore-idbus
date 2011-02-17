@@ -139,7 +139,7 @@ public class ActivateLicenseMediator extends IocFormMediator {
             _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
             _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
         }
-        var fileFilter:FileFilter = new FileFilter("XML(*.xml)", "*.xml");
+        var fileFilter:FileFilter = new FileFilter("Atricore License(*.lic)", "*.lic");
         var fileTypes:Array = new Array(fileFilter);
         _fileRef.browse(fileTypes);
     }

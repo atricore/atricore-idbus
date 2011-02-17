@@ -6,6 +6,8 @@ import com.atricore.josso2.licensing._1_0.util.LicenseKeystoreKeyResolver;
 import com.atricore.josso2.licensing._1_0.util.LicenseSignatureException;
 import com.atricore.josso2.licensing._1_0.util.LicenseSigner;
 import com.atricore.josso2.licensing._1_0.util.XmlUtils;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
@@ -13,9 +15,11 @@ import org.xml.sax.SAXException;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.security.*;
-import java.security.cert.Certificate;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -27,10 +31,7 @@ public class LicenseGenerator {
     private LicenseSigner signer;
 
     public LicenseType generate(String inLicense, String outLicense, String keystoreFile, String keystorePass, String keyName, String keyPass, String certAlias) throws LicenseGenerationException {
-        LicenseType consoleLicense = null;
-        PrivateKey privateKey = null;
-        Certificate certificate = null;
-        Writer out = null;
+        ZipArchiveOutputStream zipOut = null;
         try {
             LicenseKeystoreKeyResolver keyResolver = new LicenseKeystoreKeyResolver();
             keyResolver.setKeystoreType("JKS");
@@ -49,10 +50,20 @@ public class LicenseGenerator {
 
             String licenseString = XmlUtils.marshalLicense(signed, false);
 
-            //saves the signed license as new file
-            out = new OutputStreamWriter(new FileOutputStream(outLicense));
-            out.write(licenseString);
-            out.close();
+            //base64 encoding
+            byte[] licenseEncoded = Base64.encodeBase64(licenseString.getBytes());
+
+            //save license as zipped file
+            FileOutputStream myOutputStream = new FileOutputStream(outLicense);
+            ZipArchiveEntry entry = new ZipArchiveEntry("license");
+            entry.setSize(licenseEncoded.length);
+            
+            zipOut = new ZipArchiveOutputStream(myOutputStream);
+
+            zipOut.putArchiveEntry(entry);
+            zipOut.write(licenseEncoded);
+            zipOut.closeArchiveEntry();
+            zipOut.finish();
             return signed;
 
         } catch (FileNotFoundException e) {
@@ -79,6 +90,12 @@ public class LicenseGenerator {
             throw new LicenseGenerationException(e);
         } catch (Exception e) {
             throw new LicenseGenerationException(e);
+        } finally {
+            if (zipOut != null) {
+                try {
+                    zipOut.close();
+                } catch (IOException e) { /* swallow */ }
+            }
         }
 
     }

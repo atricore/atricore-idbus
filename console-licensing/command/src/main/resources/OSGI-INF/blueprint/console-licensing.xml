@@ -23,7 +23,7 @@
         <command name="licensing/activate">
             <action class="com.atricore.idbus.console.licensing.command.ActivateLicenseCommand"/>
         </command>
-        <command name="licensing/activate">
+        <command name="licensing/view">
             <action class="com.atricore.idbus.console.licensing.command.ViewLicenseCommand"/>
         </command>
 

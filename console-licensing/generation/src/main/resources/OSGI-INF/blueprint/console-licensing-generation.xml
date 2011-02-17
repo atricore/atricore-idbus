@@ -20,7 +20,7 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
-        <command name="licensing/activate">
+        <command name="licensing/generate">
             <action class="com.atricore.idbus.console.licensing.generation.command.GenerateLicenseCommand">
                 <property name="generator" ref="licenseGenerator"/>
             </action>
