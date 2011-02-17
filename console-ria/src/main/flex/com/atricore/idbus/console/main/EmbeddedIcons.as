@@ -84,6 +84,14 @@ public class EmbeddedIcons {
     static public var infoIcon:Class;
 
     [Bindable]
+    [Embed(source="/assets/icons/account/add.png")]
+    static public var generalAddIcon:Class;
+
+    [Bindable]
+    [Embed(source="/assets/icons/account/remove.png")]
+    static public var generalRemoveIcon:Class;
+
+    [Bindable]
     [Embed(source="/assets/icons/account/add_group.png")]
     static public var addGroupIcon:Class;
 

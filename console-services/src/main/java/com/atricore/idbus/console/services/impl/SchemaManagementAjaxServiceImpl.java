@@ -57,12 +57,12 @@ public class SchemaManagementAjaxServiceImpl implements
         this.attrMap = new HashMap();
 
         AttributeDTO atu_one = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specRole", TypeDTOEnum.STRING, false, false);
-        AttributeDTO atu_two = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specNUM", TypeDTOEnum.INT, false, false);
-        AttributeDTO atu_three = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specDate", TypeDTOEnum.DATE, true, false);
+        AttributeDTO atu_two = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specNUM", TypeDTOEnum.INT, false, true);
+        AttributeDTO atu_three = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specDate", TypeDTOEnum.DATE, true, true);
         AttributeDTO atu_four = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specEmail", TypeDTOEnum.EMAIL, true, false);
         AttributeDTO atu_five = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specURL", TypeDTOEnum.URL, false, false);
 
-        AttributeDTO atg_one = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specRole", TypeDTOEnum.STRING, false, false);
+        AttributeDTO atg_one = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specRole", TypeDTOEnum.STRING, false, true);
         AttributeDTO atg_two = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specNUM", TypeDTOEnum.INT, true, false);
         AttributeDTO atg_three = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specDate", TypeDTOEnum.DATE, false, false);
         AttributeDTO atg_four = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specEmail", TypeDTOEnum.EMAIL, true, false);

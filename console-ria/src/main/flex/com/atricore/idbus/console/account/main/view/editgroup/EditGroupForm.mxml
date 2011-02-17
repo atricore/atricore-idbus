@@ -32,7 +32,7 @@
         <!--<mx:StringValidator id="groupDescriptionValidator"  source="{groupDescription}" required="true" property="text" />-->
     </fx:Declarations>
 
-    <mx:TabNavigator id="tabNav" width="440" height="230" creationPolicy="all">
+    <mx:TabNavigator id="tabNav" width="510" height="230" creationPolicy="all">
         <s:NavigatorContent id="generalSection"
                             label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.groups.add.form.general')}" >
             <s:VGroup paddingLeft="10" paddingRight="10" paddingBottom="15" width="100%">
