@@ -33,11 +33,17 @@ import com.atricore.idbus.console.services.dto.Group;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.core.UIComponent;
 import mx.events.CloseEvent;
 
 import mx.events.FlexEvent;
 
+import mx.managers.IFocusManagerComponent;
+import mx.validators.Validator;
+
 import org.puremvc.as3.interfaces.INotification;
+
+import spark.components.NavigatorContent;
 
 public class AddGroupMediator extends IocFormMediator
 {
@@ -134,10 +140,17 @@ public class AddGroupMediator extends IocFormMediator
         _newGroup = newGroupDef;
     }
 
+    private function showTabForComponent(comp:UIComponent):void {
+        for each (var tab:NavigatorContent in view.tabNav.getChildren()) {
+            if (tab.contains(comp))
+                view.tabNav.selectedChild = tab;
+        }
+    }
+
     private function onSubmitAddGroup(event:MouseEvent):void {
         _processingStarted = true;
 
-        if (validate(true)) {
+        if (validate(true) && extraAttributesMediator.validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
             sendNotification(ApplicationFacade.ADD_GROUP, _newGroup);
@@ -145,6 +158,20 @@ public class AddGroupMediator extends IocFormMediator
         }
         else {
             event.stopImmediatePropagation();
+
+            for each (var valdator:Validator in _validators) {
+                if (valdator.source.errorString != "") {
+                    showTabForComponent(valdator.source as UIComponent);
+                    view.focusManager.setFocus(valdator.source as IFocusManagerComponent);
+                }
+            }
+            // do same for extra attributes section
+            for each (var valdator:Validator in extraAttributesMediator.getValidators) {
+                if (valdator.source.errorString != "") {
+                    showTabForComponent(valdator.source as UIComponent);
+                    extraAttributesMediator.view.focusManager.setFocus(valdator.source as IFocusManagerComponent);
+                }
+            }
         }
     }
 

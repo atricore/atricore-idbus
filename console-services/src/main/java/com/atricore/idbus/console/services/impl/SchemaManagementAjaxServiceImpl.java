@@ -58,15 +58,15 @@ public class SchemaManagementAjaxServiceImpl implements
 
         AttributeDTO atu_one = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specRole", TypeDTOEnum.STRING, false, false);
         AttributeDTO atu_two = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specNUM", TypeDTOEnum.INT, false, true);
-        AttributeDTO atu_three = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specDate", TypeDTOEnum.DATE, true, true);
-        AttributeDTO atu_four = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specEmail", TypeDTOEnum.EMAIL, true, false);
+        AttributeDTO atu_three = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specDate", TypeDTOEnum.DATE, false, true);
+        AttributeDTO atu_four = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specEmail", TypeDTOEnum.EMAIL, false, false);
         AttributeDTO atu_five = new AttributeDTO(randomGenerator.nextInt(100) ,"User", "specURL", TypeDTOEnum.URL, false, false);
 
         AttributeDTO atg_one = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specRole", TypeDTOEnum.STRING, false, true);
-        AttributeDTO atg_two = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specNUM", TypeDTOEnum.INT, true, false);
+        AttributeDTO atg_two = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specNUM", TypeDTOEnum.INT, false, false);
         AttributeDTO atg_three = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specDate", TypeDTOEnum.DATE, false, false);
-        AttributeDTO atg_four = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specEmail", TypeDTOEnum.EMAIL, true, false);
-        AttributeDTO atg_five = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specURL", TypeDTOEnum.URL, true, false);
+        AttributeDTO atg_four = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specEmail", TypeDTOEnum.EMAIL, false, false);
+        AttributeDTO atg_five = new AttributeDTO(randomGenerator.nextInt(100) ,"Group", "specURL", TypeDTOEnum.URL, false, false);
 
         attrMap.put(atu_one.getId() , atu_one );
         attrMap.put(atu_two.getId() , atu_two);
