@@ -28,7 +28,10 @@
     </command-bundle>
 
     <!-- Should be exported by Spring. Reference ID value must match the one used to export the service! -->
-    <bean id="licenseGenerator" class="com.atricore.idbus.console.licensing.generation.main.LicenseGenerator"/>
+    <bean id="licenseGenerator" class="com.atricore.idbus.console.licensing.generation.main.LicenseGenerator">
+        <property name="signer" ref="signer" />
+    </bean>
 
+    <bean id="signer" class="com.atricore.josso2.licensing._1_0.util.LicenseSigner" init-method="init"/>
 
 </blueprint>

@@ -128,7 +128,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>com.atricore.idbus.console.licensing.main.*;version=${pom.version}</Export-Package>
+                        <Export-Package>com.atricore.idbus.console.licensing.generation.main.*;version=${pom.version}</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>             
