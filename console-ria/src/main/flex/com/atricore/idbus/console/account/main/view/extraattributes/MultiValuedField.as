@@ -118,7 +118,7 @@ public class MultiValuedField extends VGroup
         this.addElement(editFormGroup);
     }
 
-    function handleAddClick(e:MouseEvent) {
+    private function handleAddClick(e:MouseEvent):void {
         var event:ValidationResultEvent  = _uiCompValidator.validate();
 
         if ( event.type==ValidationResultEvent.VALID ) {
@@ -143,13 +143,13 @@ public class MultiValuedField extends VGroup
         }
     }
 
-    function handleDeleteClick(e:MouseEvent) {
+    private function handleDeleteClick(e:MouseEvent):void {
         _valuesList.dataProvider.removeItemAt(_valuesList.selectedIndex);
         _delBtn.enabled = false;
     }
 
     // Setup item click event
-    function handleListClick(e:ListEvent) {
+    private function handleListClick(e:ListEvent):void {
         var selectedObject:Object = e.currentTarget.selectedItem;
         if (selectedObject != null)
             _delBtn.enabled = true;
@@ -169,7 +169,7 @@ public class MultiValuedField extends VGroup
             _addBtn.enabled = false;
     }
 
-    function registerInputValidators():void {
+    private function registerInputValidators():void {
         switch (attribute.type.toString()) {
             case TypeDTOEnum.STRING.toString():
                 _uiCompValidator = new StringValidator();

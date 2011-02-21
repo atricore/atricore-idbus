@@ -165,10 +165,10 @@ public class AddUserMediator extends IocFormMediator
                 }
             }
             // do same for extra attributes section
-            for each (var valdator:Validator in extraAttributesMediator.getValidators) {
-                if (valdator.source.errorString != "") {
-                    showTabForComponent(valdator.source as UIComponent);
-                    extraAttributesMediator.view.focusManager.setFocus(valdator.source as IFocusManagerComponent);
+            for each (var valdatorExtra:Validator in extraAttributesMediator.getValidators) {
+                if (valdatorExtra.source.errorString != "") {
+                    showTabForComponent(valdatorExtra.source as UIComponent);
+                    extraAttributesMediator.view.focusManager.setFocus(valdatorExtra.source as IFocusManagerComponent);
                 }
             }
         }

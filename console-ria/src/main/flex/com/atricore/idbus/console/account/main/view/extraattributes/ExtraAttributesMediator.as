@@ -184,7 +184,7 @@ public class ExtraAttributesMediator extends IocFormMediator
         }
     }
 
-    function registerInputValidator(comp:UIComponent,attr:Attribute):Validator {
+    private function registerInputValidator(comp:UIComponent,attr:Attribute):Validator {
         var _uiCompValidator:Validator;
 
         switch (attr.type.toString()) {
