@@ -47,6 +47,17 @@
     <s:HGroup id="buttonBar" width="100%" height="5%"
               paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
 
+        <s:Label paddingTop="8" text="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.list.entity')}" />
+
+        <s:ComboBox id="cbEntity" width="150" selectedIndex="0" paddingTop="8">
+            <s:dataProvider>
+                <mx:ArrayList>
+                    <fx:String>User</fx:String>
+                    <fx:String>Group</fx:String>
+                </mx:ArrayList>
+            </s:dataProvider>
+        </s:ComboBox>
+
         <components:IconLabelButton id="btnCreateAttribute"
                                     iconUp="{EmbeddedIcons.addGroupIcon}"
                                     iconWidth="22" iconHeight="22"
@@ -71,10 +82,9 @@
     </s:HGroup>
 
     <s:VGroup id="bodyHBox" width="100%" height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5">
-        <mx:DataGrid id="schemaAttrList" width="100%" rowCount="10" resizeEffect="Resize" verticalAlign="middle">
+        <mx:DataGrid id="schemaAttrList" width="100%" rowCount="10"
+                     resizeEffect="Resize" verticalAlign="middle">
             <mx:columns>
-                <mx:DataGridColumn dataField="entity"
-                                   headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.list.entity')}"/>
                 <mx:DataGridColumn dataField="name"
                                    headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.list.attribute')}"/>
                 <mx:DataGridColumn dataField="type"

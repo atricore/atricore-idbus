@@ -31,6 +31,9 @@ import com.atricore.idbus.console.services.dto.schema.Attribute;
 import flash.events.Event;
 import flash.events.MouseEvent;
 
+import mx.collections.ArrayCollection;
+import mx.collections.Sort;
+import mx.collections.SortField;
 import mx.controls.Alert;
 import mx.events.CloseEvent;
 import mx.events.ListEvent;
@@ -40,8 +43,9 @@ import mx.resources.ResourceManager;
 
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
-import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
+
+import spark.events.IndexChangeEvent;
 
 public class SchemasMediator extends IocMediator implements IDisposable{
 
@@ -51,6 +55,7 @@ public class SchemasMediator extends IocMediator implements IDisposable{
     private var _schemasManagementProxy:SchemasManagementProxy;
 
     private var _updatedSchemaAttrIndex:Number;
+    private var _selectedEntity:String="User";
 
     public function SchemasMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
@@ -67,9 +72,9 @@ public class SchemasMediator extends IocMediator implements IDisposable{
         view.btnDeleteAttribute.addEventListener(MouseEvent.CLICK, handleDeleteAttributeClick);
 
         view.schemaAttrList.addEventListener(ListEvent.ITEM_CLICK , schemaAttrListClickHandler);
+        view.cbEntity.addEventListener(IndexChangeEvent.CHANGE , entityChangeHandler);
 
         sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES);
-        //schemasPropertiesMediator.setViewComponent(view.properties);
         popupManager.init(iocFacade, view);
     }
 
@@ -83,6 +88,7 @@ public class SchemasMediator extends IocMediator implements IDisposable{
         view.btnDeleteAttribute.removeEventListener(MouseEvent.CLICK, handleDeleteAttributeClick);
 
         view.schemaAttrList.removeEventListener(ListEvent.ITEM_CLICK , schemaAttrListClickHandler);
+        view.cbEntity.removeEventListener(IndexChangeEvent.CHANGE , entityChangeHandler);
 
         view = null;
     }
@@ -100,7 +106,8 @@ public class SchemasMediator extends IocMediator implements IDisposable{
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case ListSchemaAttributesCommand.SUCCESS:
-                view.schemaAttrList.dataProvider = schemasManagementProxy.schemaAttributeList;
+                view.schemaAttrList.dataProvider = schemasManagementProxy.schemaAttributeListForEntity(_selectedEntity);
+                sortSchemaAttrList();
                 if (_updatedSchemaAttrIndex != -1)  {
                     view.schemaAttrList.selectedIndex = _updatedSchemaAttrIndex;
                     _updatedSchemaAttrIndex = -1;
@@ -150,6 +157,22 @@ public class SchemasMediator extends IocMediator implements IDisposable{
         showConfirmDeleteAlert(event);
     }
 
+    public function entityChangeHandler(e:IndexChangeEvent):void {
+        _selectedEntity = view.cbEntity.selectedItem as String;
+        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES);
+    }
+
+    private function sortSchemaAttrList():void {
+        //Create an ArrayCollection backed by the myDP array of data.
+        var sortedArray:ArrayCollection = ArrayCollection(view.schemaAttrList.dataProvider);
+        var sortA:Sort = new Sort();
+        var sortByAttribute:SortField = new SortField("name", true, false);
+        sortA.fields=[sortByAttribute];
+        sortedArray.sort=sortA;
+        sortedArray.refresh();
+        view.schemaAttrList.dataProvider= sortedArray;
+    }
+
     public function schemaAttrListClickHandler(e:ListEvent):void {
         var selectedAttr:Attribute = e.currentTarget.selectedItem as Attribute;
         schemasManagementProxy.currentSchemaAttribute = selectedAttr;
@@ -159,9 +182,6 @@ public class SchemasMediator extends IocMediator implements IDisposable{
 
         if (view.btnEditAttribute != null)
             view.btnEditAttribute.enabled = true;
-
-        //view.properties.visible = true;
-        //sendNotification(ApplicationFacade.DISPLAY_GROUP_PROPERTIES, selectedAttr);
     }
 
     private function attrBasicInfo(attr:Attribute):String {
