@@ -195,7 +195,7 @@ public class LicenseSigner {
 
                 // Check core validation status
                 if (!coreValidity) {
-                    logger.debug("Signature failed core validation");
+                    logger.error("Signature failed core validation");
                     boolean sv = signature.getSignatureValue().validate(valContext);
                     logger.debug("signature validation status: " + sv);
                     // check the validation status of each Reference
@@ -206,6 +206,7 @@ public class LicenseSigner {
                         if (!b) refValid = b;
                         logger.debug("ref[" + j + "] validity status: " + b);
                     }
+                    logger.error("Signature failed core validation" + (refValid ? " but passed all Reference validations" : " and some/all Reference validation"));
                     throw new LicenseSignatureException("Signature failed core validation" + (refValid ? " but passed all Reference validations" : " and some/all Reference validation"));
                 }
 

@@ -136,6 +136,7 @@ public class LicenseManagerImpl implements LicenseManager {
         }catch(CertificateException e){
             throw new InvalidLicenseException(e);
         } catch (LicenseSignatureException e) {
+            logger.error("Signature not valid:", e);
             throw new InvalidLicenseException(e);
         }
     }
