@@ -20,6 +20,8 @@
  */
 
 package com.atricore.idbus.console.account.main.view.extraattributes {
+import com.atricore.idbus.console.components.IconButton;
+import com.atricore.idbus.console.components.IconButtonSkin;
 import com.atricore.idbus.console.components.URLValidator;
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.services.dto.schema.Attribute;
@@ -31,16 +33,21 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.controls.DataGrid;
 import mx.controls.DateField;
+import mx.controls.Label;
+import mx.core.ClassFactory;
 import mx.core.UIComponent;
+import mx.events.FlexEvent;
 import mx.events.ListEvent;
-
+import mx.events.ValidationResultEvent;
+import mx.formatters.DateFormatter;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 import mx.validators.DateValidator;
 import mx.validators.EmailValidator;
 import mx.validators.NumberValidator;
 import mx.validators.StringValidator;
 import mx.validators.Validator;
 
-import spark.components.Button;
 import spark.components.HGroup;
 import spark.components.TextInput;
 import spark.components.VGroup;
@@ -53,39 +60,48 @@ import spark.components.VGroup;
 
 public class MultiValuedField extends VGroup
 {
+    private var resMan:IResourceManager = ResourceManager.getInstance();
+
     private var _attribute:Attribute;
     private var _valuesList:DataGrid = new DataGrid();
 
     private var _uiInputComp:UIComponent;
     private var _uiCompValidator:Validator;
-    private var _addBtn:Button = new Button();
-    private var _delBtn:Button = new Button();
+    private var _addBtn:IconButton = new IconButton();
+    private var _delBtn:IconButton = new IconButton();
 
     public function MultiValuedField(attr:Attribute) {
         super();
         _attribute = attr;
         _valuesList.dataProvider = new ArrayCollection();
-        if (attr.type == TypeDTOEnum.DATE)
+        if (_attribute.type.toString() == TypeDTOEnum.DATE.toString()) {
             _uiInputComp = new DateField();
-        else
+            _uiInputComp.addEventListener(FlexEvent.VALUE_COMMIT , uiDateFieldChangeHandler);
+        }
+        else {
             _uiInputComp = new TextInput();
+            _uiInputComp.addEventListener(Event.CHANGE , uiInputKeyChangeHandler);
+        }
 
-        _uiInputComp.addEventListener(Event.CHANGE , uiInputInputKeyChangeHandler);
-        registerInputValidator();
+        registerInputValidators();
 
         // Create button for adding new values to list
         _addBtn.label ="+";
-        //_addBtn.setStyle("skinClass","com.atricore.idbus.console.skin.button.IconLabelButtonSkin");
+        _addBtn.setStyle("skinClass",Class(IconButtonSkin));
         _addBtn.setStyle("iconUp", EmbeddedIcons.generalAddIcon);
+        _addBtn.setStyle("isLinkButton", "false");
         _addBtn.addEventListener(MouseEvent.CLICK,handleAddClick);
+        _addBtn.enabled = false;
         // Create button for deleting values from list
         _delBtn.label ="-";
-        //_delBtn.setStyle("skinClass","com.atricore.idbus.console.skin.button.IconLabelButtonSkin");
+        _delBtn.setStyle("skinClass",Class(IconButtonSkin));
         _delBtn.setStyle("iconUp", EmbeddedIcons.generalRemoveIcon);
+        _delBtn.setStyle("isLinkButton", "false");
         _delBtn.addEventListener(MouseEvent.CLICK,handleDeleteClick);
         _delBtn.enabled = false;
 
-        _valuesList.headerHeight=0;
+        _valuesList.headerHeight = 0;
+        _valuesList.rowCount = 3;
         _valuesList.addEventListener(ListEvent.ITEM_CLICK, handleListClick);
 
         _valuesList.width = 300;
@@ -103,21 +119,27 @@ public class MultiValuedField extends VGroup
     }
 
     function handleAddClick(e:MouseEvent) {
-        _uiCompValidator.validate(_uiInputComp);
+        var event:ValidationResultEvent  = _uiCompValidator.validate();
 
-        if (_attribute.type == TypeDTOEnum.DATE &&
-                (_uiInputComp as DateField).data != null)          {
-            var date:String = (_uiInputComp as DateField).data as String;
-            _valuesList.dataProvider.addItem({date:date});
-            (_uiInputComp as DateField).data = null;
-            _addBtn.enabled = false;
-        }
+        if ( event.type==ValidationResultEvent.VALID ) {
+            if (_uiInputComp is DateField &&
+                    (_uiInputComp as DateField).selectedDate != null)          {
+                var date:Object = (_uiInputComp as DateField).selectedDate;
+                _valuesList.dataProvider.addItem({date:date});
+                _valuesList.columns[0].itemRenderer = dateItemRenderer(date as Date);
+                (_uiInputComp as DateField).data = null;
+                _uiCompValidator.source.errorString = "";
+                _addBtn.enabled = false;
+            }
 
-        else if ((_uiInputComp as TextInput).text !="") {
-            var valStr:String = (_uiInputComp as TextInput).text;
-            _valuesList.dataProvider.addItem({value:valStr});
-            (_uiInputComp as TextInput).text = "";
-            _addBtn.enabled = false;
+            else if (_uiInputComp is TextInput &&
+                    (_uiInputComp as TextInput).text !="") {
+                var valStr:String = (_uiInputComp as TextInput).text;
+                _valuesList.dataProvider.addItem({value:valStr});
+                (_uiInputComp as TextInput).text = "";
+                _uiCompValidator.source.errorString = "";
+                _addBtn.enabled = false;
+            }
         }
     }
 
@@ -133,17 +155,21 @@ public class MultiValuedField extends VGroup
             _delBtn.enabled = true;
     }
 
-    private function uiInputInputKeyChangeHandler(event:Event):void {
-        if (_attribute.type == TypeDTOEnum.DATE &&
-                (_uiInputComp as DateField).data != null)
-            _addBtn.enabled = true;
-        else if ((_uiInputComp as TextInput).text !="")
+    private function uiDateFieldChangeHandler(event:Event):void {
+        if ( (_uiInputComp as DateField).selectedDate != null)
             _addBtn.enabled = true;
         else
             _addBtn.enabled = false;
     }
 
-    function registerInputValidator():void {
+    private function uiInputKeyChangeHandler(event:Event):void {
+        if ( (_uiInputComp as TextInput).text !="")
+            _addBtn.enabled = true;
+        else
+            _addBtn.enabled = false;
+    }
+
+    function registerInputValidators():void {
         switch (attribute.type.toString()) {
             case TypeDTOEnum.STRING.toString():
                 _uiCompValidator = new StringValidator();
@@ -161,7 +187,17 @@ public class MultiValuedField extends VGroup
                 _uiCompValidator = new URLValidator();
                 break;
         }
-        //_uiCompValidator.source = _uiInputComp;
+        _uiCompValidator.source = _uiInputComp;
+        _uiCompValidator.required = true;
+        _uiCompValidator.property = "text";
+    }
+
+    private function dateItemRenderer(date:Date):ClassFactory {
+        var iRenderer:ClassFactory = new ClassFactory(Label);
+        var dfmt:DateFormatter = new DateFormatter();
+        dfmt.formatString = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.DATE_FORMAT');
+        iRenderer.properties = {text: dfmt.format(date) };
+        return iRenderer;
     }
 
     public function get attribute():Attribute {

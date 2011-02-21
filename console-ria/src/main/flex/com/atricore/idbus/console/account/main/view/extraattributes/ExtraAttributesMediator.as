@@ -22,7 +22,6 @@
 package com.atricore.idbus.console.account.main.view.extraattributes {
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.components.URLValidator;
-import com.atricore.idbus.console.main.view.form.FormUtility;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.services.dto.Group;
 import com.atricore.idbus.console.services.dto.schema.Attribute;
@@ -37,6 +36,7 @@ import mx.validators.DateValidator;
 import mx.validators.EmailValidator;
 import mx.validators.NumberValidator;
 import mx.validators.StringValidator;
+import mx.validators.Validator;
 
 import org.puremvc.as3.interfaces.INotification;
 
@@ -70,9 +70,6 @@ public class ExtraAttributesMediator extends IocFormMediator
             generateFormFields();
     }
 
-    override public function registerValidators():void {
-    }
-
     override public function listNotificationInterests():Array {
         return [];
     }
@@ -84,8 +81,11 @@ public class ExtraAttributesMediator extends IocFormMediator
         }
     }
 
+    override public function registerValidators():void {
+    }
+
     override public function bindForm():void {
-        FormUtility.clearValidationErrors(_validators);
+        resetValidation();
     }
 
     override public function bindModel():void {
@@ -127,7 +127,7 @@ public class ExtraAttributesMediator extends IocFormMediator
             var textInput:TextInput = new TextInput();
             textInput.id = attr.name;
             textInput.width = 300;
-            _validators.push(plainTextValidator(textInput,attr));
+            _validators.push(registerInputValidator(textInput,attr));
             fItem.addElement(textInput);
         }
     }
@@ -140,7 +140,7 @@ public class ExtraAttributesMediator extends IocFormMediator
             var numberInput:TextInput = new TextInput();
             numberInput.id = attr.name;
             numberInput.width = 300;
-            _validators.push(numberValidator(numberInput,attr));
+            _validators.push(registerInputValidator(numberInput,attr));
             fItem.addElement(numberInput);
         }
     }
@@ -153,7 +153,7 @@ public class ExtraAttributesMediator extends IocFormMediator
             var dateInput:DateField = new DateField();
             dateInput.id = attr.name;
             dateInput.width = 100;
-            _validators.push(dateValidator(dateInput,attr));
+            _validators.push(registerInputValidator(dateInput,attr));
             fItem.addElement(dateInput);
         }
     }
@@ -166,7 +166,7 @@ public class ExtraAttributesMediator extends IocFormMediator
             var emailInput:TextInput = new TextInput();
             emailInput.id = attr.name;
             emailInput.width = 300;
-            _validators.push(emailValidator(emailInput,attr));
+            _validators.push(registerInputValidator(emailInput,attr));
             fItem.addElement(emailInput);
         }
     }
@@ -179,50 +179,37 @@ public class ExtraAttributesMediator extends IocFormMediator
             var urlInput:TextInput = new TextInput();
             urlInput.id = attr.name;
             urlInput.width = 300;
-            _validators.push(urlValidator(urlInput,attr));
+            _validators.push(registerInputValidator(urlInput,attr));
             fItem.addElement(urlInput);
         }
     }
 
-    private function plainTextValidator(comp:UIComponent,attr:Attribute):StringValidator {
-        var strVal:StringValidator = new StringValidator();
-        strVal.property = "text";
-        strVal.required = attr.required;
-        strVal.source = comp;
-        return strVal;
-    }
+    function registerInputValidator(comp:UIComponent,attr:Attribute):Validator {
+        var _uiCompValidator:Validator;
 
-    private function numberValidator(comp:UIComponent,attr:Attribute):NumberValidator {
-        var numVal:NumberValidator = new NumberValidator();
-        numVal.property = "text";
-        numVal.required = attr.required;
-        numVal.source = comp;
-        return numVal;
-    }
+        switch (attr.type.toString()) {
+            case TypeDTOEnum.STRING.toString():
+                _uiCompValidator = new StringValidator();
+                break;
+            case TypeDTOEnum.INT.toString():
+                _uiCompValidator = new NumberValidator();
+                break;
+            case TypeDTOEnum.DATE.toString():
+                _uiCompValidator = new DateValidator();
+                (_uiCompValidator as DateValidator).inputFormat = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.DATE_FORMAT');
+                break;
+            case TypeDTOEnum.EMAIL.toString():
+                _uiCompValidator = new EmailValidator();
+                break;
+            case TypeDTOEnum.URL.toString():
+                _uiCompValidator = new URLValidator();
+                break;
+        }
+        _uiCompValidator.source = comp;
+        _uiCompValidator.required = attr.required;
+        _uiCompValidator.property = "text";
 
-    private function dateValidator(comp:UIComponent,attr:Attribute):DateValidator {
-        var dateVal:DateValidator = new DateValidator();
-        dateVal.property = "text";
-        dateVal.required = attr.required;
-        dateVal.source = comp;
-        dateVal.inputFormat = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.DATE_FORMAT');
-        return dateVal;
-    }
-
-    private function emailValidator(comp:UIComponent,attr:Attribute):EmailValidator {
-        var emailVal:EmailValidator = new EmailValidator();
-        emailVal.property = "text";
-        emailVal.required = attr.required;
-        emailVal.source = comp;
-        return emailVal;
-    }
-
-    private function urlValidator(comp:UIComponent,attr:Attribute):URLValidator {
-        var urlVal:URLValidator = new URLValidator();
-        urlVal.property = "text";
-        urlVal.required = attr.required;
-        urlVal.source = comp;
-        return urlVal;
+        return _uiCompValidator;
     }
 
     public function get accountManagementProxy():AccountManagementProxy {
@@ -233,7 +220,11 @@ public class ExtraAttributesMediator extends IocFormMediator
         _accountManagementProxy = value;
     }
 
-    protected function get view():ExtraAttributesTab
+    public function get getValidators():Array {
+        return _validators;
+    }
+
+    public function get view():ExtraAttributesTab
     {
         return viewComponent as ExtraAttributesTab;
     }

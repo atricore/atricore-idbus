@@ -28,8 +28,8 @@
                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.extra.attributes.tab')}">
 
     <s:Scroller width="100%" height="100%">
-        <s:VGroup  id="extraSection" width="100%"
-                   paddingLeft="10" paddingRight="10" paddingBottom="15">
+        <s:VGroup id="extraSection" width="100%"
+                  paddingLeft="10" paddingRight="10" paddingBottom="15">
 
             <mx:FormHeading label="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.extra.attributes.heading')}"/>
 

@@ -34,11 +34,17 @@ import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.collections.ArrayCollection;
+import mx.core.UIComponent;
 import mx.events.CloseEvent;
 
 import mx.events.FlexEvent;
 
+import mx.managers.IFocusManagerComponent;
+import mx.validators.Validator;
+
 import org.puremvc.as3.interfaces.INotification;
+
+import spark.components.NavigatorContent;
 
 public class EditUserMediator extends IocFormMediator
 {
@@ -211,10 +217,17 @@ public class EditUserMediator extends IocFormMediator
         view.emailNewPasswordCheck.selected = _accountManagementProxy.currentUser.emailNewPasword;
     }
 
+    private function showTabForComponent(comp:UIComponent):void {
+        for each (var tab:NavigatorContent in view.tabNav.getChildren()) {
+            if (tab.contains(comp))
+                view.tabNav.selectedChild = tab;
+        }
+    }
+
     private function onSubmitEditUser(event:MouseEvent):void {
         _processingStarted = true;
 
-        if (validate(true)) {
+        if (validate(true) && extraAttributesMediator.validate(true)) {
             sendNotification(ProcessingMediator.START);
             bindModel();
             sendNotification(ApplicationFacade.EDIT_USER, _editedUser);
@@ -223,25 +236,18 @@ public class EditUserMediator extends IocFormMediator
         else {
             event.stopImmediatePropagation();
 
-            if (view.usernameUserValidator.source.errorString != "") {
-                view.tabNav.selectedIndex = 0;
-                view.focusManager.setFocus(view.userUsername);
+            for each (var valdator:Validator in _validators) {
+                if (valdator.source.errorString != "") {
+                    showTabForComponent(valdator.source as UIComponent);
+                    view.focusManager.setFocus(valdator.source as IFocusManagerComponent);
+                }
             }
-            if (view.pwvPasswords.source.errorString != "") {
-                view.tabNav.selectedIndex = 4;
-                view.focusManager.setFocus(view.userPassword);
-            }
-            if (view.firstnameUserValidator.source.errorString != "") {
-                view.tabNav.selectedIndex = 0;
-                view.focusManager.setFocus(view.userFirstName);
-            }
-            if (view.lastnameUserValidator.source.errorString !="") {
-                view.tabNav.selectedIndex = 0;
-                view.focusManager.setFocus(view.userLastName);
-            }
-            if (view.userEmailValidator.source.errorString != "") {
-                view.tabNav.selectedIndex = 0;
-                view.focusManager.setFocus(view.userEmail);
+            // do same for extra attributes section
+            for each (var valdator:Validator in extraAttributesMediator.getValidators) {
+                if (valdator.source.errorString != "") {
+                    showTabForComponent(valdator.source as UIComponent);
+                    extraAttributesMediator.view.focusManager.setFocus(valdator.source as IFocusManagerComponent);
+                }
             }
         }
     }
