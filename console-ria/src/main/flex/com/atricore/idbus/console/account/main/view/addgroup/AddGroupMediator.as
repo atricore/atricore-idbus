@@ -166,10 +166,10 @@ public class AddGroupMediator extends IocFormMediator
                 }
             }
             // do same for extra attributes section
-            for each (var valdator:Validator in extraAttributesMediator.getValidators) {
-                if (valdator.source.errorString != "") {
-                    showTabForComponent(valdator.source as UIComponent);
-                    extraAttributesMediator.view.focusManager.setFocus(valdator.source as IFocusManagerComponent);
+            for each (var valdatorEXtra:Validator in extraAttributesMediator.getValidators) {
+                if (valdatorEXtra.source.errorString != "") {
+                    showTabForComponent(valdatorEXtra.source as UIComponent);
+                    extraAttributesMediator.view.focusManager.setFocus(valdatorEXtra.source as IFocusManagerComponent);
                 }
             }
         }
