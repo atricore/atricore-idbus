@@ -38,13 +38,22 @@ public class SchemasManagementProxy extends IocProxy implements IDisposable
     public function SchemasManagementProxy() {
         super(NAME);
     }
-    
+
     public function get schemaAttributeList():ArrayCollection {
         return _schemaAttributeList;
     }
 
     public function set schemaAttributeList(value:ArrayCollection):void {
         _schemaAttributeList = value;
+    }
+
+    public function schemaAttributeListForEntity(entity:String):ArrayCollection {
+        var retArray:ArrayCollection = new ArrayCollection();
+        for each (var attr:Attribute in _schemaAttributeList ) {
+            if (attr.entity == entity)
+                retArray.addItem(attr);
+        }
+        return retArray;
     }
 
     public function get currentSchemaAttribute():Attribute {
