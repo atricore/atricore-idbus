@@ -33,6 +33,12 @@
     <complexType name="GroupType">
         <complexContent>
             <extension base="spml:ExtensibleType">
+
+                <!-- Extended attributes -->
+                <sequence>
+                    <element ref="spmlatc:attributeValue" minOccurs="0" maxOccurs="unbounded"/>
+                </sequence>
+
                 <attribute name="id" type="xsd:long" use="required"/>
                 <attribute name="name" type="xsd:string" use="required"/>
                 <attribute name="description" type="xsd:string" use="required"/>
@@ -44,12 +50,15 @@
         <complexContent>
             <extension base="spml:ExtensibleType">
 
-                <!-- Groups -->
+                <!-- Groups & Extended Attributes -->
                 <sequence>
                     <element ref="spmlatc:group" minOccurs="0" maxOccurs="unbounded"/>
+                    <element ref="spmlatc:attributeValue" minOccurs="0" maxOccurs="unbounded"/>
                 </sequence>
 
                 <attribute name="id" type="xsd:long" use="required"/>
+
+                <!-- Built-in Attributes -->
                 <attribute name="userName" type="xsd:string" use="required"/>
                 
                 <attribute name="firstName" type="xsd:string" use="optional"/>
@@ -100,6 +109,12 @@
         </complexContent>
     </complexType>
 
+    <xsd:complexType name="AttributeValueType">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="value" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <element name="attributeValue" type="spmlatc:AttributeValueType"/>
     <element name="group" type="spmlatc:GroupType"/>
     <element name="user" type="spmlatc:UserType"/>
 
