@@ -37,7 +37,15 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     private JDOUserDAOImpl userDao;
     private JDOGroupDAOImpl groupDao;
 
+    private JDOSchemaManager schemaManager;
 
+    public JDOSchemaManager getSchemaManager() {
+        return schemaManager;
+    }
+
+    public void setSchemaManager(JDOSchemaManager schemaManager) {
+        this.schemaManager = schemaManager;
+    }
 
     public void setUserDao(JDOUserDAOImpl userDao) {
         this.userDao = userDao;
@@ -122,7 +130,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     }
 
     @Transactional
-    public Collection<Group> findGroupsByUsernName(String userName) throws ProvisioningException {
+    public Collection<Group> findGroupsByUserName(String userName) throws ProvisioningException {
 
         try {
             Collection<JDOGroup> jdoGroups = groupDao.findByUserName(userName);

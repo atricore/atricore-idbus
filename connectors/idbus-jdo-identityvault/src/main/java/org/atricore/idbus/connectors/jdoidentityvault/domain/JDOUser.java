@@ -66,6 +66,9 @@ public class JDOUser implements Serializable {
     private Boolean automaticallyGeneratePassword;
     private Boolean emailNewPasword;
 
+//<--- Extended Attributes ---->
+    private JDOExtendedAttribute[] attrs;
+
     public Long getId() {
         return id;
     }
@@ -264,6 +267,14 @@ public class JDOUser implements Serializable {
 
     public void setGroups(JDOGroup[] groups) {
         this.groups = groups;
+    }
+
+    public JDOExtendedAttribute[] getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(JDOExtendedAttribute[] attrs) {
+        this.attrs = attrs;
     }
 
     public Boolean isAccountDisabled() {

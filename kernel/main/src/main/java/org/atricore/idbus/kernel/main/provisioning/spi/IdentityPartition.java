@@ -19,15 +19,18 @@ public interface IdentityPartition {
 
     String getDescription();
 
+    @Deprecated
     IdentityVault getIdentityVault();
 
     IdentityStore getIdentityStore();
+
+    SchemaManager getSchemaManager();
 
     Group findGroupById(long id) throws ProvisioningException;
 
     Group findGroupByName(String name) throws ProvisioningException;
 
-    Collection<Group> findGroupsByUsernName(String name) throws ProvisioningException;
+    Collection<Group> findGroupsByUserName(String name) throws ProvisioningException;
 
     Collection<Group> findAllGroups() throws ProvisioningException;
 
@@ -50,4 +53,5 @@ public interface IdentityPartition {
     User updateUser(User user) throws ProvisioningException;
 
     Collection<User> getUsersByGroup(Group group) throws ProvisioningException;
+
 }

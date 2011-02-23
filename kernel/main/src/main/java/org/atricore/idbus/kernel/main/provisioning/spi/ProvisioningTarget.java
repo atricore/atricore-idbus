@@ -63,5 +63,11 @@ public interface ProvisioningTarget {
     SetPasswordResponse setPassword(SetPasswordRequest setPwdRequest)
             throws ProvisioningException;
 
+    //<--------------- Schema -------------------->
+
+    // TODO : Add, Update, Delete, List user attribute definitions
+
+    // TODO : Add, Update, Delete, List group attribute definitions
+
 
 }

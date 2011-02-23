@@ -1,7 +1,6 @@
 package org.atricore.idbus.kernel.main.provisioning.domain;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -65,6 +64,8 @@ public class User implements Serializable {
     private byte[] userCertificate;
     private Boolean automaticallyGeneratePassword;
     private Boolean emailNewPasword;
+
+    private UserAttributeValue[] attrs;
 
     public long getId() {
         return id;
@@ -264,6 +265,14 @@ public class User implements Serializable {
 
     public void setGroups(Group[] groups) {
         this.groups = groups;
+    }
+
+    public UserAttributeValue[] getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(UserAttributeValue[] attrs) {
+        this.attrs = attrs;
     }
 
     public Boolean isAccountDisabled() {

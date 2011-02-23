@@ -10,7 +10,6 @@ import org.atricore.idbus.kernel.main.store.AbstractStore;
 import org.atricore.idbus.kernel.main.store.UserKey;
 import org.atricore.idbus.kernel.main.store.exceptions.NoSuchUserException;
 import org.atricore.idbus.kernel.main.store.exceptions.SSOIdentityException;
-import org.springframework.beans.BeanUtils;
 
 import java.util.Collection;
 
@@ -64,7 +63,7 @@ public class JDOIdentityStore extends AbstractStore
     public BaseRole[] findRolesByUserKey(UserKey key) throws SSOIdentityException {
 
         try {
-            Collection<Group> groups = idPartition.findGroupsByUsernName(key.toString());
+            Collection<Group> groups = idPartition.findGroupsByUserName(key.toString());
             return toSSORoles(groups);
         } catch (UserNotFoundException e) {
             throw new NoSuchUserException(key.toString());
