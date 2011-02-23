@@ -27,8 +27,10 @@ import com.atricore.idbus.console.services.dto.Group;
 import com.atricore.idbus.console.services.dto.schema.Attribute;
 import com.atricore.idbus.console.services.dto.schema.TypeDTOEnum;
 
+import mx.collections.ArrayCollection;
 import mx.containers.FormItem;
 import mx.controls.DateField;
+import mx.core.IVisualElement;
 import mx.core.UIComponent;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
@@ -41,6 +43,7 @@ import mx.validators.Validator;
 import org.puremvc.as3.interfaces.INotification;
 
 import spark.components.TextInput;
+import spark.components.supportClasses.GroupBase;
 
 /**
  * Author: Dusan Fisic
@@ -52,6 +55,7 @@ public class ExtraAttributesMediator extends IocFormMediator
 {
     private var resMan:IResourceManager = ResourceManager.getInstance();
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _extraAttributes:ArrayCollection;
 
     public function ExtraAttributesMediator(name:String = null, viewComp:ExtraAttributesTab = null) {
         super(name, viewComp);
@@ -89,10 +93,34 @@ public class ExtraAttributesMediator extends IocFormMediator
     }
 
     override public function bindModel():void {
-        var newGroupDef:Group = new Group();
+        _extraAttributes = new ArrayCollection();
+
+        for( var i:int = 0; i < view.extraSection.dataProvider.length; i++ ) {
+            var formItem:FormItem = view.extraSection.dataProvider.getItemAt(i) as FormItem;
+            var inputField:IVisualElement = formItem.getElementAt(0);
+            var attribute:Attribute = new Attribute();
+            attribute.name = formItem.name;
+            attribute.value = new ArrayCollection();
+
+            if ( inputField is TextInput ) {
+                var ti:TextInput = inputField as TextInput;
+                attribute.value.addItem(ti.text);
+            }
+            else if ( inputField is DateField ) {
+                var di:DateField = inputField as DateField;
+                attribute.value.addItem(di.selectedDate);
+            }
+            else if ( inputField is MultiValuedField) {
+                var mvField:MultiValuedField = inputField as MultiValuedField;
+                mvField.bindModel();
+                attribute = mvField.attribute;
+            }
+            _extraAttributes.addItem(attribute);
+        }
     }
 
     public function generateFormFields():void {
+        view.extraSection.dataProvider = new ArrayCollection();
         for each (var attr:Attribute in accountManagementProxy.attributesForEntity) {
             var fItem:FormItem = new FormItem();
             fItem.label = attr.name;
@@ -115,7 +143,7 @@ public class ExtraAttributesMediator extends IocFormMediator
                     createUrlField(fItem,attr);
                     break;
             }
-            view.extraSection.addElement(fItem);
+            view.extraSection.dataProvider.addItem(fItem);
         }
     }
 
@@ -222,6 +250,14 @@ public class ExtraAttributesMediator extends IocFormMediator
 
     public function get getValidators():Array {
         return _validators;
+    }
+
+    public function get extraAttributes():ArrayCollection {
+        return _extraAttributes;
+    }
+
+    public function set extraAttributes(value:ArrayCollection):void {
+        _extraAttributes = value;
     }
 
     public function get view():ExtraAttributesTab

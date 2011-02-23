@@ -272,6 +272,9 @@ public class AddUserMediator extends IocFormMediator
             newUserDef.emailNewPasword = view.emailNewPasswordCheck.selected;
         }
 
+        extraAttributesMediator.bindModel();
+        newUserDef.extraAttributes = extraAttributesMediator.extraAttributes;
+
         _newUser = newUserDef;
     }
 

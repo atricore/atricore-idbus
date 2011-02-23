@@ -137,6 +137,9 @@ public class EditGroupMediator extends IocFormMediator
         newGroupDef.name = view.groupName.text;
         newGroupDef.description = view.groupDescription.text;
 
+        extraAttributesMediator.bindModel();
+        newGroupDef.extraAttributes = extraAttributesMediator.extraAttributes;
+
         _editedGroup = newGroupDef;
         _editedGroup.id = _accountManagementProxy.currentGroup.id;
     }

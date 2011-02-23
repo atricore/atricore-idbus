@@ -200,6 +200,10 @@ public class MultiValuedField extends VGroup
         return iRenderer;
     }
 
+    public function bindModel():void {
+       _attribute.value = ArrayCollection(_valuesList.dataProvider);
+    }
+
     public function get attribute():Attribute {
         return _attribute;
     }
