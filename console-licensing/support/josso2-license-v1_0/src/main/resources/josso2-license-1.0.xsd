@@ -51,6 +51,8 @@
             <element ref="ds:Signature" minOccurs="0"/>
             <element ref="lic:licensedFeature" minOccurs="0" maxOccurs="unbounded" />
             <element ref="lic:organization" minOccurs="0"/>
+            <element ref="lic:licenseText" minOccurs="0"/>
+            <element ref="lic:EULA" minOccurs="0"/>
         </sequence>
         <attribute name="Version" type="string" use="required"/>
         <attribute name="ID" type="ID" use="required"/>
@@ -70,17 +72,35 @@
     <complexType name="FeatureType">
         <sequence>
             <element ref="lic:featureProperty"/>
+            <element ref="lic:licenseText" minOccurs="0"/>
+            <element ref="lic:EULA" minOccurs="0"/>
         </sequence>
         <attribute name="Group" type="string" use="required"/>
         <attribute name="Name" type="string" use="required"/>
+        <attribute name="Description" type="string" use="optional"/>
         <attribute name="Version" type="string" use="required"/>
     </complexType>
 
     <element name="featureProperty" type="lic:FeaturePropertyType"/>
     <complexType name="FeaturePropertyType">
+        <sequence>
+            <element name="Value" type="string" />
+        </sequence>
         <attribute name="Name" type="string" use="required"/>
-        <attribute name="Value" type="string" use="required"/>
+        <attribute name="Description" type="string" use="optional"/>
     </complexType>
+
+    <element name="EULA" type="lic:EULAType"/>
+    <simpleType name="EULAType">
+        <restriction base="string"/>
+    </simpleType>
+
+    <element name="licenseText" type="lic:LicenseTextType"/>
+    <simpleType name="LicenseTextType">
+        <restriction base="string"/>
+    </simpleType>
+
+    <!-- -->
 
     <element name="organization" type="lic:OrganizationType"/>
     <complexType name="OrganizationType">
@@ -100,5 +120,6 @@
         <attribute name="ID" type="ID" use="required"/>
         <attribute name="IssueInstant" type="dateTime" use="required"/>
     </complexType>
+
 
 </schema>

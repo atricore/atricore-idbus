@@ -6,8 +6,10 @@ import com.atricore.idbus.console.services.dto.LicenseTypeDTO;
 import com.atricore.idbus.console.services.spi.LicenseManagementAjaxService;
 import com.atricore.idbus.console.services.spi.request.ActivateLicenseRequest;
 import com.atricore.idbus.console.services.spi.request.GetLicenseRequest;
+import com.atricore.idbus.console.services.spi.request.ValidateLicenseRequest;
 import com.atricore.idbus.console.services.spi.response.ActivateLicenseResponse;
 import com.atricore.idbus.console.services.spi.response.GetLicenseResponse;
+import com.atricore.idbus.console.services.spi.response.ValidateLicenseResponse;
 import org.dozer.DozerBeanMapper;
 
 /**
@@ -17,6 +19,17 @@ public class LicenseManagementAjaxServiceImpl implements LicenseManagementAjaxSe
 
     private LicenseManager licenseManager;
     private DozerBeanMapper dozerMapper;
+
+
+    public ValidateLicenseResponse validateLicense(ValidateLicenseRequest req) {
+        ValidateLicenseResponse res = new ValidateLicenseResponse();
+        try {
+            licenseManager.validateLicense(req.getLicense().getValue());
+        } catch (InvalidLicenseException e) {
+            res.setErrorMsg("Invalid license file!");
+        }
+        return res;
+    }
 
     public ActivateLicenseResponse activateLicense(ActivateLicenseRequest req) {
         ActivateLicenseResponse res = new ActivateLicenseResponse();

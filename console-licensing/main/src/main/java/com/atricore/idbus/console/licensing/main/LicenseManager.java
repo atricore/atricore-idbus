@@ -10,23 +10,23 @@ public interface LicenseManager {
     /**
      * Activates binary license representation.  This is a base64 value of the unmarshalled license XML file.
      */
-    void activateLicense(byte[] license) throws InvalidLicenseException;
+    LicenseType activateLicense(byte[] license) throws InvalidLicenseException;
 
     /**
-     * Activates license
+     * Validates binary license without activating it.
      */
-    void activateLicense(LicenseType license) throws InvalidLicenseException;
+    LicenseType validateLicense(byte[] license) throws InvalidLicenseException;
 
     /**
      * Validate current license, the last one activated.
      * @throws InvalidLicenseException
      */
-    void validateLicense() throws InvalidLicenseException;
+    void validateCurrentLicense() throws InvalidLicenseException;
 
     /**
      * Check if a feature is valid in the current license.
      */
-    void validateFeature(String group, String name) throws InvalidFeatureException;
+    void validateFeature(String group, String name, String version) throws InvalidFeatureException;
 
     /**
      * Retrive active license information

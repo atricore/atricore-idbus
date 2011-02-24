@@ -39,6 +39,7 @@ public class ResourceDTO implements Serializable {
 
     // TODO : In the future we could use something like maven URIs and a VFS ? 
     private byte[] value;
+
     private static final long serialVersionUID = -7782094315179039690L;
 
     public long getId() {

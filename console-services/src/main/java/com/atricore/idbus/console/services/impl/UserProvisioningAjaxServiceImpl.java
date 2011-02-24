@@ -442,6 +442,7 @@ public class UserProvisioningAjaxServiceImpl implements
                     spmlUser.getGroup().add(spmlGroup);
                 }
             }
+
             addReq.setData(spmlUser);
 
             AddResponseType resp = spmlService.spmlAddRequest(addReq);

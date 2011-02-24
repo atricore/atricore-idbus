@@ -11,6 +11,8 @@ public class AttributeDTO {
 
     private String name;
 
+    private String description;
+
     private TypeDTOEnum type;
 
     private boolean required;
@@ -25,6 +27,16 @@ public class AttributeDTO {
         this.id = id;
         this.entity = entity;
         this.name = name;
+        this.type = type;
+        this.required = required;
+        this.multivalued = multivalued;
+    }
+
+    public AttributeDTO(int id, String entity, String name, String description, TypeDTOEnum type, boolean required, boolean multivalued) {
+        this.id = id;
+        this.entity = entity;
+        this.name = name;
+        this.description = description;
         this.type = type;
         this.required = required;
         this.multivalued = multivalued;
@@ -52,6 +64,14 @@ public class AttributeDTO {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public TypeDTOEnum getType() {
