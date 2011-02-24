@@ -35,6 +35,6 @@ public interface LicenseManager {
 
     void registerFeature(ProductFeature productFeature);
 
-    void runegisterFeature(ProductFeature productFeature);
+    void unregisterFeature(ProductFeature productFeature);
 
 }

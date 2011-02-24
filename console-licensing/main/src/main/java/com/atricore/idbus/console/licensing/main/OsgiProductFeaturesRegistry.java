@@ -20,7 +20,8 @@ public class OsgiProductFeaturesRegistry {
             logger.debug("IDMU registered " + productFeature);
         }
 
-        lm.registerFeature(productFeature.getName(), productFeature);
+        //lm.registerFeature(productFeature.getName(), productFeature);
+        lm.registerFeature(productFeature);
     }
 
     public void unregister(final ProductFeature  productFeature, final Map<String, ?> properties) {
@@ -29,7 +30,8 @@ public class OsgiProductFeaturesRegistry {
             logger.debug("IDMU unregistered " + productFeature);
         }
 
-        lm.unregisterFeature(productFeature.getName());
+        //lm.unregisterFeature(productFeature.getName());
+        lm.unregisterFeature(productFeature);
     }
 
 }

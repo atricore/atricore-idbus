@@ -161,7 +161,7 @@ public class LicenseManagerImpl implements LicenseManager {
         this.productFeatures.put(productFeature.getId(), productFeature);
     }
 
-    public void runegisterFeature(ProductFeature productFeature) {
+    public void unregisterFeature(ProductFeature productFeature) {
         this.productFeatures.remove(productFeature.getId());
     }
 
