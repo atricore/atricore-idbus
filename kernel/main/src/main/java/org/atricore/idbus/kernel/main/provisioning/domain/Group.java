@@ -13,6 +13,8 @@ public class Group implements Serializable {
     private String name;
     private String description;
 
+    private GroupAttributeValue[] attrs;
+    
     public long getId() {
         return id;
     }
@@ -36,6 +38,14 @@ public class Group implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public GroupAttributeValue[] getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(GroupAttributeValue[] attrs) {
+        this.attrs = attrs;
     }
 
     @Override

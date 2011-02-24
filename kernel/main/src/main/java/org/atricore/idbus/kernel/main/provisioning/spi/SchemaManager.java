@@ -1,12 +1,10 @@
 package org.atricore.idbus.kernel.main.provisioning.spi;
 
-import org.atricore.idbus.kernel.main.provisioning.domain.AttributeType;
 import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeDefinition;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeDefinition;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 
-import java.text.AttributedCharacterIterator;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
@@ -15,21 +13,27 @@ public interface SchemaManager {
 
     String getSchemaName();
 
-    void addUserAttribute(String name, String description, AttributeType type, boolean required, boolean multivalued) throws ProvisioningException;
+    UserAttributeDefinition addUserAttribute(UserAttributeDefinition attrDef) throws ProvisioningException;
     
-    void updateUserAttribute(UserAttributeDefinition attrDef) throws ProvisioningException;
+    UserAttributeDefinition updateUserAttribute(UserAttributeDefinition attrDef) throws ProvisioningException;
     
-    void deleteUserAttribute(UserAttributeDefinition attrDef) throws ProvisioningException;
+    void deleteUserAttribute(long id) throws ProvisioningException;
+
+    UserAttributeDefinition findUserAttributeById(long id) throws ProvisioningException;
+
+    UserAttributeDefinition findUserAttributeByName(String name) throws ProvisioningException;
     
-    List<UserAttributeDefinition> listUserAttributes() throws ProvisioningException;
+    Collection<UserAttributeDefinition> listUserAttributes() throws ProvisioningException;
     
-    void addGroupAttribute(String name, String description, AttributeType type, boolean required, boolean multivalued) throws ProvisioningException;
+    GroupAttributeDefinition addGroupAttribute(GroupAttributeDefinition attrDef) throws ProvisioningException;
     
-    void updateGroupAttribute(GroupAttributeDefinition attrDef) throws ProvisioningException;
+    GroupAttributeDefinition updateGroupAttribute(GroupAttributeDefinition attrDef) throws ProvisioningException;
     
-    void deleteGroupAttribute(GroupAttributeDefinition attrDef) throws ProvisioningException;
-    
-    List<GroupAttributeDefinition> listGroupAttributes() throws ProvisioningException;
-    
-    
+    void deleteGroupAttribute(long id) throws ProvisioningException;
+
+    GroupAttributeDefinition findGroupAttributeById(long id) throws ProvisioningException;
+
+    GroupAttributeDefinition findGroupAttributeByName(String name) throws ProvisioningException;
+
+    Collection<GroupAttributeDefinition> listGroupAttributes() throws ProvisioningException;
 }

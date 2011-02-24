@@ -44,6 +44,19 @@
                 <column length="255" jdbc-type="VARCHAR"/>
             </field>
 
+            <field name="attrs" table="ATC_GROUP_ATTRS">
+                <join >
+                    <column name="GROUP_ID"/>
+                </join>
+                <element>
+                    <column name="ATTR_ID"/>
+                </element>
+                <!--element column = "ID" primary-key="true" value-strategy="increment"/>
+                <element column="ATTR_ID"/>
+                <order column="ATTR_ORDER_IDX"/>
+                <foreign-key name="GROUP_ATTRS_FK" delete-action="cascade"/-->
+            </field>
+
         </class>
 
         <class name="JDOUser" table="ATC_USER">
@@ -183,6 +196,90 @@
                 <foreign-key name="USER_GROUPS_FK" delete-action="cascade"/-->
             </field>
 
+            <field name="attrs" table="ATC_USER_ATTRS">
+                <join >
+                    <column name="USER_ID"/>
+                </join>
+                <element>
+                    <column name="ATTR_ID"/>
+                </element>
+                <!--element column = "ID" primary-key="true" value-strategy="increment"/>
+                <element column="ATTR_ID"/>
+                <order column="ATTR_ORDER_IDX"/>
+                <foreign-key name="USER_ATTRS_FK" delete-action="cascade"/-->
+            </field>
+
+        </class>
+
+        <class name="JDOUserAttributeDefinition" table="ATC_USER_ATTRIBUTE" >
+
+            <field name="name" >
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="description">
+                <column length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="type">
+                <column name="TYPE"/>
+            </field>
+
+            <field name="required">
+                <column name="REQUIRED"/>
+            </field>
+
+            <field name="multivalued">
+                <column name="MULTIVALUED"/>
+            </field>
+            
+        </class>
+
+        <class name="JDOGroupAttributeDefinition" table="ATC_GROUP_ATTRIBUTE" >
+
+            <field name="name" >
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="description">
+                <column length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="type">
+                <column name="TYPE"/>
+            </field>
+
+            <field name="required">
+                <column name="REQUIRED"/>
+            </field>
+
+            <field name="multivalued">
+                <column name="MULTIVALUED"/>
+            </field>
+
+        </class>
+
+        <class name="JDOUserAttributeValue" table="ATC_USER_ATTRIBUTE_VALUE" >
+
+            <field name="name" >
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="value">
+                <column length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+        </class>
+
+        <class name="JDOGroupAttributeValue" table="ATC_GROUP_ATTRIBUTE_VALUE" >
+
+            <field name="name" >
+                <column allows-null="false" length="255" jdbc-type="VARCHAR"/>
+            </field>
+
+            <field name="value">
+                <column length="255" jdbc-type="VARCHAR"/>
+            </field>
 
         </class>
 

@@ -85,6 +85,7 @@
     <bean name="psp1-pst1" class="org.atricore.idbus.kernel.main.provisioning.impl.ProvisioningTargetImpl">
         <property name="name" value="pst1"/> 
         <property name="identityPartition" ref="idpart1"/>
+        <property name="schemaManager" ref="schema-manager-default"/>
     </bean>
 
     <bean name="idvault1" class="org.atricore.idbus.connectors.jdoidentityvault.JDOIdentityVault"
@@ -112,6 +113,12 @@
 
     </bean>
 
+    <bean name="schema-manager-default" class="org.atricore.idbus.connectors.jdoidentityvault.JDOSchemaManager">
+        <property name="schemaName" value="schemaManager1"/>
+        <property name="usrAttrDefDao" ref="idpart1-user-attribute-dao"/>
+        <property name="grpAttrDefDao" ref="idpart1-group-attribute-dao"/>
+    </bean>
+
     <bean name="idpart1-group-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDAOImpl">
         <property name="persistenceManagerFactory" ref="idpart1-pmf"/>
     </bean>
@@ -120,6 +127,13 @@
         <property name="persistenceManagerFactory" ref="idpart1-pmf"/>
     </bean>
 
+    <bean name="idpart1-user-attribute-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserAttributeDefinitionDAOImpl">
+        <property name="persistenceManagerFactory" ref="idpart1-pmf"/>
+    </bean>
+
+    <bean name="idpart1-group-attribute-dao" class="org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupAttributeDefinitionDAOImpl">
+        <property name="persistenceManagerFactory" ref="idpart1-pmf"/>
+    </bean>
 
     <!-- The main advantage of this proxy is that it allows DAOs to work with a plain JDO PersistenceManagerFactory reference,
          while still participating in Spring's (or a J2EE server's) resource and transaction management.

@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.request;
 
+import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeValue;
+
 /**
  * Created by IntelliJ IDEA.
  * User: eugenia
@@ -33,6 +35,8 @@ public class UpdateGroupRequest extends AbstractProvisioningRequest {
     long id;
     String name;
     String description;
+
+    private GroupAttributeValue[] attrs;
 
     public long getId() {
         return id;
@@ -56,5 +60,13 @@ public class UpdateGroupRequest extends AbstractProvisioningRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public GroupAttributeValue[] getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(GroupAttributeValue[] attrs) {
+        this.attrs = attrs;
     }
 }

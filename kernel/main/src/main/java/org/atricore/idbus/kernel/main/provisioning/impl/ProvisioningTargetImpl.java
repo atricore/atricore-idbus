@@ -3,14 +3,14 @@ package org.atricore.idbus.kernel.main.provisioning.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.kernel.main.authn.util.CipherUtil;
-import org.atricore.idbus.kernel.main.authn.util.Crypt;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
+import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeDefinition;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
-import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
-import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
-import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
+import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeDefinition;
+import org.atricore.idbus.kernel.main.provisioning.exception.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
+import org.atricore.idbus.kernel.main.provisioning.spi.SchemaManager;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.springframework.beans.BeanUtils;
@@ -42,6 +42,8 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
     private int saltLenght;
     
     private IdentityPartition identityPartition;
+
+    private SchemaManager schemaManager;
 
     public String getName() {
         return name;
@@ -99,7 +101,14 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
         this.identityPartition = identityPartition;
     }
 
-   
+    public SchemaManager getSchemaManager() {
+        return schemaManager;
+    }
+
+    public void setSchemaManager(SchemaManager schemaManager) {
+        this.schemaManager = schemaManager;
+    }
+
     public void deleteGroup(long id) throws ProvisioningException {
         try {
             identityPartition.deleteGroup(id);
@@ -371,7 +380,189 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             throw new ProvisioningException("Cannot update user password", e);
         }
     }
-    
+
+    public AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest) throws ProvisioningException {
+        try {
+            // create user attribute
+            UserAttributeDefinition userAttribute = new UserAttributeDefinition();
+            userAttribute.setName(userAttributeRequest.getName());
+            userAttribute.setDescription(userAttributeRequest.getDescription());
+            userAttribute.setType(userAttributeRequest.getType());
+            userAttribute.setRequired(userAttributeRequest.isRequired());
+            userAttribute.setMultivalued(userAttributeRequest.isMultivalued());
+
+            // add user attribute
+            userAttribute = schemaManager.addUserAttribute(userAttribute);
+            AddUserAttributeResponse userAttributeResponse = new AddUserAttributeResponse();
+            userAttributeResponse.setUserAttribute(userAttribute);
+            return userAttributeResponse;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public UpdateUserAttributeResponse updateUserAttribute(UpdateUserAttributeRequest userAttributeRequest) throws ProvisioningException {
+        try {
+            UserAttributeDefinition userAttribute = userAttributeRequest.getUserAttribute();
+
+            UserAttributeDefinition oldUserAttribute = schemaManager.findUserAttributeById(userAttribute.getId());
+
+            BeanUtils.copyProperties(userAttribute, oldUserAttribute, new String[] {"id"});
+            
+            userAttribute = schemaManager.updateUserAttribute(oldUserAttribute);
+
+            UpdateUserAttributeResponse userAttributeResponse = new UpdateUserAttributeResponse();
+            userAttributeResponse.setUserAttribute(userAttribute);
+            return userAttributeResponse;
+
+        } catch (UserAttributeNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public RemoveUserAttributeResponse removeUserAttribute(RemoveUserAttributeRequest userAttributeRequest) throws ProvisioningException {
+        try {
+            schemaManager.deleteUserAttribute(userAttributeRequest.getId());
+            return new RemoveUserAttributeResponse();
+        } catch (UserAttributeNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public FindUserAttributeByIdResponse findUserAttributeById(FindUserAttributeByIdRequest userAttributeRequest) throws ProvisioningException {
+        try {
+            UserAttributeDefinition userAttribute = schemaManager.findUserAttributeById(userAttributeRequest.getId());
+            FindUserAttributeByIdResponse userAttributeResponse = new FindUserAttributeByIdResponse();
+            userAttributeResponse.setUserAttribute(userAttribute);
+            return userAttributeResponse;
+        } catch (UserAttributeNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public FindUserAttributeByNameResponse findUserAttributeByName(FindUserAttributeByNameRequest userAttributeRequest) throws ProvisioningException {
+        try {
+            UserAttributeDefinition userAttribute = schemaManager.findUserAttributeByName(userAttributeRequest.getName());
+            FindUserAttributeByNameResponse userAttributeResponse = new FindUserAttributeByNameResponse();
+            userAttributeResponse.setUserAttribute(userAttribute);
+            return userAttributeResponse;
+        } catch (UserAttributeNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public ListUserAttributesResponse listUserAttributes(ListUserAttributesRequest userAttributeRequest) throws ProvisioningException {
+        try {
+            Collection<UserAttributeDefinition> userAttributes = schemaManager.listUserAttributes();
+
+            ListUserAttributesResponse userAttributeResponse = new ListUserAttributesResponse();
+            userAttributeResponse.setUserAttributes(userAttributes.toArray(new UserAttributeDefinition[userAttributes.size()]));
+
+            return userAttributeResponse;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public AddGroupAttributeResponse addGroupAttribute(AddGroupAttributeRequest groupAttributeRequest) throws ProvisioningException {
+        try {
+            // create group attribute
+            GroupAttributeDefinition groupAttribute = new GroupAttributeDefinition();
+            groupAttribute.setName(groupAttributeRequest.getName());
+            groupAttribute.setDescription(groupAttributeRequest.getDescription());
+            groupAttribute.setType(groupAttributeRequest.getType());
+            groupAttribute.setRequired(groupAttributeRequest.isRequired());
+            groupAttribute.setMultivalued(groupAttributeRequest.isMultivalued());
+
+            // add group attribute
+            groupAttribute = schemaManager.addGroupAttribute(groupAttribute);
+            AddGroupAttributeResponse groupAttributeResponse = new AddGroupAttributeResponse();
+            groupAttributeResponse.setGroupAttribute(groupAttribute);
+            return groupAttributeResponse;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public UpdateGroupAttributeResponse updateGroupAttribute(UpdateGroupAttributeRequest groupAttributeRequest) throws ProvisioningException {
+        try {
+            GroupAttributeDefinition groupAttribute = groupAttributeRequest.getGroupAttribute();
+
+            GroupAttributeDefinition oldGroupAttribute = schemaManager.findGroupAttributeById(groupAttribute.getId());
+
+            BeanUtils.copyProperties(groupAttribute, oldGroupAttribute, new String[] {"id"});
+
+            groupAttribute = schemaManager.updateGroupAttribute(oldGroupAttribute);
+
+            UpdateGroupAttributeResponse groupAttributeResponse = new UpdateGroupAttributeResponse();
+            groupAttributeResponse.setGroupAttribute(groupAttribute);
+            return groupAttributeResponse;
+
+        } catch (GroupAttributeNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public RemoveGroupAttributeResponse removeGroupAttribute(RemoveGroupAttributeRequest groupAttributeRequest) throws ProvisioningException {
+        try {
+            schemaManager.deleteGroupAttribute(groupAttributeRequest.getId());
+            return new RemoveGroupAttributeResponse();
+        } catch (GroupAttributeNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public FindGroupAttributeByIdResponse findGroupAttributeById(FindGroupAttributeByIdRequest groupAttributeRequest) throws ProvisioningException {
+        try {
+            GroupAttributeDefinition groupAttribute = schemaManager.findGroupAttributeById(groupAttributeRequest.getId());
+            FindGroupAttributeByIdResponse groupAttributeResponse = new FindGroupAttributeByIdResponse();
+            groupAttributeResponse.setGroupAttribute(groupAttribute);
+            return groupAttributeResponse;
+        } catch (GroupAttributeNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public FindGroupAttributeByNameResponse findGroupAttributeByName(FindGroupAttributeByNameRequest groupAttributeRequest) throws ProvisioningException {
+        try {
+            GroupAttributeDefinition groupAttribute = schemaManager.findGroupAttributeByName(groupAttributeRequest.getName());
+            FindGroupAttributeByNameResponse groupAttributeResponse = new FindGroupAttributeByNameResponse();
+            groupAttributeResponse.setGroupAttribute(groupAttribute);
+            return groupAttributeResponse;
+        } catch (GroupAttributeNotFoundException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
+    public ListGroupAttributesResponse listGroupAttributes(ListGroupAttributesRequest groupAttributeRequest) throws ProvisioningException {
+        try {
+            Collection<GroupAttributeDefinition> groupAttributes = schemaManager.listGroupAttributes();
+
+            ListGroupAttributesResponse groupAttributeResponse = new ListGroupAttributesResponse();
+            groupAttributeResponse.setGroupAttributes(groupAttributes.toArray(new GroupAttributeDefinition[groupAttributes.size()]));
+
+            return groupAttributeResponse;
+        } catch (Exception e) {
+            throw new ProvisioningException(e);
+        }
+    }
+
     protected String createPasswordHash(String password) throws ProvisioningException {
 
         // If none of this properties are set, do nothing ...

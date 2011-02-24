@@ -2,22 +2,21 @@ package org.atricore.idbus.connectors.jdoidentityvault.domain;
 
 import java.io.Serializable;
 
-/**
- * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
- */
-public class JDOExtendedAttribute implements Serializable {
+public class JDOGroupAttributeValue implements Serializable {
 
-    private static final long serialVersionUID = 4595183697627599864L;
+    private static final long serialVersionUID = 1213326080821149664L;
+    
+    private long id;
 
-    private Long id;
     private String name;
+
     private String value;
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -38,23 +37,20 @@ public class JDOExtendedAttribute implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof JDOExtendedAttribute)) return false;
+        if (!(o instanceof JDOGroupAttributeValue)) return false;
 
-        JDOExtendedAttribute that = (JDOExtendedAttribute) o;
+        JDOGroupAttributeValue that = (JDOGroupAttributeValue) o;
 
         if(id == 0) return false;
-
         if (id != that.id) return false;
 
         return true;
     }
-
-
-    @Override
-    public int hashCode() {
-        return (int) (id ^ (id >>> 32));
-    }
 }
-

@@ -7,4 +7,13 @@ import org.atricore.idbus.kernel.main.provisioning.spi.SchemaManager;
  */
 public abstract class AbstractSchemaManager implements SchemaManager {
 
+    private String schemaName;
+
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
 }

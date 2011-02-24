@@ -67,7 +67,7 @@ public class JDOUser implements Serializable {
     private Boolean emailNewPasword;
 
 //<--- Extended Attributes ---->
-    private JDOExtendedAttribute[] attrs;
+    private JDOUserAttributeValue[] attrs;
 
     public Long getId() {
         return id;
@@ -269,11 +269,11 @@ public class JDOUser implements Serializable {
         this.groups = groups;
     }
 
-    public JDOExtendedAttribute[] getAttrs() {
+    public JDOUserAttributeValue[] getAttrs() {
         return attrs;
     }
 
-    public void setAttrs(JDOExtendedAttribute[] attrs) {
+    public void setAttrs(JDOUserAttributeValue[] attrs) {
         this.attrs = attrs;
     }
 

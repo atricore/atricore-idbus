@@ -1,8 +1,9 @@
 package org.atricore.idbus.connectors.jdoidentityvault;
 
+import org.atricore.idbus.kernel.main.authn.*;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
-import org.atricore.idbus.kernel.main.authn.*;
+import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeValue;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.spi.IdentityPartition;
@@ -121,6 +122,13 @@ public class JDOIdentityStore extends AbstractStore
         if (jdoUser.getLanguage() != null) {
             SSONameValuePair language = new SSONameValuePair("language", jdoUser.getLanguage());
             ssoUser.addProperty(language);
+        }
+
+        if (jdoUser.getAttrs() != null) {
+            for (UserAttributeValue userAttribute : jdoUser.getAttrs()) {
+                SSONameValuePair attr = new SSONameValuePair(userAttribute.getName(), userAttribute.getValue());
+                ssoUser.addProperty(attr);
+            }
         }
 
         // TODO : Use configuraiton/reflexion to add more properties.

@@ -9,6 +9,14 @@ public enum AttributeType {
     INT,
     DATE,
     EMAIL,
-    URL
+    URL;
     // TODO : Others ? (i.e. certificate, etc.)
+
+    public String value() {
+        return name();
+    }
+
+    public static AttributeType fromValue(String v) {
+        return valueOf(v);
+    }
 }

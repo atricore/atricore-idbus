@@ -21,6 +21,8 @@
 
 package org.atricore.idbus.kernel.main.provisioning.spi.request;
 
+import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeValue;
+
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  *
@@ -29,6 +31,8 @@ public class AddGroupRequest extends AbstractProvisioningRequest {
 
     private String name;
     private String description;
+
+    private GroupAttributeValue[] attrs;
 
     public String getName() {
         return name;
@@ -44,5 +48,13 @@ public class AddGroupRequest extends AbstractProvisioningRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public GroupAttributeValue[] getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(GroupAttributeValue[] attrs) {
+        this.attrs = attrs;
     }
 }

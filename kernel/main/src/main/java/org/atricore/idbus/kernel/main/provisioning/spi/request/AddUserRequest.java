@@ -22,6 +22,7 @@
 package org.atricore.idbus.kernel.main.provisioning.spi.request;
 
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
+import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeValue;
 
 import java.util.Date;
 
@@ -90,6 +91,8 @@ public class AddUserRequest extends AbstractProvisioningRequest {
     private Boolean automaticallyGeneratePassword;
     private Boolean emailNewPasword;
 
+    private UserAttributeValue[] attrs;
+    
     public long getId() {
         return id;
     }
@@ -466,4 +469,11 @@ public class AddUserRequest extends AbstractProvisioningRequest {
         this.emailNewPasword = emailNewPasword;
     }
 
+    public UserAttributeValue[] getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(UserAttributeValue[] attrs) {
+        this.attrs = attrs;
+    }
 }

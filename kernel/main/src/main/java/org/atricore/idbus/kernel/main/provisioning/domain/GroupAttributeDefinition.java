@@ -1,10 +1,14 @@
 package org.atricore.idbus.kernel.main.provisioning.domain;
 
+import java.io.Serializable;
+
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
-public class GroupAttributeDefinition {
+public class GroupAttributeDefinition implements Serializable {
 
+    private static final long serialVersionUID = -723975199665695619L;
+    
     private long id;
 
     private String name;

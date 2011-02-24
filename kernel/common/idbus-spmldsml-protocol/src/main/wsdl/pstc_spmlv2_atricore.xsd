@@ -109,13 +109,52 @@
         </complexContent>
     </complexType>
 
+    <xsd:complexType name="UserAttributeType">
+        <complexContent>
+            <extension base="spml:ExtensibleType">
+                <attribute name="id" type="xsd:long" use="required"/>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                <xsd:attribute name="description" type="xsd:string" use="required"/>
+                <attribute name="type" type="spmlatc:AttributeType" use="required"/>
+                <attribute name="required" type="xsd:boolean" use="required"/>
+                <attribute name="multivalued" type="xsd:boolean" use="required"/>
+            </extension>
+        </complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="GroupAttributeType">
+        <complexContent>
+            <extension base="spml:ExtensibleType">
+                <attribute name="id" type="xsd:long" use="required"/>
+                <xsd:attribute name="name" type="xsd:string" use="required"/>
+                <xsd:attribute name="description" type="xsd:string" use="required"/>
+                <attribute name="type" type="spmlatc:AttributeType" use="required"/>
+                <attribute name="required" type="xsd:boolean" use="required"/>
+                <attribute name="multivalued" type="xsd:boolean" use="required"/>
+            </extension>
+        </complexContent>
+    </xsd:complexType>
+    
     <xsd:complexType name="AttributeValueType">
+        <xsd:attribute name="id" type="xsd:long" use="required"/>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="value" type="xsd:string" use="required"/>
     </xsd:complexType>
 
+    <xsd:simpleType name="AttributeType">
+	    <xsd:restriction base="xsd:string">
+	        <xsd:enumeration value="STRING" />
+	        <xsd:enumeration value="INT" />
+	        <xsd:enumeration value="DATE" />
+            <xsd:enumeration value="EMAIL" />
+            <xsd:enumeration value="URL" />
+	    </xsd:restriction>
+	</xsd:simpleType>
+
     <element name="attributeValue" type="spmlatc:AttributeValueType"/>
     <element name="group" type="spmlatc:GroupType"/>
     <element name="user" type="spmlatc:UserType"/>
+    <element name="userAttribute" type="spmlatc:UserAttributeType"/>
+    <element name="groupAttribute" type="spmlatc:GroupAttributeType"/>
 
 </schema>

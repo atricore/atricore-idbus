@@ -65,9 +65,39 @@ public interface ProvisioningTarget {
 
     //<--------------- Schema -------------------->
 
-    // TODO : Add, Update, Delete, List user attribute definitions
+    AddUserAttributeResponse addUserAttribute(AddUserAttributeRequest userAttributeRequest)
+            throws ProvisioningException;
 
-    // TODO : Add, Update, Delete, List group attribute definitions
+    UpdateUserAttributeResponse updateUserAttribute(UpdateUserAttributeRequest userAttributeRequest)
+            throws ProvisioningException;
 
+    RemoveUserAttributeResponse removeUserAttribute(RemoveUserAttributeRequest userAttributeRequest)
+            throws ProvisioningException;
 
+    FindUserAttributeByIdResponse findUserAttributeById(FindUserAttributeByIdRequest userAttributeRequest)
+            throws ProvisioningException;
+
+    FindUserAttributeByNameResponse findUserAttributeByName(FindUserAttributeByNameRequest userAttributeRequest)
+            throws ProvisioningException;
+
+    ListUserAttributesResponse listUserAttributes(ListUserAttributesRequest userAttributeRequest)
+            throws ProvisioningException;
+
+    AddGroupAttributeResponse addGroupAttribute(AddGroupAttributeRequest groupAttributeRequest)
+            throws ProvisioningException;
+
+    UpdateGroupAttributeResponse updateGroupAttribute(UpdateGroupAttributeRequest groupAttributeRequest)
+            throws ProvisioningException;
+
+    RemoveGroupAttributeResponse removeGroupAttribute(RemoveGroupAttributeRequest groupAttributeRequest)
+            throws ProvisioningException;
+
+    FindGroupAttributeByIdResponse findGroupAttributeById(FindGroupAttributeByIdRequest groupAttributeRequest)
+            throws ProvisioningException;
+
+    FindGroupAttributeByNameResponse findGroupAttributeByName(FindGroupAttributeByNameRequest groupAttributeRequest)
+            throws ProvisioningException;
+
+    ListGroupAttributesResponse listGroupAttributes(ListGroupAttributesRequest groupAttributeRequest)
+            throws ProvisioningException;
 }

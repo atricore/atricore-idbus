@@ -1,18 +1,18 @@
 package org.atricore.idbus.connectors.jdoidentityvault;
 
-import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroup;
-import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.*;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDAOImpl;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
+import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeValue;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
+import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeValue;
 import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
 import org.atricore.idbus.kernel.main.provisioning.impl.AbstractIdentityPartition;
 import org.datanucleus.exceptions.NucleusObjectNotFoundException;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -323,6 +323,22 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         jdoGroup.setName(group.getName());
         jdoGroup.setDescription(group.getDescription());
 
+        if (group.getAttrs() != null) {
+            JDOGroupAttributeValue[] jdoAttrs = new JDOGroupAttributeValue[group.getAttrs().length];
+
+            for (int i = 0; i < group.getAttrs().length; i++) {
+                GroupAttributeValue attr = group.getAttrs()[i];
+                JDOGroupAttributeValue jdoAttr = new JDOGroupAttributeValue();
+                jdoAttr.setId(attr.getId());
+                jdoAttr.setName(attr.getName());
+                jdoAttr.setValue(attr.getValue());
+
+                jdoAttrs[i] = jdoAttr;
+            }
+
+            jdoGroup.setAttrs(jdoAttrs);
+        }
+
         return jdoGroup;
 
     }
@@ -345,6 +361,23 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         group.setId(jdoGroup.getId());
         group.setName(jdoGroup.getName());
         group.setDescription(jdoGroup.getDescription());
+
+        if (jdoGroup.getAttrs() != null) {
+            GroupAttributeValue[] attrs = new GroupAttributeValue[jdoGroup.getAttrs().length];
+
+            for (int i = 0; i < jdoGroup.getAttrs().length; i++) {
+                JDOGroupAttributeValue jdoAttr = jdoGroup.getAttrs()[i];
+                GroupAttributeValue groupAttribute = new GroupAttributeValue();
+                groupAttribute.setId(jdoAttr.getId());
+                groupAttribute.setName(jdoAttr.getName());
+                groupAttribute.setValue(jdoAttr.getValue());
+
+                attrs[i] = groupAttribute;
+            }
+
+            group.setAttrs(attrs);
+        }
+
         return group;
     }
 
@@ -369,7 +402,7 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
         String pwd = jdoUser.getUserPassword();
 
-        BeanUtils.copyProperties(user, jdoUser, new String[] {"id", "groups"});
+        BeanUtils.copyProperties(user, jdoUser, new String[] {"id", "groups", "attrs"});
 
         if (keepUserPassword)
             jdoUser.setUserPassword(pwd);
@@ -384,12 +417,28 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
             jdoUser.setGroups(jdoGroups);
         }
 
+        if (user.getAttrs() != null) {
+            JDOUserAttributeValue[] jdoAttrs = new JDOUserAttributeValue[user.getAttrs().length];
+
+            for (int i = 0; i < user.getAttrs().length; i++) {
+                UserAttributeValue attr = user.getAttrs()[i];
+                JDOUserAttributeValue jdoAttr = new JDOUserAttributeValue();
+                jdoAttr.setId(attr.getId());
+                jdoAttr.setName(attr.getName());
+                jdoAttr.setValue(attr.getValue());
+
+                jdoAttrs[i] = jdoAttr;
+            }
+
+            jdoUser.setAttrs(jdoAttrs);
+        }
+
         return jdoUser;
     }
 
     protected User toUser(JDOUser jdoUser, boolean retrieveUserPassword) {
         User user = new User();
-        BeanUtils.copyProperties(jdoUser, user, new String[] {"groups"});
+        BeanUtils.copyProperties(jdoUser, user, new String[] {"groups", "attrs"});
 
         if (!retrieveUserPassword)
             user.setUserPassword(null);
@@ -409,6 +458,23 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
             user.setGroups(groups);
         }
+
+        if (jdoUser.getAttrs() != null) {
+            UserAttributeValue[] attrs = new UserAttributeValue[jdoUser.getAttrs().length];
+
+            for (int i = 0; i < jdoUser.getAttrs().length; i++) {
+                JDOUserAttributeValue jdoAttr = jdoUser.getAttrs()[i];
+                UserAttributeValue userAttribute = new UserAttributeValue();
+                userAttribute.setId(jdoAttr.getId());
+                userAttribute.setName(jdoAttr.getName());
+                userAttribute.setValue(jdoAttr.getValue());
+
+                attrs[i] = userAttribute;
+            }
+
+            user.setAttrs(attrs);
+        }
+
         return user;
 
     }

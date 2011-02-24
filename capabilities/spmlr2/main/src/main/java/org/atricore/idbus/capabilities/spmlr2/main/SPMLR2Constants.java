@@ -11,6 +11,10 @@ public interface SPMLR2Constants {
 
     QName userAttr = new QName("urn:oasis:names:tc:SPML:2:0:atricore", "User");
 
+    QName userAttributeAttr = new QName("urn:oasis:names:tc:SPML:2:0:atricore", "UserAttribute");
+
+    QName groupAttributeAttr = new QName("urn:oasis:names:tc:SPML:2:0:atricore", "GroupAttribute");
+
     QName targetAttr = new QName("urn:oasis:names:tc:SPML:2:0:atricore", "Target");
     
     static final String SPML_VERSION = "2.0";

@@ -1,7 +1,9 @@
 package org.atricore.idbus.capabilities.spmlr2.main.psp.producers;
 
 import oasis.names.tc.spml._2._0.*;
+import oasis.names.tc.spml._2._0.atricore.GroupAttributeType;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
+import oasis.names.tc.spml._2._0.atricore.UserAttributeType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
 import oasis.names.tc.spml._2._0.password.ResetPasswordRequestType;
 import oasis.names.tc.spml._2._0.password.SetPasswordRequestType;
@@ -25,10 +27,10 @@ import org.atricore.idbus.kernel.main.mediation.camel.component.binding.CamelMed
 import org.atricore.idbus.kernel.main.mediation.channel.ProvisioningChannel;
 import org.atricore.idbus.kernel.main.mediation.provider.ProvisioningServiceProvider;
 import org.atricore.idbus.kernel.main.provisioning.domain.Group;
+import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeDefinition;
 import org.atricore.idbus.kernel.main.provisioning.domain.User;
-import org.atricore.idbus.kernel.main.provisioning.exception.GroupNotFoundException;
-import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
-import org.atricore.idbus.kernel.main.provisioning.exception.UserNotFoundException;
+import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeDefinition;
+import org.atricore.idbus.kernel.main.provisioning.exception.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
 import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
@@ -177,7 +179,7 @@ public class PSPProducer extends SpmlR2Producer {
             spmlResponse.setPso(toSpmlUser(target, res.getUser()));
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
-        } if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
+        } else if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttr)) {
 
             GroupType spmlGroup = (GroupType) spmlRequest.getData();
             if (logger.isDebugEnabled())
@@ -200,14 +202,71 @@ public class PSPProducer extends SpmlR2Producer {
             } catch(GroupNotFoundException e) {
                 // OK!
             }
+
+            AddGroupRequest req = toAddGroupRequest(target, spmlRequest);
             
-            AddGroupRequest req = new AddGroupRequest();
-            req.setName(spmlGroup.getName());
-            req.setDescription(spmlGroup.getDescription());
-
             AddGroupResponse res = target.addGroup(req);
-
             spmlResponse.setPso(toSpmlGroup(target, res.getGroup()));
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+        } else if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.userAttributeAttr)) {
+
+            UserAttributeType spmlUserAttribute = (UserAttributeType) spmlRequest.getData();
+            if (logger.isDebugEnabled())
+                logger.debug("Processing SPML Add request for UserAttribute " + spmlUserAttribute.getName());
+
+            try {
+
+                lookupUserAttribute(target, spmlUserAttribute.getName());
+
+                // ERROR, user attribute name already exists
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.ALREADY_EXISTS );
+                spmlResponse.getErrorMessage().add("UserAttribute '" + spmlUserAttribute.getName()+ "' already exitsts.");
+
+                if (logger.isDebugEnabled())
+                    logger.debug("UserAttribute '" + spmlUserAttribute.getName()+ "' already exitsts.");
+
+                return spmlResponse;
+
+            } catch(UserAttributeNotFoundException e) {
+                // OK!
+            }
+
+            AddUserAttributeRequest req = toAddUserAttributeRequest(target, spmlRequest);
+            AddUserAttributeResponse res = target.addUserAttribute(req);
+
+            spmlResponse.setPso(toSpmlUserAttribute(target, res.getUserAttribute()));
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+        } else if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttributeAttr)) {
+
+            GroupAttributeType spmlGroupAttribute = (GroupAttributeType) spmlRequest.getData();
+            if (logger.isDebugEnabled())
+                logger.debug("Processing SPML Add request for GroupAttribute " + spmlGroupAttribute.getName());
+
+            try {
+
+                lookupGroupAttribute(target, spmlGroupAttribute.getName());
+
+                // ERROR, group attribute name already exists
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.ALREADY_EXISTS );
+                spmlResponse.getErrorMessage().add("GroupAttribute '" + spmlGroupAttribute.getName()+ "' already exitsts.");
+
+                if (logger.isDebugEnabled())
+                    logger.debug("GroupAttribute '" + spmlGroupAttribute.getName()+ "' already exitsts.");
+
+                return spmlResponse;
+
+            } catch(GroupAttributeNotFoundException e) {
+                // OK!
+            }
+
+            AddGroupAttributeRequest req = toAddGroupAttributeRequest(target, spmlRequest);
+            AddGroupAttributeResponse res = target.addGroupAttribute(req);
+
+            spmlResponse.setPso(toSpmlGroupAttribute(target, res.getGroupAttribute()));
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
         }
@@ -301,6 +360,36 @@ public class PSPProducer extends SpmlR2Producer {
             }
             spmlResponse.setStatus(StatusCodeType.SUCCESS);
 
+        } else if (path.startsWith("/attrUser")) {
+            // TODO : Improve this
+            ListUserAttributesResponse res = target.listUserAttributes(new ListUserAttributesRequest());
+            UserAttributeDefinition[] userAttributes = res.getUserAttributes();
+
+            JXPathContext jxp = JXPathContext.newContext(new TargetContainer(userAttributes));
+            Iterator it = jxp.iteratePointers(path);
+            while (it.hasNext()) {
+                Pointer userAttributePointer = (Pointer) it.next();
+                UserAttributeDefinition userAttribute = (UserAttributeDefinition) userAttributePointer.getValue();
+                PSOType psoUserAttribute = toSpmlUserAttribute(target, userAttribute);
+                spmlResponse.getPso().add(psoUserAttribute);
+            }
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+        } else if (path.startsWith("/attrGroup")) {
+            // TODO : Improve this
+            ListGroupAttributesResponse res = target.listGroupAttributes(new ListGroupAttributesRequest());
+            GroupAttributeDefinition[] groupAttributes = res.getGroupAttributes();
+
+            JXPathContext jxp = JXPathContext.newContext(new TargetContainer(groupAttributes));
+            Iterator it = jxp.iteratePointers(path);
+            while (it.hasNext()) {
+                Pointer groupAttributePointer = (Pointer) it.next();
+                GroupAttributeDefinition groupAttribute = (GroupAttributeDefinition) groupAttributePointer.getValue();
+                PSOType psoGroupAttribute = toSpmlGroupAttribute(target, groupAttribute);
+                spmlResponse.getPso().add(psoGroupAttribute);
+            }
+            spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
         } else {
             throw new UnsupportedOperationException("Select path not supported '"+path+"'");
         }
@@ -361,6 +450,46 @@ public class PSPProducer extends SpmlR2Producer {
                 spmlResponse.getErrorMessage().add(e.getMessage());
 
             }
+        } else if (psoId.getOtherAttributes().containsKey(SPMLR2Constants.userAttributeAttr)) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Looking for user attribute using PSO-ID " + psoId.getID());
+
+            FindUserAttributeByIdRequest req = new FindUserAttributeByIdRequest();
+            req.setId(Long.parseLong(psoId.getID()));
+
+            try {
+                FindUserAttributeByIdResponse res = target.findUserAttributeById(req);
+
+                spmlResponse.setPso(toSpmlUserAttribute(target, res.getUserAttribute()));
+                spmlResponse.setStatus(StatusCodeType.SUCCESS );
+            } catch (UserAttributeNotFoundException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
+                spmlResponse.getErrorMessage().add(e.getMessage());
+
+            }
+        } else if (psoId.getOtherAttributes().containsKey(SPMLR2Constants.groupAttributeAttr)) {
+
+            if (logger.isTraceEnabled())
+                logger.trace("Looking for group attribute using PSO-ID " + psoId.getID());
+
+            FindGroupAttributeByIdRequest req = new FindGroupAttributeByIdRequest();
+            req.setId(Long.parseLong(psoId.getID()));
+
+            try {
+                FindGroupAttributeByIdResponse res = target.findGroupAttributeById(req);
+
+                spmlResponse.setPso(toSpmlGroupAttribute(target, res.getGroupAttribute()));
+                spmlResponse.setStatus(StatusCodeType.SUCCESS );
+            } catch (GroupAttributeNotFoundException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
+                spmlResponse.getErrorMessage().add(e.getMessage());
+
+            }
         } else {
 
             logger.error("Unknonw/Undefined PSO attribute that specifies entity type (Non-Normative)");
@@ -382,14 +511,10 @@ public class PSPProducer extends SpmlR2Producer {
             ModificationType spmlMod = spmlRequest.getModification().get(0);
             GroupType spmlGroup = (GroupType) spmlMod.getData();
 
-            UpdateGroupRequest groupRequest = new UpdateGroupRequest ();
-            groupRequest.setId(spmlGroup.getId());
-            groupRequest.setName(spmlGroup.getName());
-            groupRequest.setDescription(spmlGroup.getDescription());
-
             ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
 
             try {
+                UpdateGroupRequest groupRequest = toUpdateGroupRequest(target, spmlRequest); 
                 UpdateGroupResponse groupResponse = target.updateGroup(groupRequest);
                 Group group = groupResponse.getGroup();
 
@@ -402,7 +527,7 @@ public class PSPProducer extends SpmlR2Producer {
                 spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
                 spmlResponse.getErrorMessage().add(e.getMessage());
 
-            } catch (ProvisioningException e) {
+            } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
             }
@@ -423,6 +548,56 @@ public class PSPProducer extends SpmlR2Producer {
                 spmlResponse.setPso(toSpmlUser(target, userResponse.getUser()));
                 spmlResponse.setStatus(StatusCodeType.SUCCESS);
             } catch (UserNotFoundException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
+                spmlResponse.getErrorMessage().add(e.getMessage());
+
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+            }
+
+            return spmlResponse;
+        } else if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.userAttributeAttr)) {
+
+            ModifyResponseType spmlResponse = new ModifyResponseType();
+            spmlResponse.setRequestID(spmlRequest.getRequestID());
+
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+
+            try {
+                UpdateUserAttributeRequest userAttributeRequest = toUpdateUserAttributeRequest(target, spmlRequest);
+                UpdateUserAttributeResponse userAttributeResponse = target.updateUserAttribute(userAttributeRequest);
+
+                spmlResponse.setPso(toSpmlUserAttribute(target, userAttributeResponse.getUserAttribute()));
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
+            } catch (UserAttributeNotFoundException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
+                spmlResponse.getErrorMessage().add(e.getMessage());
+
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+            }
+
+            return spmlResponse;
+        } else if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttributeAttr)) {
+
+            ModifyResponseType spmlResponse = new ModifyResponseType();
+            spmlResponse.setRequestID(spmlRequest.getRequestID());
+
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+
+            try {
+                UpdateGroupAttributeRequest groupAttributeRequest = toUpdateGroupAttributeRequest(target, spmlRequest);
+                UpdateGroupAttributeResponse groupAttributeResponse = target.updateGroupAttribute(groupAttributeRequest);
+
+                spmlResponse.setPso(toSpmlGroupAttribute(target, groupAttributeResponse.getGroupAttribute()));
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
+            } catch (GroupAttributeNotFoundException e) {
                 logger.error(e.getMessage(), e);
                 spmlResponse.setStatus(StatusCodeType.FAILURE);
                 spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
@@ -501,6 +676,64 @@ public class PSPProducer extends SpmlR2Producer {
             return spmlResponse;
 
 
+        } else if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.userAttributeAttr)) {
+
+            ResponseType spmlResponse = new ResponseType();
+            spmlResponse.setRequestID(spmlRequest.getRequestID());
+
+            RemoveUserAttributeRequest userAttributeRequest = new RemoveUserAttributeRequest();
+            userAttributeRequest.setId(Long.parseLong(spmlRequest.getPsoID().getID()));
+
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+
+            try {
+                RemoveUserAttributeResponse userAttributeResponse = target.removeUserAttribute(userAttributeRequest);
+
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
+                
+            } catch (UserAttributeNotFoundException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
+                spmlResponse.getErrorMessage().add(e.getMessage());
+
+            } catch (ProvisioningException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+            }
+
+            return spmlResponse;
+
+
+        } else if (spmlRequest.getOtherAttributes().containsKey(SPMLR2Constants.groupAttributeAttr)) {
+
+            ResponseType spmlResponse = new ResponseType();
+            spmlResponse.setRequestID(spmlRequest.getRequestID());
+
+            RemoveGroupAttributeRequest groupAttributeRequest = new RemoveGroupAttributeRequest();
+            groupAttributeRequest.setId(Long.parseLong(spmlRequest.getPsoID().getID()));
+
+            ProvisioningTarget target = lookupTarget(spmlRequest.getPsoID().getTargetID());
+
+            try {
+                RemoveGroupAttributeResponse groupAttributeResponse = target.removeGroupAttribute(groupAttributeRequest);
+
+                spmlResponse.setStatus(StatusCodeType.SUCCESS);
+
+            } catch (GroupAttributeNotFoundException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+                spmlResponse.setError(ErrorCode.NO_SUCH_IDENTIFIER);
+                spmlResponse.getErrorMessage().add(e.getMessage());
+
+            } catch (ProvisioningException e) {
+                logger.error(e.getMessage(), e);
+                spmlResponse.setStatus(StatusCodeType.FAILURE);
+            }
+
+            return spmlResponse;
+
+
         } else {
             throw new UnsupportedOperationException("SPML Request not supported");
         }
@@ -543,6 +776,14 @@ public class PSPProducer extends SpmlR2Producer {
             this.users = users;
         }
 
+        public TargetContainer(UserAttributeDefinition[] userAttributes) {
+            this.userAttributes = userAttributes;
+        }
+
+        public TargetContainer(GroupAttributeDefinition[] groupAttributes) {
+            this.groupAttributes = groupAttributes;
+        }
+
         public TargetContainer(Group[] groups, User[] users) {
             this.groups = groups;
             this.users = users;
@@ -552,6 +793,10 @@ public class PSPProducer extends SpmlR2Producer {
 
         private User[] users = new User[0];
 
+        private UserAttributeDefinition[] userAttributes = new UserAttributeDefinition[0];
+
+        private GroupAttributeDefinition[] groupAttributes = new GroupAttributeDefinition[0];
+        
         public Group[] getGroups() {
             return groups;
         }
@@ -566,6 +811,22 @@ public class PSPProducer extends SpmlR2Producer {
 
         public void setUsers(User[] users) {
             this.users = users;
+        }
+
+        public UserAttributeDefinition[] getUserAttributes() {
+            return userAttributes;
+        }
+
+        public void setUserAttributes(UserAttributeDefinition[] userAttributes) {
+            this.userAttributes = userAttributes;
+        }
+
+        public GroupAttributeDefinition[] getGroupAttributes() {
+            return groupAttributes;
+        }
+
+        public void setGroupAttributes(GroupAttributeDefinition[] groupAttributes) {
+            this.groupAttributes = groupAttributes;
         }
     }
     

@@ -13,6 +13,9 @@ public class JDOGroup implements Serializable {
     private String name;
     private String description;
 
+    //<--- Extended Attributes ---->
+    private JDOGroupAttributeValue[] attrs;
+    
     public Long getId() {
         return id;
     }
@@ -36,6 +39,14 @@ public class JDOGroup implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public JDOGroupAttributeValue[] getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(JDOGroupAttributeValue[] attrs) {
+        this.attrs = attrs;
     }
 
     @Override
