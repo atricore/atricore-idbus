@@ -107,6 +107,7 @@ public class EditUserCommand extends IocSimpleCommand implements IResponder {
         req.streetAddress = user.streetAddress;
         req.telephoneNumber = user.telephoneNumber;
         req.userCertificate = user.userCertificate;
+        req.extraAttributes = user.extraAttributes;
 
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.USER_PROVISIONING_SERVICE);
         var call:Object = service.updateUser(req);

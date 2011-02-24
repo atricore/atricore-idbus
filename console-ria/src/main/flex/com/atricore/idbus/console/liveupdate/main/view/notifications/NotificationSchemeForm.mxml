@@ -43,7 +43,7 @@
 
                 <mx:FormItem labelWidth="150"
                              label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'liveupdate.setup.threshold')}">
-                    <s:ComboBox id="cbUpdateNature" width="200">
+                    <s:DropDownList id="cbUpdateNature" width="200">
                         <s:dataProvider>
                             <mx:ArrayList>
                                 <fx:String>SECURITY</fx:String>
@@ -56,7 +56,7 @@
                                 <fx:String>DISTRO</fx:String>
                             </mx:ArrayList>
                         </s:dataProvider>
-                    </s:ComboBox>
+                    </s:DropDownList>
                 </mx:FormItem>
 
                 <mx:FormItem labelWidth="150"

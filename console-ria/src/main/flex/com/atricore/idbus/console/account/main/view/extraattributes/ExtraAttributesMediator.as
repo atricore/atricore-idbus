@@ -27,6 +27,8 @@ import com.atricore.idbus.console.services.dto.Group;
 import com.atricore.idbus.console.services.dto.schema.Attribute;
 import com.atricore.idbus.console.services.dto.schema.TypeDTOEnum;
 
+import flash.display.DisplayObject;
+
 import mx.collections.ArrayCollection;
 import mx.containers.FormItem;
 import mx.controls.DateField;
@@ -90,6 +92,20 @@ public class ExtraAttributesMediator extends IocFormMediator
 
     override public function bindForm():void {
         resetValidation();
+
+        for each (var at:Attribute in _extraAttributes) {
+            var iField:DisplayObject = view.extraSection.getChildByName(at.name);
+            if ( iField is TextInput ) {
+                (iField as TextInput).text = at.value.getItemAt(0) as String;
+            }
+            else if ( iField is DateField ) {
+                (iField as DateField).selectedDate = at.value.getItemAt(0) as Date;
+            }
+            else if ( iField is MultiValuedField) {
+                (iField as MultiValuedField).attribute  = at;
+                (iField as MultiValuedField).bindForm();
+            }
+        }
     }
 
     override public function bindModel():void {
@@ -181,6 +197,7 @@ public class ExtraAttributesMediator extends IocFormMediator
             var dateInput:DateField = new DateField();
             dateInput.id = attr.name;
             dateInput.width = 100;
+            dateInput.formatString = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.DATE_FORMAT');
             _validators.push(registerInputValidator(dateInput,attr));
             fItem.addElement(dateInput);
         }
@@ -224,7 +241,7 @@ public class ExtraAttributesMediator extends IocFormMediator
                 break;
             case TypeDTOEnum.DATE.toString():
                 _uiCompValidator = new DateValidator();
-                (_uiCompValidator as DateValidator).inputFormat = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.DATE_FORMAT');
+                (_uiCompValidator as DateValidator).inputFormat = (comp as DateField).formatString;
                 break;
             case TypeDTOEnum.EMAIL.toString():
                 _uiCompValidator = new EmailValidator();

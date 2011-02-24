@@ -22,6 +22,8 @@
 package com.atricore.idbus.console.services.spi.request;
 
 import com.atricore.idbus.console.services.dto.GroupDTO;
+
+import java.util.ArrayList;
 import java.util.Date;
 
 public class UpdateUserRequest extends AbstractProvisioningRequest {
@@ -81,6 +83,11 @@ public class UpdateUserRequest extends AbstractProvisioningRequest {
     private byte[] userCertificate;
     private Boolean automaticallyGeneratePassword;
     private Boolean emailNewPasword;
+
+//<--- Extra attributes list ---->
+
+    private ArrayList extraAttributes;
+
 
     public long getId()
     {
@@ -460,4 +467,11 @@ public class UpdateUserRequest extends AbstractProvisioningRequest {
         this.emailNewPasword = emailNewPasword;
     }
 
+    public ArrayList getExtraAttributes() {
+        return extraAttributes;
+    }
+
+    public void setExtraAttributes(ArrayList extraAttributes) {
+        this.extraAttributes = extraAttributes;
+    }
 }

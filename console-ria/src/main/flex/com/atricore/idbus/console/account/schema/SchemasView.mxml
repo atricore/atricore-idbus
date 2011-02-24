@@ -49,14 +49,14 @@
 
         <s:Label paddingTop="8" text="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.list.entity')}" />
 
-        <s:ComboBox id="cbEntity" width="150" selectedIndex="0" paddingTop="8">
+        <s:DropDownList id="cbEntity" width="150" selectedIndex="0">
             <s:dataProvider>
                 <mx:ArrayList>
                     <fx:String>User</fx:String>
                     <fx:String>Group</fx:String>
                 </mx:ArrayList>
             </s:dataProvider>
-        </s:ComboBox>
+        </s:DropDownList>
 
         <components:IconLabelButton id="btnCreateAttribute"
                                     iconUp="{EmbeddedIcons.addGroupIcon}"

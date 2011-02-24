@@ -30,6 +30,8 @@ import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.services.dto.Group;
 
+import com.atricore.idbus.console.services.dto.schema.Attribute;
+
 import flash.events.Event;
 import flash.events.MouseEvent;
 
@@ -128,6 +130,10 @@ public class EditGroupMediator extends IocFormMediator
     override public function bindForm():void {
         view.groupName.text = _accountManagementProxy.currentGroup.name;
         view.groupDescription.text = _accountManagementProxy.currentGroup.description;
+        if (_accountManagementProxy.currentGroup.extraAttributes.length > 0) {
+            extraAttributesMediator.extraAttributes = _accountManagementProxy.currentGroup.extraAttributes;
+            extraAttributesMediator.bindForm();
+        }
 
         FormUtility.clearValidationErrors(_validators);
     }

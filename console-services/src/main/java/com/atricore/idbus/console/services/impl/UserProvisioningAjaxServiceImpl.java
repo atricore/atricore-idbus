@@ -120,6 +120,8 @@ public class UserProvisioningAjaxServiceImpl implements
             GroupType group = new GroupType ();
             group.setName(groupRequest.getName());
             group.setDescription(groupRequest.getDescription());
+            if (groupRequest.getExtraAttributes() != null)
+                group.getAttributeValue().addAll(groupRequest.getExtraAttributes());
             addReq.setData(group);
 
             AddResponseType resp = spmlService.spmlAddRequest(addReq);
@@ -340,7 +342,6 @@ public class UserProvisioningAjaxServiceImpl implements
             logger.error(e.getMessage(), e);
             throw new UserProvisioningAjaxException("Error while searching groups");
         }
-
     }
 
     public UpdateGroupResponse updateGroup(UpdateGroupRequest groupRequest) throws UserProvisioningAjaxException {
@@ -359,6 +360,9 @@ public class UserProvisioningAjaxServiceImpl implements
 
             if (groupRequest.getDescription() != null)
                 spmlGroup.setDescription(groupRequest.getDescription());
+
+            if (groupRequest.getExtraAttributes() != null)
+                spmlGroup.getAttributeValue().addAll(groupRequest.getExtraAttributes());
 
             PSOIdentifierType psoId = new PSOIdentifierType();
             psoId.setID(groupRequest.getId() + "");
@@ -819,7 +823,10 @@ public class UserProvisioningAjaxServiceImpl implements
         user.setAutomaticallyGeneratePassword(newUser.getAutomaticallyGeneratePassword());
         user.setEmailNewPasword(newUser.getEmailNewPasword());
 
-        //user.setGroup(newUser.getGroups());
+        ArrayList extraAttr = newUser.getExtraAttributes();
+        if (extraAttr !=null)
+            user.getAttributeValue().addAll(extraAttr);
+
         return user;
     }
 
@@ -867,23 +874,29 @@ public class UserProvisioningAjaxServiceImpl implements
         user.setAutomaticallyGeneratePassword(newUser.getAutomaticallyGeneratePassword());
         user.setEmailNewPasword(newUser.getEmailNewPasword());
 
-        //user.setGroup(newUser.getGroups());
+        ArrayList extraAttr = newUser.getExtraAttributes();
+        if (extraAttr !=null)
+            user.getAttributeValue().addAll(extraAttr);
+
         return user;
     }
 
     public GroupType toGroupType(GroupDTO grp) {
         GroupType g = new GroupType();
+        g.setId(grp.getId());
         g.setName(grp.getName());
         g.setDescription(grp.getDescription());
-        g.setId(grp.getId());
+        if (grp.getExtraAttributes() != null)
+            g.getAttributeValue().addAll(grp.getExtraAttributes());
         return g;
     }
 
     public GroupDTO toGroupDTO(GroupType grp) {
         GroupDTO g = new GroupDTO();
+        g.setId(grp.getId());
         g.setName(grp.getName());
         g.setDescription(grp.getDescription());
-        g.setId(grp.getId());
+        g.setExtraAttributes(new ArrayList(grp.getAttributeValue()));
         return g;
     }
 
@@ -938,6 +951,8 @@ public class UserProvisioningAjaxServiceImpl implements
         }
 
         u.setGroups(groups);
+
+        u.setExtraAttributes(new ArrayList(usr.getAttributeValue()));
 
         return u;
     }
