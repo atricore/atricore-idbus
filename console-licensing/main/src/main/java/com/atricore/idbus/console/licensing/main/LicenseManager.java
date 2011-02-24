@@ -33,4 +33,8 @@ public interface LicenseManager {
      */
     LicenseType getLicense() throws InvalidLicenseException;
 
+    void registerFeature(ProductFeature productFeature);
+
+    void runegisterFeature(ProductFeature productFeature);
+
 }

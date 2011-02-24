@@ -3,7 +3,7 @@ package com.atricore.idbus.console.licensing.main.impl;
 import com.atricore.idbus.console.licensing.main.InvalidFeatureException;
 import com.atricore.idbus.console.licensing.main.InvalidLicenseException;
 import com.atricore.idbus.console.licensing.main.LicenseManager;
-import com.atricore.idbus.console.licensing.main.NoDefaulLicenseException;
+import com.atricore.idbus.console.licensing.main.ProductFeature;
 import com.atricore.josso2.licensing._1_0.license.FeatureType;
 import com.atricore.josso2.licensing._1_0.license.LicenseType;
 import com.atricore.josso2.licensing._1_0.license.LicensedFeatureType;
@@ -19,17 +19,19 @@ import java.io.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
 public class LicenseManagerImpl implements LicenseManager {
 
-    static Log logger = LogFactory.getLog(LicenseManagerImpl.class);
+    private static final Log logger = LogFactory.getLog(LicenseManagerImpl.class);
 
     // Encoded digital certificate (in the future, we should be able to manage a set of certs).
     //TODO replace with proper certificate
-    private String certificate = "-----BEGIN CERTIFICATE-----\n" +
+    private static final String certificate = "-----BEGIN CERTIFICATE-----\n" +
             "MIIDVzCCAj8CBE0cdYswDQYJKoZIhvcNAQEEBQAwcDEQMA4GA1UEBhMHVW5rbm93\n" +
             "bjEQMA4GA1UECBMHVW5rbm93bjEQMA4GA1UEBxMHVW5rbm93bjEQMA4GA1UEChMH\n" +
             "VW5rbm93bjEQMA4GA1UECxMHVW5rbm93bjEUMBIGA1UEAxMLRGVqYW4gTWFyaWMw\n" +
@@ -50,8 +52,11 @@ public class LicenseManagerImpl implements LicenseManager {
             "OVuOVWYfBNMwMNikL2JvOZAmNNFWZia4EGphS8Uh+yLRhHbpobRqT6+DOg==\n" +
             "-----END CERTIFICATE-----";
     
-    private String licensePath = "etc/license.lic";
+    private String licensePath = "etc/atricore.lic";
+
     private LicenseSigner signer;
+
+    private Map<String, ProductFeature> productFeatures = new HashMap<String, ProductFeature>();
 
     public LicenseType activateLicense(byte[] license) throws InvalidLicenseException {
         LicenseType licenseType = null;
@@ -152,6 +157,16 @@ public class LicenseManagerImpl implements LicenseManager {
         }
     }
 
+    public void registerFeature(ProductFeature productFeature) {
+        this.productFeatures.put(productFeature.getId(), productFeature);
+    }
+
+    public void runegisterFeature(ProductFeature productFeature) {
+        this.productFeatures.remove(productFeature.getId());
+    }
+
+    // -------------------------------------------------------< Protected Utils >
+
     protected byte[] unzipLicense(byte[] zippedLicense) throws InvalidLicenseException {
         try {
             ZipArchiveInputStream zis = new ZipArchiveInputStream(new ByteArrayInputStream(zippedLicense));
@@ -206,7 +221,20 @@ public class LicenseManagerImpl implements LicenseManager {
     }
 
     protected void validateLicenseInformation(LicenseType license) throws InvalidLicenseException {
-        // TODO : Validate expiration date, distribution type, etc.
+
+        boolean valid = true;
+        for (ProductFeature pf : productFeatures.values()) {
+            try {
+                validateFeature(pf.getGroup(), pf.getName(), pf.getVersion());
+            } catch (InvalidFeatureException e) {
+                logger.error(e.getMessage(),e);
+                valid = false;
+            }
+        }
+
+        if (!valid)
+            throw new InvalidLicenseException("Product License is not valid");
+
     }
 
     protected LicenseType loadLicense() throws InvalidLicenseException {
@@ -274,6 +302,10 @@ public class LicenseManagerImpl implements LicenseManager {
 
     public void setLicensePath(String licensePath) {
         this.licensePath = licensePath;
+    }
+
+    public String getLicensePath() {
+        return licensePath;
     }
 
     public void setSigner(LicenseSigner signer) {

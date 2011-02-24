@@ -16,9 +16,31 @@
     <osgi:reference id="updateManagerService" cardinality="1..1" timeout="60"
                     interface="com.atricore.idbus.console.liveservices.liveupdate.main.LiveUpdateManager"/>
 
-
     <bean id="liveUpdateAjaxService" class="com.atricore.idbus.console.services.impl.LiveUpdateAjaxServiceImpl">
         <property name="updateManager" ref="updateManagerService"/>
     </bean>
+
+    <bean name="consoleCeFeature" class="com.atricore.idbus.console.licensing.main.ProductFeature">
+        <property name="id" value="atricore-console-ee"/>
+        <property name="group" value="com.atricore.idbus.console"/>
+        <property name="name" value="console-ee"/>
+
+        <!-- TODO : Use maven props! -->
+        <property name="version" value="1.0.0-SNAPSHOT"/>
+    </bean>
+    <osgi:service id="osgiConsoleCeFeature" ref="consoleCeFeature"
+                    interface="com.atricore.idbus.console.licensing.main.ProductFeature"/>
+
+    <bean name="idbusFeature" class="com.atricore.idbus.console.licensing.main.ProductFeature">
+        <property name="id" value="atricore-idbus"/>
+        <property name="group" value="org.atricore.idbus"/>
+        <property name="name" value="idbus"/>
+
+        <!-- TODO : Use maven props! -->
+        <property name="version" value="1.1.0-SNAPSHOT"/>
+    </bean>
+
+    <osgi:service id="osgiIdbusFeature" ref="idbusFeature"
+                    interface="com.atricore.idbus.console.licensing.main.ProductFeature"/>
 
 </beans>

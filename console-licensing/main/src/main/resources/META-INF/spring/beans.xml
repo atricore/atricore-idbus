@@ -24,4 +24,15 @@
     <osgi:service id="osgiLicenseManager" ref="licenseManager"
                   interface="com.atricore.idbus.console.licensing.main.LicenseManager"/>
 
+    <osgi:list id="productFeatures" interface="com.atricore.idbus.console.licensing.main.ProductFeature"
+               cardinality="0..N" >
+        <osgi:listener ref="osgiProductFeaturesRegistry" bind-method="register" unbind-method="unregister" />
+    </osgi:list>
+
+    <bean id="osgiProductFeaturesRegistry" class="OsgiProductFeaturesRegistry">
+        <constructor-arg ref="licenseManager" />
+    </bean>
+
+
+
 </beans>
