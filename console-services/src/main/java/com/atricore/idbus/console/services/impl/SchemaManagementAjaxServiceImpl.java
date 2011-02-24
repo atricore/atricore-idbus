@@ -24,6 +24,7 @@ package com.atricore.idbus.console.services.impl;
 import com.atricore.idbus.console.services.dto.schema.AttributeDTO;
 import com.atricore.idbus.console.services.dto.schema.TypeDTOEnum;
 import com.atricore.idbus.console.services.spi.SchemaManagementAjaxService;
+import com.atricore.idbus.console.services.spi.SpmlAjaxClient;
 import com.atricore.idbus.console.services.spi.request.schema.AddSchemaAttributeRequest;
 import com.atricore.idbus.console.services.spi.request.schema.ListSchemaAttributesRequest;
 import com.atricore.idbus.console.services.spi.request.schema.RemoveSchemaAttributeRequest;
@@ -34,9 +35,14 @@ import com.atricore.idbus.console.services.spi.response.schema.RemoveSchemaAttri
 import com.atricore.idbus.console.services.spi.response.schema.UpdateSchemaAttributeResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client;
+import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Author: Dusan Fisic
@@ -46,6 +52,7 @@ import java.util.*;
 
 public class SchemaManagementAjaxServiceImpl implements
         SchemaManagementAjaxService,
+        SpmlAjaxClient,
         InitializingBean {
 
     private static Log logger = LogFactory.getLog(SchemaManagementAjaxServiceImpl.class);
@@ -53,6 +60,10 @@ public class SchemaManagementAjaxServiceImpl implements
     private HashMap<Integer,AttributeDTO> attrMap;
     private Random randomGenerator = new Random();
 
+    private UUIDGenerator uuidGenerator = new UUIDGenerator();
+    private String pspTargetId;
+    private SpmlR2Client spmlService;
+    
     public void afterPropertiesSet() throws Exception {
         this.attrMap = new HashMap();
 
@@ -184,6 +195,20 @@ public class SchemaManagementAjaxServiceImpl implements
         }
     }
 
+    public String getPspTargetId() {
+        return pspTargetId;
+    }
 
+    public void setPspTargetId(String pspTargetId) {
+        this.pspTargetId = pspTargetId;
+    }
+
+    public SpmlR2Client getSpmlService() {
+        return spmlService;
+    }
+
+    public void setSpmlService(SpmlR2Client spmlService) {
+        this.spmlService = spmlService;
+    }
 }
 
