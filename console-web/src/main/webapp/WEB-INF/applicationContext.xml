@@ -36,6 +36,7 @@
             <list>
                 <ref bean="userProvisioningAjaxServiceBean"/>
                 <ref bean="profileManagementAjaxServiceBean"/>
+                <ref bean="schemaManagementAjaxServiceBean"/>
             </list>
         </property>
     </bean>
@@ -70,6 +71,7 @@
 
     <bean id="schemaManagementAjaxServiceBean"
           class="com.atricore.idbus.console.services.impl.SchemaManagementAjaxServiceImpl">
+        <property name="pspTargetId" value="pst-default" />
     </bean>
 
     <bean id="applicationServerInitialization" init-method="init"
