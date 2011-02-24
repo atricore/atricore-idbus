@@ -329,6 +329,9 @@ public class EditUserMediator extends IocFormMediator
             newUserDef.emailNewPasword = view.emailNewPasswordCheck.selected;
         }
 
+        extraAttributesMediator.bindModel();
+        newUserDef.extraAttributes = extraAttributesMediator.extraAttributes;
+
         newUserDef.id = _accountManagementProxy.currentUser.id;
         _editedUser = newUserDef;
     }

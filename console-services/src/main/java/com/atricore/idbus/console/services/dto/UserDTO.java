@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.services.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import javax.jdo.annotations.PersistenceCapable;
 import javax.jdo.annotations.Persistent;
@@ -86,6 +87,10 @@ public class UserDTO
     private byte[] userCertificate;
     private Boolean automaticallyGeneratePassword;
     private Boolean emailNewPasword;
+
+//<--- Extra attributes list ---->
+
+    private ArrayList extraAttributes;
 
     public long getId() {
         return id;
@@ -461,6 +466,14 @@ public class UserDTO
 
     public void setEmailNewPasword(Boolean emailNewPasword) {
         this.emailNewPasword = emailNewPasword;
+    }
+
+    public ArrayList getExtraAttributes() {
+        return extraAttributes;
+    }
+
+    public void setExtraAttributes(ArrayList extraAttributes) {
+        this.extraAttributes = extraAttributes;
     }
 
     @Override
