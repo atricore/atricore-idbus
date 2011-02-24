@@ -91,6 +91,9 @@ import com.atricore.idbus.console.modeling.propertysheet.view.export.ExportProvi
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.puremvc.as3.interfaces.IFacade;
 import org.puremvc.as3.interfaces.INotification;
 
@@ -165,7 +168,6 @@ public class ModelerPopUpManager extends BasePopUpManager {
     private var _exportIdentityApplianceView:ExportIdentityApplianceView;
     private var _exportProviderCertificateView:ExportProviderCertificateView;
     private var _exportMetadataView:ExportMetadataView;
-
 
     public function ModelerPopUpManager() {
         super();
@@ -475,7 +477,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateIdentityProviderWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createIdentityProviderCreateForm();
-        _popup.title = "New Identity Provider Definition";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.idp");
         _popup.width = 690;
         _popup.height = 455;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -497,7 +499,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateServiceProviderWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createServiceProviderCreateForm();
-        _popup.title = "New Service Provider Definition";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.sp");
         _popup.width = 690;
         _popup.height = 455;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -518,7 +520,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateExternalIdentityProviderWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createExternalIdentityProviderCreateForm();
-        _popup.title = "New External Identity Provider Definition";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.externalidp");
         _popup.width = 410;
         _popup.height = 190;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -540,7 +542,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateExternalServiceProviderWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createExternalServiceProviderCreateForm();
-        _popup.title = "New External Service Provider Definition";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.externalsp");
         _popup.width = 410;
         _popup.height = 190;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -561,7 +563,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateSalesforceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createSalesforceCreateForm();
-        _popup.title = "New Salesforce Definition";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.salesforce");
         _popup.width = 410;
         _popup.height = 140;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -582,7 +584,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateGoogleAppsWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createGoogleAppsCreateForm();
-        _popup.title = "New Google Apps Definition";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.googleaps");
         _popup.width = 410;
         _popup.height = 170;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -624,7 +626,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateDbIdentitySourceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createDbIdentitySourceCreateForm();
-        _popup.title = "Create DB Identity Source";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.dbsource");
         _popup.width = 540;
         _popup.height = 350;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -645,7 +647,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateLdapIdentitySourceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createLdapIdentitySourceCreateForm();
-        _popup.title = "Create LDAP Identity Source";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.ldapsource");
         _popup.width = 500;
         _popup.height = 370;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -666,7 +668,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateXmlIdentitySourceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createXmlIdentitySourceCreateForm();
-        _popup.title = "Create XML Identity Source";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.xmlsource");
         _popup.width = 410;
         _popup.height = 170;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -687,7 +689,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateWeblogicExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createWeblogicExecutionEnvironmentCreateForm();
-        _popup.title = "Create Weblogic Execution Environment";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.weblogic");
         _popup.width = 500;
         _popup.height = 320;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -708,7 +710,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateTomcatExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createTomcatExecutionEnvironmentCreateForm();
-        _popup.title = "Create Tomcat Execution Environment";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.tomcat");
         _popup.width = 500;
         _popup.height = 290;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -729,7 +731,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateJBossPortalExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createJBossPortalExecutionEnvironmentCreateForm();
-        _popup.title = "Create JBoss Portal Execution Environment";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.jbportal");
         _popup.width = 500;
         _popup.height = 260;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -750,7 +752,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateLiferayPortalExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createLiferayPortalExecutionEnvironmentCreateForm();
-        _popup.title = "Create Liferay Portal Execution Environment";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.liferay");
         _popup.width = 500;
         _popup.height = 310;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -771,7 +773,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateWASCEExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createWASCEExecutionEnvironmentCreateForm();
-        _popup.title = "Create WASCE Execution Environment";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.wasce");
         _popup.width = 500;
         _popup.height = 260;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -792,7 +794,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateApacheExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createApacheExecutionEnvironmentCreateForm();
-        _popup.title = "Create Apache Execution Environment";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.apache");
         _popup.width = 440;//500
         _popup.height = 220; //260
         _popup.x = (_popupParent.width / 2) - 225;
@@ -813,7 +815,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateWindowsIISExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createWindowsIISExecutionEnvironmentCreateForm();
-        _popup.title = "Create Windows IIS Execution Environment";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.iis");
         _popup.width = 440;//500
         _popup.height = 220; //260
         _popup.x = (_popupParent.width / 2) - 225;
@@ -834,7 +836,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateAlfrescoExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createAlfrescoExecutionEnvironmentCreateForm();
-        _popup.title = "Create Alfresco Execution Environment";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.alfresco");
         _popup.width = 500;
         _popup.height = 290;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -855,7 +857,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateJavaEEExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createJavaEEExecutionEnvironmentCreateForm();
-        _popup.title = "Create JavaEE Execution Environment";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.javaee");
         _popup.width = 440;//500
         _popup.height = 220; //260
         _popup.x = (_popupParent.width / 2) - 225;
@@ -876,7 +878,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreatePhpBBExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createPhpBBExecutionEnvironmentCreateForm();
-        _popup.title = "Create PhpBB Execution Environment";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.phpbb");
         _popup.width = 500;
         _popup.height = 290;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -897,7 +899,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateWebserverExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createWebserverExecutionEnvironmentCreateForm();
-        _popup.title = "Create Webserver Execution Environment";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.web");
         _popup.width = 440;//500
         _popup.height = 240; //260
         _popup.x = (_popupParent.width / 2) - 225;
@@ -918,7 +920,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateFederatedConnectionWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createFederatedConnectionCreateForm();
-        _popup.title = "Create Federated Connection";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.federated.connection");
         _popup.width = 640;
         _popup.height = 425;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -940,7 +942,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateActivationWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createActivationCreateForm();
-        _popup.title = "Create JOSSO Activation";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.josso.activation");
         _popup.width = 670;
         _popup.height = 200;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -961,7 +963,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateJBossExecutionEnvironmentWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createJBossExecutionEnvironmentCreateForm();
-        _popup.title = "Create JBoss Execution Environment";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.env.jboss");
         _popup.width = 500;
         _popup.height = 320;
         _popup.x = (_popupParent.width / 2) - 225;
@@ -982,7 +984,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showManageCertificateWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createManageCertificateForm();
-        _popup.title = "Manage Certificate";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.new.cert");
         _popup.width = 400;
         _popup.height = 480;
         showPopup(_manageCertificateForm);
@@ -1001,7 +1003,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showUploadProgressWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createUploadProgressWindow();
-        _progress.title = "File upload";
+        _progress.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.file.upload");
         _progress.width = 300;
         _progress.height = 140;
         //_progress.x = (_popupParent.width / 2) - 225;
@@ -1022,7 +1024,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showBuildIdentityApplianceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createBuildApplianceWindow();
-        _popup.title = "Build Identity Appliance";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.build.appliance");
         _popup.width = 430;
         _popup.height = 230;
         //_progress.x = (_popupParent.width / 2) - 225;
@@ -1043,7 +1045,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showDeployIdentityApplianceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createDeployApplianceWindow();
-        _popup.title = "Deploy Identity Appliance";
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.deploy.appliance");
         _popup.width = 430;
         _popup.height = 230;
         //_progress.x = (_popupParent.width / 2) - 225;
@@ -1064,7 +1066,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateExportIdentityApplianceWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createExportIdentityApplianceView();
-        _progress.title = "Export Identity Appliance";
+        _progress.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.export.appliance");
         _progress.width = 300;
         _progress.height = 150;
 //        _popup.x = (_popupParent.width / 2) - 225;
@@ -1085,7 +1087,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateExportProviderCertificateWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createExportProviderCertificateView();
-        _progress.title = "Export Provider Certificate";
+        _progress.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.export.prov.cert");
         _progress.width = 300;
         _progress.height = 150;
 //        _popup.x = (_popupParent.width / 2) - 225;
@@ -1106,7 +1108,7 @@ public class ModelerPopUpManager extends BasePopUpManager {
     public function showCreateExportMetadataWindow(notification:INotification):void {
         _lastWindowNotification = notification;
         createExportMetadataView();
-        _progress.title = "Export SAML Metadata";
+        _progress.title = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.popup.export.saml.meta");
         _progress.width = 300;
         _progress.height = 150;
 //        _popup.x = (_popupParent.width / 2) - 225;

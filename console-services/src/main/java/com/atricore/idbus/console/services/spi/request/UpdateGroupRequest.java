@@ -21,11 +21,14 @@
 
 package com.atricore.idbus.console.services.spi.request;
 
+import java.util.ArrayList;
+
 public class UpdateGroupRequest extends AbstractProvisioningRequest {
 
-    long id;
-    String name;
-    String description;
+    private long id;
+    private String name;
+    private String description;
+    private ArrayList extraAttributes;
 
     public long getId() {
         return id;
@@ -49,5 +52,13 @@ public class UpdateGroupRequest extends AbstractProvisioningRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public ArrayList getExtraAttributes() {
+        return extraAttributes;
+    }
+
+    public void setExtraAttributes(ArrayList extraAttributes) {
+        this.extraAttributes = extraAttributes;
     }
 }

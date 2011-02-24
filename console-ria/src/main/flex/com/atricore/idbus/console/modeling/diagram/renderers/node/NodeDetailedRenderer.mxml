@@ -194,7 +194,9 @@
         }
 
         private function confirmNodeRemove(e:MouseEvent):void {
-            Alert.show("Are you sure you want to delete this item?", "Confirm Removal", Alert.YES | Alert.NO, null, nodeRemoveConfirmed, null, Alert.YES);
+
+            Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "modelling.noderenderer.deletequestion"),
+                    resourceManager.getString(AtricoreConsole.BUNDLE, "modelling.noderenderer.confirm"), Alert.YES | Alert.NO, null, nodeRemoveConfirmed, null, Alert.YES);
         }
 
         private function nodeRemoveConfirmed(event:CloseEvent):void {

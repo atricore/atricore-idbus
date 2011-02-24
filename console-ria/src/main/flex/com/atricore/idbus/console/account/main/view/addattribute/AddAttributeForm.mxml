@@ -43,14 +43,14 @@
 
         <mx:FormItem labelWidth="100" required="true"
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.attribute.add.entity')}">
-            <s:ComboBox id="cbEntity" width="200">
+            <s:DropDownList id="cbEntity" width="200">
                 <s:dataProvider>
                     <mx:ArrayList>
                         <fx:String>User</fx:String>
                         <fx:String>Group</fx:String>
                     </mx:ArrayList>
                 </s:dataProvider>
-            </s:ComboBox>
+            </s:DropDownList>
         </mx:FormItem>
 
         <mx:FormItem labelWidth="100" required="true"
@@ -59,7 +59,7 @@
         </mx:FormItem>
         <mx:FormItem labelWidth="100" required="true"
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.attribute.add.type')}">
-            <s:ComboBox id="cbType" width="200" dataProvider="{new ArrayCollection(resourceManager.getString(AtricoreConsole.BUNDLE,
+            <s:DropDownList id="cbType" width="200" dataProvider="{new ArrayCollection(resourceManager.getString(AtricoreConsole.BUNDLE,
          'provisioning.schema.attribute.add.typeenum').split(','))}" />
         </mx:FormItem>
         <mx:FormItem labelWidth="100" required="true"

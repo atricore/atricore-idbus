@@ -138,7 +138,7 @@
                 if (uploadKeystore.selected) {
                     certificateForm.validateForm(event);
                     if (certificateKeyPair.dataProvider == null || certificateKeyPair.dataProvider.length == 0) {
-                        lblUploadMsg.text = "You must select a keystore!!!";
+                        lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair.error");
                         lblUploadMsg.setStyle("color", "Red");
                         lblUploadMsg.visible = true;
                         isValid = false;

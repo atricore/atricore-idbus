@@ -149,6 +149,11 @@ public class EditUserMediator extends IocFormMediator
         view.userTelephone.text = _accountManagementProxy.currentUser.telephoneNumber;
         view.userFax.text = _accountManagementProxy.currentUser.facsimilTelephoneNumber;
 
+        if (_accountManagementProxy.currentGroup.extraAttributes.length > 0) {
+            extraAttributesMediator.extraAttributes = _accountManagementProxy.currentGroup.extraAttributes;
+            extraAttributesMediator.bindForm();
+        }
+
         // Preference data
         for (var i:int = 0; i < view.userLanguage.dataProvider.length; i++) {
             if (view.userLanguage.dataProvider[i].data == _accountManagementProxy.currentUser.language) {
@@ -328,6 +333,9 @@ public class EditUserMediator extends IocFormMediator
             newUserDef.automaticallyGeneratePassword = view.generatePasswordCheck.selected;
             newUserDef.emailNewPasword = view.emailNewPasswordCheck.selected;
         }
+
+        extraAttributesMediator.bindModel();
+        newUserDef.extraAttributes = extraAttributesMediator.extraAttributes;
 
         newUserDef.id = _accountManagementProxy.currentUser.id;
         _editedUser = newUserDef;

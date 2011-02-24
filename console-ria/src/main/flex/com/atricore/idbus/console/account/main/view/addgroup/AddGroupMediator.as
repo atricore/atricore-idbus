@@ -137,6 +137,9 @@ public class AddGroupMediator extends IocFormMediator
         newGroupDef.name = view.groupName.text;
         newGroupDef.description = view.groupDescription.text;
 
+        extraAttributesMediator.bindModel();
+        newGroupDef.extraAttributes = extraAttributesMediator.extraAttributes;
+
         _newGroup = newGroupDef;
     }
 

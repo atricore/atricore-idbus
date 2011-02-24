@@ -10,6 +10,9 @@ import flash.net.FileReference;
 
 import mx.events.CloseEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
@@ -20,6 +23,8 @@ public class ExportIdentityApplianceMediator extends IocMediator {
     private var _fileRef:FileReference;
 
     private var _exportedAppliance:Object;
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     public function ExportIdentityApplianceMediator(name:String = null, viewComp:ExportIdentityApplianceView = null) {
         super(name, viewComp);
@@ -54,7 +59,7 @@ public class ExportIdentityApplianceMediator extends IocMediator {
         if (projectProxy.currentIdentityAppliance != null) {
 
             view.progBar.setProgress(0, 0);
-            view.progBar.label = "Exporting Identity Appliance...";
+            view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.export.progress");
 
             sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_EXPORT, projectProxy.currentIdentityAppliance.id.toString());
         } else {
@@ -86,16 +91,16 @@ public class ExportIdentityApplianceMediator extends IocMediator {
                 view.progBar.indeterminate = false;
                 view.progBar.setProgress(100, 100);
                 if (_exportedAppliance != null && _exportedAppliance.length > 0) {
-                    view.progBar.label = "Appliance successfully exported";
+                    view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.export.success");
                     view.btnSave.enabled = true;
                 } else {
-                    view.progBar.label = "Error exporting Appliance!!!";
+                    view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.export.error");
                 }
                 break;
             case ExportIdentityApplianceCommand.FAILURE:
                 view.progBar.indeterminate = false;
                 view.progBar.setProgress(100, 100);
-                view.progBar.label = "Error exporting Appliance!!!";
+                view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.export.error");
                 break;
         }
     }

@@ -135,6 +135,8 @@ import mx.core.mx_internal;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 import mx.events.ItemClickEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 import mx.utils.StringUtil;
 import mx.validators.Validator;
 
@@ -149,6 +151,8 @@ import spark.events.IndexChangeEvent;
 public class PropertySheetMediator extends IocMediator {
 
     private var _projectProxy:ProjectProxy;
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     private var _tabbedPropertiesTabBar:TabBar;
     private var _propertySheetsViewStack:CustomViewStack;
@@ -358,7 +362,7 @@ public class PropertySheetMediator extends IocMediator {
                 break;
             case FolderExistsCommand.FOLDER_DOESNT_EXISTS:
                 if(_execEnvHomeDir != null){
-                    _execEnvHomeDir.errorString = "Directory doesn't exist";
+                    _execEnvHomeDir.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                     _execEnvHomeDir = null;
                     _execEnvSaveFunction = null;                    
                 }
@@ -371,17 +375,17 @@ public class PropertySheetMediator extends IocMediator {
                         for each (var invalidFolder:String in checkFoldersResp.invalidFolders) {
                             if (currentElement is LiferayExecutionEnvironment) {
                                 if (_liferayExecEnvCoreSection.homeDirectory.text == invalidFolder) {
-                                    _liferayExecEnvCoreSection.homeDirectory.errorString = "Directory doesn't exist";
+                                    _liferayExecEnvCoreSection.homeDirectory.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                                 }
                                 if (_liferayExecEnvCoreSection.containerPath.text == invalidFolder) {
-                                    _liferayExecEnvCoreSection.containerPath.errorString = "Directory doesn't exist";
+                                    _liferayExecEnvCoreSection.containerPath.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                                 }
                             } else if (currentElement is AlfrescoExecutionEnvironment){
                                 if (_alfrescoExecEnvCoreSection.homeDirectory.text == invalidFolder) {
-                                    _alfrescoExecEnvCoreSection.homeDirectory.errorString = "Directory doesn't exist";
+                                    _alfrescoExecEnvCoreSection.homeDirectory.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                                 }
                                 if (_alfrescoExecEnvCoreSection.tomcatInstallDir.text == invalidFolder) {
-                                    _alfrescoExecEnvCoreSection.tomcatInstallDir.errorString = "Directory doesn't exist";
+                                    _alfrescoExecEnvCoreSection.tomcatInstallDir.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                                 }
                             }
                         }
@@ -406,7 +410,8 @@ public class PropertySheetMediator extends IocMediator {
             case JDBCDriversListCommand.FAILURE:
                 _jdbcDrivers = new ArrayCollection();
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        "There was an error loading JDBC drivers list.");
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.loading.jdbc.error"));
+
                 break;
             case ApplicationFacade.APPLIANCE_SAVED:
                 _applianceSaved = true;
@@ -1297,7 +1302,7 @@ public class PropertySheetMediator extends IocMediator {
             if (_certificateSection.uploadKeystore.selected && (config.signer == null ||
                     config.signer.store == null)) {
                 if (_selectedFiles == null || _selectedFiles.length == 0) {
-                    _certificateSection.lblUploadMsg.text = "You must select a keystore!!!";
+                    _certificateSection.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair.error");
                     _certificateSection.lblUploadMsg.setStyle("color", "Red");
                     _certificateSection.lblUploadMsg.visible = true;
                     return;
@@ -3805,8 +3810,8 @@ public class PropertySheetMediator extends IocMediator {
 
     private function reactivateClickHandler(event:Event):void {
         if(!_applianceSaved){
-            Alert.show("The Identity Appliance needs to be saved first in order to be able to run activation procedures onto execution environments",
-                    "Information", Alert.OK, null, null, null, Alert.OK);
+            Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "activation.save.info"),
+                    resourceManager.getString(AtricoreConsole.BUNDLE, "activation.save.title"), Alert.OK, null, null, null, Alert.OK);
             _executionEnvironmentActivateSection.reactivate.selected = false;
         }
     }
@@ -3814,9 +3819,13 @@ public class PropertySheetMediator extends IocMediator {
     private function activateExecutionEnvironment(event:Event):void {
         var currentExecEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
         if(_executionEnvironmentActivateSection.reactivate.selected && _applianceSaved){
-            var text:String = currentExecEnv.name +  " execution environment is about to be activated.\nYou must restart the execution environment for the changes to take effect.";
+            var text:String = currentExecEnv.name + " "
+                    + resourceManager.getString(AtricoreConsole.BUNDLE, "activation.confirm.line1")
+                    + "\n"
+                    + resourceManager.getString(AtricoreConsole.BUNDLE, "activation.confirm.line2");
             var alert:Alert = Alert.show(text,
-                    "Confirm Activation", Alert.OK | Alert.CANCEL, null, activationConfirmationHandler, null, Alert.OK);
+                    resourceManager.getString(AtricoreConsole.BUNDLE, "activation.confirm.title"), 
+                    Alert.OK | Alert.CANCEL, null, activationConfirmationHandler, null, Alert.OK);
             alert.width = 450;
             alert.callLater(function():void {
                 var textField:IUITextField =  IUITextField(alert.mx_internal::alertForm.mx_internal::textField);
@@ -3925,14 +3934,14 @@ public class PropertySheetMediator extends IocMediator {
         _uploadedFile = _fileRef.data;
         _uploadedFileName = _fileRef.name;
 
-        _certificateSection.lblUploadMsg.text = "Keystore successfully saved.";
+        _certificateSection.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "manageCertificate.form.upload.success");
         _certificateSection.lblUploadMsg.setStyle("color", "Green");
         _certificateSection.lblUploadMsg.visible = true;
         _certificateSection.fadeFx.play([_certificateSection.lblUploadMsg]);
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        _certificateSection.certificateKeyPair.prompt = "Browse Key Pair";
+        _certificateSection.certificateKeyPair.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair");
 
         var provider:Provider = _currentIdentityApplianceElement as Provider;
         var config:SamlR2ProviderConfig = provider.config as SamlR2ProviderConfig;
@@ -4028,18 +4037,18 @@ public class PropertySheetMediator extends IocMediator {
         _selectedMetadataFiles = new ArrayCollection();
 
         if (_currentIdentityApplianceElement is ExternalIdentityProvider) {
-            _externalIdpCoreSection.lblUploadMsg.text = "Metadata file successfully saved.";
+            _externalIdpCoreSection.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "externalIdentityProv.metadata.uploadSuccess");            
             _externalIdpCoreSection.lblUploadMsg.setStyle("color", "Green");
             _externalIdpCoreSection.lblUploadMsg.visible = true;
             _externalIdpCoreSection.fadeFx.play([_externalIdpCoreSection.lblUploadMsg]);
-            _externalIdpCoreSection.metadataFile.prompt = "Browse metadata file";
+            _externalIdpCoreSection.metadataFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "externalIdentityProv.metadata.browseFile");
             updateExternalIdentityProvider();
         } else if (_currentIdentityApplianceElement is ExternalServiceProvider) {
-            _externalSpCoreSection.lblUploadMsg.text = "Metadata file successfully saved.";
+            _externalSpCoreSection.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "externalServiceProv.metadata.uploadSuccess");
             _externalSpCoreSection.lblUploadMsg.setStyle("color", "Green");
             _externalSpCoreSection.lblUploadMsg.visible = true;
             _externalSpCoreSection.fadeFx.play([_externalSpCoreSection.lblUploadMsg]);
-            _externalSpCoreSection.metadataFile.prompt = "Browse metadata file";
+            _externalSpCoreSection.metadataFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "externalServiceProv.metadata.browseFile");            
             updateExternalServiceProvider();
         }
     }
@@ -4227,15 +4236,15 @@ public class PropertySheetMediator extends IocMediator {
      */
     private function comparePasswords(adminPass:TextInput, confirmAdminPass:TextInput):Boolean {
         if (adminPass.text == "") {
-            adminPass.errorString = "This field is required!";
+            adminPass.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "compare.pass.required");
             return false;
         }
         if (confirmAdminPass.text == "") {
-            confirmAdminPass.errorString = "This field is required!";
+            confirmAdminPass.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "compare.pass.required");
             return false;
         }
         if (adminPass.text != confirmAdminPass.text) {
-            adminPass.errorString = "Passwords are not identical!";
+            adminPass.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "compare.pass.not.identical");
             return false;
         }
         confirmAdminPass.errorString = "";

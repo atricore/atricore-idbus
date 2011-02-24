@@ -35,6 +35,9 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.puremvc.as3.interfaces.INotification;
 
 public class ApacheExecutionEnvironmentCreateMediator extends IocFormMediator {
@@ -43,6 +46,7 @@ public class ApacheExecutionEnvironmentCreateMediator extends IocFormMediator {
     private static var _environmentName:String = "APACHE";
 
     private var _newExecutionEnvironment:ApacheExecutionEnvironment;
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     public function ApacheExecutionEnvironmentCreateMediator(name:String = null, viewComp:ApacheExecutionEnvironmentCreateForm = null) {
         super(name, viewComp);
@@ -166,7 +170,7 @@ public class ApacheExecutionEnvironmentCreateMediator extends IocFormMediator {
             case FolderExistsCommand.FOLDER_DOESNT_EXISTS:
                 envName = notification.getBody() as String;
                 if(envName == _environmentName){
-                    view.homeDirectory.errorString = "Directory doesn't exist";
+                    view.homeDirectory.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                 }
                 break;
         }

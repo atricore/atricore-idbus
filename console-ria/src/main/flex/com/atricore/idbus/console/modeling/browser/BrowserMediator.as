@@ -39,6 +39,9 @@ import flash.utils.Dictionary;
 
 import mx.collections.ArrayCollection;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;

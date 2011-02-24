@@ -29,6 +29,8 @@ import com.atricore.idbus.console.services.dto.IdentityAppliance;
 import flash.events.Event;
 
 import mx.events.CloseEvent;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 import mx.utils.ObjectProxy;
 
 import org.puremvc.as3.interfaces.INotification;
@@ -41,6 +43,8 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
     private var _wizardDataModel:ObjectProxy = new ObjectProxy();
 
     private var _processingStarted:Boolean;
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     public function IdentityApplianceWizardViewMediator(name:String = null, viewComp:IdentityApplianceWizardView = null) {
         super(name, viewComp);
@@ -85,7 +89,7 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
             case IdentityApplianceCreateCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        "There was an error creating appliance.");
+                                 resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.wizard.creation.error"));
                 break;
         }
 
@@ -94,7 +98,8 @@ public class IdentityApplianceWizardViewMediator extends IocMediator
     private function onIdentityApplianceWizardComplete(event:WizardEvent):void {
         _processingStarted = true;
         view.dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
-        sendNotification(ProcessingMediator.START, "Saving Identity Appliance...");
+        sendNotification(ProcessingMediator.START,
+                         resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.wizard.saving"));
         var identityAppliance:IdentityAppliance = _wizardDataModel.applianceData;
         sendNotification(ApplicationFacade.CREATE_IDENTITY_APPLIANCE, identityAppliance);
     }

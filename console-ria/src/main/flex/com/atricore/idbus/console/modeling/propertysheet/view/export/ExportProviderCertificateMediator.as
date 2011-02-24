@@ -12,6 +12,9 @@ import flash.net.FileReference;
 
 import mx.events.CloseEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
@@ -22,6 +25,7 @@ public class ExportProviderCertificateMediator extends IocMediator {
     private var _fileRef:FileReference;
 
     private var _exportedCertificate:Object;
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     public function ExportProviderCertificateMediator(name:String = null, viewComp:ExportProviderCertificateView = null) {
         super(name, viewComp);
@@ -58,7 +62,7 @@ public class ExportProviderCertificateMediator extends IocMediator {
         if (provider != null) {
 
             view.progBar.setProgress(0, 0);
-            view.progBar.label = "Exporting Provider Certificate...";
+            view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "export.saml.prov.cert");
 
             sendNotification(ApplicationFacade.PROVIDER_CERTIFICATE_EXPORT, provider.config as SamlR2ProviderConfig);
         } else {
@@ -94,17 +98,17 @@ public class ExportProviderCertificateMediator extends IocMediator {
                 view.progBar.setProgress(100, 100);
                 view.btnSave.enabled = true;
                 if (_exportedCertificate != null && _exportedCertificate.length > 0) {
-                    view.progBar.label = "Certificate successfully exported";
+                    view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "export.saml.prov.cert.success");
                 } else {
-                    view.progBar.label = "Error exporting certificate!!!";
-                    view.btnSave.label = "Close";
+                    view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "export.saml.prov.cert.error");
+                    view.btnSave.label = resourceManager.getString(AtricoreConsole.BUNDLE, "export.saml.prov.cert.close");
                 }
                 break;
             case ExportProviderCertificateCommand.FAILURE:
                 view.progBar.indeterminate = false;
                 view.progBar.setProgress(100, 100);
-                view.progBar.label = "Error exporting certificate!!!";
-                view.btnSave.label = "Close";
+                view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "export.saml.prov.cert.error");
+                view.btnSave.label = resourceManager.getString(AtricoreConsole.BUNDLE, "export.saml.prov.cert.close");
                 view.btnSave.enabled = true;
                 break;
         }

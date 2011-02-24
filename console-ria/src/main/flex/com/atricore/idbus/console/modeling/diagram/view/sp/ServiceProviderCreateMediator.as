@@ -46,6 +46,9 @@ import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 import mx.events.ItemClickEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.puremvc.as3.interfaces.INotification;
 
 public class ServiceProviderCreateMediator extends IocFormMediator {
@@ -54,6 +57,8 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
     private var _newServiceProvider:ServiceProvider;
     private var _uploadedFile:ByteArray;
     private var _uploadedFileName:String;
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     private var _idaURI:String;
 
@@ -130,7 +135,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.certificateKeyPair.prompt = "Browse Key Pair";
+        view.certificateKeyPair.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair");
 
         view.certificateAlias.text = "";
         view.keyAlias.text = "";
@@ -268,7 +273,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
             }
             */
             if (view.uploadKeystore.selected && (_selectedFiles == null || _selectedFiles.length == 0)) {
-                view.lblUploadMsg.text = "You must select a keystore!!!";
+                view.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair.error");
                 view.lblUploadMsg.setStyle("color", "Red");
                 view.lblUploadMsg.visible = true;
                 event.stopImmediatePropagation();
@@ -373,7 +378,7 @@ public class ServiceProviderCreateMediator extends IocFormMediator {
         //sendNotification(UploadProgressMediator.UPLOAD_COMPLETED);
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.certificateKeyPair.prompt = "Browse Key Pair";
+        view.certificateKeyPair.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.keypair");
         //view.btnUpload.enabled = false;
 
         saveServiceProvider();

@@ -36,6 +36,9 @@ import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.puremvc.as3.interfaces.INotification;
 
 public class ActivateLicenseMediator extends IocFormMediator {
@@ -43,6 +46,8 @@ public class ActivateLicenseMediator extends IocFormMediator {
     private var _newLicense:Resource;
     private var _uploadedFile:ByteArray;
     private var _uploadedFileName:String;
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     [Bindable]
     private var _fileRef:FileReference;
@@ -83,7 +88,7 @@ public class ActivateLicenseMediator extends IocFormMediator {
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.licenseFile.prompt = "Browse medatada file";
+        view.licenseFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.license.file");
         view.lblUploadMsg.text = "";
         view.lblUploadMsg.visible = false;
 
@@ -103,7 +108,7 @@ public class ActivateLicenseMediator extends IocFormMediator {
     private function handleLicenseActivation(event:MouseEvent):void {
         if (validate(true)) {
             if (_selectedFiles == null || _selectedFiles.length == 0) {
-                view.lblUploadMsg.text = "You must select a metadata file!!!";
+                view.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.license.file.error");
                 view.lblUploadMsg.setStyle("color", "Red");
                 view.lblUploadMsg.visible = true;
                 event.stopImmediatePropagation();
@@ -139,7 +144,8 @@ public class ActivateLicenseMediator extends IocFormMediator {
             _fileRef.addEventListener(Event.SELECT, fileSelectHandler);
             _fileRef.addEventListener(Event.COMPLETE, uploadCompleteHandler);
         }
-        var fileFilter:FileFilter = new FileFilter("Atricore License(*.lic)", "*.lic");
+        var fileFilter:FileFilter = new FileFilter(resourceManager.getString(AtricoreConsole.BUNDLE, "atricore.license")
+                + "(*.lic)", "*.lic");
         var fileTypes:Array = new Array(fileFilter);
         _fileRef.browse(fileTypes);
     }
@@ -160,7 +166,7 @@ public class ActivateLicenseMediator extends IocFormMediator {
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.licenseFile.prompt = "Browse license file";
+        view.licenseFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.license.file");
 
         activateLicense();
     }

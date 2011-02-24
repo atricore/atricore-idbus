@@ -96,6 +96,8 @@ import mx.collections.ArrayCollection;
 import mx.controls.Button;
 import mx.core.ClassFactory;
 import mx.core.Container;
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
 import mx.utils.UIDUtil;
 
 import org.osmf.traits.IDisposable;
@@ -139,6 +141,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
     private var _projectProxy:ProjectProxy;
 
     private var _currentIdentityApplianceId:Number;
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     public function get projectProxy():ProjectProxy {
         return _projectProxy;
@@ -652,21 +656,24 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                     var providerNode:IVisualNode = findNodeElementBySemanticElement(identityLookup1.provider);
                     var identitySourceNode:IVisualNode = findNodeElementBySemanticElement(identityLookup1.identitySource);
                     GraphDataManager.linkVNodes(_identityApplianceDiagram, identitySourceNode, providerNode,
-                            identityLookup1,EmbeddedIcons.connectionIdentityLookupMiniIcon, "Identity Lookup Connection");
+                            identityLookup1,EmbeddedIcons.connectionIdentityLookupMiniIcon,
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"));                    
                     _identityApplianceDiagram.exitConnectionMode();
                 } else if (element is FederatedConnection) {
                     var federatedConnection1:FederatedConnection = element as FederatedConnection;
                     var provider1Node:IVisualNode = findNodeElementBySemanticElement(federatedConnection1.roleA);
                     var provider2Node:IVisualNode = findNodeElementBySemanticElement(federatedConnection1.roleB);
                     GraphDataManager.linkVNodes(_identityApplianceDiagram, provider2Node, provider1Node,
-                            federatedConnection1, EmbeddedIcons.connectionFederatedMiniIcon, "Federated Connection");
+                            federatedConnection1, EmbeddedIcons.connectionFederatedMiniIcon,
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "federated.connection"));
                     _identityApplianceDiagram.exitConnectionMode();
                 } else if (element is JOSSOActivation) {
                     var activation1:JOSSOActivation = element as JOSSOActivation;
                     var spNode:IVisualNode = findNodeElementBySemanticElement(activation1.sp);
                     var execEnvNode:IVisualNode = findNodeElementBySemanticElement(activation1.executionEnv);
                     GraphDataManager.linkVNodes(_identityApplianceDiagram, execEnvNode, spNode,
-                            activation1, EmbeddedIcons.connectionActivationIcon, "Activation Connection");
+                            activation1, EmbeddedIcons.connectionActivationIcon,
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "activation.connection"));
                     _identityApplianceDiagram.exitConnectionMode();
                 } else {
                     GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), element, null, null, null, null, true, Constants.IDENTITY_BUS_DEEP);
@@ -764,13 +771,18 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             var vaultExists:Boolean = false;
                             for each (var tmpVaultGraphNode:IVisualNode in vaultNodes){
                                 if(tmpVaultGraphNode.data as IdentitySource == idSource){
-                                    GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode, locProv.identityLookup ,EmbeddedIcons.connectionIdentityLookupIcon, "Identity Lookup Connection");
+                                    GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpVaultGraphNode, providerGraphNode,
+                                            locProv.identityLookup ,EmbeddedIcons.connectionIdentityLookupIcon,
+                                            resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"));
+                                    
                                     vaultExists = true;
                                 }
                             }
                             if(!vaultExists){
                                 var newVaultNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), idSource, providerGraphNode,
-                                        locProv.identityLookup, EmbeddedIcons.connectionIdentityLookupIcon, "Identity Lookup Connection", true, Constants.IDENTITY_VAULT_DEEP);
+                                        locProv.identityLookup, EmbeddedIcons.connectionIdentityLookupIcon,
+                                        resourceManager.getString(AtricoreConsole.BUNDLE, "identity.lookup.connection"), 
+                                        true, Constants.IDENTITY_VAULT_DEEP);
                                 //if vault doesn't exist in the vaults array, add it so other providers can find it
                                 vaultNodes.addItem(newVaultNode);
                             }
@@ -784,13 +796,16 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                                 for each (var tmpExecEnvGraphNode:IVisualNode in environmentNodes){
                                     if(tmpExecEnvGraphNode.data as ExecutionEnvironment == sp.activation.executionEnv){
                                         GraphDataManager.linkVNodes(_identityApplianceDiagram, tmpExecEnvGraphNode, providerGraphNode,
-                                                sp.activation, EmbeddedIcons.connectionActivationIcon, "Activation Connection");
+                                                sp.activation, EmbeddedIcons.connectionActivationIcon,
+                                                resourceManager.getString(AtricoreConsole.BUNDLE, "activation.connection"));
                                         environmentExists = true;
                                     }
                                 }
                                 if(!environmentExists){
                                     var newExecEnvNode:IVisualNode = GraphDataManager.addVNodeAsChild(_identityApplianceDiagram, UIDUtil.createUID(), sp.activation.executionEnv, providerGraphNode,
-                                            sp.activation,EmbeddedIcons.connectionActivationIcon, "Activation Connection", true, Constants.IDENTITY_VAULT_DEEP);
+                                            sp.activation,EmbeddedIcons.connectionActivationIcon,
+                                            resourceManager.getString(AtricoreConsole.BUNDLE, "activation.connection"), 
+                                            true, Constants.IDENTITY_VAULT_DEEP);
                                     //if vault doesn't exist in the vaults array, add it so other providers can find it
                                     environmentNodes.addItem(newExecEnvNode);
                                 }
@@ -809,7 +824,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             var graphNodeRoleB1:IVisualNode = providerNodes[fedConnA.roleB];
                             if(!DiagramUtil.nodeLinkExists(graphNodeRoleA1.node, graphNodeRoleB1.node)){ //avoid double linking
                                 GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA1, graphNodeRoleB1,
-                                        fedConnA, EmbeddedIcons.connectionFederatedIcon, "Federated Connection");
+                                        fedConnA, EmbeddedIcons.connectionFederatedIcon,
+                                        resourceManager.getString(AtricoreConsole.BUNDLE, "federated.connection"));
                             }
                         }
                         for each (var fedConnB:FederatedConnection in fedProvider.federatedConnectionsB){
@@ -817,7 +833,8 @@ public class DiagramMediator extends IocMediator implements IDisposable {
                             var graphNodeRoleB2:IVisualNode = providerNodes[fedProvider];
                             if(!DiagramUtil.nodeLinkExists(graphNodeRoleA2.node, graphNodeRoleB2.node)){ //avoid double linking
                                 GraphDataManager.linkVNodes(_identityApplianceDiagram, graphNodeRoleA2, graphNodeRoleB2,
-                                        fedConnB, EmbeddedIcons.connectionFederatedIcon, "Federated Connection");
+                                        fedConnB, EmbeddedIcons.connectionFederatedIcon,
+                                        resourceManager.getString(AtricoreConsole.BUNDLE, "federated.connection"));
                             }
                         }
                     }

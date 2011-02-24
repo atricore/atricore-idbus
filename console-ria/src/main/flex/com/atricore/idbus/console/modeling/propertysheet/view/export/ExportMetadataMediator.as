@@ -10,6 +10,9 @@ import flash.net.FileReference;
 
 import mx.events.CloseEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
@@ -25,6 +28,8 @@ public class ExportMetadataMediator extends IocMediator {
     private var _providerName:String;
     private var _channelName:String;
     private var _override:Boolean;
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
     
     public function ExportMetadataMediator(name:String = null, viewComp:ExportMetadataView = null) {
         super(name, viewComp);
@@ -57,7 +62,7 @@ public class ExportMetadataMediator extends IocMediator {
         if (_applianceId != null && _providerName != null) {
 
             view.progBar.setProgress(0, 0);
-            view.progBar.label = "Exporting SAML Metadata...";
+            view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "export.saml.metadata");            
 
             sendNotification(ApplicationFacade.METADATA_EXPORT, [_applianceId, _providerName, _channelName]);
         } else {
@@ -106,17 +111,17 @@ public class ExportMetadataMediator extends IocMediator {
                 view.progBar.setProgress(100, 100);
                 view.btnSave.enabled = true;
                 if (_exportedMetadata != null && _exportedMetadata.length > 0) {
-                    view.progBar.label = "Metadata successfully exported";
+                    view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "export.saml.metadata.success");
                 } else {
-                    view.progBar.label = "Error exporting metadata!!!";
-                    view.btnSave.label = "Close";
+                    view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "export.saml.metadata.error");
+                    view.btnSave.label = resourceManager.getString(AtricoreConsole.BUNDLE, "export.saml.metadata.close");
                 }
                 break;
             case ExportMetadataCommand.FAILURE:
                 view.progBar.indeterminate = false;
                 view.progBar.setProgress(100, 100);
-                view.progBar.label = "Error exporting metadata!!!";
-                view.btnSave.label = "Close";
+                view.progBar.label = resourceManager.getString(AtricoreConsole.BUNDLE, "export.saml.metadata.error");
+                view.btnSave.label = resourceManager.getString(AtricoreConsole.BUNDLE, "export.saml.metadata.close");
                 view.btnSave.enabled = true;
                 break;
         }

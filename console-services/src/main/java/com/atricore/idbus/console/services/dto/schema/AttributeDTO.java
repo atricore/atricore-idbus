@@ -1,5 +1,7 @@
 package com.atricore.idbus.console.services.dto.schema;
 
+import java.util.ArrayList;
+
 /**
  * @author <a href=mailto:sgonzalez@atricore.org>Sebastian Gonzalez Oyuela</a>
  */
@@ -18,6 +20,8 @@ public class AttributeDTO {
     private boolean required;
 
     private boolean multivalued;
+
+    private ArrayList value;
 
     public AttributeDTO() {
 
@@ -96,5 +100,13 @@ public class AttributeDTO {
 
     public void setMultivalued(boolean multivalued) {
         this.multivalued = multivalued;
+    }
+
+    public ArrayList getValue() {
+        return value;
+    }
+
+    public void setValue(ArrayList value) {
+        this.value = value;
     }
 }

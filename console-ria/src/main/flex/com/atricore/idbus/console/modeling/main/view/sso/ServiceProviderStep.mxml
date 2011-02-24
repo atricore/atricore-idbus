@@ -129,7 +129,7 @@
             }
 
             public function handleDirectoryDoesntExists(event:Event):void {
-                homeDir.errorString = "Directory doesn't exist";
+                homeDir.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                 isValid = false;
             }
 
@@ -173,16 +173,16 @@
             }
 
             private function addSPToReadableArray():void {
-                readableResultArray.push("JOSSO Service Provider's Name: " + jossoSPName.text);
-                readableResultArray.push("JOSSO Service Provider's Platform: " + jossoSPPlatform.labelDisplay.text);
-                readableResultArray.push("JOSSO Service Provider's Location: " + composeLocation());
+                readableResultArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "idApplianceWiz.spLocalStep.josso.spname") + ": " + jossoSPName.text);
+                readableResultArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "idApplianceWiz.spLocalStep.platform") + ": " + jossoSPPlatform.labelDisplay.text);
+                readableResultArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "idApplianceWiz.spLocalStep.josso.sp.location") + ": " + composeLocation());
             }
 
             private function addNewSPProvider():void {
                 addSPToArray();
                 addSPToReadableArray();
 
-                creationStatusLbl.text = "JOSSO Service Provider successfully added";
+                creationStatusLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, "idApplianceWiz.spLocalStep.creation.status");
                 fadeFx.play([creationStatusLbl]);
                 clearTheForm();
 
