@@ -39,6 +39,9 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.puremvc.as3.interfaces.INotification;
 
 public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator {
@@ -48,6 +51,8 @@ public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator 
     private static var _environmentName:String = "ALFRESCO";    
 
     private var _newExecutionEnvironment:AlfrescoExecutionEnvironment;
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     public function AlfrescoExecutionEnvironmentCreateMediator(name:String = null, viewComp:AlfrescoExecutionEnvironmentCreateForm = null) {
         super(name, viewComp);
@@ -166,10 +171,10 @@ public class AlfrescoExecutionEnvironmentCreateMediator extends IocFormMediator 
                     if (resp.invalidFolders != null && resp.invalidFolders.length > 0) {
                         for each (var invalidFolder:String in resp.invalidFolders) {
                             if (view.homeDirectory.text == invalidFolder) {
-                                view.homeDirectory.errorString = "Directory doesn't exist";
+                                view.homeDirectory.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist")
                             }
                             if (view.tomcatInstallDir.text == invalidFolder) {
-                                view.tomcatInstallDir.errorString = "Directory doesn't exist";
+                                view.tomcatInstallDir.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                             }
                         }
                     } else {

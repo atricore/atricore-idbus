@@ -33,6 +33,9 @@ import flash.events.MouseEvent;
 
 import mx.events.CloseEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.puremvc.as3.interfaces.INotification;
 
 public class DeployApplianceMediator extends IocFormMediator
@@ -42,6 +45,8 @@ public class DeployApplianceMediator extends IocFormMediator
     private var _projectProxy:ProjectProxy;
 
     private var _processingStarted:Boolean;
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     public function DeployApplianceMediator(name:String = null, viewComp:DeployApplianceView = null) {
         super(name, viewComp);
@@ -88,9 +93,9 @@ public class DeployApplianceMediator extends IocFormMediator
                     sendNotification(ProcessingMediator.STOP);
                     sendNotification(ApplicationFacade.UPDATE_IDENTITY_APPLIANCE);
                     // TODO : Use resources bundle!
-                    var msg:String = "Appliance has been successfully deployed.";
+                    var msg:String = resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.deploy.success");
                     if (view.startAppliance.selected) {
-                        msg = "Appliance has been successfully deployed and started.";
+                        msg = resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.deploy.start.success");
                     }
 //                    sendNotification(ApplicationFacade.SHOW_SUCCESS_MSG, msg);
                 }
@@ -100,7 +105,7 @@ public class DeployApplianceMediator extends IocFormMediator
                     sendNotification(ProcessingMediator.STOP);
                     // TODO : Use resources bundle!
                     sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                            "There was an error deploying appliance.");
+                            resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.deploy.error"));
                 }
                 break;
         }
@@ -110,7 +115,8 @@ public class DeployApplianceMediator extends IocFormMediator
     private function handleNextClick(event:MouseEvent):void {
         _processingStarted = true;
         closeWindow();
-        sendNotification(ProcessingMediator.START, "Deploying appliance ...");
+        sendNotification(ProcessingMediator.START,
+                resourceManager.getString(AtricoreConsole.BUNDLE, "idappliance.deploy.progress"));
         sendNotification(ApplicationFacade.DEPLOY_IDENTITY_APPLIANCE,
                 [_projectProxy.currentIdentityAppliance.id.toString(), view.startAppliance.selected]);
     }

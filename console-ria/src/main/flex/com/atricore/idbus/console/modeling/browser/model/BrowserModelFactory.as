@@ -54,6 +54,9 @@ import com.atricore.idbus.console.services.dto.WebserverExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.WindowsIISExecutionEnvironment;
 import com.atricore.idbus.console.services.dto.XmlIdentitySource;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 public class BrowserModelFactory {
 
         public static function createIdentityApplianceNode(identityAppliance:IdentityAppliance, selectable:Boolean, parentNode:BrowserNode):BrowserNode {
@@ -177,7 +180,8 @@ public class BrowserModelFactory {
 
         public static function createConnectionsNode(selectable:Boolean, parentNode:BrowserNode):BrowserNode {
             var connectionsNode:BrowserNode = new BrowserNode();
-            connectionsNode.label = "connections";
+            var resourceManager:IResourceManager = ResourceManager.getInstance();
+            connectionsNode.label = resourceManager.getString(AtricoreConsole.BUNDLE, "modelling.browser.connections");
             connectionsNode.type = Constants.CONNECTIONS_DEEP;
             connectionsNode.selectable = selectable;
             connectionsNode.parentNode = parentNode;

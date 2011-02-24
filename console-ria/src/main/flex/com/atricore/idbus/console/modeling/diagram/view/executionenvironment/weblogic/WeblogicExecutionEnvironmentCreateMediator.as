@@ -34,13 +34,18 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.puremvc.as3.interfaces.INotification;
 
 public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
 
-    private static var _environmentName:String = "WEBLOGIC";    
+    private static var _environmentName:String = "WEBLOGIC";
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     private var _newExecutionEnvironment:WeblogicExecutionEnvironment;
 
@@ -160,7 +165,7 @@ public class WeblogicExecutionEnvironmentCreateMediator extends IocFormMediator 
             case FolderExistsCommand.FOLDER_DOESNT_EXISTS:
                 envName = notification.getBody() as String;
                 if(envName == _environmentName){
-                    view.homeDirectory.errorString = "Directory doesn't exist";
+                    view.homeDirectory.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                 }
                 break;
         }

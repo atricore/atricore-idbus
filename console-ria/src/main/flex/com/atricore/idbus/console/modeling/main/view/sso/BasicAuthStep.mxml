@@ -53,14 +53,15 @@
                 if (obfuscatePass.selected) {
                     //TODO
                     //                  identitySource.obfuscatePassword = obfuscatePass.selected;
-                    readableDecisionArray.push("Obfuscate Password: " + obfuscatePass.selected);
+                    readableDecisionArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "ssoWiz.step1.obfuscatePass") + ": " + obfuscatePass.selected);
+
                 }
 
                 if (embedded.selected) {
                     identitySource = new EmbeddedIdentitySource();
-                    readableDecisionArray.push("Create Embedded Repository");
+                    readableDecisionArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "ssoWiz.step1.create.embedded"));
                 } else {
-                    readableDecisionArray.push("Create External Repository");
+                    readableDecisionArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "ssoWiz.step1.create.external"));                    
                     if (externalRepositoryType.selectedItem.data == "database") {
                         identitySource = new DbIdentitySource();
                     } else if (externalRepositoryType.selectedItem.data == "ldap") {
@@ -71,9 +72,10 @@
                 }
                 
                 identitySource.name = userRepositoryName.text;
-                readableDecisionArray.push("Repository Name: " + identitySource.name);
+                readableDecisionArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "ssoWiz.step2.repository.name") + ": " + identitySource.name);
+
                 if (!(identitySource is EmbeddedIdentitySource)) {
-                    readableDecisionArray.push("Repository type: " + externalRepositoryType.labelDisplay.text);
+                    readableDecisionArray.push(resourceManager.getString(AtricoreConsole.BUNDLE, "ssoWiz.step2.repository.type") + ": " + externalRepositoryType.labelDisplay.text);
                 }
                 
                 return identitySource;

@@ -62,6 +62,9 @@ import mx.controls.Alert;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
@@ -81,6 +84,8 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
     private var _emptyNotationModel:XML;
 
     private var _popupManager:ModelerPopUpManager;
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     [Bindable]
     public var _applianceList:Array;
@@ -240,10 +245,10 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             var buttonWidth:Number = Alert.buttonWidth;
             Alert.buttonWidth = 80;
             Alert.okLabel = "Continue";
-            Alert.show("There are unsaved changes which will be lost in case you choose to continue.",
-                    "Confirm", Alert.OK | Alert.CANCEL, null, newApplianceConfirmed, null, Alert.OK);
+            Alert.show(resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.unsaveddata"),
+                    resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.confirm"), Alert.OK | Alert.CANCEL, null, newApplianceConfirmed, null, Alert.OK);
             Alert.buttonWidth = buttonWidth;
-            Alert.okLabel = "OK";
+            Alert.okLabel = resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.okLabel");
         } else {
             openNewApplianceWizard();
         }
@@ -267,21 +272,21 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
         trace("Open Button Click: " + event);
         if (view.appliances.selectedItem != null) {
             var applianceId:String = (view.appliances.selectedItem as IdentityAppliance).id.toString();
-            sendNotification(ProcessingMediator.START, "Opening Identity Appliance...");
+            sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.opening.appliance"));
             sendNotification(ApplicationFacade.LOOKUP_IDENTITY_APPLIANCE_BY_ID, applianceId);
         }
     }
 
     private function handleSaveClick(event:MouseEvent):void {
         trace("Save Button Click: " + event);
-        sendNotification(ProcessingMediator.START, "Saving Identity Appliance...");
+        sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.saving.appliance"));
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
     }
 
     private function handleImportClick(event:MouseEvent):void {
         trace("Import Button Click: " + event);
         _fileRef = new FileReference();
-        var appTypes:FileFilter = new FileFilter("Appliances Files (*.zip, *.jar)", "*.zip; *.jar");
+        var appTypes:FileFilter = new FileFilter(resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.appliance.files") + "(*.zip, *.jar)", "*.zip; *.jar");
         _fileRef.addEventListener(Event.SELECT, selectFileOpenHandler);
         _fileRef.addEventListener(Event.COMPLETE, completeFileOpenHandler);
         _fileRef.browse(new Array(appTypes));
@@ -366,7 +371,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                     // check for null because we try to open Modeler after login and the view might not be created yet
                     if (view != null && view.btnSave != null && view.btnSave.enabled) {
                         _appSectionChangeInProgress = true;
-                        sendNotification(ProcessingMediator.START, "Autosaving Identity Appliance...");
+                        sendNotification(ProcessingMediator.START, resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.autosaving.appliance"));
                         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_UPDATE);
                     } else {
                         sendNotification(BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED);
@@ -572,7 +577,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             case LookupIdentityApplianceByIdCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        "There was an error opening appliance.");
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.opening.error"));                    
                 break;
             case IdentityApplianceListLoadCommand.SUCCESS:
                 if (projectProxy.identityApplianceList == null) {
@@ -589,7 +594,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case IdentityApplianceListLoadCommand.FAILURE:
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        "There was an error retrieving list of appliances.");
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.list.error"));                    
                 break;
 
             case IdentityApplianceImportCommand.SUCCESS:
@@ -599,7 +604,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case IdentityApplianceImportCommand.FAILURE:
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        "There was an error importing appliance. Bad artifact or already exists.");
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.import.error"));
                 break;
             case IdentityApplianceUpdateCommand.SUCCESS:
                 var silentUpdate:Boolean = notification.getBody() as Boolean;
@@ -627,7 +632,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
             case IdentityApplianceUpdateCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        "There was an error updating appliance.");
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.update.error"));                    
                 if (_appSectionChangeInProgress) {
                     sendNotification(BaseAppFacade.APP_SECTION_CHANGE_REJECTED, viewName);
                     _appSectionChangeInProgress = false;
@@ -644,7 +649,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                         }
                         msg += validationError + "\n";
                     }
-                    Alert.show(msg, "Validation Errors");
+                    Alert.show(msg, resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.validation.error"));
                 }
                 projectProxy.identityApplianceValidationErrors = null;
                 if (_appSectionChangeInProgress) {
@@ -654,7 +659,7 @@ public class ModelerMediator extends AppSectionMediator implements IDisposable {
                 break;
             case JDBCDriversListCommand.FAILURE:
                 sendNotification(ApplicationFacade.SHOW_ERROR_MSG,
-                        "There was an error loading JDBC drivers list.");
+                        resourceManager.getString(AtricoreConsole.BUNDLE, "modeler.mediator.loading.jdbc.error"));
                 break;
             case ApplicationFacade.EXPORT_IDENTITY_APPLIANCE:
                 if (projectProxy.currentIdentityAppliance != null) {

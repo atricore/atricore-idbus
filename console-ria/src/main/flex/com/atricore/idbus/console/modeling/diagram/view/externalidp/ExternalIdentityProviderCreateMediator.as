@@ -39,6 +39,9 @@ import mx.binding.utils.BindingUtils;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.puremvc.as3.interfaces.INotification;
 
 public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
@@ -47,6 +50,8 @@ public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
     private var _newIdentityProvider:ExternalIdentityProvider;
     private var _uploadedFile:ByteArray;
     private var _uploadedFileName:String;
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     [Bindable]
     private var _fileRef:FileReference;
@@ -100,7 +105,7 @@ public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.metadataFile.prompt = "Browse medatada file";
+        view.metadataFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.metadata.file");
         view.lblUploadMsg.text = "";
         view.lblUploadMsg.visible = false;
 
@@ -132,7 +137,7 @@ public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
     private function handleIdentityProviderSave(event:MouseEvent):void {
         if (validate(true)) {
             if (_selectedFiles == null || _selectedFiles.length == 0) {
-                view.lblUploadMsg.text = "You must select a metadata file!!!";
+                view.lblUploadMsg.text = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.metadata.file.error");
                 view.lblUploadMsg.setStyle("color", "Red");
                 view.lblUploadMsg.visible = true;
                 event.stopImmediatePropagation();
@@ -195,7 +200,7 @@ public class ExternalIdentityProviderCreateMediator extends IocFormMediator {
 
         _fileRef = null;
         _selectedFiles = new ArrayCollection();
-        view.metadataFile.prompt = "Browse metadata file";
+        view.metadataFile.prompt = resourceManager.getString(AtricoreConsole.BUNDLE, "browse.metadata.file");
 
         saveIdentityProvider();
     }

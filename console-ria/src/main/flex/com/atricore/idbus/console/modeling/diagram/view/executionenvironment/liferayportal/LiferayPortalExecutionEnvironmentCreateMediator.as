@@ -35,13 +35,18 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.events.CloseEvent;
 
+import mx.resources.IResourceManager;
+import mx.resources.ResourceManager;
+
 import org.puremvc.as3.interfaces.INotification;
 
 public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMediator {
 
     private var _projectProxy:ProjectProxy;
 
-    private static var _environmentName:String = "LIFERAY";    
+    private static var _environmentName:String = "LIFERAY";
+
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     private var _newExecutionEnvironment:LiferayExecutionEnvironment;
 
@@ -163,10 +168,10 @@ public class LiferayPortalExecutionEnvironmentCreateMediator extends IocFormMedi
                     if (resp.invalidFolders != null && resp.invalidFolders.length > 0) {
                         for each (var invalidFolder:String in resp.invalidFolders) {
                             if (view.homeDirectory.text == invalidFolder) {
-                                view.homeDirectory.errorString = "Directory doesn't exist";
+                                view.homeDirectory.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                             }
                             if (view.containerPath.text == invalidFolder) {
-                                view.containerPath.errorString = "Directory doesn't exist";
+                                view.containerPath.errorString = resourceManager.getString(AtricoreConsole.BUNDLE, "executionenvironment.doesntexist");
                             }
                         }
                     } else {
