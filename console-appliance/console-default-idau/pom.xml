@@ -28,12 +28,12 @@
     <parent>
         <groupId>com.atricore.idbus.console</groupId>
         <artifactId>console</artifactId>
-        <version>1.0.0-m3</version>
+        <version>1.0.0-m4</version>
     </parent>
 
     <groupId>com.atricore.idbus.console.appliance</groupId>
     <artifactId>com.atricore.idbus.console.appliance.console-default-idau</artifactId>
-    <version>1.0.0-m3</version>
+    <version>1.0.0-m4</version>
     <packaging>bundle</packaging>
     <name>Atricore Console :: Default Identity Appliance Unit</name>
 

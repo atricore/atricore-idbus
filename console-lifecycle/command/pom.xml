@@ -29,13 +29,13 @@
     <parent>
         <groupId>com.atricore.idbus.console.lifecycle</groupId>
         <artifactId>console-lifecycle</artifactId>
-        <version>1.0.0-m3</version>
+        <version>1.0.0-m4</version>
     </parent>
 
     <groupId>com.atricore.idbus.console.lifecycle</groupId>
     <artifactId>com.atricore.idbus.console.lifecycle.command</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.0-m3</version>
+    <version>1.0.0-m4</version>
     <name>Atricore Console :: Lifecycle Commands</name>
 
     <description>
