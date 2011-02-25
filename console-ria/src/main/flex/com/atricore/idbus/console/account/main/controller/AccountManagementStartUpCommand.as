@@ -45,7 +45,6 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
     private var _searchGroupsCommand:IIocCommand;
     private var _searchUsersCommand:IIocCommand;
     private var _listSchemaAttributesCommand:IIocCommand;
-    private var _listSchemaAttributesForEntityCommand:IIocCommand;
     private var _addAttributeCommand:IIocCommand;
     private var _editAttributeCommand:IIocCommand;
     private var _deleteAttributeCommand:IIocCommand;
@@ -93,7 +92,6 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
         iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_GROUPS, searchGroupsCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.SEARCH_USERS, searchUsersCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, listSchemaAttributesCommand.getConfigName());
-        iocFacade.registerCommandByConfigName(ApplicationFacade.LIST_ENTITY_SCHEMA_ATTRIBUTES, listSchemaAttributesForEntityCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.ADD_SCHEMA_ATTRIBUTE, addAttributeCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.EDIT_SCHEMA_ATTRIBUTE, editAttributeCommand.getConfigName());
         iocFacade.registerCommandByConfigName(ApplicationFacade.DELETE_SCHEMA_ATTRIBUTE, deleteAttributeCommand.getConfigName());
@@ -316,14 +314,6 @@ public class AccountManagementStartUpCommand extends AppSectionStartUpCommand {
 
     public function set listSchemaAttributesCommand(value:IIocCommand):void {
         _listSchemaAttributesCommand = value;
-    }
-
-    public function get listSchemaAttributesForEntityCommand():IIocCommand {
-        return _listSchemaAttributesForEntityCommand;
-    }
-
-    public function set listSchemaAttributesForEntityCommand(value:IIocCommand):void {
-        _listSchemaAttributesForEntityCommand = value;
     }
 
     public function get addAttributeCommand():IIocCommand {

@@ -127,7 +127,7 @@ public class EditAttributeMediator extends IocFormMediator
 
     public function handleEditAttributeSuccess():void {
         sendNotification(ProcessingMediator.STOP);
-        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES);
+        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,_editedAttribute.entity);
     }
 
     public function handleEditAttributeFailure():void {

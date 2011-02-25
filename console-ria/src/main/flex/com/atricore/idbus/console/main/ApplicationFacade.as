@@ -80,7 +80,6 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const SEARCH_GROUPS:String = "searchGroups";
     public static const SEARCH_USERS:String = "searchUsers";
     public static const LIST_SCHEMA_ATTRIBUTES:String = "listSchemaAttributes";
-    public static const LIST_ENTITY_SCHEMA_ATTRIBUTES:String = "listSchemaAttributesForEntity";
     public static const ADD_SCHEMA_ATTRIBUTE:String ="addAttribute";
     public static const EDIT_SCHEMA_ATTRIBUTE:String ="editAttribute";
     public static const DELETE_SCHEMA_ATTRIBUTE:String ="deleteAttribute";

@@ -171,7 +171,6 @@
         <symbol>com.atricore.idbus.console.account.main.view.editattribute.EditAttributeMediator</symbol>
 
         <symbol>com.atricore.idbus.console.account.main.controller.ListSchemaAttributesCommand</symbol>
-        <symbol>com.atricore.idbus.console.account.main.controller.ListSchemaAttributesForEntityCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.AddAttributeCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.EditAttributeCommand</symbol>
         <symbol>com.atricore.idbus.console.account.main.controller.DeleteAttributeCommand</symbol>

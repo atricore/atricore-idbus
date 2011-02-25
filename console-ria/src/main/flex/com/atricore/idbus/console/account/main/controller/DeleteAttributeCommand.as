@@ -65,6 +65,7 @@ public class DeleteAttributeCommand extends IocSimpleCommand implements IRespond
         var req:RemoveSchemaAttributeRequest = new RemoveSchemaAttributeRequest();
         req.attributeId = atr.id;
         req.schemaName = atr.name;
+        req.entity = atr.entity;
         var call:Object = service.removeSchemaAttribute(req);
         call.addResponder(this);
     }

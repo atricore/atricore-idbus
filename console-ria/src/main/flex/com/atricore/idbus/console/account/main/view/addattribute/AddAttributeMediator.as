@@ -124,7 +124,7 @@ public class AddAttributeMediator extends IocFormMediator
 
     public function handleAddAttributeSuccess():void {
         sendNotification(ProcessingMediator.STOP);
-        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES);
+        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, _newAttribute.entity);
     }
 
     public function handleAddAttributeFailure():void {

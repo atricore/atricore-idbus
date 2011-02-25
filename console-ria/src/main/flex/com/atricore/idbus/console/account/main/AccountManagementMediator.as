@@ -159,7 +159,7 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
             view.accountManagementTabBar.selectedIndex = 0;
             view.vsAccountMng.selectedIndex = 0;
             view.accountManagementTabBar.addEventListener(IndexChangeEvent.CHANGE, stackChanged);
-            sendNotification(ApplicationFacade.LIST_ENTITY_SCHEMA_ATTRIBUTES,"User");
+            sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,"User");
         }
     }
 
@@ -181,9 +181,9 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
     private function stackChanged(event:IndexChangeEvent):void {
         view.vsAccountMng.selectedIndex = view.accountManagementTabBar.selectedIndex;
         if (view.vsAccountMng.selectedIndex==0)
-            sendNotification(ApplicationFacade.LIST_ENTITY_SCHEMA_ATTRIBUTES,"User");
+            sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,"User");
         else if (view.vsAccountMng.selectedIndex==1)
-            sendNotification(ApplicationFacade.LIST_ENTITY_SCHEMA_ATTRIBUTES,"Group");
+            sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,"Group");
 
     }
 

@@ -9,6 +9,8 @@ public class RemoveSchemaAttributeRequest extends AbstractSchemaManagementReques
 
     private int attributeId;
 
+    private String entity;
+
     public String getSchemaName() {
         return schemaName;
     }
@@ -23,5 +25,13 @@ public class RemoveSchemaAttributeRequest extends AbstractSchemaManagementReques
 
     public void setAttributeId(int attributeId) {
         this.attributeId = attributeId;
+    }
+
+    public String getEntity() {
+        return entity;
+    }
+
+    public void setEntity(String entity) {
+        this.entity = entity;
     }
 }

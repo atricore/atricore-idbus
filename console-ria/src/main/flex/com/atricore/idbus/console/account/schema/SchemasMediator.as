@@ -74,7 +74,7 @@ public class SchemasMediator extends IocMediator implements IDisposable{
         view.schemaAttrList.addEventListener(ListEvent.ITEM_CLICK , schemaAttrListClickHandler);
         view.cbEntity.addEventListener(IndexChangeEvent.CHANGE , entityChangeHandler);
 
-        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES);
+        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,_selectedEntity);
         popupManager.init(iocFacade, view);
     }
 
@@ -106,7 +106,7 @@ public class SchemasMediator extends IocMediator implements IDisposable{
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case ListSchemaAttributesCommand.SUCCESS:
-                view.schemaAttrList.dataProvider = schemasManagementProxy.schemaAttributeListForEntity(_selectedEntity);
+                view.schemaAttrList.dataProvider = schemasManagementProxy.schemaAttributeList;
                 sortSchemaAttrList();
                 if (_updatedSchemaAttrIndex != -1)  {
                     view.schemaAttrList.selectedIndex = _updatedSchemaAttrIndex;
@@ -127,7 +127,7 @@ public class SchemasMediator extends IocMediator implements IDisposable{
                 break;
             case DeleteAttributeCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES);
+                sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, _selectedEntity);
                 break;
             case DeleteAttributeCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);
@@ -159,7 +159,7 @@ public class SchemasMediator extends IocMediator implements IDisposable{
 
     public function entityChangeHandler(e:IndexChangeEvent):void {
         _selectedEntity = view.cbEntity.selectedItem as String;
-        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES);
+        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,_selectedEntity);
     }
 
     private function sortSchemaAttrList():void {

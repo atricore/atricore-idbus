@@ -47,15 +47,6 @@ public class SchemasManagementProxy extends IocProxy implements IDisposable
         _schemaAttributeList = value;
     }
 
-    public function schemaAttributeListForEntity(entity:String):ArrayCollection {
-        var retArray:ArrayCollection = new ArrayCollection();
-        for each (var attr:Attribute in _schemaAttributeList ) {
-            if (attr.entity == entity)
-                retArray.addItem(attr);
-        }
-        return retArray;
-    }
-
     public function get currentSchemaAttribute():Attribute {
         return _currentSchemaAttribute;
     }
