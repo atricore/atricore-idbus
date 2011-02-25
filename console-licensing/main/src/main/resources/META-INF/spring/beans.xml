@@ -29,7 +29,7 @@
         <osgi:listener ref="osgiProductFeaturesRegistry" bind-method="register" unbind-method="unregister" />
     </osgi:list>
 
-    <bean id="osgiProductFeaturesRegistry" class="OsgiProductFeaturesRegistry">
+    <bean id="osgiProductFeaturesRegistry" class="com.atricore.idbus.console.licensing.main.OsgiProductFeaturesRegistry">
         <constructor-arg ref="licenseManager" />
     </bean>
 

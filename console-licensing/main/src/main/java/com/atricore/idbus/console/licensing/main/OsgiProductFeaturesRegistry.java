@@ -14,6 +14,10 @@ public class OsgiProductFeaturesRegistry {
 
     private LicenseManager lm;
 
+    public OsgiProductFeaturesRegistry(LicenseManager lm) {
+        this.lm = lm;
+    }
+
     public void register(final ProductFeature productFeature, final Map<String, ?> properties) {
         logger.info("Identity Mediation Unit registered : " + productFeature.getName());
         if (logger.isDebugEnabled()) {
