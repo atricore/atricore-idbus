@@ -188,6 +188,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const DISPLAY_GROUP_PROPERTIES:String = "displayGroupProperties";
     public static const DISPLAY_USER_PROPERTIES:String = "displayUserProperties";
     public static const DISPLAY_SCHEMA_PROPERTIES:String = "displaySchemaProperties";
+    public static const DISPLAY_SCHEMA_ATTRIBUTES:String = "displaySchemaAttributes";
     public static const DISPLAY_CHANGE_PASSWORD:String = "displayChangePassword";
     public static const APPLIANCE_VALIDATION_ERRORS:String = "applianceValidationErrors";
     public static const APPLIANCE_SAVED:String = "applianceSaved";

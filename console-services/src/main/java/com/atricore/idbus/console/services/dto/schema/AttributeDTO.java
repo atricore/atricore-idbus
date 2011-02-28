@@ -24,7 +24,7 @@ public class AttributeDTO {
     private ArrayList value;
 
     public AttributeDTO() {
-
+        value = new ArrayList();
     }
 
     public AttributeDTO(int id, String entity, String name, TypeDTOEnum type, boolean required, boolean multivalued) {
@@ -34,6 +34,7 @@ public class AttributeDTO {
         this.type = type;
         this.required = required;
         this.multivalued = multivalued;
+        value = new ArrayList();
     }
 
     public AttributeDTO(int id, String entity, String name, String description, TypeDTOEnum type, boolean required, boolean multivalued) {
@@ -44,6 +45,7 @@ public class AttributeDTO {
         this.type = type;
         this.required = required;
         this.multivalued = multivalued;
+        value = new ArrayList();
     }
 
     public int getId() {

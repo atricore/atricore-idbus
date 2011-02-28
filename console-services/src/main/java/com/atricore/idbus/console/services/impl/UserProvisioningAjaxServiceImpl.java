@@ -25,11 +25,13 @@ import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundExceptio
 import com.atricore.idbus.console.lifecycle.main.exception.UserProvisioningAjaxException;
 import com.atricore.idbus.console.services.dto.GroupDTO;
 import com.atricore.idbus.console.services.dto.UserDTO;
+import com.atricore.idbus.console.services.dto.schema.AttributeDTO;
 import com.atricore.idbus.console.services.spi.SpmlAjaxClient;
 import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
 import com.atricore.idbus.console.services.spi.request.*;
 import com.atricore.idbus.console.services.spi.response.*;
 import oasis.names.tc.spml._2._0.*;
+import oasis.names.tc.spml._2._0.atricore.AttributeValueType;
 import oasis.names.tc.spml._2._0.atricore.GroupType;
 import oasis.names.tc.spml._2._0.atricore.UserType;
 import oasis.names.tc.spml._2._0.search.ScopeType;
@@ -47,8 +49,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Author: Dusan Fisic
@@ -120,8 +121,12 @@ public class UserProvisioningAjaxServiceImpl implements
             GroupType group = new GroupType ();
             group.setName(groupRequest.getName());
             group.setDescription(groupRequest.getDescription());
-            if (groupRequest.getExtraAttributes() != null)
-                group.getAttributeValue().addAll(groupRequest.getExtraAttributes());
+            if (groupRequest.getExtraAttributes() != null) {
+                for (AttributeDTO attribute : (List<AttributeDTO>) groupRequest.getExtraAttributes()) {
+                    List<AttributeValueType> attrValues = toAttributeValueTypes(attribute);
+                    group.getAttributeValue().addAll(attrValues);
+                }
+            }
             addReq.setData(group);
 
             AddResponseType resp = spmlService.spmlAddRequest(addReq);
@@ -361,8 +366,12 @@ public class UserProvisioningAjaxServiceImpl implements
             if (groupRequest.getDescription() != null)
                 spmlGroup.setDescription(groupRequest.getDescription());
 
-            if (groupRequest.getExtraAttributes() != null)
-                spmlGroup.getAttributeValue().addAll(groupRequest.getExtraAttributes());
+            if (groupRequest.getExtraAttributes() != null) {
+                for (AttributeDTO attribute : (List<AttributeDTO>) groupRequest.getExtraAttributes()) {
+                    List<AttributeValueType> attrValues = toAttributeValueTypes(attribute);
+                    spmlGroup.getAttributeValue().addAll(attrValues);
+                }
+            }
 
             PSOIdentifierType psoId = new PSOIdentifierType();
             psoId.setID(groupRequest.getId() + "");
@@ -825,8 +834,12 @@ public class UserProvisioningAjaxServiceImpl implements
         user.setEmailNewPasword(newUser.getEmailNewPasword());
 
         ArrayList extraAttr = newUser.getExtraAttributes();
-        if (extraAttr !=null)
-            user.getAttributeValue().addAll(extraAttr);
+        if (extraAttr !=null) {
+            for (AttributeDTO attribute : (List<AttributeDTO>) extraAttr) {
+                List<AttributeValueType> attrValues = toAttributeValueTypes(attribute);
+                user.getAttributeValue().addAll(attrValues);
+            }
+        }
 
         return user;
     }
@@ -876,8 +889,12 @@ public class UserProvisioningAjaxServiceImpl implements
         user.setEmailNewPasword(newUser.getEmailNewPasword());
 
         ArrayList extraAttr = newUser.getExtraAttributes();
-        if (extraAttr !=null)
-            user.getAttributeValue().addAll(extraAttr);
+        if (extraAttr !=null) {
+            for (AttributeDTO attribute : (List<AttributeDTO>) extraAttr) {
+                List<AttributeValueType> attrValues = toAttributeValueTypes(attribute);
+                user.getAttributeValue().addAll(attrValues);
+            }
+        }
 
         return user;
     }
@@ -887,8 +904,12 @@ public class UserProvisioningAjaxServiceImpl implements
         g.setId(grp.getId());
         g.setName(grp.getName());
         g.setDescription(grp.getDescription());
-        if (grp.getExtraAttributes() != null)
-            g.getAttributeValue().addAll(grp.getExtraAttributes());
+        if (grp.getExtraAttributes() != null) {
+            for (AttributeDTO attribute : (List<AttributeDTO>) grp.getExtraAttributes()) {
+                List<AttributeValueType> attrValues = toAttributeValueTypes(attribute);
+                g.getAttributeValue().addAll(attrValues);
+            }
+        }
         return g;
     }
 
@@ -897,8 +918,36 @@ public class UserProvisioningAjaxServiceImpl implements
         g.setId(grp.getId());
         g.setName(grp.getName());
         g.setDescription(grp.getDescription());
-        g.setExtraAttributes(new ArrayList(grp.getAttributeValue()));
+        g.setExtraAttributes(toAttributeDTOs(grp.getAttributeValue()));
         return g;
+    }
+
+    public List<AttributeValueType> toAttributeValueTypes(AttributeDTO attribute) {
+        List<AttributeValueType> attrValues = new ArrayList<AttributeValueType>();
+        for (String value : (List<String>) attribute.getValue()) {
+            AttributeValueType attrValue = new AttributeValueType();
+            attrValue.setName(attribute.getName());
+            attrValue.setValue(value);
+            attrValues.add(attrValue);
+        }
+
+        return attrValues;
+    }
+
+    public ArrayList<AttributeDTO> toAttributeDTOs(List<AttributeValueType> attrValues) {
+        Map<String, AttributeDTO> attributes = new LinkedHashMap<String, AttributeDTO>();
+        if (attrValues != null) {
+            for (AttributeValueType attrValue : attrValues) {
+                AttributeDTO attribute = attributes.get(attrValue.getName());
+                if (attribute == null) {
+                    attribute = new AttributeDTO();
+                    attribute.setName(attrValue.getName());
+                }
+                attribute.getValue().add(attrValue.getValue());
+                attributes.put(attribute.getName(), attribute);
+            }
+        }
+        return new ArrayList(attributes.values());
     }
 
     public UserDTO toUserDTO(UserType usr) {
@@ -953,7 +1002,7 @@ public class UserProvisioningAjaxServiceImpl implements
 
         u.setGroups(groups);
 
-        u.setExtraAttributes(new ArrayList(usr.getAttributeValue()));
+        u.setExtraAttributes(toAttributeDTOs(usr.getAttributeValue()));
 
         return u;
     }

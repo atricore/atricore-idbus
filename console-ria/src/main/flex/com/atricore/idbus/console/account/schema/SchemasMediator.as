@@ -99,7 +99,8 @@ public class SchemasMediator extends IocMediator implements IDisposable{
             DeleteAttributeCommand.SUCCESS,
             DeleteAttributeCommand.FAILURE,
             ApplicationFacade.DISPLAY_ADD_NEW_ATTRIBUTE,
-            ApplicationFacade.DISPLAY_EDIT_ATTRIBUTE
+            ApplicationFacade.DISPLAY_EDIT_ATTRIBUTE,
+            ApplicationFacade.DISPLAY_SCHEMA_ATTRIBUTES
         ];
     }
 
@@ -138,6 +139,9 @@ public class SchemasMediator extends IocMediator implements IDisposable{
                 break;
             case ApplicationFacade.DISPLAY_EDIT_ATTRIBUTE:
                 popupManager.showEditAttributeWindow(notification);
+                break;
+            case ApplicationFacade.DISPLAY_SCHEMA_ATTRIBUTES:
+                sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, _selectedEntity);
                 break;
         }
     }

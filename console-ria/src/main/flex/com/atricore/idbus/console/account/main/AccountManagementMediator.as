@@ -184,7 +184,8 @@ public class AccountManagementMediator extends AppSectionMediator implements IDi
             sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,"User");
         else if (view.vsAccountMng.selectedIndex==1)
             sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,"Group");
-
+        else if (view.vsAccountMng.selectedIndex==2)
+            sendNotification(ApplicationFacade.DISPLAY_SCHEMA_ATTRIBUTES);
     }
 
     override public function listNotificationInterests():Array {

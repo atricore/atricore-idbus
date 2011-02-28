@@ -37,7 +37,6 @@ import com.atricore.idbus.console.services.spi.response.schema.UpdateSchemaAttri
 import oasis.names.tc.spml._2._0.*;
 import oasis.names.tc.spml._2._0.atricore.AttributeType;
 import oasis.names.tc.spml._2._0.atricore.GroupAttributeType;
-import oasis.names.tc.spml._2._0.atricore.GroupType;
 import oasis.names.tc.spml._2._0.atricore.UserAttributeType;
 import oasis.names.tc.spml._2._0.search.ScopeType;
 import oasis.names.tc.spml._2._0.search.SearchQueryType;
@@ -47,15 +46,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.spmlr2.main.SPMLR2Constants;
 import org.atricore.idbus.capabilities.spmlr2.main.SpmlR2Client;
-import org.atricore.idbus.kernel.main.mediation.IdentityMediationException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
 
 /**
  * Author: Dusan Fisic
@@ -69,9 +65,6 @@ public class SchemaManagementAjaxServiceImpl implements
         InitializingBean {
 
     private static Log logger = LogFactory.getLog(SchemaManagementAjaxServiceImpl.class);
-
-    private HashMap<Integer,AttributeDTO> attrMap;
-    private Random randomGenerator = new Random();
 
     private UUIDGenerator uuidGenerator = new UUIDGenerator();
     private String pspTargetId;
@@ -100,7 +93,7 @@ public class SchemaManagementAjaxServiceImpl implements
                     addReq.getOtherAttributes().put(SPMLR2Constants.userAttributeAttr, "true");
                     UserAttributeType userAttribute = new UserAttributeType();
                     userAttribute.setName(attribute.getName());
-                    userAttribute.setDescription("desc1");
+                    userAttribute.setDescription(attribute.getDescription());
                     userAttribute.setRequired(attribute.isRequired());
                     userAttribute.setMultivalued(attribute.isMultivalued());
                     userAttribute.setType(AttributeType.fromValue(attribute.getType().name()));
@@ -109,7 +102,7 @@ public class SchemaManagementAjaxServiceImpl implements
                     addReq.getOtherAttributes().put(SPMLR2Constants.groupAttributeAttr, "true");
                     GroupAttributeType groupAttribute = new GroupAttributeType();
                     groupAttribute.setName(attribute.getName());
-                    groupAttribute.setDescription("desc2");
+                    groupAttribute.setDescription(attribute.getDescription());
                     groupAttribute.setRequired(attribute.isRequired());
                     groupAttribute.setMultivalued(attribute.isMultivalued());
                     groupAttribute.setType(AttributeType.fromValue(attribute.getType().name()));
@@ -166,7 +159,7 @@ public class SchemaManagementAjaxServiceImpl implements
                     UserAttributeType userAttribute = new UserAttributeType();
                     userAttribute.setId(attribute.getId());
                     userAttribute.setName(attribute.getName());
-                    userAttribute.setDescription("desc1");
+                    userAttribute.setDescription(attribute.getDescription());
                     userAttribute.setRequired(attribute.isRequired());
                     userAttribute.setMultivalued(attribute.isMultivalued());
                     userAttribute.setType(AttributeType.fromValue(attribute.getType().name()));
@@ -178,7 +171,7 @@ public class SchemaManagementAjaxServiceImpl implements
                     GroupAttributeType groupAttribute = new GroupAttributeType();
                     groupAttribute.setId(attribute.getId());
                     groupAttribute.setName(attribute.getName());
-                    groupAttribute.setDescription("desc2");
+                    groupAttribute.setDescription(attribute.getDescription());
                     groupAttribute.setRequired(attribute.isRequired());
                     groupAttribute.setMultivalued(attribute.isMultivalued());
                     groupAttribute.setType(AttributeType.fromValue(attribute.getType().name()));

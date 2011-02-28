@@ -93,7 +93,7 @@ public class ExtraAttributesMediator extends IocFormMediator
     override public function bindForm():void {
         resetValidation();
 
-        for each (var at:Attribute in _extraAttributes) {
+        for each (var at:Attribute in accountManagementProxy.attributesForEntity) {
             var iField:DisplayObject = view.extraSection.getChildByName(at.name);
             if ( iField is TextInput ) {
                 (iField as TextInput).text = at.value.getItemAt(0) as String;
@@ -111,27 +111,29 @@ public class ExtraAttributesMediator extends IocFormMediator
     override public function bindModel():void {
         _extraAttributes = new ArrayCollection();
 
-        for( var i:int = 0; i < view.extraSection.dataProvider.length; i++ ) {
-            var formItem:FormItem = view.extraSection.dataProvider.getItemAt(i) as FormItem;
-            var inputField:IVisualElement = formItem.getElementAt(0);
-            var attribute:Attribute = new Attribute();
-            attribute.name = formItem.name;
-            attribute.value = new ArrayCollection();
+        if (accountManagementProxy.attributesForEntity.length > 0) {
+            for( var i:int = 0; i < view.extraSection.dataProvider.length; i++ ) {
+                var formItem:FormItem = view.extraSection.dataProvider.getItemAt(i) as FormItem;
+                var inputField:IVisualElement = formItem.getElementAt(0);
+                var attribute:Attribute = new Attribute();
+                attribute.name = (inputField as UIComponent).id;
+                attribute.value = new ArrayCollection();
 
-            if ( inputField is TextInput ) {
-                var ti:TextInput = inputField as TextInput;
-                attribute.value.addItem(ti.text);
+                if ( inputField is TextInput ) {
+                    var ti:TextInput = inputField as TextInput;
+                    attribute.value.addItem(ti.text);
+                }
+                else if ( inputField is DateField ) {
+                    var di:DateField = inputField as DateField;
+                    attribute.value.addItem(di.selectedDate);
+                }
+                else if ( inputField is MultiValuedField) {
+                    var mvField:MultiValuedField = inputField as MultiValuedField;
+                    mvField.bindModel();
+                    attribute.value = mvField.attribute.value;
+                }
+                _extraAttributes.addItem(attribute);
             }
-            else if ( inputField is DateField ) {
-                var di:DateField = inputField as DateField;
-                attribute.value.addItem(di.selectedDate);
-            }
-            else if ( inputField is MultiValuedField) {
-                var mvField:MultiValuedField = inputField as MultiValuedField;
-                mvField.bindModel();
-                attribute = mvField.attribute;
-            }
-            _extraAttributes.addItem(attribute);
         }
     }
 
@@ -139,6 +141,7 @@ public class ExtraAttributesMediator extends IocFormMediator
         view.extraSection.dataProvider = new ArrayCollection();
         for each (var attr:Attribute in accountManagementProxy.attributesForEntity) {
             var fItem:FormItem = new FormItem();
+            fItem.name = attr.name;
             fItem.label = attr.name;
             fItem.required = attr.required;
             fItem.setStyle("labelWidth", 100);
@@ -161,6 +164,7 @@ public class ExtraAttributesMediator extends IocFormMediator
             }
             view.extraSection.dataProvider.addItem(fItem);
         }
+        bindForm();
     }
 
     private function createStringField(fItem:FormItem,attr:Attribute):void {
