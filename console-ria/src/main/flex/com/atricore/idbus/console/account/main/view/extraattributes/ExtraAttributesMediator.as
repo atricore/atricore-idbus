@@ -21,14 +21,17 @@
 
 package com.atricore.idbus.console.account.main.view.extraattributes {
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
 import com.atricore.idbus.console.components.URLValidator;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.services.dto.Group;
 import com.atricore.idbus.console.services.dto.schema.Attribute;
+import com.atricore.idbus.console.services.dto.schema.AttributeValue;
 import com.atricore.idbus.console.services.dto.schema.TypeDTOEnum;
 
 import flash.display.DisplayObject;
 
+import mx.collections.ArrayCollection;
 import mx.collections.ArrayCollection;
 import mx.containers.FormItem;
 import mx.controls.DateField;
@@ -56,8 +59,8 @@ import spark.components.supportClasses.GroupBase;
 public class ExtraAttributesMediator extends IocFormMediator
 {
     private var resMan:IResourceManager = ResourceManager.getInstance();
-    private var _accountManagementProxy:AccountManagementProxy;
-    private var _extraAttributes:ArrayCollection;
+    private var _schemasManagementProxy:SchemasManagementProxy;
+    private var _attributesValues:ArrayCollection;
 
     public function ExtraAttributesMediator(name:String = null, viewComp:ExtraAttributesTab = null) {
         super(name, viewComp);
@@ -72,7 +75,7 @@ public class ExtraAttributesMediator extends IocFormMediator
     }
 
     private function init():void {
-        if (accountManagementProxy.attributesForEntity.length > 0)
+        if (schemasManagementProxy.attributesForEntity.length > 0)
             generateFormFields();
     }
 
@@ -93,53 +96,54 @@ public class ExtraAttributesMediator extends IocFormMediator
     override public function bindForm():void {
         resetValidation();
 
-        for each (var at:Attribute in accountManagementProxy.attributesForEntity) {
-            var iField:DisplayObject = view.extraSection.getChildByName(at.name);
+        for each (var attVal:AttributeValue in _attributesValues) {
+            var iField:DisplayObject = view.extraSection.getChildByName(attVal.name);
             if ( iField is TextInput ) {
-                (iField as TextInput).text = at.value.getItemAt(0) as String;
+                (iField as TextInput).text = attVal.value as String;
             }
             else if ( iField is DateField ) {
-                (iField as DateField).selectedDate = at.value.getItemAt(0) as Date;
+                (iField as DateField).selectedDate = attVal.value as Date;
             }
             else if ( iField is MultiValuedField) {
-                (iField as MultiValuedField).attribute  = at;
+                var values:ArrayCollection = new ArrayCollection(attVal.value.split(','));
+                (iField as MultiValuedField).attributeValues  = values;
                 (iField as MultiValuedField).bindForm();
             }
         }
     }
 
     override public function bindModel():void {
-        _extraAttributes = new ArrayCollection();
+        _attributesValues = new ArrayCollection();
 
-        if (accountManagementProxy.attributesForEntity.length > 0) {
+        if (schemasManagementProxy.attributesForEntity.length > 0) {
             for( var i:int = 0; i < view.extraSection.dataProvider.length; i++ ) {
                 var formItem:FormItem = view.extraSection.dataProvider.getItemAt(i) as FormItem;
                 var inputField:IVisualElement = formItem.getElementAt(0);
-                var attribute:Attribute = new Attribute();
-                attribute.name = (inputField as UIComponent).id;
-                attribute.value = new ArrayCollection();
+                var attributeVal:AttributeValue = new AttributeValue();
+                attributeVal.id = (inputField as UIComponent).id as Number;
+                attributeVal.name = (inputField as UIComponent).name;
 
                 if ( inputField is TextInput ) {
                     var ti:TextInput = inputField as TextInput;
-                    attribute.value.addItem(ti.text);
+                    attributeVal.value = ti.text;
                 }
                 else if ( inputField is DateField ) {
                     var di:DateField = inputField as DateField;
-                    attribute.value.addItem(di.selectedDate);
+                    attributeVal.value = di.selectedDate as String;
                 }
                 else if ( inputField is MultiValuedField) {
                     var mvField:MultiValuedField = inputField as MultiValuedField;
                     mvField.bindModel();
-                    attribute.value = mvField.attribute.value;
+                    attributeVal.value = mvField.attributeValues.source.join(',');
                 }
-                _extraAttributes.addItem(attribute);
+                _attributesValues.addItem(attributeVal);
             }
         }
     }
 
     public function generateFormFields():void {
         view.extraSection.dataProvider = new ArrayCollection();
-        for each (var attr:Attribute in accountManagementProxy.attributesForEntity) {
+        for each (var attr:Attribute in schemasManagementProxy.attributesForEntity) {
             var fItem:FormItem = new FormItem();
             fItem.name = attr.name;
             fItem.label = attr.name;
@@ -261,24 +265,24 @@ public class ExtraAttributesMediator extends IocFormMediator
         return _uiCompValidator;
     }
 
-    public function get accountManagementProxy():AccountManagementProxy {
-        return _accountManagementProxy;
+    public function get schemasManagementProxy():SchemasManagementProxy {
+        return _schemasManagementProxy;
     }
 
-    public function set accountManagementProxy(value:AccountManagementProxy):void {
-        _accountManagementProxy = value;
+    public function set schemasManagementProxy(value:SchemasManagementProxy):void {
+        _schemasManagementProxy = value;
     }
 
     public function get getValidators():Array {
         return _validators;
     }
 
-    public function get extraAttributes():ArrayCollection {
-        return _extraAttributes;
+    public function get attributesValues():ArrayCollection {
+        return _attributesValues;
     }
 
-    public function set extraAttributes(value:ArrayCollection):void {
-        _extraAttributes = value;
+    public function set attributesValues(value:ArrayCollection):void {
+        _attributesValues = value;
     }
 
     public function get view():ExtraAttributesTab

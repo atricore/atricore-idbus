@@ -94,6 +94,7 @@ public class EditAttributeMediator extends IocFormMediator
         _editedAttribute.id = schemasManagementProxy.currentSchemaAttribute.id;
         view.cbEntity.selectedItem = schemasManagementProxy.currentSchemaAttribute.entity;
         view.nameAttribute.text = schemasManagementProxy.currentSchemaAttribute.name;
+        view.descAttribute.text = schemasManagementProxy.currentSchemaAttribute.description;
         view.cbType.selectedItem = schemasManagementProxy.currentSchemaAttribute.type;
         view.required.selected = schemasManagementProxy.currentSchemaAttribute.required;
         view.multivalued.selected = schemasManagementProxy.currentSchemaAttribute.multivalued;
@@ -105,6 +106,7 @@ public class EditAttributeMediator extends IocFormMediator
 
         _editedAttribute.entity = view.cbEntity.selectedItem;
         _editedAttribute.name = view.nameAttribute.text;
+        _editedAttribute.description = view.descAttribute.text;
         _editedAttribute.type = new TypeDTOEnum(view.cbType.selectedItem , null);
         _editedAttribute.required = view.required.selected;
         _editedAttribute.multivalued = view.multivalued.selected;

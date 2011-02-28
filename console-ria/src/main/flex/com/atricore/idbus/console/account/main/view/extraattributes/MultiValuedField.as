@@ -25,6 +25,7 @@ import com.atricore.idbus.console.components.IconButtonSkin;
 import com.atricore.idbus.console.components.URLValidator;
 import com.atricore.idbus.console.main.EmbeddedIcons;
 import com.atricore.idbus.console.services.dto.schema.Attribute;
+import com.atricore.idbus.console.services.dto.schema.AttributeValue;
 import com.atricore.idbus.console.services.dto.schema.TypeDTOEnum;
 
 import flash.events.Event;
@@ -63,6 +64,7 @@ public class MultiValuedField extends VGroup
     private var resMan:IResourceManager = ResourceManager.getInstance();
 
     private var _attribute:Attribute;
+    private var _attributeValues:ArrayCollection;
     private var _valuesList:DataGrid = new DataGrid();
 
     private var _uiInputComp:UIComponent;
@@ -201,13 +203,13 @@ public class MultiValuedField extends VGroup
     }
 
     public function bindForm():void {
-        for each (var val:Object in attribute.value) {
+        for each (var val:AttributeValue in attributeValues) {
             _valuesList.dataProvider.addItem(val);
         }
     }
 
     public function bindModel():void {
-        _attribute.value = ArrayCollection(_valuesList.dataProvider);
+        _attributeValues = ArrayCollection(_valuesList.dataProvider);
     }
 
     public function get attribute():Attribute {
@@ -216,6 +218,14 @@ public class MultiValuedField extends VGroup
 
     public function set attribute(value:Attribute):void {
         _attribute = value;
+    }
+
+    public function get attributeValues():ArrayCollection {
+        return _attributeValues;
+    }
+
+    public function set attributeValues(value:ArrayCollection):void {
+        _attributeValues = value;
     }
 
     public function get valuesList():DataGrid {

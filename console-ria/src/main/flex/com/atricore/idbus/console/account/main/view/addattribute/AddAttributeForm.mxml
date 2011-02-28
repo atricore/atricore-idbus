@@ -57,6 +57,10 @@
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.attribute.add.name')}:">
             <s:TextInput id="nameAttribute" width="200" />
         </mx:FormItem>
+        <mx:FormItem labelWidth="100" required="false"
+                     label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.attribute.add.description')}:">
+            <s:TextArea id="descAttribute" heightInLines="2" width="200" />
+        </mx:FormItem>
         <mx:FormItem labelWidth="100" required="true"
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.attribute.add.type')}">
             <s:DropDownList id="cbType" width="200" dataProvider="{new ArrayCollection(resourceManager.getString(AtricoreConsole.BUNDLE,

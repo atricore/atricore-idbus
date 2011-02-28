@@ -107,14 +107,14 @@ public class SchemasMediator extends IocMediator implements IDisposable{
     override public function handleNotification(notification:INotification):void {
         switch (notification.getName()) {
             case ListSchemaAttributesCommand.SUCCESS:
-                view.schemaAttrList.dataProvider = schemasManagementProxy.schemaAttributeList;
+                view.schemaAttrList.dataProvider = schemasManagementProxy.attributesForEntity;
                 sortSchemaAttrList();
                 if (_updatedSchemaAttrIndex != -1)  {
                     view.schemaAttrList.selectedIndex = _updatedSchemaAttrIndex;
                     _updatedSchemaAttrIndex = -1;
                 }
                 else {
-                    view.schemaAttrList.selectedIndex = schemasManagementProxy.schemaAttributeList.length - 1;
+                    view.schemaAttrList.selectedIndex = schemasManagementProxy.attributesForEntity.length - 1;
                 }
                 // dispatch index change.
                 view.schemaAttrList.dispatchEvent(

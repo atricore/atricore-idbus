@@ -87,6 +87,8 @@
             <mx:columns>
                 <mx:DataGridColumn dataField="name"
                                    headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.list.attribute')}"/>
+                <mx:DataGridColumn dataField="description"
+                                   headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.list.description')}"/>
                 <mx:DataGridColumn dataField="type"
                                    headerText="{resourceManager.getString(AtricoreConsole.BUNDLE,  'provisioning.schema.list.type')}"/>
                 <mx:DataGridColumn dataField="required"

@@ -30,21 +30,20 @@ import org.springextensions.actionscript.puremvc.patterns.proxy.IocProxy;
 
 public class SchemasManagementProxy extends IocProxy implements IDisposable
 {
-
-    private var _schemaAttributeList:ArrayCollection;
-
     private var _currentSchemaAttribute:Attribute;
+
+    private var _attributesForEntity:ArrayCollection;
 
     public function SchemasManagementProxy() {
         super(NAME);
     }
 
-    public function get schemaAttributeList():ArrayCollection {
-        return _schemaAttributeList;
+    public function get attributesForEntity():ArrayCollection {
+        return _attributesForEntity;
     }
 
-    public function set schemaAttributeList(value:ArrayCollection):void {
-        _schemaAttributeList = value;
+    public function set attributesForEntity(value:ArrayCollection):void {
+        _attributesForEntity = value;
     }
 
     public function get currentSchemaAttribute():Attribute {
@@ -56,7 +55,7 @@ public class SchemasManagementProxy extends IocProxy implements IDisposable
     }
 
     public function dispose():void {
-        _schemaAttributeList = null;
+        _attributesForEntity = null;
         _currentSchemaAttribute = null;
     }
 }

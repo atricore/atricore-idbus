@@ -91,6 +91,7 @@ public class AddAttributeMediator extends IocFormMediator
     override public function bindForm():void {
         view.cbEntity.selectedIndex = -1;
         view.nameAttribute.text = "";
+        view.descAttribute.text = "";
         view.cbType.selectedIndex = -1;
         view.required.selected = false;
         view.multivalued.selected = false;
@@ -102,6 +103,7 @@ public class AddAttributeMediator extends IocFormMediator
         _newAttribute = new Attribute();
         _newAttribute.entity = view.cbEntity.selectedItem;
         _newAttribute.name = view.nameAttribute.text;
+        _newAttribute.description = view.descAttribute.text;
         _newAttribute.type = new TypeDTOEnum(view.cbType.selectedItem , null);
         _newAttribute.required = view.required.selected;
         _newAttribute.multivalued = view.multivalued.selected;

@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.account.main.view.editgroup {
 import com.atricore.idbus.console.account.main.controller.EditGroupCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
 import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator;
 import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesTab;
 import com.atricore.idbus.console.main.ApplicationFacade;
@@ -30,15 +31,12 @@ import com.atricore.idbus.console.main.view.form.IocFormMediator;
 import com.atricore.idbus.console.main.view.progress.ProcessingMediator;
 import com.atricore.idbus.console.services.dto.Group;
 
-import com.atricore.idbus.console.services.dto.schema.Attribute;
-
 import flash.events.Event;
 import flash.events.MouseEvent;
 
 import mx.core.UIComponent;
 import mx.events.CloseEvent;
 import mx.events.FlexEvent;
-
 import mx.managers.IFocusManagerComponent;
 import mx.validators.Validator;
 
@@ -49,6 +47,7 @@ import spark.components.NavigatorContent;
 public class EditGroupMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _schemasManagementProxy:SchemasManagementProxy;
     private var _extraAttributesMediator:ExtraAttributesMediator;
     private var _editedGroup:Group;
 
@@ -64,6 +63,14 @@ public class EditGroupMediator extends IocFormMediator
 
     public function set accountManagementProxy(value:AccountManagementProxy):void {
         _accountManagementProxy = value;
+    }
+
+    public function get schemasManagementProxy():SchemasManagementProxy {
+        return _schemasManagementProxy;
+    }
+
+    public function set schemasManagementProxy(value:SchemasManagementProxy):void {
+        _schemasManagementProxy = value;
     }
 
     public function get extraAttributesMediator():ExtraAttributesMediator {
@@ -93,8 +100,8 @@ public class EditGroupMediator extends IocFormMediator
         view.submitEditGroupButton.addEventListener(MouseEvent.CLICK, onSubmitEditGroup);
         view.generalSection.addEventListener(FlexEvent.SHOW, initGeneralSection);
 
-        if (    accountManagementProxy.attributesForEntity !=null &&
-                accountManagementProxy.attributesForEntity.length > 0) {
+        if (    schemasManagementProxy.attributesForEntity !=null &&
+                schemasManagementProxy.attributesForEntity.length > 0) {
             var extraTab:ExtraAttributesTab = new ExtraAttributesTab();
             view.tabNav.addChild(extraTab);
             extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
@@ -131,7 +138,7 @@ public class EditGroupMediator extends IocFormMediator
         view.groupName.text = _accountManagementProxy.currentGroup.name;
         view.groupDescription.text = _accountManagementProxy.currentGroup.description;
         if (_accountManagementProxy.currentGroup.extraAttributes.length > 0) {
-            extraAttributesMediator.extraAttributes = _accountManagementProxy.currentGroup.extraAttributes;
+            extraAttributesMediator.attributesValues = _accountManagementProxy.currentGroup.extraAttributes;
             extraAttributesMediator.bindForm();
         }
 
@@ -144,7 +151,7 @@ public class EditGroupMediator extends IocFormMediator
         newGroupDef.description = view.groupDescription.text;
 
         extraAttributesMediator.bindModel();
-        newGroupDef.extraAttributes = extraAttributesMediator.extraAttributes;
+        newGroupDef.extraAttributes = extraAttributesMediator.attributesValues;
 
         _editedGroup = newGroupDef;
         _editedGroup.id = _accountManagementProxy.currentGroup.id;

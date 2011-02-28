@@ -22,6 +22,7 @@
 package com.atricore.idbus.console.account.main.view.edituser {
 import com.atricore.idbus.console.account.main.controller.EditUserCommand;
 import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
 import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator;
 import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesTab;
 import com.atricore.idbus.console.main.ApplicationFacade;
@@ -36,9 +37,7 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.core.UIComponent;
 import mx.events.CloseEvent;
-
 import mx.events.FlexEvent;
-
 import mx.managers.IFocusManagerComponent;
 import mx.validators.Validator;
 
@@ -49,6 +48,7 @@ import spark.components.NavigatorContent;
 public class EditUserMediator extends IocFormMediator
 {
     private var _accountManagementProxy:AccountManagementProxy;
+    private var _schemasManagementProxy:SchemasManagementProxy;
     private var _extraAttributesMediator:ExtraAttributesMediator;
     private var _editedUser:User;
 
@@ -64,6 +64,14 @@ public class EditUserMediator extends IocFormMediator
 
     public function set accountManagementProxy(value:AccountManagementProxy):void {
         _accountManagementProxy = value;
+    }
+
+    public function get schemasManagementProxy():SchemasManagementProxy {
+        return _schemasManagementProxy;
+    }
+
+    public function set schemasManagementProxy(value:SchemasManagementProxy):void {
+        _schemasManagementProxy = value;
     }
 
     public function get extraAttributesMediator():ExtraAttributesMediator {
@@ -97,8 +105,8 @@ public class EditUserMediator extends IocFormMediator
         view.userPassword.addEventListener(Event.CHANGE, passwordChange);
         view.userRetypePassword.addEventListener(Event.CHANGE, passwordChange);
 
-        if (    accountManagementProxy.attributesForEntity !=null &&
-                accountManagementProxy.attributesForEntity.length > 0) {
+        if (    schemasManagementProxy.attributesForEntity !=null &&
+                schemasManagementProxy.attributesForEntity.length > 0) {
             var extraTab:ExtraAttributesTab = new ExtraAttributesTab();
             view.tabNav.addChild(extraTab);
             extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
@@ -150,7 +158,7 @@ public class EditUserMediator extends IocFormMediator
         view.userFax.text = _accountManagementProxy.currentUser.facsimilTelephoneNumber;
 
         if (_accountManagementProxy.currentGroup.extraAttributes.length > 0) {
-            extraAttributesMediator.extraAttributes = _accountManagementProxy.currentGroup.extraAttributes;
+            extraAttributesMediator.attributesValues = _accountManagementProxy.currentGroup.extraAttributes;
             extraAttributesMediator.bindForm();
         }
 
@@ -335,7 +343,7 @@ public class EditUserMediator extends IocFormMediator
         }
 
         extraAttributesMediator.bindModel();
-        newUserDef.extraAttributes = extraAttributesMediator.extraAttributes;
+        newUserDef.extraAttributes = extraAttributesMediator.attributesValues;
 
         newUserDef.id = _accountManagementProxy.currentUser.id;
         _editedUser = newUserDef;

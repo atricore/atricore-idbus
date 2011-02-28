@@ -212,7 +212,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
 
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.attribute.add.form.heading');
         _popup.width = 400;
-        _popup.height = 280;
+        _popup.height = 300;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_addAttributeForm);
@@ -280,7 +280,7 @@ public class AccountManagementPopUpManager extends BasePopUpManager {
 
         _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.attribute.edit.form.heading');
         _popup.width = 400;
-        _popup.height = 280;
+        _popup.height = 300;
         _popup.x = (_popupParent.width / 2) - 225;
         _popup.y = 80;
         showPopup(_editAttributeForm);

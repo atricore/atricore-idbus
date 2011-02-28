@@ -21,7 +21,7 @@
 
 package com.atricore.idbus.console.account.main.view.addgroup {
 import com.atricore.idbus.console.account.main.controller.AddGroupCommand;
-import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
+import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
 import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator;
 import com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesTab;
 import com.atricore.idbus.console.main.ApplicationFacade;
@@ -35,9 +35,7 @@ import flash.events.MouseEvent;
 
 import mx.core.UIComponent;
 import mx.events.CloseEvent;
-
 import mx.events.FlexEvent;
-
 import mx.managers.IFocusManagerComponent;
 import mx.validators.Validator;
 
@@ -47,7 +45,7 @@ import spark.components.NavigatorContent;
 
 public class AddGroupMediator extends IocFormMediator
 {
-    private var _accountManagementProxy:AccountManagementProxy;
+    private var _schemasManagementProxy:SchemasManagementProxy;
     private var _extraAttributesMediator:ExtraAttributesMediator;
     private var _newGroup:Group;
 
@@ -57,12 +55,12 @@ public class AddGroupMediator extends IocFormMediator
         super(name, viewComp);
     }
 
-    public function get accountManagementProxy():AccountManagementProxy {
-        return _accountManagementProxy;
+    public function get schemasManagementProxy():SchemasManagementProxy {
+        return _schemasManagementProxy;
     }
 
-    public function set accountManagementProxy(value:AccountManagementProxy):void {
-        _accountManagementProxy = value;
+    public function set schemasManagementProxy(value:SchemasManagementProxy):void {
+        _schemasManagementProxy = value;
     }
 
     public function get extraAttributesMediator():ExtraAttributesMediator {
@@ -92,8 +90,8 @@ public class AddGroupMediator extends IocFormMediator
         view.submitAddGroupButton.addEventListener(MouseEvent.CLICK, onSubmitAddGroup);
         view.generalSection.addEventListener(FlexEvent.SHOW, initGeneralSection);
 
-        if (    accountManagementProxy.attributesForEntity !=null &&
-                accountManagementProxy.attributesForEntity.length > 0) {
+        if (    schemasManagementProxy.attributesForEntity !=null &&
+                schemasManagementProxy.attributesForEntity.length > 0) {
             var extraTab:ExtraAttributesTab = new ExtraAttributesTab();
             view.tabNav.addChild(extraTab);
             extraTab.addEventListener(FlexEvent.SHOW, initExtraSection);
@@ -138,7 +136,7 @@ public class AddGroupMediator extends IocFormMediator
         newGroupDef.description = view.groupDescription.text;
 
         extraAttributesMediator.bindModel();
-        newGroupDef.extraAttributes = extraAttributesMediator.extraAttributes;
+        newGroupDef.extraAttributes = extraAttributesMediator.attributesValues;
 
         _newGroup = newGroupDef;
     }

@@ -42,8 +42,6 @@ public class ListSchemaAttributesCommand extends IocSimpleCommand implements IRe
 
     private var _registry:ServiceRegistry;
     private var _schemasManagementProxy:SchemasManagementProxy;
-    private var _accountManagementProxy:AccountManagementProxy;
-
 
     public function ListSchemaAttributesCommand() {
     }
@@ -64,14 +62,6 @@ public class ListSchemaAttributesCommand extends IocSimpleCommand implements IRe
         _schemasManagementProxy = value;
     }
 
-    public function get accountManagementProxy():AccountManagementProxy {
-        return _accountManagementProxy;
-    }
-
-    public function set accountManagementProxy(value:AccountManagementProxy):void {
-        _accountManagementProxy = value;
-    }
-
     override public function execute(notification:INotification):void {
         var service:RemoteObject = registry.getRemoteObjectService(ApplicationFacade.SCHEMAS_MANAGEMENT_SERVICE);
         var entity:String = notification.getBody() as String;
@@ -81,8 +71,7 @@ public class ListSchemaAttributesCommand extends IocSimpleCommand implements IRe
 
     public function result(data:Object):void {
         var resp:ListSchemaAttributesResponse = data.result as ListSchemaAttributesResponse;
-        accountManagementProxy.attributesForEntity = resp.attributesCollection;
-        schemasManagementProxy.schemaAttributeList = resp.attributesCollection;
+        schemasManagementProxy.attributesForEntity = resp.attributesCollection;
         sendNotification(SUCCESS);
     }
 

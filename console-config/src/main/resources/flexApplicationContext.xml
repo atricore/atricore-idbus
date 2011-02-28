@@ -370,7 +370,6 @@
             class="com.atricore.idbus.console.account.main.controller.ListSchemaAttributesCommand">
         <property name="registry" ref="serviceRegistry"/>
         <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
-        <property name="accountManagementProxy" ref="accountManagementProxy"/>
     </object>
     <object id="addAttributeCommand"
             class="com.atricore.idbus.console.account.main.controller.AddAttributeCommand">
@@ -621,11 +620,12 @@
     <object id="groupPropertiesMediator"
             class="com.atricore.idbus.console.account.groupproperties.GroupPropertiesMediator"/>
     <object id="addGroupMediator" class="com.atricore.idbus.console.account.main.view.addgroup.AddGroupMediator">
-        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
         <property name="extraAttributesMediator" ref="extraAttributesMediator"/>
     </object>
     <object id="editGroupMediator" class="com.atricore.idbus.console.account.main.view.editgroup.EditGroupMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
         <property name="extraAttributesMediator" ref="extraAttributesMediator"/>
     </object>
     <object id="searchGroupsMediator"
@@ -642,10 +642,12 @@
 
     <object id="addUserMediator" class="com.atricore.idbus.console.account.main.view.adduser.AddUserMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
         <property name="extraAttributesMediator" ref="extraAttributesMediator"/>
     </object>
     <object id="editUserMediator" class="com.atricore.idbus.console.account.main.view.edituser.EditUserMediator">
         <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
         <property name="extraAttributesMediator" ref="extraAttributesMediator"/>
     </object>
     <object id="searchUsersMediator"
@@ -654,7 +656,7 @@
     </object>
     <object id="extraAttributesMediator"
             class="com.atricore.idbus.console.account.main.view.extraattributes.ExtraAttributesMediator">
-        <property name="accountManagementProxy" ref="accountManagementProxy"/>
+        <property name="schemasManagementProxy" ref="schemasManagementProxy"/>
     </object>
 
     <object id="schemasMediator" class="com.atricore.idbus.console.account.schema.SchemasMediator">

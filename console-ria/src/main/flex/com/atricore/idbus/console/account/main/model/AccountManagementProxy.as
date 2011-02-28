@@ -40,8 +40,6 @@ public class AccountManagementProxy extends IocProxy implements IDisposable
     private var _searchedGroups:ArrayCollection;
     private var _searchedUsers:ArrayCollection;
 
-    private var _attributesForEntity:ArrayCollection;
-
     public function AccountManagementProxy()
     {
         super(NAME);
@@ -93,14 +91,6 @@ public class AccountManagementProxy extends IocProxy implements IDisposable
 
     public function set searchedUsers(value:ArrayCollection):void {
         _searchedUsers = value;
-    }
-
-    public function get attributesForEntity():ArrayCollection {
-        return _attributesForEntity;
-    }
-
-    public function set attributesForEntity(value:ArrayCollection):void {
-        _attributesForEntity = value;
     }
 
     public function dispose():void {
