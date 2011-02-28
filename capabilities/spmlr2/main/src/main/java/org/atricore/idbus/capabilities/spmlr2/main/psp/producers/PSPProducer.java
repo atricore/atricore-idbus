@@ -366,7 +366,7 @@ public class PSPProducer extends SpmlR2Producer {
             UserAttributeDefinition[] userAttributes = res.getUserAttributes();
 
             JXPathContext jxp = JXPathContext.newContext(new TargetContainer(userAttributes));
-            Iterator it = jxp.iteratePointers(path);
+            Iterator it = jxp.iteratePointers("/userAttributes");
             while (it.hasNext()) {
                 Pointer userAttributePointer = (Pointer) it.next();
                 UserAttributeDefinition userAttribute = (UserAttributeDefinition) userAttributePointer.getValue();
@@ -381,7 +381,7 @@ public class PSPProducer extends SpmlR2Producer {
             GroupAttributeDefinition[] groupAttributes = res.getGroupAttributes();
 
             JXPathContext jxp = JXPathContext.newContext(new TargetContainer(groupAttributes));
-            Iterator it = jxp.iteratePointers(path);
+            Iterator it = jxp.iteratePointers("/groupAttributes");
             while (it.hasNext()) {
                 Pointer groupAttributePointer = (Pointer) it.next();
                 GroupAttributeDefinition groupAttribute = (GroupAttributeDefinition) groupAttributePointer.getValue();
