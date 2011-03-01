@@ -141,7 +141,13 @@ public class SchemasMediator extends IocMediator implements IDisposable{
                 popupManager.showEditAttributeWindow(notification);
                 break;
             case ApplicationFacade.DISPLAY_SCHEMA_ATTRIBUTES:
-                sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, _selectedEntity);
+                if (schemasManagementProxy.currentSchemaAttribute != null) {
+                    var ent:String = schemasManagementProxy.currentSchemaAttribute.entity;
+                    view.cbEntity.selectedItem = ent;
+                    sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, ent);
+                }
+                else
+                    sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, _selectedEntity);
                 break;
         }
     }

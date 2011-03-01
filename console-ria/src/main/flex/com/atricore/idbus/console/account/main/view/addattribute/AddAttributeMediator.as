@@ -89,7 +89,8 @@ public class AddAttributeMediator extends IocFormMediator
     }
 
     override public function bindForm():void {
-        view.cbEntity.selectedIndex = -1;
+        var attE:Attribute =  schemasManagementProxy.attributesForEntity.getItemAt(0) as Attribute;
+        view.cbEntity.selectedItem =attE.entity;
         view.nameAttribute.text = "";
         view.descAttribute.text = "";
         view.cbType.selectedIndex = -1;
@@ -117,6 +118,7 @@ public class AddAttributeMediator extends IocFormMediator
             sendNotification(ProcessingMediator.START);
             bindModel();
             sendNotification(ApplicationFacade.ADD_SCHEMA_ATTRIBUTE, _newAttribute);
+            schemasManagementProxy.currentSchemaAttribute = _newAttribute;
             closeWindow();
         }
         else {
@@ -127,6 +129,7 @@ public class AddAttributeMediator extends IocFormMediator
     public function handleAddAttributeSuccess():void {
         sendNotification(ProcessingMediator.STOP);
         sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, _newAttribute.entity);
+        sendNotification(ApplicationFacade.DISPLAY_SCHEMA_ATTRIBUTES);
     }
 
     public function handleAddAttributeFailure():void {

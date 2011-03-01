@@ -76,6 +76,8 @@ public class MultiValuedField extends VGroup
         super();
         _attribute = attr;
         _valuesList.dataProvider = new ArrayCollection();
+        _attributeValues= new ArrayCollection();
+
         if (_attribute.type.toString() == TypeDTOEnum.DATE.toString()) {
             _uiInputComp = new DateField();
             _uiInputComp.addEventListener(FlexEvent.VALUE_COMMIT , uiDateFieldChangeHandler);
@@ -203,13 +205,18 @@ public class MultiValuedField extends VGroup
     }
 
     public function bindForm():void {
-        for each (var val:AttributeValue in attributeValues) {
-            _valuesList.dataProvider.addItem(val);
+        for each (var attval:Object in attributeValues)  {
+            _valuesList.dataProvider.addItem((attval as AttributeValue).value);
         }
     }
 
     public function bindModel():void {
-        _attributeValues = ArrayCollection(_valuesList.dataProvider);
+        for each (var dataStr:String in _valuesList.dataProvider) {
+            var attVal:AttributeValue = new AttributeValue();
+            attVal.name = attribute.name;
+            attVal.value = dataStr;
+            _attributeValues.addItem(attVal);
+        }
     }
 
     public function get attribute():Attribute {
