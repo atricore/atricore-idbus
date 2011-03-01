@@ -105,7 +105,7 @@ public class LicenseManagerImpl implements LicenseManager {
     public void validateCurrentLicense() throws InvalidLicenseException {
         try {
             // 1. Retrieve consoleLicense file
-            LicenseType consoleLicense = getLicense();
+            LicenseType consoleLicense = getCurrentLicense();
             // 2. Validate
             validateLicense(consoleLicense);
         } catch (Exception e) {
@@ -114,28 +114,29 @@ public class LicenseManagerImpl implements LicenseManager {
         }
     }
 
-    public void validateFeature(String group, String name, String version) throws InvalidFeatureException {
+    public void validateFeature(String group, String name, String version, LicenseType license) throws InvalidFeatureException {
         try {
 
             Calendar now = Calendar.getInstance();
-            LicenseType lic = getLicense();
+            LicenseType lic = license;
 
             boolean valid = false;
 
             for (LicensedFeatureType feature : lic.getLicensedFeature()) {
 
-                FeatureType ft = feature.getFeature();
+                for(FeatureType ft : feature.getFeature()) {
 
-                if (ft.getGroup().equals(group) &&
-                        ft.getName().equals(name)) {
+                    if (ft.getGroup().equals(group) &&
+                            ft.getName().equals(name)) {
 
-                    // TODO : Check version range !
-                    if (now.after(feature.getExpirationDate())) {
-                        throw new InvalidFeatureException("Feature expired on " +
-                                feature.getExpirationDate().toString());
+                        // TODO : Check version range !
+                        if (now.after(feature.getExpirationDate())) {
+                            throw new InvalidFeatureException("Feature expired on " +
+                                    feature.getExpirationDate().toString());
+                        }
+
+                        valid = true;
                     }
-
-                    valid = true;
                 }
 
             }
@@ -148,7 +149,7 @@ public class LicenseManagerImpl implements LicenseManager {
         }
     }
 
-    public LicenseType getLicense() throws InvalidLicenseException {
+    public LicenseType getCurrentLicense() throws InvalidLicenseException {
         try {
             return loadLicense();
         } catch (Exception e) {
@@ -225,7 +226,7 @@ public class LicenseManagerImpl implements LicenseManager {
         boolean valid = true;
         for (ProductFeature pf : productFeatures.values()) {
             try {
-                validateFeature(pf.getGroup(), pf.getName(), pf.getVersion());
+                validateFeature(pf.getGroup(), pf.getName(), pf.getVersion(), license);
             } catch (InvalidFeatureException e) {
                 logger.error(e.getMessage(),e);
                 valid = false;

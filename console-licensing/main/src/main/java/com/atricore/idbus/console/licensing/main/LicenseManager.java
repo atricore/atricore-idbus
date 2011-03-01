@@ -26,12 +26,12 @@ public interface LicenseManager {
     /**
      * Check if a feature is valid in the current license.
      */
-    void validateFeature(String group, String name, String version) throws InvalidFeatureException;
+    void validateFeature(String group, String name, String version, LicenseType license) throws InvalidFeatureException;
 
     /**
      * Retrive active license information
      */
-    LicenseType getLicense() throws InvalidLicenseException;
+    LicenseType getCurrentLicense() throws InvalidLicenseException;
 
     void registerFeature(ProductFeature productFeature);
 

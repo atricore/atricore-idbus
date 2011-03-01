@@ -152,7 +152,7 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         view.organization.text = _licenseProxy.license.organization.organizationName;
         view.ownerName.text = _licenseProxy.license.organization.owner;
         var licFeature:LicensedFeatureType = _licenseProxy.license.licensedFeature.getItemAt(0) as LicensedFeatureType;
-        view.feature.text = licFeature.feature.name;
+        view.feature.text = licFeature.feature.getItemAt(0).name;
         view.expirationDate.text = licFeature.expirationDate.toDateString();
     }
 

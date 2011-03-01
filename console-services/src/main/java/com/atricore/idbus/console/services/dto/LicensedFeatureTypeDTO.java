@@ -1,8 +1,12 @@
 package com.atricore.idbus.console.services.dto;
 
+import com.atricore.josso2.licensing._1_0.license.FeatureType;
+
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Author: Dejan Maric
@@ -10,15 +14,18 @@ import java.util.Date;
 public class LicensedFeatureTypeDTO implements Serializable {
     private static final long serialVersionUID = 475541230033855542L;
 
-    protected FeatureTypeDTO feature;    
+    protected List<FeatureTypeDTO> feature;
     protected Date issueDate;
     protected Date expirationDate;
 
-    public FeatureTypeDTO getFeature() {
-        return feature;
+    public List<FeatureTypeDTO> getFeature() {
+        if (feature == null) {
+            feature = new ArrayList<FeatureTypeDTO>();
+        }
+        return this.feature;
     }
 
-    public void setFeature(FeatureTypeDTO feature) {
+    public void setFeature(List<FeatureTypeDTO> feature) {
         this.feature = feature;
     }
 

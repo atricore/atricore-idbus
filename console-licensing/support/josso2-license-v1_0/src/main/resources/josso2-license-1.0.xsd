@@ -62,7 +62,7 @@
     <element name="licensedFeature" type="lic:LicensedFeatureType"/>
     <complexType name="LicensedFeatureType">
         <sequence>
-            <element ref="lic:feature" minOccurs="0"/>
+            <element ref="lic:feature" minOccurs="0" maxOccurs="unbounded"/>
         </sequence>
         <attribute name="IssueDate" type="dateTime" use="optional"/>
         <attribute name="ExpirationDate" type="dateTime" use="required"/>

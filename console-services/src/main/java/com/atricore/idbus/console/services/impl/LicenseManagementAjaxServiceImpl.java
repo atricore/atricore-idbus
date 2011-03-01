@@ -44,8 +44,8 @@ public class LicenseManagementAjaxServiceImpl implements LicenseManagementAjaxSe
     public GetLicenseResponse getLicense(GetLicenseRequest req) {
         GetLicenseResponse res = new GetLicenseResponse();
         try {
-            licenseManager.getLicense();
-            res.setLicense(dozerMapper.map(licenseManager.getLicense(), LicenseTypeDTO.class));
+            licenseManager.getCurrentLicense();
+            res.setLicense(dozerMapper.map(licenseManager.getCurrentLicense(), LicenseTypeDTO.class));
         } catch (InvalidLicenseException e) {
             res.setError("Error loading license.");
         }

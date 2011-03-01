@@ -690,9 +690,15 @@
             <a>expirationDate</a>
             <b>expirationDate</b>
         </field>
-        <field>
+        <field relationship-type="non-cumulative" remove-orphans="true">
             <a>feature</a>
             <b>feature</b>
+            <a-hint>
+                com.atricore.josso2.licensing._1_0.license.FeatureType
+            </a-hint>
+            <b-hint>
+                com.atricore.idbus.console.services.dto.FeatureTypeDTO 
+            </b-hint>
         </field>
     </mapping>
 
