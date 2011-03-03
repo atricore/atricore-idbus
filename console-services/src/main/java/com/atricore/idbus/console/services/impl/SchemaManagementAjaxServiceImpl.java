@@ -193,7 +193,7 @@ public class SchemaManagementAjaxServiceImpl implements
         } catch (Exception e) {
             // Log the error ant throw an exception to the Ajax layer.
             logger.error(e.getMessage(), e);
-            throw new Exception("Error adding attribute [" + req.getAttribute().getName()+
+            throw new Exception("Error updating attribute [" + req.getAttribute().getName()+
                     "|" +
                     req.getAttribute().getEntity() +"]",e);
         }

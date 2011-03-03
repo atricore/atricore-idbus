@@ -44,7 +44,7 @@
 
         <mx:FormItem labelWidth="100" required="true"
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.attribute.add.entity')}">
-            <s:DropDownList id="cbEntity" width="200">
+            <s:DropDownList id="cbEntity" width="200" enabled="false">
                 <s:dataProvider>
                     <mx:ArrayList>
                         <fx:String>User</fx:String>
@@ -65,7 +65,7 @@
         <mx:FormItem labelWidth="100" required="true"
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.attribute.add.type')}">
             <s:DropDownList id="cbType" width="200" dataProvider="{new ArrayCollection(resourceManager.getString(AtricoreConsole.BUNDLE,
-         'provisioning.schema.attribute.add.typeenum').split(','))}" />
+         'provisioning.schema.attribute.add.typeenum').split(','))}" enabled="false"/>
         </mx:FormItem>
         <mx:FormItem labelWidth="100" required="true"
                      label="{resourceManager.getString(AtricoreConsole.BUNDLE, 'provisioning.schema.attribute.add.required')}:">

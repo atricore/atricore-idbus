@@ -157,8 +157,8 @@ public class EditUserMediator extends IocFormMediator
         view.userTelephone.text = _accountManagementProxy.currentUser.telephoneNumber;
         view.userFax.text = _accountManagementProxy.currentUser.facsimilTelephoneNumber;
 
-        if (_accountManagementProxy.currentGroup.extraAttributes.length > 0) {
-            extraAttributesMediator.attributesValues = _accountManagementProxy.currentGroup.extraAttributes;
+        if (_accountManagementProxy.currentUser.extraAttributes.length > 0) {
+            extraAttributesMediator.attributesValues = _accountManagementProxy.currentUser.extraAttributes;
             extraAttributesMediator.bindForm();
         }
 

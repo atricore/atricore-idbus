@@ -20,6 +20,7 @@
  */
 
 package com.atricore.idbus.console.account.main.view.extraattributes {
+import com.atricore.idbus.console.components.DataGridValidator;
 import com.atricore.idbus.console.components.IconButton;
 import com.atricore.idbus.console.components.IconButtonSkin;
 import com.atricore.idbus.console.components.URLValidator;
@@ -34,13 +35,11 @@ import flash.events.MouseEvent;
 import mx.collections.ArrayCollection;
 import mx.controls.DataGrid;
 import mx.controls.DateField;
-import mx.controls.Label;
-import mx.core.ClassFactory;
+import mx.controls.dataGridClasses.DataGridColumn;
 import mx.core.UIComponent;
 import mx.events.FlexEvent;
 import mx.events.ListEvent;
 import mx.events.ValidationResultEvent;
-import mx.formatters.DateFormatter;
 import mx.resources.IResourceManager;
 import mx.resources.ResourceManager;
 import mx.validators.DateValidator;
@@ -66,6 +65,7 @@ public class MultiValuedField extends VGroup
     private var _attribute:Attribute;
     private var _attributeValues:ArrayCollection;
     private var _valuesList:DataGrid = new DataGrid();
+    private var _valuesValidator:Validator;
 
     private var _uiInputComp:UIComponent;
     private var _uiCompValidator:Validator;
@@ -76,6 +76,12 @@ public class MultiValuedField extends VGroup
         super();
         _attribute = attr;
         _valuesList.dataProvider = new ArrayCollection();
+        _attributeValues= new ArrayCollection();
+
+        var gridColumn:DataGridColumn = new DataGridColumn();
+        gridColumn.dataField = "value";
+        _valuesList.columns = [gridColumn];
+
         if (_attribute.type.toString() == TypeDTOEnum.DATE.toString()) {
             _uiInputComp = new DateField();
             _uiInputComp.addEventListener(FlexEvent.VALUE_COMMIT , uiDateFieldChangeHandler);
@@ -126,9 +132,9 @@ public class MultiValuedField extends VGroup
         if ( event.type==ValidationResultEvent.VALID ) {
             if (_uiInputComp is DateField &&
                     (_uiInputComp as DateField).selectedDate != null)          {
-                var date:Object = (_uiInputComp as DateField).selectedDate;
-                _valuesList.dataProvider.addItem({date:date});
-                _valuesList.columns[0].itemRenderer = dateItemRenderer(date as Date);
+                var date:Date = (_uiInputComp as DateField).selectedDate;
+                _valuesList.dataProvider.addItem({id:null, value:DateField.dateToString(date,
+                        resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.DATE_FORMAT'))});
                 (_uiInputComp as DateField).data = null;
                 _uiCompValidator.source.errorString = "";
                 _addBtn.enabled = false;
@@ -137,7 +143,7 @@ public class MultiValuedField extends VGroup
             else if (_uiInputComp is TextInput &&
                     (_uiInputComp as TextInput).text !="") {
                 var valStr:String = (_uiInputComp as TextInput).text;
-                _valuesList.dataProvider.addItem({value:valStr});
+                _valuesList.dataProvider.addItem({id:null, value:valStr});
                 (_uiInputComp as TextInput).text = "";
                 _uiCompValidator.source.errorString = "";
                 _addBtn.enabled = false;
@@ -172,6 +178,11 @@ public class MultiValuedField extends VGroup
     }
 
     private function registerInputValidators():void {
+        _valuesValidator = new DataGridValidator();
+        _valuesValidator.source = _valuesList;
+        _valuesValidator.required = attribute.required;
+        _valuesValidator.property = "dataProvider";
+
         switch (attribute.type.toString()) {
             case TypeDTOEnum.STRING.toString():
                 _uiCompValidator = new StringValidator();
@@ -194,22 +205,25 @@ public class MultiValuedField extends VGroup
         _uiCompValidator.property = "text";
     }
 
-    private function dateItemRenderer(date:Date):ClassFactory {
-        var iRenderer:ClassFactory = new ClassFactory(Label);
-        var dfmt:DateFormatter = new DateFormatter();
-        dfmt.formatString = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.DATE_FORMAT');
-        iRenderer.properties = {text: dfmt.format(date) };
-        return iRenderer;
-    }
-
     public function bindForm():void {
-        for each (var val:AttributeValue in attributeValues) {
-            _valuesList.dataProvider.addItem(val);
+        _valuesList.dataProvider.removeAll();
+        for each (var attval:Object in attributeValues)  {
+            _valuesList.dataProvider.addItem({id:(attval as AttributeValue).id, value:(attval as AttributeValue).value});
         }
     }
 
+    public function addValue(id:Number, value:String):void {
+        _valuesList.dataProvider.addItem({id:id, value:value});
+    }
+
     public function bindModel():void {
-        _attributeValues = ArrayCollection(_valuesList.dataProvider);
+        for each (var data:Object in _valuesList.dataProvider) {
+            var attVal:AttributeValue = new AttributeValue();
+            attVal.id = data["id"];
+            attVal.name = attribute.name;
+            attVal.value = data["value"];
+            _attributeValues.addItem(attVal);
+        }
     }
 
     public function get attribute():Attribute {
@@ -234,6 +248,10 @@ public class MultiValuedField extends VGroup
 
     public function set valuesList(value:DataGrid):void {
         _valuesList = value;
+    }
+
+    public function get valuesValidator():Validator {
+        return _valuesValidator;
     }
 }
 }

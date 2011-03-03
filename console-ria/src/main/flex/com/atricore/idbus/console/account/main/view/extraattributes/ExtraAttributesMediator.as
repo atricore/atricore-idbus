@@ -20,18 +20,15 @@
  */
 
 package com.atricore.idbus.console.account.main.view.extraattributes {
-import com.atricore.idbus.console.account.main.model.AccountManagementProxy;
 import com.atricore.idbus.console.account.main.model.SchemasManagementProxy;
 import com.atricore.idbus.console.components.URLValidator;
 import com.atricore.idbus.console.main.view.form.IocFormMediator;
-import com.atricore.idbus.console.services.dto.Group;
 import com.atricore.idbus.console.services.dto.schema.Attribute;
 import com.atricore.idbus.console.services.dto.schema.AttributeValue;
 import com.atricore.idbus.console.services.dto.schema.TypeDTOEnum;
 
 import flash.display.DisplayObject;
 
-import mx.collections.ArrayCollection;
 import mx.collections.ArrayCollection;
 import mx.containers.FormItem;
 import mx.controls.DateField;
@@ -48,7 +45,6 @@ import mx.validators.Validator;
 import org.puremvc.as3.interfaces.INotification;
 
 import spark.components.TextInput;
-import spark.components.supportClasses.GroupBase;
 
 /**
  * Author: Dusan Fisic
@@ -96,18 +92,24 @@ public class ExtraAttributesMediator extends IocFormMediator
     override public function bindForm():void {
         resetValidation();
 
-        for each (var attVal:AttributeValue in _attributesValues) {
-            var iField:DisplayObject = view.extraSection.getChildByName(attVal.name);
-            if ( iField is TextInput ) {
-                (iField as TextInput).text = attVal.value as String;
-            }
-            else if ( iField is DateField ) {
-                (iField as DateField).selectedDate = attVal.value as Date;
-            }
-            else if ( iField is MultiValuedField) {
-                var values:ArrayCollection = new ArrayCollection(attVal.value.split(','));
-                (iField as MultiValuedField).attributeValues  = values;
-                (iField as MultiValuedField).bindForm();
+        if (_attributesValues != null) {
+            for each (var attVal:AttributeValue in _attributesValues) {
+                var formItem:FormItem = findDisplayObject(attVal.name) as FormItem;
+                var iField:IVisualElement = formItem.getElementAt(0);
+
+                if ( iField is TextInput ) {
+                    (iField as TextInput).id = attVal.id.toString();
+                    (iField as TextInput).text = attVal.value as String;
+                }
+                else if ( iField is DateField ) {
+                    (iField as DateField).id = attVal.id.toString();
+                    if (attVal.value != null)
+                        (iField as DateField).selectedDate = DateField.stringToDate(attVal.value,
+                                resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.DATE_FORMAT'));
+                }
+                else if ( iField is MultiValuedField) {
+                    (iField as MultiValuedField).addValue(attVal.id, attVal.value);
+                }
             }
         }
     }
@@ -120,32 +122,45 @@ public class ExtraAttributesMediator extends IocFormMediator
                 var formItem:FormItem = view.extraSection.dataProvider.getItemAt(i) as FormItem;
                 var inputField:IVisualElement = formItem.getElementAt(0);
                 var attributeVal:AttributeValue = new AttributeValue();
-                attributeVal.id = (inputField as UIComponent).id as Number;
-                attributeVal.name = (inputField as UIComponent).name;
+                attributeVal.name = formItem.id;
 
                 if ( inputField is TextInput ) {
                     var ti:TextInput = inputField as TextInput;
+                    attributeVal.id = Number(ti.id);
                     attributeVal.value = ti.text;
+                    _attributesValues.addItem(attributeVal);
                 }
                 else if ( inputField is DateField ) {
                     var di:DateField = inputField as DateField;
-                    attributeVal.value = di.selectedDate as String;
+                    attributeVal.id = Number(di.id);
+                    attributeVal.value = DateField.dateToString(di.selectedDate,
+                            resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.DATE_FORMAT'));
+                    _attributesValues.addItem(attributeVal);
                 }
                 else if ( inputField is MultiValuedField) {
                     var mvField:MultiValuedField = inputField as MultiValuedField;
                     mvField.bindModel();
-                    attributeVal.value = mvField.attributeValues.source.join(',');
+                    _attributesValues.addAll(mvField.attributeValues);
                 }
-                _attributesValues.addItem(attributeVal);
             }
         }
+    }
+
+    private function findDisplayObject(name:String):DisplayObject {
+        var retComp:DisplayObject = null;
+        for( var j:int = 0; j < view.extraSection.dataProvider.length; j++ ) {
+            var comp:DisplayObject = view.extraSection.dataProvider.getItemAt(j) as DisplayObject;
+            if ((comp as FormItem).id == name)
+                retComp = comp;
+        }
+        return retComp;
     }
 
     public function generateFormFields():void {
         view.extraSection.dataProvider = new ArrayCollection();
         for each (var attr:Attribute in schemasManagementProxy.attributesForEntity) {
             var fItem:FormItem = new FormItem();
-            fItem.name = attr.name;
+            fItem.id = attr.name;
             fItem.label = attr.name;
             fItem.required = attr.required;
             fItem.setStyle("labelWidth", 100);
@@ -168,16 +183,14 @@ public class ExtraAttributesMediator extends IocFormMediator
             }
             view.extraSection.dataProvider.addItem(fItem);
         }
-        bindForm();
     }
 
     private function createStringField(fItem:FormItem,attr:Attribute):void {
         if (attr.multivalued) { //multivalued field - list
-            fItem.addElement(new MultiValuedField(attr));
+            createMultiValuedField(fItem, attr);
         }
         else { // single text field
             var textInput:TextInput = new TextInput();
-            textInput.id = attr.name;
             textInput.width = 300;
             _validators.push(registerInputValidator(textInput,attr));
             fItem.addElement(textInput);
@@ -186,11 +199,10 @@ public class ExtraAttributesMediator extends IocFormMediator
 
     private function createNumberField(fItem:FormItem,attr:Attribute):void {
         if (attr.multivalued) { //multivalued field - list
-            fItem.addElement(new MultiValuedField(attr));
+            createMultiValuedField(fItem, attr);
         }
         else { // single text field
             var numberInput:TextInput = new TextInput();
-            numberInput.id = attr.name;
             numberInput.width = 300;
             _validators.push(registerInputValidator(numberInput,attr));
             fItem.addElement(numberInput);
@@ -199,11 +211,10 @@ public class ExtraAttributesMediator extends IocFormMediator
 
     private function createDateField(fItem:FormItem,attr:Attribute):void {
         if (attr.multivalued) { //multivalued field - list
-            fItem.addElement(new MultiValuedField(attr));
+            createMultiValuedField(fItem, attr);
         }
         else { // single text field
             var dateInput:DateField = new DateField();
-            dateInput.id = attr.name;
             dateInput.width = 100;
             dateInput.formatString = resMan.getString(AtricoreConsole.BUNDLE, 'provisioning.DATE_FORMAT');
             _validators.push(registerInputValidator(dateInput,attr));
@@ -213,11 +224,10 @@ public class ExtraAttributesMediator extends IocFormMediator
 
     private function createEmailField(fItem:FormItem,attr:Attribute):void {
         if (attr.multivalued) { //multivalued field - list
-            fItem.addElement(new MultiValuedField(attr));
+            createMultiValuedField(fItem, attr);
         }
         else { // single text field
             var emailInput:TextInput = new TextInput();
-            emailInput.id = attr.name;
             emailInput.width = 300;
             _validators.push(registerInputValidator(emailInput,attr));
             fItem.addElement(emailInput);
@@ -226,15 +236,20 @@ public class ExtraAttributesMediator extends IocFormMediator
 
     private function createUrlField(fItem:FormItem,attr:Attribute):void {
         if (attr.multivalued) { //multivalued field - list
-            fItem.addElement(new MultiValuedField(attr));
+            createMultiValuedField(fItem, attr);
         }
         else { // single text field
             var urlInput:TextInput = new TextInput();
-            urlInput.id = attr.name;
             urlInput.width = 300;
             _validators.push(registerInputValidator(urlInput,attr));
             fItem.addElement(urlInput);
         }
+    }
+
+    private function createMultiValuedField(fItem:FormItem, attr:Attribute):void {
+        var multiValField:MultiValuedField = new MultiValuedField(attr);
+        _validators.push(multiValField.valuesValidator);
+        fItem.addElement(multiValField);
     }
 
     private function registerInputValidator(comp:UIComponent,attr:Attribute):Validator {
