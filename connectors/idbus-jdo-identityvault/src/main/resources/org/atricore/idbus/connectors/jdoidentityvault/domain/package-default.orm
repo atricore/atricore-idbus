@@ -52,9 +52,9 @@
                     <column name="ATTR_ID"/>
                 </element>
                 <!--element column = "ID" primary-key="true" value-strategy="increment"/>
-                <element column="ATTR_ID"/>
+                <element column="ATTR_ID"/-->
                 <order column="ATTR_ORDER_IDX"/>
-                <foreign-key name="GROUP_ATTRS_FK" delete-action="cascade"/-->
+                <foreign-key name="GROUP_ATTRS_FK" delete-action="cascade"/>
             </field>
 
         </class>
@@ -204,9 +204,9 @@
                     <column name="ATTR_ID"/>
                 </element>
                 <!--element column = "ID" primary-key="true" value-strategy="increment"/>
-                <element column="ATTR_ID"/>
+                <element column="ATTR_ID"/-->
                 <order column="ATTR_ORDER_IDX"/>
-                <foreign-key name="USER_ATTRS_FK" delete-action="cascade"/-->
+                <foreign-key name="USER_ATTRS_FK" delete-action="cascade"/>
             </field>
 
         </class>

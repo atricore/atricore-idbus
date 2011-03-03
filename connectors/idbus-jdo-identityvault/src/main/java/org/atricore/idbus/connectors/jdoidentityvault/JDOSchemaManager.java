@@ -4,7 +4,9 @@ import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOAttributeType;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroupAttributeDefinition;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUserAttributeDefinition;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupAttributeDefinitionDAO;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupAttributeValueDAO;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserAttributeDefinitionDAO;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserAttributeValueDAO;
 import org.atricore.idbus.kernel.main.provisioning.domain.AttributeType;
 import org.atricore.idbus.kernel.main.provisioning.domain.GroupAttributeDefinition;
 import org.atricore.idbus.kernel.main.provisioning.domain.UserAttributeDefinition;
@@ -33,6 +35,10 @@ public class JDOSchemaManager extends AbstractSchemaManager {
 
     private JDOGroupAttributeDefinitionDAO grpAttrDefDao;
 
+    private JDOUserAttributeValueDAO usrAttrValDao;
+
+    private JDOGroupAttributeValueDAO grpAttrValDao;
+
     @Transactional
     public UserAttributeDefinition addUserAttribute(UserAttributeDefinition attrDef) throws ProvisioningException {
         try {
@@ -49,6 +55,9 @@ public class JDOSchemaManager extends AbstractSchemaManager {
     public UserAttributeDefinition updateUserAttribute(UserAttributeDefinition attrDef) throws ProvisioningException {
         try {
             JDOUserAttributeDefinition jdoUserAttribute = usrAttrDefDao.findById(attrDef.getId());
+            if (!jdoUserAttribute.getName().equals(attrDef.getName())) {
+                usrAttrValDao.updateName(jdoUserAttribute.getName(), attrDef.getName());
+            }
             jdoUserAttribute = toJDOUserAttribute(jdoUserAttribute, attrDef);
             jdoUserAttribute = usrAttrDefDao.save(jdoUserAttribute);
             jdoUserAttribute = usrAttrDefDao.detachCopy(jdoUserAttribute, 99);
@@ -67,7 +76,11 @@ public class JDOSchemaManager extends AbstractSchemaManager {
     @Transactional
     public void deleteUserAttribute(long id) throws ProvisioningException {
         try {
-            usrAttrDefDao.delete(id);
+            JDOUserAttributeDefinition jdoUserAttribute = usrAttrDefDao.findById(id);
+            if (jdoUserAttribute != null) {
+                usrAttrValDao.deleteValues(jdoUserAttribute.getName());
+                usrAttrDefDao.delete(id);
+            }
         } catch (JdoObjectRetrievalFailureException e) {
             throw new UserAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
@@ -142,6 +155,9 @@ public class JDOSchemaManager extends AbstractSchemaManager {
     public GroupAttributeDefinition updateGroupAttribute(GroupAttributeDefinition attrDef) throws ProvisioningException {
         try {
             JDOGroupAttributeDefinition jdoGroupAttribute = grpAttrDefDao.findById(attrDef.getId());
+            if (!jdoGroupAttribute.getName().equals(attrDef.getName())) {
+                grpAttrValDao.updateName(jdoGroupAttribute.getName(), attrDef.getName());
+            }
             jdoGroupAttribute = toJDOGroupAttribute(jdoGroupAttribute, attrDef);
             jdoGroupAttribute = grpAttrDefDao.save(jdoGroupAttribute);
             jdoGroupAttribute = grpAttrDefDao.detachCopy(jdoGroupAttribute, 99);
@@ -160,7 +176,11 @@ public class JDOSchemaManager extends AbstractSchemaManager {
     @Transactional
     public void deleteGroupAttribute(long id) throws ProvisioningException {
         try {
-            grpAttrDefDao.delete(id);
+            JDOGroupAttributeDefinition jdoGroupAttribute = grpAttrDefDao.findById(id);
+            if (jdoGroupAttribute != null) {
+                grpAttrValDao.deleteValues(jdoGroupAttribute.getName());
+                grpAttrDefDao.delete(id);
+            }
         } catch (JdoObjectRetrievalFailureException e) {
             throw new GroupAttributeNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
@@ -288,5 +308,13 @@ public class JDOSchemaManager extends AbstractSchemaManager {
 
     public void setUsrAttrDefDao(JDOUserAttributeDefinitionDAO usrAttrDefDao) {
         this.usrAttrDefDao = usrAttrDefDao;
+    }
+
+    public void setUsrAttrValDao(JDOUserAttributeValueDAO usrAttrValDao) {
+        this.usrAttrValDao = usrAttrValDao;
+    }
+
+    public void setGrpAttrValDao(JDOGroupAttributeValueDAO grpAttrValDao) {
+        this.grpAttrValDao = grpAttrValDao;
     }
 }

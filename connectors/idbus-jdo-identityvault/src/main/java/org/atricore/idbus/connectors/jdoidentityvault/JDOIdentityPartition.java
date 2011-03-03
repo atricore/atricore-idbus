@@ -1,6 +1,11 @@
 package org.atricore.idbus.connectors.jdoidentityvault;
 
-import org.atricore.idbus.connectors.jdoidentityvault.domain.*;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroup;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOGroupAttributeValue;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUser;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.JDOUserAttributeValue;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOGroupAttributeValueDAO;
+import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.JDOUserAttributeValueDAO;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOGroupDAOImpl;
 import org.atricore.idbus.connectors.jdoidentityvault.domain.dao.impl.JDOUserDAOImpl;
 import org.atricore.idbus.kernel.common.support.services.IdentityServiceLifecycle;
@@ -36,6 +41,8 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     private JDOUserDAOImpl userDao;
     private JDOGroupDAOImpl groupDao;
+    private JDOUserAttributeValueDAO usrAttrValDao;
+    private JDOGroupAttributeValueDAO grpAttrValDao;
 
     private JDOSchemaManager schemaManager;
 
@@ -61,6 +68,14 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
     public JDOGroupDAOImpl getGroupDao() {
         return groupDao;
+    }
+
+    public void setUsrAttrValDao(JDOUserAttributeValueDAO usrAttrValDao) {
+        this.usrAttrValDao = usrAttrValDao;
+    }
+
+    public void setGrpAttrValDao(JDOGroupAttributeValueDAO grpAttrValDao) {
+        this.grpAttrValDao = grpAttrValDao;
     }
 
     public void boot() throws Exception {
@@ -158,8 +173,27 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     public Group updateGroup(Group group) throws ProvisioningException {
         try {
             JDOGroup jdoGroup = groupDao.findById(group.getId());
+            jdoGroup = groupDao.detachCopy(jdoGroup, FetchPlan.FETCH_SIZE_GREEDY);
+            List<JDOGroupAttributeValue> oldAttrsList = new ArrayList<JDOGroupAttributeValue>();
+            if (jdoGroup.getAttrs() != null) {
+                for (JDOGroupAttributeValue oldGroupAttr : jdoGroup.getAttrs()) {
+                    if (oldGroupAttr.getId() > 0) {
+                        oldAttrsList.add(oldGroupAttr);
+                    }
+                }
+
+                if (oldAttrsList.size() != jdoGroup.getAttrs().length) {
+                    jdoGroup = groupDao.findById(group.getId());
+                    jdoGroup.setAttrs(oldAttrsList.toArray(new JDOGroupAttributeValue[]{}));
+                    jdoGroup = groupDao.save(jdoGroup);
+                }
+            }
+
+            jdoGroup = groupDao.findById(group.getId());
+            JDOGroupAttributeValue[] oldAttrs = jdoGroup.getAttrs();
             jdoGroup = toJDOGroup(jdoGroup, group);
             jdoGroup = groupDao.save(jdoGroup);
+            grpAttrValDao.deleteRemovedValues(oldAttrs, jdoGroup.getAttrs());
             jdoGroup = groupDao.detachCopy(jdoGroup, 99);
 
             return toGroup(jdoGroup);
@@ -190,7 +224,18 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     @Transactional
     public void deleteGroup(long id) throws ProvisioningException {
         try {
-            groupDao.delete(id);
+            JDOGroup jdoGroup = groupDao.findById(id);
+            if (jdoGroup != null) {
+                JDOGroupAttributeValue[] attrs = jdoGroup.getAttrs();
+                jdoGroup.setAttrs(null);
+                groupDao.save(jdoGroup);
+                groupDao.flush();
+                groupDao.delete(id);
+                if (attrs != null) {
+                    for (JDOGroupAttributeValue value : attrs)
+                        grpAttrValDao.delete(value.getId());
+                }
+            }
         } catch (JdoObjectRetrievalFailureException e) {
             throw new GroupNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
@@ -279,10 +324,29 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     public User updateUser(User user) throws ProvisioningException {
         try {
             JDOUser jdoUser = userDao.findById(user.getId());
+            jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
+            List<JDOUserAttributeValue> oldAttrsList = new ArrayList<JDOUserAttributeValue>();
+            if (jdoUser.getAttrs() != null) {
+                for (JDOUserAttributeValue oldUserAttr : jdoUser.getAttrs()) {
+                    if (oldUserAttr.getId() > 0) {
+                        oldAttrsList.add(oldUserAttr);
+                    }
+                }
+
+                if (oldAttrsList.size() != jdoUser.getAttrs().length) {
+                    jdoUser = userDao.findById(user.getId());
+                    jdoUser.setAttrs(oldAttrsList.toArray(new JDOUserAttributeValue[]{}));
+                    jdoUser = userDao.save(jdoUser);
+                }
+            }
+
+            jdoUser = userDao.findById(user.getId());
+            JDOUserAttributeValue[] oldAttrs = jdoUser.getAttrs();
             
             // Do not let users to change the password!
             toJDOUser(jdoUser, user, false);
             jdoUser = userDao.save(jdoUser);
+            usrAttrValDao.deleteRemovedValues(oldAttrs, jdoUser.getAttrs());
             jdoUser = userDao.detachCopy(jdoUser, FetchPlan.FETCH_SIZE_GREEDY);
             return toUser(jdoUser, true);
         } catch (JdoObjectRetrievalFailureException e) {
@@ -299,7 +363,18 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
     @Transactional
     public void deleteUser(long id) throws ProvisioningException {
         try {
-            userDao.delete(id);
+            JDOUser jdoUser = userDao.findById(id);
+            if (jdoUser != null) {
+                JDOUserAttributeValue[] attrs = jdoUser.getAttrs();
+                jdoUser.setAttrs(null);
+                userDao.save(jdoUser);
+                userDao.flush();
+                userDao.delete(id);
+                if (attrs != null) {
+                    for (JDOUserAttributeValue value : attrs)
+                        usrAttrValDao.delete(value.getId());
+                }
+            }
         } catch (JdoObjectRetrievalFailureException e) {
             throw new UserNotFoundException(id);
         } catch (JDOObjectNotFoundException e) {
@@ -328,9 +403,14 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
             for (int i = 0; i < group.getAttrs().length; i++) {
                 GroupAttributeValue attr = group.getAttrs()[i];
-                JDOGroupAttributeValue jdoAttr = new JDOGroupAttributeValue();
-                jdoAttr.setId(attr.getId());
-                jdoAttr.setName(attr.getName());
+                JDOGroupAttributeValue jdoAttr = null;
+                if (attr.getId() > 0) {
+                    jdoAttr = grpAttrValDao.findById(attr.getId());
+                }
+                if (jdoAttr == null) {
+                    jdoAttr = new JDOGroupAttributeValue();
+                    jdoAttr.setName(attr.getName());
+                }
                 jdoAttr.setValue(attr.getValue());
 
                 jdoAttrs[i] = jdoAttr;
@@ -363,19 +443,23 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         group.setDescription(jdoGroup.getDescription());
 
         if (jdoGroup.getAttrs() != null) {
-            GroupAttributeValue[] attrs = new GroupAttributeValue[jdoGroup.getAttrs().length];
-
+            List<GroupAttributeValue> attrs = new ArrayList<GroupAttributeValue>();
+            
             for (int i = 0; i < jdoGroup.getAttrs().length; i++) {
                 JDOGroupAttributeValue jdoAttr = jdoGroup.getAttrs()[i];
-                GroupAttributeValue groupAttribute = new GroupAttributeValue();
-                groupAttribute.setId(jdoAttr.getId());
-                groupAttribute.setName(jdoAttr.getName());
-                groupAttribute.setValue(jdoAttr.getValue());
+                if (jdoAttr.getId() > 0) {
+                    GroupAttributeValue groupAttribute = new GroupAttributeValue();
+                    groupAttribute.setId(jdoAttr.getId());
+                    groupAttribute.setName(jdoAttr.getName());
+                    groupAttribute.setValue(jdoAttr.getValue());
 
-                attrs[i] = groupAttribute;
+                    attrs.add(groupAttribute);
+                }
             }
 
-            group.setAttrs(attrs);
+            if (attrs.size() > 0) {
+                group.setAttrs(attrs.toArray(new GroupAttributeValue[]{}));
+            }
         }
 
         return group;
@@ -422,9 +506,14 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
 
             for (int i = 0; i < user.getAttrs().length; i++) {
                 UserAttributeValue attr = user.getAttrs()[i];
-                JDOUserAttributeValue jdoAttr = new JDOUserAttributeValue();
-                jdoAttr.setId(attr.getId());
-                jdoAttr.setName(attr.getName());
+                JDOUserAttributeValue jdoAttr = null;
+                if (attr.getId() > 0) {
+                    jdoAttr = usrAttrValDao.findById(attr.getId());
+                }
+                if (jdoAttr == null) {
+                    jdoAttr = new JDOUserAttributeValue();
+                    jdoAttr.setName(attr.getName());
+                }
                 jdoAttr.setValue(attr.getValue());
 
                 jdoAttrs[i] = jdoAttr;
@@ -460,19 +549,23 @@ public class JDOIdentityPartition extends AbstractIdentityPartition
         }
 
         if (jdoUser.getAttrs() != null) {
-            UserAttributeValue[] attrs = new UserAttributeValue[jdoUser.getAttrs().length];
-
+            List<UserAttributeValue> attrs = new ArrayList<UserAttributeValue>();
+            
             for (int i = 0; i < jdoUser.getAttrs().length; i++) {
                 JDOUserAttributeValue jdoAttr = jdoUser.getAttrs()[i];
-                UserAttributeValue userAttribute = new UserAttributeValue();
-                userAttribute.setId(jdoAttr.getId());
-                userAttribute.setName(jdoAttr.getName());
-                userAttribute.setValue(jdoAttr.getValue());
+                if (jdoAttr.getId() > 0) {
+                    UserAttributeValue userAttribute = new UserAttributeValue();
+                    userAttribute.setId(jdoAttr.getId());
+                    userAttribute.setName(jdoAttr.getName());
+                    userAttribute.setValue(jdoAttr.getValue());
 
-                attrs[i] = userAttribute;
+                    attrs.add(userAttribute);
+                }
             }
 
-            user.setAttrs(attrs);
+            if (attrs.size() > 0) {
+                user.setAttrs(attrs.toArray(new UserAttributeValue[]{}));
+            }
         }
 
         return user;

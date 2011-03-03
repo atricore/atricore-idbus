@@ -194,6 +194,7 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             Group group = new Group();
             group.setName(groupRequest.getName());
             group.setDescription(groupRequest.getDescription());
+            group.setAttrs(groupRequest.getAttrs());
             group = identityPartition.addGroup(group);
             AddGroupResponse groupResponse = new AddGroupResponse();
             groupResponse.setGroup(group);
@@ -209,12 +210,10 @@ public class ProvisioningTargetImpl implements ProvisioningTarget {
             
             Group group = identityPartition.findGroupById(groupRequest.getId());
 
-            if (groupRequest.getName() != null)
-                group.setName(groupRequest.getName());
-
-            if (groupRequest.getDescription() != null)
-                group.setDescription(groupRequest.getDescription());
-
+            group.setName(groupRequest.getName());
+            group.setDescription(groupRequest.getDescription());
+            group.setAttrs(groupRequest.getAttrs());
+            
             group = identityPartition.updateGroup(group);
 
             UpdateGroupResponse groupResponse = new UpdateGroupResponse();

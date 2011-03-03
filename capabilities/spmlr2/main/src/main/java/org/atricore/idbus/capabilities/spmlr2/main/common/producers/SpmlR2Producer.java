@@ -17,10 +17,7 @@ import org.atricore.idbus.kernel.main.provisioning.domain.*;
 import org.atricore.idbus.kernel.main.provisioning.exception.ProvisioningException;
 import org.atricore.idbus.kernel.main.provisioning.spi.ProvisioningTarget;
 import org.atricore.idbus.kernel.main.provisioning.spi.request.*;
-import org.atricore.idbus.kernel.main.provisioning.spi.response.FindGroupAttributeByNameResponse;
-import org.atricore.idbus.kernel.main.provisioning.spi.response.FindGroupByNameResponse;
-import org.atricore.idbus.kernel.main.provisioning.spi.response.FindUserAttributeByNameResponse;
-import org.atricore.idbus.kernel.main.provisioning.spi.response.FindUserByUsernameResponse;
+import org.atricore.idbus.kernel.main.provisioning.spi.response.*;
 import org.atricore.idbus.kernel.main.store.exceptions.IdentityProvisioningException;
 import org.atricore.idbus.kernel.main.util.UUIDGenerator;
 import org.springframework.beans.BeanUtils;
@@ -264,7 +261,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
             ModificationType spmlMod = spmlRequest.getModification().get(0);
 
             UserAttributeType spmlUserAttribute = (UserAttributeType) spmlMod.getData();
-            UserAttributeDefinition userAttribute = lookupUserAttribute(target, spmlUserAttribute.getName());
+            UserAttributeDefinition userAttribute = lookupUserAttribute(target, spmlUserAttribute.getId());
 
             // Do not override null properties in the original object
             String[] ignoredProps = getNullProps(spmlUserAttribute, new String[] {"id", "type"});
@@ -302,7 +299,7 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
             ModificationType spmlMod = spmlRequest.getModification().get(0);
 
             GroupAttributeType spmlGroupAttribute = (GroupAttributeType) spmlMod.getData();
-            GroupAttributeDefinition groupAttribute = lookupGroupAttribute(target, spmlGroupAttribute.getName());
+            GroupAttributeDefinition groupAttribute = lookupGroupAttribute(target, spmlGroupAttribute.getId());
 
             // Do not override null properties in the original object
             String[] ignoredProps = getNullProps(spmlGroupAttribute, new String[] {"id", "type"});
@@ -453,12 +450,28 @@ public abstract class SpmlR2Producer extends AbstractCamelProducer<CamelMediatio
 
     }
 
+    protected UserAttributeDefinition lookupUserAttribute(ProvisioningTarget target, long id) throws ProvisioningException {
+        FindUserAttributeByIdRequest req = new FindUserAttributeByIdRequest();
+        req.setId(id);
+        FindUserAttributeByIdResponse res = target.findUserAttributeById(req);
+
+        return res.getUserAttribute();
+    }
+
     protected UserAttributeDefinition lookupUserAttribute(ProvisioningTarget target, String name) throws ProvisioningException {
         FindUserAttributeByNameRequest req = new FindUserAttributeByNameRequest();
         req.setName(name);
         FindUserAttributeByNameResponse res = target.findUserAttributeByName(req);
 
         return res.getUserAttribute();
+    }
+
+    protected GroupAttributeDefinition lookupGroupAttribute(ProvisioningTarget target, long id) throws ProvisioningException {
+        FindGroupAttributeByIdRequest req = new FindGroupAttributeByIdRequest();
+        req.setId(id);
+        FindGroupAttributeByIdResponse res = target.findGroupAttributeById(req);
+
+        return res.getGroupAttribute();
     }
 
     protected GroupAttributeDefinition lookupGroupAttribute(ProvisioningTarget target, String name) throws ProvisioningException {
