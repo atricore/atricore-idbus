@@ -22,19 +22,19 @@ public class GenerateLicenseCommand  extends OsgiCommandSupport {
     @Option(name = "-o", aliases = "--out", description = "Signed license file", required = true, multiValued = false)
     private String outLicense;
 
-    @Option(name = "-s", aliases = "--keystore", description = "Keystore file", required = true, multiValued = false)
+    @Option(name = "-k", aliases = "--keystore", description = "Keystore file", required = true, multiValued = false)
     private String keystore;
 
-    @Option(name = "-w", aliases = "--password", description = "Keystore password", required = true, multiValued = false)
+    @Option(name = "-p", aliases = "--password", description = "Keystore password", required = true, multiValued = false)
     private String keystorePass;
 
-    @Option(name = "-n", aliases = "--keyname", description = "Private key alias", required = true, multiValued = false)
+    @Option(name  = "--keyname", description = "Private key alias", required = true, multiValued = false)
     private String keyAlias;
 
-    @Option(name = "-k", aliases = "--keypass", description = "Private key password", required = true, multiValued = false)
+    @Option(name = "--keypass", description = "Private key password", required = true, multiValued = false)
     private String keyPass;
 
-    @Option(name = "-c", aliases = "--cert", description = "Certificate alias", required = true, multiValued = false)
+    @Option(name = "--cert", description = "Certificate alias", required = true, multiValued = false)
     private String certAlias;
 
     private LicenseGenerator generator;

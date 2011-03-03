@@ -29,27 +29,23 @@ public class LicenseManagerImpl implements LicenseManager {
 
     private static final Log logger = LogFactory.getLog(LicenseManagerImpl.class);
 
-    // Encoded digital certificate (in the future, we should be able to manage a set of certs).
-    //TODO replace with proper certificate
+    // JOSSO 2 Licensing certificate :
     private static final String certificate = "-----BEGIN CERTIFICATE-----\n" +
-            "MIIDVzCCAj8CBE0cdYswDQYJKoZIhvcNAQEEBQAwcDEQMA4GA1UEBhMHVW5rbm93\n" +
-            "bjEQMA4GA1UECBMHVW5rbm93bjEQMA4GA1UEBxMHVW5rbm93bjEQMA4GA1UEChMH\n" +
-            "VW5rbm93bjEQMA4GA1UECxMHVW5rbm93bjEUMBIGA1UEAxMLRGVqYW4gTWFyaWMw\n" +
-            "HhcNMTAxMjMwMTIwNTMxWhcNMTMwMTI4MTIwNTMxWjBwMRAwDgYDVQQGEwdVbmtu\n" +
-            "b3duMRAwDgYDVQQIEwdVbmtub3duMRAwDgYDVQQHEwdVbmtub3duMRAwDgYDVQQK\n" +
-            "EwdVbmtub3duMRAwDgYDVQQLEwdVbmtub3duMRQwEgYDVQQDEwtEZWphbiBNYXJp\n" +
-            "YzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALCD0c4gN9akBO/crFpk\n" +
-            "PpqFNNRg9fpnDrW3VRHdGtZCUWc0Bd6H3KisSPOAP7LChzFVjpbNK914naSVbzfX\n" +
-            "z7oYEGGJ7RMueRgHRxkeud4aUAZEfVqAcsX2a5Xuy2ghf4zaz0G/GI0mI0TTKlnh\n" +
-            "yp1h3g6ImO86UCzUXI954KvKy6aEj8SEc53kmyRdsErypAOoKQVH3DqJ8A2CkMMU\n" +
-            "JhbawH3yGhayxO070vCcBlZPwWCz23GWO3XjHdlbS7HHxT4XJs3VMWDWA1qO8+bV\n" +
-            "wu0RxYJY9Dbigi8vd4hHfimfMq0qk0FwC+M+pD06iRFhGotc1d+yCCITTcDlu4p9\n" +
-            "auUCAwEAATANBgkqhkiG9w0BAQQFAAOCAQEABSMuhGIkM+WlFT9Mu7qZHwF4oFpf\n" +
-            "A0TT7SMwyac4vJXjSsXX28n3htP5xN95m17Fi8n4VVqY8yQPLKHDD4Id6ffaM8h7\n" +
-            "hwgrmy66pAjsU0LNnvL76+md/CRm/3XRAVG2Tj7pEBQ0lS86HJMcvEcdC38Ng/+q\n" +
-            "/mpi8sH3VgufF8ooCYlPPLEk55Nc+GZkXj7j6yd4ocgPGqdiB7L2CpC82s6gb1Ju\n" +
-            "mvbxZJj5s1rzxDTAm5WYDV50wqnWvgIyjKd4ymeoQQnGfunu31OZ9xcpdGgLoH6V\n" +
-            "OVuOVWYfBNMwMNikL2JvOZAmNNFWZia4EGphS8Uh+yLRhHbpobRqT6+DOg==\n" +
+            "MIIDITCCAt+gAwIBAgIETW5/vzALBgcqhkjOOAQDBQAwdDELMAkGA1UEBhMCVVMxCzAJBgNVBAgT\n" +
+            "Ak5ZMREwDwYDVQQHEwhOZXcgWW9yazEXMBUGA1UEChMOQXRyaWNvcmUsIEluYy4xGjAYBgNVBAsT\n" +
+            "EUF0cmljb3JlIFNlcnZpY2VzMRAwDgYDVQQDEwdKT1NTTyAyMB4XDTExMDMwMjE3MzQ1NVoXDTEx\n" +
+            "MDUzMTE3MzQ1NVowdDELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAk5ZMREwDwYDVQQHEwhOZXcgWW9y\n" +
+            "azEXMBUGA1UEChMOQXRyaWNvcmUsIEluYy4xGjAYBgNVBAsTEUF0cmljb3JlIFNlcnZpY2VzMRAw\n" +
+            "DgYDVQQDEwdKT1NTTyAyMIIBtzCCASwGByqGSM44BAEwggEfAoGBAP1/U4EddRIpUt9KnC7s5Of2\n" +
+            "EbdSPO9EAMMeP4C2USZpRV1AIlH7WT2NWPq/xfW6MPbLm1Vs14E7gB00b/JmYLdrmVClpJ+f6AR7\n" +
+            "ECLCT7up1/63xhv4O1fnxqimFQ8E+4P208UewwI1VBNaFpEy9nXzrith1yrv8iIDGZ3RSAHHAhUA\n" +
+            "l2BQjxUjC8yykrmCouuEC/BYHPUCgYEA9+GghdabPd7LvKtcNrhXuXmUr7v6OuqC+VdMCz0HgmdR\n" +
+            "WVeOutRZT+ZxBxCBgLRJFnEj6EwoFhO3zwkyjMim4TwWeotUfI0o4KOuHiuzpnWRbqN/C/ohNWLx\n" +
+            "+2J6ASQ7zKTxvqhRkImog9/hWuWfBpKLZl6Ae1UlZAFMO/7PSSoDgYQAAoGAaJG9q75JoyuZ69DW\n" +
+            "biJIr7ARf5W2H2AFwwmIe2ykdp8NOZbxE50WSwv+XnyHXNiBAl2HXKbxnglzK/liU3Cc+EyZJhxm\n" +
+            "psEToKX0OZ7sgTbKQ+ftoku0/SBQks5KjFkZDDoylcJNYQewPBAoiHkxprLIy46UGHaEGema+TqB\n" +
+            "hJcwCwYHKoZIzjgEAwUAAy8AMCwCFCF6xU7fTvuz4Yy0k87r5aT398V1AhRMB9iek8ZuDFGAO8BH\n" +
+            "Ydh80QefCg==\n" +
             "-----END CERTIFICATE-----";
     
     private String licensePath = "etc/atricore.lic";
