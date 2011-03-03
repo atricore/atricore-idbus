@@ -128,7 +128,7 @@ public class SchemasMediator extends IocMediator implements IDisposable{
                 break;
             case DeleteAttributeCommand.SUCCESS:
                 sendNotification(ProcessingMediator.STOP);
-                sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, _selectedEntity);
+                sendNotification(ApplicationFacade.DISPLAY_SCHEMA_ATTRIBUTES);
                 break;
             case DeleteAttributeCommand.FAILURE:
                 sendNotification(ProcessingMediator.STOP);

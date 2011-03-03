@@ -25,7 +25,6 @@ import com.atricore.idbus.console.lifecycle.main.exception.GroupNotFoundExceptio
 import com.atricore.idbus.console.lifecycle.main.exception.UserProvisioningAjaxException;
 import com.atricore.idbus.console.services.dto.GroupDTO;
 import com.atricore.idbus.console.services.dto.UserDTO;
-import com.atricore.idbus.console.services.dto.schema.AttributeDTO;
 import com.atricore.idbus.console.services.dto.schema.AttributeValueDTO;
 import com.atricore.idbus.console.services.spi.SpmlAjaxClient;
 import com.atricore.idbus.console.services.spi.UserProvisioningAjaxService;
@@ -50,7 +49,8 @@ import org.springframework.beans.factory.InitializingBean;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Author: Dusan Fisic
@@ -930,20 +930,17 @@ public class UserProvisioningAjaxServiceImpl implements
     }
 
     public ArrayList<AttributeValueDTO> toAttributeValueDTOs(List<AttributeValueType> attrValues) {
-        Map<String, AttributeValueDTO> attributes = new LinkedHashMap<String, AttributeValueDTO>();
+        ArrayList<AttributeValueDTO> attributes = new ArrayList<AttributeValueDTO>();
         if (attrValues != null) {
             for (AttributeValueType attrValue : attrValues) {
-                AttributeValueDTO attributeVal = attributes.get(attrValue.getName());
-                if (attributeVal == null) {
-                    attributeVal = new AttributeValueDTO();
-                    attributeVal.setName(attrValue.getName());
-                }
+                AttributeValueDTO attributeVal = new AttributeValueDTO();
                 attributeVal.setId(attrValue.getId());
+                attributeVal.setName(attrValue.getName());
                 attributeVal.setValue(attrValue.getValue());
-                attributes.put(attributeVal.getName(), attributeVal);
+                attributes.add(attributeVal);
             }
         }
-        return new ArrayList(attributes.values());
+        return attributes;
     }
 
     public UserDTO toUserDTO(UserType usr) {
