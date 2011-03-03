@@ -60,7 +60,7 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             }
             jdoUserAttribute = toJDOUserAttribute(jdoUserAttribute, attrDef);
             jdoUserAttribute = usrAttrDefDao.save(jdoUserAttribute);
-            jdoUserAttribute = usrAttrDefDao.detachCopy(jdoUserAttribute, 99);
+            jdoUserAttribute = usrAttrDefDao.detachCopy(jdoUserAttribute, FetchPlan.FETCH_SIZE_GREEDY);
             return toUserAttribute(jdoUserAttribute);
         } catch (JdoObjectRetrievalFailureException e) {
             throw new UserAttributeNotFoundException(attrDef.getId());
@@ -160,7 +160,7 @@ public class JDOSchemaManager extends AbstractSchemaManager {
             }
             jdoGroupAttribute = toJDOGroupAttribute(jdoGroupAttribute, attrDef);
             jdoGroupAttribute = grpAttrDefDao.save(jdoGroupAttribute);
-            jdoGroupAttribute = grpAttrDefDao.detachCopy(jdoGroupAttribute, 99);
+            jdoGroupAttribute = grpAttrDefDao.detachCopy(jdoGroupAttribute, FetchPlan.FETCH_SIZE_GREEDY);
             return toGroupAttribute(jdoGroupAttribute);
         } catch (JdoObjectRetrievalFailureException e) {
             throw new GroupAttributeNotFoundException(attrDef.getId());
