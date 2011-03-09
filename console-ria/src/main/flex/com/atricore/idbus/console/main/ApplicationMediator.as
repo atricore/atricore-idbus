@@ -41,7 +41,11 @@ import com.atricore.idbus.console.main.view.setup.SetupWizardViewMediator;
 
 import com.atricore.idbus.console.main.controller.CheckLicenseCommand;
 
+import com.atricore.idbus.console.main.view.util.MouseWheelEnabler;
+
 import flash.events.Event;
+
+import flash.events.MouseEvent;
 
 import mx.controls.Alert;
 import mx.controls.MenuBar;
@@ -62,7 +66,7 @@ import spark.events.IndexChangeEvent;
 public class ApplicationMediator extends IocMediator {
 
     private var resourceManager:IResourceManager = ResourceManager.getInstance();
-    
+
     public var userProfileIcon:Class = EmbeddedIcons.userProfileIcon;
 
     private var _brandingFactory:AtricoreConsoleBrandingFactory;
@@ -82,7 +86,7 @@ public class ApplicationMediator extends IocMediator {
     //login mediator
     private var _loginMediator:IIocMediator;
     private var _licenseActivationMediator:IIocMediator;
-    
+
     private var _popupManager:ConsolePopUpManager;
 
     private var _userActionMenuBar:MenuBar;
@@ -194,12 +198,17 @@ public class ApplicationMediator extends IocMediator {
         sendNotification(ApplicationFacade.NOT_FIRST_RUN);
         popupManager.init(iocFacade, app);
         app.addEventListener(FlexEvent.SHOW, handleShowConsole);
+        app.addEventListener(Event.ADDED_TO_STAGE, stage_init);
         createHeading();
     }
 
     private function createHeading():void {
         //app.brandedHeading.addChild(app.messageBox);
         //app.brandedHeading.addChild(app.userActionMenuBar);
+    }
+
+    private function stage_init(e:Event):void {
+        MouseWheelEnabler.init(app.stage);
     }
 
     public function handleStackChange(event:IndexChangeEvent):void {
@@ -229,8 +238,8 @@ public class ApplicationMediator extends IocMediator {
 
     override public function listNotificationInterests():Array {
         return [BaseAppFacade.APP_SECTION_CHANGE,
-                BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED,
-                BaseAppFacade.APP_SECTION_CHANGE_REJECTED,
+            BaseAppFacade.APP_SECTION_CHANGE_CONFIRMED,
+            BaseAppFacade.APP_SECTION_CHANGE_REJECTED,
             ApplicationFacade.SHOW_ERROR_MSG,
             //            ApplicationFacade.SHOW_SUCCESS_MSG,
             ApplicationFacade.CLEAR_MSG,
@@ -334,7 +343,7 @@ public class ApplicationMediator extends IocMediator {
                 popupManager.hideProcessingWindow(notification);
                 break;
             case CheckLicenseCommand.FAILURE:
-                showLicenseActivation();                
+                showLicenseActivation();
                 break;
             case CheckLicenseCommand.SUCCESS:
                 // CheckLicense SUCCESS, switch application state to splash :
@@ -345,7 +354,7 @@ public class ApplicationMediator extends IocMediator {
                 //product successfully activated
                 app.addEventListener(StateChangeEvent.CURRENT_STATE_CHANGE, switchedMode);
                 app.currentState = "splash";
-                break;        
+                break;
         }
     }
 
@@ -423,7 +432,7 @@ public class ApplicationMediator extends IocMediator {
         projectProxy.dispose();
         keystoreProxy.dispose();
         profileProxy.dispose();
-        
+
         sendNotification(ApplicationFacade.LOGOUT);
     }
 
