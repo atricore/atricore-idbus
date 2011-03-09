@@ -32,6 +32,8 @@ public class SchemasManagementProxy extends IocProxy implements IDisposable
 {
     private var _currentSchemaAttribute:Attribute;
 
+    private var _currentEntity:String="User";;
+
     private var _attributesForEntity:ArrayCollection;
 
     public function SchemasManagementProxy() {
@@ -52,6 +54,14 @@ public class SchemasManagementProxy extends IocProxy implements IDisposable
 
     public function set currentSchemaAttribute(value:Attribute):void {
         _currentSchemaAttribute = value;
+    }
+
+    public function get currentEntity():String {
+        return _currentEntity;
+    }
+
+    public function set currentEntity(value:String):void {
+        _currentEntity = value;
     }
 
     public function dispose():void {

@@ -55,7 +55,6 @@ public class SchemasMediator extends IocMediator implements IDisposable{
     private var _schemasManagementProxy:SchemasManagementProxy;
 
     private var _updatedSchemaAttrIndex:Number;
-    private var _selectedEntity:String="User";
 
     public function SchemasMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
@@ -74,7 +73,7 @@ public class SchemasMediator extends IocMediator implements IDisposable{
         view.schemaAttrList.addEventListener(ListEvent.ITEM_CLICK , schemaAttrListClickHandler);
         view.cbEntity.addEventListener(IndexChangeEvent.CHANGE , entityChangeHandler);
 
-        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,_selectedEntity);
+        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,schemasManagementProxy.currentEntity);
         popupManager.init(iocFacade, view);
     }
 
@@ -141,13 +140,7 @@ public class SchemasMediator extends IocMediator implements IDisposable{
                 popupManager.showEditAttributeWindow(notification);
                 break;
             case ApplicationFacade.DISPLAY_SCHEMA_ATTRIBUTES:
-                if (schemasManagementProxy.currentSchemaAttribute != null) {
-                    var ent:String = schemasManagementProxy.currentSchemaAttribute.entity;
-                    view.cbEntity.selectedItem = ent;
-                    sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, ent);
-                }
-                else
-                    sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, _selectedEntity);
+                sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, schemasManagementProxy.currentEntity);
                 break;
         }
     }
@@ -168,8 +161,8 @@ public class SchemasMediator extends IocMediator implements IDisposable{
     }
 
     public function entityChangeHandler(e:IndexChangeEvent):void {
-        _selectedEntity = view.cbEntity.selectedItem as String;
-        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES,_selectedEntity);
+        schemasManagementProxy.currentEntity = view.cbEntity.selectedItem as String;
+        sendNotification(ApplicationFacade.LIST_SCHEMA_ATTRIBUTES, schemasManagementProxy.currentEntity);
     }
 
     private function sortSchemaAttrList():void {

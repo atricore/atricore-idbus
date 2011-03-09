@@ -65,7 +65,8 @@ public class AddAttributeMediator extends IocFormMediator
         view.submitAddAttributeButton.addEventListener(MouseEvent.CLICK, onSubmitAddAttribute);
         view.cancelAddAttribute.addEventListener(MouseEvent.CLICK, handleCancel);
         view.parent.addEventListener(CloseEvent.CLOSE, handleClose);
-        view.focusManager.setFocus(view.cbEntity);
+        bindForm();
+        view.focusManager.setFocus(view.nameAttribute);
     }
 
     override public function registerValidators():void {
@@ -89,8 +90,8 @@ public class AddAttributeMediator extends IocFormMediator
     }
 
     override public function bindForm():void {
-        var attE:Attribute =  schemasManagementProxy.attributesForEntity.getItemAt(0) as Attribute;
-        view.cbEntity.selectedItem =attE.entity;
+        view.cbEntity.selectedItem = schemasManagementProxy.currentEntity;
+        view.cbEntity.enabled = false;
         view.nameAttribute.text = "";
         view.descAttribute.text = "";
         view.cbType.selectedIndex = -1;
