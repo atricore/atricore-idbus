@@ -835,28 +835,32 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 		// XML Signature, saml2 core, section 5
         if (mediator.isEnableSignatureValidation()) {
 
-            if(response.getSignature() != null && mediator.isEnableSignatureValidation()) {
+            if (response.getSignature() == null) {
+                throw new SamlR2ResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
+            }
 
-                try {
-                    // It's better to validate the original message, when available.
+            try {
+                // It's better to validate the original message, when available.
 
-                    if (originalResponse != null)
-                        signer.validate(idpMd, originalResponse);
-                    else
-                        signer.validate(idpMd, response);
+                if (originalResponse != null)
+                    signer.validate(idpMd, originalResponse);
+                else
+                    signer.validate(idpMd, response);
 
-                } catch (SamlR2SignatureValidationException e) {
-                    throw new SamlR2ResponseException(response,
-                            StatusCode.TOP_REQUESTER,
-                            StatusCode.REQUEST_DENIED,
-                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-                } catch (SamlR2SignatureException e) {
-                    //other exceptions like JAXB, xml parser...
-                    throw new SamlR2ResponseException(response,
-                            StatusCode.TOP_REQUESTER,
-                            StatusCode.REQUEST_DENIED,
-                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-                }
+            } catch (SamlR2SignatureValidationException e) {
+                throw new SamlR2ResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            } catch (SamlR2SignatureException e) {
+                //other exceptions like JAXB, xml parser...
+                throw new SamlR2ResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
             }
         }
 
@@ -885,8 +889,15 @@ public class AssertionConsumerProducer extends SamlR2Producer {
 
 			// XML Signature, saml core, section 5
             /* NOT WORKING OK ... */
-			if(assertion.getSignature() != null &&
-                    mediator.isEnableSignatureValidation()){
+			if(mediator.isEnableSignatureValidation()){
+
+                if (assertion.getSignature() == null) {
+                    throw new SamlR2ResponseException(response,
+                            StatusCode.TOP_REQUESTER,
+                            StatusCode.REQUEST_DENIED,
+                            StatusDetails.INVALID_ASSERTION_SIGNATURE);
+                }
+                
 				try {
 
                     if (originalResponse != null)

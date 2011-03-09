@@ -190,7 +190,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
 
     protected void doProcessStatusResponse(CamelMediationExchange exchange, StatusResponseType samlResponse)
-            throws SamlR2Exception {
+            throws Exception {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
@@ -205,6 +205,10 @@ public class SingleLogoutProducer extends SamlR2Producer {
         in.getMessage().getState().removeLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
         // TODO : Validate SLO Response
+        LogoutRequestType logoutRequest = (LogoutRequestType)
+                in.getMessage().getState().getLocalVariable("urn:oasis:names:tc:SAML:2.0:protocol:LogoutRequest");
+        in.getMessage().getState().removeLocalVariable("urn:oasis:names:tc:SAML:2.0:protocol:LogoutRequest");
+        validateResponse(logoutRequest, (ResponseType) in.getMessage().getContent(), in.getMessage().getRawContent());
         // validateResponse(samlResponse);
 
         // Received SAML2 Response from IdP
