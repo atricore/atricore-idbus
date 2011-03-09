@@ -14,7 +14,7 @@ import org.puremvc.as3.interfaces.INotification;
 public class HelpMediator extends AppSectionMediator implements IDisposable {
 
     private var _projectProxy:ProjectProxy;
-    
+
     private var _created:Boolean;
 
     public function HelpMediator(name:String = null, viewComp:HelpView = null) {
@@ -37,6 +37,11 @@ public class HelpMediator extends AppSectionMediator implements IDisposable {
 
     private function creationCompleteHandler(event:Event):void {
         _created = true;
+
+        /* Remove unused title in account management panel */
+        view.titleDisplay.width = 0;
+        view.titleDisplay.height = 0;
+
         view.helpIFrame.visible = true;
     }
 

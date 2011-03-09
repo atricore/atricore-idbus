@@ -7,7 +7,7 @@ import com.atricore.idbus.console.base.extensions.appsection.AppSectionViewFacto
 
 public class SettingsViewFactory  extends AppSectionViewFactory {
 
-    public static const VIEW_NAME:String = "SettignsView";
+    public static const VIEW_NAME:String = "SettingsView";
 
     public function SettingsViewFactory() {
         super(VIEW_NAME);

@@ -19,6 +19,8 @@ import org.osmf.traits.IDisposable;
 import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocMediator;
 
+import spark.components.Panel;
+
 public class SettingsMediator extends AppSectionMediator implements IDisposable {
 
     private var resourceManager:IResourceManager = ResourceManager.getInstance();
@@ -26,9 +28,9 @@ public class SettingsMediator extends AppSectionMediator implements IDisposable 
     private var _projectProxy:ProjectProxy;
 
     private var _menuMediator:MenuMediator;
-    
+
     private var _created:Boolean;
-    
+
     public function SettingsMediator(p_mediatorName:String = null, p_viewComponent:Object = null) {
         super(p_mediatorName, p_viewComponent);
     }
@@ -49,14 +51,18 @@ public class SettingsMediator extends AppSectionMediator implements IDisposable 
         _menuMediator = value;
     }
 
-    override public function setViewComponent(viewComponent:Object):void {
-        (viewComponent as SettingsView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+    override public function setViewComponent(p_viewComponent:Object):void {
+        (p_viewComponent as SettingsView).addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 
-        super.setViewComponent(viewComponent);
+        super.setViewComponent(p_viewComponent);
     }
 
     private function creationCompleteHandler(event:Event):void {
         _created = true;
+
+        /* Remove unused title in account management panel */
+        view.titleDisplay.width = 0;
+        view.titleDisplay.height = 0;
 
         menuMediator.setViewComponent(view.menu);
     }
@@ -86,8 +92,8 @@ public class SettingsMediator extends AppSectionMediator implements IDisposable 
                 var params:Array = notification.getBody() as Array;
                 var settingsMenuEntryMediator:IIocMediator = iocFacade.container.getObject(params[0]) as IIocMediator;
                 var settingsMenuEntryView:IVisualElement = iocFacade.container.getObject(params[1]) as IVisualElement;
-                view.panel.removeAllElements();
-                view.panel.addElement(settingsMenuEntryView);
+                view.vPanel.removeAllElements();
+                view.vPanel.addElement(settingsMenuEntryView);
                 settingsMenuEntryMediator.setViewComponent(settingsMenuEntryView);
                 break;
             default:
@@ -96,7 +102,7 @@ public class SettingsMediator extends AppSectionMediator implements IDisposable 
                 break;
         }
     }
-    
+
     public function dispose():void {
         _created = false;
     }
