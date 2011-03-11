@@ -21,27 +21,40 @@
 
 package org.atricore.idbus.capabilities.samlr2.main.idp.producers;
 
+import oasis.names.tc.saml._2_0.metadata.EntityDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
+import oasis.names.tc.saml._2_0.metadata.SPSSODescriptorType;
 import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
 import org.atricore.idbus.capabilities.samlr2.main.common.producers.SamlR2Producer;
 import org.atricore.idbus.capabilities.samlr2.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.samlr2.main.idp.IdentityProviderConstants;
 import org.atricore.idbus.capabilities.samlr2.main.idp.ProviderSecurityContext;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
+import org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2RequestException;
+import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2ResponseException;
 import org.atricore.idbus.capabilities.samlr2.support.core.StatusCode;
 import org.atricore.idbus.capabilities.samlr2.support.core.StatusDetails;
+import org.atricore.idbus.capabilities.samlr2.support.core.encryption.SamlR2Encrypter;
+import org.atricore.idbus.capabilities.samlr2.support.core.signature.SamlR2SignatureException;
+import org.atricore.idbus.capabilities.samlr2.support.core.signature.SamlR2SignatureValidationException;
+import org.atricore.idbus.capabilities.samlr2.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenEmissionException;
 import org.atricore.idbus.common.sso._1_0.protocol.IDPInitiatedLogoutRequestType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSORequestAbstractType;
 import org.atricore.idbus.common.sso._1_0.protocol.SSOResponseType;
+import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustManagerException;
 import org.atricore.idbus.kernel.main.federation.metadata.CircleOfTrustMemberDescriptor;
 import org.atricore.idbus.kernel.main.federation.metadata.EndpointDescriptor;
+import org.atricore.idbus.kernel.main.federation.metadata.MetadataEntry;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
 import org.atricore.idbus.kernel.main.mediation.MediationMessageImpl;
 import org.atricore.idbus.kernel.main.mediation.MediationState;
@@ -95,7 +108,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
         String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
 
-        performSlo(exchange, secCtx, null);
+        boolean partialLogout = performSlo(exchange, secCtx, null);
 
         // Send status response!
         if (logger.isDebugEnabled())
@@ -103,7 +116,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
         SSOResponseType response = buildSsoResponse(sloRequest);
 
-        // TODO : Only works for SOAP binding for now!
+
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
         out.setMessage(new MediationMessageImpl(response.getID(),
                 response, "SSOResponse", in.getMessage().getRelayState(), null, in.getMessage().getState()));
@@ -116,12 +129,14 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
 
-        // TODO : Validate request!
+
         MediationState mediationState = in.getMessage().getState();
         String varName = getProvider().getName().toUpperCase() + "_SECURITY_CTX";
         IdPSecurityContext secCtx = (IdPSecurityContext) mediationState.getLocalVariable(varName);
 
-        performSlo(exchange, secCtx, sloRequest);
+        validateRequest(sloRequest, in.getMessage().getRawContent());
+
+        boolean partialLogout = performSlo(exchange, secCtx, sloRequest);
 
         SamlR2Binding binding = SamlR2Binding.asEnum(endpoint.getBinding());
         // Send status response!
@@ -131,6 +146,8 @@ public class SingleLogoutProducer extends SamlR2Producer {
         CircleOfTrustMemberDescriptor sp = resolveProviderDescriptor(sloRequest.getIssuer());
 
         EndpointDescriptor ed = resolveSpSloEndpoint(sloRequest.getIssuer(), new SamlR2Binding [] { binding } , true);
+
+        // TODO : Send partialLogout status code if required
         ResponseType response = buildSamlResponse(exchange, sloRequest, sp, ed);
 
         CamelMediationMessage out = (CamelMediationMessage) exchange.getOut();
@@ -181,7 +198,138 @@ public class SingleLogoutProducer extends SamlR2Producer {
         return (ResponseType) idPlanExchange.getOut().getContent();
     }
 
-    protected void performSlo(CamelMediationExchange exchange, IdPSecurityContext secCtx, LogoutRequestType sloRequest ) throws Exception {
+    // TODO : Reuse basic SAML response validations ....
+    protected void validateResponse(LogoutRequestType spSloRequest, StatusResponseType spSloResponse, String originalSloResponse)
+            throws SamlR2ResponseException{
+        SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
+        SamlR2Signer signer = mediator.getSigner();
+        SamlR2Encrypter encrypter = mediator.getEncrypter();
+
+        // Metadata from the IDP
+        String spAlias = null;
+        SPSSODescriptorType spMd = null;
+        try {
+            spAlias = spSloRequest.getIssuer().getValue();
+            MetadataEntry md = getCotManager().findEntityMetadata(spAlias);
+            EntityDescriptorType saml2Md = (EntityDescriptorType) md.getEntry();
+            boolean found = false;
+            for (RoleDescriptorType roleMd : saml2Md.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
+
+                if (roleMd instanceof SPSSODescriptorType) {
+                    spMd = (SPSSODescriptorType) roleMd;
+                }
+            }
+
+        } catch (CircleOfTrustManagerException e) {
+            throw new SamlR2ResponseException(spSloResponse,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    null,
+                    spSloRequest.getIssuer().getValue(),
+                    e);
+        }
+
+		// XML Signature, saml2 core, section 5
+        if (mediator.isEnableSignatureValidation()) {
+
+            // If no signature is present, throw an exception!
+            if (spSloRequest.getSignature() == null)
+                throw new SamlR2ResponseException(spSloResponse,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
+            try {
+
+                if (originalSloResponse != null)
+                    signer.validate(spMd, originalSloResponse);
+                else
+                    signer.validate(spMd, spSloResponse);
+
+            } catch (SamlR2SignatureValidationException e) {
+                throw new SamlR2ResponseException(spSloResponse,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            } catch (SamlR2SignatureException e) {
+                //other exceptions like JAXB, xml parser...
+                throw new SamlR2ResponseException(spSloResponse,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            }
+
+        }
+    }
+
+    // TODO : Reuse basic SAML request validations ....
+    protected void validateRequest(LogoutRequestType request, String originalRequest)
+            throws SamlR2RequestException, SamlR2Exception {
+
+        SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
+        SamlR2Signer signer = mediator.getSigner();
+        SamlR2Encrypter encrypter = mediator.getEncrypter();
+
+        // Metadata from the IDP
+        String spAlais = null;
+        SPSSODescriptorType spMd = null;
+        try {
+            spAlais = request.getIssuer().getValue();
+            MetadataEntry md = getCotManager().findEntityMetadata(spAlais);
+            EntityDescriptorType saml2Md = (EntityDescriptorType) md.getEntry();
+            boolean found = false;
+            for (RoleDescriptorType roleMd : saml2Md.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
+
+                if (roleMd instanceof SPSSODescriptorType) {
+                    spMd = (SPSSODescriptorType) roleMd;
+                }
+            }
+
+        } catch (CircleOfTrustManagerException e) {
+            throw new SamlR2RequestException(request,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    null,
+                    request.getIssuer().getValue(),
+                    e);
+        }
+
+		// XML Signature, saml2 core, section 5
+        if (mediator.isEnableSignatureValidation()) {
+
+            // If no signature is present, throw an exception!
+            if (request.getSignature() == null)
+                throw new SamlR2RequestException(request,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
+            try {
+
+                if (originalRequest != null)
+                    signer.validate(spMd, originalRequest);
+                else
+                    signer.validate(spMd, request);
+
+            } catch (SamlR2SignatureValidationException e) {
+                throw new SamlR2RequestException(request,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            } catch (SamlR2SignatureException e) {
+                //other exceptions like JAXB, xml parser...
+                throw new SamlR2RequestException(request,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            }
+
+        }
+
+    }
+
+
+    protected boolean performSlo(CamelMediationExchange exchange, IdPSecurityContext secCtx, LogoutRequestType sloRequest ) throws Exception {
+
+        boolean partialLogout = false;
 
         // -----------------------------------------------------------------------------
         // Invalidate SSO Session
@@ -196,6 +344,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
                 SSOSessionManager sessionMgr = ((SPChannel)channel).getSessionManager();
 
                 // Notify other SPs using either back or front channels
+
 
                 for (ProviderSecurityContext pSecCtx : secCtx.lookupProviders()) {
 
@@ -221,11 +370,18 @@ public class SingleLogoutProducer extends SamlR2Producer {
                                 " to SP " + sp.getAlias() +
                                 " using endpoint " + ed.getLocation());
 
-                    // Response from SP
-                    StatusResponseType spSloResponse =
-                            (StatusResponseType) channel.getIdentityMediator().sendMessage(spSloRequest, ed, channel);
+                    try {
+                        // Response from SP
+                        StatusResponseType spSloResponse =
+                                (StatusResponseType) channel.getIdentityMediator().sendMessage(spSloRequest, ed, channel);
 
-                    // TODO : Validate SP SLO Response!
+                        //
+                        validateResponse(spSloRequest, spSloResponse, null);
+
+                    } catch (Exception e) {
+                        logger.error("Error performing SLO for SP : " + sp.getAlias(), e);
+                        partialLogout = true;
+                    }
 
                 }
 
@@ -243,10 +399,13 @@ public class SingleLogoutProducer extends SamlR2Producer {
             } catch (NoSuchSessionException e) {
                 logger.debug("JOSSO Session is not valid : " + secCtx.getSessionIndex());
             }
+
         } else {
             // No session information ...
             logger.debug("No session information foud, sending SUCCESS status");
         }
+
+        return partialLogout;
     }
 
     protected LogoutRequestType buildSamlSloRequest(CamelMediationExchange exchange,
@@ -254,6 +413,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
                                              LogoutRequestType sloRequest,
                                              CircleOfTrustMemberDescriptor sp,
                                              EndpointDescriptor spEndpoint) throws Exception {
+
         // Build sloresponse
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2SloRequestToSpSamlR2SloRequestPlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
@@ -295,7 +455,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
     }
 
     protected SSOResponseType buildSsoResponse(SSORequestAbstractType request) {
-        // TODO : Use Planning planning to build SSO Response
+        // TODO : Use Planning planning to build SSO Response  !!!
         SSOResponseType response = new SSOResponseType();
 
         response.setID(request.getID());

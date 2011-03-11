@@ -25,6 +25,7 @@ import oasis.names.tc.saml._1_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.metadata.KeyDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
+import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
 import oasis.names.tc.saml._2_0.protocol.ManageNameIDRequestType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
@@ -356,6 +357,28 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
         } catch (Exception e) {
             throw new SamlR2SignatureException("Error verifying signature for SAMLR2 response" + response.getID());
+        }
+    }
+
+    public void validate(RoleDescriptorType md, LogoutRequestType request) throws SamlR2SignatureException, SamlR2SignatureValidationException {
+        try {
+            // Marshall the Assertion object as a DOM tree:
+            if (logger.isDebugEnabled())
+                logger.debug("Marshalling SAMLR2 Status LogoutRequest to DOM Tree [" + request.getID() + "]");
+
+            // Instantiate the document to be signed
+            javax.xml.parsers.DocumentBuilderFactory dbf =
+                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
+
+            // XML Signature needs to be namespace aware
+            dbf.setNamespaceAware(true);
+            Document doc =
+                    dbf.newDocumentBuilder().parse(new ByteArrayInputStream(XmlUtils.marshallSamlR2Request(request, false).getBytes()));
+
+            validate(md, doc);
+
+        } catch (Exception e) {
+            throw new SamlR2SignatureException("Error verifying signature for SAMLR2 response" + request.getID());
         }
     }
 

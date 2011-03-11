@@ -22,17 +22,18 @@
 package org.atricore.idbus.capabilities.samlr2.support.core;
 
 import oasis.names.tc.saml._2_0.protocol.ResponseType;
+import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.atricore.idbus.kernel.main.mediation.IdentityMediationFault;
 
 public class SamlR2ResponseException extends IdentityMediationFault {
 
-    private ResponseType response;
+    private StatusResponseType  response;
 
     private StatusCode topLevelStatusCode;
     private StatusCode secondLevelStatusCode;
     private StatusDetails statusDtails;
 
-    public SamlR2ResponseException(ResponseType response,
+    public SamlR2ResponseException(StatusResponseType  response,
                                              StatusCode topLevelStatusCode,
                                              StatusCode secondLevelStatusCode,
                                              StatusDetails statusDtails) {
@@ -48,7 +49,7 @@ public class SamlR2ResponseException extends IdentityMediationFault {
         this.statusDtails = statusDtails;
     }
 
-    public SamlR2ResponseException(ResponseType response,
+    public SamlR2ResponseException(StatusResponseType  response,
                                              StatusCode topLevelStatusCode,
                                              StatusCode secondLevelStatusCode,
                                              StatusDetails statusDtails,
@@ -65,7 +66,7 @@ public class SamlR2ResponseException extends IdentityMediationFault {
         this.statusDtails = statusDtails;
     }
 
-    public SamlR2ResponseException(ResponseType response,
+    public SamlR2ResponseException(StatusResponseType  response,
                                              StatusCode topLevelStatusCode,
                                              StatusCode secondLevelStatusCode,
                                              StatusDetails statusDtails,
@@ -82,7 +83,7 @@ public class SamlR2ResponseException extends IdentityMediationFault {
     }
 
 
-    public SamlR2ResponseException(ResponseType response,
+    public SamlR2ResponseException(StatusResponseType response,
                                              StatusCode topLevelStatusCode,
                                              StatusCode secondLevelStatusCode,
                                              StatusDetails statusDtails,
@@ -100,7 +101,7 @@ public class SamlR2ResponseException extends IdentityMediationFault {
         this.statusDtails = statusDtails;
     }
 
-    public ResponseType getResponse() {
+    public StatusResponseType  getResponse() {
         return response;
     }
 

@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
+import org.atricore.idbus.capabilities.samlr2.main.common.AbstractSamlR2Mediator;
 import org.atricore.idbus.capabilities.samlr2.main.common.producers.SamlR2Producer;
 import org.atricore.idbus.capabilities.samlr2.main.sp.SPSecurityContext;
 import org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator;
@@ -643,7 +644,7 @@ public class AssertionConsumerProducer extends SamlR2Producer {
                                             String originalResponse)
             throws SamlR2ResponseException, SamlR2Exception {
 
-        SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
+        AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
         SamlR2Encrypter encrypter = mediator.getEncrypter();
 

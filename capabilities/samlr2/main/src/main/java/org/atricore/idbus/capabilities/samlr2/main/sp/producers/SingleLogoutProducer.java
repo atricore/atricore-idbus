@@ -37,6 +37,7 @@ import org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator;
 import org.atricore.idbus.capabilities.samlr2.main.sp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
+import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2RequestException;
 import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2ResponseException;
 import org.atricore.idbus.capabilities.samlr2.support.core.StatusCode;
 import org.atricore.idbus.capabilities.samlr2.support.core.StatusDetails;
@@ -109,12 +110,13 @@ public class SingleLogoutProducer extends SamlR2Producer {
     protected void doProcessLogoutRequest(CamelMediationExchange exchange, LogoutRequestType sloRequest)
             throws Exception {
 
-        // TODO : Validate SLO Request
-        // validateRequest()
+
         
         CamelMediationMessage in = (CamelMediationMessage) exchange.getIn();
         SPSecurityContext secCtx =
                 (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
+
+        validateRequest(sloRequest, in.getMessage().getRawContent());
 
         CircleOfTrustMemberDescriptor idp = getProvider().getCotManager().loolkupMemberByAlias(sloRequest.getIssuer().getValue());
         if (secCtx == null || !idp.getAlias().equals(secCtx.getIdpAlias())) {
@@ -204,12 +206,12 @@ public class SingleLogoutProducer extends SamlR2Producer {
                 (SPSecurityContext) in.getMessage().getState().getLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
         in.getMessage().getState().removeLocalVariable(getProvider().getName().toUpperCase() + "_SECURITY_CTX");
 
-        // TODO : Validate SLO Response
         LogoutRequestType logoutRequest = (LogoutRequestType)
                 in.getMessage().getState().getLocalVariable("urn:oasis:names:tc:SAML:2.0:protocol:LogoutRequest");
         in.getMessage().getState().removeLocalVariable("urn:oasis:names:tc:SAML:2.0:protocol:LogoutRequest");
+
+        // Validate received Response
         validateResponse(logoutRequest, (ResponseType) in.getMessage().getContent(), in.getMessage().getRawContent());
-        // validateResponse(samlResponse);
 
         // Received SAML2 Response from IdP
         // TODO : Use plans ?
@@ -249,7 +251,73 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
     }
 
-   // TODO : Reuse basic SAML request validations ....
+    // TODO : Reuse basic SAML request validations ....
+    protected void validateRequest(LogoutRequestType request, String originalRequest)
+            throws SamlR2RequestException, SamlR2Exception {
+
+        SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
+        SamlR2Signer signer = mediator.getSigner();
+        SamlR2Encrypter encrypter = mediator.getEncrypter();
+
+        // Metadata from the IDP
+        String idpAlias = null;
+        IDPSSODescriptorType idpMd = null;
+        try {
+            idpAlias = request.getIssuer().getValue();
+            MetadataEntry md = getCotManager().findEntityMetadata(idpAlias);
+            EntityDescriptorType saml2Md = (EntityDescriptorType) md.getEntry();
+            boolean found = false;
+            for (RoleDescriptorType roleMd : saml2Md.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
+
+                if (roleMd instanceof IDPSSODescriptorType) {
+                    idpMd = (IDPSSODescriptorType) roleMd;
+                }
+            }
+
+        } catch (CircleOfTrustManagerException e) {
+            throw new SamlR2RequestException(request,
+                    StatusCode.TOP_RESPONDER,
+                    StatusCode.NO_SUPPORTED_IDP,
+                    null,
+                    request.getIssuer().getValue(),
+                    e);
+        }
+
+		// XML Signature, saml2 core, section 5
+        if (mediator.isEnableSignatureValidation()) {
+
+            // If no signature is present, throw an exception!
+            if (request.getSignature() == null)
+                throw new SamlR2RequestException(request,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
+            try {
+
+                if (originalRequest != null)
+                    signer.validate(idpMd, originalRequest);
+                else
+                    signer.validate(idpMd, request);
+
+            } catch (SamlR2SignatureValidationException e) {
+                throw new SamlR2RequestException(request,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            } catch (SamlR2SignatureException e) {
+                //other exceptions like JAXB, xml parser...
+                throw new SamlR2RequestException(request,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            }
+
+        }
+
+    }
+
+
+    // TODO : Reuse basic SAML response validations ....
     protected ResponseType validateResponse(LogoutRequestType request,
                                             ResponseType response,
                                             String originalResponse)
@@ -433,29 +501,32 @@ public class SingleLogoutProducer extends SamlR2Producer {
 		// XML Signature, saml2 core, section 5
         if (mediator.isEnableSignatureValidation()) {
 
+            // If no signature is present, throw an exception!
+            if (response.getSignature() == null)
+                throw new SamlR2ResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
+            try {
 
+                if (originalResponse != null)
+                    signer.validate(idpMd, originalResponse);
+                else
+                    signer.validate(idpMd, response);
 
-            if(response.getSignature() != null && mediator.isEnableSignatureValidation()) {
-                try {
-
-                    if (originalResponse != null)
-                        signer.validate(idpMd, originalResponse);
-                    else
-                        signer.validate(idpMd, response);
-
-                } catch (SamlR2SignatureValidationException e) {
-                    throw new SamlR2ResponseException(response,
-                            StatusCode.TOP_REQUESTER,
-                            StatusCode.REQUEST_DENIED,
-                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-                } catch (SamlR2SignatureException e) {
-                    //other exceptions like JAXB, xml parser...
-                    throw new SamlR2ResponseException(response,
-                            StatusCode.TOP_REQUESTER,
-                            StatusCode.REQUEST_DENIED,
-                            StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
-                }
+            } catch (SamlR2SignatureValidationException e) {
+                throw new SamlR2ResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            } catch (SamlR2SignatureException e) {
+                //other exceptions like JAXB, xml parser...
+                throw new SamlR2ResponseException(response,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
             }
+
         }
 
         return response;

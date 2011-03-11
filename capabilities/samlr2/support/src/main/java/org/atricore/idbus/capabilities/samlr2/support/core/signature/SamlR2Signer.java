@@ -23,6 +23,7 @@ package org.atricore.idbus.capabilities.samlr2.support.core.signature;
 
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
+import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
 import oasis.names.tc.saml._2_0.protocol.ManageNameIDRequestType;
 import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
 import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
@@ -75,6 +76,15 @@ public interface SamlR2Signer {
      *          if the assertion signature is invalid
      */
     void validate(RoleDescriptorType md, StatusResponseType response) throws SamlR2SignatureException, SamlR2SignatureValidationException;
+
+    /**
+     * @param md       The signer SAML 2.0 Metadata
+     * @param request The signed SAML 2.0 Response
+     * @throws SamlR2SignatureValidationException
+     *          if the assertion signature is invalid
+     */
+    void validate(RoleDescriptorType md, LogoutRequestType request) throws SamlR2SignatureException, SamlR2SignatureValidationException;
+
 
     /**
      * @param md                  The signer SAML 2.0 Metadata
