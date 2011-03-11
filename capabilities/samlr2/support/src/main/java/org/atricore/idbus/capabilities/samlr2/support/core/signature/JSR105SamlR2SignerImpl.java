@@ -25,10 +25,7 @@ import oasis.names.tc.saml._1_0.protocol.ResponseType;
 import oasis.names.tc.saml._2_0.assertion.AssertionType;
 import oasis.names.tc.saml._2_0.metadata.KeyDescriptorType;
 import oasis.names.tc.saml._2_0.metadata.RoleDescriptorType;
-import oasis.names.tc.saml._2_0.protocol.LogoutRequestType;
-import oasis.names.tc.saml._2_0.protocol.ManageNameIDRequestType;
-import oasis.names.tc.saml._2_0.protocol.RequestAbstractType;
-import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
+import oasis.names.tc.saml._2_0.protocol.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.support.SAMLR11Constants;
@@ -363,11 +360,33 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         }
     }
 
+    public void validate(RoleDescriptorType md, AuthnRequestType request) throws SamlR2SignatureException, SamlR2SignatureValidationException {
+        try {
+            // Marshall the Assertion object as a DOM tree:
+            if (logger.isDebugEnabled())
+                logger.debug("Marshalling SAMLR2 Status Authn Request to DOM Tree [" + request.getID() + "]");
+
+            // Instantiate the document to be signed
+            javax.xml.parsers.DocumentBuilderFactory dbf =
+                    javax.xml.parsers.DocumentBuilderFactory.newInstance();
+
+            // XML Signature needs to be namespace aware
+            dbf.setNamespaceAware(true);
+            Document doc =
+                    dbf.newDocumentBuilder().parse(new ByteArrayInputStream(XmlUtils.marshallSamlR2Request(request, false).getBytes()));
+
+            validate(md, doc);
+
+        } catch (Exception e) {
+            throw new SamlR2SignatureException("Error verifying signature for SAMLR2 response" + request.getID());
+        }
+    }
+
     public void validate(RoleDescriptorType md, LogoutRequestType request) throws SamlR2SignatureException, SamlR2SignatureValidationException {
         try {
             // Marshall the Assertion object as a DOM tree:
             if (logger.isDebugEnabled())
-                logger.debug("Marshalling SAMLR2 Status LogoutRequest to DOM Tree [" + request.getID() + "]");
+                logger.debug("Marshalling SAMLR2 Logout Request to DOM Tree [" + request.getID() + "]");
 
             // Instantiate the document to be signed
             javax.xml.parsers.DocumentBuilderFactory dbf =
@@ -571,58 +590,47 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     }
 
+    /**
+     * This validates XML Didgital signature for SAML 2.0 Documents (requests, responses, assertions, etc)
+     *
+     * @param md  The signer SAML 2.0 Metadata
+     * @param doc DOM representation of the document
+     * @throws SamlR2SignatureException if the signature is invalid
+     */
     public void validate(RoleDescriptorType md, Document doc) throws SamlR2SignatureException {
         try {
-            // Check for duplicate IDs
+
+            // Check for duplicate IDs among XML elements
             NodeList nodes = evaluateXPath(doc, "//*/@ID");
             boolean duplicateIdExists = false;
             List<String> ids = new ArrayList<String>();
-            for (int i = 0 ; i < nodes.getLength() ; i++) {
+            for (int i = 0; i < nodes.getLength(); i++) {
                 Node node = nodes.item(i);
                 if (ids.contains(node.getNodeValue())) {
                     duplicateIdExists = true;
-                    break;
+                    logger.error("Duplicated Element ID in XML Document : " + node.getNodeValue());
                 }
                 ids.add(node.getNodeValue());
             }
             if (duplicateIdExists) {
-                throw new SamlR2SignatureException("Duplicate IDs in response");
+                throw new SamlR2SignatureException("Duplicate IDs in document ");
             }
 
-            // Check number of Response elements
-            NodeList responseElements = evaluateXPath(doc, "//p:Response");
-            if (responseElements.getLength() > 1) {
-                throw new SamlR2SignatureException("More than one Response found");
-            }
+            // TODO : Check that the Signature references the root element (the one used by the application)
+            // Keep in mind that signature reference might be an XPath expression ?!
 
-            // Check number of Assertion elements
-            NodeList assertionElements = evaluateXPath(doc, "//a:Assertion");
-            if (assertionElements.getLength() > 1) {
-                throw new SamlR2SignatureException("More than one Assertion found");
-            }
-
-            // Check signature reference
-            // get ID of the root Response element
-            NodeList responseIDs = evaluateXPath(doc, "/p:Response/@ID");
-            String responseID = responseIDs.item(0).getNodeValue();
-            if (responseID == null || responseID.trim().equals("")) {
-                throw new SamlR2SignatureException("Response ID is empty");
-            }
-            // get URI of the root Response Signature Reference
-            NodeList signatureReferenceURIs = evaluateXPath(doc, "/p:Response/ds:Signature/ds:SignedInfo/ds:Reference/@URI");
-            String referenceURI = null;
-            if (signatureReferenceURIs.getLength() > 0) {
-                referenceURI = signatureReferenceURIs.item(0).getNodeValue();
-                if (referenceURI.startsWith("#") && !referenceURI.substring(1).equals(responseID)) {
-                    throw new SamlR2SignatureException("Signature Reference URI doesn't match root Response ID");
-                }
-            }
+            // We know that in SAML, the root element is the element used by the application, we just need to make sure that
+            // the root element is the one referred by the signature
+            Node root = doc.getDocumentElement();
+            Node rootIdAttr = root.getAttributes().getNamedItem("ID");
+            if (rootIdAttr == null)
+                throw new SamlR2SignatureException("SAML document does not have an ID ");
 
             // Find Signature element
-            NodeList nl =
+            NodeList signatureNodes =
                     doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
-            if (nl.getLength() == 0) {
-                throw new SamlR2SignatureException("Cannot find Signature element");
+            if (signatureNodes.getLength() == 0) {
+                throw new SamlR2SignatureException("Cannot find Signature elements");
             }
 
             // Create a DOM XMLSignatureFactory that will be used to unmarshal the
@@ -631,16 +639,13 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
             // Create a DOMValidateContext and specify a KeyValue KeySelector
             // and document context
-            /*
-            DOMValidateContext valContext = new DOMValidateContext
-                    (new KeyValueKeySelector(), nl.item(0));
-            */
 
             // Validate all Signature elements
-            for (int k = 0; k < nl.getLength(); k++) {
+            boolean rootIdMatched = false;
+            for (int k = 0; k < signatureNodes.getLength(); k++) {
 
                 DOMValidateContext valContext = new DOMValidateContext
-                        (new RawX509KeySelector(), nl.item(k));
+                        (new RawX509KeySelector(), signatureNodes.item(k));
 
                 // unmarshal the XMLSignature
                 XMLSignature signature = fac.unmarshalXMLSignature(valContext);
@@ -650,21 +655,52 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
                 // Check core validation status
                 if (!coreValidity) {
-                    logger.debug("Signature failed core validation");
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("Signature failed core validation");
+
                     boolean sv = signature.getSignatureValue().validate(valContext);
-                    logger.debug("signature validation status: " + sv);
-                    // check the validation status of each Reference
+
+                    if (logger.isDebugEnabled())
+                        logger.debug("signature validation status: " + sv);
+                    // check the validation status of each Reference (should be only one!)
                     Iterator i = signature.getSignedInfo().getReferences().iterator();
                     boolean refValid = true;
                     for (int j = 0; i.hasNext(); j++) {
-                        boolean b = ((Reference) i.next()).validate(valContext);
-                        if (!b) refValid = b;
-                        logger.debug("ref[" + j + "] validity status: " + b);
+
+                        Reference ref = (Reference) i.next();
+                        boolean b = ref.validate(valContext);
+                        if (logger.isDebugEnabled())
+                            logger.debug("ref[" + j + "] " + ref.getId() + " validity status: " + b);
+
+                        if (!b) {
+                            refValid = b;
+                            logger.error("Signature failed reference validation " + ref.getId());
+                        }
+
+
                     }
                     throw new SamlR2SignatureValidationException("Signature failed core validation" + (refValid ? " but passed all Reference validations" : " and some/all Reference validation"));
                 }
 
-                logger.debug("Signature passed core validation");
+                if (logger.isDebugEnabled())
+                    logger.debug("Singnature passed Core validation");
+
+                // The Signature must contain only one reference, and it must be the signed top element's ID.
+                List<Reference> refs = signature.getSignedInfo().getReferences();
+                if (refs.size() != 1) {
+                    throw new SamlR2SignatureValidationException("Invalid number of 'Reference' elements in signature : "
+                            + refs.size() + " [" + signature.getId() + "]");
+                }
+
+                Reference reference = refs.get(0);
+                String referenceURI = reference.getURI();
+
+                if (referenceURI == null || !referenceURI.startsWith("#"))
+                    throw new SamlR2SignatureValidationException("Signature reference URI format not supported " + referenceURI);
+
+                if (referenceURI.substring(1).equals(rootIdAttr.getNodeValue()))
+                    rootIdMatched = true;
 
                 Key key = signature.getKeySelectorResult().getKey();
                 boolean certValidity = validateCertificate(md, key);
@@ -672,9 +708,18 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
                     throw new SamlR2SignatureValidationException("Signature failed Certificate validation");
                 }
 
-                logger.debug("Signature passed Certificate validation");
+                if (logger.isDebugEnabled())
+                    logger.debug("Signature passed Certificate validation");
 
             }
+
+            // Check that any of the Signatures matched the root element ID
+            if (!rootIdMatched) {
+                logger.error("No Signature element refers to root element (possible signature wrapping attack)");
+                throw new SamlR2SignatureValidationException("No Signature element refers to root element");
+            }
+
+
         } catch (MarshalException e) {
             throw new RuntimeException(e.getMessage(), e);
         } catch (XMLSignatureException e) {
@@ -747,7 +792,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
             try {
                 CertificateFactory cf = CertificateFactory.getInstance("X.509");
-                X509Certificate x509Cert = (X509Certificate)cf.generateCertificate(new ByteArrayInputStream(x509CertificateBin));
+                X509Certificate x509Cert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(x509CertificateBin));
 
                 PublicKey x509PublicKey = x509Cert.getPublicKey();
 
@@ -765,7 +810,6 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         return false;
 
     }
-
 
 
     /**
@@ -793,12 +837,13 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             // The URI must be the assertion ID
 
             List<Transform> transforms = new ArrayList<Transform>();
-            transforms.add(fac.newTransform (Transform.ENVELOPED, (TransformParameterSpec) null));
+            transforms.add(fac.newTransform(Transform.ENVELOPED, (TransformParameterSpec) null));
             // Magically, this solves assertion DS validation when embedded in a signed response :)
-            transforms.add(fac.newTransform (CanonicalizationMethod.EXCLUSIVE, (TransformParameterSpec) null));
+            transforms.add(fac.newTransform(CanonicalizationMethod.EXCLUSIVE, (TransformParameterSpec) null));
 
             Reference ref = fac.newReference
-                    ("#" + id, fac.newDigestMethod(DigestMethod.SHA1, null),
+                    ("#" + id,
+                            fac.newDigestMethod(DigestMethod.SHA1, null),
                             transforms,
                             null, null);
 
@@ -889,9 +934,9 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
                 if (prefix.equals("ds"))
                     return org.apache.xml.security.utils.Constants.SignatureSpecNS;
                 if (prefix.equals("p"))
-                	return SAMLR2Constants.SAML_PROTOCOL_NS;
+                    return SAMLR2Constants.SAML_PROTOCOL_NS;
                 if (prefix.equals("a"))
-                	return SAMLR2Constants.SAML_ASSERTION_NS;
+                    return SAMLR2Constants.SAML_ASSERTION_NS;
 
                 return null;
             }
@@ -903,12 +948,12 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
             // Dummy implemenation - not used!
             public String getPrefix(String uri) {
-            	if (uri.equals(org.apache.xml.security.utils.Constants.SignatureSpecNS))
+                if (uri.equals(org.apache.xml.security.utils.Constants.SignatureSpecNS))
                     return "ds";
                 if (uri.equals(SAMLR2Constants.SAML_PROTOCOL_NS))
-                	return "p";
+                    return "p";
                 if (uri.equals(SAMLR2Constants.SAML_ASSERTION_NS))
-                	return "a";
+                    return "a";
 
                 return null;
             }

@@ -98,8 +98,9 @@ log4j.category.org.atricore.idbus.kernel.main.session.service.SessionMonitor=INF
 #log4j.category.org.ops4j.pax.web.service.jetty=TRACE
 
 # DataNucleus Categories
+log4j.category.DataNucleus=INFO
 #log4j.category.DataNucleus.JDO=INFO
-#log4j.category.DataNucleus.Cache=DEBUG
+#log4j.category.DataNucleus.Cache=INFO
 #log4j.category.DataNucleus.MetaData=WARN
 #log4j.category.DataNucleus.General=INFO
 #log4j.category.DataNucleus.Utility=WARN
