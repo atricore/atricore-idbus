@@ -353,8 +353,9 @@ public class SamlR2IdPTransformer extends AbstractTransformer implements Initial
             }
         }
 
-        // ArtifactResolutionService
-        if (artifactEnabled) {
+        // ArtifactResolutionService must always be enabled just in case other providers support this binding
+        // if (artifactEnabled)
+        {
             IndexedEndpointType artifactResolutionService = new IndexedEndpointType();
             artifactResolutionService.setBinding(SamlR2Binding.SAMLR2_SOAP.getValue());
             artifactResolutionService.setLocation(resolveLocationUrl(provider, spChannel) + "/SAML2/ARTIFACT/SOAP");

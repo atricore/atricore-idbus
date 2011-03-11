@@ -284,8 +284,9 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
             }
         }
 
-        // ArtifactResolutionService
-        if (artifactEnabled) {
+        // ArtifactResolutionService must always be enabled, just in case other providers support this binding
+        //if (artifactEnabled)
+        {
             Bean arSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
             arSoap.setName(idpChannelBean.getName() + "-saml2-ar-soap");
             setPropertyValue(arSoap, "name", arSoap.getName());
@@ -316,7 +317,7 @@ public class AbstractIdPChannelTransformer extends AbstractTransformer {
             setPropertyRefs(arLocal, "identityPlans", plansList);
             endpoints.add(arLocal);
         }
-        
+
         setPropertyAsBeans(idpChannelBean, "endpoints", endpoints);
 
         if (idpChannel != null)

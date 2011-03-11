@@ -327,8 +327,9 @@ public class AbstractSPChannelTransformer extends AbstractTransformer {
             }
         }
 
-        // ArtifactResolutionService
-        if (artifactEnabled) {
+        // ArtifactResolutionService must always be enabled just in case other providers support this binding
+        //if (artifactEnabled)
+        {
             Bean arSoap = newAnonymousBean(IdentityMediationEndpointImpl.class);
             arSoap.setName(spChannelBean.getName() + "-saml2-ar-soap");
             setPropertyValue(arSoap, "name", arSoap.getName());
