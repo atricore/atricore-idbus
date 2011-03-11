@@ -39,6 +39,7 @@ import org.atricore.idbus.capabilities.samlr2.support.core.util.NamespaceFilterX
 import org.atricore.idbus.capabilities.samlr2.support.core.util.XmlUtils;
 import org.w3._2000._09.xmldsig_.X509DataType;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -55,10 +56,12 @@ import javax.xml.crypto.dsig.keyinfo.KeyValue;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.xpath.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -570,6 +573,51 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
 
     public void validate(RoleDescriptorType md, Document doc) throws SamlR2SignatureException {
         try {
+            // Check for duplicate IDs
+            NodeList nodes = evaluateXPath(doc, "//*/@ID");
+            boolean duplicateIdExists = false;
+            List<String> ids = new ArrayList<String>();
+            for (int i = 0 ; i < nodes.getLength() ; i++) {
+                Node node = nodes.item(i);
+                if (ids.contains(node.getNodeValue())) {
+                    duplicateIdExists = true;
+                    break;
+                }
+                ids.add(node.getNodeValue());
+            }
+            if (duplicateIdExists) {
+                throw new SamlR2SignatureException("Duplicate IDs in response");
+            }
+
+            // Check number of Response elements
+            NodeList responseElements = evaluateXPath(doc, "//p:Response");
+            if (responseElements.getLength() > 1) {
+                throw new SamlR2SignatureException("More than one Response found");
+            }
+
+            // Check number of Assertion elements
+            NodeList assertionElements = evaluateXPath(doc, "//a:Assertion");
+            if (assertionElements.getLength() > 1) {
+                throw new SamlR2SignatureException("More than one Assertion found");
+            }
+
+            // Check signature reference
+            // get ID of the root Response element
+            NodeList responseIDs = evaluateXPath(doc, "/p:Response/@ID");
+            String responseID = responseIDs.item(0).getNodeValue();
+            if (responseID == null || responseID.trim().equals("")) {
+                throw new SamlR2SignatureException("Response ID is empty");
+            }
+            // get URI of the root Response Signature Reference
+            NodeList signatureReferenceURIs = evaluateXPath(doc, "/p:Response/ds:Signature/ds:SignedInfo/ds:Reference/@URI");
+            String referenceURI = null;
+            if (signatureReferenceURIs.getLength() > 0) {
+                referenceURI = signatureReferenceURIs.item(0).getNodeValue();
+                if (referenceURI.startsWith("#") && !referenceURI.substring(1).equals(responseID)) {
+                    throw new SamlR2SignatureException("Signature Reference URI doesn't match root Response ID");
+                }
+            }
+
             // Find Signature element
             NodeList nl =
                     doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
@@ -814,6 +862,59 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
         } catch (SamlR2KeyResolverException e) {
             throw new SamlR2SignatureException(e.getMessage(), e);
         }
+    }
+
+    protected NodeList evaluateXPath(Document doc, String expression) throws SamlR2SignatureException {
+        XPathFactory factory = XPathFactory.newInstance();
+        XPath xpath = factory.newXPath();
+        xpath.setNamespaceContext(getNamespaceContext());
+
+        NodeList nl;
+        try {
+            XPathExpression expr = xpath.compile(expression);
+
+            nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            throw new SamlR2SignatureException(e);
+        }
+
+        return nl;
+    }
+
+    protected NamespaceContext getNamespaceContext() {
+
+        return new NamespaceContext() {
+
+            public String getNamespaceURI(String prefix) {
+                if (prefix.equals("ds"))
+                    return org.apache.xml.security.utils.Constants.SignatureSpecNS;
+                if (prefix.equals("p"))
+                	return SAMLR2Constants.SAML_PROTOCOL_NS;
+                if (prefix.equals("a"))
+                	return SAMLR2Constants.SAML_ASSERTION_NS;
+
+                return null;
+            }
+
+            // Dummy implementation - not used!
+            public Iterator getPrefixes(String val) {
+                return null;
+            }
+
+            // Dummy implemenation - not used!
+            public String getPrefix(String uri) {
+            	if (uri.equals(org.apache.xml.security.utils.Constants.SignatureSpecNS))
+                    return "ds";
+                if (uri.equals(SAMLR2Constants.SAML_PROTOCOL_NS))
+                	return "p";
+                if (uri.equals(SAMLR2Constants.SAML_ASSERTION_NS))
+                	return "a";
+
+                return null;
+            }
+
+        };
+
     }
 
     /**
