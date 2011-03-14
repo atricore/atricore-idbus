@@ -734,6 +734,8 @@
 
     <object id="activateLicenseMediator" class="com.atricore.idbus.console.main.view.license.ActivateLicenseMediator"/>
 
+    <object id="displayLicenseTextMediator" class="com.atricore.idbus.console.licensing.main.view.displaylicensetext.DisplayLicenseTextMediator" />
+
     <object id="helpMediator" class="com.atricore.idbus.console.help.main.HelpMediator">
         <property name="projectProxy" ref="projectProxy"/>
 
@@ -824,6 +826,7 @@
             class="com.atricore.idbus.console.licensing.main.view.LicensingPopUpManager">
         <property name="updateLicenseMediator" ref="updateLicenseMediator"/>
         <property name="activateLicenseMediator" ref="activateLicenseMediator"/>
+        <property name="displayLicenseTextMediator" ref="displayLicenseTextMediator" />
     </object>
 
     <!-- App Section View Factories -->

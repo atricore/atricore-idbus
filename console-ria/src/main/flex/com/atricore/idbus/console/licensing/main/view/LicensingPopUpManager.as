@@ -20,6 +20,8 @@
  */
 
 package com.atricore.idbus.console.licensing.main.view {
+import com.atricore.idbus.console.licensing.main.view.displaylicensetext.DisplayLicenseTextForm;
+import com.atricore.idbus.console.licensing.main.view.displaylicensetext.DisplayLicenseTextMediator;
 import com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseForm;
 import com.atricore.idbus.console.licensing.main.view.updatelicense.UpdateLicenseMediator;
 import com.atricore.idbus.console.main.BasePopUpManager;
@@ -38,10 +40,12 @@ public class LicensingPopUpManager extends BasePopUpManager {
     // mediators
     private var _updateLicenseMediator:UpdateLicenseMediator;
     private var _activateLicenseMediator:ActivateLicenseMediator;
+    private var _displayLicenseTextMediator:DisplayLicenseTextMediator;
 
     // views
     private var _updateLicenseForm:UpdateLicenseForm;
     private var _activateLicenseForm:ActivateLicenseForm;
+    private var _displayLicenseTextForm:DisplayLicenseTextForm;
 
     //commands
 //    private var _updateLicenseCommand:UpdateLicenseCommand;
@@ -69,6 +73,14 @@ public class LicensingPopUpManager extends BasePopUpManager {
 
     public function set activateLicenseMediator(value:ActivateLicenseMediator):void {
         _activateLicenseMediator = value;
+    }
+
+    public function get displayLicenseTextMediator():DisplayLicenseTextMediator {
+        return _displayLicenseTextMediator;
+    }
+
+    public function set displayLicenseTextMediator(value:DisplayLicenseTextMediator):void {
+        _displayLicenseTextMediator = value;
     }
 
     public function showUpdateLicenseWindow(notification:INotification):void {
@@ -117,5 +129,27 @@ public class LicensingPopUpManager extends BasePopUpManager {
         activateLicenseMediator.handleNotification(_lastWindowNotification);
     }
 
+    public function showLicenseTextWindow(notification:INotification):void {
+        _lastWindowNotification = notification;
+        createViewLicenseTextForm();
+        displayLicenseTextMediator.handleNotification(notification);
+
+        _popup.title = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.vieweula.heading');
+        _popup.width = 410;
+        _popup.height =450;
+        _popup.x = (_popupParent.width / 2) - 225;
+        _popup.y = 80;
+        showPopup(_displayLicenseTextForm);
+    }
+
+    private function createViewLicenseTextForm():void {
+        _displayLicenseTextForm = new DisplayLicenseTextForm();
+        _displayLicenseTextForm.addEventListener(FlexEvent.CREATION_COMPLETE, handleDisplayLicenseTextFormCreated);
+    }
+
+    private function handleDisplayLicenseTextFormCreated(event:FlexEvent):void {
+        displayLicenseTextMediator.setViewComponent(_displayLicenseTextForm);
+        displayLicenseTextMediator.handleNotification(_lastWindowNotification);
+    }
 }
 }

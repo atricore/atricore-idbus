@@ -194,6 +194,7 @@ public class ApplicationFacade extends BaseAppFacade {
     public static const APPLIANCE_SAVED:String = "applianceSaved";
     public static const DISPLAY_ACTIVATE_LICENSE:String = "displayActivateLicense";
     public static const DISPLAY_UPDATE_LICENSE:String = "displayUpdateLicense";
+    public static const DISPLAY_EULA_TEXT:String = "displayEulaText";
     public static const EXPORT_IDENTITY_APPLIANCE:String = "exportIdentityAppliance";
     public static const EXPORT_PROVIDER_CERTIFICATE:String = "exportProviderCertificate";
     public static const EXPORT_METADATA:String = "exportMetadata";

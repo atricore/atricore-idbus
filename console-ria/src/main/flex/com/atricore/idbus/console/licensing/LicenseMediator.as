@@ -48,6 +48,7 @@ import org.puremvc.as3.interfaces.INotification;
 import org.springextensions.actionscript.puremvc.interfaces.IIocFacade;
 import org.springextensions.actionscript.puremvc.patterns.mediator.IocMediator;
 
+import spark.components.Button;
 import spark.components.HGroup;
 import spark.components.Label;
 
@@ -122,6 +123,7 @@ public class LicenseMediator extends IocMediator implements IDisposable {
             UpdateLicenseCommand.SUCCESS,
             UpdateLicenseCommand.FAILURE,
             ApplicationFacade.DISPLAY_UPDATE_LICENSE,
+            ApplicationFacade.DISPLAY_EULA_TEXT,
             GetLicenseCommand.SUCCESS,
             GetLicenseCommand.FAILURE];
     }
@@ -139,6 +141,9 @@ public class LicenseMediator extends IocMediator implements IDisposable {
                 break;
             case ApplicationFacade.DISPLAY_UPDATE_LICENSE:
                 popupManager.showUpdateLicenseWindow(notification);
+                break;
+            case ApplicationFacade.DISPLAY_EULA_TEXT:
+                popupManager.showLicenseTextWindow(notification);
                 break;
             case GetLicenseCommand.SUCCESS:
                 displayLicenseInfo();
@@ -158,6 +163,26 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         sendNotification(ApplicationFacade.SHOW_ERROR_MSG, errMsg);
     }
 
+    public function handleViewEulaButton(event:Event):void {        
+        sendNotification(ApplicationFacade.DISPLAY_EULA_TEXT, StringUtil.trim(_licenseProxy.license.eula));
+    }
+
+    public function handleViewLicenseButton(event:Event):void {
+        var btnId:String = (event.currentTarget as Button).id;
+        var tmpId:String;
+        var tmpFeature:FeatureType;
+        for each (var licFeature:LicensedFeatureType in _licenseProxy.license.licensedFeature) {
+            for each (var feature:FeatureType in licFeature.feature) {
+                var tmpId:String = feature.group + feature.name;
+                if(btnId == tmpId){
+                   tmpFeature = feature;
+                    break;
+                }
+            }
+        }
+        sendNotification(ApplicationFacade.DISPLAY_EULA_TEXT, StringUtil.trim(tmpFeature.licenseText));
+    }
+
     public function displayLicenseInfo():void {
         var paddingBottom:Number = 5;
         var lblWidth:Number = 150;
@@ -171,9 +196,13 @@ public class LicenseMediator extends IocMediator implements IDisposable {
             textLbl.width = lblWidth;
             textLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.generaleula') + ":";
             hgroup.addElement(textLbl);
-            textLbl = new Label();
-            textLbl.text = StringUtil.trim(_licenseProxy.license.eula);
-            hgroup.addElement(textLbl);
+            var btn:Button = new Button();
+            btn.label = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.vieweula');
+            btn.addEventListener(MouseEvent.CLICK, handleViewEulaButton);
+            hgroup.addElement(btn);
+//            textLbl = new Label();
+//            textLbl.text = StringUtil.trim(_licenseProxy.license.eula);
+//            hgroup.addElement(textLbl);
             view.licenseInfo.addElement(hgroup);
         }
 
@@ -240,9 +269,14 @@ public class LicenseMediator extends IocMediator implements IDisposable {
                     textLbl.width = lblWidth;
                     textLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.licensetext') + ":";
                     hgroup.addElement(textLbl);
-                    textLbl = new Label();
-                    textLbl.text = StringUtil.trim(feature.licenseText);
-                    hgroup.addElement(textLbl);
+                    var btn:Button = new Button();
+                    btn.label = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.viewlicense');
+                    btn.id = feature.group + feature.name;
+                    btn.addEventListener(MouseEvent.CLICK, handleViewLicenseButton);
+                    hgroup.addElement(btn);
+//                    textLbl = new Label();
+//                    textLbl.text = StringUtil.trim(feature.licenseText);
+//                    hgroup.addElement(textLbl);
                     view.licenseInfo.addElement(hgroup);
                 }
             }
