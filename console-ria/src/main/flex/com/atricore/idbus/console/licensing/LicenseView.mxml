@@ -33,7 +33,6 @@
 
     <fx:Script>
         <![CDATA[
-//        import com.atricore.idbus.console.main.EmbeddedIcons;
         public var icon:Class = null;
         ]]>
     </fx:Script>    
@@ -53,23 +52,27 @@
             <!--<s:Label width="150" text="Licensed to:"/>-->
             <!--<s:Label id="licensedTo" width="150" text="Atricore Inc."/>-->
         <!--</s:HGroup>-->
-        <s:VGroup paddingLeft="25">
-            <s:HGroup paddingBottom="5">
-                <s:Label width="150" text="License Owner:"/>
-                <s:Label id="ownerName" width="150" text="Atricore Inc."/>
-            </s:HGroup>
-            <s:HGroup paddingBottom="5">
-                <s:Label width="150" text="Organization:"/>
-                <s:Label id="organization" width="150" text="Atricore Inc."/>
-            </s:HGroup>
-            <s:HGroup paddingBottom="5">
-                <s:Label width="150" text="Feature:"/>
-                <s:Label id="feature" width="150" text="Atricore Inc."/>
-            </s:HGroup>
-            <s:HGroup>
-                <s:Label width="150" text="Expires on:"/>
-                <s:Label id="expirationDate" width="150" text="Atricore Inc."/>
-            </s:HGroup>
+        <s:VGroup paddingLeft="25" id="licenseInfo">
+            <!--<s:HGroup paddingBottom="5">-->
+                <!--<s:Label width="150" text="General EULA:"/>-->
+                <!--<s:Label id="eula" width="350" text=""/>-->
+            <!--</s:HGroup>            -->
+            <!--<s:HGroup paddingBottom="5">-->
+                <!--<s:Label width="150" text="License Owner:"/>-->
+                <!--<s:Label id="ownerName" width="150" text="Atricore Inc."/>-->
+            <!--</s:HGroup>-->
+            <!--<s:HGroup paddingBottom="5">-->
+                <!--<s:Label width="150" text="Organization:"/>-->
+                <!--<s:Label id="organization" width="150" text="Atricore Inc."/>-->
+            <!--</s:HGroup>-->
+            <!--<s:HGroup paddingBottom="5">-->
+                <!--<s:Label width="150" text="Feature:"/>-->
+                <!--<s:Label id="feature" width="150" text="Atricore Inc."/>-->
+            <!--</s:HGroup>-->
+            <!--<s:HGroup>-->
+                <!--<s:Label width="150" text="Expires on:"/>-->
+                <!--<s:Label id="expirationDate" width="150" text="Atricore Inc."/>-->
+            <!--</s:HGroup>-->
         </s:VGroup>
     </s:VGroup>
 </s:Panel>

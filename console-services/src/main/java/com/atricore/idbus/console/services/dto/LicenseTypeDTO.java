@@ -15,6 +15,8 @@ public class LicenseTypeDTO implements Serializable {
 
     private List<LicensedFeatureTypeDTO> licensedFeature;
 
+    protected String eula;    
+
     public OrganizationTypeDTO getOrganization() {
         return organization;
     }
@@ -40,5 +42,13 @@ public class LicenseTypeDTO implements Serializable {
 
     public void setIssueInstant(Date issueInstant) {
         this.issueInstant = issueInstant;
+    }
+
+    public String getEula() {
+        return eula;
+    }
+
+    public void setEula(String eula) {
+        this.eula = eula;
     }
 }

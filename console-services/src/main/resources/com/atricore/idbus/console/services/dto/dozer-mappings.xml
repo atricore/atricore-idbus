@@ -672,6 +672,10 @@
             <a>issueInstant</a>
             <b>issueInstant</b>
         </field>
+        <field>
+            <a>eula</a>
+            <b>eula</b>
+        </field>
     </mapping>
 
     <mapping>

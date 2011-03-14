@@ -8,6 +8,7 @@ public class FeatureTypeDTO {
     private String group;
     private String name;
     private String version;
+    protected String licenseText;
 
     public String getGroup() {
         return group;
@@ -31,5 +32,13 @@ public class FeatureTypeDTO {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public String getLicenseText() {
+        return licenseText;
+    }
+
+    public void setLicenseText(String licenseText) {
+        this.licenseText = licenseText;
     }
 }
