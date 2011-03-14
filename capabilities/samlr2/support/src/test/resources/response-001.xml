@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ns3:Response xmlns:ns4="http://www.w3.org/2001/04/xmlenc#" xmlns:ns3="urn:oasis:names:tc:SAML:2.0:protocol"
+              xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="urn:oasis:names:tc:SAML:2.0:assertion"
+              Consent="urn:oasis:names:tc:SAML:2.0:consent:obtained"
+              Destination="http://localhost:8081/IDBUS/IDA1/SP2/SAML2/ACS/ARTIFACT"
+              IssueInstant="2011-03-11T14:44:54.216Z" Version="2.0" InResponseTo="id253A7406D0A9DB72"
+              ID="idE9CC33D6A3920FA5">
+    <Issuer Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">http://localhost:8081/IDBUS/IDA1/IDP1/SAML2/MD
+    </Issuer>
+    <ns3:Status>
+        <ns3:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+    </ns3:Status>
+
+</ns3:Response>

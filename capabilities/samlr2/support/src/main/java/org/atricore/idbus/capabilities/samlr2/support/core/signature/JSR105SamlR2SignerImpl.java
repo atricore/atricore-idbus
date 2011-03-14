@@ -356,7 +356,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             validate(md, doc);
 
         } catch (Exception e) {
-            throw new SamlR2SignatureException("Error verifying signature for SAMLR2 response" + response.getID());
+            throw new SamlR2SignatureException("Error verifying signature for SAMLR2 response" + response.getID(), e);
         }
     }
 
@@ -378,7 +378,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             validate(md, doc);
 
         } catch (Exception e) {
-            throw new SamlR2SignatureException("Error verifying signature for SAMLR2 response" + request.getID());
+            throw new SamlR2SignatureException("Error verifying signature for SAMLR2 response" + request.getID(), e);
         }
     }
 
@@ -400,7 +400,7 @@ public class JSR105SamlR2SignerImpl implements SamlR2Signer {
             validate(md, doc);
 
         } catch (Exception e) {
-            throw new SamlR2SignatureException("Error verifying signature for SAMLR2 response" + request.getID());
+            throw new SamlR2SignatureException("Error verifying signature for SAMLR2 response" + request.getID(), e);
         }
     }
 
