@@ -51,9 +51,11 @@
             <element ref="ds:Signature" minOccurs="0"/>
             <element ref="lic:licensedFeature" minOccurs="0" maxOccurs="unbounded" />
             <element ref="lic:organization" minOccurs="0"/>
+
             <element ref="lic:licenseText" minOccurs="0"/>
             <element ref="lic:EULA" minOccurs="0"/>
         </sequence>
+        <attribute name="LicenseName" type="string" use="required"/>
         <attribute name="Version" type="string" use="required"/>
         <attribute name="ID" type="ID" use="required"/>
         <attribute name="IssueInstant" type="dateTime" use="required"/>
