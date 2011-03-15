@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
 import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsRequest;
 import org.atricore.idbus.capabilities.samlr2.main.claims.SamlR2ClaimsResponse;
+import org.atricore.idbus.capabilities.samlr2.main.common.AbstractSamlR2Mediator;
 import org.atricore.idbus.capabilities.samlr2.main.common.producers.SamlR2Producer;
 import org.atricore.idbus.capabilities.samlr2.main.emitter.SamlR2SecurityTokenEmissionContext;
 import org.atricore.idbus.capabilities.samlr2.main.emitter.plans.SamlR2SecurityTokenToAuthnAssertionPlan;
@@ -44,8 +45,12 @@ import org.atricore.idbus.capabilities.samlr2.support.SAMLR2Constants;
 import org.atricore.idbus.capabilities.samlr2.support.auth.AuthnCtxClass;
 import org.atricore.idbus.capabilities.samlr2.support.binding.SamlR2Binding;
 import org.atricore.idbus.capabilities.samlr2.support.core.NameIDFormat;
+import org.atricore.idbus.capabilities.samlr2.support.core.SamlR2RequestException;
 import org.atricore.idbus.capabilities.samlr2.support.core.StatusCode;
 import org.atricore.idbus.capabilities.samlr2.support.core.StatusDetails;
+import org.atricore.idbus.capabilities.samlr2.support.core.encryption.SamlR2Encrypter;
+import org.atricore.idbus.capabilities.samlr2.support.core.signature.SamlR2SignatureException;
+import org.atricore.idbus.capabilities.samlr2.support.core.signature.SamlR2SignatureValidationException;
 import org.atricore.idbus.capabilities.samlr2.support.core.signature.SamlR2Signer;
 import org.atricore.idbus.capabilities.samlr2.support.metadata.SamlR2Service;
 import org.atricore.idbus.capabilities.sts.main.SecurityTokenAuthenticationFailure;
@@ -235,13 +240,15 @@ public class SingleSignOnProducer extends SamlR2Producer {
 
         if (responseMode != null && responseMode.equalsIgnoreCase("unsolicited")) {
             logger.debug("Response Mode for Authentication Request " + authnRequest.getID() + " is unsolicited");
-            logger.debug("Response Format for Authentication Request " + authnRequest.getID() + " is " +
-                    responseFormat);
+            logger.debug("Response Format for Authentication Request " + authnRequest.getID() + " is " + responseFormat);
         } else {
             logger.debug("Response Mode for Authentication Request " + authnRequest.getID() + " is NOT unsolicited");
         }
 
         SSOSessionManager sessionMgr = ((SPChannel)channel).getSessionManager();
+
+        // TODO : Validate AuthnRequest
+        validateRequest(authnRequest, in.getMessage().getRawContent());
 
         // -----------------------------------------------------------------------------
         // Validate SSO Session
@@ -636,6 +643,70 @@ public class SingleSignOnProducer extends SamlR2Producer {
     // -----------------------------------------------------------------------------------
     // Utils
     // -----------------------------------------------------------------------------------
+
+    protected void validateRequest(AuthnRequestType request, String originalRequest)
+            throws SamlR2RequestException, SamlR2Exception {
+
+        AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
+        SamlR2Signer signer = mediator.getSigner();
+        SamlR2Encrypter encrypter = mediator.getEncrypter();
+
+        // Metadata from the IDP
+        String spAlais = null;
+        SPSSODescriptorType spMd = null;
+        try {
+            spAlais = request.getIssuer().getValue();
+            MetadataEntry md = getCotManager().findEntityMetadata(spAlais);
+            EntityDescriptorType saml2Md = (EntityDescriptorType) md.getEntry();
+            boolean found = false;
+            for (RoleDescriptorType roleMd : saml2Md.getRoleDescriptorOrIDPSSODescriptorOrSPSSODescriptor()) {
+
+                if (roleMd instanceof SPSSODescriptorType) {
+                    spMd = (SPSSODescriptorType) roleMd;
+                }
+            }
+
+        } catch (CircleOfTrustManagerException e) {
+            throw new SamlR2RequestException(request,
+                    StatusCode.TOP_REQUESTER,
+                    StatusCode.REQUEST_DENIED,
+                    null,
+                    request.getIssuer().getValue(),
+                    e);
+        }
+
+		// XML Signature, saml2 core, section 5
+        if (mediator.isEnableSignatureValidation()) {
+
+            // If no signature is present, throw an exception!
+            if (request.getSignature() == null)
+                throw new SamlR2RequestException(request,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE);
+            try {
+
+                if (originalRequest != null)
+                    signer.validate(spMd, originalRequest);
+                else
+                    signer.validate(spMd, request);
+
+            } catch (SamlR2SignatureValidationException e) {
+                throw new SamlR2RequestException(request,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            } catch (SamlR2SignatureException e) {
+                //other exceptions like JAXB, xml parser...
+                throw new SamlR2RequestException(request,
+                        StatusCode.TOP_REQUESTER,
+                        StatusCode.REQUEST_DENIED,
+                        StatusDetails.INVALID_RESPONSE_SIGNATURE, e);
+            }
+
+        }
+
+    }
 
     /**
      * This has the logic to select endpoings for claims collecting.

@@ -126,7 +126,7 @@
     <!-- SamlR2 Sign LogoutRequest -->
     <bean name="samlr2-idp-sign-logoutrequest-process-fragment"
           class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
-        <property name="name" value="samlr2-sign-logoutrequest-process-fragment"/>
+        <property name="name" value="samlr2-idp-sign-logoutrequest-process-fragment"/>
         <property name="lifecycle" value="generate-idp-sloreq"/>
         <property name="phase" value="ensure-authenticity"/>
         <property name="processFragmentDescriptor"

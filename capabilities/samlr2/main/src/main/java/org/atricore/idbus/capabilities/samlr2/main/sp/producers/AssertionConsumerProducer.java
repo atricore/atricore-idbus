@@ -653,9 +653,9 @@ public class AssertionConsumerProducer extends SamlR2Producer {
         IDPSSODescriptorType idpMd = null;
 
         // Request can be null for IDP initiated SSO
-    	EndpointDescriptor epointDesc;
+    	EndpointDescriptor endpointDesc;
 		try {
-			epointDesc = channel.getIdentityMediator().resolveEndpoint(channel, endpoint);
+			endpointDesc = channel.getIdentityMediator().resolveEndpoint(channel, endpoint);
 
 		} catch (IdentityMediationException e1) {
 			throw new SamlR2ResponseException(response,
@@ -702,20 +702,28 @@ public class AssertionConsumerProducer extends SamlR2Producer {
         // --------------------------------------------------------
 
         // Destination
-    	//saml2 core, section 3.2.2
     	//saml2 binding, sections 3.4.5.2 & 3.5.5.2
-    	if(response.getDestination() != null){
-    		
-    		if(!epointDesc.getLocation().equals(response.getDestination())){
+    	if(response.getDestination() != null) {
+
+            //saml2 core, section 3.2.2
+            String location = endpointDesc.getResponseLocation();
+            if (location ==null)
+                location = endpointDesc.getLocation();
+
+
+    		if(!response.getDestination().equals(location)){
     			throw new SamlR2ResponseException(response,
                         StatusCode.TOP_REQUESTER,
                         StatusCode.REQUEST_DENIED,
                         StatusDetails.INVALID_DESTINATION);
-    		}    		
-    		
+    		}
+
     	} else if(response.getSignature() != null &&
-                (epointDesc.getBinding().equals("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST") ||
-    			epointDesc.getBinding().equals("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"))) {
+                (!endpointDesc.getBinding().equals(SamlR2Binding.SAMLR2_LOCAL.getValue()) &&
+                 !endpointDesc.getBinding().equals(SamlR2Binding.SAMLR2_ARTIFACT.getValue()))) {
+
+            // If message is signed, the destination is mandatory!
+            //saml2 binding, sections 3.4.5.2 & 3.5.5.2
     		throw new SamlR2ResponseException(response,
                     StatusCode.TOP_REQUESTER,
                     StatusCode.REQUEST_DENIED,

@@ -385,8 +385,10 @@ public class SingleLogoutProducer extends SamlR2Producer {
     		}
 
     	} else if(response.getSignature() != null &&
-                (endpointDesc.getBinding().equals("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST") ||
-    			endpointDesc.getBinding().equals("urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"))) {
+                (!endpointDesc.getBinding().equals(SamlR2Binding.SAMLR2_LOCAL.getValue()) &&
+                 !endpointDesc.getBinding().equals(SamlR2Binding.SAMLR2_ARTIFACT.getValue()))) {
+
+            // Local and Artifact bindings don't require signature
 
             // If message is signed, the destination is mandatory!
             //saml2 binding, sections 3.4.5.2 & 3.5.5.2
