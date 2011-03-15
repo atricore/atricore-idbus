@@ -173,7 +173,7 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         var tmpFeature:FeatureType;
         for each (var licFeature:LicensedFeatureType in _licenseProxy.license.licensedFeature) {
             for each (var feature:FeatureType in licFeature.feature) {
-                var tmpId:String = feature.group + feature.name;
+                tmpId = feature.group + feature.name;
                 if(btnId == tmpId){
                    tmpFeature = feature;
                     break;
@@ -210,7 +210,7 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         if(_licenseProxy.license.organization != null && _licenseProxy.license.organization.owner != null){
             hgroup = new HGroup();
             hgroup.paddingBottom = paddingBottom;
-            var textLbl:Label = new Label();
+            textLbl = new Label();
             textLbl.width = lblWidth;
             textLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.owner') + ":";
             hgroup.addElement(textLbl);
@@ -224,7 +224,7 @@ public class LicenseMediator extends IocMediator implements IDisposable {
         if(_licenseProxy.license.organization != null){
             hgroup = new HGroup();
             hgroup.paddingBottom = paddingBottom;
-            var textLbl:Label = new Label();
+            textLbl = new Label();
             textLbl.width = lblWidth;
             textLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.organization') + ":";
             hgroup.addElement(textLbl);
@@ -240,7 +240,7 @@ public class LicenseMediator extends IocMediator implements IDisposable {
                 //feature name
                 hgroup = new HGroup();
                 hgroup.paddingBottom = paddingBottom;
-                var textLbl:Label = new Label();
+                textLbl = new Label();
                 textLbl.width = lblWidth;
                 textLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.feature') + ":";
                 hgroup.addElement(textLbl);
@@ -252,7 +252,7 @@ public class LicenseMediator extends IocMediator implements IDisposable {
                 //feature expire date
                 hgroup = new HGroup();
                 hgroup.paddingBottom = paddingBottom;
-                var textLbl:Label = new Label();
+                textLbl = new Label();
                 textLbl.width = lblWidth;
                 textLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.expires') + ":";
                 hgroup.addElement(textLbl);
@@ -265,11 +265,11 @@ public class LicenseMediator extends IocMediator implements IDisposable {
                 if(feature.licenseText != null){
                     hgroup = new HGroup();
                     hgroup.paddingBottom = paddingBottom;
-                    var textLbl:Label = new Label();
+                    textLbl = new Label();
                     textLbl.width = lblWidth;
                     textLbl.text = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.licensetext') + ":";
                     hgroup.addElement(textLbl);
-                    var btn:Button = new Button();
+                    btn = new Button();
                     btn.label = resourceManager.getString(AtricoreConsole.BUNDLE, 'licensing.viewlicense');
                     btn.id = feature.group + feature.name;
                     btn.addEventListener(MouseEvent.CLICK, handleViewLicenseButton);
