@@ -21,18 +21,18 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<process-definition name='Initialize SAMLR2 IDP Authn Response'>
+<process-definition name='Set IDP Authn Response Status information'>
 
-    <description>Initialize Response </description>
+    <description>Set IDP Response Status</description>
 
     <start-state name="start">
-        <transition to="samlr2InitializeResponse"/>
+        <transition to="setResponseStatus"/>
     </start-state>
 
-    <state name="samlr2InitializeResponse">
+    <state name="setResponseStatus">
         <event type="node-enter">
-            <action class="org.atricore.idbus.capabilities.samlr2.main.common.plans.actions.InitializeResponseAction"
-                    name="SAMLR2 Initialize Response">
+            <action class="org.atricore.idbus.capabilities.samlr2.main.idp.plans.actions.SetResponseStatusAction"
+                    name="SAMLR2 Set Response Status ">
             </action>
         </event>
 

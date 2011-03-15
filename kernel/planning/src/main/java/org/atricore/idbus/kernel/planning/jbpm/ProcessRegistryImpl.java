@@ -166,13 +166,13 @@ public class ProcessRegistryImpl implements ProcessFragmentRegistry, BundleConte
         for (Bundle bundle : bundleActionKeys) {
 
             Set<ProcessAction> processActions = bundleActions.get(bundle);
-            if (logger.isDebugEnabled())
-                logger.debug("Bundle ("+bundle.getBundleId()+") has " + processActions.size() + " actions");
+            if (logger.isTraceEnabled())
+                logger.trace("Bundle ("+bundle.getBundleId()+") has " + processActions.size() + " actions");
 
             for (ProcessAction processAction : processActions) {
 
-                if (logger.isDebugEnabled())
-                    logger.debug("Bundle ("+bundle.getBundleId()+") has " + processAction + " actions");
+                if (logger.isTraceEnabled())
+                    logger.trace("Bundle ("+bundle.getBundleId()+") has " + processAction.getClass().getName() + " action");
 
                 if (processAction.getQualifiedClassName().equals(qualifiedActionName)) {
                     foundClass = bundle.loadClass(qualifiedActionName);

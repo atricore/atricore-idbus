@@ -34,7 +34,7 @@
      Validate Authn Request 
     -->
     <process-fragment-state name="validateAuthnRequest">
-        <process-fragment lifecycle="genenrate-authnresponse" phase="validate-recieved-request"/>
+        <process-fragment lifecycle="genenrate-authnresponse" phase="validate-received-request"/>
         <transition to="initializeResponse"/>
     </process-fragment-state>
     

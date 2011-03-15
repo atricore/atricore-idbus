@@ -36,6 +36,16 @@
             </action>
         </event>
 
+        <transition to="initializeAuthnResponse" />
+    </state>
+
+    <state name="initializeAuthnResponse">
+        <event type="node-enter">
+            <action class="org.atricore.idbus.capabilities.samlr2.main.idp.plans.actions.InitializeAuthnResponseAction"
+                    name="SAMLR2 Initialize AuthnResponse">
+            </action>
+        </event>
+
         <transition to="end" />
     </state>
 

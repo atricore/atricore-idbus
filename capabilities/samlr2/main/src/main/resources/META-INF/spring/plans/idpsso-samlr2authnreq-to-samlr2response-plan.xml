@@ -38,10 +38,10 @@
         <property name="bootstrapProcessFragmentName" value="samlr2-idp-authnreq-to-samlr2response-process-fragment" />
         <property name="activeProcessFragments">
             <list>
-                <value>samlr2-idp-init-response-process-fragment</value>
-                <value>samlr2-idp-response-addassertion-process-fragment</value>
-                <value>samlr2-idp-response-setstatus-process-fragment</value>
-                <value>samlr2-sign-response-process-fragment</value>
+                <value>samlr2-idp-authnresponse-init-process-fragment</value>
+                <value>samlr2-idp-authnresponse-addassertion-process-fragment</value>
+                <value>samlr2-idp-authnresponse-setstatus-process-fragment</value>
+                <value>samlr2-idp-authnresponse-sign-process-fragment</value>
             </list>
         </property>
     </bean>

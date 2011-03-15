@@ -34,7 +34,7 @@
      Validate SP Initiated authn request
     -->
     <process-fragment-state name="validateSPInitiatedAuthnRequest">
-        <process-fragment lifecycle="generate-authnreq" phase="validate-recieved-request"/>
+        <process-fragment lifecycle="generate-authnreq" phase="validate-received-request"/>
         <transition to="initializeAuthnRequest"/>
 
         <variable name="urn:org:atricore:idbus:cot-member" access="read"/>

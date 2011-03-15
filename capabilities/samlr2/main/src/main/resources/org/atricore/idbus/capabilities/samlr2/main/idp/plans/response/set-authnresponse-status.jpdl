@@ -21,15 +21,15 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<process-definition name='Set IDP Response Status information'>
+<process-definition name='Set IDP Authn Response Status information'>
 
     <description>Set IDP Response Status</description>
 
     <start-state name="start">
-        <transition to="setStatus"/>
+        <transition to="setAuthnResponseStatus"/>
     </start-state>
 
-    <state name="setStatus">
+    <state name="setAuthnResponseStatus">
         <event type="node-enter">
             <action class="org.atricore.idbus.capabilities.samlr2.main.idp.plans.actions.SetAuthnResponseStatusAction"
                     name="SAMLR2 Set Response Status ">

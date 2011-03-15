@@ -196,14 +196,24 @@
                   ref="samlr2-init-authn-response-action"
                   interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
 
-    <!-- Set SAMLR2 Response Statius-->
-    <bean name="samlr2-set-response-status-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+    <!-- Set SAMLR2 AuthnResponse Status-->
+    <bean name="samlr2-set-authnresponse-status-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
           <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.idp.plans.actions.SetAuthnResponseStatusAction"/>
+    </bean>
+    <osgi:service id="osgi-samlr2-set-authnresponse-status-action"
+                  ref="samlr2-set-authnresponse-status-action"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
+
+    <!-- Set SAMLR2 Response Status-->
+    <bean name="samlr2-set-response-status-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
+          <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.idp.plans.actions.SetResponseStatusAction"/>
     </bean>
     <osgi:service id="osgi-samlr2-set-response-status-action"
                   ref="samlr2-set-response-status-action"
                   interface="org.atricore.idbus.kernel.planning.jbpm.ProcessAction"/>
 
+
+    <!-- Initialize SAMLR2 Authn Request Action -->
     <bean name="samlr2-idp-initialize-authn-request-action" class="org.atricore.idbus.kernel.planning.jbpm.ProcessActionImpl">
         <property name="qualifiedClassName" value="org.atricore.idbus.capabilities.samlr2.main.idp.plans.actions.InitializeAuthnRequestAction"/>
     </bean>

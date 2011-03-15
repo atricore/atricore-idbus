@@ -48,6 +48,51 @@
                   ref="samlr2-idp-sloreq-to-samlr2response-process-fragment"
                   interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
 
+    <!-- SamlR2 Response init -->
+    <bean name="samlr2-idp-slo-response-init-process-fragment"
+          class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
+        <property name="name" value="samlr2-idp-slo-response-init-process-fragment"/>
+        <property name="lifecycle" value="generate-idp-sloresponse"/>
+        <property name="phase" value="initialize"/>
+        <property name="processFragmentDescriptor"
+                  value="classpath:org/atricore/idbus/capabilities/samlr2/main/idp/plans/response/initialize-response.jpdl"/>
+    </bean>
+
+    <osgi:service id="osgi-samlr2-idp-slo-response-init-process-fragment"
+                  ref="samlr2-idp-slo-response-init-process-fragment"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
+
+    <bean name="samlr2-idp-slo-response-setstatus-process-fragment"
+          class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
+        <property name="name" value="samlr2-idp-slo-response-setstatus-process-fragment"/>
+        <property name="lifecycle" value="generate-idp-sloresponse"/>
+        <property name="phase" value="provide-status"/>
+        <property name="processFragmentDescriptor"
+                  value="classpath:org/atricore/idbus/capabilities/samlr2/main/idp/plans/response/set-response-status.jpdl"/>
+    </bean>
+
+    <osgi:service id="osgi-samlr2-idp-slo-response-setstatus-process-fragment"
+                  ref="samlr2-idp-slo-response-setstatus-process-fragment"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
+
+
+    <!-- SamlR2 Sign SLO Response -->
+    <bean name="samlr2-idp-slo-response-sign-process-fragment"
+          class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
+        <property name="name" value="samlr2-idp-slo-response-sign-process-fragment"/>
+        <property name="lifecycle" value="generate-idp-sloresponse"/>
+        <property name="phase" value="ensure-authenticity"/>
+        <property name="processFragmentDescriptor"
+                  value="classpath:org/atricore/idbus/capabilities/samlr2/main/idp/plans/response/sign-response.jpdl"/>
+
+    </bean>
+
+    <osgi:service id="osgi-samlr2-idp-slo-response-sign-process-fragment"
+                  ref="samlr2-idp-slo-response-sign-process-fragment"
+                  interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
+
+
+
     <!-- ====================================================================== -->
     <!-- SAMLR2 SLO Request to SAMLR2 SLO Request                               -->
     <!-- ====================================================================== -->
@@ -110,23 +155,23 @@
                   interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
 
     <!-- SamlR2 Response init -->
-    <bean name="samlr2-idp-init-response-process-fragment"
+    <bean name="samlr2-idp-authnresponse-init-process-fragment"
           class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
-        <property name="name" value="samlr2-idp-init-response-process-fragment"/>
+        <property name="name" value="samlr2-idp-authnresponse-init-process-fragment"/>
         <property name="lifecycle" value="generate-authnresponse"/>
         <property name="phase" value="initialize"/>
         <property name="processFragmentDescriptor"
-                  value="classpath:org/atricore/idbus/capabilities/samlr2/main/idp/plans/response/initialize-response.jpdl"/>
+                  value="classpath:org/atricore/idbus/capabilities/samlr2/main/idp/plans/response/initialize-authnresponse.jpdl"/>
     </bean>
 
-    <osgi:service id="osgi-samlr2-idp-init-response-process-fragment"
-                  ref="samlr2-idp-init-response-process-fragment"
+    <osgi:service id="osgi-samlr2-idp-authnresponse-init-process-fragment"
+                  ref="samlr2-idp-authnresponse-init-process-fragment"
                   interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
 
     <!-- SamlR2 Response Add Content -->
-    <bean name="samlr2-idp-response-addassertion-process-fragment"
+    <bean name="samlr2-idp-authnresponse-addassertion-process-fragment"
           class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
-        <property name="name" value="samlr2-idp-response-addassertion-process-fragment"/>
+        <property name="name" value="samlr2-idp-authnresponse-addassertion-process-fragment"/>
         <property name="lifecycle" value="generate-authnresponse"/>
         <property name="phase" value="provide-content"/>
         <property name="processFragmentDescriptor"
@@ -134,36 +179,36 @@
     </bean>
 
 
-    <osgi:service id="osgi-samlr2-idp-response-addassertion-process-fragment"
-                  ref="samlr2-idp-response-addassertion-process-fragment"
+    <osgi:service id="osgi-samlr2-idp-authnresponse-addassertion-process-fragment"
+                  ref="samlr2-idp-authnresponse-addassertion-process-fragment"
                   interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
 
     <!-- SamlR2 Response Set Status -->
-    <bean name="samlr2-idp-response-setstatus-process-fragment"
+    <bean name="samlr2-idp-authnresponse-setstatus-process-fragment"
           class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
-        <property name="name" value="samlr2-idp-response-setstatus-process-fragment"/>
+        <property name="name" value="samlr2-idp-authnresponse-setstatus-process-fragment"/>
         <property name="lifecycle" value="generate-authnresponse"/>
         <property name="phase" value="provide-status"/>
         <property name="processFragmentDescriptor"
-                  value="classpath:org/atricore/idbus/capabilities/samlr2/main/idp/plans/response/set-status.jpdl"/>
+                  value="classpath:org/atricore/idbus/capabilities/samlr2/main/idp/plans/response/set-authnresponse-status.jpdl"/>
     </bean>
 
-    <osgi:service id="osgi-samlr2-idp-response-setstatus-process-fragment"
-                  ref="samlr2-idp-response-setstatus-process-fragment"
+    <osgi:service id="osgi-samlr2-idp-authnresponse-setstatus-process-fragment"
+                  ref="samlr2-idp-authnresponse-setstatus-process-fragment"
                   interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
 
     <!-- SamlR2 Response Signing -->
-    <bean name="samlr2-sign-response-process-fragment"
+    <bean name="samlr2-idp-authnresponse-sign-process-fragment"
           class="org.atricore.idbus.kernel.planning.jbpm.ProcessFragmentImpl">
-        <property name="name" value="samlr2-sign-response-process-fragment"/>
+        <property name="name" value="samlr2-idp-authnresponse-sign-process-fragment"/>
         <property name="lifecycle" value="generate-authnresponse"/>
         <property name="phase" value="ensure-authenticity"/>
         <property name="processFragmentDescriptor"
                   value="classpath:org/atricore/idbus/capabilities/samlr2/main/idp/plans/response/sign-response.jpdl"/>
     </bean>
 
-    <osgi:service id="osgi-samlr2-sign-response-fragment"
-                  ref="samlr2-sign-response-process-fragment"
+    <osgi:service id="osgi-samlr2-idp-authnresponse-sign-fragment"
+                  ref="samlr2-idp-authnresponse-sign-process-fragment"
                   interface="org.atricore.idbus.kernel.planning.jbpm.ProcessFragment"/>
 
     <!-- SamlR2 AuthnRequest init  -->

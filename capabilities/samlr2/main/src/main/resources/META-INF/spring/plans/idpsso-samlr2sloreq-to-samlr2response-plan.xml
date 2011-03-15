@@ -38,8 +38,9 @@
         <property name="bootstrapProcessFragmentName" value="samlr2-idp-sloreq-to-samlr2response-process-fragment" />
         <property name="activeProcessFragments">
             <list>
-                <value>samlr2-idp-init-response-process-fragment</value>
-                <value>samlr2-idp-response-setstatus-process-fragment</value>
+                <value>samlr2-idp-slo-response-init-process-fragment</value>
+                <value>samlr2-idp-slo-response-setstatus-process-fragment</value>
+                <value>samlr2-idp-slo-response-sign-process-fragment</value>
             </list>
         </property>
     </bean>

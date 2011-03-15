@@ -30,10 +30,12 @@ import oasis.names.tc.saml._2_0.protocol.StatusResponseType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.atricore.idbus.capabilities.samlr2.main.SamlR2Exception;
+import org.atricore.idbus.capabilities.samlr2.main.common.AbstractSamlR2Mediator;
 import org.atricore.idbus.capabilities.samlr2.main.common.producers.SamlR2Producer;
 import org.atricore.idbus.capabilities.samlr2.main.idp.IdPSecurityContext;
 import org.atricore.idbus.capabilities.samlr2.main.idp.IdentityProviderConstants;
 import org.atricore.idbus.capabilities.samlr2.main.idp.ProviderSecurityContext;
+import org.atricore.idbus.capabilities.samlr2.main.idp.SamlR2IDPMediator;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSamlR2RespPlan;
 import org.atricore.idbus.capabilities.samlr2.main.idp.plans.SamlR2SloRequestToSpSamlR2SloRequestPlan;
 import org.atricore.idbus.capabilities.samlr2.main.sp.SamlR2SPMediator;
@@ -160,7 +162,8 @@ public class SingleLogoutProducer extends SamlR2Producer {
 
     protected ResponseType buildSamlResponse(CamelMediationExchange exchange,
                                              LogoutRequestType sloRequest,
-                                             CircleOfTrustMemberDescriptor sp, EndpointDescriptor spEndpoint) throws Exception {
+                                             CircleOfTrustMemberDescriptor sp,
+                                             EndpointDescriptor spEndpoint) throws Exception {
         // Build sloresponse
         IdentityPlan identityPlan = findIdentityPlanOfType(SamlR2SloRequestToSamlR2RespPlan.class);
         IdentityPlanExecutionExchange idPlanExchange = createIdentityPlanExecutionExchange();
@@ -265,7 +268,7 @@ public class SingleLogoutProducer extends SamlR2Producer {
     protected void validateRequest(LogoutRequestType request, String originalRequest)
             throws SamlR2RequestException, SamlR2Exception {
 
-        SamlR2SPMediator mediator = (SamlR2SPMediator) channel.getIdentityMediator();
+        AbstractSamlR2Mediator mediator = (AbstractSamlR2Mediator) channel.getIdentityMediator();
         SamlR2Signer signer = mediator.getSigner();
         SamlR2Encrypter encrypter = mediator.getEncrypter();
 

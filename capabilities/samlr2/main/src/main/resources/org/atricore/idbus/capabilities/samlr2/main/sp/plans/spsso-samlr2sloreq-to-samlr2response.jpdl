@@ -21,7 +21,7 @@
   ~ 02110-1301 USA, or see the FSF site: http://www.fsf.org.
   -->
 
-<process-definition name='SAMLR2 Response from SAMLR2 LogoutRequest'>
+<process-definition name='SP SAMLR2 Response from SAMLR2 LogoutRequest'>
 
     <description>Emit a SamlR2 Response (auth) from a SamlR2 Logout Request</description>
 
@@ -33,7 +33,7 @@
      Validate Logout Request
     -->
     <process-fragment-state name="validateLogoutRequest">
-        <process-fragment lifecycle="genenrate-sloresponse" phase="validate-recieved-request"/>
+        <process-fragment lifecycle="genenrate-sloresponse" phase="validate-received-request"/>
         <transition to="initializeResponse"/>
     </process-fragment-state>
 
@@ -42,7 +42,7 @@
      Initialize Response
     -->
     <process-fragment-state name="initializeResponse">
-        <process-fragment lifecycle="generate-sloresponse" phase="initialize"/>
+        <process-fragment lifecycle="generate-sp-sloresponse" phase="initialize"/>
 
         <transition to="provideResponseContent"/>
 
@@ -63,7 +63,7 @@
      Provide Response Content
     -->
     <process-fragment-state name="provideResponseContent">
-        <process-fragment lifecycle="generate-sloresponse" phase="provide-content"/>
+        <process-fragment lifecycle="generate-sp-sloresponse" phase="provide-content"/>
         <transition to="provideResponseStatus"/>
 
     </process-fragment-state>
@@ -72,7 +72,7 @@
      Provide Response Status
     -->
     <process-fragment-state name="provideResponseStatus">
-        <process-fragment lifecycle="generate-sloresponse" phase="provide-status"/>
+        <process-fragment lifecycle="generate-sp-sloresponse" phase="provide-status"/>
         <transition to="ensureContentConfidentiality"/>
 
     </process-fragment-state>
@@ -81,7 +81,7 @@
     Encrypt response content (attributes, assertions, etc)
     -->
     <process-fragment-state name="ensureContentConfidentiality">
-        <process-fragment lifecycle="generate-sloresponse" phase="ensure-content-confidentiality"/>
+        <process-fragment lifecycle="generate-sp-sloresponse" phase="ensure-content-confidentiality"/>
         <transition to="ensureAuthenticity"/>
     </process-fragment-state>
 
@@ -89,7 +89,7 @@
     Ensure response authenticity
     -->
     <process-fragment-state name="ensureAuthenticity">
-        <process-fragment lifecycle="generate-sloresponse" phase="ensure-authenticity"/>
+        <process-fragment lifecycle="generate-sp-sloresponse" phase="ensure-authenticity"/>
         <transition to="validateResponse"/>
     </process-fragment-state>
 
@@ -97,7 +97,7 @@
     Validate the generated response
     -->
     <process-fragment-state name="validateResponse">
-        <process-fragment lifecycle="generate-sloresponse" phase="validate"/>
+        <process-fragment lifecycle="generate-sp-sloresponse" phase="validate"/>
         <transition to="ensureConfidentiality"/>
     </process-fragment-state>
 
@@ -105,7 +105,7 @@
     Encrypt the entire response ?
     -->
     <process-fragment-state name="ensureConfidentiality">
-        <process-fragment lifecycle="generate-sloresponse" phase="ensure-confidentiality"/>
+        <process-fragment lifecycle="generate-sp-sloresponse" phase="ensure-confidentiality"/>
         <transition to="end"/>
     </process-fragment-state>
 
