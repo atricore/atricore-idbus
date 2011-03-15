@@ -2784,7 +2784,7 @@ public class PropertySheetMediator extends IocMediator {
         tomcatExecEnv.description = _tomcatExecEnvCoreSection.executionEnvironmentDescription.text;
         tomcatExecEnv.platformId = _tomcatExecEnvCoreSection.platform.selectedItem.data;
         tomcatExecEnv.installUri = _tomcatExecEnvCoreSection.homeDirectory.text;
-
+        
         sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
         sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
         _applianceSaved = false;
@@ -3799,12 +3799,24 @@ public class PropertySheetMediator extends IocMediator {
             }
             //TODO add click handler for _executionEnvironmentActivateSection.activate checkbox
             _executionEnvironmentActivateSection.reactivate.addEventListener(MouseEvent.CLICK, reactivateClickHandler);
+            _executionEnvironmentActivateSection.installSamples.addEventListener(Event.CHANGE, handleSectionChange);
+            _executionEnvironmentActivateSection.replaceConfFiles.addEventListener(Event.CHANGE, handleSectionChange);
         }
     }
 
     private function handleExecEnvActivationPropertyTabRollOut(event:Event):void {
         if (projectProxy.currentIdentityAppliance.state != IdentityApplianceState.DISPOSED.toString()){
             activateExecutionEnvironment(event);
+        }
+        if (_dirty){
+            var execEnv:ExecutionEnvironment = projectProxy.currentIdentityApplianceElement as ExecutionEnvironment;
+            execEnv.installDemoApps = _executionEnvironmentActivateSection.installSamples.selected ;
+            execEnv.overwriteOriginalSetup = _executionEnvironmentActivateSection.replaceConfFiles.selected;
+
+            sendNotification(ApplicationFacade.DIAGRAM_ELEMENT_UPDATED);
+            sendNotification(ApplicationFacade.IDENTITY_APPLIANCE_CHANGED);
+            _applianceSaved = false;
+            _dirty = false;
         }
     }
 
