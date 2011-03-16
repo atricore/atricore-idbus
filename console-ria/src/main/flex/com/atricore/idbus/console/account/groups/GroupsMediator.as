@@ -96,8 +96,7 @@ public class GroupsMediator extends IocMediator implements IDisposable{
         view.groupList.addEventListener(ListEvent.ITEM_CLICK , groupListClickHandler);
         view.btnClearSearch.addEventListener(MouseEvent.CLICK, handleClearSearch);
 
-        sendNotification(ApplicationFacade.LIST_GROUPS);
-        groupPropertiesMediator.setViewComponent(view.properties);
+        _groupPropertiesMediator.setViewComponent(view.properties);
         popupManager.init(iocFacade, view);
     }
 
@@ -115,10 +114,6 @@ public class GroupsMediator extends IocMediator implements IDisposable{
         view.btnClearSearch.removeEventListener(MouseEvent.CLICK, handleClearSearch);
 
         view = null;
-    }
-
-    private function onShow(event:Event):void {
-        sendNotification(ApplicationFacade.LIST_GROUPS);
     }
 
     override public function listNotificationInterests():Array {
