@@ -45,6 +45,11 @@
             encryption.algorithm = MD5
             encryption.encoding = hexadecimal
         </jaas:module>
+
+        <jaas:module className="org.atricore.idbus.console.appliance.jaas.RBACLoginModule" flags="required">
+            allowed.roles = Administrators
+        </jaas:module>
+
     </jaas:config>
 
 </blueprint>
